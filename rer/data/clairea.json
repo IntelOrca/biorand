@@ -54,6 +54,16 @@
     {
       "stage": 0,
       "room": 3,
+      "items": [
+        {
+          "id": 5,
+          "type": 0
+        },
+        {
+          "id": 31,
+          "type": 0
+        }
+      ],
       "doors": [
         {
           "stage": 1,
@@ -64,42 +74,8 @@
     },
     {
       "stage": 0,
-      "room": 4,
-      "doors": [
-        {
-          "stage": 0,
-          "room": 5,
-          "requires": []
-        }
-      ]
-    },
-    {
-      "stage": 0,
-      "room": 5,
-      "doors": [
-        {
-          "stage": 0,
-          "room": 6,
-          "requires": [
-            88
-          ]
-        },
-        {
-          "stage": 0,
-          "room": 4,
-          "requires": []
-        }
-      ]
-    },
-    {
-      "stage": 0,
       "room": 6,
       "doors": [
-        {
-          "stage": 0,
-          "room": 5,
-          "requires": []
-        },
         {
           "stage": 0,
           "room": 7,
@@ -142,6 +118,16 @@
     {
       "stage": 0,
       "room": 9,
+      "items": [
+        {
+          "id": 4,
+          "type": 0
+        },
+        {
+          "id": 5,
+          "type": 0
+        }
+      ],
       "doors": [
         {
           "stage": 0,
@@ -195,6 +181,20 @@
     {
       "stage": 0,
       "room": 11,
+      "items": [
+        {
+          "id": 5,
+          "type": 0
+        },
+        {
+          "id": 16,
+          "type": 56,
+          "requires": [
+            51,
+            51
+          ]
+        }
+      ],
       "doors": [
         {
           "stage": 0,
@@ -206,6 +206,12 @@
     {
       "stage": 0,
       "room": 12,
+      "items": [
+        {
+          "id": 12,
+          "type": 0
+        }
+      ],
       "doors": [
         {
           "stage": 1,
@@ -227,6 +233,12 @@
     {
       "stage": 0,
       "room": 13,
+      "items": [
+        {
+          "id": 10,
+          "type": 0
+        }
+      ],
       "doors": [
         {
           "stage": 0,
@@ -297,6 +309,16 @@
     {
       "stage": 0,
       "room": 17,
+      "items": [
+        {
+          "id": 2,
+          "type": 57,
+          "requires": [
+            67,
+            74
+          ]
+        }
+      ],
       "doors": [
         {
           "stage": 0,
@@ -441,6 +463,12 @@
     {
       "stage": 0,
       "room": 24,
+      "items": [
+        {
+          "id": 4,
+          "type": 0
+        }
+      ],
       "doors": [
         {
           "stage": 0,
@@ -677,6 +705,19 @@
     {
       "stage": 1,
       "room": 6,
+      "items": [
+        {
+          "id": 3,
+          "type": 51,
+          "requires": [
+            47
+          ]
+        },
+        {
+          "id": 5,
+          "type": 0
+        }
+      ],
       "doors": [
         {
           "stage": 1,
@@ -716,6 +757,20 @@
     {
       "stage": 1,
       "room": 8,
+      "items": [
+        {
+          "id": 12,
+          "type": 0
+        },
+        {
+          "id": 13,
+          "type": 0
+        },
+        {
+          "id": 14,
+          "type": 0
+        }
+      ],
       "doors": [
         {
           "stage": 1,
@@ -769,6 +824,16 @@
     {
       "stage": 1,
       "room": 11,
+      "items": [
+        {
+          "id": 3,
+          "type": 0
+        },
+        {
+          "id": 3,
+          "type": 0
+        }
+      ],
       "doors": [
         {
           "stage": 1,
@@ -792,6 +857,12 @@
     {
       "stage": 1,
       "room": 12,
+      "items": [
+        {
+          "id": 10,
+          "type": 0
+        }
+      ],
       "doors": [
         {
           "stage": 1,
@@ -817,6 +888,15 @@
     {
       "stage": 1,
       "room": 13,
+      "items": [
+        {
+          "id": 1,
+          "type": 74,
+          "requires": [
+            47
+          ]
+        }
+      ],
       "doors": [
         {
           "stage": 1,
@@ -832,6 +912,14 @@
         {
           "id": 3,
           "type": 58
+        },
+        {
+          "id": 4,
+          "type": 0
+        },
+        {
+          "id": 6,
+          "type": 0
         }
       ],
       "doors": [
@@ -850,6 +938,12 @@
     {
       "stage": 1,
       "room": 15,
+      "items": [
+        {
+          "id": 7,
+          "type": 0
+        }
+      ],
       "doors": [
         {
           "stage": 1,
@@ -2018,11 +2112,29 @@
       "room": 21,
       "items": [
         {
+          "id": 7,
+          "type": 24,
+          "requires": [
+            63
+          ]
+        },
+        {
+          "id": 8,
+          "type": 24,
+          "requires": [
+            63
+          ]
+        },
+        {
           "id": 5,
           "type": 97
         },
         {
           "id": 6,
+          "type": 0
+        },
+        {
+          "id": 20,
           "type": 0
         }
       ],

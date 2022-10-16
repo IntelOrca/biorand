@@ -70,7 +70,10 @@ namespace rer
                             {
                                 foreach (var r in item.Requires)
                                 {
-                                    _requiredItems.Add(r);
+                                    if (!_haveItems.Contains(r))
+                                    {
+                                        _requiredItems.Add(r);
+                                    }
                                 }
                             }
                         }
@@ -94,7 +97,10 @@ namespace rer
                     {
                         foreach (var item in requiredItems)
                         {
-                            _requiredItems.Add(item);
+                            if (!_haveItems.Contains(item))
+                            {
+                                _requiredItems.Add(item);
+                            }
                         }
                     }
                 }
