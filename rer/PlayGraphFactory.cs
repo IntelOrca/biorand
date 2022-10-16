@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -39,7 +40,6 @@ namespace rer
                 Search(graph.Start);
             }
             RandomiseRemainingPool();
-            Save();
             return graph;
         }
 
@@ -206,7 +206,7 @@ namespace rer
             _itemPool.Clear();
         }
 
-        private void Save()
+        public void Save()
         {
             foreach (var entry in _definedPool)
             {
