@@ -15,12 +15,11 @@ class Program
         var factory = new PlayGraphFactory();
         var gameData = ReadGameData();
         factory.Create(gameData, @"M:\git\rer\rer\map.json");
+        RandomiseBgm();
     }
 
     private static GameData ReadGameData()
     {
-        // RandomiseBgm();
-
         var files = Directory.GetFiles(@"F:\games\re2\data\Pl1\Rdt");
         var rdts = new List<Rdt>();
         foreach (var file in files)
@@ -70,8 +69,8 @@ class Program
             }
             mapRooms.Add(new MapRoom()
             {
-                Stage = room.Stage,
-                Room = room.RoomId,
+                Stage = room.RdtId.Stage,
+                Room = room.RdtId.Room,
                 Doors = mapRoomDoors.ToArray()
             });
         }
@@ -154,15 +153,12 @@ class Program
     {
         File.Copy(path, randomPath, true);
 
-        var room = new Rdt();
-        room.Id = Path.GetFileNameWithoutExtension(path).Substring(4, 3);
-        room.Stage = int.Parse(room.Id.Substring(0, 1), NumberStyles.HexNumber) - 1;
-        room.RoomId = int.Parse(room.Id.Substring(1, 2), NumberStyles.HexNumber);
+        var room = new Rdt(RdtId.Parse(Path.GetFileNameWithoutExtension(path).Substring(4, 3)));
         room.OriginalPath = path;
         room.ModifiedPath = randomPath;
 
-        // if (room.Id == "200")
-        //     room.Id = room.Id;
+        // if (room.RdtId == RdtId.Parse("202"))
+        //     room.OriginalPath = path;
         // else
         //     return room;
 
@@ -249,12 +245,14 @@ class Program
                 switch (opcode)
                 {
                     default:
-                        if (!Enum.IsDefined<Opcode>(opcode))
+                        if (Enum.IsDefined(opcode))
                         {
-                            opcode = opcode;
+                            sb.WriteLine($"{opcode}();");
                         }
-
-                        sb.WriteLine($"{opcode}();");
+                        else
+                        {
+                            sb.WriteLine($"op_{opcode:X}();");
+                        }
                         break;
                     case Opcode.Nop:
                         break;
@@ -272,7 +270,7 @@ class Program
                         if (expectingEndIf)
                         {
                             sb.Unindent();
-                            sb.WriteLine($"endif");
+                            sb.WriteLine($"end-if");
                         }
                         sb.Unindent();
                         sb.WriteLine($"else");
@@ -284,10 +282,112 @@ class Program
                         sb.WriteLine($"endif");
                         expectingEndIf = false;
                         break;
+                    case Opcode.Sleep:
+                        {
+                            br.ReadByte();
+                            var count = br.ReadUInt16();
+                            sb.WriteLine($"sleep({count});");
+                            break;
+                        }
+                    case Opcode.Sleeping:
+                        {
+                            var count = br.ReadUInt16();
+                            sb.WriteLine($"sleeping({count});");
+                            break;
+                        }
+                    case Opcode.Wsleep:
+                        {
+                            sb.WriteLine($"wsleep();");
+                            break;
+                        }
+                    case Opcode.Wsleeping:
+                        {
+                            sb.WriteLine($"wsleeping();");
+                            break;
+                        }
+                    case Opcode.For:
+                        {
+                            br.ReadByte();
+                            var blockLen = br.ReadUInt16();
+                            var count = br.ReadUInt16();
+                            sb.WriteLine($"for {count} times");
+                            sb.Indent();
+                            break;
+                        }
+                    case Opcode.Next:
+                        {
+                            sb.Unindent();
+                            sb.WriteLine($"next");
+                            break;
+                        }
+                    case Opcode.While:
+                        {
+                            sb.WriteLine($"while (");
+                            sb.Indent();
+                            break;
+                        }
+                    case Opcode.Ewhile:
+                        {
+                            sb.Unindent();
+                            sb.WriteLine($"next");
+                            break;
+                        }
+                    case Opcode.Do:
+                        {
+                            sb.WriteLine($"do");
+                            sb.Indent();
+                            break;
+                        }
+                    case Opcode.Edwhile:
+                        {
+                            sb.Unindent();
+                            sb.WriteLine($"while (");
+                            break;
+                        }
+                    case Opcode.Switch:
+                        {
+                            var varw = br.ReadByte();
+                            sb.WriteLine($"switch (var_{varw:X2})");
+                            sb.Indent();
+                            break;
+                        }
+                    case Opcode.Case:
+                        {
+                            br.ReadByte();
+                            br.ReadUInt16();
+                            var value = br.ReadUInt16();
+                            sb.Unindent();
+                            sb.WriteLine($"case {value}:");
+                            sb.Indent();
+                            break;
+                        }
+                    case Opcode.Default:
+                        {
+                            sb.Unindent();
+                            sb.WriteLine($"default:");
+                            sb.Indent();
+                            break;
+                        }
+                    case Opcode.Eswitch:
+                        {
+                            sb.Unindent();
+                            sb.WriteLine($"end-switch");
+                            break;
+                        }
                     case Opcode.Gosub:
                         {
                             var num = br.ReadByte();
                             sb.WriteLine($"sub_{num:X2}();");
+                            break;
+                        }
+                    case Opcode.Return:
+                        {
+                            sb.WriteLine($"return;");
+                            break;
+                        }
+                    case Opcode.Break:
+                        {
+                            sb.WriteLine("break;");
                             break;
                         }
                     case Opcode.Ck:
@@ -316,7 +416,7 @@ class Program
                                 kindS = "wk_player";
                             else if (kind == 3)
                                 kindS = "wk_entity";
-                            else if(kind == 4)
+                            else if (kind == 4)
                                 kindS = "wk_door";
 
                             sb.WriteLine($"work_set({kindS}, {id});");
@@ -345,6 +445,7 @@ class Program
                             br.ReadBytes(3);
                             br.ReadBytes(8);
                             br.ReadBytes(6);
+                            sb.WriteLine($"aot_set({id}, 0x{type:X});");
                             break;
                         }
                     case Opcode.PosSet:
@@ -403,6 +504,12 @@ class Program
                             sb.WriteLine($"aot_reset({reset.Id}, 0x{reset.Type:X2}, 0x{reset.Amount:X2}, 0x{reset.Unk8:X2});");
                             break;
                         }
+                    case Opcode.AotOn:
+                        {
+                            var id = br.ReadByte();
+                            sb.WriteLine($"aot_on({id});");
+                            break;
+                        }
                     case Opcode.ItemAotSet:
                         {
                             var item = new Item()
@@ -421,6 +528,7 @@ class Program
                                 Unknown1 = br.ReadUInt16(),
                             };
                             room.AddItem(item);
+                            sb.WriteLine($"item_aot_set({item.Id}, 0x{item.Type:X2}, 0x{item.Amount:X2});");
                             break;
                         }
                     case Opcode.SceBgmControl:
@@ -430,7 +538,7 @@ class Program
                             var dummy = br.ReadByte();
                             var volume = br.ReadByte();
                             var channel = br.ReadByte();
-                            // Console.WriteLine($"{bgm},{action},{volume},{channel}");
+                            sb.WriteLine($"sce_bgm_control({bgm},{action},{volume},{channel});");
                             break;
                         }
                     case Opcode.SceBgmtblSet:
@@ -442,12 +550,41 @@ class Program
                             var sub = br.ReadByte();
                             var dummy1 = br.ReadByte();
                             var dummy2 = br.ReadByte();
-                            // Console.WriteLine($"{stage:X}{roomId:X2} = MAIN{main:X2} SUB{sub:X2}");
+                            sb.WriteLine($"sce_bgmtbl_set({stage:X}{roomId:X2} = MAIN{main:X2} SUB{sub:X2});");
+                            break;
+                        }
+                    case Opcode.XaOn:
+                        {
+                            var channel = br.ReadByte();
+                            var id = br.ReadInt16();
+                            sb.WriteLine($"xa_on({channel}, {id});");
+                            break;
+                        }
+                    case Opcode.SceItemLost:
+                        {
+                            var item = br.ReadByte();
+                            sb.WriteLine($"sce_item_lost(0x{item:X});");
                             break;
                         }
                     case Opcode.DoorAotSet4p:
-                        fs.Position += 39;
-                        break;
+                        {
+                            var id = br.ReadByte();
+                            sb.WriteLine($"door_aot_set_4p({id});");
+                            break;
+                        }
+                    case Opcode.ItemAotSet4p:
+                        {
+                            var id = br.ReadByte();
+                            sb.WriteLine($"item_aot_set_4p({id});");
+                            break;
+                        }
+                    case Opcode.SceItemGet:
+                        {
+                            var type = br.ReadByte();
+                            var amount = br.ReadByte();
+                            sb.WriteLine($"sce_item_get(0x{type}, {amount});");
+                            break;
+                        }
                     case Opcode.Unk81:
                         throw new Exception();
                 }

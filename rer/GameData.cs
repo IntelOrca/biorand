@@ -11,9 +11,9 @@ namespace rer
             Rdts = rdts;
         }
 
-        public Rdt? GetRdt(int stage, int room)
+        public Rdt? GetRdt(RdtId rtdId)
         {
-            return Rdts.FirstOrDefault(x => x.Stage == stage && x.RoomId == room);
+            return Rdts.FirstOrDefault(x => x.RdtId == rtdId);
         }
     }
 }

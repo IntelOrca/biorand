@@ -8,15 +8,18 @@ namespace rer
 {
     internal class Rdt
     {
-        public string Id { get; set; }
-        public int Stage { get; set; }
-        public int RoomId { get; set; }
-        public string OriginalPath { get; set; }
-        public string ModifiedPath { get; set; }
+        public RdtId RdtId { get; }
+        public string? OriginalPath { get; set; }
+        public string? ModifiedPath { get; set; }
 
         public List<Door> Doors = new List<Door>();
         public List<Item> Items = new List<Item>();
         public List<Reset> Resets = new List<Reset>();
+
+        public Rdt(RdtId rdtId)
+        {
+            RdtId = rdtId;
+        }
 
         public void AddDoor(Door door)
         {
@@ -67,7 +70,7 @@ namespace rer
 
         public void Save()
         {
-            using var fs = new FileStream(ModifiedPath, FileMode.Open, FileAccess.ReadWrite);
+            using var fs = new FileStream(ModifiedPath!, FileMode.Open, FileAccess.ReadWrite);
             var bw = new BinaryWriter(fs);
             // foreach (var door in Doors)
             // {
@@ -88,7 +91,7 @@ namespace rer
 
         public void Print()
         {
-            Console.WriteLine(Id);
+            Console.WriteLine(RdtId);
             Console.WriteLine("------------------------");
             foreach (var door in Doors)
             {
@@ -118,6 +121,11 @@ namespace rer
             }
             Console.WriteLine("------------------------");
             Console.WriteLine();
+        }
+
+        public override string ToString()
+        {
+            return RdtId.ToString();
         }
     }
 

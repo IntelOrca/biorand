@@ -10,13 +10,13 @@ namespace rer
     {
         private GameData _gameData;
         private Map _map = new Map();
-        private Dictionary<(int, int), PlayNode> _nodes = new Dictionary<(int, int), PlayNode>();
+        private Dictionary<RdtId, PlayNode> _nodes = new Dictionary<RdtId, PlayNode>();
         private List<ItemPoolEntry> _itemPool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _definedPool = new List<ItemPoolEntry>();
         private HashSet<ushort> _requiredItems = new HashSet<ushort>();
         private HashSet<ushort> _haveItems = new HashSet<ushort>();
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
-        private Random _random = new Random();
+        private Random _random = new Random(0);
 
         public PlayGraph Create(GameData gameData, string path)
         {
@@ -29,7 +29,8 @@ namespace rer
             })!;
 
             var graph = new PlayGraph();
-            graph.Start = GetOrCreateNode(_map.Start!.Stage, _map.Start!.Room);
+            graph.Start = GetOrCreateNode(new RdtId(_map.Start!.Stage, _map.Start!.Room));
+            graph.End = GetOrCreateNode(new RdtId(_map.End!.Stage, _map.End!.Room));
 
             Search(graph.Start);
             while (_requiredItems.Count != 0)
@@ -44,7 +45,7 @@ namespace rer
 
         private void Search(PlayNode start)
         {
-            var seen = new HashSet<(int, int)>();
+            var seen = new HashSet<RdtId>();
             var walkedNodes = new List<PlayNode>();
             var stack = new Stack<PlayNode>();
             stack.Push(start);
@@ -52,25 +53,33 @@ namespace rer
             {
                 var node = stack.Pop();
                 walkedNodes.Add(node);
-                seen.Add((node.Stage, node.Room));
+                seen.Add(node.RdtId);
 
                 if (_visitedRooms.Add(node))
                 {
                     // First time we have visited room, add room items to pool
-                    foreach (var id in node.ItemIds!)
+                    _itemPool.AddRange(node.Items!);
+
+                    if (node.Items != null && node.Items.Length != 0)
                     {
-                        _itemPool.Add(new ItemPoolEntry()
+                        Console.WriteLine($"Room {node.RdtId} contains:");
+                        foreach (var item in node.Items)
                         {
-                            Stage = node.Stage,
-                            Room = node.Room,
-                            Id = id
-                        });
+                            Console.WriteLine($"    {item}");
+                            if (item.Requires != null)
+                            {
+                                foreach (var r in item.Requires)
+                                {
+                                    _requiredItems.Add(r);
+                                }
+                            }
+                        }
                     }
                 }
 
                 foreach (var edge in node.Edges)
                 {
-                    if (seen.Contains((edge.Node.Stage, edge.Node.Room)))
+                    if (seen.Contains(edge.Node.RdtId))
                         continue;
                     if (edge.Locked)
                         continue;
@@ -92,74 +101,170 @@ namespace rer
             }
         }
 
+        private bool HasAllRequiredItems(ushort[]? items)
+        {
+            if (items != null && items.Length != 0)
+            {
+                foreach (var r in items)
+                {
+                    if (!_haveItems.Contains(r))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        private int FindNewKeyItemLocation(int type)
+        {
+            var randomOrder = Enumerable.Range(0, _itemPool.Count).Shuffle(_random).ToArray();
+            foreach (var i in randomOrder)
+            {
+                if (_itemPool[i].Type != type && HasAllRequiredItems(_itemPool[i].Requires))
+                {
+                    return i;
+                }
+            }
+            return 0;
+        }
+
         private void PlaceKeyItem()
         {
             if (_requiredItems.Count == 0)
                 return;
 
-            var reqIndex = _random.Next(0, _requiredItems.Count);
-            var req = _requiredItems.Skip(reqIndex).First();
+            var checkList = _requiredItems.Shuffle(_random);
+            foreach (var req in checkList)
+            {
+                if (PlaceKeyItem(req))
+                {
+                    return;
+                }
+            }
+
+            Console.WriteLine("Unable to place the following key items:");
+            foreach (var item in checkList)
+            {
+                Console.WriteLine($"    {Items.GetItemName(item)}");
+            }
+
+            throw new Exception("Unable to find key item to swap");
+        }
+
+        private bool PlaceKeyItem(ushort req)
+        {
+            var swapA = default(ItemPoolEntry);
+            var swapB = default(ItemPoolEntry);
+
+            // Get a new location for the key item
+            var index = FindNewKeyItemLocation(req);
+            var itemEntry = _itemPool[index];
+
+            // Find original location of key item
+            var originalIndex = _itemPool.FindIndex(x => x.Type == req);
+            if (originalIndex != -1)
+            {
+                // Change original key item to the item we are going to replace
+                var originalItemEntry = _itemPool[originalIndex];
+                swapA = originalItemEntry;
+                swapB = itemEntry;
+                var keyCount = originalItemEntry.Amount;
+                originalItemEntry.Type = itemEntry.Type;
+                originalItemEntry.Amount = itemEntry.Amount;
+                _itemPool[originalIndex] = originalItemEntry;
+                itemEntry.Amount = keyCount;
+            }
+            else
+            {
+                return false;
+            }
+            itemEntry.Type = req;
+
+            // Remove new key item location from pool
             _requiredItems.Remove(req);
             _haveItems.Add(req);
-            var index = _random.Next(0, _itemPool.Count);
-            var itemEntry = _itemPool[index];
             _itemPool.RemoveAt(index);
-            itemEntry.Type = req;
-            itemEntry.Amount = 1;
             _definedPool.Add(itemEntry);
-            Console.WriteLine($"Placing key item ({Items.GetItemName(itemEntry.Type)}) in {Utility.GetHumanRoomId(itemEntry.Stage, itemEntry.Room)}:{itemEntry.Id}");
+            Console.WriteLine($"Placing key item ({Items.GetItemName(itemEntry.Type)}) in {itemEntry.RdtId}:{itemEntry.Id}");
+            Console.WriteLine($"    Swapped {swapA} with {swapB}");
+            return true;
         }
 
         private void RandomiseRemainingPool()
         {
-            while (_itemPool.Count != 0)
+            Console.WriteLine("Shuffling non-key items:");
+            var shuffled = _itemPool.Shuffle(_random);
+            for (int i = 0; i < _itemPool.Count; i++)
             {
-                var entry = _itemPool[0];
-                _itemPool.RemoveAt(0);
-
-                entry.Type = 0x19;
-                entry.Amount = (ushort)_random.Next(0, 8);
+                var entry = _itemPool[i];
+                entry.Type = shuffled[i].Type;
+                entry.Amount = shuffled[i].Amount;
+                Console.WriteLine($"    Swapped {_itemPool[i]} with {shuffled[i]}");
                 _definedPool.Add(entry);
             }
+            _itemPool.Clear();
         }
 
         private void Save()
         {
             foreach (var entry in _definedPool)
             {
-                var rdt = _gameData.GetRdt(entry.Stage, entry.Room);
+                var rdt = _gameData.GetRdt(entry.RdtId)!;
                 rdt.SetItem(entry.Id, entry.Type, entry.Amount);
                 rdt.Save();
             }
         }
 
-        private PlayNode GetOrCreateNode(int stage, int room)
+        private PlayNode GetOrCreateNode(RdtId rdtId)
         {
-            var node = FindNode(stage, room);
+            var node = FindNode(rdtId);
             if (node != null)
                 return node;
 
-            var rdt = _gameData.GetRdt(stage, room);
-            var itemIds = rdt!.Items.Select(x => x.Id).Distinct().ToArray();
+            var rdt = _gameData.GetRdt(rdtId);
+            var items = rdt!.Items.Select(x => new ItemPoolEntry()
+            {
+                RdtId = rdt.RdtId,
+                Id = x.Id,
+                Type = x.Type,
+                Amount = x.Amount
+            }).DistinctBy(x => x.Id).Where(x => x.Type < 0x64).ToArray();
 
-            node = new PlayNode(stage, room);
-            node.ItemIds = itemIds;
-            _nodes.Add((stage, room), node);
+            node = new PlayNode(rdtId);
+            node.Items = items;
+            _nodes.Add(rdtId, node);
 
-            var mapRoom = _map.GetRoom(stage, room);
+            var mapRoom = _map.GetRoom(rdtId.Stage, rdtId.Room);
             foreach (var door in mapRoom!.Doors!)
             {
-                var edgeNode = GetOrCreateNode(door.Stage, door.Room);
+                var edgeNode = GetOrCreateNode(new RdtId(door.Stage, door.Room));
                 var edge = new PlayEdge(edgeNode, door.Locked, door.Requires!);
                 node.Edges.Add(edge);
+            }
+
+            if (mapRoom.Items != null)
+            {
+                foreach (var fixedItem in mapRoom.Items)
+                {
+                    var idx = Array.FindIndex(items, x => x.Id == fixedItem.Id);
+                    if (idx != -1)
+                    {
+                        items[idx].Type = (ushort)fixedItem.Type;
+                        items[idx].Requires = fixedItem.Requires;
+                    }
+                }
+
+                // Remove any items that have no type (removed fixed items)
+                node.Items = node.Items.Where(x => x.Type != 0).ToArray();
             }
 
             return node;
         }
 
-        public PlayNode? FindNode(int stage, int room)
+        public PlayNode? FindNode(RdtId rdtId)
         {
-            if (_nodes.TryGetValue((stage, room), out var node))
+            if (_nodes.TryGetValue(rdtId, out var node))
                 return node;
             return null;
         }

@@ -3,6 +3,10 @@
     "stage": 0,
     "room": 0
   },
+  "end": {
+    "stage": 5,
+    "room": 23
+  },
   "rooms": [
     {
       "stage": 0,
@@ -76,7 +80,9 @@
         {
           "stage": 0,
           "room": 6,
-          "requires": [88]
+          "requires": [
+            88
+          ]
         },
         {
           "stage": 0,
@@ -171,12 +177,18 @@
         {
           "stage": 0,
           "room": 11,
-          "requires": []
+          "requires": [
+            50
+          ]
         },
         {
           "stage": 1,
           "room": 27,
-          "requires": []
+          "requires": [
+            50,
+            64,
+            65
+          ]
         }
       ]
     },
@@ -258,6 +270,12 @@
     {
       "stage": 0,
       "room": 16,
+      "items": [
+        {
+          "id": 3,
+          "type": 0
+        }
+      ],
       "doors": [
         {
           "stage": 1,
@@ -288,7 +306,10 @@
         {
           "stage": 1,
           "room": 25,
-          "requires": [67, 74]
+          "requires": [
+            67,
+            74
+          ]
         }
       ]
     },
@@ -351,7 +372,9 @@
         {
           "stage": 0,
           "room": 19,
-          "requires": [89]
+          "requires": [
+            89
+          ]
         },
         {
           "stage": 0,
@@ -391,6 +414,12 @@
     {
       "stage": 0,
       "room": 23,
+      "items": [
+        {
+          "id": 0,
+          "type": 0
+        }
+      ],
       "doors": [
         {
           "stage": 0,
@@ -508,6 +537,15 @@
     {
       "stage": 1,
       "room": 0,
+      "items": [
+        {
+          "id": 9,
+          "type": 89,
+          "requires": [
+            71
+          ]
+        }
+      ],
       "doors": [
         {
           "stage": 0,
@@ -523,12 +561,12 @@
         {
           "stage": 1,
           "room": 1,
-          "requires": [ 53 ]
+          "requires": []
         },
         {
           "stage": 1,
           "room": 10,
-          "requires": [ 53 ]
+          "requires": []
         }
       ]
     },
@@ -589,6 +627,12 @@
     {
       "stage": 1,
       "room": 4,
+      "items": [
+        {
+          "id": 2,
+          "type": 0
+        }
+      ],
       "doors": [
         {
           "stage": 1,
@@ -603,7 +647,9 @@
         {
           "stage": 1,
           "room": 3,
-          "requires": [89]
+          "requires": [
+            89
+          ]
         }
       ]
     },
@@ -661,7 +707,9 @@
         {
           "stage": 1,
           "room": 9,
-          "requires": [90]
+          "requires": [
+            90
+          ]
         }
       ]
     },
@@ -730,7 +778,9 @@
         {
           "stage": 1,
           "room": 15,
-          "requires": [91]
+          "requires": [
+            91
+          ]
         },
         {
           "stage": 0,
@@ -751,12 +801,16 @@
         {
           "stage": 1,
           "room": 13,
-          "requires": [92]
+          "requires": [
+            92
+          ]
         },
         {
           "stage": 1,
           "room": 14,
-          "requires": [90]
+          "requires": [
+            90
+          ]
         }
       ]
     },
@@ -774,6 +828,12 @@
     {
       "stage": 1,
       "room": 14,
+      "items": [
+        {
+          "id": 3,
+          "type": 58
+        }
+      ],
       "doors": [
         {
           "stage": 1,
@@ -804,7 +864,9 @@
         {
           "stage": 1,
           "room": 16,
-          "requires": [92]
+          "requires": [
+            92
+          ]
         }
       ]
     },
@@ -836,7 +898,9 @@
         {
           "stage": 1,
           "room": 20,
-          "requires": [52]
+          "requires": [
+            52
+          ]
         },
         {
           "stage": 1,
@@ -851,7 +915,9 @@
         {
           "stage": 1,
           "room": 21,
-          "requires": [92]
+          "requires": [
+            92
+          ]
         }
       ]
     },
@@ -954,21 +1020,6 @@
           "stage": 1,
           "room": 25,
           "requires": []
-        },
-        {
-          "stage": 2,
-          "room": 2,
-          "requires": []
-        },
-        {
-          "stage": 1,
-          "room": 25,
-          "requires": []
-        },
-        {
-          "stage": 2,
-          "room": 2,
-          "requires": []
         }
       ]
     },
@@ -989,7 +1040,12 @@
         {
           "stage": 2,
           "room": 8,
-          "requires": [ 54, 56, 57, 58 ]
+          "requires": [
+            54,
+            56,
+            57,
+            58
+          ]
         }
       ]
     },
@@ -997,11 +1053,6 @@
       "stage": 2,
       "room": 0,
       "doors": [
-        {
-          "stage": 2,
-          "room": 8,
-          "requires": []
-        },
         {
           "stage": 2,
           "room": 9,
@@ -1096,11 +1147,6 @@
           "stage": 2,
           "room": 7,
           "requires": []
-        },
-        {
-          "stage": 2,
-          "room": 11,
-          "requires": []
         }
       ]
     },
@@ -1141,11 +1187,6 @@
       "room": 8,
       "doors": [
         {
-          "stage": 1,
-          "room": 27,
-          "requires": []
-        },
-        {
           "stage": 2,
           "room": 0,
           "requires": []
@@ -1158,11 +1199,6 @@
       "doors": [
         {
           "stage": 2,
-          "room": 0,
-          "requires": []
-        },
-        {
-          "stage": 2,
           "room": 10,
           "requires": []
         }
@@ -1172,11 +1208,6 @@
       "stage": 2,
       "room": 10,
       "doors": [
-        {
-          "stage": 2,
-          "room": 9,
-          "requires": []
-        },
         {
           "stage": 3,
           "room": 0,
@@ -1237,16 +1268,6 @@
       "room": 0,
       "doors": [
         {
-          "stage": 2,
-          "room": 10,
-          "requires": []
-        },
-        {
-          "stage": 3,
-          "room": 1,
-          "requires": []
-        },
-        {
           "stage": 3,
           "room": 1,
           "requires": []
@@ -1264,27 +1285,7 @@
         },
         {
           "stage": 3,
-          "room": 0,
-          "requires": []
-        },
-        {
-          "stage": 3,
-          "room": 0,
-          "requires": []
-        },
-        {
-          "stage": 3,
           "room": 4,
-          "requires": []
-        },
-        {
-          "stage": 3,
-          "room": 1,
-          "requires": []
-        },
-        {
-          "stage": 3,
-          "room": 1,
           "requires": []
         }
       ]
@@ -1347,21 +1348,6 @@
         },
         {
           "stage": 3,
-          "room": 1,
-          "requires": []
-        },
-        {
-          "stage": 3,
-          "room": 3,
-          "requires": []
-        },
-        {
-          "stage": 3,
-          "room": 3,
-          "requires": []
-        },
-        {
-          "stage": 3,
           "room": 5,
           "requires": []
         }
@@ -1380,11 +1366,6 @@
           "stage": 3,
           "room": 4,
           "requires": []
-        },
-        {
-          "stage": 3,
-          "room": 11,
-          "requires": []
         }
       ]
     },
@@ -1395,7 +1376,10 @@
         {
           "stage": 3,
           "room": 13,
-          "requires": []
+          "requires": [
+            72,
+            73
+          ]
         },
         {
           "stage": 3,
@@ -1421,7 +1405,9 @@
         {
           "stage": 3,
           "room": 10,
-          "requires": []
+          "requires": [
+            50
+          ]
         }
       ]
     },
@@ -1481,11 +1467,6 @@
           "stage": 3,
           "room": 15,
           "requires": []
-        },
-        {
-          "stage": 3,
-          "room": 0,
-          "requires": []
         }
       ]
     },
@@ -1512,11 +1493,6 @@
         {
           "stage": 4,
           "room": 0,
-          "requires": []
-        },
-        {
-          "stage": 4,
-          "room": 1,
           "requires": []
         },
         {
@@ -1574,8 +1550,8 @@
       "room": 1,
       "doors": [
         {
-          "stage": 3,
-          "room": 14,
+          "stage": 4,
+          "room": 0,
           "requires": []
         },
         {
@@ -1614,16 +1590,6 @@
           "stage": 4,
           "room": 4,
           "requires": []
-        },
-        {
-          "stage": 4,
-          "room": 6,
-          "requires": []
-        },
-        {
-          "stage": 4,
-          "room": 4,
-          "requires": []
         }
       ]
     },
@@ -1653,23 +1619,8 @@
           "requires": []
         },
         {
-          "stage": 4,
-          "room": 9,
-          "requires": []
-        },
-        {
-          "stage": 5,
-          "room": 7,
-          "requires": []
-        },
-        {
           "stage": 5,
           "room": 0,
-          "requires": []
-        },
-        {
-          "stage": 5,
-          "room": 6,
           "requires": []
         }
       ]
@@ -1712,16 +1663,6 @@
         },
         {
           "stage": 4,
-          "room": 2,
-          "requires": []
-        },
-        {
-          "stage": 4,
-          "room": 2,
-          "requires": []
-        },
-        {
-          "stage": 4,
           "room": 3,
           "requires": []
         }
@@ -1743,13 +1684,8 @@
       "room": 0,
       "doors": [
         {
-          "stage": 4,
-          "room": 5,
-          "requires": []
-        },
-        {
           "stage": 5,
-          "room": 2,
+          "room": 6,
           "requires": []
         }
       ]
@@ -1761,16 +1697,6 @@
         {
           "stage": 5,
           "room": 2,
-          "requires": []
-        },
-        {
-          "stage": 5,
-          "room": 6,
-          "requires": []
-        },
-        {
-          "stage": 6,
-          "room": 0,
           "requires": []
         }
       ]
@@ -1841,35 +1767,13 @@
       "room": 6,
       "doors": [
         {
-          "stage": 4,
-          "room": 5,
-          "requires": []
-        },
-        {
           "stage": 5,
           "room": 7,
-          "requires": [
-            98
-          ]
-        },
-        {
-          "stage": 5,
-          "room": 7,
-          "requires": []
-        },
-        {
-          "stage": 5,
-          "room": 1,
           "requires": []
         },
         {
           "stage": 5,
           "room": 17,
-          "requires": []
-        },
-        {
-          "stage": 5,
-          "room": 8,
           "requires": []
         }
       ]
@@ -1881,11 +1785,6 @@
         {
           "stage": 5,
           "room": 6,
-          "requires": []
-        },
-        {
-          "stage": 5,
-          "room": 1,
           "requires": []
         }
       ]
@@ -1908,9 +1807,7 @@
         {
           "stage": 5,
           "room": 11,
-          "requires": [
-            254
-          ]
+          "requires": []
         }
       ]
     },
@@ -1936,6 +1833,11 @@
       "doors": [
         {
           "stage": 5,
+          "room": 17,
+          "requires": []
+        },
+        {
+          "stage": 5,
           "room": 9,
           "locked": true,
           "requires": []
@@ -1948,7 +1850,9 @@
         {
           "stage": 5,
           "room": 14,
-          "requires": []
+          "requires": [
+            77
+          ]
         }
       ]
     },
@@ -1958,19 +1862,32 @@
       "doors": [
         {
           "stage": 5,
+          "room": 17,
+          "requires": []
+        },
+        {
+          "stage": 5,
           "room": 13,
           "requires": []
         },
         {
           "stage": 5,
-          "room": 15,
-          "requires": []
+          "room": 16,
+          "requires": [
+            97
+          ]
         }
       ]
     },
     {
       "stage": 5,
       "room": 13,
+      "items": [
+        {
+          "id": 1,
+          "type": 77
+        }
+      ],
       "doors": [
         {
           "stage": 5,
@@ -1983,16 +1900,6 @@
       "stage": 5,
       "room": 14,
       "doors": [
-        {
-          "stage": 5,
-          "room": 14,
-          "requires": []
-        },
-        {
-          "stage": 5,
-          "room": 14,
-          "requires": []
-        },
         {
           "stage": 5,
           "room": 11,
@@ -2019,12 +1926,40 @@
     {
       "stage": 5,
       "room": 16,
-      "doors": []
+      "items": [
+        {
+          "id": 5,
+          "type": 0
+        }
+      ],
+      "doors": [
+        {
+          "stage": 5,
+          "room": 12,
+          "requires": []
+        }
+      ]
     },
     {
       "stage": 5,
       "room": 17,
-      "doors": []
+      "doors": [
+        {
+          "stage": 5,
+          "room": 6,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 11,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 12,
+          "requires": []
+        }
+      ]
     },
     {
       "stage": 5,
@@ -2079,6 +2014,16 @@
     {
       "stage": 5,
       "room": 21,
+      "items": [
+        {
+          "id": 5,
+          "type": 97
+        },
+        {
+          "id": 6,
+          "type": 0
+        }
+      ],
       "doors": [
         {
           "stage": 5,
@@ -2104,25 +2049,17 @@
         {
           "stage": 5,
           "room": 23,
-          "requires": []
+          "requires": [
+            79,
+            96
+          ]
         }
       ]
     },
     {
       "stage": 5,
       "room": 23,
-      "doors": [
-        {
-          "stage": 5,
-          "room": 22,
-          "requires": []
-        },
-        {
-          "stage": 6,
-          "room": 0,
-          "requires": []
-        }
-      ]
+      "doors": []
     },
     {
       "stage": 6,

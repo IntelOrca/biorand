@@ -5,22 +5,21 @@ namespace rer
     internal class PlayGraph
     {
         public PlayNode? Start { get; set; }
+        public PlayNode? End { get; set; }
     }
 
     internal class PlayNode
     {
-        public int Stage { get; set; }
-        public int Room { get; set; }
-        public byte[]? ItemIds { get; set; }
+        public RdtId RdtId { get; set; }
+        public ItemPoolEntry[]? Items { get; set; }
         public List<PlayEdge> Edges { get; } = new List<PlayEdge>();
 
-        public PlayNode(int stage, int room)
+        public PlayNode(RdtId rdtId)
         {
-            Stage = stage;
-            Room = room;
+            RdtId = rdtId;
         }
 
-        public override string ToString() => Utility.GetHumanRoomId(Stage, Room);
+        public override string ToString() => RdtId.ToString();
     }
 
     internal class PlayEdge
@@ -38,7 +37,7 @@ namespace rer
 
         public override string ToString()
         {
-            var s = Utility.GetHumanRoomId(Node.Stage, Node.Room);
+            var s = Node.RdtId.ToString();
             if (Locked)
             {
                 s += " (locked)";

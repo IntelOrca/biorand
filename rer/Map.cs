@@ -5,6 +5,7 @@ namespace rer
     public class Map
     {
         public MapStart? Start { get; set; }
+        public MapStart? End { get; set; }
         public MapRoom[]? Rooms { get; set; }
 
         public MapRoom? GetRoom(int stage, int room)
@@ -24,6 +25,7 @@ namespace rer
         public int Stage { get; set; }
         public int Room { get; set; }
         public MapRoomDoor[]? Doors { get; set; }
+        public MapRoomItem[]? Items { get; set; }
     }
 
     public class MapRoomDoor
@@ -31,6 +33,13 @@ namespace rer
         public int Stage { get; set; }
         public int Room { get; set; }
         public bool Locked { get; set; }
+        public ushort[]? Requires { get; set; }
+    }
+
+    public class MapRoomItem
+    {
+        public int Id { get; set; }
+        public int Type { get; set; }
         public ushort[]? Requires { get; set; }
     }
 }
