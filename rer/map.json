@@ -1,0 +1,4115 @@
+﻿{
+  "start": {
+    "stage": 0,
+    "room": 0
+  },
+  "rooms": [
+    {
+      "stage": 0,
+      "room": 0,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 1,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 1,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 2,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 2,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 24,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 3,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 0,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 4,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 5,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 5,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 6,
+          "requires": [88]
+        },
+        {
+          "stage": 0,
+          "room": 4,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 6,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 5,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 7,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 7,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 6,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 8,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 8,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 7,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 9,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 9,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 8,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 10,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 22,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 10,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 9,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 15,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 11,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 27,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 11,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 10,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 12,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 7,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 19,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 20,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 13,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 14,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 27,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 14,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 13,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 15,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 10,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 16,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 16,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 15,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 18,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 17,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 23,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 25,
+          "requires": [67, 74]
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 18,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 16,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 19,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 23,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 19,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 20,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 18,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 20,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 18,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 20,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 12,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 19,
+          "requires": [89]
+        },
+        {
+          "stage": 0,
+          "room": 21,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 21,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 20,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 22,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 11,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 9,
+          "locked": true,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 23,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 18,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 17,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 18,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 24,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 2,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 25,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 25,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 24,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 26,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 26,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 25,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 27,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 27,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 26,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 3,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 28,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 7,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 9,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 0,
+      "room": 29,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 3,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 0,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 3,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 2,
+          "locked": true,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 1,
+          "requires": [ 53 ]
+        },
+        {
+          "stage": 1,
+          "room": 10,
+          "requires": [ 53 ]
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 1,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 4,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 4,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 2,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 9,
+          "locked": true,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 3,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 4,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 4,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 5,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 3,
+          "requires": [89]
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 5,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 4,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 6,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 7,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 6,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 5,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 7,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 5,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 8,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 12,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 9,
+          "requires": [90]
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 8,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 7,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 8,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 9,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 7,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 2,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 10,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 11,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 12,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 11,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 10,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 15,
+          "requires": [91]
+        },
+        {
+          "stage": 0,
+          "room": 22,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 12,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 10,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 13,
+          "requires": [92]
+        },
+        {
+          "stage": 1,
+          "room": 14,
+          "requires": [90]
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 13,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 12,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 14,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 12,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 12,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 15,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 11,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 17,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 16,
+          "requires": [92]
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 16,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 15,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 17,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 18,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 19,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 20,
+          "requires": [52]
+        },
+        {
+          "stage": 1,
+          "room": 22,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 15,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 21,
+          "requires": [92]
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 18,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 17,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 7,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 19,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 17,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 20,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 17,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 20,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 21,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 17,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 22,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 17,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 25,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 25,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 22,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 26,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 1,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 26,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 25,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 2,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 25,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 2,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 1,
+      "room": 27,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 10,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 13,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 8,
+          "requires": [ 54, 56, 57, 58 ]
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "room": 0,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 8,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 9,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "room": 1,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 25,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "room": 2,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 26,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 11,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "room": 3,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 4,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 11,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 4,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 11,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "room": 4,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 3,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 2,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 3,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "room": 5,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 6,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 7,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 11,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "room": 6,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 5,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "room": 7,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 13,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 18,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 5,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "room": 8,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 27,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 0,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "room": 9,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 10,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "room": 10,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 9,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 0,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "room": 11,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 3,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 5,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 2,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 12,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "room": 12,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 11,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 2,
+      "room": 13,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 7,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "room": 0,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 10,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 1,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "room": 1,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 15,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 4,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 1,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "room": 2,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 4,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 3,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "room": 3,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 2,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 3,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 3,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 3,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 4,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "room": 4,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 3,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 3,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 5,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "room": 5,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 7,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 4,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 11,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "room": 7,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 13,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 8,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 5,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "room": 8,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 7,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 10,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "room": 9,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 16,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 11,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "room": 10,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 16,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 8,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "room": 11,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 5,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 9,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "room": 12,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 15,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 0,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "room": 13,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 7,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 14,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "room": 14,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 4,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 13,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "room": 15,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 12,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 3,
+      "room": 16,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 9,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 10,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 4,
+      "room": 0,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 1,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 4,
+      "room": 1,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 14,
+          "requires": []
+        },
+        {
+          "stage": 4,
+          "room": 2,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 4,
+      "room": 2,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 4,
+          "room": 8,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 4,
+      "room": 3,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 8,
+          "requires": []
+        },
+        {
+          "stage": 4,
+          "room": 4,
+          "requires": []
+        },
+        {
+          "stage": 4,
+          "room": 6,
+          "requires": []
+        },
+        {
+          "stage": 4,
+          "room": 4,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 4,
+      "room": 4,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 3,
+          "requires": []
+        },
+        {
+          "stage": 4,
+          "room": 5,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 4,
+      "room": 5,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 4,
+          "requires": []
+        },
+        {
+          "stage": 4,
+          "room": 9,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 7,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 6,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 4,
+      "room": 6,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 3,
+          "requires": []
+        },
+        {
+          "stage": 4,
+          "room": 7,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 4,
+      "room": 7,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 6,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 4,
+      "room": 8,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 2,
+          "requires": []
+        },
+        {
+          "stage": 4,
+          "room": 2,
+          "requires": []
+        },
+        {
+          "stage": 4,
+          "room": 2,
+          "requires": []
+        },
+        {
+          "stage": 4,
+          "room": 3,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 4,
+      "room": 9,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 5,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 0,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 5,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 2,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 1,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 2,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 6,
+          "requires": []
+        },
+        {
+          "stage": 6,
+          "room": 0,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 2,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 3,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 3,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 2,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 4,
+          "requires": [
+            95
+          ]
+        },
+        {
+          "stage": 5,
+          "room": 5,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 4,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 3,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 5,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 3,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 6,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 5,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 7,
+          "requires": [
+            98
+          ]
+        },
+        {
+          "stage": 5,
+          "room": 7,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 17,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 8,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 7,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 6,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 1,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 8,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 6,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 9,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 11,
+          "requires": [
+            254
+          ]
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 10,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 11,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 9,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 11,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 9,
+          "locked": true,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 10,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 14,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 12,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 13,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 15,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 13,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 12,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 14,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 14,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 14,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 11,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 22,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 15,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 12,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 16,
+      "doors": []
+    },
+    {
+      "stage": 5,
+      "room": 17,
+      "doors": []
+    },
+    {
+      "stage": 5,
+      "room": 18,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 20,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 22,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 19,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 20,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 20,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 19,
+          "requires": [
+            97
+          ]
+        },
+        {
+          "stage": 5,
+          "room": 21,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 18,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 21,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 20,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 22,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 14,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 18,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 23,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 5,
+      "room": 23,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 22,
+          "requires": []
+        },
+        {
+          "stage": 6,
+          "room": 0,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 6,
+      "room": 0,
+      "doors": [
+        {
+          "stage": 6,
+          "room": 1,
+          "requires": [
+            99
+          ]
+        },
+        {
+          "stage": 6,
+          "room": 3,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 6,
+      "room": 1,
+      "doors": [
+        {
+          "stage": 6,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 6,
+          "room": 2,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 6,
+      "room": 2,
+      "doors": [
+        {
+          "stage": 6,
+          "room": 1,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 6,
+      "room": 3,
+      "doors": [
+        {
+          "stage": 6,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 6,
+          "room": 4,
+          "requires": []
+        },
+        {
+          "stage": 6,
+          "room": 3,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 6,
+      "room": 4,
+      "doors": [
+        {
+          "stage": 6,
+          "room": 3,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 6,
+      "room": 5,
+      "doors": []
+    },
+    {
+      "stage": 6,
+      "room": 7,
+      "doors": []
+    },
+    {
+      "stage": 9,
+      "room": 0,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 1,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 1,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 2,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 2,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 24,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 3,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 27,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 4,
+      "doors": []
+    },
+    {
+      "stage": 9,
+      "room": 5,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 6,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 4,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 6,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 5,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 7,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 7,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 6,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 8,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 8,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 7,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 9,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 9,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 8,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 10,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 22,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 10,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 9,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 15,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 11,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 27,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 11,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 10,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 12,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 7,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 19,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 20,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 13,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 14,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 27,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 14,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 13,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 15,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 10,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 16,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 16,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 15,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 18,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 17,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 23,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 25,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 18,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 16,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 19,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 23,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 19,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 20,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 18,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 20,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 19,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 21,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 12,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 21,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 20,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 22,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 11,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 9,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 23,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 18,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 17,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 24,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 2,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 25,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 25,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 24,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 26,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 26,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 25,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 27,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 27,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 26,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 3,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 28,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 7,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 9,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 9,
+      "room": 29,
+      "doors": []
+    },
+    {
+      "stage": 10,
+      "room": 0,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 2,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 10,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 16,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 1,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 4,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 2,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 9,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 3,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 4,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 4,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 5,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 3,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 5,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 4,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 6,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 7,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 6,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 5,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 7,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 5,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 8,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 12,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 9,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 8,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 7,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 9,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 7,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 2,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 10,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 11,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 12,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 11,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 10,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 15,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 22,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 12,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 10,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 13,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 14,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 14,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 13,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 12,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 14,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 12,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 12,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 15,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 11,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 17,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 16,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 16,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 15,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 17,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 18,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 19,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 20,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 22,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 15,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 21,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 18,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 17,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 7,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 19,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 17,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 20,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 17,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 21,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 17,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 22,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 17,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 25,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 25,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 22,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 26,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 1,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 26,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 25,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 2,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 10,
+      "room": 27,
+      "doors": [
+        {
+          "stage": 0,
+          "room": 10,
+          "requires": []
+        },
+        {
+          "stage": 0,
+          "room": 13,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 8,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 27,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 27,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 11,
+      "room": 0,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 8,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 9,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 11,
+      "room": 1,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 25,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 11,
+      "room": 2,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 26,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 11,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 11,
+      "room": 3,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 4,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 11,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 11,
+      "room": 4,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 3,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 11,
+      "room": 5,
+      "doors": []
+    },
+    {
+      "stage": 11,
+      "room": 6,
+      "doors": []
+    },
+    {
+      "stage": 11,
+      "room": 7,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 13,
+          "requires": []
+        },
+        {
+          "stage": 1,
+          "room": 18,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 5,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 11,
+      "room": 8,
+      "doors": [
+        {
+          "stage": 1,
+          "room": 27,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 0,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 11,
+      "room": 9,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 10,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 11,
+      "room": 10,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 9,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 11,
+      "room": 11,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 3,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 5,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 2,
+          "requires": []
+        },
+        {
+          "stage": 2,
+          "room": 12,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 11,
+      "room": 12,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 11,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 11,
+      "room": 13,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 7,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 12,
+      "room": 0,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 10,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 1,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 12,
+      "room": 1,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 0,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 4,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 1,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 12,
+      "room": 2,
+      "doors": [
+        {
+          "stage": 2,
+          "room": 4,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 3,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 12,
+      "room": 3,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 2,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 3,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 3,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 3,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 4,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 12,
+      "room": 4,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 3,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 5,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 12,
+      "room": 5,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 7,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 4,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 11,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 12,
+      "room": 7,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 13,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 8,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 5,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 12,
+      "room": 8,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 7,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 10,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 12,
+      "room": 9,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 16,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 11,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 12,
+      "room": 10,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 16,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 8,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 12,
+      "room": 11,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 5,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 9,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 12,
+      "room": 12,
+      "doors": []
+    },
+    {
+      "stage": 12,
+      "room": 13,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 7,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 14,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 12,
+      "room": 14,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 13,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 12,
+      "room": 15,
+      "doors": []
+    },
+    {
+      "stage": 12,
+      "room": 16,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 9,
+          "requires": []
+        },
+        {
+          "stage": 3,
+          "room": 10,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 13,
+      "room": 0,
+      "doors": []
+    },
+    {
+      "stage": 13,
+      "room": 1,
+      "doors": [
+        {
+          "stage": 3,
+          "room": 14,
+          "requires": []
+        },
+        {
+          "stage": 4,
+          "room": 2,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 13,
+      "room": 2,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 4,
+          "room": 8,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 13,
+      "room": 3,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 8,
+          "requires": []
+        },
+        {
+          "stage": 4,
+          "room": 4,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 13,
+      "room": 4,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 3,
+          "requires": []
+        },
+        {
+          "stage": 4,
+          "room": 5,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 13,
+      "room": 5,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 6,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 13,
+      "room": 6,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 3,
+          "requires": []
+        },
+        {
+          "stage": 4,
+          "room": 7,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 13,
+      "room": 7,
+      "doors": []
+    },
+    {
+      "stage": 13,
+      "room": 8,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 2,
+          "requires": []
+        },
+        {
+          "stage": 4,
+          "room": 3,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 13,
+      "room": 9,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 5,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 0,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 5,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 2,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 1,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 2,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 6,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 2,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 3,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 3,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 2,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 4,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 5,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 4,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 3,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 5,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 3,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 6,
+      "doors": [
+        {
+          "stage": 4,
+          "room": 4,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 7,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 1,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 8,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 7,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 6,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 8,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 6,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 9,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 11,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 10,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 11,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 11,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 9,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 10,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 14,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 12,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 13,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 15,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 13,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 12,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 14,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 14,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 14,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 11,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 22,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 15,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 12,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 16,
+      "doors": []
+    },
+    {
+      "stage": 14,
+      "room": 17,
+      "doors": []
+    },
+    {
+      "stage": 14,
+      "room": 18,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 20,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 22,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 19,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 20,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 20,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 19,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 21,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 18,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 21,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 20,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 22,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 14,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 18,
+          "requires": []
+        },
+        {
+          "stage": 5,
+          "room": 23,
+          "requires": []
+        }
+      ]
+    },
+    {
+      "stage": 14,
+      "room": 23,
+      "doors": [
+        {
+          "stage": 5,
+          "room": 22,
+          "requires": []
+        },
+        {
+          "stage": 6,
+          "room": 0,
+          "requires": []
+        }
+      ]
+    }
+  ]
+}
