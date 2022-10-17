@@ -33,18 +33,19 @@ namespace rer
             graph.Start = GetOrCreateNode(new RdtId(_map.Start!.Stage, _map.Start!.Room));
             graph.End = GetOrCreateNode(new RdtId(_map.End!.Stage, _map.End!.Room));
 
-            Search(graph.Start);
-            while (_requiredItems.Count != 0)
+            var checkpoint = Search(graph.Start);
+            while (!_visitedRooms.Contains(graph.End))
             {
                 PlaceKeyItem();
-                Search(graph.Start);
+                checkpoint = Search(checkpoint);
             }
             RandomiseRemainingPool();
             return graph;
         }
 
-        private void Search(PlayNode start)
+        private PlayNode Search(PlayNode start)
         {
+            var checkpoint = start;
             var seen = new HashSet<RdtId>();
             var walkedNodes = new List<PlayNode>();
             var stack = new Stack<PlayNode>();
@@ -86,11 +87,21 @@ namespace rer
                         continue;
                     if (edge.Locked)
                         continue;
+                    if (edge.NoReturn && _requiredItems.Count != 0)
+                        continue;
 
                     var requiredItems = edge.Requires.Except(_haveItems).ToArray()!;
                     if (requiredItems.Length == 0)
                     {
-                        // Console.WriteLine($"{node} -> {edge.Node}");
+                        if (edge.NoReturn)
+                        {
+                            checkpoint = edge.Node;
+                            // Console.WriteLine($"{node} -> {edge.Node} (checkpoint)");
+                        }
+                        else
+                        {
+                            // Console.WriteLine($"{node} -> {edge.Node}");
+                        }
                         stack.Push(edge.Node);
                     }
                     else
@@ -105,6 +116,7 @@ namespace rer
                     }
                 }
             }
+            return checkpoint;
         }
 
         private bool HasAllRequiredItems(ushort[]? items)
@@ -245,7 +257,7 @@ namespace rer
             foreach (var door in mapRoom!.Doors!)
             {
                 var edgeNode = GetOrCreateNode(new RdtId(door.Stage, door.Room));
-                var edge = new PlayEdge(edgeNode, door.Locked, door.Requires!);
+                var edge = new PlayEdge(edgeNode, door.Locked, door.NoReturn, door.Requires!);
                 node.Edges.Add(edge);
             }
 

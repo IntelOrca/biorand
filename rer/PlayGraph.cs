@@ -26,12 +26,14 @@ namespace rer
     {
         public PlayNode Node { get; }
         public bool Locked { get; set; }
+        public bool NoReturn { get; set; }
         public ushort[] Requires { get; }
 
-        public PlayEdge(PlayNode node, bool locked, ushort[] requires)
+        public PlayEdge(PlayNode node, bool locked, bool noReturn, ushort[] requires)
         {
             Node = node;
             Locked = locked;
+            NoReturn = noReturn;
             Requires = requires;
         }
 

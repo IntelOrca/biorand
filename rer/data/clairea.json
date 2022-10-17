@@ -526,6 +526,7 @@
         {
           "stage": 0,
           "room": 3,
+          "noReturn": true,
           "requires": []
         }
       ]
@@ -1134,6 +1135,7 @@
         {
           "stage": 2,
           "room": 8,
+          "noReturn": true,
           "requires": [
             54,
             56,
@@ -1587,6 +1589,7 @@
         {
           "stage": 4,
           "room": 0,
+          "noReturn": true,
           "requires": []
         },
         {
@@ -1715,6 +1718,7 @@
         {
           "stage": 5,
           "room": 0,
+          "noReturn": true,
           "requires": [
             93
           ]

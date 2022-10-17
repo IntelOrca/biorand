@@ -33,6 +33,7 @@ namespace rer
         public int Stage { get; set; }
         public int Room { get; set; }
         public bool Locked { get; set; }
+        public bool NoReturn { get; set; }
         public ushort[]? Requires { get; set; }
     }
 
