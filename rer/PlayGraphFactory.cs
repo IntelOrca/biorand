@@ -12,13 +12,15 @@ namespace rer
         private GameData _gameData;
         private Map _map = new Map();
         private Dictionary<RdtId, PlayNode> _nodes = new Dictionary<RdtId, PlayNode>();
-        private List<ItemPoolEntry> _itemPool = new List<ItemPoolEntry>();
+        private List<ItemPoolEntry> _currentPool = new List<ItemPoolEntry>();
+        private List<ItemPoolEntry> _shufflePool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _definedPool = new List<ItemPoolEntry>();
         private List<(RdtItemId, RdtItemId)> _linkedItems = new();
         private HashSet<ushort> _requiredItems = new HashSet<ushort>();
         private HashSet<ushort> _haveItems = new HashSet<ushort>();
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
         private bool _firstRedJewelPlaced;
+        private bool _preventSoftLocking;
         private Random _random = new Random(1);
 
         public PlayGraph Create(GameData gameData, string path)
@@ -35,12 +37,23 @@ namespace rer
             graph.Start = GetOrCreateNode(new RdtId(_map.Start!.Stage, _map.Start!.Room));
             graph.End = GetOrCreateNode(new RdtId(_map.End!.Stage, _map.End!.Room));
 
-            var checkpoint = Search(graph.Start);
+            var checkpoint = graph.Start;
             while (!_visitedRooms.Contains(graph.End))
             {
                 PlaceKeyItem();
-                checkpoint = Search(checkpoint);
+                var newCheckpoint = Search(checkpoint);
+                if (newCheckpoint != checkpoint)
+                {
+                    Console.WriteLine("------------ checkpoint ------------");
+                    if (_preventSoftLocking)
+                    {
+                        _shufflePool.AddRange(_currentPool);
+                        _currentPool.Clear();
+                    }
+                }
+                checkpoint = newCheckpoint;
             }
+            _shufflePool.AddRange(_currentPool);
             RandomiseRemainingPool();
             SetLinkedItems();
             return graph;
@@ -68,7 +81,7 @@ namespace rer
                     }
 
                     // First time we have visited room, add room items to pool
-                    _itemPool.AddRange(node.Items);
+                    _currentPool.AddRange(node.Items);
                     foreach (var linkedItem in node.LinkedItems)
                     {
                         _linkedItems.Add((new RdtItemId(node.RdtId, linkedItem.Key), linkedItem.Value));
@@ -114,8 +127,8 @@ namespace rer
                         else
                         {
                             // Console.WriteLine($"{node} -> {edge.Node}");
+                            stack.Push(edge.Node);
                         }
-                        stack.Push(edge.Node);
                     }
                     else
                     {
@@ -149,10 +162,10 @@ namespace rer
 
         private int FindNewKeyItemLocation(int type)
         {
-            var randomOrder = Enumerable.Range(0, _itemPool.Count).Shuffle(_random).ToArray();
+            var randomOrder = Enumerable.Range(0, _currentPool.Count).Shuffle(_random).ToArray();
             foreach (var i in randomOrder)
             {
-                if (_itemPool[i].Type != type && HasAllRequiredItems(_itemPool[i].Requires))
+                if (_currentPool[i].Type != type && HasAllRequiredItems(_currentPool[i].Requires))
                 {
                     return i;
                 }
@@ -190,20 +203,20 @@ namespace rer
 
             // Get a new location for the key item
             var index = FindNewKeyItemLocation(req);
-            var itemEntry = _itemPool[index];
+            var itemEntry = _currentPool[index];
 
             // Find original location of key item
-            var originalIndex = _itemPool.FindIndex(x => x.Type == req);
+            var originalIndex = _currentPool.FindIndex(x => x.Type == req);
             if (originalIndex != -1)
             {
                 // Change original key item to the item we are going to replace
-                var originalItemEntry = _itemPool[originalIndex];
+                var originalItemEntry = _currentPool[originalIndex];
                 swapA = originalItemEntry;
                 swapB = itemEntry;
                 var keyCount = originalItemEntry.Amount;
                 originalItemEntry.Type = itemEntry.Type;
                 originalItemEntry.Amount = itemEntry.Amount;
-                _itemPool[originalIndex] = originalItemEntry;
+                _currentPool[originalIndex] = originalItemEntry;
                 itemEntry.Amount = keyCount;
             }
             else
@@ -222,7 +235,7 @@ namespace rer
                 _requiredItems.Remove(req);
             }
             _haveItems.Add(req);
-            _itemPool.RemoveAt(index);
+            _currentPool.RemoveAt(index);
             _definedPool.Add(itemEntry);
             Console.WriteLine($"Placing key item ({Items.GetItemName(itemEntry.Type)}) in {itemEntry.RdtId}:{itemEntry.Id}");
             Console.WriteLine($"    Swapped {swapA} with {swapB}");
@@ -232,16 +245,16 @@ namespace rer
         private void RandomiseRemainingPool()
         {
             Console.WriteLine("Shuffling non-key items:");
-            var shuffled = _itemPool.Shuffle(_random);
-            for (int i = 0; i < _itemPool.Count; i++)
+            var shuffled = _shufflePool.Shuffle(_random);
+            for (int i = 0; i < _shufflePool.Count; i++)
             {
-                var entry = _itemPool[i];
+                var entry = _shufflePool[i];
                 entry.Type = shuffled[i].Type;
                 entry.Amount = shuffled[i].Amount;
-                Console.WriteLine($"    Swapped {_itemPool[i]} with {shuffled[i]}");
+                Console.WriteLine($"    Swapped {_shufflePool[i]} with {shuffled[i]}");
                 _definedPool.Add(entry);
             }
-            _itemPool.Clear();
+            _shufflePool.Clear();
         }
 
         private void SetLinkedItems()
