@@ -8,9 +8,19 @@
         public ushort Amount { get; set; }
         public ushort[]? Requires { get; set; }
 
+        public RdtItemId RdtItemId
+        {
+            get => new RdtItemId(RdtId, Id);
+            set
+            {
+                RdtId = value.Rdt;
+                Id = value.Id;
+            }
+        }
+
         public override string ToString()
         {
-            return $"{RdtId}:{Id} {Items.GetItemName(Type)} x{Amount}";
+            return $"{RdtId}:{Id} [{Items.GetItemName(Type)} x{Amount}]";
         }
     }
 }

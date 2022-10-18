@@ -40,9 +40,10 @@ namespace rer
 
     public class MapRoomItem
     {
-        public int Id { get; set; }
+        public byte Id { get; set; }
         public int Type { get; set; }
         public ushort? Amount { get; set; }
+        public string? Link { get; set; }
         public ushort[]? Requires { get; set; }
     }
 }

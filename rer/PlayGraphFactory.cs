@@ -14,6 +14,7 @@ namespace rer
         private Dictionary<RdtId, PlayNode> _nodes = new Dictionary<RdtId, PlayNode>();
         private List<ItemPoolEntry> _itemPool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _definedPool = new List<ItemPoolEntry>();
+        private List<(RdtItemId, RdtItemId)> _linkedItems = new();
         private HashSet<ushort> _requiredItems = new HashSet<ushort>();
         private HashSet<ushort> _haveItems = new HashSet<ushort>();
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
@@ -41,6 +42,7 @@ namespace rer
                 checkpoint = Search(checkpoint);
             }
             RandomiseRemainingPool();
+            SetLinkedItems();
             return graph;
         }
 
@@ -67,6 +69,10 @@ namespace rer
 
                     // First time we have visited room, add room items to pool
                     _itemPool.AddRange(node.Items);
+                    foreach (var linkedItem in node.LinkedItems)
+                    {
+                        _linkedItems.Add((new RdtItemId(node.RdtId, linkedItem.Key), linkedItem.Value));
+                    }
 
                     if (node.Items.Length != 0)
                     {
@@ -238,6 +244,19 @@ namespace rer
             _itemPool.Clear();
         }
 
+        private void SetLinkedItems()
+        {
+            Console.WriteLine("Setting up linked items:");
+            foreach (var (targetId, sourceId) in _linkedItems)
+            {
+                var sourceItem = _definedPool.Find(x => x.RdtItemId == sourceId);
+                var targetItem = sourceItem;
+                targetItem.RdtItemId = targetId;
+                _definedPool.Add(targetItem);
+                Console.WriteLine($"    {sourceItem} placed at {targetId}");
+            }
+        }
+
         public void Save()
         {
             foreach (var entry in _definedPool)
@@ -289,8 +308,18 @@ namespace rer
                         var idx = Array.FindIndex(items, x => x.Id == fixedItem.Id);
                         if (idx != -1)
                         {
-                            items[idx].Type = (ushort)fixedItem.Type;
-                            items[idx].Amount = fixedItem.Amount ?? items[idx].Amount;
+                            if (fixedItem.Link == null)
+                            {
+                                items[idx].Type = (ushort)fixedItem.Type;
+                                items[idx].Amount = fixedItem.Amount ?? items[idx].Amount;
+                            }
+                            else
+                            {
+                                items[idx].Type = 0;
+
+                                var rdtItemId = RdtItemId.Parse(fixedItem.Link);
+                                node.LinkedItems.Add(fixedItem.Id, rdtItemId);
+                            }
                             items[idx].Requires = fixedItem.Requires;
                         }
                     }

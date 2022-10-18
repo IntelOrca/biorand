@@ -13,6 +13,7 @@ namespace rer
     {
         public RdtId RdtId { get; set; }
         public ItemPoolEntry[] Items { get; set; } = Array.Empty<ItemPoolEntry>();
+        public Dictionary<byte, RdtItemId> LinkedItems { get; set; } = new();
         public ushort[] Requires { get; set; } = Array.Empty<ushort>();
         public List<PlayEdge> Edges { get; } = new List<PlayEdge>();
 
