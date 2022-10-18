@@ -42,6 +42,7 @@ namespace rer
     {
         public int Id { get; set; }
         public int Type { get; set; }
+        public ushort? Amount { get; set; }
         public ushort[]? Requires { get; set; }
     }
 }

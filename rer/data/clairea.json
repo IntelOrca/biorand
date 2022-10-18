@@ -1500,7 +1500,7 @@
         },
         {
           "id": 9,
-          "type": 23,
+          "type": 25,
           "amount": 6
         }
       ],
@@ -1721,6 +1721,13 @@
     {
       "stage": 4,
       "room": 5,
+      "items": [
+        {
+          "id": 7,
+          "type": 25,
+          "amount": 6
+        }
+      ],
       "doors": [
         {
           "stage": 4,

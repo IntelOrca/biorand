@@ -17,6 +17,7 @@ namespace rer
         private HashSet<ushort> _requiredItems = new HashSet<ushort>();
         private HashSet<ushort> _haveItems = new HashSet<ushort>();
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
+        private bool _firstRedJewelPlaced;
         private Random _random = new Random(1);
 
         public PlayGraph Create(GameData gameData, string path)
@@ -206,7 +207,14 @@ namespace rer
             itemEntry.Type = req;
 
             // Remove new key item location from pool
-            _requiredItems.Remove(req);
+            if (req == 0x33 && !_firstRedJewelPlaced) // red jewel
+            {
+                _firstRedJewelPlaced = true;
+            }
+            else
+            {
+                _requiredItems.Remove(req);
+            }
             _haveItems.Add(req);
             _itemPool.RemoveAt(index);
             _definedPool.Add(itemEntry);
@@ -282,6 +290,7 @@ namespace rer
                         if (idx != -1)
                         {
                             items[idx].Type = (ushort)fixedItem.Type;
+                            items[idx].Amount = fixedItem.Amount ?? items[idx].Amount;
                             items[idx].Requires = fixedItem.Requires;
                         }
                     }
