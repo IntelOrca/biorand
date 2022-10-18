@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace rer
 {
@@ -34,8 +35,8 @@ namespace rer
             })!;
 
             var graph = new PlayGraph();
-            graph.Start = GetOrCreateNode(new RdtId(_map.Start!.Stage, _map.Start!.Room));
-            graph.End = GetOrCreateNode(new RdtId(_map.End!.Stage, _map.End!.Room));
+            graph.Start = GetOrCreateNode(RdtId.Parse(_map.Start!));
+            graph.End = GetOrCreateNode(RdtId.Parse(_map.End!));
 
             var checkpoint = graph.Start;
             while (!_visitedRooms.Contains(graph.End))
@@ -116,7 +117,7 @@ namespace rer
                     if (edge.NoReturn && _requiredItems.Count != 0)
                         continue;
 
-                    var requiredItems = edge.Requires.Except(_haveItems).ToArray()!;
+                    var requiredItems = edge.Requires == null ? new ushort[0] : edge.Requires.Except(_haveItems).ToArray()!;
                     if (requiredItems.Length == 0)
                     {
                         if (edge.NoReturn)
@@ -299,7 +300,7 @@ namespace rer
             node.Items = items;
             _nodes.Add(rdtId, node);
 
-            var mapRoom = _map.GetRoom(rdtId.Stage, rdtId.Room);
+            var mapRoom = _map.GetRoom(rdtId);
             if (mapRoom != null)
             {
                 node.Requires = mapRoom.Requires ?? Array.Empty<ushort>();
@@ -308,7 +309,7 @@ namespace rer
                 {
                     foreach (var door in mapRoom.Doors)
                     {
-                        var edgeNode = GetOrCreateNode(new RdtId(door.Stage, door.Room));
+                        var edgeNode = GetOrCreateNode(RdtId.Parse(door.Target!));
                         var edge = new PlayEdge(edgeNode, door.Locked, door.NoReturn, door.Requires!);
                         node.Edges.Add(edge);
                     }

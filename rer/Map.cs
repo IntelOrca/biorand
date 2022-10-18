@@ -1,16 +1,17 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace rer
 {
     public class Map
     {
-        public MapStart? Start { get; set; }
-        public MapStart? End { get; set; }
-        public MapRoom[]? Rooms { get; set; }
+        public string? Start { get; set; }
+        public string? End { get; set; }
+        public Dictionary<string, MapRoom>? Rooms { get; set; }
 
-        public MapRoom? GetRoom(int stage, int room)
+        internal MapRoom? GetRoom(RdtId id)
         {
-            return Rooms?.FirstOrDefault(x => x.Stage == stage && x.Room == room);
+            return Rooms![id.ToString()];
         }
     }
 
@@ -22,8 +23,6 @@ namespace rer
 
     public class MapRoom
     {
-        public int Stage { get; set; }
-        public int Room { get; set; }
         public ushort[]? Requires { get; set; }
         public MapRoomDoor[]? Doors { get; set; }
         public MapRoomItem[]? Items { get; set; }
@@ -31,11 +30,21 @@ namespace rer
 
     public class MapRoomDoor
     {
-        public int Stage { get; set; }
-        public int Room { get; set; }
+        public string? Target { get; set; }
         public bool Locked { get; set; }
         public bool NoReturn { get; set; }
-        public ushort[]? Requires { get; set; }
+
+        private ushort[]? _requires;
+        public ushort[]? Requires
+        {
+            get
+            {
+                if (_requires == null || _requires.Length == 0)
+                    return null;
+                return _requires;
+            }
+            set => _requires = value;
+        }
     }
 
     public class MapRoomItem

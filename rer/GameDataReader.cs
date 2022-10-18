@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace rer
 {
@@ -31,6 +33,7 @@ namespace rer
             var map = GenerateMap(gameData.Rdts);
             var json = JsonSerializer.Serialize(map, new JsonSerializerOptions()
             {
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 WriteIndented = true
             });
@@ -40,7 +43,7 @@ namespace rer
         private static Map GenerateMap(IEnumerable<Rdt> rooms)
         {
             var map = new Map();
-            var mapRooms = new List<MapRoom>();
+            var mapRooms = new Dictionary<string, MapRoom>();
             foreach (var room in rooms)
             {
                 var mapRoomDoors = new List<MapRoomDoor>();
@@ -48,19 +51,16 @@ namespace rer
                 {
                     mapRoomDoors.Add(new MapRoomDoor()
                     {
-                        Stage = door.Stage,
-                        Room = door.Room,
+                        Target = new RdtId(door.Stage, door.Room).ToString(),
                         Requires = door.DoorKey == 0 ? new ushort[0] : new ushort[] { door.DoorKey }
                     });
                 }
-                mapRooms.Add(new MapRoom()
+                mapRooms.Add(room.RdtId.ToString(), new MapRoom()
                 {
-                    Stage = room.RdtId.Stage,
-                    Room = room.RdtId.Room,
                     Doors = mapRoomDoors.ToArray()
                 });
             }
-            map.Rooms = mapRooms.ToArray();
+            map.Rooms = mapRooms;
             return map;
         }
 
