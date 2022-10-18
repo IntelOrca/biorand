@@ -324,14 +324,6 @@
           "stage": 0,
           "room": 23,
           "requires": []
-        },
-        {
-          "stage": 1,
-          "room": 25,
-          "requires": [
-            67,
-            74
-          ]
         }
       ]
     },
@@ -968,6 +960,12 @@
     {
       "stage": 1,
       "room": 16,
+      "items": [
+        {
+          "id": 3,
+          "type": 0
+        }
+      ],
       "doors": [
         {
           "stage": 1,
@@ -1077,11 +1075,6 @@
         {
           "stage": 1,
           "room": 17,
-          "requires": []
-        },
-        {
-          "stage": 1,
-          "room": 25,
           "requires": []
         }
       ]
@@ -1307,6 +1300,7 @@
         {
           "stage": 3,
           "room": 0,
+          "noReturn": true,
           "requires": []
         }
       ]
@@ -1373,6 +1367,12 @@
     {
       "stage": 3,
       "room": 1,
+      "items": [
+        {
+          "id": 12,
+          "type": 0
+        }
+      ],
       "doors": [
         {
           "stage": 3,
@@ -1492,6 +1492,17 @@
     {
       "stage": 3,
       "room": 8,
+      "items": [
+        {
+          "id": 2,
+          "type": 0
+        },
+        {
+          "id": 9,
+          "type": 23,
+          "amount": 6
+        }
+      ],
       "doors": [
         {
           "stage": 3,

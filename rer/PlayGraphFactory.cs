@@ -17,7 +17,7 @@ namespace rer
         private HashSet<ushort> _requiredItems = new HashSet<ushort>();
         private HashSet<ushort> _haveItems = new HashSet<ushort>();
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
-        private Random _random = new Random(0);
+        private Random _random = new Random(1);
 
         public PlayGraph Create(GameData gameData, string path)
         {
