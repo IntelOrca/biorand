@@ -9,8 +9,6 @@
 * Lab key card only one use, check with original game
 * Sort out fuse case / main fuse
 * Add ability to prevent soft lock
-* Ensure optional key items spawn before points of no return
-* Prevent film from being spawned after RPD
 * Remove unused rooms
 * Enemy rando
 * NPC rando

@@ -24,6 +24,7 @@ namespace rer
     {
         public int Stage { get; set; }
         public int Room { get; set; }
+        public ushort[]? Requires { get; set; }
         public MapRoomDoor[]? Doors { get; set; }
         public MapRoomItem[]? Items { get; set; }
     }

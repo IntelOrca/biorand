@@ -750,6 +750,7 @@
     {
       "stage": 1,
       "room": 8,
+      "requires": [ 68, 69, 80 ],
       "items": [
         {
           "id": 12,

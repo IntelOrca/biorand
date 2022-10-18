@@ -58,10 +58,16 @@ namespace rer
 
                 if (_visitedRooms.Add(node))
                 {
-                    // First time we have visited room, add room items to pool
-                    _itemPool.AddRange(node.Items!);
+                    // Add any required keys for the room (ones that don't guard an item, e.g. Film A, Film B, etc.)
+                    foreach (var r in node.Requires)
+                    {
+                        _requiredItems.Add(r);
+                    }
 
-                    if (node.Items != null && node.Items.Length != 0)
+                    // First time we have visited room, add room items to pool
+                    _itemPool.AddRange(node.Items);
+
+                    if (node.Items.Length != 0)
                     {
                         Console.WriteLine($"Room {node.RdtId} contains:");
                         foreach (var item in node.Items)
@@ -254,29 +260,36 @@ namespace rer
             _nodes.Add(rdtId, node);
 
             var mapRoom = _map.GetRoom(rdtId.Stage, rdtId.Room);
-            foreach (var door in mapRoom!.Doors!)
+            if (mapRoom != null)
             {
-                var edgeNode = GetOrCreateNode(new RdtId(door.Stage, door.Room));
-                var edge = new PlayEdge(edgeNode, door.Locked, door.NoReturn, door.Requires!);
-                node.Edges.Add(edge);
-            }
+                node.Requires = mapRoom.Requires ?? Array.Empty<ushort>();
 
-            if (mapRoom.Items != null)
-            {
-                foreach (var fixedItem in mapRoom.Items)
+                if (mapRoom.Doors != null)
                 {
-                    var idx = Array.FindIndex(items, x => x.Id == fixedItem.Id);
-                    if (idx != -1)
+                    foreach (var door in mapRoom.Doors)
                     {
-                        items[idx].Type = (ushort)fixedItem.Type;
-                        items[idx].Requires = fixedItem.Requires;
+                        var edgeNode = GetOrCreateNode(new RdtId(door.Stage, door.Room));
+                        var edge = new PlayEdge(edgeNode, door.Locked, door.NoReturn, door.Requires!);
+                        node.Edges.Add(edge);
                     }
                 }
 
-                // Remove any items that have no type (removed fixed items)
-                node.Items = node.Items.Where(x => x.Type != 0).ToArray();
-            }
+                if (mapRoom.Items != null)
+                {
+                    foreach (var fixedItem in mapRoom.Items)
+                    {
+                        var idx = Array.FindIndex(items, x => x.Id == fixedItem.Id);
+                        if (idx != -1)
+                        {
+                            items[idx].Type = (ushort)fixedItem.Type;
+                            items[idx].Requires = fixedItem.Requires;
+                        }
+                    }
 
+                    // Remove any items that have no type (removed fixed items)
+                    node.Items = node.Items.Where(x => x.Type != 0).ToArray();
+                }
+            }
             return node;
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace rer
 {
@@ -11,7 +12,8 @@ namespace rer
     internal class PlayNode
     {
         public RdtId RdtId { get; set; }
-        public ItemPoolEntry[]? Items { get; set; }
+        public ItemPoolEntry[] Items { get; set; } = Array.Empty<ItemPoolEntry>();
+        public ushort[] Requires { get; set; } = Array.Empty<ushort>();
         public List<PlayEdge> Edges { get; } = new List<PlayEdge>();
 
         public PlayNode(RdtId rdtId)
