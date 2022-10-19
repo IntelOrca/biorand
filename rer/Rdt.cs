@@ -71,6 +71,8 @@ namespace rer
 
         public void Save()
         {
+            Directory.CreateDirectory(Path.GetDirectoryName(ModifiedPath!));
+            File.Copy(OriginalPath, ModifiedPath!, true);
             using var fs = new FileStream(ModifiedPath!, FileMode.Open, FileAccess.ReadWrite);
             var bw = new BinaryWriter(fs);
             // foreach (var door in Doors)

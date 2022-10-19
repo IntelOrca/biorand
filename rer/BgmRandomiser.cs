@@ -34,8 +34,9 @@ namespace rer
 
         private void Swap(string[] dstList, string[] srcList)
         {
-            var srcDir = Path.Combine(GamePath, @"data\Common\Sound\BGM");
-            var dstDir = Path.Combine(RngPath, @"data\Common\Sound\BGM");
+            var srcDir = Path.Combine(GamePath, @"Common\Sound\BGM");
+            var dstDir = Path.Combine(RngPath, @"Common\Sound\BGM");
+            Directory.CreateDirectory(dstDir);
             for (int i = 0; i < dstList.Length; i++)
             {
                 // var src = Path.Combine(srcDir, FixSubFilename(srcList[i]) + ".bgm");

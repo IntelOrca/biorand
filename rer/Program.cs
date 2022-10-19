@@ -11,13 +11,24 @@ class Program
         var randomItems = new Random(2);
         var randomMusic = new Random(2);
 
-        var factory = new PlayGraphFactory(randomItems);
-        var gameData = GameDataReader.Read(@"F:\games\re2", @"F:\games\re2r");
-        CheckRoomItems(gameData);
-        factory.Create(gameData, @"M:\git\rer\rer\data\clairea.json");
-        // factory.Save();
+        var re2Path = @"F:\games\re2";
+        var originalDataPath = Path.Combine(re2Path, "data");
+        var modPath = Path.Combine(re2Path, @"mod_rando");
 
-        var bgmRandomiser = new BgmRandomiser(@"F:\games\re2", @"F:\games\re2r");
+        if (Directory.Exists(modPath))
+        {
+            Directory.Delete(modPath, true);
+        }
+        Directory.CreateDirectory(modPath);
+        File.WriteAllText(Path.Combine(modPath, "manifest.txt"), "[MOD]\nName = BIOHAZARD 2: RANDOMIZER\n");
+
+        var factory = new PlayGraphFactory(randomItems);
+        var gameData = GameDataReader.Read(originalDataPath, modPath);
+        // CheckRoomItems(gameData);
+        factory.Create(gameData, @"M:\git\rer\rer\data\clairea.json");
+        factory.Save();
+
+        var bgmRandomiser = new BgmRandomiser(originalDataPath, modPath);
         bgmRandomiser.Randomise(randomMusic);
     }
 

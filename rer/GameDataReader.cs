@@ -11,11 +11,11 @@ namespace rer
     {
         public static GameData Read(string srcGamePath, string rndGamePath)
         {
-            var files = Directory.GetFiles(Path.Combine(srcGamePath, @"data\Pl1\Rdt"));
+            var files = Directory.GetFiles(Path.Combine(srcGamePath, @"Pl1\Rdt"));
             var rdts = new List<Rdt>();
             foreach (var file in files)
             {
-                var randomFile = Path.Combine(rndGamePath, @"data\Pl1\Rdt", Path.GetFileName(file));
+                var randomFile = Path.Combine(rndGamePath, @"Pl1\Rdt", Path.GetFileName(file));
                 try
                 {
                     var room = ReadRdt(file, randomFile);
@@ -66,8 +66,6 @@ namespace rer
 
         private static Rdt ReadRdt(string path, string randomPath)
         {
-            File.Copy(path, randomPath, true);
-
             var room = new Rdt(RdtId.Parse(Path.GetFileNameWithoutExtension(path).Substring(4, 3)));
             room.OriginalPath = path;
             room.ModifiedPath = randomPath;
