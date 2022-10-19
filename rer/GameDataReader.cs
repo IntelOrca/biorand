@@ -401,6 +401,32 @@ namespace rer
                                 sb.WriteLine($"door_aot_se({door.Id}, 0x{door.Stage:X}, 0x{door.Room:X2}, {door.DoorFlag}, {door.DoorLockFlag}, {door.DoorKey});");
                                 break;
                             }
+                        case Opcode.SceEmSet:
+                            {
+                                var enemy = new RdtEnemy()
+                                {
+                                    Offset = instructionPosition,
+                                    Opcode = (byte)opcode,
+                                    Unk01 = br.ReadByte(),
+                                    Id = br.ReadByte(),
+                                    Type = br.ReadByte(),
+                                    State = br.ReadByte(),
+                                    Ai = br.ReadByte(),
+                                    Floor = br.ReadByte(),
+                                    SoundBank = br.ReadByte(),
+                                    Texture = br.ReadByte(),
+                                    KillId = br.ReadByte(),
+                                    X = br.ReadInt16(),
+                                    Y = br.ReadInt16(),
+                                    Z = br.ReadInt16(),
+                                    D = br.ReadInt16(),
+                                    Animation = br.ReadUInt16(),
+                                    Unk15 = br.ReadByte(),
+                                };
+                                room.AddEnemy(enemy);
+                                sb.WriteLine($"sce_em_set({enemy.Id}, {enemy.Type}, {enemy.State}, {enemy.Ai}, {enemy.Floor}, {enemy.SoundBank}, {enemy.Texture}, {enemy.KillId}, ..., {enemy.Animation});");
+                                break;
+                            }
                         case Opcode.AotReset:
                             {
                                 var reset = new Reset()

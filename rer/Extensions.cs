@@ -18,5 +18,11 @@ namespace rer
             }
             return array;
         }
+
+        public static T NextOf<T>(this Random random, params T[] values)
+        {
+            var i = random.Next(0, values.Length);
+            return values[i];
+        }
     }
 }

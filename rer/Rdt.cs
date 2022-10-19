@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace rer
@@ -15,6 +16,7 @@ namespace rer
 
         public List<Door> Doors = new List<Door>();
         public List<Item> Items = new List<Item>();
+        public List<RdtEnemy> Enemies = new List<RdtEnemy>();
         public List<Reset> Resets = new List<Reset>();
 
         public Rdt(RdtId rdtId)
@@ -30,6 +32,11 @@ namespace rer
         public void AddItem(Item item)
         {
             Items.Add(item);
+        }
+
+        public void AddEnemy(RdtEnemy enemy)
+        {
+            Enemies.Add(enemy);
         }
 
         public void AddReset(Reset reset)
@@ -69,10 +76,25 @@ namespace rer
             }
         }
 
+        public void SetEnemy(byte id, byte type, byte state, byte ai, byte soundBank, byte texture)
+        {
+            foreach (var enemy in Enemies)
+            {
+                if (enemy.Id == id)
+                {
+                    enemy.Type = type;
+                    enemy.State = state;
+                    enemy.Ai = ai;
+                    enemy.SoundBank = soundBank;
+                    enemy.Texture = texture;
+                }
+            }
+        }
+
         public void Save()
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(ModifiedPath!));
-            File.Copy(OriginalPath, ModifiedPath!, true);
+            Directory.CreateDirectory(Path.GetDirectoryName(ModifiedPath!)!);
+            File.Copy(OriginalPath!, ModifiedPath!, true);
             using var fs = new FileStream(ModifiedPath!, FileMode.Open, FileAccess.ReadWrite);
             var bw = new BinaryWriter(fs);
             // foreach (var door in Doors)
@@ -84,6 +106,11 @@ namespace rer
             {
                 fs.Position = item.Offset;
                 item.Write(bw);
+            }
+            foreach (var enemy in Enemies)
+            {
+                fs.Position = enemy.Offset;
+                enemy.Write(bw);
             }
             foreach (var reset in Resets)
             {
@@ -263,5 +290,46 @@ namespace rer
             bw.Write(Amount);
             bw.Write(Unk8);
         }
+    }
+
+    internal class RdtEnemy
+    {
+        public int Offset;
+        public byte Opcode;
+        public byte Unk01;
+        public byte Id;
+        public byte Type;
+        public byte State;
+        public byte Ai;
+        public byte Floor;
+        public byte SoundBank;
+        public byte Texture;
+        public byte KillId;
+        public short X;
+        public short Y;
+        public short Z;
+        public short D;
+        public ushort Animation;
+        public byte Unk15;
+
+        public void Write(BinaryWriter bw)
+        {
+            bw.Write(Opcode);
+            bw.Write(Unk01);
+            bw.Write(Id);
+            bw.Write(Type);
+            bw.Write(State);
+            bw.Write(Ai);
+            bw.Write(Floor);
+            bw.Write(SoundBank);
+            bw.Write(Texture);
+            bw.Write(KillId);
+            bw.Write(X);
+            bw.Write(Y);
+            bw.Write(Z);
+            bw.Write(D);
+            bw.Write(Animation);
+            bw.Write(Unk15);
+    }
     }
 }
