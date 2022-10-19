@@ -53,6 +53,7 @@ namespace rer
         public int Type { get; set; }
         public ushort? Amount { get; set; }
         public string? Link { get; set; }
+        public string? Priority { get; set; }
         public ushort[]? Requires { get; set; }
     }
 }

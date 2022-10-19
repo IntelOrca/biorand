@@ -32,7 +32,7 @@ class Program
         factory.Save();
 
         // RandomizeNpcs(gameData, randomEnemies);
-        RandomizeEnemies(gameData, randomEnemies);
+        // RandomizeEnemies(gameData, randomEnemies);
 
         var bgmRandomiser = new BgmRandomiser(originalDataPath, modPath);
         bgmRandomiser.Randomise(randomMusic);

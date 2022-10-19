@@ -7,6 +7,7 @@
         public ushort Type { get; set; }
         public ushort Amount { get; set; }
         public ushort[]? Requires { get; set; }
+        public ItemPriority Priority { get; set; }
 
         public RdtItemId RdtItemId
         {

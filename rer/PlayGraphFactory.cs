@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace rer
 {
@@ -36,6 +34,7 @@ namespace rer
             var jsonMap = File.ReadAllText(path);
             _map = JsonSerializer.Deserialize<Map>(jsonMap, new JsonSerializerOptions()
             {
+                ReadCommentHandling = JsonCommentHandling.Skip,
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             })!;
 
@@ -83,7 +82,10 @@ namespace rer
                     // Add any required keys for the room (ones that don't guard an item, e.g. Film A, Film B, etc.)
                     foreach (var r in node.Requires)
                     {
-                        _requiredItems.Add(r);
+                        if (!_haveItems.Contains(r))
+                        {
+                            _requiredItems.Add(r);
+                        }
                     }
 
                     // First time we have visited room, add room items to pool
@@ -171,7 +173,8 @@ namespace rer
             var randomOrder = Enumerable.Range(0, _currentPool.Count).Shuffle(_random).ToArray();
             foreach (var i in randomOrder)
             {
-                if (_currentPool[i].Type != type && HasAllRequiredItems(_currentPool[i].Requires))
+                var item = _currentPool[i];
+                if (item.Type != type && item.Priority != ItemPriority.Low && HasAllRequiredItems(item.Requires))
                 {
                     return i;
                 }
@@ -340,6 +343,10 @@ namespace rer
                                 node.LinkedItems.Add(fixedItem.Id, rdtItemId);
                             }
                             items[idx].Requires = fixedItem.Requires;
+                            if (fixedItem.Priority != null)
+                            {
+                                items[idx].Priority = Enum.Parse<ItemPriority>(fixedItem.Priority, true);
+                            }
                         }
                     }
 
