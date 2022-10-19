@@ -22,7 +22,12 @@ namespace rer
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
         private bool _firstRedJewelPlaced;
         private bool _preventSoftLocking;
-        private Random _random = new Random(1);
+        private Random _random;
+
+        public PlayGraphFactory(Random random)
+        {
+            _random = random;
+        }
 
         public PlayGraph Create(GameData gameData, string path)
         {

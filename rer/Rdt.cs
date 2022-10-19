@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using static System.Net.Mime.MediaTypeNames;
@@ -209,6 +210,7 @@ namespace rer
         }
     }
 
+    [DebuggerDisplay("Id = {Id} Type = {Type} Amount = {Amount}")]
     internal class Item
     {
         public int Offset;
