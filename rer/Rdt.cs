@@ -76,7 +76,7 @@ namespace rer
             }
         }
 
-        public void SetEnemy(byte id, byte type, byte state, byte ai, byte soundBank, byte texture)
+        public void SetEnemy(byte id, EnemyType type, byte state, byte ai, byte soundBank, byte texture)
         {
             foreach (var enemy in Enemies)
             {
@@ -292,13 +292,14 @@ namespace rer
         }
     }
 
+    [DebuggerDisplay("Id = {Id} Type = {Type} State = {State}")]
     internal class RdtEnemy
     {
         public int Offset;
         public byte Opcode;
         public byte Unk01;
         public byte Id;
-        public byte Type;
+        public EnemyType Type;
         public byte State;
         public byte Ai;
         public byte Floor;
@@ -317,7 +318,7 @@ namespace rer
             bw.Write(Opcode);
             bw.Write(Unk01);
             bw.Write(Id);
-            bw.Write(Type);
+            bw.Write((byte)Type);
             bw.Write(State);
             bw.Write(Ai);
             bw.Write(Floor);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using rer;
 
 class Program
@@ -8,9 +9,10 @@ class Program
 
     public static void Main(string[] args)
     {
-        var randomItems = new Random(2);
-        var randomEnemies = new Random(2);
-        var randomMusic = new Random(2);
+        var randomItems = new Random(3);
+        var randomNpcs = new Random(3);
+        var randomEnemies = new Random(3);
+        var randomMusic = new Random(3);
 
         var re2Path = @"F:\games\re2";
         var originalDataPath = Path.Combine(re2Path, "data");
@@ -23,117 +25,172 @@ class Program
         Directory.CreateDirectory(modPath);
         File.WriteAllText(Path.Combine(modPath, "manifest.txt"), "[MOD]\nName = BIOHAZARD 2: RANDOMIZER\n");
 
-        // var factory = new PlayGraphFactory(randomItems);
+        var factory = new PlayGraphFactory(randomItems);
         var gameData = GameDataReader.Read(originalDataPath, modPath);
         CheckRoomItems(gameData);
-        // factory.Create(gameData, @"M:\git\rer\rer\data\clairea.json");
-        // factory.Save();
+        factory.Create(gameData, @"M:\git\rer\rer\data\clairea.json");
+        factory.Save();
 
+        // RandomizeNpcs(gameData, randomEnemies);
         RandomizeEnemies(gameData, randomEnemies);
 
         var bgmRandomiser = new BgmRandomiser(originalDataPath, modPath);
         bgmRandomiser.Randomise(randomMusic);
     }
 
+    private static void RandomizeNpcs(GameData gameData, Random random)
+    {
+        var sourceNpc = new[]
+        {
+            EnemyType.ChiefIrons1,
+            EnemyType.AdaWong1,
+            EnemyType.ChiefIrons2,
+            EnemyType.AdaWong2,
+            EnemyType.BenBertolucci1,
+            EnemyType.SherryWithPendant,
+            EnemyType.BenBertolucci2,
+            EnemyType.AnnetteBirkin1,
+            EnemyType.RobertKendo,
+            EnemyType.AnnetteBirkin2,
+            EnemyType.MarvinBranagh,
+            EnemyType.SherryWithClairesJacket,
+            EnemyType.LeonKennedyRpd,
+            EnemyType.ClaireRedfield,
+            EnemyType.LeonKennedyBandaged,
+            EnemyType.ClaireRedfieldNoJacket,
+            EnemyType.LeonKennedyCapTankTop,
+            EnemyType.ClaireRedfieldCowGirl,
+            EnemyType.LeonKennedyBlackLeather,
+        };
+        var targetNpc = sourceNpc.Shuffle(random).ToArray();
+        var map = Enumerable.Range(0, sourceNpc.Length).ToDictionary(x => sourceNpc[x], i => targetNpc[i]);
+
+        foreach (var rdt in gameData.Rdts)
+        {
+            foreach (var enemy in rdt.Enemies)
+            {
+                if (map.TryGetValue(enemy.Type, out var newType))
+                {
+                    enemy.Type = EnemyType.SherryWithClairesJacket;
+                }
+            }
+            rdt.Save();
+        }
+    }
+
     private static void RandomizeEnemies(GameData gameData, Random random)
     {
         foreach (var rdt in gameData.Rdts)
         {
-            var enemyType = random.NextOf<byte>(23);
+            var enemyType = random.NextOf(
+                EnemyType.ZombieCop,
+                EnemyType.ZombieGuy1,
+                EnemyType.ZombieGirl,
+                EnemyType.ZombieTestSubject,
+                EnemyType.ZombieScientist,
+                EnemyType.ZombieNaked,
+                EnemyType.ZombieGuy2,
+                EnemyType.ZombieGuy3,
+                EnemyType.ZombieRandom,
+                EnemyType.Cerebrus,
+                EnemyType.Crow,
+                EnemyType.BabySpider,
+                EnemyType.Spider,
+                EnemyType.LickerRed,
+                EnemyType.LickerGrey,
+                EnemyType.Ivy,
+                EnemyType.IvyPurple,
+                EnemyType.GiantMoth,
+                EnemyType.Tyrant1);
             foreach (var enemy in rdt.Enemies)
             {
-                switch (enemyType)
+                if ((IsZombie(enemy.Type) && enemy.Type != EnemyType.ZombieBrad) || enemy.Type == EnemyType.Cerebrus || enemy.Type == EnemyType.Ivy || enemy.Type == EnemyType.IvyPurple)
                 {
-                    case 16: // zombie cop
-                        rdt.SetEnemy(enemy.Id,
-                            type: enemyType,
-                            state: random.NextOf<byte>(0, 6),
-                            ai: random.NextOf<byte>(0),
-                            soundBank: random.NextOf<byte>(7, 8),
-                            texture: random.NextOf<byte>(131));
-                        break;
-                    case 18: // zombie guy
-                        rdt.SetEnemy(enemy.Id,
-                            type: enemyType,
-                            state: random.NextOf<byte>(70),
-                            ai: random.NextOf<byte>(0),
-                            soundBank: random.NextOf<byte>(3),
-                            texture: 131);
-                        break;
-                    case 19: // zombie girl
-                        rdt.SetEnemy(enemy.Id,
-                            type: enemyType,
-                            state: random.NextOf<byte>(0, 6, 67),
-                            ai: random.NextOf<byte>(0),
-                            soundBank: random.NextOf<byte>(10, 11),
-                            texture: 0);
-                        break;
-                    case 21: // zombie lab coat (full)
-                        rdt.SetEnemy(enemy.Id,
-                            type: enemyType,
-                            state: random.NextOf<byte>(0, 6),
-                            ai: random.NextOf<byte>(0),
-                            soundBank: random.NextOf<byte>(47),
-                            texture: 128);
-                        break;
-                    case 22: // zombie lab coat (jacket)
-                        rdt.SetEnemy(enemy.Id,
-                            type: enemyType,
-                            state: random.NextOf<byte>(0),
-                            ai: random.NextOf<byte>(0),
-                            soundBank: random.NextOf<byte>(47),
-                            texture: 0);
-                        break;
-                    case 23: // zombie naked
-                        rdt.SetEnemy(enemy.Id,
-                            type: enemyType,
-                            state: random.NextOf<byte>(0, 6),
-                            ai: random.NextOf<byte>(0),
-                            soundBank: random.NextOf<byte>(46),
-                            texture: 0);
-                        break;
-                    case 31: // zombie guy
-                        rdt.SetEnemy(enemy.Id,
-                            type: enemyType,
-                            state: random.NextOf<byte>(70),
-                            ai: random.NextOf<byte>(16),
-                            soundBank: random.NextOf<byte>(1, 2),
-                            texture: random.NextOf<byte>(0, 1, 2, 3));
-                        break;
-                    case 34: // licker
-                        rdt.SetEnemy(enemy.Id,
-                            type: enemyType,
-                            state: 0,
-                            ai: 0,
-                            soundBank: 14,
-                            texture: 0);
-                        break;
-                    case 41: // bug
-                        rdt.SetEnemy(enemy.Id,
-                            type: enemyType,
-                            state: 0,
-                            ai: 0,
-                            soundBank: 15,
-                            texture: 0);
-                        break;
-                    case 46: // plant
-                        rdt.SetEnemy(enemy.Id,
-                            type: enemyType,
-                            state: 0,
-                            ai: 0,
-                            soundBank: 19,
-                            texture: 0);
-                        break;
-                    case 47: // ?
-                        break;
-                    case 57: // plant
-                        rdt.SetEnemy(enemy.Id,
-                            type: enemyType,
-                            state: 16,
-                            ai: 0,
-                            soundBank: 19,
-                            texture: 0);
-                        break;
+                    switch (enemyType)
+                    {
+                        case EnemyType.ZombieCop:
+                        case EnemyType.ZombieGuy1:
+                        case EnemyType.ZombieGirl:
+                        case EnemyType.ZombieTestSubject:
+                        case EnemyType.ZombieScientist:
+                        case EnemyType.ZombieNaked:
+                        case EnemyType.ZombieGuy2:
+                        case EnemyType.ZombieGuy3:
+                            rdt.SetEnemy(enemy.Id,
+                                type: enemyType,
+                                state: random.NextOf<byte>(0, 1, 2, 3, 4, 6),
+                                ai: 0,
+                                soundBank: random.NextOf<byte>(1, 2, 7, 8, 41, 46, 47),
+                                texture: 0);
+                            break;
+                        case EnemyType.Cerebrus:
+                            rdt.SetEnemy(enemy.Id,
+                                type: enemyType,
+                                state: random.NextOf<byte>(0, 2),
+                                ai: 0,
+                                soundBank: 12,
+                                texture: 0);
+                            break;
+                        case EnemyType.Crow:
+                            rdt.SetEnemy(enemy.Id,
+                                type: enemyType,
+                                state: 0,
+                                ai: 0,
+                                soundBank: 13,
+                                texture: 0);
+                            break;
+                        case EnemyType.BabySpider:
+                        case EnemyType.Spider:
+                            rdt.SetEnemy(enemy.Id,
+                                type: enemyType,
+                                state: 0,
+                                ai: 0,
+                                soundBank: 16,
+                                texture: 0);
+                            break;
+                        case EnemyType.LickerRed:
+                        case EnemyType.LickerGrey:
+                            rdt.SetEnemy(enemy.Id,
+                                type: enemyType,
+                                state: 0,
+                                ai: 0,
+                                soundBank: 14,
+                                texture: 0);
+                            break;
+                        case EnemyType.Cockroach:
+                            rdt.SetEnemy(enemy.Id,
+                                type: enemyType,
+                                state: 0,
+                                ai: 0,
+                                soundBank: 15,
+                                texture: 0);
+                            break;
+                        case EnemyType.Ivy:
+                        case EnemyType.IvyPurple:
+                            rdt.SetEnemy(enemy.Id,
+                                type: enemyType,
+                                state: 0,
+                                ai: 0,
+                                soundBank: 19,
+                                texture: 0);
+                            break;
+                        case EnemyType.GiantMoth:
+                            rdt.SetEnemy(enemy.Id,
+                                type: enemyType,
+                                state: 0,
+                                ai: 0,
+                                soundBank: 23,
+                                texture: 0);
+                            break;
+                        case EnemyType.Tyrant1:
+                            rdt.SetEnemy(enemy.Id,
+                                type: enemyType,
+                                state: 0,
+                                ai: 0,
+                                soundBank: 18,
+                                texture: 0);
+                            break;
+                    }
                 }
             }
             rdt.Save();
@@ -152,6 +209,28 @@ class Program
                     Console.WriteLine($"    {enemy.Id}: {enemy.Type}, {enemy.State}, {enemy.Ai}, {enemy.SoundBank}, {enemy.Texture}");
                 }
             }
+        }
+    }
+
+    private static bool IsCreature(EnemyType type) => type < EnemyType.ChiefIrons1;
+
+    private static bool IsZombie(EnemyType type)
+    {
+        switch (type)
+        {
+            case EnemyType.ZombieCop:
+            case EnemyType.ZombieBrad:
+            case EnemyType.ZombieGuy1:
+            case EnemyType.ZombieGirl:
+            case EnemyType.ZombieTestSubject :
+            case EnemyType.ZombieScientist:
+            case EnemyType.ZombieNaked:
+            case EnemyType.ZombieGuy2:
+            case EnemyType.ZombieGuy3:
+            case EnemyType.ZombieRandom:
+                return true;
+            default:
+                return false;
         }
     }
 

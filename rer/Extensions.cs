@@ -9,9 +9,9 @@ namespace rer
         public static T[] Shuffle<T>(this IEnumerable<T> items, Random random)
         {
             var array = items.ToArray();
-            for (int i = 0; i < array.Length; i++)
+            for (int i = 0; i < array.Length - 1; i++)
             {
-                var ri = random.Next(0, array.Length);
+                var ri = random.Next(i + 1, array.Length);
                 var tmp = array[ri];
                 array[ri] = array[i];
                 array[i] = tmp;

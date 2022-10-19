@@ -158,7 +158,7 @@ namespace rer
                     switch (opcode)
                     {
                         default:
-                            if (Enum.IsDefined(opcode))
+                            if (EnemyType.IsDefined(opcode))
                             {
                                 sb.WriteLine($"{opcode}();");
                             }
@@ -409,7 +409,7 @@ namespace rer
                                     Opcode = (byte)opcode,
                                     Unk01 = br.ReadByte(),
                                     Id = br.ReadByte(),
-                                    Type = br.ReadByte(),
+                                    Type = (EnemyType)br.ReadByte(),
                                     State = br.ReadByte(),
                                     Ai = br.ReadByte(),
                                     Floor = br.ReadByte(),
