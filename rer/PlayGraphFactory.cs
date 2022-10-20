@@ -27,16 +27,49 @@ namespace rer
             _random = random;
         }
 
+        public void CreateDoorRando(GameData gameData, string path)
+        {
+            _gameData = gameData;
+            _map = LoadJsonMap(path);
+
+            var nodes = new List<PlayNode>();
+            foreach (var kvp in _map.Rooms!)
+            {
+                nodes.Add(GetOrCreateNode(RdtId.Parse(kvp.Key)));
+            }
+
+            foreach (var node in nodes)
+            {
+                var rdt = gameData.GetRdt(node.RdtId);
+                if (rdt != null)
+                {
+                    foreach (var door in rdt.Doors)
+                    {
+                        // Get a random door to go to
+                        PlayNode targetNode;
+                        do
+                        {
+                            var nodeIndex = _random.Next(0, nodes.Count);
+                            targetNode = nodes[nodeIndex];
+                        }
+                        while (targetNode.Doors.Length == 0);
+                        var doorIndex = _random.Next(0, targetNode.Doors.Length);
+                        var targetDoor = targetNode.Doors[doorIndex];
+
+                        rdt.SetDoorTarget(door.Id, targetDoor);
+                    }
+                }
+            }
+            foreach (var rdt in gameData.Rdts)
+            {
+                rdt.Save();
+            }
+        }
+
         public PlayGraph Create(GameData gameData, string path)
         {
             _gameData = gameData;
-
-            var jsonMap = File.ReadAllText(path);
-            _map = JsonSerializer.Deserialize<Map>(jsonMap, new JsonSerializerOptions()
-            {
-                ReadCommentHandling = JsonCommentHandling.Skip,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            })!;
+            _map = LoadJsonMap(path);
 
             var graph = new PlayGraph();
             graph.Start = GetOrCreateNode(RdtId.Parse(_map.Start!));
@@ -62,6 +95,17 @@ namespace rer
             RandomiseRemainingPool();
             SetLinkedItems();
             return graph;
+        }
+
+        private static Map LoadJsonMap(string path)
+        {
+            var jsonMap = File.ReadAllText(path);
+            var map = JsonSerializer.Deserialize<Map>(jsonMap, new JsonSerializerOptions()
+            {
+                ReadCommentHandling = JsonCommentHandling.Skip,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            })!;
+            return map;
         }
 
         private PlayNode Search(PlayNode start)
@@ -305,6 +349,7 @@ namespace rer
             }).DistinctBy(x => x.Id).Where(x => x.Type < 0x64).ToArray();
 
             node = new PlayNode(rdtId);
+            node.Doors = GetAllDoorsToRoom(rdtId);
             node.Items = items;
             _nodes.Add(rdtId, node);
 
@@ -362,6 +407,37 @@ namespace rer
             if (_nodes.TryGetValue(rdtId, out var node))
                 return node;
             return null;
+        }
+
+        private Door[] GetAllDoorsToRoom(RdtId room)
+        {
+            var doors = new List<Door>();
+            foreach (var rdt in _gameData.Rdts)
+            {
+                foreach (var door in rdt.Doors)
+                {
+                    if (door.Stage == room.Stage && door.Room == room.Room)
+                    {
+                        if (!doors.Any(x => IsDoorTheSame(x, door)))
+                        {
+                            doors.Add(door);
+                        }
+                    }
+                }
+            }
+            return doors.ToArray();
+        }
+
+        private static bool IsDoorTheSame(Door a, Door b)
+        {
+            if (a.Camera != b.Camera)
+                return false;
+
+            var dx = a.NextX - b.NextX;
+            var dy = a.NextY - b.NextY;
+            var dz = a.NextZ - b.NextZ;
+            var d = Math.Sqrt((dx * dx) + (dy * dy) + (dz * dz));
+            return d < 1024;
         }
     }
 }

@@ -44,14 +44,19 @@ namespace rer
 
         public void SetDoorTarget(int id, Door sourceDoor)
         {
-            var door = Doors.First(x => x.Id == id);
-            door.NextX = sourceDoor.NextX;
-            door.NextY = sourceDoor.NextY;
-            door.NextZ = sourceDoor.NextZ;
-            door.NextD = sourceDoor.NextD;
-            door.Stage = sourceDoor.Stage;
-            door.Room = sourceDoor.Room;
-            door.Camera = sourceDoor.Camera;
+            foreach (var door in Doors)
+            {
+                if (door.Id == id)
+                {
+                    door.NextX = sourceDoor.NextX;
+                    door.NextY = sourceDoor.NextY;
+                    door.NextZ = sourceDoor.NextZ;
+                    door.NextD = sourceDoor.NextD;
+                    door.Stage = sourceDoor.Stage;
+                    door.Room = sourceDoor.Room;
+                    door.Camera = sourceDoor.Camera;
+                }
+            }
         }
 
         public void SetItem(byte id, ushort type, ushort amount)
@@ -95,11 +100,11 @@ namespace rer
             File.Copy(OriginalPath!, ModifiedPath!, true);
             using var fs = new FileStream(ModifiedPath!, FileMode.Open, FileAccess.ReadWrite);
             var bw = new BinaryWriter(fs);
-            // foreach (var door in Doors)
-            // {
-            //     fs.Position = door.Offset;
-            //     door.Write(bw);
-            // }
+            foreach (var door in Doors)
+            {
+                fs.Position = door.Offset;
+                door.Write(bw);
+            }
             foreach (var item in Items)
             {
                 fs.Position = item.Offset;

@@ -27,8 +27,9 @@ class Program
 
         var factory = new PlayGraphFactory(randomItems);
         var gameData = GameDataReader.Read(originalDataPath, modPath);
-        CheckRoomItems(gameData);
-        factory.Create(gameData, @"M:\git\rer\rer\data\clairea.json");
+        // CheckRoomItems(gameData);
+        factory.CreateDoorRando(gameData, @"M:\git\rer\rer\data\clairea.json");
+        // factory.Create(gameData, @"M:\git\rer\rer\data\clairea.json");
         factory.Save();
 
         // RandomizeNpcs(gameData, randomEnemies);

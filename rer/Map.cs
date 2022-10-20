@@ -11,7 +11,10 @@ namespace rer
 
         internal MapRoom? GetRoom(RdtId id)
         {
-            return Rooms![id.ToString()];
+            if (Rooms == null)
+                return null;
+            Rooms.TryGetValue(id.ToString(), out var value);
+            return value;
         }
     }
 
