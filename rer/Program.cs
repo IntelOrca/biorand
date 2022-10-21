@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using rer;
 
 class Program
@@ -8,8 +9,8 @@ class Program
     public static void Main(string[] args)
     {
         var randomItems = new Random(3);
-        var randomNpcs = new Random(3);
-        var randomEnemies = new Random(3);
+        var randomNpcs = new Random(4);
+        var randomEnemies = new Random(4);
         var randomMusic = new Random(3);
 
         var re2Path = @"F:\games\re2";
@@ -23,20 +24,34 @@ class Program
         Directory.CreateDirectory(modPath);
         File.WriteAllText(Path.Combine(modPath, "manifest.txt"), "[MOD]\nName = BIOHAZARD 2: RANDOMIZER\n");
 
+        var map = LoadJsonMap(@"M:\git\rer\rer\data\clairea.json");
+
         var factory = new PlayGraphFactory(randomItems);
         var gameData = GameDataReader.Read(originalDataPath, modPath);
         // CheckRoomItems(gameData);
-        // factory.CreateDoorRando(gameData, @"M:\git\rer\rer\data\clairea.json");
-        // factory.Create(gameData, @"M:\git\rer\rer\data\clairea.json");
+        // factory.CreateDoorRando(gameData, map);
+        factory.Create(gameData, map);
         factory.Save();
 
-        // RandomizeNpcs(gameData, randomEnemies);
+        var npcRandomiser = new NPCRandomiser(originalDataPath, modPath, gameData, map, randomNpcs);
+        npcRandomiser.Randomise();
 
         var enemyRandomiser = new EnemyRandomiser(gameData, randomEnemies);
         enemyRandomiser.Randomise();
 
         var bgmRandomiser = new BgmRandomiser(originalDataPath, modPath);
         bgmRandomiser.Randomise(randomMusic);
+    }
+
+    private static Map LoadJsonMap(string path)
+    {
+        var jsonMap = File.ReadAllText(path);
+        var map = JsonSerializer.Deserialize<Map>(jsonMap, new JsonSerializerOptions()
+        {
+            ReadCommentHandling = JsonCommentHandling.Skip,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        })!;
+        return map;
     }
 
     private static void RandomizeNpcs(GameData gameData, Random random)

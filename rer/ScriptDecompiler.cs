@@ -65,6 +65,7 @@ namespace rer
                 case Opcode.SceEmSet:
                 case Opcode.AotReset:
                 case Opcode.ItemAotSet:
+                case Opcode.XaOn:
                     base.VisitOpcode(offset, opcode, operands);
                     break;
                 default:
@@ -91,6 +92,11 @@ namespace rer
         protected override void VisitItemAotSet(Item item)
         {
             _sb.WriteLine($"item_aot_set({item.Id}, 0x{item.Type:X2}, 0x{item.Amount:X2});");
+        }
+
+        protected override void VisitXaOn(RdtSound sound)
+        {
+            _sb.WriteLine($"xa_on({sound.Channel}, {sound.Id});");
         }
 
         private void VisitOpcode(int offset, Opcode opcode, BinaryReader br)

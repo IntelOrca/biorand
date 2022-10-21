@@ -16,6 +16,8 @@ namespace rer
         public List<Item> Items = new List<Item>();
         public List<RdtEnemy> Enemies = new List<RdtEnemy>();
         public List<Reset> Resets = new List<Reset>();
+        public List<RdtSound> Sounds = new List<RdtSound>();
+        public List<NopSequence> NopSequences = new List<NopSequence>();
 
         public Rdt(RdtId rdtId)
         {
@@ -40,6 +42,11 @@ namespace rer
         public void AddReset(Reset reset)
         {
             Resets.Add(reset);
+        }
+
+        public void AddSound(RdtSound sound)
+        {
+            Sounds.Add(sound);
         }
 
         public void SetDoorTarget(int id, Door sourceDoor)
@@ -94,6 +101,11 @@ namespace rer
             }
         }
 
+        public void Nop(int offset, int length)
+        {
+            NopSequences.Add(new NopSequence(offset, length));
+        }
+
         public void Save()
         {
             Directory.CreateDirectory(Path.GetDirectoryName(ModifiedPath!)!);
@@ -119,6 +131,12 @@ namespace rer
             {
                 fs.Position = reset.Offset;
                 reset.Write(bw);
+            }
+            foreach (var nop in NopSequences)
+            {
+                fs.Position = nop.Offset;
+                for (int i = 0; i < nop.Length; i++)
+                    bw.Write((byte)0);
             }
         }
 
@@ -334,6 +352,34 @@ namespace rer
             bw.Write(D);
             bw.Write(Animation);
             bw.Write(Unk15);
+        }
     }
+
+    [DebuggerDisplay("Channel = {Channel} Id = {Id}")]
+    internal class RdtSound
+    {
+        public int Offset;
+        public byte Opcode;
+        public byte Channel;
+        public ushort Id;
+
+        public void Write(BinaryWriter bw)
+        {
+            bw.Write(Opcode);
+            bw.Write(Channel);
+            bw.Write(Id);
+        }
+    }
+
+    internal struct NopSequence
+    {
+        public NopSequence(int offset, int length)
+        {
+            Offset = offset;
+            Length = length;
+        }
+
+        public int Offset { get; set; }
+        public int Length { get; set; }
     }
 }

@@ -109,6 +109,15 @@ namespace rer
                         Unknown1 = br.ReadUInt16(),
                     });
                     break;
+                case Opcode.XaOn:
+                    VisitXaOn(new RdtSound()
+                    {
+                        Offset = offset,
+                        Opcode = (byte)opcode,
+                        Channel = br.ReadByte(),
+                        Id = br.ReadUInt16()
+                    });
+                    break;
             }
         }
 
@@ -125,6 +134,10 @@ namespace rer
         }
 
         protected virtual void VisitItemAotSet(Item item)
+        {
+        }
+
+        protected virtual void VisitXaOn(RdtSound sound)
         {
         }
     }

@@ -23,5 +23,15 @@
         {
             _rdt.AddEnemy(enemy);
         }
+
+        protected override void VisitAotReset(Reset reset)
+        {
+            _rdt.AddReset(reset);
+        }
+
+        protected override void VisitXaOn(RdtSound sound)
+        {
+            _rdt.AddSound(sound);
+        }
     }
 }

@@ -26,6 +26,7 @@ namespace rer
 
     public class MapRoom
     {
+        public int[]? SupportedNpcs { get; set; }
         public ushort[]? Requires { get; set; }
         public MapRoomDoor[]? Doors { get; set; }
         public MapRoomItem[]? Items { get; set; }

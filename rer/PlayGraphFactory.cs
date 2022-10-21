@@ -27,10 +27,10 @@ namespace rer
             _random = random;
         }
 
-        public void CreateDoorRando(GameData gameData, string path)
+        public void CreateDoorRando(GameData gameData, Map map)
         {
             _gameData = gameData;
-            _map = LoadJsonMap(path);
+            _map = map;
 
             var nodes = new List<PlayNode>();
             foreach (var kvp in _map.Rooms!)
@@ -66,10 +66,10 @@ namespace rer
             }
         }
 
-        public PlayGraph Create(GameData gameData, string path)
+        public PlayGraph Create(GameData gameData, Map map)
         {
             _gameData = gameData;
-            _map = LoadJsonMap(path);
+            _map = map;
 
             var graph = new PlayGraph();
             graph.Start = GetOrCreateNode(RdtId.Parse(_map.Start!));
