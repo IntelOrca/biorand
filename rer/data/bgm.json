@@ -1,6 +1,8 @@
 {
   "outside": [
     "main00",
+    "main00_2",
+    "main2d",
     "main2e",
     "main2f"
   ],
@@ -21,14 +23,17 @@
     "main24",
     "main25",
     "main27",
-    "main28",
     "main29",
+    "main2b",
+    "main2c",
+    "main30",
     "main31",
     "sub01",
     "sub05",
     "sub0b",
     "sub10",
     "sub11",
+    "sub14",
     "sub15",
     "sub22",
     "sub2e",
@@ -36,7 +41,8 @@
     "sub34",
     "sub35",
     "sub36",
-    "sub42"
+    "sub42",
+    "sub44"
   ],
   "calm": [
     "main0a",
@@ -45,22 +51,25 @@
     "main2a",
     "sub0c",
     "sub1b",
-    "sub24"
+    "sub24",
+    "sub30",
+    "main38"
   ],
   "danger": [
     "main10",
     "main12",
     "main15",
+    "main15",
     "main1a",
     "main1d",
     "main1e",
     "main21",
+    "main28",
     "main33",
     "main34",
     "main35",
     "main36",
     "main37",
-    "main38",
     "main39",
     "sub00",
     "sub03",
@@ -81,14 +90,17 @@
     "main04",
     "main0f",
     "main14",
+    "main16",
     "main19",
     "main1b",
     "sub0f",
     "sub1a",
+    "sub1e",
     "sub27",
     "sub28",
     "sub29",
     "sub32",
-    "sub39"
+    "sub39",
+    "sub3f"
   ]
 }

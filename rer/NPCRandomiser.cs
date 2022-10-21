@@ -24,10 +24,10 @@ namespace rer
             _gameData = gameData;
             _map = map;
             _random = random;
-            _voiceInfo = LoadVoiceInfo();
+            _voiceInfo = LoadVoiceInfo(originalDataPath);
         }
 
-        private static VoiceInfo[] LoadVoiceInfo()
+        private static VoiceInfo[] LoadVoiceInfo(string originalDataPath)
         {
             var json = File.ReadAllText(@"M:\git\rer\rer\data\voice.json");
             var voiceList = JsonSerializer.Deserialize<Dictionary<string, string>>(json, new JsonSerializerOptions()
@@ -51,12 +51,30 @@ namespace rer
                 });
             }
 
+            // Remove duplicate samples
+            foreach (var group in voiceInfos.GroupBy(x => GetVoiceSize(originalDataPath, x)))
+            {
+                if (group.Count() <= 1)
+                    continue;
+
+                foreach (var item in group.Skip(1))
+                {
+                    voiceInfos.RemoveAll(x => x.Sample == item.Sample);
+                }
+            }
+
             return voiceInfos.ToArray();
+        }
+
+        private static int GetVoiceSize(string basePath, VoiceInfo vi)
+        {
+            var path = GetVoicePath(basePath, vi.Sample);
+            return (int)new FileInfo(path).Length;
         }
 
         public void Randomise()
         {
-            // ConvertSapFiles(@"M:\temp\re2converted");
+            ConvertSapFiles(@"M:\temp\re2converted\voice");
 
             _pool.AddRange(_voiceInfo.Shuffle(_random));
 
@@ -130,7 +148,7 @@ namespace rer
             File.Copy(srcPath, dstPath, true);
         }
 
-        private string GetVoicePath(string basePath, VoiceSample sample)
+        private static string GetVoicePath(string basePath, VoiceSample sample)
         {
             return Path.Combine(basePath, "PL" + sample.Player, "Voice", "stage" + sample.Stage, $"v{sample.Id:000}.sap");
         }
@@ -143,14 +161,17 @@ namespace rer
 
         private void ConvertSapFiles(string path)
         {
-            var sapFiles = Directory.GetFiles(path, "*.sap", SearchOption.AllDirectories);
-            foreach (var sapFile in sapFiles)
-            {
-                var wavFile = Path.ChangeExtension(sapFile, ".wav");
-                var bytes = File.ReadAllBytes(sapFile);
-                File.WriteAllBytes(wavFile, bytes.Skip(8).ToArray());
-                File.Delete(sapFile);
-            }
+            var wavFiles = Directory.GetFiles(path, "*.wav", SearchOption.AllDirectories);
+            var wavLen = wavFiles.GroupBy(x => new FileInfo(x).Length).Where(x => x.Count() > 1).ToArray();
+
+            // var sapFiles = Directory.GetFiles(path, "*.sap", SearchOption.AllDirectories);
+            // foreach (var sapFile in sapFiles)
+            // {
+            //     var wavFile = Path.ChangeExtension(sapFile, ".wav");
+            //     var bytes = File.ReadAllBytes(sapFile);
+            //     File.WriteAllBytes(wavFile, bytes.Skip(8).ToArray());
+            //     File.Delete(sapFile);
+            // }
         }
 
         private static bool IsNpc(EnemyType type) => type >= EnemyType.ChiefIrons1;
