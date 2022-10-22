@@ -108,6 +108,8 @@ namespace rer
         {
             if (rdt.ToString() == "101")
                 return;
+            if (rdt.ToString() == "202")
+                return;
             if (rdt.ToString() == "212")
                 return;
 

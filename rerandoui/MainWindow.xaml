@@ -37,7 +37,6 @@
                 <CheckBox x:Name="chkRngDoors">Randomize doors</CheckBox>
                 <CheckBox x:Name="chkRngChars">Randomize characters, voice</CheckBox>
                 <CheckBox x:Name="chkRngBgm">Randomize background music</CheckBox>
-                <CheckBox x:Name="chkProtectSoftLock">Protect from soft lock</CheckBox>
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Enemies">
@@ -56,6 +55,8 @@
         <GroupBox Header="Items">
             <StackPanel Orientation="Vertical">
                 <CheckBox x:Name="chkRngItems">Randomize items</CheckBox>
+                <CheckBox x:Name="chkAlternativeRoute">Allow alternative routes</CheckBox>
+                <CheckBox x:Name="chkProtectSoftLock">Protect from soft lock</CheckBox>
                 <CheckBox x:Name="chkShuffleItems">Shuffle default items</CheckBox>
                 <StackPanel x:Name="panelItemSliders" Orientation="Vertical">
                     <TextBlock>Ammo</TextBlock>

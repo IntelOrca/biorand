@@ -13,7 +13,9 @@ namespace rer
         private RandoConfig _config;
         private GameData _gameData;
         private Map _map = new Map();
-        private Dictionary<RdtId, PlayNode> _nodes = new Dictionary<RdtId, PlayNode>();
+        private List<PlayNode> _nodes = new List<PlayNode>();
+        private Dictionary<RdtId, PlayNode> _nodeMap = new Dictionary<RdtId, PlayNode>();
+        private List<ItemPoolEntry> _futurePool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _currentPool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _shufflePool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _definedPool = new List<ItemPoolEntry>();
@@ -73,6 +75,12 @@ namespace rer
         {
             _logger.WriteHeading("Randomizing Items:");
             _logger.WriteLine("Placing key items:");
+
+            // Create all nodes
+            foreach (var kvp in _map.Rooms!)
+            {
+                _nodes.Add(GetOrCreateNode(RdtId.Parse(kvp.Key)));
+            }
 
             var graph = new PlayGraph();
             graph.Start = GetOrCreateNode(RdtId.Parse(_map.Start!));
@@ -145,7 +153,19 @@ namespace rer
                     }
 
                     // First time we have visited room, add room items to pool
-                    _currentPool.AddRange(node.Items);
+                    foreach (var item in node.Items)
+                    {
+                        // Check if we have already added this item in advance
+                        var futureIndex = _futurePool.FindIndex(x => x.RdtItemId == item.RdtItemId);
+                        if (futureIndex == -1)
+                        {
+                            _currentPool.Add(item);
+                        }
+                        else
+                        {
+                            _futurePool.RemoveAt(futureIndex);
+                        }
+                    }
                     foreach (var linkedItem in node.LinkedItems)
                     {
                         _linkedItems.Add((new RdtItemId(node.RdtId, linkedItem.Key), linkedItem.Value));
@@ -224,18 +244,18 @@ namespace rer
             return true;
         }
 
-        private int FindNewKeyItemLocation(int type)
+        private int? FindNewKeyItemLocation(int type)
         {
             var randomOrder = Enumerable.Range(0, _currentPool.Count).Shuffle(_rng).ToArray();
             foreach (var i in randomOrder)
             {
                 var item = _currentPool[i];
-                if (item.Type != type && item.Priority != ItemPriority.Low && HasAllRequiredItems(item.Requires))
+                if (item.Type != type && item.Priority == ItemPriority.Normal && HasAllRequiredItems(item.Requires))
                 {
                     return i;
                 }
             }
-            return 0;
+            return null;
         }
 
         private void PlaceKeyItem()
@@ -263,21 +283,41 @@ namespace rer
 
         private bool PlaceKeyItem(ushort req)
         {
-            var swapA = default(ItemPoolEntry);
-            var swapB = default(ItemPoolEntry);
-
             // Get a new location for the key item
             var index = FindNewKeyItemLocation(req);
-            var itemEntry = _currentPool[index];
+            if (index == null)
+                throw new Exception("Run out of free item slots");
+
+            var itemEntry = _currentPool[index.Value];
 
             // Find original location of key item
             var originalIndex = _currentPool.FindIndex(x => x.Type == req);
+            if (originalIndex == -1 && _config.AlternativeRoutes)
+            {
+                // Key must be in a layer area, find it
+                foreach (var node in _nodes)
+                {
+                    var futureItem = node.Items.FirstOrDefault(x => x.Type == req);
+                    if (futureItem.Type == req && futureItem.Priority != ItemPriority.Fixed)
+                    {
+                        _futurePool.Add(futureItem);
+                        _currentPool.Add(futureItem);
+                        originalIndex = _currentPool.Count - 1;
+                        break;
+                    }
+                }
+            }
             if (originalIndex != -1)
             {
-                // Change original key item to the item we are going to replace
+                // Check original key can actually be moved
                 var originalItemEntry = _currentPool[originalIndex];
-                swapA = originalItemEntry;
-                swapB = itemEntry;
+                if (originalItemEntry.Priority == ItemPriority.Fixed)
+                {
+                    index = originalIndex;
+                    itemEntry = originalItemEntry;
+                }
+
+                // Change original key item to the item we are going to replace
                 var keyCount = originalItemEntry.Amount;
                 originalItemEntry.Type = itemEntry.Type;
                 originalItemEntry.Amount = itemEntry.Amount;
@@ -300,10 +340,9 @@ namespace rer
                 _requiredItems.Remove(req);
             }
             _haveItems.Add(req);
-            _currentPool.RemoveAt(index);
+            _currentPool.RemoveAt(index.Value);
             _definedPool.Add(itemEntry);
             _logger.WriteLine($"    Placing key item ({Items.GetItemName(itemEntry.Type)}) in {itemEntry.RdtId}:{itemEntry.Id}");
-            // _logger.WriteLine($"        Swapped {swapA} with {swapB}");
             return true;
         }
 
@@ -313,9 +352,9 @@ namespace rer
 
             // Shuffle the pool, keep low priority at the end
             var shuffled = _shufflePool
-                .Where(x => x.Priority != ItemPriority.Low)
+                .Where(x => x.Priority == ItemPriority.Normal)
                 .Shuffle(_rng)
-                .Concat(_shufflePool.Where(x => x.Priority == ItemPriority.Low))
+                .Concat(_shufflePool.Where(x => x.Priority != ItemPriority.Normal))
                 .ToQueue();
             _shufflePool.Clear();
 
@@ -513,7 +552,7 @@ namespace rer
             node = new PlayNode(rdtId);
             node.Doors = GetAllDoorsToRoom(rdtId);
             node.Items = items;
-            _nodes.Add(rdtId, node);
+            _nodeMap.Add(rdtId, node);
 
             var mapRoom = _map.GetRoom(rdtId);
             if (mapRoom != null)
@@ -566,7 +605,7 @@ namespace rer
 
         public PlayNode? FindNode(RdtId rdtId)
         {
-            if (_nodes.TryGetValue(rdtId, out var node))
+            if (_nodeMap.TryGetValue(rdtId, out var node))
                 return node;
             return null;
         }

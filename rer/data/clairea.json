@@ -213,6 +213,7 @@
         {
           "id": 2,
           "type": 57,
+          "priority": "fixed",
           "requires": [
             67,
             74
@@ -404,7 +405,7 @@
       ]
     },
     "202": {
-      "supportedNpcs": [ 66, 67, 68, 72, 75, 79, 90 ],
+      "supportedNpcs": [ 66, 67, 68, 72, 79, 90 ],
       "items": [
         {
           "id": 12

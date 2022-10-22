@@ -88,6 +88,7 @@ namespace rerandoui
                 chkRngEnemies.IsChecked = _config.RandomEnemies;
                 chkRngItems.IsChecked = _config.RandomItems;
                 chkShuffleItems.IsChecked = _config.ShuffleItems;
+                chkAlternativeRoute.IsChecked = _config.AlternativeRoutes;
 
                 sliderEnemyDifficulty.Value = _config.EnemyDifficulty;
 
@@ -117,6 +118,7 @@ namespace rerandoui
             _config.RandomEnemies = chkRngEnemies.IsChecked == true;
             _config.RandomItems = chkRngItems.IsChecked == true;
             _config.ShuffleItems = chkShuffleItems.IsChecked == true;
+            _config.AlternativeRoutes = chkAlternativeRoute.IsChecked == true;
 
             _config.EnemyDifficulty = (byte)sliderEnemyDifficulty.Value;
 
@@ -212,7 +214,14 @@ namespace rerandoui
 
         private void btnGenerate_Click(object sender, RoutedEventArgs e)
         {
-            Program.Generate(_config);
+            try
+            {
+                Program.Generate(_config);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Failed to Generate", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }
