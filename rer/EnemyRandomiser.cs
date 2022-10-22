@@ -5,18 +5,22 @@ namespace rer
 {
     internal class EnemyRandomiser
     {
+        private readonly RandoLogger _logger;
+        private RandoConfig _config;
         private GameData _gameData;
         private Random _random;
 
-        public EnemyRandomiser(GameData gameData, Random random)
+        public EnemyRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Random random)
         {
+            _logger = logger;
+            _config = config;
             _gameData = gameData;
             _random = random;
         }
 
         public void Randomise()
         {
-            Console.WriteLine($"Randomising enemies:");
+            _logger.WriteHeading("Randomizing enemies:");
             foreach (var rdt in _gameData.Rdts)
             {
                 var logEnemies = rdt.Enemies.Select(GetEnemyLogText).ToArray();
@@ -29,7 +33,7 @@ namespace rer
                     var newLog = GetEnemyLogText(enemy);
                     if (oldLog != newLog)
                     {
-                        Console.WriteLine($"    {rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) {oldLog} becomes {newLog}");
+                        _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) {oldLog} becomes {newLog}");
                     }
                 }
             }
@@ -47,10 +51,23 @@ namespace rer
             if (rdt.ToString() == "212")
                 return;
 
+            if (rdt.ToString() == "100")
+                rdt.Nop(4888, 4);
+
+            if (rdt.ToString() == "105")
+            {
+                var enemyType3 = GetRandomZombieType();
+                foreach (var enemy in rdt.Enemies)
+                {
+                    enemy.Type = enemyType3;
+                    enemy.SoundBank = GetZombieSoundBank(enemy.Type);
+                }
+                return;
+            }
+
             if (rdt.Enemies.Any(x => x.State == 72))
             {
                 var enemyType3 = _random.NextOf(EnemyType.ZombieRandom, EnemyType.ZombieNaked);
-                enemyType3 = EnemyType.ZombieNaked;
                 foreach (var enemy in rdt.Enemies)
                 {
                     enemy.Type = enemyType3;

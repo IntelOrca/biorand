@@ -105,7 +105,7 @@ namespace rer
             switch (opcode)
             {
                 default:
-                    if (Enum.IsDefined(opcode))
+                    if (Enum.IsDefined(typeof(Opcode), opcode))
                     {
                         sb.WriteLine($"{opcode}();");
                     }

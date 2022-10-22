@@ -8,30 +8,32 @@ namespace rer
 {
     internal class PlayGraphFactory
     {
+        private readonly RandoLogger _logger;
+        private RandoConfig _config;
         private GameData _gameData;
         private Map _map = new Map();
         private Dictionary<RdtId, PlayNode> _nodes = new Dictionary<RdtId, PlayNode>();
         private List<ItemPoolEntry> _currentPool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _shufflePool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _definedPool = new List<ItemPoolEntry>();
-        private List<(RdtItemId, RdtItemId)> _linkedItems = new();
+        private List<(RdtItemId, RdtItemId)> _linkedItems = new List<(RdtItemId, RdtItemId)>();
         private HashSet<ushort> _requiredItems = new HashSet<ushort>();
         private HashSet<ushort> _haveItems = new HashSet<ushort>();
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
         private bool _firstRedJewelPlaced;
-        private bool _preventSoftLocking;
         private Random _random;
 
-        public PlayGraphFactory(Random random)
+        public PlayGraphFactory(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Random random)
         {
+            _logger = logger;
+            _config = config;
+            _gameData = gameData;
+            _map = map;
             _random = random;
         }
 
-        public void CreateDoorRando(GameData gameData, Map map)
+        public void CreateDoorRando()
         {
-            _gameData = gameData;
-            _map = map;
-
             var nodes = new List<PlayNode>();
             foreach (var kvp in _map.Rooms!)
             {
@@ -40,7 +42,7 @@ namespace rer
 
             foreach (var node in nodes)
             {
-                var rdt = gameData.GetRdt(node.RdtId);
+                var rdt = _gameData.GetRdt(node.RdtId);
                 if (rdt != null)
                 {
                     foreach (var door in rdt.Doors)
@@ -60,16 +62,16 @@ namespace rer
                     }
                 }
             }
-            foreach (var rdt in gameData.Rdts)
+            foreach (var rdt in _gameData.Rdts)
             {
                 rdt.Save();
             }
         }
 
-        public PlayGraph Create(GameData gameData, Map map)
+        public PlayGraph Create()
         {
-            _gameData = gameData;
-            _map = map;
+            _logger.WriteHeading("Randomizing Items:");
+            _logger.WriteLine("Placing key items:");
 
             var graph = new PlayGraph();
             graph.Start = GetOrCreateNode(RdtId.Parse(_map.Start!));
@@ -82,8 +84,8 @@ namespace rer
                 var newCheckpoint = Search(checkpoint);
                 if (newCheckpoint != checkpoint)
                 {
-                    Console.WriteLine("------------ checkpoint ------------");
-                    if (_preventSoftLocking)
+                    _logger.WriteLine("    ------------ checkpoint ------------");
+                    if (_config.ProtectFromSoftLock)
                     {
                         _shufflePool.AddRange(_currentPool);
                         _currentPool.Clear();
@@ -141,10 +143,10 @@ namespace rer
 
                     if (node.Items.Length != 0)
                     {
-                        Console.WriteLine($"Room {node.RdtId} contains:");
+                        // _logger.WriteLine($"    Room {node.RdtId} contains:");
                         foreach (var item in node.Items)
                         {
-                            Console.WriteLine($"    {item}");
+                            // _logger.WriteLine($"        {item}");
                             if (item.Requires != null)
                             {
                                 foreach (var r in item.Requires)
@@ -174,11 +176,11 @@ namespace rer
                         if (edge.NoReturn)
                         {
                             checkpoint = edge.Node;
-                            // Console.WriteLine($"{node} -> {edge.Node} (checkpoint)");
+                            // _logger.WriteLine($"        {node} -> {edge.Node} (checkpoint)");
                         }
                         else
                         {
-                            // Console.WriteLine($"{node} -> {edge.Node}");
+                            // _logger.WriteLine($"        {node} -> {edge.Node}");
                             stack.Push(edge.Node);
                         }
                     }
@@ -240,10 +242,10 @@ namespace rer
                 }
             }
 
-            Console.WriteLine("Unable to place the following key items:");
+            _logger.WriteLine("    Unable to place the following key items:");
             foreach (var item in checkList)
             {
-                Console.WriteLine($"    {Items.GetItemName(item)}");
+                _logger.WriteLine($"        {Items.GetItemName(item)}");
             }
 
             throw new Exception("Unable to find key item to swap");
@@ -290,21 +292,21 @@ namespace rer
             _haveItems.Add(req);
             _currentPool.RemoveAt(index);
             _definedPool.Add(itemEntry);
-            Console.WriteLine($"Placing key item ({Items.GetItemName(itemEntry.Type)}) in {itemEntry.RdtId}:{itemEntry.Id}");
-            Console.WriteLine($"    Swapped {swapA} with {swapB}");
+            _logger.WriteLine($"    Placing key item ({Items.GetItemName(itemEntry.Type)}) in {itemEntry.RdtId}:{itemEntry.Id}");
+            // _logger.WriteLine($"        Swapped {swapA} with {swapB}");
             return true;
         }
 
         private void RandomiseRemainingPool()
         {
-            Console.WriteLine("Shuffling non-key items:");
+            _logger.WriteLine("Shuffling non-key items:");
             var shuffled = _shufflePool.Shuffle(_random);
             for (int i = 0; i < _shufflePool.Count; i++)
             {
                 var entry = _shufflePool[i];
                 entry.Type = shuffled[i].Type;
                 entry.Amount = shuffled[i].Amount;
-                Console.WriteLine($"    Swapped {_shufflePool[i]} with {shuffled[i]}");
+                _logger.WriteLine($"    Swapped {_shufflePool[i]} with {shuffled[i]}");
                 _definedPool.Add(entry);
             }
             _shufflePool.Clear();
@@ -312,14 +314,14 @@ namespace rer
 
         private void SetLinkedItems()
         {
-            Console.WriteLine("Setting up linked items:");
+            _logger.WriteLine("Setting up linked items:");
             foreach (var (targetId, sourceId) in _linkedItems)
             {
                 var sourceItem = _definedPool.Find(x => x.RdtItemId == sourceId);
                 var targetItem = sourceItem;
                 targetItem.RdtItemId = targetId;
                 _definedPool.Add(targetItem);
-                Console.WriteLine($"    {sourceItem} placed at {targetId}");
+                _logger.WriteLine($"    {sourceItem} placed at {targetId}");
             }
         }
 
@@ -390,7 +392,7 @@ namespace rer
                             items[idx].Requires = fixedItem.Requires;
                             if (fixedItem.Priority != null)
                             {
-                                items[idx].Priority = Enum.Parse<ItemPriority>(fixedItem.Priority, true);
+                                items[idx].Priority = (ItemPriority)Enum.Parse(typeof(ItemPriority), fixedItem.Priority, true);
                             }
                         }
                     }

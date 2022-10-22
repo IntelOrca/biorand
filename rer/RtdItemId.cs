@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 
 namespace rer
 {
@@ -15,7 +16,15 @@ namespace rer
 
         public override bool Equals(object? obj) => obj is RdtItemId id && Equals(id);
         public bool Equals(RdtItemId other) => Rdt == other.Rdt && Id == other.Id;
-        public override int GetHashCode() => HashCode.Combine(Rdt, Id);
+
+        public override int GetHashCode()
+        {
+            int hash = 17;
+            hash = hash * 23 + Rdt.GetHashCode();
+            hash = hash * 23 + Id;
+            return hash;
+        }
+
         public static bool operator ==(RdtItemId left, RdtItemId right) => left.Equals(right);
         public static bool operator !=(RdtItemId left, RdtItemId right) => !(left == right);
 

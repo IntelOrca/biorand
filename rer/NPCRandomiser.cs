@@ -9,6 +9,7 @@ namespace rer
 {
     internal class NPCRandomiser
     {
+        private readonly RandoLogger _logger;
         private string _originalDataPath;
         private string _modPath;
         private GameData _gameData;
@@ -17,8 +18,9 @@ namespace rer
         private VoiceInfo[] _voiceInfo;
         private List<VoiceInfo> _pool = new List<VoiceInfo>();
 
-        public NPCRandomiser(string originalDataPath, string modPath, GameData gameData, Map map, Random random)
+        public NPCRandomiser(RandoLogger logger, string originalDataPath, string modPath, GameData gameData, Map map, Random random)
         {
+            _logger = logger;
             _originalDataPath = originalDataPath;
             _modPath = modPath;
             _gameData = gameData;
@@ -78,7 +80,7 @@ namespace rer
 
             _pool.AddRange(_voiceInfo.Shuffle(_random));
 
-            Console.WriteLine($"Randomising NPCs:");
+            _logger.WriteHeading("Randomizing Characters, Voices:");
             foreach (var rdt in _gameData.Rdts)
             {
                 var room = _map.GetRoom(rdt.RdtId);
@@ -94,7 +96,7 @@ namespace rer
                     {
                         var currentNpcIndex = Array.IndexOf(currentNpcs, enemy.Type);
                         var newNpcType = (EnemyType)npcs[currentNpcIndex % npcs.Length];
-                        Console.WriteLine($"    {rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) [{enemy.Type}] becomes [{newNpcType}]");
+                        _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) [{enemy.Type}] becomes [{newNpcType}]");
                         enemy.Type = newNpcType;
                     }
                 }
@@ -110,11 +112,11 @@ namespace rer
                         {
                             var newNpcType = (EnemyType)npcs[currentNpcIndex % npcs.Length];
                             var newActor = GetActor(newNpcType);
-                            var randomVoice = GetRandomVoice(newActor);
+                            var randomVoice = GetRandomVoice(newActor!);
                             if (randomVoice != null)
                             {
                                 SetVoice(voice, randomVoice.Value);
-                                Console.WriteLine($"    {voice} [{actor}] becomes {randomVoice.Value} [{newActor}]");
+                                Console.WriteLine($"{voice} [{actor}] becomes {randomVoice.Value} [{newActor}]");
                             }
                         }
                     }
@@ -176,7 +178,7 @@ namespace rer
 
         private static bool IsNpc(EnemyType type) => type >= EnemyType.ChiefIrons1;
 
-        private static string GetActor(EnemyType type)
+        private static string? GetActor(EnemyType type)
         {
             switch (type)
             {
@@ -249,7 +251,11 @@ namespace rer
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Player, Stage, Id);
+            int hash = 17;
+            hash = hash * 23 + Player;
+            hash = hash * 23 + Stage;
+            hash = hash * 23 + Id;
+            return hash;
         }
 
         public static bool operator ==(VoiceSample left, VoiceSample right)

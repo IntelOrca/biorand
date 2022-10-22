@@ -6,11 +6,14 @@ namespace rer
 {
     internal class BgmRandomiser
     {
+        private readonly RandoLogger _logger;
+
         public string GamePath { get; }
         public string RngPath { get; }
 
-        public BgmRandomiser(string gamePath, string rngPath)
+        public BgmRandomiser(RandoLogger logger, string gamePath, string rngPath)
         {
+            _logger = logger;
             GamePath = gamePath;
             RngPath = rngPath;
         }
@@ -25,7 +28,7 @@ namespace rer
             if (bgmList == null)
                 throw new Exception();
 
-            Console.WriteLine("Shuffling BGM:");
+            _logger.WriteHeading("Shuffling BGM:");
             Swap(bgmList.Creepy!, bgmList.Creepy!.Shuffle(random));
             Swap(bgmList.Calm!, bgmList.Calm!.Shuffle(random));
             Swap(bgmList.Danger!, bgmList.Danger!.Shuffle(random));
@@ -39,14 +42,11 @@ namespace rer
             Directory.CreateDirectory(dstDir);
             for (int i = 0; i < dstList.Length; i++)
             {
-                // var src = Path.Combine(srcDir, FixSubFilename(srcList[i]) + ".bgm");
-                // var dst = Path.Combine(dstDir, FixSubFilename(dstList[i]) + ".bgm");
-                // File.Copy(src, dst, true);
                 var src = Path.Combine(srcDir, srcList[i] + ".sap");
                 var dst = Path.Combine(dstDir, dstList[i] + ".sap");
                 File.Copy(src, dst, true);
 
-                Console.WriteLine($"    Setting {dstList[i]} to {srcList[i]}");
+                _logger.WriteLine($"Setting {dstList[i]} to {srcList[i]}");
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Numerics;
 
 namespace rer
 {
@@ -16,7 +17,15 @@ namespace rer
 
         public override bool Equals(object? obj) => obj is RdtId id && Equals(id);
         public bool Equals(RdtId other) => Stage == other.Stage && Room == other.Room;
-        public override int GetHashCode() => HashCode.Combine(Stage, Room);
+
+        public override int GetHashCode()
+        {
+            int hash = 17;
+            hash = hash * 23 + Stage;
+            hash = hash * 23 + Room;
+            return hash;
+        }
+
         public static bool operator ==(RdtId left, RdtId right) => left.Equals(right);
         public static bool operator !=(RdtId left, RdtId right) => !(left == right);
 
@@ -48,7 +57,7 @@ namespace rer
                 return false;
             }
 
-            if (!int.TryParse(s[1..], NumberStyles.HexNumber, null, out var room))
+            if (!int.TryParse(s.Substring(1), NumberStyles.HexNumber, null, out var room))
                 return false;
 
             id = new RdtId(stage - 1, room);
