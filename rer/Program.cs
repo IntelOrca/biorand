@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 
@@ -8,18 +9,26 @@ namespace rer
     {
         public static void Main(string[] args)
         {
-            Generate(new RandoConfig()
-            {
-                Seed = 0
-            });
+            var rng = new Rng();
+
+            var numbers = new List<double>();
+            for (int i = 0; i < 2048; i++)
+                // numbers.Add((5 + rng.NextGaussian(-5, 1)) / 10);
+                numbers.Add(rng.NextGaussian(-5, 2));
+            numbers.Sort();
+
+            // Generate(new RandoConfig()
+            // {
+            //     Seed = 0
+            // });
         }
 
         public static void Generate(RandoConfig config)
         {
-            var randomItems = new Random(config.Seed);
-            var randomNpcs = new Random(config.Seed + 1);
-            var randomEnemies = new Random(config.Seed + 2);
-            var randomMusic = new Random(config.Seed + 3);
+            var randomItems = new Rng(config.Seed);
+            var randomNpcs = new Rng(config.Seed + 1);
+            var randomEnemies = new Rng(config.Seed + 2);
+            var randomMusic = new Rng(config.Seed + 3);
 
             var re2Path = @"F:\games\re2";
             var originalDataPath = Path.Combine(re2Path, "data");
@@ -32,6 +41,8 @@ namespace rer
             Directory.CreateDirectory(modPath);
 
             using var logger = new RandoLogger(Path.Combine(modPath, "log.txt"));
+            logger.WriteHeading("Resident Evil Randomizer");
+            logger.WriteLine($"Seed: {config}");
 
             var map = LoadJsonMap(@"M:\git\rer\rer\data\clairea.json");
 

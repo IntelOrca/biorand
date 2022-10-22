@@ -6,16 +6,18 @@ namespace rer
     internal class EnemyRandomiser
     {
         private readonly RandoLogger _logger;
-        private RandoConfig _config;
-        private GameData _gameData;
-        private Random _random;
+        private readonly RandoConfig _config;
+        private readonly GameData _gameData;
+        private readonly Rng _rng;
+        private readonly Rng.Table<EnemyType> _probTable;
 
-        public EnemyRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Random random)
+        public EnemyRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Rng random)
         {
             _logger = logger;
             _config = config;
             _gameData = gameData;
-            _random = random;
+            _rng = random;
+            _probTable = CreateEnemyProbabilityTable();
         }
 
         public void Randomise()
@@ -37,6 +39,64 @@ namespace rer
                     }
                 }
             }
+        }
+
+        private Rng.Table<EnemyType> CreateEnemyProbabilityTable()
+        {
+            var table = _rng.CreateProbabilityTable<EnemyType>();
+            switch (_config.EnemyDifficulty)
+            {
+                case 0:
+                    table.Add(EnemyType.Crow, 10);
+                    table.Add(EnemyType.ZombieArms, 10);
+                    table.Add(EnemyType.Spider, 10);
+                    table.Add(EnemyType.GiantMoth, 10);
+                    table.Add(EnemyType.Ivy, 15);
+                    table.Add(EnemyType.IvyPurple, 5);
+                    table.Add(EnemyType.Tyrant1, 1);
+                    table.Add(EnemyType.ZombieRandom, 30);
+                    table.Add(EnemyType.Cerebrus, 5);
+                    table.Add(EnemyType.LickerRed, 2);
+                    table.Add(EnemyType.LickerGrey, 2);
+                    break;
+                case 1:
+                    table.Add(EnemyType.Crow, 5);
+                    table.Add(EnemyType.ZombieArms, 5);
+                    table.Add(EnemyType.Spider, 5);
+                    table.Add(EnemyType.GiantMoth, 5);
+                    table.Add(EnemyType.Ivy, 5);
+                    table.Add(EnemyType.IvyPurple, 5);
+                    table.Add(EnemyType.Tyrant1, 5);
+                    table.Add(EnemyType.ZombieRandom, 40);
+                    table.Add(EnemyType.Cerebrus, 10);
+                    table.Add(EnemyType.LickerRed, 10);
+                    table.Add(EnemyType.LickerGrey, 5);
+                    break;
+                case 2:
+                    table.Add(EnemyType.Spider, 5);
+                    table.Add(EnemyType.GiantMoth, 5);
+                    table.Add(EnemyType.Ivy, 5);
+                    table.Add(EnemyType.IvyPurple, 5);
+                    table.Add(EnemyType.Tyrant1, 5);
+                    table.Add(EnemyType.ZombieRandom, 25);
+                    table.Add(EnemyType.Cerebrus, 25);
+                    table.Add(EnemyType.LickerRed, 15);
+                    table.Add(EnemyType.LickerGrey, 10);
+                    break;
+                case 3:
+                default:
+                    table.Add(EnemyType.ZombieRandom, 5);
+                    table.Add(EnemyType.Spider, 5);
+                    table.Add(EnemyType.GiantMoth, 5);
+                    table.Add(EnemyType.Ivy, 2);
+                    table.Add(EnemyType.IvyPurple, 3);
+                    table.Add(EnemyType.Tyrant1, 5);
+                    table.Add(EnemyType.Cerebrus, 50);
+                    table.Add(EnemyType.LickerRed, 5);
+                    table.Add(EnemyType.LickerGrey, 20);
+                    break;
+            }
+            return table;
         }
 
         private static string GetEnemyLogText(RdtEnemy enemy)
@@ -67,7 +127,7 @@ namespace rer
 
             if (rdt.Enemies.Any(x => x.State == 72))
             {
-                var enemyType3 = _random.NextOf(EnemyType.ZombieRandom, EnemyType.ZombieNaked);
+                var enemyType3 = _rng.NextOf(EnemyType.ZombieRandom, EnemyType.ZombieNaked);
                 foreach (var enemy in rdt.Enemies)
                 {
                     enemy.Type = enemyType3;
@@ -110,11 +170,11 @@ namespace rer
                         case EnemyType.ZombieScientist:
                         case EnemyType.ZombieNaked:
                         case EnemyType.ZombieRandom:
-                            enemy.State = _random.NextOf<byte>(0, 1, 2, 3, 4, 6);
+                            enemy.State = _rng.NextOf<byte>(0, 1, 2, 3, 4, 6);
                             enemy.SoundBank = GetZombieSoundBank(enemyType);
                             break;
                         case EnemyType.Cerebrus:
-                            enemy.State = _random.NextOf<byte>(0, 0, 0, 2);
+                            enemy.State = _rng.NextOf<byte>(0, 0, 0, 2);
                             enemy.Ai = 0;
                             enemy.SoundBank = 12;
                             break;
@@ -161,7 +221,7 @@ namespace rer
                 case EnemyType.ZombieRandom:
                 case EnemyType.ZombieScientist:
                 case EnemyType.ZombieTestSubject:
-                    return _random.NextOf<byte>(1, 2);
+                    return _rng.NextOf<byte>(1, 2);
                 case EnemyType.ZombieGirl:
                     return 10;
                 case EnemyType.ZombieNaked:
@@ -201,32 +261,17 @@ namespace rer
 
         private EnemyType GetRandomEnemyType()
         {
-            return _random.NextOf(
-               EnemyType.ZombieCop,
-               EnemyType.ZombieGuy1,
-               EnemyType.ZombieGirl,
-               EnemyType.ZombieTestSubject,
-               EnemyType.ZombieScientist,
-               EnemyType.ZombieNaked,
-               EnemyType.ZombieGuy2,
-               EnemyType.ZombieGuy3,
-               EnemyType.ZombieRandom,
-               EnemyType.ZombieArms,
-               EnemyType.Cerebrus,
-               EnemyType.Crow,
-               EnemyType.BabySpider,
-               EnemyType.Spider,
-               EnemyType.LickerRed,
-               EnemyType.LickerGrey,
-               EnemyType.Ivy,
-               EnemyType.IvyPurple,
-               EnemyType.GiantMoth,
-               EnemyType.Tyrant1);
+            var enemyType = _probTable.Next();
+            if (enemyType == EnemyType.ZombieRandom)
+            {
+                return GetRandomZombieType();
+            }
+            return enemyType;
         }
 
         private EnemyType GetRandomZombieType()
         {
-            return _random.NextOf(
+            return _rng.NextOf(
                 EnemyType.ZombieCop,
                 EnemyType.ZombieGuy1,
                 EnemyType.ZombieGirl,

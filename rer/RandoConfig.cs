@@ -119,7 +119,7 @@ namespace rer
         private void SetD4(byte value)
         {
             AmmoQuantity = (byte)(value & 0b111);
-            EnemyDifficulty = (byte)((EnemyDifficulty & 0b11100) >> 2);
+            EnemyDifficulty = (byte)((value & 0b11000) >> 3);
         }
 
         private byte GetD4()

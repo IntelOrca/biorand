@@ -18,7 +18,7 @@ namespace rer
             RngPath = rngPath;
         }
 
-        public void Randomise(Random random)
+        public void Randomise(Rng random)
         {
             var json = File.ReadAllText(@"M:\git\rer\rer\data\bgm.json");
             var bgmList = JsonSerializer.Deserialize<BgmList>(json, new JsonSerializerOptions()

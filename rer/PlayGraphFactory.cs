@@ -21,15 +21,15 @@ namespace rer
         private HashSet<ushort> _haveItems = new HashSet<ushort>();
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
         private bool _firstRedJewelPlaced;
-        private Random _random;
+        private Rng _rng;
 
-        public PlayGraphFactory(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Random random)
+        public PlayGraphFactory(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng random)
         {
             _logger = logger;
             _config = config;
             _gameData = gameData;
             _map = map;
-            _random = random;
+            _rng = random;
         }
 
         public void CreateDoorRando()
@@ -51,11 +51,11 @@ namespace rer
                         PlayNode targetNode;
                         do
                         {
-                            var nodeIndex = _random.Next(0, nodes.Count);
+                            var nodeIndex = _rng.Next(0, nodes.Count);
                             targetNode = nodes[nodeIndex];
                         }
                         while (targetNode.Doors.Length == 0);
-                        var doorIndex = _random.Next(0, targetNode.Doors.Length);
+                        var doorIndex = _rng.Next(0, targetNode.Doors.Length);
                         var targetDoor = targetNode.Doors[doorIndex];
 
                         rdt.SetDoorTarget(door.Id, targetDoor);
@@ -94,7 +94,16 @@ namespace rer
                 checkpoint = newCheckpoint;
             }
             _shufflePool.AddRange(_currentPool);
-            RandomiseRemainingPool();
+
+            if (_config.ShuffleItems)
+            {
+                ShuffleRemainingPool();
+            }
+            else
+            {
+                RandomiseRemainingPool();
+            }
+
             SetLinkedItems();
             return graph;
         }
@@ -216,7 +225,7 @@ namespace rer
 
         private int FindNewKeyItemLocation(int type)
         {
-            var randomOrder = Enumerable.Range(0, _currentPool.Count).Shuffle(_random).ToArray();
+            var randomOrder = Enumerable.Range(0, _currentPool.Count).Shuffle(_rng).ToArray();
             foreach (var i in randomOrder)
             {
                 var item = _currentPool[i];
@@ -233,7 +242,7 @@ namespace rer
             if (_requiredItems.Count == 0)
                 return;
 
-            var checkList = _requiredItems.Shuffle(_random);
+            var checkList = _requiredItems.Shuffle(_rng);
             foreach (var req in checkList)
             {
                 if (PlaceKeyItem(req))
@@ -299,8 +308,68 @@ namespace rer
 
         private void RandomiseRemainingPool()
         {
+            _logger.WriteLine("Randomizing non-key items:");
+
+            double ammo = _config.RatioAmmo / 32.0;
+            double health = _config.RatioHealth / 32.0;
+            double ink = _config.RatioInkRibbons / 32.0;
+
+            var table = _rng.CreateProbabilityTable<ItemType>();
+            table.Add(ItemType.InkRibbon, ink);
+
+            table.Add(ItemType.HerbG, health * 0.5);
+            table.Add(ItemType.HerbR, health * 0.3);
+            table.Add(ItemType.HerbB, health * 0.1);
+            table.Add(ItemType.FAidSpray, health * 0.1);
+
+            table.Add(ItemType.HandgunAmmo, ammo * 0.4);
+            table.Add(ItemType.BowgunAmmo, ammo * 0.1);
+            table.Add(ItemType.GrenadeRounds, ammo * 0.1);
+            table.Add(ItemType.AcidRounds, ammo * 0.1);
+            table.Add(ItemType.FlameRounds, ammo * 0.1);
+            table.Add(ItemType.SparkshotAmmo, ammo * 0.1);
+            table.Add(ItemType.SMGammo, ammo * 0.1);
+
+            for (int i = 0; i < _shufflePool.Count; i++)
+            {
+                var itemType = table.Next();
+
+                var entry = _shufflePool[i];
+                entry.Type = (byte)itemType;
+                entry.Amount = GetRandomAmount(itemType);
+                _logger.WriteLine($"    Replaced {_shufflePool[i]} with {entry}");
+                _definedPool.Add(entry);
+            }
+            _shufflePool.Clear();
+        }
+
+        private byte GetRandomAmount(ItemType type)
+        {
+            var multiplier = _config.AmmoQuantity / 8.0;
+            switch (type)
+            {
+                default:
+                    return 1;
+                case ItemType.InkRibbon:
+                    return (byte)_rng.Next(1, 3);
+                case ItemType.HandgunAmmo:
+                    return (byte)_rng.Next(1, (int)(60 * multiplier));
+                case ItemType.BowgunAmmo:
+                    return (byte)_rng.Next(1, (int)(30 * multiplier));
+                case ItemType.GrenadeRounds:
+                case ItemType.AcidRounds:
+                case ItemType.FlameRounds:
+                    return (byte)_rng.Next(1, (int)(10 * multiplier));
+                case ItemType.SparkshotAmmo:
+                case ItemType.SMGammo:
+                    return (byte)_rng.Next(1, (int)(100 * multiplier));
+            }
+        }
+
+        private void ShuffleRemainingPool()
+        {
             _logger.WriteLine("Shuffling non-key items:");
-            var shuffled = _shufflePool.Shuffle(_random);
+            var shuffled = _shufflePool.Shuffle(_rng);
             for (int i = 0; i < _shufflePool.Count; i++)
             {
                 var entry = _shufflePool[i];
