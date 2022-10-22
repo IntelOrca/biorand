@@ -97,6 +97,12 @@ namespace rer
                 var npcs = room.SupportedNpcs.Shuffle(_random);
                 foreach (var enemy in rdt.Enemies)
                 {
+                    // Marvin edge case
+                    if (rdt.RdtId.Stage == 1 && rdt.RdtId.Room == 2 && enemy.Offset != 0x1DF6)
+                    {
+                        continue;
+                    }
+
                     if (IsNpc(enemy.Type))
                     {
                         var currentNpcIndex = Array.IndexOf(currentCharacters, enemy.Type);
