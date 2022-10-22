@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using static rer.Rng;
 
 namespace rer
 {
@@ -310,6 +311,38 @@ namespace rer
         {
             _logger.WriteLine("Randomizing non-key items:");
 
+            // Shuffle the pool, keep low priority at the end
+            var shuffled = _shufflePool
+                .Where(x => x.Priority != ItemPriority.Low)
+                .Shuffle(_rng)
+                .Concat(_shufflePool.Where(x => x.Priority == ItemPriority.Low))
+                .ToQueue();
+            _shufflePool.Clear();
+
+            // Weapons first
+            var ammoTypes = new HashSet<ItemType>() { ItemType.HandgunAmmo };
+            var items = new List<ItemType>();
+            if (_rng.Next(0, 3) >= 1)
+                items.Add(ItemType.Bowgun);
+            if (_rng.Next(0, 3) >= 1)
+                items.Add(_rng.NextOf(ItemType.GrenadeLauncherExplosive, ItemType.GrenadeLauncherFlame, ItemType.GrenadeLauncherAcid));
+            if (_rng.Next(0, 2) == 0)
+                items.Add(ItemType.SMG);
+            if (_rng.Next(0, 2) == 0)
+                items.Add(ItemType.Sparkshot);
+            if (_rng.Next(0, 2) == 0)
+                items.Add(ItemType.ColtSAA);
+            if (_rng.Next(0, 2) == 0)
+                items.Add(ItemType.RocketLauncher);
+            foreach (var itemType in items)
+            {
+                var ammoType = GetAmmoTypeForWeapon(itemType);
+                var amount = GetRandomAmount(ammoType);
+                SpawnItem(shuffled, itemType, amount);
+                ammoTypes.Add(ammoType);
+            }
+
+            // Now everything else
             double ammo = _config.RatioAmmo / 32.0;
             double health = _config.RatioHealth / 32.0;
             double ink = _config.RatioInkRibbons / 32.0;
@@ -322,25 +355,81 @@ namespace rer
             table.Add(ItemType.HerbB, health * 0.1);
             table.Add(ItemType.FAidSpray, health * 0.1);
 
-            table.Add(ItemType.HandgunAmmo, ammo * 0.4);
-            table.Add(ItemType.BowgunAmmo, ammo * 0.1);
-            table.Add(ItemType.GrenadeRounds, ammo * 0.1);
-            table.Add(ItemType.AcidRounds, ammo * 0.1);
-            table.Add(ItemType.FlameRounds, ammo * 0.1);
+            if (ammoTypes.Contains(ItemType.HandgunAmmo))
+                table.Add(ItemType.HandgunAmmo, ammo * 0.4);
+            if (ammoTypes.Contains(ItemType.BowgunAmmo))
+                table.Add(ItemType.BowgunAmmo, ammo * 0.1);
+            if (ammoTypes.Contains(ItemType.ExplosiveRounds) ||
+                ammoTypes.Contains(ItemType.FlameRounds) ||
+                ammoTypes.Contains(ItemType.AcidRounds))
+            {
+                table.Add(ItemType.ExplosiveRounds, ammo * 0.1);
+                table.Add(ItemType.AcidRounds, ammo * 0.1);
+                table.Add(ItemType.FlameRounds, ammo * 0.1);
+            }
+            if (ammoTypes.Contains(ItemType.SparkshotAmmo))
             table.Add(ItemType.SparkshotAmmo, ammo * 0.1);
-            table.Add(ItemType.SMGammo, ammo * 0.1);
+            if (ammoTypes.Contains(ItemType.SMGAmmo))
+            table.Add(ItemType.SMGAmmo, ammo * 0.1);
 
-            for (int i = 0; i < _shufflePool.Count; i++)
+            bool successful;
+            do
             {
                 var itemType = table.Next();
+                successful = SpawnItem(shuffled, itemType, GetRandomAmount(itemType));
+            } while (successful);
+        }
 
-                var entry = _shufflePool[i];
-                entry.Type = (byte)itemType;
-                entry.Amount = GetRandomAmount(itemType);
-                _logger.WriteLine($"    Replaced {_shufflePool[i]} with {entry}");
-                _definedPool.Add(entry);
+        private bool SpawnItem(Queue<ItemPoolEntry> pool, ItemType itemType, byte amount)
+        {
+            if (pool.Count != 0)
+            {
+                var oldEntry = pool.Dequeue();
+                var newEntry = oldEntry;
+                newEntry.Type = (byte)itemType;
+                newEntry.Amount = amount;
+                _logger.WriteLine($"    Replaced {oldEntry} with {newEntry}");
+                _definedPool.Add(newEntry);
+                return true;
             }
-            _shufflePool.Clear();
+            else
+            {
+                return false;
+            }
+        }
+
+        private ItemType GetAmmoTypeForWeapon(ItemType type)
+        {
+            switch (type)
+            {
+                case ItemType.HandgunLeon:
+                case ItemType.HandgunClaire:
+                case ItemType.CustomHandgun:
+                case ItemType.ColtSAA:
+                case ItemType.Beretta:
+                    return ItemType.HandgunAmmo;
+                case ItemType.Shotgun:
+                    return ItemType.ShotgunAmmo;
+                case ItemType.Magnum:
+                case ItemType.CustomMagnum:
+                    return ItemType.MagnumAmmo;
+                case ItemType.Bowgun:
+                    return ItemType.BowgunAmmo;
+                case ItemType.SparkshotAmmo:
+                    return ItemType.SparkshotAmmo;
+                case ItemType.Flamethrower:
+                    return ItemType.FuelTank;
+                case ItemType.SMG:
+                    return ItemType.SMGAmmo;
+                case ItemType.GrenadeLauncherFlame:
+                    return ItemType.GrenadeLauncherFlame;
+                case ItemType.GrenadeLauncherExplosive:
+                    return ItemType.GrenadeLauncherExplosive;
+                case ItemType.GrenadeLauncherAcid:
+                    return ItemType.GrenadeLauncherAcid;
+                default:
+                    return type;
+            }
         }
 
         private byte GetRandomAmount(ItemType type)
@@ -356,13 +445,15 @@ namespace rer
                     return (byte)_rng.Next(1, (int)(60 * multiplier));
                 case ItemType.BowgunAmmo:
                     return (byte)_rng.Next(1, (int)(30 * multiplier));
-                case ItemType.GrenadeRounds:
+                case ItemType.ExplosiveRounds:
                 case ItemType.AcidRounds:
                 case ItemType.FlameRounds:
                     return (byte)_rng.Next(1, (int)(10 * multiplier));
                 case ItemType.SparkshotAmmo:
-                case ItemType.SMGammo:
+                case ItemType.SMGAmmo:
                     return (byte)_rng.Next(1, (int)(100 * multiplier));
+                case ItemType.RocketLauncher:
+                    return (byte)_rng.Next(1, (int)(5 * multiplier));
             }
         }
 

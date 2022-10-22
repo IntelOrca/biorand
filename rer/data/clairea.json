@@ -850,6 +850,14 @@
       ]
     },
     "30B": {
+      "items": [
+        {
+          "id": 5,
+          "type": 24,
+          "amount": 6,
+          "priority": "low"
+        }
+      ],
       "doors": [
         {
           "target": "305"

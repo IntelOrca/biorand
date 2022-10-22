@@ -23,5 +23,10 @@ namespace rer
         {
             return items.GroupBy(property).Select(x => x.First());
         }
+
+        public static Queue<T> ToQueue<T>(this IEnumerable<T> items)
+        {
+            return new Queue<T>(items);
+        }
     }
 }
