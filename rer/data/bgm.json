@@ -102,5 +102,12 @@
     "sub32",
     "sub39",
     "sub3f"
+  ],
+  "alarm": [
+    "main11",
+    "main23",
+    "main34",
+    "sub33",
+    "sub43"
   ]
 }

@@ -33,6 +33,7 @@ namespace rer
             Swap(bgmList.Calm!, bgmList.Calm!.Shuffle(random));
             Swap(bgmList.Danger!, bgmList.Danger!.Shuffle(random));
             Swap(bgmList.Ambient!, bgmList.Creepy!.Shuffle(random));
+            Swap(bgmList.Alarm!, bgmList.Creepy!.Shuffle(random));
         }
 
         private void Swap(string[] dstList, string[] srcList)
@@ -64,6 +65,7 @@ namespace rer
             public string[]? Calm { get; set; }
             public string[]? Danger { get; set; }
             public string[]? Ambient { get; set; }
+            public string[]? Alarm { get; set; }
         }
     }
 }
