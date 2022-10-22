@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 namespace rer
@@ -6,7 +8,9 @@ namespace rer
     internal class ScriptDecompiler : BioScriptVisitor
     {
         private ScriptBuilder _sb = new ScriptBuilder();
-        private bool _expectingEndIf;
+        private Stack<int> _blockEnds = new Stack<int>();
+        private bool _constructingBinaryExpression;
+        private int _expressionCount;
 
         public string GetScript()
         {
@@ -48,6 +52,8 @@ namespace rer
             _sb.WriteLine($"sub_{index:X2}()");
             _sb.WriteLine("{");
             _sb.Indent();
+
+            _blockEnds.Clear();
         }
 
         public override void VisitEndSubroutine(int index)
@@ -59,6 +65,24 @@ namespace rer
 
         public override void VisitOpcode(int offset, Opcode opcode, Span<byte> operands)
         {
+            if (_constructingBinaryExpression)
+            {
+                if (opcode != Opcode.Ck && opcode != Opcode.Cmp)
+                {
+                    _constructingBinaryExpression = false;
+                    _sb.WriteLine(")");
+                    _sb.WriteLine("{");
+                    _sb.Indent();
+                }
+            }
+
+            while (_blockEnds.Count != 0 && _blockEnds.Peek() <= offset)
+            {
+                _blockEnds.Pop();
+                _sb.Unindent();
+                _sb.WriteLine("}");
+            }
+
             switch (opcode)
             {
                 case Opcode.DoorAotSe:
@@ -76,22 +100,22 @@ namespace rer
 
         protected override void VisitDoorAotSe(Door door)
         {
-            _sb.WriteLine($"door_aot_se({door.Id}, 0x{door.Stage:X}, 0x{door.Room:X2}, {door.DoorFlag}, {door.DoorLockFlag}, {door.DoorKey});");
+            _sb.WriteLine($"door_aot_se({door.Id}, {door.Stage:X}, 0x{door.Room:X2}, {door.DoorFlag}, {door.DoorLockFlag}, {door.DoorKey});");
         }
 
         protected override void VisitAotReset(Reset reset)
         {
-            _sb.WriteLine($"aot_reset({reset.Id}, 0x{reset.Type:X2}, 0x{reset.Amount:X2}, 0x{reset.Unk8:X2});");
+            _sb.WriteLine($"aot_reset({reset.Id}, {reset.Type}, {reset.Amount}, 0x{reset.Unk8:X2});");
         }
 
         protected override void VisitSceEmSet(RdtEnemy enemy)
         {
-            _sb.WriteLine($"sce_em_set({enemy.Id}, {enemy.Type}, {enemy.State}, {enemy.Ai}, {enemy.Floor}, {enemy.SoundBank}, {enemy.Texture}, {enemy.KillId}, ..., {enemy.Animation});");
+            _sb.WriteLine($"sce_em_set({enemy.Id}, ENEMY_{enemy.Type.ToString().ToUpperInvariant()}, {enemy.State}, {enemy.Ai}, {enemy.Floor}, {enemy.SoundBank}, {enemy.Texture}, {enemy.KillId}, ..., {enemy.Animation});");
         }
 
         protected override void VisitItemAotSet(Item item)
         {
-            _sb.WriteLine($"item_aot_set({item.Id}, 0x{item.Type:X2}, 0x{item.Amount:X2});");
+            _sb.WriteLine($"item_aot_set({item.Id}, ITEM_{((ItemType)item.Type).ToString().ToUpperInvariant()}, {item.Amount});");
         }
 
         protected override void VisitXaOn(RdtSound sound)
@@ -122,25 +146,43 @@ namespace rer
                         sb.WriteLine($"return {ret};");
                         break;
                     }
-                case Opcode.IfelCk:
-                    sb.Write($"if (");
-                    sb.Indent();
-                    break;
-                case Opcode.ElseCk:
-                    if (_expectingEndIf)
+                case Opcode.EvtExec:
                     {
-                        sb.Unindent();
-                        sb.WriteLine($"end-if");
+                        var cond = br.ReadByte();
+                        var exOpcode = br.ReadByte();
+                        var evnt = br.ReadByte();
+                        var exOpcodeS = $"OP_{ ((Opcode)exOpcode).ToString().ToUpperInvariant()}";
+                        if (cond == 255)
+                            sb.WriteLine($"evt_exec(CAMERA, {exOpcodeS}, {evnt});");
+                        else
+                            sb.WriteLine($"evt_exec({cond}, {exOpcodeS}, {evnt});");
+                        break;
                     }
-                    sb.Unindent();
-                    sb.WriteLine($"else");
-                    sb.Indent();
-                    _expectingEndIf = true;
+                case Opcode.IfelCk:
+                    {
+                        br.ReadByte();
+                        var blockLen = br.ReadUInt16();
+                        _blockEnds.Push(offset + blockLen);
+                        sb.Write($"if (");
+                        _constructingBinaryExpression = true;
+                        _expressionCount = 0;
+                        break;
+                    }
+                case Opcode.ElseCk:
+                    {
+                        br.ReadByte();
+                        var blockLen = br.ReadUInt16();
+                        _blockEnds.Push(offset + blockLen);
+
+                        sb.WriteLine("else");
+                        sb.WriteLine("{");
+                        sb.Indent();
+                    }
                     break;
                 case Opcode.EndIf:
-                    sb.Unindent();
-                    sb.WriteLine($"endif");
-                    _expectingEndIf = false;
+                    // sb.Unindent();
+                    // sb.WriteLine("}");
+                    // _expectingEndIf = false;
                     break;
                 case Opcode.Sleep:
                     {
@@ -171,30 +213,33 @@ namespace rer
                         var blockLen = br.ReadUInt16();
                         var count = br.ReadUInt16();
                         sb.WriteLine($"for {count} times");
+                        sb.WriteLine("{");
                         sb.Indent();
                         break;
                     }
                 case Opcode.Next:
                     {
                         sb.Unindent();
-                        sb.WriteLine($"next");
+                        sb.WriteLine("}");
                         break;
                     }
                 case Opcode.While:
                     {
                         sb.WriteLine($"while (");
+                        sb.WriteLine("{");
                         sb.Indent();
                         break;
                     }
                 case Opcode.Ewhile:
                     {
                         sb.Unindent();
-                        sb.WriteLine($"next");
+                        sb.WriteLine("}");
                         break;
                     }
                 case Opcode.Do:
                     {
                         sb.WriteLine($"do");
+                        sb.WriteLine("{");
                         sb.Indent();
                         break;
                     }
@@ -202,12 +247,14 @@ namespace rer
                     {
                         sb.Unindent();
                         sb.WriteLine($"while (");
+                        sb.WriteLine("{");
                         break;
                     }
                 case Opcode.Switch:
                     {
                         var varw = br.ReadByte();
                         sb.WriteLine($"switch (var_{varw:X2})");
+                        sb.WriteLine("{");
                         sb.Indent();
                         break;
                     }
@@ -231,7 +278,7 @@ namespace rer
                 case Opcode.Eswitch:
                     {
                         sb.Unindent();
-                        sb.WriteLine($"end-switch");
+                        sb.WriteLine("}");
                         break;
                     }
                 case Opcode.Gosub:
@@ -250,14 +297,44 @@ namespace rer
                         sb.WriteLine("break;");
                         break;
                     }
+                case Opcode.Cmp:
+                    {
+                        var ops = new[] { "==", ">", ">=", "<", "<=", "!=" };
+
+                        br.ReadByte();
+                        var index = br.ReadByte();
+                        var op = br.ReadByte();
+                        var value = br.ReadInt16();
+                        var opS = ops.Length > op ? ops[op] : "?";
+
+                        if (_constructingBinaryExpression)
+                        {
+                            if (_expressionCount != 0)
+                            {
+                                sb.Write(" && ");
+                            }
+                            sb.Write($"arr[{index}] {opS} {value}");
+                            _expressionCount++;
+                        }
+                        break;
+                    }
                 case Opcode.Ck:
                     {
                         var bitArray = br.ReadByte();
                         var number = br.ReadByte();
                         var value = br.ReadByte();
-                        if (value == 0)
-                            sb.Write($"!");
-                        sb.WriteLine($"bits[{bitArray}][{number}])");
+
+                        if (_constructingBinaryExpression)
+                        {
+                            if (_expressionCount != 0)
+                            {
+                                sb.Write(" && ");
+                            }
+                            if (value == 0)
+                                sb.Write($"!");
+                            sb.Write($"bits[{bitArray}][{number}]");
+                            _expressionCount++;
+                        }
                         break;
                     }
                 case Opcode.ObjModelSet:
@@ -298,6 +375,16 @@ namespace rer
                             sb.WriteLine(" (INVALID);");
                         break;
                     }
+                case Opcode.Calc:
+                    {
+                        var ops = new string[] { "+", "-", "*", "/", "%", "|", "&", "^", "~", "<<", ">>", ">>>" };
+                        var op = br.ReadByte();
+                        var var = br.ReadByte();
+                        var src = br.ReadByte();
+                        var opS = ops.Length > op ? ops[op] : "?";
+                        sb.WriteLine($"var_{var:X2} {opS}= {src:X2};");
+                        break;
+                    }
                 case Opcode.AotSet:
                     {
                         var id = br.ReadByte();
@@ -314,6 +401,13 @@ namespace rer
                         var y = br.ReadInt16();
                         var z = br.ReadInt16();
                         sb.WriteLine($"pos_set({x}, {y}, {z});");
+                        break;
+                    }
+                case Opcode.ScaIdSet:
+                    {
+                        var entry = br.ReadByte();
+                        var id = br.ReadUInt16();
+                        sb.WriteLine($"sca_id_set({entry}, {id});");
                         break;
                     }
                 case Opcode.AotOn:
@@ -354,7 +448,7 @@ namespace rer
                 case Opcode.SceItemLost:
                     {
                         var item = br.ReadByte();
-                        sb.WriteLine($"sce_item_lost(0x{item:X});");
+                        sb.WriteLine($"sce_item_lost(ITEM_{((ItemType)item).ToString().ToUpperInvariant()});");
                         break;
                     }
                 case Opcode.DoorAotSet4p:

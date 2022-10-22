@@ -11,6 +11,7 @@ namespace rer
         public RdtId RdtId { get; }
         public string? OriginalPath { get; set; }
         public string? ModifiedPath { get; set; }
+        public string? Script { get; set; }
 
         public List<Door> Doors = new List<Door>();
         public List<Item> Items = new List<Item>();

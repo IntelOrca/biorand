@@ -72,7 +72,7 @@ namespace rer
 
             var scriptDecompiler = new ScriptDecompiler();
             rdtFile.ReadScript(scriptDecompiler);
-            var script = scriptDecompiler.GetScript();
+            rdt.Script = scriptDecompiler.GetScript();
 
             var rdtBuilder = new RdtBuilder(rdt);
             rdtFile.ReadScript(rdtBuilder);

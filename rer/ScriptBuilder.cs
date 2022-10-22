@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 namespace rer
 {
@@ -16,7 +17,7 @@ namespace rer
 
         public void Unindent()
         {
-            _indent -= _indentAdjust;
+            _indent = Math.Max(0, _indent - _indentAdjust);
         }
 
         public void Indent()

@@ -55,6 +55,7 @@
         MemberSet,
         MemberSet2,
         SeOn,
+        ScaIdSet,
         DoorAotSe = 0x3B,
         CutAuto,
         MemberCopy,

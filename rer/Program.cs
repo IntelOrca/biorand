@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Text.Json;
 
 namespace rer
@@ -9,6 +10,15 @@ namespace rer
     {
         public static void Main(string[] args)
         {
+            var re2Path = @"F:\games\re2";
+            var originalDataPath = Path.Combine(re2Path, "data");
+            var modPath = Path.Combine(re2Path, @"mod_rando");
+            var gameData = GameDataReader.Read(originalDataPath, modPath);
+
+            // DumpRdtList(gameData, @"M:\git\rer\docs\rdt.txt");
+            // DumpScripts(gameData, @"F:\games\re2\mod_rando\scripts");
+            return;
+
             var rng = new Rng();
 
             var numbers = new List<double>();
@@ -47,7 +57,6 @@ namespace rer
             var map = LoadJsonMap(@"M:\git\rer\rer\data\clairea.json");
 
             var gameData = GameDataReader.Read(originalDataPath, modPath);
-
             if (config.RandomItems)
             {
                 var factory = new PlayGraphFactory(logger, config, gameData, map, randomItems);
@@ -87,6 +96,38 @@ namespace rer
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             })!;
             return map;
+        }
+
+        private static void DumpRdtList(GameData gameData, string path)
+        {
+            var sb = new StringBuilder();
+            foreach (var rdt in gameData.Rdts)
+            {
+                sb.AppendLine($"{rdt.RdtId} ():");
+                foreach (var door in rdt.Doors)
+                {
+                    sb.AppendLine($"    Door #{door.Id}: {new RdtId(door.Stage, door.Room)} (0x{door.Offset:X2})");
+                }
+                foreach (var item in rdt.Items)
+                {
+                    sb.AppendLine($"    Item #{item.Id}: {(ItemType)item.Type} x{item.Amount} (0x{item.Offset:X2})");
+                }
+                foreach (var enemy in rdt.Enemies)
+                {
+                    sb.AppendLine($"    Enemy #{enemy.Id}: {enemy.Type} (0x{enemy.Offset:X2})");
+                }
+            }
+            File.WriteAllText(path, sb.ToString());
+        }
+
+        private static void DumpScripts(GameData gameData, string scriptPath)
+        {
+            Directory.CreateDirectory(scriptPath);
+            foreach (var rdt in gameData.Rdts)
+            {
+                var script = rdt.Script;
+                File.WriteAllText(Path.Combine(scriptPath, $"{rdt.RdtId}.bio.c"), script);
+            }
         }
     }
 }

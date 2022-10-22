@@ -38,6 +38,7 @@
         RobertKendo,
         AnnetteBirkin2,
         MarvinBranagh,
+        MayorsDaughter,
         SherryWithClairesJacket = 0x4F,
         LeonKennedyRpd,
         ClaireRedfield,
