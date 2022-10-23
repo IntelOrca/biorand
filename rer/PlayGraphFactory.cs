@@ -97,7 +97,7 @@ namespace rer
             var checkpoint = graph.Start;
             while (!_visitedRooms.Contains(graph.End))
             {
-                PlaceKeyItem();
+                PlaceKeyItem(_config.AlternativeRoutes);
                 var newCheckpoint = Search(checkpoint);
                 if (newCheckpoint != checkpoint)
                 {
@@ -282,7 +282,7 @@ namespace rer
             return bestI;
         }
 
-        private void PlaceKeyItem()
+        private void PlaceKeyItem(bool alternativeRoutes)
         {
             if (_requiredItems.Count == 0)
                 return;
@@ -290,10 +290,18 @@ namespace rer
             var checkList = _requiredItems.Shuffle(_rng);
             foreach (var req in checkList)
             {
-                if (PlaceKeyItem(req))
+                if (PlaceKeyItem(req, alternativeRoutes))
                 {
                     return;
                 }
+            }
+
+            if (!alternativeRoutes)
+            {
+                // Failed, so try with alternative routes
+                // This is a hack to get round the blue card
+                PlaceKeyItem(true);
+                return;
             }
 
             _logger.WriteLine("    Unable to place the following key items:");
@@ -306,7 +314,7 @@ namespace rer
             // throw new Exception("Unable to find key item to swap");
         }
 
-        private bool PlaceKeyItem(ushort req)
+        private bool PlaceKeyItem(ushort req, bool alternativeRoute)
         {
             // Get a new location for the key item
             var index = FindNewKeyItemLocation(req);
@@ -317,7 +325,7 @@ namespace rer
 
             // Find original location of key item
             var originalIndex = _currentPool.FindIndex(x => x.Type == req);
-            if (originalIndex == -1 && _config.AlternativeRoutes)
+            if (originalIndex == -1 && alternativeRoute)
             {
                 // Key must be in a layer area, find it
                 foreach (var node in _nodes)
@@ -554,7 +562,21 @@ namespace rer
             foreach (var entry in _definedPool)
             {
                 var rdt = _gameData.GetRdt(entry.RdtId)!;
-                rdt.SetItem(entry.Id, entry.Type, entry.Amount);
+
+                // HACK: 255 is used for give commands
+                if (entry.Id == 255)
+                {
+                    foreach (var itemGet in rdt.ItemGets)
+                    {
+                        itemGet.Type = (byte)entry.Type;
+                        itemGet.Amount = (byte)entry.Amount;
+                    }
+                }
+                else
+                {
+                    rdt.SetItem(entry.Id, entry.Type, entry.Amount);
+                }
+
                 rdt.Save();
             }
         }
@@ -604,6 +626,22 @@ namespace rer
                         if (correctedItem.Scenario != null && correctedItem.Scenario != _config.Scenario)
                             continue;
 
+                        // HACK 255 is used for item get commands
+                        if (correctedItem.Id == 255)
+                        {
+                            items = items.Concat(new[] {
+                                new ItemPoolEntry() {
+                                    RdtId = rdtId,
+                                    Id = correctedItem.Id,
+                                    Type = (ushort)correctedItem.Type,
+                                    Amount = correctedItem.Amount ?? 1,
+                                    Requires = correctedItem.Requires,
+                                    Priority = ParsePriority(correctedItem.Priority)
+                                }
+                            }).ToArray();
+                            continue;
+                        }
+
                         var idx = Array.FindIndex(items, x => x.Id == correctedItem.Id);
                         if (idx != -1)
                         {
@@ -620,18 +658,22 @@ namespace rer
                                 node.LinkedItems.Add(correctedItem.Id, rdtItemId);
                             }
                             items[idx].Requires = correctedItem.Requires;
-                            if (correctedItem.Priority != null)
-                            {
-                                items[idx].Priority = (ItemPriority)Enum.Parse(typeof(ItemPriority), correctedItem.Priority, true);
-                            }
+                            items[idx].Priority = ParsePriority(correctedItem.Priority);
                         }
                     }
 
                     // Remove any items that have no type (removed fixed items)
-                    node.Items = node.Items.Where(x => x.Type != 0).ToArray();
+                    node.Items = items.Where(x => x.Type != 0).ToArray();
                 }
             }
             return node;
+        }
+
+        private static ItemPriority ParsePriority(string? s)
+        {
+            if (s == null)
+                return ItemPriority.Normal;
+            return (ItemPriority)Enum.Parse(typeof(ItemPriority), s, true);
         }
 
         public PlayNode? FindNode(RdtId rdtId)

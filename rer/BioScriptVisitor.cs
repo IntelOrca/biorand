@@ -118,6 +118,15 @@ namespace rer
                         Id = br.ReadUInt16()
                     });
                     break;
+                case Opcode.SceItemGet:
+                    VisitSceItemGet(new ItemGet()
+                    {
+                        Offset = offset,
+                        Opcode = (byte)opcode,
+                        Type = br.ReadByte(),
+                        Amount = br.ReadByte()
+                    });
+                    break;
             }
         }
 
@@ -138,6 +147,10 @@ namespace rer
         }
 
         protected virtual void VisitXaOn(RdtSound sound)
+        {
+        }
+
+        protected virtual void VisitSceItemGet(ItemGet itemGet)
         {
         }
     }

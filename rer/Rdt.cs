@@ -18,6 +18,7 @@ namespace rer
         public List<RdtEnemy> Enemies = new List<RdtEnemy>();
         public List<Reset> Resets = new List<Reset>();
         public List<RdtSound> Sounds = new List<RdtSound>();
+        public List<ItemGet> ItemGets = new List<ItemGet>();
         public List<NopSequence> NopSequences = new List<NopSequence>();
 
         public Rdt(RdtId rdtId)
@@ -48,6 +49,11 @@ namespace rer
         public void AddSound(RdtSound sound)
         {
             Sounds.Add(sound);
+        }
+
+        public void AddItemGet(ItemGet itemGet)
+        {
+            ItemGets.Add(itemGet);
         }
 
         public void SetDoorTarget(int id, Door sourceDoor)
@@ -132,6 +138,11 @@ namespace rer
             {
                 fs.Position = reset.Offset;
                 reset.Write(bw);
+            }
+            foreach (var itemGet in ItemGets)
+            {
+                fs.Position = itemGet.Offset;
+                itemGet.Write(bw);
             }
             foreach (var nop in NopSequences)
             {
@@ -369,6 +380,22 @@ namespace rer
             bw.Write(Opcode);
             bw.Write(Channel);
             bw.Write(Id);
+        }
+    }
+
+    [DebuggerDisplay("Item = {Item} Amount = {Amount}")]
+    internal class ItemGet
+    {
+        public int Offset;
+        public byte Opcode;
+        public byte Type;
+        public byte Amount;
+
+        public void Write(BinaryWriter bw)
+        {
+            bw.Write(Opcode);
+            bw.Write(Type);
+            bw.Write(Amount);
         }
     }
 

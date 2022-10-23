@@ -35,6 +35,32 @@ namespace rer
 
         public static void Generate(RandoConfig config)
         {
+            if (config.GameVariant == 0)
+            {
+                // Leon A / Claire B
+                // config.Player = 0;
+                // config.Scenario = 0;
+                // Generate2(config);
+
+                config.Player = 1;
+                config.Scenario = 1;
+                Generate2(config);
+            }
+            else
+            {
+                // Leon B / Claire A
+                // config.Player = 0;
+                // config.Scenario = 1;
+                // Generate2(config);
+
+                config.Player = 1;
+                config.Scenario = 0;
+                Generate2(config);
+            }
+        }
+
+        public static void Generate2(RandoConfig config)
+        {
             var randomItems = new Rng(config.Seed);
             var randomNpcs = new Rng(config.Seed + 1);
             var randomEnemies = new Rng(config.Seed + 2);
@@ -50,15 +76,16 @@ namespace rer
             }
             Directory.CreateDirectory(modPath);
 
-            using var logger = new RandoLogger(Path.Combine(modPath, "log.txt"));
+            using var logger = new RandoLogger(Path.Combine(modPath, $"log_pl{config.Player}.txt"));
             logger.WriteHeading("Resident Evil Randomizer");
             logger.WriteLine($"Seed: {config}");
+            logger.WriteLine($"Player: {config.Player} {GetPlayerName(config.Player)}");
+            logger.WriteLine($"Scenario: {GetScenarioName(config.Scenario)}");
 
             var map = LoadJsonMap(@"M:\git\rer\rer\data\rdt.json");
             var gameData = GameDataReader.Read(originalDataPath, modPath);
 
-            config.Player = 1;
-            config.Scenario = 1;
+
 
             if (config.RandomItems)
             {
@@ -89,6 +116,9 @@ namespace rer
 
             File.WriteAllText(Path.Combine(modPath, "manifest.txt"), "[MOD]\nName = BIOHAZARD 2: RANDOMIZER\n");
         }
+
+        private static string GetPlayerName(int player) => player == 0 ? "Leon" : "Claire";
+        private static string GetScenarioName(int scenario) => scenario == 0 ? "A" : "B";
 
         private static Map LoadJsonMap(string path)
         {

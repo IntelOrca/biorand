@@ -33,5 +33,10 @@
         {
             _rdt.AddSound(sound);
         }
+
+        protected override void VisitSceItemGet(ItemGet itemGet)
+        {
+            _rdt.AddItemGet(itemGet);
+        }
     }
 }

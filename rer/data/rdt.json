@@ -284,7 +284,15 @@
           "target": "10F"
         },
         {
-          "target": "112"
+          "target": "112",
+          "scenario": 0
+        },
+        {
+          "target": "112",
+          "requires": [
+            53
+          ],
+          "scenario": 1
         }
       ],
       "items": [
@@ -525,10 +533,16 @@
           "locked": true
         },
         {
-          "target": "201"
+          "target": "201",
+          "requires": [
+            53
+          ]
         },
         {
-          "target": "20A"
+          "target": "20A",
+          "requires": [
+            53
+          ]
         }
       ],
       "items": [
@@ -590,6 +604,13 @@
         90
       ],
       "items": [
+        {
+          "id": 255,
+          "type": 53,
+          "amount": 1,
+          "priority": "low",
+          "scenario": 0
+        },
         {
           "id": 12
         }

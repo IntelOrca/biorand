@@ -115,12 +115,17 @@ namespace rer
 
         protected override void VisitItemAotSet(Item item)
         {
-            _sb.WriteLine($"item_aot_set({item.Id}, ITEM_{((ItemType)item.Type).ToString().ToUpperInvariant()}, {item.Amount});");
+            _sb.WriteLine($"item_aot_set({item.Id}, {GetItemConstant(item.Type)}, {item.Amount});");
         }
 
         protected override void VisitXaOn(RdtSound sound)
         {
             _sb.WriteLine($"xa_on({sound.Channel}, {sound.Id});");
+        }
+
+        protected override void VisitSceItemGet(ItemGet itemGet)
+        {
+            _sb.WriteLine($"sce_item_get({GetItemConstant(itemGet.Type)}, {itemGet.Amount});");
         }
 
         private void VisitOpcode(int offset, Opcode opcode, BinaryReader br)
@@ -448,7 +453,7 @@ namespace rer
                 case Opcode.SceItemLost:
                     {
                         var item = br.ReadByte();
-                        sb.WriteLine($"sce_item_lost(ITEM_{((ItemType)item).ToString().ToUpperInvariant()});");
+                        sb.WriteLine($"sce_item_lost({GetItemConstant(item)});");
                         break;
                     }
                 case Opcode.DoorAotSet4p:
@@ -463,14 +468,12 @@ namespace rer
                         sb.WriteLine($"item_aot_set_4p({id});");
                         break;
                     }
-                case Opcode.SceItemGet:
-                    {
-                        var type = br.ReadByte();
-                        var amount = br.ReadByte();
-                        sb.WriteLine($"sce_item_get(0x{type}, {amount});");
-                        break;
-                    }
             }
+        }
+
+        private static string GetItemConstant(ushort item)
+        {
+            return $"ITEM_{ ((ItemType)item).ToString().ToUpperInvariant()}";
         }
     }
 }
