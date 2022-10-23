@@ -37,8 +37,6 @@
     "sub15",
     "sub22",
     "sub2e",
-    "sub33",
-    "sub34",
     "sub35",
     "sub36",
     "sub42",
@@ -66,7 +64,6 @@
     "main21",
     "main28",
     "main33",
-    "main34",
     "main35",
     "main36",
     "main37",
@@ -108,6 +105,7 @@
     "main23",
     "main34",
     "sub33",
+    "sub34",
     "sub43"
   ]
 }

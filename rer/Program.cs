@@ -54,9 +54,12 @@ namespace rer
             logger.WriteHeading("Resident Evil Randomizer");
             logger.WriteLine($"Seed: {config}");
 
-            var map = LoadJsonMap(@"M:\git\rer\rer\data\clairea.json");
-
+            var map = LoadJsonMap(@"M:\git\rer\rer\data\rdt.json");
             var gameData = GameDataReader.Read(originalDataPath, modPath);
+
+            config.Player = 1;
+            config.Scenario = 1;
+
             if (config.RandomItems)
             {
                 var factory = new PlayGraphFactory(logger, config, gameData, map, randomItems);

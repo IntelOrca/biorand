@@ -5,8 +5,10 @@ namespace rer
 {
     public class Map
     {
-        public string? Start { get; set; }
-        public string? End { get; set; }
+        public string? StartA { get; set; }
+        public string? EndA { get; set; }
+        public string? StartB { get; set; }
+        public string? EndB { get; set; }
         public Dictionary<string, MapRoom>? Rooms { get; set; }
 
         internal MapRoom? GetRoom(RdtId id)
@@ -37,18 +39,8 @@ namespace rer
         public string? Target { get; set; }
         public bool Locked { get; set; }
         public bool NoReturn { get; set; }
-
-        private ushort[]? _requires;
-        public ushort[]? Requires
-        {
-            get
-            {
-                if (_requires == null || _requires.Length == 0)
-                    return null;
-                return _requires;
-            }
-            set => _requires = value;
-        }
+        public ushort[]? Requires { get; set; }
+        public int? Scenario { get; set; }
     }
 
     public class MapRoomItem
@@ -59,5 +51,6 @@ namespace rer
         public string? Link { get; set; }
         public string? Priority { get; set; }
         public ushort[]? Requires { get; set; }
+        public int? Scenario { get; set; }
     }
 }

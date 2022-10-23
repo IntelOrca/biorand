@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using static rer.Rng;
 
 namespace rer
 {
@@ -25,6 +24,7 @@ namespace rer
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
         private bool _firstRedJewelPlaced;
         private Rng _rng;
+        private bool _debugLogging;
 
         public PlayGraphFactory(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng random)
         {
@@ -83,8 +83,16 @@ namespace rer
             }
 
             var graph = new PlayGraph();
-            graph.Start = GetOrCreateNode(RdtId.Parse(_map.Start!));
-            graph.End = GetOrCreateNode(RdtId.Parse(_map.End!));
+            if (_config.Scenario == 0)
+            {
+                graph.Start = GetOrCreateNode(RdtId.Parse(_map.StartA!));
+                graph.End = GetOrCreateNode(RdtId.Parse(_map.EndA!));
+            }
+            else
+            {
+                graph.Start = GetOrCreateNode(RdtId.Parse(_map.StartB!));
+                graph.End = GetOrCreateNode(RdtId.Parse(_map.EndB!));
+            }
 
             var checkpoint = graph.Start;
             while (!_visitedRooms.Contains(graph.End))
@@ -173,10 +181,16 @@ namespace rer
 
                     if (node.Items.Length != 0)
                     {
-                        // _logger.WriteLine($"    Room {node.RdtId} contains:");
+                        if (_debugLogging)
+                        {
+                            _logger.WriteLine($"    Room {node.RdtId} contains:");
+                        }
                         foreach (var item in node.Items)
                         {
-                            // _logger.WriteLine($"        {item}");
+                            if (_debugLogging)
+                            {
+                                _logger.WriteLine($"        {item}");
+                            }
                             if (item.Requires != null)
                             {
                                 foreach (var r in item.Requires)
@@ -206,11 +220,17 @@ namespace rer
                         if (edge.NoReturn)
                         {
                             checkpoint = edge.Node;
-                            // _logger.WriteLine($"        {node} -> {edge.Node} (checkpoint)");
+                            if (_debugLogging)
+                            {
+                                _logger.WriteLine($"        {node} -> {edge.Node} (checkpoint)");
+                            }
                         }
                         else
                         {
-                            // _logger.WriteLine($"        {node} -> {edge.Node}");
+                            if (_debugLogging)
+                            {
+                                _logger.WriteLine($"        {node} -> {edge.Node}");
+                            }
                             stack.Push(edge.Node);
                         }
                     }
@@ -247,15 +267,19 @@ namespace rer
         private int? FindNewKeyItemLocation(int type)
         {
             var randomOrder = Enumerable.Range(0, _currentPool.Count).Shuffle(_rng).ToArray();
+            var bestI = (int?)null;
             foreach (var i in randomOrder)
             {
                 var item = _currentPool[i];
-                if (item.Type != type && item.Priority == ItemPriority.Normal && HasAllRequiredItems(item.Requires))
+                if (item.Priority == ItemPriority.Normal && HasAllRequiredItems(item.Requires))
                 {
-                    return i;
+                    if (item.Type == type)
+                        bestI = i;
+                    else
+                        return i;
                 }
             }
-            return null;
+            return bestI;
         }
 
         private void PlaceKeyItem()
@@ -278,7 +302,8 @@ namespace rer
                 _logger.WriteLine($"        {Items.GetItemName(item)}");
             }
 
-            throw new Exception("Unable to find key item to swap");
+            _requiredItems.Clear();
+            // throw new Exception("Unable to find key item to swap");
         }
 
         private bool PlaceKeyItem(ushort req)
@@ -407,9 +432,9 @@ namespace rer
                 table.Add(ItemType.FlameRounds, ammo * 0.1);
             }
             if (ammoTypes.Contains(ItemType.SparkshotAmmo))
-            table.Add(ItemType.SparkshotAmmo, ammo * 0.1);
+                table.Add(ItemType.SparkshotAmmo, ammo * 0.1);
             if (ammoTypes.Contains(ItemType.SMGAmmo))
-            table.Add(ItemType.SMGAmmo, ammo * 0.1);
+                table.Add(ItemType.SMGAmmo, ammo * 0.1);
 
             bool successful;
             do
@@ -563,6 +588,9 @@ namespace rer
                 {
                     foreach (var door in mapRoom.Doors)
                     {
+                        if (door.Scenario != null && door.Scenario != _config.Scenario)
+                            continue;
+
                         var edgeNode = GetOrCreateNode(RdtId.Parse(door.Target!));
                         var edge = new PlayEdge(edgeNode, door.Locked, door.NoReturn, door.Requires!);
                         node.Edges.Add(edge);
@@ -571,27 +599,30 @@ namespace rer
 
                 if (mapRoom.Items != null)
                 {
-                    foreach (var fixedItem in mapRoom.Items)
+                    foreach (var correctedItem in mapRoom.Items)
                     {
-                        var idx = Array.FindIndex(items, x => x.Id == fixedItem.Id);
+                        if (correctedItem.Scenario != null && correctedItem.Scenario != _config.Scenario)
+                            continue;
+
+                        var idx = Array.FindIndex(items, x => x.Id == correctedItem.Id);
                         if (idx != -1)
                         {
-                            if (fixedItem.Link == null)
+                            if (correctedItem.Link == null)
                             {
-                                items[idx].Type = (ushort)fixedItem.Type;
-                                items[idx].Amount = fixedItem.Amount ?? items[idx].Amount;
+                                items[idx].Type = (ushort)correctedItem.Type;
+                                items[idx].Amount = correctedItem.Amount ?? items[idx].Amount;
                             }
                             else
                             {
                                 items[idx].Type = 0;
 
-                                var rdtItemId = RdtItemId.Parse(fixedItem.Link);
-                                node.LinkedItems.Add(fixedItem.Id, rdtItemId);
+                                var rdtItemId = RdtItemId.Parse(correctedItem.Link);
+                                node.LinkedItems.Add(correctedItem.Id, rdtItemId);
                             }
-                            items[idx].Requires = fixedItem.Requires;
-                            if (fixedItem.Priority != null)
+                            items[idx].Requires = correctedItem.Requires;
+                            if (correctedItem.Priority != null)
                             {
-                                items[idx].Priority = (ItemPriority)Enum.Parse(typeof(ItemPriority), fixedItem.Priority, true);
+                                items[idx].Priority = (ItemPriority)Enum.Parse(typeof(ItemPriority), correctedItem.Priority, true);
                             }
                         }
                     }

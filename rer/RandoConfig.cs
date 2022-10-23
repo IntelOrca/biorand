@@ -172,5 +172,17 @@ namespace rer
         {
             return _pwdChars[c];
         }
+
+        public int Scenario
+        {
+            get => GameVariant & 1;
+            set => GameVariant = (byte)((GameVariant & ~1) | (value & 1));
+        }
+        
+        public int Player
+        {
+            get => (GameVariant >> 1) & 1;
+            set => GameVariant = (byte)((GameVariant & ~2) | ((value & 1) << 1));
+        }
     }
 }

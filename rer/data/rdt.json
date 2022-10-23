@@ -1,6 +1,8 @@
 ﻿{
-  "start": "100",
-  "end": "617",
+  "startA": "100",
+  "endA": "617",
+  "startB": "104",
+  "endB": "300",
   "rooms": {
     "100": {
       "doors": [
@@ -10,7 +12,16 @@
       ]
     },
     "101": {
-      "supportedNpcs": [ 66, 67, 68, 71, 74, 79, 80, 85 ],
+      "supportedNpcs": [
+        66,
+        67,
+        68,
+        71,
+        74,
+        79,
+        80,
+        85
+      ],
       "doors": [
         {
           "target": "100"
@@ -45,10 +56,46 @@
         }
       ]
     },
+    "104": {
+      "doors": [
+        {
+          "target": "105"
+        }
+      ]
+    },
+    "105": {
+      "doors": [
+        {
+          "target": "106",
+          "noReturn": true,
+          "requires": [
+            88
+          ]
+        }
+      ]
+    },
     "106": {
       "doors": [
         {
           "target": "107"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "type": 12,
+          "amount": 18,
+          "scenario": 0
+        },
+        {
+          "id": 3,
+          "type": 20,
+          "amount": 15,
+          "scenario": 1
+        },
+        {
+          "id": 4,
+          "scenario": 1
         }
       ]
     },
@@ -86,7 +133,8 @@
       ],
       "items": [
         {
-          "id": 4
+          "id": 4,
+          "scenario": 0
         },
         {
           "id": 5
@@ -124,6 +172,16 @@
         }
       ],
       "items": [
+        {
+          "id": 2,
+          "type": 90,
+          "scenario": 0
+        },
+        {
+          "id": 2,
+          "type": 53,
+          "scenario": 1
+        },
         {
           "id": 5
         },
@@ -168,10 +226,30 @@
       ]
     },
     "10E": {
-      "supportedNpcs": [ 67, 68, 72, 74, 80, 90 ],
+      "supportedNpcs": [
+        67,
+        68,
+        72,
+        74,
+        80,
+        90
+      ],
       "doors": [
         {
           "target": "10D"
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "type": 35,
+          "scenario": 0
+        },
+        {
+          "id": 4,
+          "type": 20,
+          "amount": 15,
+          "scenario": 1
         }
       ]
     },
@@ -182,6 +260,18 @@
         },
         {
           "target": "110"
+        }
+      ],
+      "items": [
+        {
+          "id": 5,
+          "type": 47,
+          "scenario": 0
+        },
+        {
+          "id": 5,
+          "type": 20,
+          "scenario": 1
         }
       ]
     },
@@ -199,7 +289,8 @@
       ],
       "items": [
         {
-          "id": 3
+          "id": 3,
+          "scenario": 0
         }
       ]
     },
@@ -235,7 +326,15 @@
       ]
     },
     "113": {
-      "supportedNpcs": [ 66, 67, 68, 72, 74, 79, 80 ],
+      "supportedNpcs": [
+        66,
+        67,
+        68,
+        72,
+        74,
+        79,
+        80
+      ],
       "doors": [
         {
           "target": "114"
@@ -243,10 +342,36 @@
         {
           "target": "112"
         }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "type": 25,
+          "amount": 6,
+          "scenario": 0
+        },
+        {
+          "id": 4,
+          "type": 20,
+          "amount": 15,
+          "scenario": 1
+        },
+        {
+          "id": 5,
+          "scenario": 1
+        }
       ]
     },
     "114": {
-      "supportedNpcs": [ 66, 67, 68, 71, 72, 74, 80 ],
+      "supportedNpcs": [
+        66,
+        67,
+        68,
+        71,
+        72,
+        74,
+        80
+      ],
       "doors": [
         {
           "target": "10C"
@@ -266,6 +391,32 @@
       "doors": [
         {
           "target": "114"
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "type": 71,
+          "scenario": 0
+        },
+        {
+          "id": 2,
+          "type": 90,
+          "scenario": 1
+        },
+        {
+          "id": 13,
+          "type": 9,
+          "scenario": 0
+        },
+        {
+          "id": 13,
+          "type": 12,
+          "scenario": 1
+        },
+        {
+          "id": 9,
+          "scenario": 1
         }
       ]
     },
@@ -293,7 +444,9 @@
         }
       ],
       "items": [
-        {}
+        {
+          "id": 0
+        }
       ]
     },
     "118": {
@@ -382,9 +535,32 @@
         {
           "id": 9,
           "type": 89,
+          "amount": 2,
           "requires": [
             71
-          ]
+          ],
+          "scenario": 0
+        },
+        {
+          "id": 9,
+          "type": 89,
+          "amount": 1,
+          "requires": [
+            71
+          ],
+          "scenario": 1
+        },
+        {
+          "id": 19,
+          "type": 9,
+          "amount": 6,
+          "scenario": 1
+        },
+        {
+          "id": 19,
+          "type": 20,
+          "amount": 30,
+          "scenario": 0
         }
       ]
     },
@@ -405,7 +581,14 @@
       ]
     },
     "202": {
-      "supportedNpcs": [ 66, 67, 68, 72, 79, 90 ],
+      "supportedNpcs": [
+        66,
+        67,
+        68,
+        72,
+        79,
+        90
+      ],
       "items": [
         {
           "id": 12
@@ -426,10 +609,24 @@
         {
           "target": "204"
         }
+      ],
+      "items": [
+        {
+          "id": 5,
+          "type": 67,
+          "scenario": 0
+        },
+        {
+          "id": 5,
+          "type": 47,
+          "scenario": 1
+        }
       ]
     },
     "204": {
-      "requires": [ 86 ],
+      "requires": [
+        86
+      ],
       "doors": [
         {
           "target": "201"
@@ -478,7 +675,8 @@
           ]
         },
         {
-          "id": 5
+          "id": 5,
+          "scenario": 0
         }
       ]
     },
@@ -505,6 +703,7 @@
       "requires": [
         68,
         69,
+        70,
         80
       ],
       "doors": [
@@ -567,13 +766,15 @@
       ],
       "items": [
         {
-          "id": 3
+          "id": 3,
+          "scenario": 0
         },
         {
           "id": 28
         },
         {
-          "id": 31
+          "id": 31,
+          "scenario": 0
         }
       ]
     },
@@ -620,6 +821,10 @@
           "requires": [
             47
           ]
+        },
+        {
+          "id": 2,
+          "scenario": 1
         }
       ]
     },
@@ -641,15 +846,27 @@
           "id": 4
         },
         {
-          "id": 5
+          "id": 5,
+          "scenario": 0
         },
         {
-          "id": 6
+          "id": 6,
+          "scenario": 0
+        },
+        {
+          "id": 7,
+          "scenario": 1
+        },
+        {
+          "id": 8,
+          "scenario": 1
         }
       ]
     },
     "20F": {
-      "requires": [ 86 ],
+      "requires": [
+        86
+      ],
       "doors": [
         {
           "target": "20B"
@@ -669,7 +886,8 @@
           "id": 6
         },
         {
-          "id": 7
+          "id": 7,
+          "scenario": 0
         }
       ]
     },
@@ -711,6 +929,11 @@
             92
           ]
         }
+      ],
+      "items": [
+        {
+          "id": 4
+        }
       ]
     },
     "212": {
@@ -728,15 +951,32 @@
         {
           "target": "211"
         }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "scenario": 0
+        }
       ]
     },
     "214": {
       "doors": [
         {
           "target": "211"
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "type": 29,
+          "amount": 15,
+          "scenario": 0
         },
         {
-          "target": "214"
+          "id": 2,
+          "type": 26,
+          "amount": 6,
+          "scenario": 1
         }
       ]
     },
@@ -751,11 +991,54 @@
       "doors": [
         {
           "target": "211"
+        },
+        {
+          "target": "219",
+          "scenario": 1
+        }
+      ],
+      "items": [
+        {
+          "id": 27,
+          "scenario": 1
+        }
+      ]
+    },
+    "219": {
+      "doors": [
+        {
+          "target": "216"
+        },
+        {
+          "target": "21A"
+        },
+        {
+          "target": "301"
+        }
+      ]
+    },
+    "21A": {
+      "doors": [
+        {
+          "target": "219"
+        }
+      ],
+      "items": [
+        {
+          "id": 13
         }
       ]
     },
     "21B": {
-      "supportedNpcs": [ 67, 68, 72, 74, 79, 80, 90 ],
+      "supportedNpcs": [
+        67,
+        68,
+        72,
+        74,
+        79,
+        80,
+        90
+      ],
       "doors": [
         {
           "target": "10A"
@@ -776,10 +1059,19 @@
       ]
     },
     "300": {
-      "supportedNpcs": [ 68 ],
+      "supportedNpcs": [
+        68
+      ],
       "doors": [
         {
           "target": "309"
+        }
+      ]
+    },
+    "301": {
+      "doors": [
+        {
+          "target": "219"
         }
       ]
     },
@@ -804,7 +1096,14 @@
       ]
     },
     "307": {
-      "supportedNpcs": [ 67, 68, 72, 74, 80, 90 ],
+      "supportedNpcs": [
+        67,
+        68,
+        72,
+        74,
+        80,
+        90
+      ],
       "doors": [
         {
           "target": "30D"
@@ -842,7 +1141,16 @@
       ]
     },
     "30A": {
-      "supportedNpcs": [ 66, 67, 68, 71, 72, 74, 79, 88 ],
+      "supportedNpcs": [
+        66,
+        67,
+        68,
+        71,
+        72,
+        74,
+        79,
+        88
+      ],
       "doors": [
         {
           "target": "400",
@@ -873,7 +1181,16 @@
       ]
     },
     "400": {
-      "supportedNpcs": [ 66, 67, 68, 71, 72, 74, 79, 88 ],
+      "supportedNpcs": [
+        66,
+        67,
+        68,
+        71,
+        72,
+        74,
+        79,
+        88
+      ],
       "doors": [
         {
           "target": "401"
@@ -938,7 +1255,12 @@
       ]
     },
     "405": {
-      "supportedNpcs": [ 65, 67, 69, 79 ],
+      "supportedNpcs": [
+        65,
+        67,
+        69,
+        79
+      ],
       "doors": [
         {
           "target": "407"
@@ -971,7 +1293,15 @@
       ]
     },
     "408": {
-      "supportedNpcs": [ 66, 67, 68, 69, 72, 74, 80 ],
+      "supportedNpcs": [
+        66,
+        67,
+        68,
+        69,
+        72,
+        74,
+        80
+      ],
       "doors": [
         {
           "target": "407"
@@ -995,7 +1325,12 @@
       ]
     },
     "409": {
-      "supportedNpcs": [ 65, 67, 69, 79 ],
+      "supportedNpcs": [
+        65,
+        67,
+        69,
+        79
+      ],
       "doors": [
         {
           "target": "410"
@@ -1141,7 +1476,15 @@
       ]
     },
     "505": {
-      "supportedNpcs": [ 66, 68, 71, 72, 74, 80, 90 ],
+      "supportedNpcs": [
+        66,
+        68,
+        71,
+        72,
+        74,
+        80,
+        90
+      ],
       "doors": [
         {
           "target": "504"
@@ -1183,7 +1526,15 @@
       ]
     },
     "607": {
-      "supportedNpcs": [ 66, 68, 71, 72, 74, 80, 90 ],
+      "supportedNpcs": [
+        66,
+        68,
+        71,
+        72,
+        74,
+        80,
+        90
+      ],
       "doors": [
         {
           "target": "606"
@@ -1291,7 +1642,15 @@
       ]
     },
     "612": {
-      "supportedNpcs": [ 66, 67, 68, 72, 74, 79, 80 ],
+      "supportedNpcs": [
+        66,
+        67,
+        68,
+        72,
+        74,
+        79,
+        80
+      ],
       "doors": [
         {
           "target": "614"
@@ -1309,7 +1668,15 @@
       ]
     },
     "614": {
-      "supportedNpcs": [ 66, 67, 68, 69, 72, 74, 80 ],
+      "supportedNpcs": [
+        66,
+        67,
+        68,
+        69,
+        72,
+        74,
+        80
+      ],
       "doors": [
         {
           "target": "613",
