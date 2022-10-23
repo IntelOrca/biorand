@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,6 +16,7 @@ namespace rerandoui
     public partial class MainWindow : Window
     {
         private Random _random = new Random();
+        private RandoAppSettings _settings = new RandoAppSettings();
         private RandoConfig _config = new RandoConfig();
         private bool _suspendEvents;
 
@@ -22,8 +24,23 @@ namespace rerandoui
         {
             InitializeComponent();
             InitializeEvents();
+            LoadSettings();
             UpdateUi();
             UpdateEnabledUi();
+        }
+
+        private void LoadSettings()
+        {
+            _settings = RandoAppSettings.Load();
+            _config = _settings.Seed == null ? new RandoConfig() : RandoConfig.FromString(_settings.Seed);
+            txtGameDataLocation.Text = _settings.GamePath;
+        }
+
+        private void SaveSettings()
+        {
+            _settings.GamePath = txtGameDataLocation.Text;
+            _settings.Seed = _config.ToString();
+            _settings.Save();
         }
 
         private void InitializeEvents()
@@ -131,6 +148,8 @@ namespace rerandoui
             _config.AmmoQuantity = (byte)sliderAmmoQuantity.Value;
 
             _config.GameVariant = (byte)dropdownVariant.SelectedIndex;
+
+            SaveSettings();
         }
 
         private void UpdateEnabledUi()
@@ -232,6 +251,7 @@ namespace rerandoui
                 btn.Content = "Generating...";
                 IsEnabled = false;
                 await Task.Run(() => Program.Generate(_config, gamePath));
+                RandoAppSettings.LogGeneration(_config.ToString(), gamePath);
                 ShowGenerateCompleteMessage();
             }
             catch (Exception ex)
@@ -267,6 +287,7 @@ namespace rerandoui
             {
                 NormaliseGamePath(dialog.FileName, out var normalised);
                 txtGameDataLocation.Text = normalised;
+                SaveSettings();
             }
         }
 

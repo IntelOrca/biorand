@@ -35,6 +35,7 @@ namespace rer
 
         public static void Generate(RandoConfig config, string re2Path)
         {
+            config = config.Clone();
             if (config.GameVariant == 0)
             {
                 // Leon A / Claire B

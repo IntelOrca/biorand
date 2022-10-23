@@ -37,7 +37,7 @@ namespace rer
 
         public static RandoConfig FromString(string code)
         {
-            var chars = code.ToCharArray();
+            var chars = code?.ToCharArray() ?? new char[0];
             Array.Resize(ref chars, 16);
 
             var result = new RandoConfig();
@@ -56,6 +56,8 @@ namespace rer
 
             return result;
         }
+
+        public RandoConfig Clone() => FromString(ToString());
 
         public override string ToString()
         {

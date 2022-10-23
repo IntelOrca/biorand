@@ -54,10 +54,14 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="6.0.6" />
+  </ItemGroup>
+  <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="RandoAppSettings.cs" />
     <Compile Include="RandoSlider.xaml.cs">
       <DependentUpon>RandoSlider.xaml</DependentUpon>
     </Compile>
