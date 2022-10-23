@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using rer;
@@ -134,7 +135,7 @@ namespace rerandoui
         {
             panelEnemySliders.IsEnabled = chkRngEnemies.IsChecked == true;
             panelItemSliders.IsEnabled = chkShuffleItems.IsChecked != true;
-            chkShuffleItems.IsEnabled = chkRngItems.IsChecked == true;
+            panelItemOptions.IsEnabled = chkRngItems.IsChecked == true;
         }
 
         private IEnumerable<FrameworkElement> GetAllControls(object parent)
@@ -212,15 +213,23 @@ namespace rerandoui
             txtSeed.CaretIndex = Math.Min(caretIndex, txtSeed.Text.Length);
         }
 
-        private void btnGenerate_Click(object sender, RoutedEventArgs e)
+        private async void btnGenerate_Click(object sender, RoutedEventArgs e)
         {
+            var btn = (Button)sender;
             try
             {
-                Program.Generate(_config);
+                btn.Content = "Generating...";
+                IsEnabled = false;
+                await Task.Run(() => Program.Generate(_config));
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Failed to Generate", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                btn.Content = "Generate";
+                IsEnabled = true;
             }
         }
     }

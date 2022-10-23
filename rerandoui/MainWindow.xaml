@@ -7,10 +7,7 @@
         mc:Ignorable="d"
         Title="Resident Evil Randomizer" Width="500" ResizeMode="NoResize" SizeToContent="Height">
     <Window.Resources>
-        <Style TargetType="Slider">
-            <Setter Property="SmallChange" Value="1" />
-            <Setter Property="LargeChange" Value="4" />
-            <Setter Property="Minimum" Value="0" />
+        <Style TargetType="local:RandoSlider">
             <Setter Property="Maximum" Value="31" />
             <Setter Property="Value" Value="15" />
         </Style>
@@ -43,31 +40,24 @@
             <StackPanel Orientation="Vertical">
                 <CheckBox x:Name="chkRngEnemies">Randomize enemies</CheckBox>
                 <StackPanel x:Name="panelEnemySliders" Orientation="Vertical">
-                    <TextBlock>Difficulty</TextBlock>
-                    <Slider x:Name="sliderEnemyDifficulty" Maximum="3" />
-                    <Grid>
-                        <TextBlock>Ez</TextBlock>
-                        <TextBlock HorizontalAlignment="Right">Pain</TextBlock>
-                    </Grid>
+                    <local:RandoSlider x:Name="sliderEnemyDifficulty" Heading="Difficulty" LowText="Ez" HighText="Hard" Maximum="3" />
                 </StackPanel>
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Items">
             <StackPanel Orientation="Vertical">
                 <CheckBox x:Name="chkRngItems">Randomize items</CheckBox>
-                <CheckBox x:Name="chkAlternativeRoute">Allow alternative routes</CheckBox>
-                <CheckBox x:Name="chkProtectSoftLock">Protect from soft lock</CheckBox>
-                <CheckBox x:Name="chkShuffleItems">Shuffle default items</CheckBox>
-                <StackPanel x:Name="panelItemSliders" Orientation="Vertical">
-                    <TextBlock>Ammo</TextBlock>
-                    <Slider x:Name="sliderAmmo" />
-                    <TextBlock>Health</TextBlock>
-                    <Slider x:Name="sliderHealth"></Slider>
-                    <TextBlock>Ink Ribbons</TextBlock>
-                    <Slider x:Name="sliderInkRibbons" />
-                    <Rectangle Margin="0,8,0,4" Height="1" Fill="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
-                    <TextBlock>Ammo quanity</TextBlock>
-                    <Slider x:Name="sliderAmmoQuantity" Maximum="7" />
+                <StackPanel x:Name="panelItemOptions" Orientation="Vertical">
+                    <CheckBox x:Name="chkAlternativeRoute">Allow alternative routes</CheckBox>
+                    <CheckBox x:Name="chkProtectSoftLock">Protect from soft lock</CheckBox>
+                    <CheckBox x:Name="chkShuffleItems">Shuffle default items</CheckBox>
+                    <StackPanel x:Name="panelItemSliders" Orientation="Vertical">
+                        <local:RandoSlider x:Name="sliderAmmo" Heading="Ammo probability" LowText="None" HighText="High" />
+                        <local:RandoSlider x:Name="sliderHealth" Heading="Health probability" LowText="None" HighText="High" />
+                        <local:RandoSlider x:Name="sliderInkRibbons" Heading="Ink Ribbon probability" LowText="None" HighText="High" />
+                        <Rectangle Margin="0,8,0,4" Height="1" Fill="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+                        <local:RandoSlider x:Name="sliderAmmoQuantity" Heading="Ammo average quantity" LowText="None" HighText="High" Maximum="7" />
+                    </StackPanel>
                 </StackPanel>
             </StackPanel>
         </GroupBox>
