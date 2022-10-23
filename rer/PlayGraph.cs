@@ -16,7 +16,7 @@ namespace rer
         public Dictionary<byte, RdtItemId> LinkedItems { get; set; } = new Dictionary<byte, RdtItemId>();
         public ushort[] Requires { get; set; } = Array.Empty<ushort>();
         public List<PlayEdge> Edges { get; } = new List<PlayEdge>();
-        public Door[] Doors { get; set; } = Array.Empty<Door>();
+        public DoorAotSeOpcode[] Doors { get; set; } = Array.Empty<DoorAotSeOpcode>();
 
         public PlayNode(RdtId rdtId)
         {

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -74,8 +76,9 @@ namespace rer
             rdtFile.ReadScript(scriptDecompiler);
             rdt.Script = scriptDecompiler.GetScript();
 
-            var rdtBuilder = new RdtBuilder(rdt);
-            rdtFile.ReadScript(rdtBuilder);
+            var opcodeBuilder = new OpcodeBuilder();
+            rdtFile.ReadScript(opcodeBuilder);
+            rdt.Opcodes = opcodeBuilder.ToArray();
 
             return rdt;
         }

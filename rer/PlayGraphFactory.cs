@@ -683,9 +683,9 @@ namespace rer
             return null;
         }
 
-        private Door[] GetAllDoorsToRoom(RdtId room)
+        private DoorAotSeOpcode[] GetAllDoorsToRoom(RdtId room)
         {
-            var doors = new List<Door>();
+            var doors = new List<DoorAotSeOpcode>();
             foreach (var rdt in _gameData.Rdts)
             {
                 foreach (var door in rdt.Doors)
@@ -702,7 +702,7 @@ namespace rer
             return doors.ToArray();
         }
 
-        private static bool IsDoorTheSame(Door a, Door b)
+        private static bool IsDoorTheSame(DoorAotSeOpcode a, DoorAotSeOpcode b)
         {
             if (a.Camera != b.Camera)
                 return false;

@@ -32,6 +32,7 @@ namespace rer
         public ushort[]? Requires { get; set; }
         public MapRoomDoor[]? Doors { get; set; }
         public MapRoomItem[]? Items { get; set; }
+        public MapRoomEnemies? Enemies { get; set; }
     }
 
     public class MapRoomDoor
@@ -52,5 +53,15 @@ namespace rer
         public string? Priority { get; set; }
         public ushort[]? Requires { get; set; }
         public int? Scenario { get; set; }
+    }
+
+    public class MapRoomEnemies
+    {
+        public int[]? Nop { get; set; }
+        public int[]? ExcludeTypes { get; set; }
+        public int[]? IncludeTypes { get; set; }
+        public bool KeepState { get; set; }
+        public bool KeepAi { get; set; }
+        public short? Y { get; set; }
     }
 }

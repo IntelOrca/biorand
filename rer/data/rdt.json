@@ -9,19 +9,12 @@
         {
           "target": "101"
         }
-      ]
+      ],
+      "enemies": {
+        "nop": [ 4888 ]
+      }
     },
     "101": {
-      "supportedNpcs": [
-        66,
-        67,
-        68,
-        71,
-        74,
-        79,
-        80,
-        85
-      ],
       "doors": [
         {
           "target": "100"
@@ -29,7 +22,8 @@
         {
           "target": "102"
         }
-      ]
+      ],
+      "supportedNpcs": [ 66, 67, 68, 71, 74, 79, 80, 85 ]
     },
     "102": {
       "doors": [
@@ -39,7 +33,11 @@
         {
           "target": "118"
         }
-      ]
+      ],
+      "enemies": {
+        "excludeTypes": [ 34, 36, 42, 46, 57, 58 ],
+        "keepAi": true
+      }
     },
     "103": {
       "doors": [
@@ -54,14 +52,18 @@
         {
           "id": 31
         }
-      ]
+      ],
+      "enemies": {}
     },
     "104": {
       "doors": [
         {
           "target": "105"
         }
-      ]
+      ],
+      "enemies": {
+        "includeTypes": [ 16, 22, 23, 31, 32, 33 ]
+      }
     },
     "105": {
       "doors": [
@@ -72,7 +74,12 @@
             88
           ]
         }
-      ]
+      ],
+      "enemies": {
+        "includeTypes": [ 16, 18, 19, 21, 22, 23, 24, 30, 31 ],
+        "keepState": true,
+        "keepAi": true
+      }
     },
     "106": {
       "doors": [
@@ -97,7 +104,12 @@
           "id": 4,
           "scenario": 1
         }
-      ]
+      ],
+      "enemies": {
+        "excludeTypes": [ 42 ],
+        "keepAi": true,
+        "keepState": true
+      }
     },
     "107": {
       "doors": [
@@ -107,7 +119,8 @@
         {
           "target": "108"
         }
-      ]
+      ],
+      "enemies": { }
     },
     "108": {
       "doors": [
@@ -139,7 +152,11 @@
         {
           "id": 5
         }
-      ]
+      ],
+      "enemies": {
+        "keepAi": true,
+        "y": 0
+      }
     },
     "10A": {
       "doors": [
@@ -163,7 +180,8 @@
             65
           ]
         }
-      ]
+      ],
+      "enemies": { }
     },
     "10B": {
       "doors": [
@@ -300,7 +318,8 @@
           "id": 3,
           "scenario": 0
         }
-      ]
+      ],
+      "enemies": { }
     },
     "111": {
       "doors": [
@@ -334,15 +353,7 @@
       ]
     },
     "113": {
-      "supportedNpcs": [
-        66,
-        67,
-        68,
-        72,
-        74,
-        79,
-        80
-      ],
+      "supportedNpcs": [ 66, 67, 68, 72, 74, 79, 80 ],
       "doors": [
         {
           "target": "114"
@@ -368,18 +379,11 @@
           "id": 5,
           "scenario": 1
         }
-      ]
+      ],
+      "enemies": { }
     },
     "114": {
-      "supportedNpcs": [
-        66,
-        67,
-        68,
-        71,
-        72,
-        74,
-        80
-      ],
+      "supportedNpcs": [ 66, 67, 68, 71, 72, 74, 80 ],
       "doors": [
         {
           "target": "10C"
@@ -455,7 +459,8 @@
         {
           "id": 0
         }
-      ]
+      ],
+      "enemies": { }
     },
     "118": {
       "doors": [
@@ -470,7 +475,8 @@
         {
           "id": 4
         }
-      ]
+      ],
+      "enemies": {}
     },
     "119": {
       "doors": [
@@ -480,7 +486,12 @@
         {
           "target": "11A"
         }
-      ]
+      ],
+      "enemies": {
+        "includeTypes": [ 23, 31 ],
+        "keepState": true,
+        "keepAi": true
+      }
     },
     "11A": {
       "doors": [
@@ -490,7 +501,10 @@
         {
           "target": "11B"
         }
-      ]
+      ],
+      "enemies": {
+        "excludeTypes": [ 46, 57, 58 ]
+      }
     },
     "11B": {
       "doors": [
@@ -501,7 +515,8 @@
           "target": "103",
           "noReturn": true
         }
-      ]
+      ],
+      "enemies": {}
     },
     "11C": {
       "doors": [

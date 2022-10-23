@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace rer
@@ -6,6 +7,8 @@ namespace rer
     internal class ScriptBuilder
     {
         private readonly StringBuilder _sb = new StringBuilder();
+        private Dictionary<int, int> _offsetToPosition = new Dictionary<int, int>();
+        private int _linePosition;
         private int _indent;
         private int _indentAdjust = 4;
         private int _lineLength;
@@ -36,6 +39,7 @@ namespace rer
         {
             _sb.AppendLine();
             _lineLength = 0;
+            _linePosition = _sb.Length;
         }
 
         public void WriteLine(string s)
@@ -50,6 +54,20 @@ namespace rer
             {
                 _sb.Append(' ', _indent);
                 _lineLength += _indent;
+            }
+        }
+
+        public void RecordOffset(int offset)
+        {
+            _offsetToPosition.Add(offset, _linePosition);
+        }
+
+        public void InsertLabel(int offset, string line)
+        {
+            if (_offsetToPosition.TryGetValue(offset, out var sbPosition))
+            {
+                _sb.Insert(sbPosition, line + "\n");
+                _offsetToPosition.Remove(offset);
             }
         }
 

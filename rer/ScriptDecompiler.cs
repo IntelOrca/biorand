@@ -1,14 +1,15 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using rer.Opcodes;
 
 namespace rer
 {
     internal class ScriptDecompiler : BioScriptVisitor
     {
         private ScriptBuilder _sb = new ScriptBuilder();
-        private Stack<int> _blockEnds = new Stack<int>();
+        private Stack<(Opcode, int)> _blockEnds = new Stack<(Opcode, int)>();
+        private bool _endDoWhile;
         private bool _constructingBinaryExpression;
         private int _expressionCount;
 
@@ -58,6 +59,11 @@ namespace rer
 
         public override void VisitEndSubroutine(int index)
         {
+            while (_blockEnds.Count != 0)
+            {
+                CloseCurrentBlock();
+            }
+
             _sb.ResetIndent();
             _sb.Indent();
             _sb.WriteLine("}");
@@ -65,22 +71,29 @@ namespace rer
 
         public override void VisitOpcode(int offset, Opcode opcode, Span<byte> operands)
         {
+            _sb.RecordOffset(offset);
+
             if (_constructingBinaryExpression)
             {
                 if (opcode != Opcode.Ck && opcode != Opcode.Cmp)
                 {
                     _constructingBinaryExpression = false;
-                    _sb.WriteLine(")");
-                    _sb.WriteLine("{");
-                    _sb.Indent();
+                    if (_endDoWhile)
+                    {
+                        _sb.WriteLine(");");
+                    }
+                    else
+                    {
+                        _sb.WriteLine(")");
+                        _sb.WriteLine("{");
+                        _sb.Indent();
+                    }
                 }
             }
 
-            while (_blockEnds.Count != 0 && _blockEnds.Peek() <= offset)
+            while (_blockEnds.Count != 0 && _blockEnds.Peek().Item2 <= offset)
             {
-                _blockEnds.Pop();
-                _sb.Unindent();
-                _sb.WriteLine("}");
+                CloseCurrentBlock();
             }
 
             switch (opcode)
@@ -98,32 +111,46 @@ namespace rer
             }
         }
 
-        protected override void VisitDoorAotSe(Door door)
+        private void CloseCurrentBlock()
+        {
+            if (_blockEnds.Count != 0)
+            {
+                _blockEnds.Pop();
+                if (!_endDoWhile)
+                {
+                    _sb.Unindent();
+                    _sb.WriteLine("}");
+                }
+            }
+        }
+
+        protected override void VisitDoorAotSe(DoorAotSeOpcode door)
         {
             _sb.WriteLine($"door_aot_se({door.Id}, {door.Stage:X}, 0x{door.Room:X2}, {door.DoorFlag}, {door.DoorLockFlag}, {door.DoorKey});");
         }
 
-        protected override void VisitAotReset(Reset reset)
+        protected override void VisitAotReset(AotResetOpcode reset)
         {
             _sb.WriteLine($"aot_reset({reset.Id}, {reset.Type}, {reset.Amount}, 0x{reset.Unk8:X2});");
         }
 
-        protected override void VisitSceEmSet(RdtEnemy enemy)
+        protected override void VisitSceEmSet(SceEmSetOpcode enemy)
         {
-            _sb.WriteLine($"sce_em_set({enemy.Id}, ENEMY_{enemy.Type.ToString().ToUpperInvariant()}, {enemy.State}, {enemy.Ai}, {enemy.Floor}, {enemy.SoundBank}, {enemy.Texture}, {enemy.KillId}, ..., {enemy.Animation});");
+            _sb.WriteLine($"sce_em_set({enemy.Id}, ENEMY_{enemy.Type.ToString().ToUpperInvariant()}, " +
+                $"{enemy.State}, {enemy.Ai}, {enemy.Floor}, {enemy.SoundBank}, {enemy.Texture}, {enemy.KillId}, {enemy.X}, {enemy.Y}, {enemy.Z}, {enemy.D}, {enemy.Animation});");
         }
 
-        protected override void VisitItemAotSet(Item item)
+        protected override void VisitItemAotSet(ItemAotSetOpcode item)
         {
             _sb.WriteLine($"item_aot_set({item.Id}, {GetItemConstant(item.Type)}, {item.Amount});");
         }
 
-        protected override void VisitXaOn(RdtSound sound)
+        protected override void VisitXaOn(XaOnOpcode sound)
         {
             _sb.WriteLine($"xa_on({sound.Channel}, {sound.Id});");
         }
 
-        protected override void VisitSceItemGet(ItemGet itemGet)
+        protected override void VisitSceItemGet(SceItemGetOpcode itemGet)
         {
             _sb.WriteLine($"sce_item_get({GetItemConstant(itemGet.Type)}, {itemGet.Amount});");
         }
@@ -151,6 +178,9 @@ namespace rer
                         sb.WriteLine($"return {ret};");
                         break;
                     }
+                case Opcode.EvtNext:
+                    sb.WriteLine($"evt_next();");
+                    break;
                 case Opcode.EvtExec:
                     {
                         var cond = br.ReadByte();
@@ -158,26 +188,35 @@ namespace rer
                         var evnt = br.ReadByte();
                         var exOpcodeS = $"OP_{ ((Opcode)exOpcode).ToString().ToUpperInvariant()}";
                         if (cond == 255)
-                            sb.WriteLine($"evt_exec(CAMERA, {exOpcodeS}, {evnt});");
+                            sb.WriteLine($"evt_exec(CAMERA, {exOpcodeS}, {evnt}); // {offset}");
                         else
-                            sb.WriteLine($"evt_exec({cond}, {exOpcodeS}, {evnt});");
+                            sb.WriteLine($"evt_exec({cond}, {exOpcodeS}, {evnt}); // {offset}");
                         break;
                     }
                 case Opcode.IfelCk:
                     {
                         br.ReadByte();
                         var blockLen = br.ReadUInt16();
-                        _blockEnds.Push(offset + blockLen);
-                        sb.Write($"if (");
+                        _blockEnds.Push((opcode, offset + 4 + blockLen));
+                        sb.Write("if (");
                         _constructingBinaryExpression = true;
                         _expressionCount = 0;
                         break;
                     }
                 case Opcode.ElseCk:
                     {
+                        while (_blockEnds.Count != 0 && _blockEnds.Peek().Item1 != Opcode.IfelCk)
+                        {
+                            CloseCurrentBlock();
+                        }
+                        if (_blockEnds.Count != 0 && _blockEnds.Peek().Item1 == Opcode.IfelCk)
+                        {
+                            CloseCurrentBlock();
+                        }
+
                         br.ReadByte();
                         var blockLen = br.ReadUInt16();
-                        _blockEnds.Push(offset + blockLen);
+                        _blockEnds.Push((opcode, offset + blockLen));
 
                         sb.WriteLine("else");
                         sb.WriteLine("{");
@@ -185,9 +224,7 @@ namespace rer
                     }
                     break;
                 case Opcode.EndIf:
-                    // sb.Unindent();
-                    // sb.WriteLine("}");
-                    // _expectingEndIf = false;
+                    CloseCurrentBlock();
                     break;
                 case Opcode.Sleep:
                     {
@@ -243,6 +280,10 @@ namespace rer
                     }
                 case Opcode.Do:
                     {
+                        br.ReadByte();
+                        var blockLen = br.ReadUInt16();
+                        _blockEnds.Push((opcode, offset + blockLen));
+
                         sb.WriteLine($"do");
                         sb.WriteLine("{");
                         sb.Indent();
@@ -251,8 +292,10 @@ namespace rer
                 case Opcode.Edwhile:
                     {
                         sb.Unindent();
-                        sb.WriteLine($"while (");
-                        sb.WriteLine("{");
+                        sb.Write("} while (");
+                        _constructingBinaryExpression = true;
+                        _expressionCount = 0;
+                        _endDoWhile = true;
                         break;
                     }
                 case Opcode.Switch:
@@ -284,6 +327,17 @@ namespace rer
                     {
                         sb.Unindent();
                         sb.WriteLine("}");
+                        break;
+                    }
+                case Opcode.Goto:
+                    {
+                        var a = br.ReadByte();
+                        var b = br.ReadByte();
+                        var c = br.ReadByte();
+                        var rel = br.ReadInt16();
+                        var io = offset + rel;
+                        sb.WriteLine($"goto off_{io};");
+                        sb.InsertLabel(io, $"off_{io}:");
                         break;
                     }
                 case Opcode.Gosub:
@@ -335,9 +389,7 @@ namespace rer
                             {
                                 sb.Write(" && ");
                             }
-                            if (value == 0)
-                                sb.Write($"!");
-                            sb.Write($"bits[{bitArray}][{number}]");
+                            sb.Write($"{GetBitsString(bitArray, number)} == {value}");
                             _expressionCount++;
                         }
                         break;
@@ -369,7 +421,7 @@ namespace rer
                         var bitArray = br.ReadByte();
                         var number = br.ReadByte();
                         var opChg = br.ReadByte();
-                        sb.Write($"bits[{bitArray}][{number}]");
+                        sb.Write(GetBitsString(bitArray, number));
                         if (opChg == 0)
                             sb.WriteLine(" = 0;");
                         else if (opChg == 1)
@@ -440,7 +492,7 @@ namespace rer
                         var sub = br.ReadByte();
                         var dummy1 = br.ReadByte();
                         var dummy2 = br.ReadByte();
-                        sb.WriteLine($"sce_bgmtbl_set({stage:X}{roomId:X2} = MAIN{main:X2} SUB{sub:X2});");
+                        sb.WriteLine($"sce_bgmtbl_set({stage}, 0x{roomId:X2}, 0x{main:X2}, 0x{sub:X2});");
                         break;
                     }
                 case Opcode.XaOn:
@@ -474,6 +526,25 @@ namespace rer
         private static string GetItemConstant(ushort item)
         {
             return $"ITEM_{ ((ItemType)item).ToString().ToUpperInvariant()}";
+        }
+
+        private static string GetBitsString(int bitArray, int number)
+        {
+            if (bitArray == 0 && number == 0x19)
+                return "game.difficult";
+
+            if (bitArray == 1 && number == 0)
+                return "game.player";
+            if (bitArray == 1 && number == 1)
+                return "game.scenario";
+            if (bitArray == 1 && number == 6)
+                return "game.bonus";
+            if (bitArray == 1 && number == 0x1B)
+                return "game.cutscene";
+            if (bitArray == 0xB && number == 0x1F)
+                return "input.question";
+
+            return $"bits[{bitArray}][{number}]";
         }
     }
 }

@@ -72,7 +72,13 @@ namespace rer
 
             if (Directory.Exists(modPath))
             {
-                Directory.Delete(modPath, true);
+                try
+                {
+                    Directory.Delete(modPath, true);
+                }
+                catch
+                {
+                }
             }
             Directory.CreateDirectory(modPath);
 
@@ -85,7 +91,7 @@ namespace rer
             var map = LoadJsonMap(@"M:\git\rer\rer\data\rdt.json");
             var gameData = GameDataReader.Read(originalDataPath, modPath);
 
-
+            DumpScripts(gameData, Path.Combine(modPath, "scripts"));
 
             if (config.RandomItems)
             {
@@ -104,7 +110,7 @@ namespace rer
 
             if (config.RandomEnemies)
             {
-                var enemyRandomiser = new EnemyRandomiser(logger, config, gameData, randomEnemies);
+                var enemyRandomiser = new EnemyRandomiser(logger, config, gameData, map, randomEnemies);
                 enemyRandomiser.Randomise();
             }
 
