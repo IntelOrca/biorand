@@ -67,8 +67,8 @@
                 <ColumnDefinition />
                 <ColumnDefinition Width="30" />
             </Grid.ColumnDefinitions>
-            <TextBox Margin="4,4,2,4" Text="F:\games\re2" />
-            <Button Grid.Column="1" Margin="2,4,4,4">...</Button>
+            <TextBox x:Name="txtGameDataLocation" Margin="4,4,2,4" Text="F:\games\re2" />
+            <Button Grid.Column="1" Margin="2,4,4,4" Click="btnBrowse_Click">...</Button>
         </Grid>
         <Grid>
             <Grid.ColumnDefinitions>

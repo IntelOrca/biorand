@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Win32;
 using rer;
 
 namespace rerandoui
@@ -215,12 +217,22 @@ namespace rerandoui
 
         private async void btnGenerate_Click(object sender, RoutedEventArgs e)
         {
+            var gamePath = txtGameDataLocation.Text;
+            if (!ValidateGamePath(gamePath))
+            {
+                if (!ShowGamePathWarning())
+                {
+                    return;
+                }
+            }
+
             var btn = (Button)sender;
             try
             {
                 btn.Content = "Generating...";
                 IsEnabled = false;
-                await Task.Run(() => Program.Generate(_config));
+                await Task.Run(() => Program.Generate(_config, gamePath));
+                ShowGenerateCompleteMessage();
             }
             catch (Exception ex)
             {
@@ -231,6 +243,60 @@ namespace rerandoui
                 btn.Content = "Generate";
                 IsEnabled = true;
             }
+        }
+
+        private void btnBrowse_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog();
+            dialog.Title = "Select Resident Evil 2 / Biohazard Game Location";
+            dialog.InitialDirectory = txtGameDataLocation.Text;
+            dialog.Filter = "Executable Files (*.exe)|*.exe";
+            dialog.CheckFileExists = false;
+            dialog.CheckPathExists = false;
+            dialog.FileOk += (s, e2) =>
+            {
+                if (!NormaliseGamePath(dialog.FileName, out _))
+                {
+                    if (!ShowGamePathWarning())
+                    {
+                        e2.Cancel = true;
+                    }
+                }
+            };
+            if (dialog.ShowDialog(this) == true)
+            {
+                NormaliseGamePath(dialog.FileName, out var normalised);
+                txtGameDataLocation.Text = normalised;
+            }
+        }
+
+        private static bool NormaliseGamePath(string path, out string normalised)
+        {
+            normalised = path;
+            if (!Directory.Exists(normalised))
+            {
+                normalised = Path.GetDirectoryName(path);
+            }
+            return ValidateGamePath(normalised);
+        }
+
+        private static bool ValidateGamePath(string path)
+        {
+            return Directory.Exists(Path.Combine(path, "data", "pl0"));
+        }
+
+        private bool ShowGamePathWarning()
+        {
+            var title = "Incorrect RE2 location";
+            var msg = "This directory was not dectected as a valid RE2 game directory. Do you want to continue anyway?";
+            return MessageBox.Show(this, msg, title, MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
+        }
+
+        private void ShowGenerateCompleteMessage()
+        {
+            var title = "Randomization Complete!";
+            var msg = "The Randomizer mod has successfully been generated. Run the game and choose \"BIOHAZARD 2: RANDOMIZER\" from the mod selection.";
+            MessageBox.Show(this, msg, title, MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

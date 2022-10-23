@@ -33,7 +33,7 @@ namespace rer
             // });
         }
 
-        public static void Generate(RandoConfig config)
+        public static void Generate(RandoConfig config, string re2Path)
         {
             if (config.GameVariant == 0)
             {
@@ -44,7 +44,7 @@ namespace rer
 
                 config.Player = 1;
                 config.Scenario = 1;
-                Generate2(config);
+                Generate2(config, re2Path);
             }
             else
             {
@@ -55,18 +55,17 @@ namespace rer
 
                 config.Player = 1;
                 config.Scenario = 0;
-                Generate2(config);
+                Generate2(config, re2Path);
             }
         }
 
-        public static void Generate2(RandoConfig config)
+        public static void Generate2(RandoConfig config, string re2Path)
         {
             var randomItems = new Rng(config.Seed);
             var randomNpcs = new Rng(config.Seed + 1);
             var randomEnemies = new Rng(config.Seed + 2);
             var randomMusic = new Rng(config.Seed + 3);
 
-            var re2Path = @"F:\games\re2";
             var originalDataPath = Path.Combine(re2Path, "data");
             var modPath = Path.Combine(re2Path, @"mod_rando");
 
