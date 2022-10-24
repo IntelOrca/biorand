@@ -28,6 +28,16 @@ namespace rer
             _indent += _indentAdjust;
         }
 
+        public void WriteLabel(int offset)
+        {
+            if (_lineLength != 0)
+                WriteLine();
+            var oldIndent = _indent;
+            _indent = 0;
+            WriteLine("// " + GetLabelName(offset) + ":");
+            _indent = oldIndent;
+        }
+
         public void Write(string s)
         {
             WriteIndent();
@@ -62,13 +72,18 @@ namespace rer
             _offsetToPosition.Add(offset, _linePosition);
         }
 
-        public void InsertLabel(int offset, string line)
+        public void InsertLabel(int offset)
         {
             if (_offsetToPosition.TryGetValue(offset, out var sbPosition))
             {
-                _sb.Insert(sbPosition, line + "\n");
+                _sb.Insert(sbPosition, GetLabelName(offset) + ":\n");
                 _offsetToPosition.Remove(offset);
             }
+        }
+
+        public string GetLabelName(int offset)
+        {
+            return $"off_{offset}";
         }
 
         public override string ToString() => _sb.ToString();

@@ -44,7 +44,7 @@ namespace rer
             }
         }
 
-        private Rng.Table<EnemyType> CreateEnemyProbabilityTable(HashSet<EnemyType> includeTypes, HashSet<EnemyType> excludeTypes)
+        private Rng.Table<EnemyType> CreateEnemyProbabilityTable(HashSet<EnemyType>? includeTypes, HashSet<EnemyType>? excludeTypes)
         {
             var table = _rng.CreateProbabilityTable<EnemyType>();
             switch (_config.EnemyDifficulty)
@@ -65,22 +65,22 @@ namespace rer
                 case 1:
                     AddIfSupported(EnemyType.Crow, 5);
                     AddIfSupported(EnemyType.ZombieArms, 5);
-                    AddIfSupported(EnemyType.Spider, 5);
+                    AddIfSupported(EnemyType.Spider, 6);
                     AddIfSupported(EnemyType.GiantMoth, 5);
-                    AddIfSupported(EnemyType.Ivy, 5);
-                    AddIfSupported(EnemyType.IvyPurple, 5);
-                    AddIfSupported(EnemyType.Tyrant1, 5);
+                    AddIfSupported(EnemyType.Ivy, 6);
+                    AddIfSupported(EnemyType.IvyPurple, 6);
+                    AddIfSupported(EnemyType.Tyrant1, 2);
                     AddIfSupported(EnemyType.ZombieRandom, 40);
                     AddIfSupported(EnemyType.Cerebrus, 10);
                     AddIfSupported(EnemyType.LickerRed, 10);
                     AddIfSupported(EnemyType.LickerGrey, 5);
                     break;
                 case 2:
-                    AddIfSupported(EnemyType.Spider, 5);
-                    AddIfSupported(EnemyType.GiantMoth, 5);
-                    AddIfSupported(EnemyType.Ivy, 5);
-                    AddIfSupported(EnemyType.IvyPurple, 5);
-                    AddIfSupported(EnemyType.Tyrant1, 5);
+                    AddIfSupported(EnemyType.Spider, 7);
+                    AddIfSupported(EnemyType.GiantMoth, 3);
+                    AddIfSupported(EnemyType.Ivy, 6);
+                    AddIfSupported(EnemyType.IvyPurple, 6);
+                    AddIfSupported(EnemyType.Tyrant1, 3);
                     AddIfSupported(EnemyType.ZombieRandom, 25);
                     AddIfSupported(EnemyType.Cerebrus, 25);
                     AddIfSupported(EnemyType.LickerRed, 15);
@@ -88,13 +88,13 @@ namespace rer
                     break;
                 case 3:
                 default:
-                    AddIfSupported(EnemyType.ZombieRandom, 5);
                     AddIfSupported(EnemyType.Spider, 5);
-                    AddIfSupported(EnemyType.GiantMoth, 5);
-                    AddIfSupported(EnemyType.Ivy, 2);
+                    AddIfSupported(EnemyType.GiantMoth, 2);
+                    AddIfSupported(EnemyType.Ivy, 3);
                     AddIfSupported(EnemyType.IvyPurple, 3);
                     AddIfSupported(EnemyType.Tyrant1, 5);
-                    AddIfSupported(EnemyType.Cerebrus, 50);
+                    AddIfSupported(EnemyType.ZombieRandom, 17);
+                    AddIfSupported(EnemyType.Cerebrus, 40);
                     AddIfSupported(EnemyType.LickerRed, 5);
                     AddIfSupported(EnemyType.LickerGrey, 20);
                     break;
@@ -137,6 +137,9 @@ namespace rer
             if (enemySpec == null)
                 return;
 
+            if (enemySpec.Scenario != null && enemySpec.Scenario != _config.Scenario)
+                return;
+
             if (enemySpec.Nop != null)
             {
                 foreach (var offset in enemySpec.Nop)
@@ -154,40 +157,6 @@ namespace rer
                 enemySpec.ExcludeTypes.Select(x => (EnemyType)x).ToHashSet();
             var probTable = CreateEnemyProbabilityTable(includeTypes, excludeTypes);
 
-            /*
-            if (rdt.ToString() == "101")
-                return;
-            if (rdt.ToString() == "202")
-                return;
-            if (rdt.ToString() == "212")
-                return;
-
-            if (rdt.ToString() == "100")
-                rdt.Nop(4888);
-
-            if (rdt.ToString() == "105")
-            {
-                var enemyType3 = GetRandomZombieType();
-                foreach (var enemy in rdt.Enemies)
-                {
-                    enemy.Type = enemyType3;
-                    enemy.SoundBank = GetZombieSoundBank(enemy.Type);
-                }
-                return;
-            }
-
-            if (rdt.Enemies.Any(x => x.State == 72))
-            {
-                var enemyType3 = _rng.NextOf(EnemyType.ZombieRandom, EnemyType.ZombieNaked);
-                foreach (var enemy in rdt.Enemies)
-                {
-                    enemy.Type = enemyType3;
-                    enemy.SoundBank = GetZombieSoundBank(enemy.Type);
-                }
-                return;
-            }
-            */
-
 #if MULTIPLE_ENEMY_TYPES
             var ids = rdt.Enemies.Select(x => x.Id).Distinct().ToArray();
             var enemyTypesId = ids.Select(x => EnemyType.Cerebrus).ToArray();
@@ -203,6 +172,11 @@ namespace rer
 
             foreach (var enemy in rdt.Enemies)
             {
+                if (enemySpec.ExcludeIds?.Contains(enemy.Id) == true)
+                    continue;
+                if (enemySpec.ExcludeOffsets?.Contains(enemy.Offset) == true)
+                    continue;
+
                 if (!ShouldChangeEnemy(enemy))
                     continue;
 
@@ -307,50 +281,25 @@ namespace rer
 
         private bool ShouldChangeEnemy(SceEmSetOpcode enemy)
         {
-            if (IsNpc(enemy.Type))
-                return false;
-
-            if (enemy.Type == EnemyType.ZombieBrad)
-                return false;
-
-            if (enemy.Type == EnemyType.LickerRed ||
-                enemy.Type == EnemyType.LickerGrey)
+            switch (enemy.Type)
             {
-                // if (enemy.State == 0)
+                case EnemyType.Crow:
+                case EnemyType.Spider:
+                case EnemyType.GiantMoth:
+                case EnemyType.LickerRed:
+                case EnemyType.LickerGrey:
+                case EnemyType.Cerebrus:
+                case EnemyType.Ivy:
+                case EnemyType.IvyPurple:
                     return true;
-                // return false;
-            }
-
-            if (IsZombie(enemy.Type))
-            {
-                // Dead zombie (e.g. first licker corridor)
-                if (enemy.State == 7)
+                case EnemyType.ZombieBrad:
                     return false;
-
-                return true;
+                case EnemyType.MarvinBranagh:
+                    // Edge case: Marvin is only a zombie in scenario B
+                    return _config.Scenario == 1;
+                default:
+                    return IsZombie(enemy.Type);
             }
-
-            if (enemy.Type == EnemyType.Cerebrus || enemy.Type == EnemyType.Ivy || enemy.Type == EnemyType.IvyPurple)
-                return true;
-
-            if (enemy.Type == EnemyType.Crow)
-                return true;
-
-            return false;
-        }
-
-        private EnemyType GetRandomZombieType()
-        {
-            return _rng.NextOf(
-                EnemyType.ZombieCop,
-                EnemyType.ZombieGuy1,
-                EnemyType.ZombieGirl,
-                EnemyType.ZombieTestSubject,
-                EnemyType.ZombieScientist,
-                EnemyType.ZombieNaked,
-                EnemyType.ZombieGuy2,
-                EnemyType.ZombieGuy3,
-                EnemyType.ZombieRandom);
         }
 
         private static void PrintAllEnemies(GameData gameData)
@@ -387,37 +336,6 @@ namespace rer
                     return false;
             }
         }
-
-        private static bool IsNpc(EnemyType type) => type >= EnemyType.ChiefIrons1;
-
-        private static readonly HashSet<EnemyType> _enemyTypeSet = new HashSet<EnemyType>()
-        {
-            EnemyType.ZombieCop,
-            EnemyType.ZombieBrad,
-            EnemyType.ZombieGuy1,
-            EnemyType.ZombieGirl,
-            EnemyType.ZombieTestSubject,
-            EnemyType.ZombieScientist,
-            EnemyType.ZombieNaked,
-            EnemyType.ZombieGuy2,
-            EnemyType.ZombieGuy3,
-            EnemyType.ZombieRandom,
-            EnemyType.Cerebrus,
-            EnemyType.Crow,
-            EnemyType.LickerRed,
-            EnemyType.Alligator,
-            EnemyType.LickerGrey,
-            EnemyType.Spider,
-            EnemyType.BabySpider,
-            EnemyType.Cockroach,
-            EnemyType.Tyrant1,
-            EnemyType.Tyrant2,
-            EnemyType.ZombieArms,
-            EnemyType.Ivy,
-            EnemyType.IvyPurple,
-            EnemyType.GiantMoth,
-            EnemyType.Maggots
-        };
 
         private static readonly EnemyType[] _zombieTypes = new[]
         {

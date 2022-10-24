@@ -90,6 +90,10 @@ namespace rer
                     }
                 }
             }
+            else
+            {
+                // _sb.WriteLabel(offset);
+            }
 
             while (_blockEnds.Count != 0 && _blockEnds.Peek().Item2 <= offset)
             {
@@ -137,7 +141,7 @@ namespace rer
         protected override void VisitSceEmSet(SceEmSetOpcode enemy)
         {
             _sb.WriteLine($"sce_em_set({enemy.Id}, ENEMY_{enemy.Type.ToString().ToUpperInvariant()}, " +
-                $"{enemy.State}, {enemy.Ai}, {enemy.Floor}, {enemy.SoundBank}, {enemy.Texture}, {enemy.KillId}, {enemy.X}, {enemy.Y}, {enemy.Z}, {enemy.D}, {enemy.Animation});");
+                $"{enemy.State}, {enemy.Ai}, {enemy.Floor}, {enemy.SoundBank}, {enemy.Texture}, {enemy.KillId}, {enemy.X}, {enemy.Y}, {enemy.Z}, {enemy.D}, {enemy.Animation}); // {enemy.Offset}");
         }
 
         protected override void VisitItemAotSet(ItemAotSetOpcode item)
@@ -337,7 +341,7 @@ namespace rer
                         var rel = br.ReadInt16();
                         var io = offset + rel;
                         sb.WriteLine($"goto off_{io};");
-                        sb.InsertLabel(io, $"off_{io}:");
+                        sb.InsertLabel(io);
                         break;
                     }
                 case Opcode.Gosub:

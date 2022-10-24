@@ -58,10 +58,13 @@ namespace rer
     public class MapRoomEnemies
     {
         public int[]? Nop { get; set; }
+        public int[]? ExcludeOffsets { get; set; }
+        public int[]? ExcludeIds { get; set; }
         public int[]? ExcludeTypes { get; set; }
         public int[]? IncludeTypes { get; set; }
         public bool KeepState { get; set; }
         public bool KeepAi { get; set; }
         public short? Y { get; set; }
+        public int? Scenario { get; set; }
     }
 }
