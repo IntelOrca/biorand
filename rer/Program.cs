@@ -121,8 +121,11 @@ namespace rer
             }
 
 #if DEBUG
-            var moddedGameData = GameDataReader.Read(modPath, modPath);
-            DumpScripts(moddedGameData, Path.Combine(modPath, "scripts_modded"));
+            if (config.RandomItems || config.RandomEnemies)
+            {
+                var moddedGameData = GameDataReader.Read(modPath, modPath);
+                DumpScripts(moddedGameData, Path.Combine(modPath, "scripts_modded"));
+            }
 #endif
 
             File.WriteAllText(Path.Combine(modPath, "manifest.txt"), "[MOD]\nName = BIOHAZARD 2: RANDOMIZER\n");

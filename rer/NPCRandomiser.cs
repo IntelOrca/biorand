@@ -18,6 +18,7 @@ namespace rer
         private VoiceInfo[] _voiceInfo;
         private VoiceInfo[] _available;
         private List<VoiceInfo> _pool = new List<VoiceInfo>();
+        private HashSet<VoiceSample> _randomized = new HashSet<VoiceSample>();
 
         public NPCRandomiser(RandoLogger logger, string originalDataPath, string modPath, GameData gameData, Map map, Rng random)
         {
@@ -48,11 +49,8 @@ namespace rer
                 var stage = int.Parse(path.Substring(15, 1));
                 var id = int.Parse(path.Substring(18, 3));
                 var sample = new VoiceSample(player, stage, id);
-                voiceInfos.Add(new VoiceInfo()
-                {
-                    Sample = sample,
-                    Actor = kvp.Value
-                });
+                var actorParts = kvp.Value.Split('_');
+                voiceInfos.Add(new VoiceInfo(sample, actorParts[0], actorParts.Length >= 2 ? actorParts[1] : ""));
             }
 
             return voiceInfos.ToArray();
@@ -88,38 +86,48 @@ namespace rer
             foreach (var rdt in _gameData.Rdts)
             {
                 var room = _map.GetRoom(rdt.RdtId);
-                if (room == null || room.SupportedNpcs == null || room.SupportedNpcs.Length == 0)
+                if (room == null)
                     continue;
 
                 var currentCharacters = rdt.Enemies.Where(x => IsNpc(x.Type)).Select(x => x.Type).ToArray();
                 var currentActors = currentCharacters.Select(x => GetActor(x)).ToArray();
-                var npcs = room.SupportedNpcs.Shuffle(_random);
-                foreach (var enemy in rdt.Enemies)
-                {
-                    // Marvin edge case
-                    if (rdt.RdtId.Stage == 1 && rdt.RdtId.Room == 2 && enemy.Offset != 0x1DF6)
-                    {
-                        continue;
-                    }
 
-                    if (IsNpc(enemy.Type))
+                var npcs = new int[0];
+                if (room.SupportedNpcs != null && room.SupportedNpcs.Length != 0)
+                {
+                    npcs = room.SupportedNpcs.Shuffle(_random);
+                    foreach (var enemy in rdt.Enemies)
                     {
-                        var currentNpcIndex = Array.IndexOf(currentCharacters, enemy.Type);
-                        var newNpcType = (EnemyType)npcs[currentNpcIndex % npcs.Length];
-                        _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) [{enemy.Type}] becomes [{newNpcType}]");
-                        enemy.Type = newNpcType;
+                        // Marvin edge case
+                        if (rdt.RdtId.Stage == 1 && rdt.RdtId.Room == 2 && enemy.Offset != 0x1DF6)
+                        {
+                            continue;
+                        }
+
+                        if (IsNpc(enemy.Type))
+                        {
+                            var currentNpcIndex = Array.IndexOf(currentCharacters, enemy.Type);
+                            var newNpcType = (EnemyType)npcs[currentNpcIndex % npcs.Length];
+                            _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) [{enemy.Type}] becomes [{newNpcType}]");
+                            enemy.Type = newNpcType;
+                        }
                     }
+                    rdt.Save();
                 }
 
                 foreach (var sound in rdt.Sounds)
                 {
                     var voice = new VoiceSample(1, rdt.RdtId.Stage + 1, sound.Id);
-                    var actor = GetVoice(voice);
+                    var (actor, kind) = GetVoice(voice);
                     if (actor != null)
                     {
-                        if (actor == "claire")
+                        if (kind == "radio")
                         {
-                            RandomizeVoice(voice, actor, actor);
+                            RandomizeVoice(voice, actor, actor, kind);
+                        }
+                        if ((actor == "claire" && kind != "npc") || kind == "pc" || npcs.Length == 0)
+                        {
+                            RandomizeVoice(voice, actor, actor, null);
                         }
                         else
                         {
@@ -128,7 +136,7 @@ namespace rer
                             {
                                 var newNpcType = (EnemyType)npcs[currentNpcIndex % npcs.Length];
                                 var newActor = GetActor(newNpcType) ?? actor;
-                                RandomizeVoice(voice, actor, newActor);
+                                RandomizeVoice(voice, actor, newActor, null);
                             }
                         }
                     }
@@ -136,19 +144,23 @@ namespace rer
             }
         }
 
-        private void RandomizeVoice(VoiceSample voice, string actor, string newActor)
+        private void RandomizeVoice(VoiceSample voice, string actor, string newActor, string? kind)
         {
-            var randomVoice = GetRandomVoice(newActor);
+            if (_randomized.Contains(voice))
+                return;
+
+            var randomVoice = GetRandomVoice(newActor, kind);
             if (randomVoice != null)
             {
                 SetVoice(voice, randomVoice.Value);
+                _randomized.Add(voice);
                 _logger.WriteLine($"    {voice} [{actor}] becomes {randomVoice.Value} [{newActor}]");
             }
         }
 
-        private VoiceSample? GetRandomVoice(string actor)
+        private VoiceSample? GetRandomVoice(string actor, string? kind)
         {
-            var index = _pool.FindIndex(x => x.Actor == actor);
+            var index = _pool.FindIndex(x => x.Actor == actor && (kind == null || x.Kind == kind));
             if (index == -1)
             {
                 var newItems = _voiceInfo.Where(x => x.Actor == actor).Shuffle(_random).ToArray();
@@ -177,10 +189,10 @@ namespace rer
             return Path.Combine(basePath, "PL" + sample.Player, "Voice", "stage" + sample.Stage, $"v{sample.Id:000}.sap");
         }
 
-        private string? GetVoice(VoiceSample sample)
+        private (string?, string?) GetVoice(VoiceSample sample)
         {
             var voiceInfo = _voiceInfo.FirstOrDefault(x => x.Sample == sample);
-            return voiceInfo?.Actor;
+            return (voiceInfo?.Actor, voiceInfo?.Kind);
         }
 
         private void ConvertSapFiles(string path)
@@ -242,7 +254,15 @@ namespace rer
     internal class VoiceInfo
     {
         public VoiceSample Sample { get; set; }
-        public string? Actor { get; set; }
+        public string Actor { get; set; }
+        public string Kind { get; set; }
+
+        public VoiceInfo(VoiceSample sample, string actor, string kind)
+        {
+            Sample = sample;
+            Actor = actor;
+            Kind = kind;
+        }
     }
 
     [DebuggerDisplay("Player = {Player} Stage = {Stage} Id = {Id}")]
