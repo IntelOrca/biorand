@@ -12,6 +12,7 @@ namespace rer
         public string? OriginalPath { get; set; }
         public string? ModifiedPath { get; set; }
         public string? Script { get; set; }
+        public string? ScriptDisassembly { get; set; }
         public OpcodeBase[] Opcodes { get; set; } = new OpcodeBase[0];
 
         public IEnumerable<DoorAotSeOpcode> Doors => Opcodes.OfType<DoorAotSeOpcode>();

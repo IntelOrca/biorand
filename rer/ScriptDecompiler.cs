@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using rer.Opcodes;
@@ -13,6 +14,13 @@ namespace rer
         private bool _constructingBinaryExpression;
         private int _expressionCount;
 
+        public bool AssemblyFormat => _sb.AssemblyFormat;
+
+        public ScriptDecompiler(bool assemblyFormat)
+        {
+            _sb.AssemblyFormat = assemblyFormat;
+        }
+
         public string GetScript()
         {
             return _sb.ToString();
@@ -23,70 +31,93 @@ namespace rer
             switch (kind)
             {
                 case BioScriptKind.Init:
-                    _sb.WriteLine("init");
-                    _sb.WriteLine("{");
-                    _sb.Indent();
+                    if (AssemblyFormat)
+                    {
+                        _sb.WriteLine("init:");
+                    }
+                    else
+                    {
+                        _sb.WriteLine("init");
+                        _sb.OpenBlock();
+                    }
                     break;
                 case BioScriptKind.Main:
                     _sb.WriteLine();
-                    _sb.WriteLine("main");
-                    _sb.WriteLine("{");
-                    _sb.Indent();
+                    if (AssemblyFormat)
+                    {
+                        _sb.WriteLine("main:");
+                    }
+                    else
+                    {
+                        _sb.WriteLine("main");
+                        _sb.OpenBlock();
+                    }
                     break;
             }
         }
 
         public override void VisitEndScript(BioScriptKind kind)
         {
+            if (AssemblyFormat)
+                return;
+
             _sb.ResetIndent();
-            _sb.WriteLine("}");
+            _sb.CloseBlock();
         }
 
         public override void VisitBeginSubroutine(int index)
         {
-            _sb.ResetIndent();
             if (index != 0)
             {
                 _sb.WriteLine();
             }
-            _sb.Indent();
-            _sb.WriteLine($"sub_{index:X2}()");
-            _sb.WriteLine("{");
-            _sb.Indent();
+            if (AssemblyFormat)
+            {
+                _sb.WriteLine($"sub_{index:X2}:");
+            }
+            else
+            {
+                _sb.ResetIndent();
 
-            _blockEnds.Clear();
+                _sb.Indent();
+                _sb.WriteLine($"sub_{index:X2}()");
+                _sb.OpenBlock();
+
+                _blockEnds.Clear();
+            }
         }
 
         public override void VisitEndSubroutine(int index)
         {
+            if (AssemblyFormat)
+                return;
+
             while (_blockEnds.Count != 0)
             {
                 CloseCurrentBlock();
             }
 
-            _sb.ResetIndent();
-            _sb.Indent();
-            _sb.WriteLine("}");
+            _sb.CloseBlock();
         }
 
         public override void VisitOpcode(int offset, Opcode opcode, Span<byte> operands)
         {
-            _sb.RecordOffset(offset);
+            _sb.RecordOpcode(offset, opcode, operands);
 
             if (_constructingBinaryExpression)
             {
-                if (opcode != Opcode.Ck && opcode != Opcode.Cmp)
+                if (opcode != Opcode.Ck && opcode != Opcode.Cmp && opcode != Opcode.MemberCmp)
                 {
                     _constructingBinaryExpression = false;
                     if (_endDoWhile)
                     {
+                        _endDoWhile = false;
                         _sb.WriteLine(");");
                     }
                     else
                     {
                         _sb.WriteLine(")");
-                        _sb.WriteLine("{");
-                        _sb.Indent();
+                        _sb.OpenBlock();
                     }
                 }
             }
@@ -122,41 +153,40 @@ namespace rer
                 _blockEnds.Pop();
                 if (!_endDoWhile)
                 {
-                    _sb.Unindent();
-                    _sb.WriteLine("}");
+                    _sb.CloseBlock();
                 }
             }
         }
 
         protected override void VisitDoorAotSe(DoorAotSeOpcode door)
         {
-            _sb.WriteLine($"door_aot_se({door.Id}, {door.Stage:X}, 0x{door.Room:X2}, {door.DoorFlag}, {door.DoorLockFlag}, {door.DoorKey});");
+            _sb.WriteStandardOpcode("door_aot_se", door.Id, $"{door.Stage:X}", $"0x{door.Room:X2}", door.DoorFlag, door.DoorLockFlag, door.DoorKey);
         }
 
         protected override void VisitAotReset(AotResetOpcode reset)
         {
-            _sb.WriteLine($"aot_reset({reset.Id}, {reset.Type}, {reset.Amount}, 0x{reset.Unk8:X2});");
+            _sb.WriteStandardOpcode("aot_reset", reset.Id, reset.Type, reset.Amount, $"0x{reset.Unk8:X2}");
         }
 
         protected override void VisitSceEmSet(SceEmSetOpcode enemy)
         {
-            _sb.WriteLine($"sce_em_set({enemy.Id}, ENEMY_{enemy.Type.ToString().ToUpperInvariant()}, " +
-                $"{enemy.State}, {enemy.Ai}, {enemy.Floor}, {enemy.SoundBank}, {enemy.Texture}, {enemy.KillId}, {enemy.X}, {enemy.Y}, {enemy.Z}, {enemy.D}, {enemy.Animation}); // {enemy.Offset}");
+            _sb.WriteStandardOpcode("sce_em_set", enemy.Id, GetEnemyConstant(enemy.Type),
+                enemy.State, enemy.Ai, enemy.Floor, enemy.SoundBank, enemy.Texture, enemy.KillId, enemy.X, enemy.Y, enemy.Z, enemy.D, enemy.Animation);
         }
 
         protected override void VisitItemAotSet(ItemAotSetOpcode item)
         {
-            _sb.WriteLine($"item_aot_set({item.Id}, {GetItemConstant(item.Type)}, {item.Amount});");
+            _sb.WriteStandardOpcode("item_aot_set", item.Id, GetItemConstant(item.Type), item.Amount);
         }
 
         protected override void VisitXaOn(XaOnOpcode sound)
         {
-            _sb.WriteLine($"xa_on({sound.Channel}, {sound.Id});");
+            _sb.WriteStandardOpcode("xa_on", sound.Channel, sound.Id);
         }
 
         protected override void VisitSceItemGet(SceItemGetOpcode itemGet)
         {
-            _sb.WriteLine($"sce_item_get({GetItemConstant(itemGet.Type)}, {itemGet.Amount});");
+            _sb.WriteStandardOpcode("sce_item_get", GetItemConstant(itemGet.Type), itemGet.Amount);
         }
 
         private void VisitOpcode(int offset, Opcode opcode, BinaryReader br)
@@ -167,23 +197,29 @@ namespace rer
                 default:
                     if (Enum.IsDefined(typeof(Opcode), opcode))
                     {
-                        sb.WriteLine($"{opcode}();");
+                        sb.WriteStandardOpcode(opcode.ToString());
                     }
                     else
                     {
-                        sb.WriteLine($"op_{opcode:X}();");
+                        sb.WriteStandardOpcode($"op_{opcode:X}");
                     }
                     break;
                 case Opcode.Nop:
+                case Opcode.Nop20:
+                    if (AssemblyFormat)
+                        sb.WriteStandardOpcode("nop");
                     break;
                 case Opcode.EvtEnd:
                     {
                         var ret = br.ReadByte();
-                        sb.WriteLine($"return {ret};");
+                        if (AssemblyFormat)
+                            sb.WriteStandardOpcode("return", ret);
+                        else
+                            sb.WriteLine($"return {ret};");
                         break;
                     }
                 case Opcode.EvtNext:
-                    sb.WriteLine($"evt_next();");
+                    sb.WriteStandardOpcode("evt_next");
                     break;
                 case Opcode.EvtExec:
                     {
@@ -192,65 +228,87 @@ namespace rer
                         var evnt = br.ReadByte();
                         var exOpcodeS = $"OP_{ ((Opcode)exOpcode).ToString().ToUpperInvariant()}";
                         if (cond == 255)
-                            sb.WriteLine($"evt_exec(CAMERA, {exOpcodeS}, {evnt}); // {offset}");
+                            sb.WriteStandardOpcode("evt_exec", "CAMERA", exOpcodeS, evnt);
                         else
-                            sb.WriteLine($"evt_exec({cond}, {exOpcodeS}, {evnt}); // {offset}");
+                            sb.WriteStandardOpcode("evt_exec", cond, exOpcodeS, evnt);
                         break;
                     }
                 case Opcode.IfelCk:
                     {
                         br.ReadByte();
                         var blockLen = br.ReadUInt16();
-                        _blockEnds.Push((opcode, offset + 4 + blockLen));
-                        sb.Write("if (");
-                        _constructingBinaryExpression = true;
-                        _expressionCount = 0;
+                        if (AssemblyFormat)
+                        {
+                            _sb.InsertLabel(offset + blockLen);
+                            _sb.WriteStandardOpcode("if", sb.GetLabelName(offset + blockLen));
+                        }
+                        else
+                        {
+                            _blockEnds.Push((opcode, offset + blockLen));
+                            sb.Write("if (");
+                            _constructingBinaryExpression = true;
+                            _expressionCount = 0;
+                        }
                         break;
                     }
                 case Opcode.ElseCk:
                     {
-                        while (_blockEnds.Count != 0 && _blockEnds.Peek().Item1 != Opcode.IfelCk)
-                        {
-                            CloseCurrentBlock();
-                        }
-                        if (_blockEnds.Count != 0 && _blockEnds.Peek().Item1 == Opcode.IfelCk)
-                        {
-                            CloseCurrentBlock();
-                        }
-
                         br.ReadByte();
                         var blockLen = br.ReadUInt16();
-                        _blockEnds.Push((opcode, offset + blockLen));
+                        if (AssemblyFormat)
+                        {
+                            _sb.InsertLabel(offset + blockLen);
+                            _sb.WriteStandardOpcode("else", sb.GetLabelName(offset + blockLen));
+                        }
+                        else
+                        {
+                            while (_blockEnds.Count != 0 && _blockEnds.Peek().Item1 != Opcode.IfelCk)
+                            {
+                                CloseCurrentBlock();
+                            }
+                            if (_blockEnds.Count != 0 && _blockEnds.Peek().Item1 == Opcode.IfelCk)
+                            {
+                                CloseCurrentBlock();
+                            }
 
-                        sb.WriteLine("else");
-                        sb.WriteLine("{");
-                        sb.Indent();
+                            _blockEnds.Push((opcode, offset + blockLen));
+
+                            sb.WriteLine("else");
+                            _sb.OpenBlock();
+                        }
                     }
                     break;
                 case Opcode.EndIf:
-                    CloseCurrentBlock();
+                    if (AssemblyFormat)
+                    {
+                        sb.WriteStandardOpcode("endif");
+                    }
+                    else
+                    {
+                        CloseCurrentBlock();
+                    }
                     break;
                 case Opcode.Sleep:
                     {
                         br.ReadByte();
                         var count = br.ReadUInt16();
-                        sb.WriteLine($"sleep({count});");
+                        sb.WriteStandardOpcode("sleep", count);
                         break;
                     }
                 case Opcode.Sleeping:
                     {
                         var count = br.ReadUInt16();
-                        sb.WriteLine($"sleeping({count});");
+                        sb.WriteStandardOpcode("sleeping", count);
                         break;
                     }
                 case Opcode.Wsleep:
                     {
-                        sb.WriteLine($"wsleep();");
+                        sb.WriteStandardOpcode("wsleep");
                         break;
                     }
                 case Opcode.Wsleeping:
                     {
-                        sb.WriteLine($"wsleeping();");
+                        sb.WriteStandardOpcode("wsleeping");
                         break;
                     }
                 case Opcode.For:
@@ -258,56 +316,100 @@ namespace rer
                         br.ReadByte();
                         var blockLen = br.ReadUInt16();
                         var count = br.ReadUInt16();
-                        sb.WriteLine($"for {count} times");
-                        sb.WriteLine("{");
-                        sb.Indent();
+                        if (AssemblyFormat)
+                        {
+                            _sb.InsertLabel(offset + blockLen);
+                            _sb.WriteStandardOpcode("for", sb.GetLabelName(offset + blockLen), count);
+                        }
+                        else
+                        {
+                            sb.WriteLine($"for {count} times");
+                            _sb.OpenBlock();
+                        }
                         break;
                     }
                 case Opcode.Next:
+                    if (AssemblyFormat)
                     {
-                        sb.Unindent();
-                        sb.WriteLine("}");
-                        break;
+                        _sb.WriteStandardOpcode("next");
                     }
+                    else
+                    {
+                        sb.CloseBlock();
+                    }
+                    break;
                 case Opcode.While:
                     {
-                        sb.WriteLine($"while (");
-                        sb.WriteLine("{");
-                        sb.Indent();
+                        br.ReadByte();
+                        var blockLen = br.ReadUInt16();
+                        if (AssemblyFormat)
+                        {
+                            _sb.InsertLabel(offset + blockLen);
+                            _sb.WriteStandardOpcode("while", sb.GetLabelName(offset + blockLen));
+                        }
+                        else
+                        {
+                            sb.WriteLine($"while (");
+                            _sb.OpenBlock();
+                        }
                         break;
                     }
                 case Opcode.Ewhile:
+                    if (AssemblyFormat)
                     {
-                        sb.Unindent();
-                        sb.WriteLine("}");
-                        break;
+                        _sb.WriteStandardOpcode("ewhile");
                     }
+                    else
+                    {
+                        sb.CloseBlock();
+                    }
+                    break;
                 case Opcode.Do:
                     {
                         br.ReadByte();
                         var blockLen = br.ReadUInt16();
-                        _blockEnds.Push((opcode, offset + blockLen));
 
-                        sb.WriteLine($"do");
-                        sb.WriteLine("{");
-                        sb.Indent();
+                        if (AssemblyFormat)
+                        {
+                            _sb.WriteStandardOpcode("do", sb.GetLabelName(offset + blockLen));
+                        }
+                        else
+                        {
+                            _blockEnds.Push((opcode, offset + blockLen));
+
+                            sb.WriteLine($"do");
+                            _sb.OpenBlock();
+                        }
                         break;
                     }
                 case Opcode.Edwhile:
                     {
-                        sb.Unindent();
-                        sb.Write("} while (");
-                        _constructingBinaryExpression = true;
-                        _expressionCount = 0;
-                        _endDoWhile = true;
+                        if (AssemblyFormat)
+                        {
+                            _sb.WriteStandardOpcode("edwhile");
+                        }
+                        else
+                        {
+                            sb.Unindent();
+                            sb.Write("} while (");
+                            _constructingBinaryExpression = true;
+                            _expressionCount = 0;
+                            _endDoWhile = true;
+                        }
                         break;
                     }
                 case Opcode.Switch:
                     {
                         var varw = br.ReadByte();
-                        sb.WriteLine($"switch (var_{varw:X2})");
-                        sb.WriteLine("{");
-                        sb.Indent();
+                        if (AssemblyFormat)
+                        {
+                            _sb.WriteStandardOpcode("switch", varw);
+                        }
+                        else
+                        {
+                            sb.WriteLine($"switch ({GetVariableName(varw)})");
+                            _sb.OpenBlock();
+                        }
                         break;
                     }
                 case Opcode.Case:
@@ -315,24 +417,42 @@ namespace rer
                         br.ReadByte();
                         br.ReadUInt16();
                         var value = br.ReadUInt16();
-                        sb.Unindent();
-                        sb.WriteLine($"case {value}:");
-                        sb.Indent();
+                        if (AssemblyFormat)
+                        {
+                            _sb.WriteStandardOpcode("case", value);
+                        }
+                        else
+                        {
+                            sb.Unindent();
+                            sb.WriteLine($"case {value}:");
+                            sb.Indent();
+                        }
                         break;
                     }
                 case Opcode.Default:
                     {
-                        sb.Unindent();
-                        sb.WriteLine($"default:");
-                        sb.Indent();
+                        if (AssemblyFormat)
+                        {
+                            _sb.WriteStandardOpcode("default");
+                        }
+                        else
+                        {
+                            sb.Unindent();
+                            sb.WriteLine($"default:");
+                            sb.Indent();
+                        }
                         break;
                     }
                 case Opcode.Eswitch:
+                    if (AssemblyFormat)
                     {
-                        sb.Unindent();
-                        sb.WriteLine("}");
-                        break;
+                        _sb.WriteStandardOpcode("eswitch");
                     }
+                    else
+                    {
+                        sb.CloseBlock();
+                    }
+                    break;
                 case Opcode.Goto:
                     {
                         var a = br.ReadByte();
@@ -340,44 +460,73 @@ namespace rer
                         var c = br.ReadByte();
                         var rel = br.ReadInt16();
                         var io = offset + rel;
-                        sb.WriteLine($"goto off_{io};");
-                        sb.InsertLabel(io);
+                        if (AssemblyFormat)
+                        {
+                            _sb.WriteStandardOpcode("goto", sb.GetLabelName(io));
+                        }
+                        else
+                        {
+                            sb.WriteLine($"goto {sb.GetLabelName(io)};");
+                            sb.InsertLabel(io);
+                        }
                         break;
                     }
                 case Opcode.Gosub:
                     {
                         var num = br.ReadByte();
-                        sb.WriteLine($"sub_{num:X2}();");
+                        if (AssemblyFormat)
+                            sb.WriteStandardOpcode("gosub", $"0x{num:X2}");
+                        else
+                            sb.WriteLine($"sub_{num:X2}();");
                         break;
                     }
                 case Opcode.Return:
-                    {
-                        sb.WriteLine($"return;");
-                        break;
-                    }
+                    if (AssemblyFormat)
+                        sb.WriteStandardOpcode("return");
+                    else
+                        sb.WriteLine("return;");
+                    break;
                 case Opcode.Break:
                     {
-                        sb.WriteLine("break;");
+                        if (AssemblyFormat)
+                            sb.WriteStandardOpcode("break");
+                        else
+                            sb.WriteLine("break;");
+                        break;
+                    }
+                case Opcode.WorkCopy:
+                    {
+                        var varw = br.ReadByte();
+                        var dst = br.ReadByte();
+                        var size = br.ReadByte();
+                        sb.WriteStandardOpcode("work_copy", varw, dst, size);
                         break;
                     }
                 case Opcode.Cmp:
                     {
-                        var ops = new[] { "==", ">", ">=", "<", "<=", "!=" };
-
                         br.ReadByte();
                         var index = br.ReadByte();
                         var op = br.ReadByte();
                         var value = br.ReadInt16();
-                        var opS = ops.Length > op ? ops[op] : "?";
 
-                        if (_constructingBinaryExpression)
+                        if (AssemblyFormat)
                         {
-                            if (_expressionCount != 0)
+                            sb.WriteStandardOpcode("cmp", index, op, value);
+                        }
+                        else
+                        {
+                            if (_constructingBinaryExpression)
                             {
-                                sb.Write(" && ");
+                                if (_expressionCount != 0)
+                                {
+                                    sb.Write(" && ");
+                                }
+
+                                var ops = new[] { "==", ">", ">=", "<", "<=", "!=" };
+                                var opS = ops.Length > op ? ops[op] : "?";
+                                sb.Write($"arr[{index}] {opS} {value}");
+                                _expressionCount++;
                             }
-                            sb.Write($"arr[{index}] {opS} {value}");
-                            _expressionCount++;
                         }
                         break;
                     }
@@ -386,22 +535,33 @@ namespace rer
                         var bitArray = br.ReadByte();
                         var number = br.ReadByte();
                         var value = br.ReadByte();
+                        var bitString = GetBitsString(bitArray, number);
 
-                        if (_constructingBinaryExpression)
+                        if (AssemblyFormat)
                         {
-                            if (_expressionCount != 0)
+                            if (bitString.StartsWith("bits"))
+                                sb.WriteStandardOpcode("ck", bitArray, number, value);
+                            else
+                                sb.WriteStandardOpcode("ck", bitString);
+                        }
+                        else
+                        {
+                            if (_constructingBinaryExpression)
                             {
-                                sb.Write(" && ");
+                                if (_expressionCount != 0)
+                                {
+                                    sb.Write(" && ");
+                                }
+                                sb.Write($"{GetBitsString(bitArray, number)} == {value}");
+                                _expressionCount++;
                             }
-                            sb.Write($"{GetBitsString(bitArray, number)} == {value}");
-                            _expressionCount++;
                         }
                         break;
                     }
                 case Opcode.ObjModelSet:
                     {
                         var id = br.ReadByte();
-                        sb.WriteLine($"obj_model_set({id}, ...)");
+                        sb.WriteStandardOpcode("obj_model_set", id, "...");
                         break;
                     }
                 case Opcode.WorkSet:
@@ -417,7 +577,7 @@ namespace rer
                         else if (kind == 4)
                             kindS = "wk_door";
 
-                        sb.WriteLine($"work_set({kindS}, {id});");
+                        sb.WriteStandardOpcode("work_set", kindS, id);
                         break;
                     }
                 case Opcode.Set:
@@ -425,25 +585,41 @@ namespace rer
                         var bitArray = br.ReadByte();
                         var number = br.ReadByte();
                         var opChg = br.ReadByte();
-                        sb.Write(GetBitsString(bitArray, number));
-                        if (opChg == 0)
-                            sb.WriteLine(" = 0;");
-                        else if (opChg == 1)
-                            sb.WriteLine(" = 1;");
-                        else if (opChg == 7)
-                            sb.WriteLine(" ^= 1;");
+                        if (AssemblyFormat)
+                        {
+                            sb.WriteStandardOpcode("set", bitArray, number, opChg);
+                        }
                         else
-                            sb.WriteLine(" (INVALID);");
+                        {
+                            sb.Write(GetBitsString(bitArray, number));
+                            if (opChg == 0)
+                                sb.WriteLine(" = 0;");
+                            else if (opChg == 1)
+                                sb.WriteLine(" = 1;");
+                            else if (opChg == 7)
+                                sb.WriteLine(" ^= 1;");
+                            else
+                                sb.WriteLine(" (INVALID);");
+                        }
                         break;
                     }
                 case Opcode.Calc:
                     {
-                        var ops = new string[] { "+", "-", "*", "/", "%", "|", "&", "^", "~", "<<", ">>", ">>>" };
+                        br.ReadByte();
                         var op = br.ReadByte();
                         var var = br.ReadByte();
-                        var src = br.ReadByte();
-                        var opS = ops.Length > op ? ops[op] : "?";
-                        sb.WriteLine($"var_{var:X2} {opS}= {src:X2};");
+                        var src = br.ReadInt16();
+
+                        if (AssemblyFormat)
+                        {
+                            sb.WriteStandardOpcode("calc", op, var, src);
+                        }
+                        else
+                        {
+                            var ops = new string[] { "+", "-", "*", "/", "%", "|", "&", "^", "~", "<<", ">>", ">>>" };
+                            var opS = ops.Length > op ? ops[op] : "?";
+                            sb.WriteLine($"{GetVariableName(var)} {opS}= {src:X2};");
+                        }
                         break;
                     }
                 case Opcode.AotSet:
@@ -453,7 +629,7 @@ namespace rer
                         br.ReadBytes(3);
                         br.ReadBytes(8);
                         br.ReadBytes(6);
-                        sb.WriteLine($"aot_set({id}, 0x{type:X});");
+                        sb.WriteStandardOpcode("aot_set", id, $"0x{type:X}");
                         break;
                     }
                 case Opcode.PosSet:
@@ -461,20 +637,101 @@ namespace rer
                         var x = br.ReadInt16();
                         var y = br.ReadInt16();
                         var z = br.ReadInt16();
-                        sb.WriteLine($"pos_set({x}, {y}, {z});");
+                        sb.WriteStandardOpcode("pos_set", x, y, z);
                         break;
                     }
                 case Opcode.ScaIdSet:
                     {
                         var entry = br.ReadByte();
                         var id = br.ReadUInt16();
-                        sb.WriteLine($"sca_id_set({entry}, {id});");
+                        sb.WriteStandardOpcode("sca_id_set", entry, id);
+                        break;
+                    }
+                case Opcode.MemberSet:
+                    {
+                        var dst = br.ReadByte();
+                        var src = br.ReadInt16();
+                        sb.WriteStandardOpcode("member_set", dst, src);
+                        break;
+                    }
+                case Opcode.MemberSet2:
+                    {
+                        var dst = br.ReadByte();
+                        var src = br.ReadByte();
+                        if (AssemblyFormat)
+                            sb.WriteStandardOpcode("member_set2", dst, src);
+                        else
+                            sb.WriteStandardOpcode("member_set", dst, GetVariableName(src));
+                        break;
+                    }
+                case Opcode.DirCk:
+                    {
+                        br.ReadByte();
+                        var x = br.ReadInt16();
+                        var y = br.ReadInt16();
+                        var add = br.ReadInt16();
+
+                        if (AssemblyFormat)
+                        {
+                            sb.WriteStandardOpcode("dir_ck", x, y, add);
+                        }
+                        else
+                        {
+                            if (_constructingBinaryExpression)
+                            {
+                                if (_expressionCount != 0)
+                                {
+                                    sb.Write(" && ");
+                                }
+
+                                sb.Write($"dir_ck({x}, {y}, {add})");
+                                _expressionCount++;
+                            }
+                        }
+                        break;
+                    }
+                case Opcode.MemberCopy:
+                    {
+                        var dst = br.ReadByte();
+                        var src = br.ReadByte();
+                        if (AssemblyFormat)
+                            sb.WriteStandardOpcode("member_copy", dst, src);
+                        else
+                            sb.WriteStandardOpcode("member_copy", GetVariableName(dst), src);
+                        break;
+                    }
+                case Opcode.MemberCmp:
+                    {
+                        br.ReadByte();
+                        var flag = br.ReadByte();
+                        var op = br.ReadByte();
+                        var value = br.ReadInt16();
+
+                        if (AssemblyFormat)
+                        {
+                            sb.WriteStandardOpcode("member_cmp", flag, op, value);
+                        }
+                        else
+                        {
+                            if (_constructingBinaryExpression)
+                            {
+                                if (_expressionCount != 0)
+                                {
+                                    sb.Write(" && ");
+                                }
+
+                                var ops = new[] { "==", ">", ">=", "<", "<=", "!=" };
+                                var opS = ops.Length > op ? ops[op] : "?";
+                                sb.Write($"&{flag} {opS} {value}");
+                                _expressionCount++;
+                            }
+                        }
                         break;
                     }
                 case Opcode.AotOn:
                     {
                         var id = br.ReadByte();
-                        sb.WriteLine($"aot_on({id});");
+                        sb.WriteStandardOpcode("aot_on", id);
                         break;
                     }
                 case Opcode.SceBgmControl:
@@ -484,7 +741,7 @@ namespace rer
                         var dummy = br.ReadByte();
                         var volume = br.ReadByte();
                         var channel = br.ReadByte();
-                        sb.WriteLine($"sce_bgm_control({bgm},{action},{volume},{channel});");
+                        sb.WriteStandardOpcode("sce_bgm_control", bgm, action, volume, channel);
                         break;
                     }
                 case Opcode.SceBgmtblSet:
@@ -496,40 +753,50 @@ namespace rer
                         var sub = br.ReadByte();
                         var dummy1 = br.ReadByte();
                         var dummy2 = br.ReadByte();
-                        sb.WriteLine($"sce_bgmtbl_set({stage}, 0x{roomId:X2}, 0x{main:X2}, 0x{sub:X2});");
+                        sb.WriteStandardOpcode("sce_bgmtbl_set", stage, $"0x{roomId:X2}", $"0x{main:X2}", $"0x{sub:X2}");
                         break;
                     }
                 case Opcode.XaOn:
                     {
                         var channel = br.ReadByte();
                         var id = br.ReadInt16();
-                        sb.WriteLine($"xa_on({channel}, {id});");
+                        sb.WriteStandardOpcode("xa_on", channel, id);
                         break;
                     }
                 case Opcode.SceItemLost:
                     {
                         var item = br.ReadByte();
-                        sb.WriteLine($"sce_item_lost({GetItemConstant(item)});");
+                        sb.WriteStandardOpcode("sce_item_lost", GetItemConstant(item));
                         break;
                     }
                 case Opcode.DoorAotSet4p:
                     {
                         var id = br.ReadByte();
-                        sb.WriteLine($"door_aot_set_4p({id});");
+                        sb.WriteStandardOpcode("door_aot_set_4p", id);
                         break;
                     }
                 case Opcode.ItemAotSet4p:
                     {
                         var id = br.ReadByte();
-                        sb.WriteLine($"item_aot_set_4p({id});");
+                        sb.WriteStandardOpcode("item_aot_set_4p", id);
                         break;
                     }
             }
         }
 
+        private static string GetEnemyConstant(EnemyType type)
+        {
+            return $"ENEMY_{type.ToString().ToUpperInvariant()}";
+        }
+
         private static string GetItemConstant(ushort item)
         {
             return $"ITEM_{ ((ItemType)item).ToString().ToUpperInvariant()}";
+        }
+
+        private static string GetVariableName(int id)
+        {
+            return $"var_{id:X2}";
         }
 
         private static string GetBitsString(int bitArray, int number)

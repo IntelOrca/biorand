@@ -16,7 +16,7 @@ namespace rer
             var gameData = GameDataReader.Read(originalDataPath, modPath);
 
             // DumpRdtList(gameData, @"M:\git\rer\docs\rdt.txt");
-            // DumpScripts(gameData, @"F:\games\re2\mod_rando\scripts");
+            DumpScripts(gameData, @"F:\games\re2\mod_rando\scripts");
             return;
 
             var rng = new Rng();
@@ -169,8 +169,8 @@ namespace rer
             Directory.CreateDirectory(scriptPath);
             foreach (var rdt in gameData.Rdts)
             {
-                var script = rdt.Script;
-                File.WriteAllText(Path.Combine(scriptPath, $"{rdt.RdtId}.bio.c"), script);
+                File.WriteAllText(Path.Combine(scriptPath, $"{rdt.RdtId}.bio"), rdt.Script);
+                File.WriteAllText(Path.Combine(scriptPath, $"{rdt.RdtId}.s"), rdt.ScriptDisassembly);
             }
         }
     }

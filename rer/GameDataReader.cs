@@ -72,15 +72,21 @@ namespace rer
             rdt.OriginalPath = path;
             rdt.ModifiedPath = randomPath;
 
-            var scriptDecompiler = new ScriptDecompiler();
-            rdtFile.ReadScript(scriptDecompiler);
-            rdt.Script = scriptDecompiler.GetScript();
+            rdt.Script = Decompile(rdtFile, false);
+            rdt.ScriptDisassembly = Decompile(rdtFile, true);
 
             var opcodeBuilder = new OpcodeBuilder();
             rdtFile.ReadScript(opcodeBuilder);
             rdt.Opcodes = opcodeBuilder.ToArray();
 
             return rdt;
+        }
+
+        private static string Decompile(RdtFile rdtFile, bool assemblyFormat)
+        {
+            var scriptDecompiler = new ScriptDecompiler(assemblyFormat);
+            rdtFile.ReadScript(scriptDecompiler);
+            return scriptDecompiler.GetScript();
         }
     }
 }
