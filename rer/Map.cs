@@ -41,6 +41,7 @@ namespace rer
         public bool Locked { get; set; }
         public bool NoReturn { get; set; }
         public ushort[]? Requires { get; set; }
+        public int? Player { get; set; }
         public int? Scenario { get; set; }
     }
 
@@ -52,6 +53,7 @@ namespace rer
         public string? Link { get; set; }
         public string? Priority { get; set; }
         public ushort[]? Requires { get; set; }
+        public int? Player { get; set; }
         public int? Scenario { get; set; }
     }
 
@@ -65,6 +67,7 @@ namespace rer
         public bool KeepState { get; set; }
         public bool KeepAi { get; set; }
         public short? Y { get; set; }
+        public int? Player { get; set; }
         public int? Scenario { get; set; }
     }
 }

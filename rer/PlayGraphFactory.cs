@@ -22,7 +22,9 @@ namespace rer
         private HashSet<ushort> _requiredItems = new HashSet<ushort>();
         private HashSet<ushort> _haveItems = new HashSet<ushort>();
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
+        private HashSet<RdtItemId> _visitedItems = new HashSet<RdtItemId>();
         private bool _firstRedJewelPlaced;
+        private bool _firstSmallKeyPlaced;
         private Rng _rng;
         private bool _debugLogging;
 
@@ -111,6 +113,8 @@ namespace rer
                 checkpoint = newCheckpoint;
             }
             _shufflePool.AddRange(_currentPool);
+            if (_shufflePool.DistinctBy(x => x.RdtItemId).Count() != _shufflePool.Count())
+                throw new Exception();
 
             if (_config.ShuffleItems)
             {
@@ -163,16 +167,13 @@ namespace rer
                     // First time we have visited room, add room items to pool
                     foreach (var item in node.Items)
                     {
-                        // Check if we have already added this item in advance
-                        var futureIndex = _futurePool.FindIndex(x => x.RdtItemId == item.RdtItemId);
-                        if (futureIndex == -1)
-                        {
+                        if (_visitedItems.Add(item.RdtItemId))
                             _currentPool.Add(item);
-                        }
-                        else
-                        {
-                            _futurePool.RemoveAt(futureIndex);
-                        }
+
+                        if (_currentPool.DistinctBy(x => x.RdtItemId).Count() != _currentPool.Count())
+                            throw new Exception();
+
+                        _futurePool.RemoveAll(x => x.RdtItemId == item.RdtItemId);
                     }
                     foreach (var linkedItem in node.LinkedItems)
                     {
@@ -310,8 +311,10 @@ namespace rer
                 _logger.WriteLine($"        {Items.GetItemName(item)}");
             }
 
+            if (_requiredItems.Any(x => x != (ushort)ItemType.FilmC && x != (ushort)ItemType.Cord))
+                throw new Exception("Unable to find key item to swap");
+
             _requiredItems.Clear();
-            // throw new Exception("Unable to find key item to swap");
         }
 
         private bool PlaceKeyItem(ushort req, bool alternativeRoute)
@@ -327,16 +330,21 @@ namespace rer
             var originalIndex = _currentPool.FindIndex(x => x.Type == req);
             if (originalIndex == -1 && alternativeRoute)
             {
-                // Key must be in a layer area, find it
+                // Key must be in a later area, find it
                 foreach (var node in _nodes)
                 {
-                    var futureItem = node.Items.FirstOrDefault(x => x.Type == req);
-                    if (futureItem.Type == req && futureItem.Priority != ItemPriority.Fixed)
+                    foreach (var item in node.Items)
                     {
-                        _futurePool.Add(futureItem);
-                        _currentPool.Add(futureItem);
-                        originalIndex = _currentPool.Count - 1;
-                        break;
+                        if (item.Type == req && item.Priority != ItemPriority.Fixed && !_visitedItems.Contains((RdtItemId)item.RdtItemId))
+                        {
+                            _futurePool.Add(item);
+                            _currentPool.Add(item);
+                            if (_currentPool.DistinctBy(x => x.RdtItemId).Count() != _currentPool.Count())
+                                throw new Exception();
+                            _visitedItems.Add(item.RdtItemId);
+                            originalIndex = _currentPool.Count - 1;
+                            break;
+                        }
                     }
                 }
             }
@@ -364,9 +372,13 @@ namespace rer
             itemEntry.Type = req;
 
             // Remove new key item location from pool
-            if (req == 0x33 && !_firstRedJewelPlaced) // red jewel
+            if (req == (ushort)ItemType.RedJewel && !_firstRedJewelPlaced)
             {
                 _firstRedJewelPlaced = true;
+            }
+            else if (req == (ushort)ItemType.SmallKey && !_firstSmallKeyPlaced)
+            {
+                _firstSmallKeyPlaced = true;
             }
             else
             {
@@ -387,23 +399,47 @@ namespace rer
             var shuffled = _shufflePool
                 .Where(x => x.Priority == ItemPriority.Normal)
                 .Shuffle(_rng)
-                .Concat(_shufflePool.Where(x => x.Priority != ItemPriority.Normal))
+                .Concat(_shufflePool.Where(x => x.Priority == ItemPriority.Low))
                 .ToQueue();
             _shufflePool.Clear();
 
             // Weapons first
             var ammoTypes = new HashSet<ItemType>() { ItemType.HandgunAmmo };
             var items = new List<ItemType>();
-            if (_rng.Next(0, 3) >= 1)
-                items.Add(ItemType.Bowgun);
-            if (_rng.Next(0, 3) >= 1)
-                items.Add(_rng.NextOf(ItemType.GrenadeLauncherExplosive, ItemType.GrenadeLauncherFlame, ItemType.GrenadeLauncherAcid));
-            if (_rng.Next(0, 2) == 0)
-                items.Add(ItemType.SMG);
-            if (_rng.Next(0, 2) == 0)
-                items.Add(ItemType.Sparkshot);
-            if (_rng.Next(0, 2) == 0)
-                items.Add(ItemType.ColtSAA);
+            if (_config.Player == 0)
+            {
+                if (_rng.Next(0, 3) >= 1)
+                    items.Add(ItemType.HandgunParts);
+                if (_rng.Next(0, 2) >= 1)
+                {
+                    items.Add(ItemType.Shotgun);
+                    if (_rng.Next(0, 2) >= 1)
+                        items.Add(ItemType.ShotgunParts);
+                }
+                if (_rng.Next(0, 3) >= 1)
+                {
+                    items.Add(ItemType.Magnum);
+                    if (_rng.Next(0, 2) >= 1)
+                        items.Add(ItemType.MagnumParts);
+                }
+                if (_rng.Next(0, 2) == 0)
+                    items.Add(ItemType.SMG);
+                if (_rng.Next(0, 2) == 0)
+                    items.Add(ItemType.Flamethrower);
+            }
+            else
+            {
+                if (_rng.Next(0, 3) >= 1)
+                    items.Add(ItemType.Bowgun);
+                if (_rng.Next(0, 3) >= 1)
+                    items.Add(_rng.NextOf(ItemType.GrenadeLauncherExplosive, ItemType.GrenadeLauncherFlame, ItemType.GrenadeLauncherAcid));
+                if (_rng.Next(0, 2) == 0)
+                    items.Add(ItemType.SMG);
+                if (_rng.Next(0, 2) == 0)
+                    items.Add(ItemType.Sparkshot);
+                if (_rng.Next(0, 2) == 0)
+                    items.Add(ItemType.ColtSAA);
+            }
             if (_rng.Next(0, 2) == 0)
                 items.Add(ItemType.RocketLauncher);
             foreach (var itemType in items)
@@ -429,8 +465,12 @@ namespace rer
 
             if (ammoTypes.Contains(ItemType.HandgunAmmo))
                 table.Add(ItemType.HandgunAmmo, ammo * 0.4);
+            if (ammoTypes.Contains(ItemType.ShotgunAmmo))
+                table.Add(ItemType.ShotgunAmmo, ammo * 0.2);
             if (ammoTypes.Contains(ItemType.BowgunAmmo))
                 table.Add(ItemType.BowgunAmmo, ammo * 0.1);
+            if (ammoTypes.Contains(ItemType.MagnumAmmo))
+                table.Add(ItemType.MagnumAmmo, ammo * 0.1);
             if (ammoTypes.Contains(ItemType.ExplosiveRounds) ||
                 ammoTypes.Contains(ItemType.FlameRounds) ||
                 ammoTypes.Contains(ItemType.AcidRounds))
@@ -439,6 +479,8 @@ namespace rer
                 table.Add(ItemType.AcidRounds, ammo * 0.1);
                 table.Add(ItemType.FlameRounds, ammo * 0.1);
             }
+            if (ammoTypes.Contains(ItemType.FuelTank))
+                table.Add(ItemType.FuelTank, ammo * 0.1);
             if (ammoTypes.Contains(ItemType.SparkshotAmmo))
                 table.Add(ItemType.SparkshotAmmo, ammo * 0.1);
             if (ammoTypes.Contains(ItemType.SMGAmmo))
@@ -461,6 +503,8 @@ namespace rer
                 newEntry.Type = (byte)itemType;
                 newEntry.Amount = amount;
                 _logger.WriteLine($"    Replaced {oldEntry} with {newEntry}");
+                if (_definedPool.Any(x => x.RdtItemId == newEntry.RdtItemId))
+                    throw new Exception();
                 _definedPool.Add(newEntry);
                 return true;
             }
@@ -515,12 +559,17 @@ namespace rer
                     return (byte)_rng.Next(1, 3);
                 case ItemType.HandgunAmmo:
                     return (byte)_rng.Next(1, (int)(60 * multiplier));
+                case ItemType.ShotgunAmmo:
+                    return (byte)_rng.Next(1, (int)(30 * multiplier));
                 case ItemType.BowgunAmmo:
                     return (byte)_rng.Next(1, (int)(30 * multiplier));
+                case ItemType.MagnumAmmo:
+                    return (byte)_rng.Next(1, (int)(10 * multiplier));
                 case ItemType.ExplosiveRounds:
                 case ItemType.AcidRounds:
                 case ItemType.FlameRounds:
                     return (byte)_rng.Next(1, (int)(10 * multiplier));
+                case ItemType.FuelTank:
                 case ItemType.SparkshotAmmo:
                 case ItemType.SMGAmmo:
                     return (byte)_rng.Next(1, (int)(100 * multiplier));
@@ -610,6 +659,8 @@ namespace rer
                 {
                     foreach (var door in mapRoom.Doors)
                     {
+                        if (door.Player != null && door.Player != _config.Player)
+                            continue;
                         if (door.Scenario != null && door.Scenario != _config.Scenario)
                             continue;
 
@@ -623,6 +674,8 @@ namespace rer
                 {
                     foreach (var correctedItem in mapRoom.Items)
                     {
+                        if (correctedItem.Player != null && correctedItem.Player != _config.Player)
+                            continue;
                         if (correctedItem.Scenario != null && correctedItem.Scenario != _config.Scenario)
                             continue;
 

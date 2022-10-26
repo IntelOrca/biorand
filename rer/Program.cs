@@ -13,7 +13,7 @@ namespace rer
             var re2Path = @"F:\games\re2";
             var originalDataPath = Path.Combine(re2Path, "data");
             var modPath = Path.Combine(re2Path, @"mod_rando");
-            var gameData = GameDataReader.Read(originalDataPath, modPath);
+            var gameData = GameDataReader.Read(originalDataPath, modPath, 0);
 
             // DumpRdtList(gameData, @"M:\git\rer\docs\rdt.txt");
             DumpScripts(gameData, @"F:\games\re2\mod_rando\scripts");
@@ -39,24 +39,24 @@ namespace rer
             if (config.GameVariant == 0)
             {
                 // Leon A / Claire B
-                // config.Player = 0;
-                // config.Scenario = 0;
-                // Generate2(config);
-
-                config.Player = 1;
-                config.Scenario = 1;
+                config.Player = 0;
+                config.Scenario = 0;
                 Generate2(config, re2Path);
+
+                // config.Player = 1;
+                // config.Scenario = 1;
+                // Generate2(config, re2Path);
             }
             else
             {
                 // Leon B / Claire A
-                // config.Player = 0;
-                // config.Scenario = 1;
-                // Generate2(config);
-
-                config.Player = 1;
-                config.Scenario = 0;
+                config.Player = 0;
+                config.Scenario = 1;
                 Generate2(config, re2Path);
+
+                // config.Player = 1;
+                // config.Scenario = 0;
+                // Generate2(config, re2Path);
             }
         }
 
@@ -89,7 +89,7 @@ namespace rer
             logger.WriteLine($"Scenario: {GetScenarioName(config.Scenario)}");
 
             var map = LoadJsonMap(@"M:\git\rer\rer\data\rdt.json");
-            var gameData = GameDataReader.Read(originalDataPath, modPath);
+            var gameData = GameDataReader.Read(originalDataPath, modPath, config.Player);
 
             DumpScripts(gameData, Path.Combine(modPath, "scripts"));
 
@@ -104,7 +104,7 @@ namespace rer
 
             if (config.RandomNPCs)
             {
-                var npcRandomiser = new NPCRandomiser(logger, originalDataPath, modPath, gameData, map, randomNpcs);
+                var npcRandomiser = new NPCRandomiser(logger, config, originalDataPath, modPath, gameData, map, randomNpcs);
                 npcRandomiser.Randomise();
             }
 
@@ -123,7 +123,7 @@ namespace rer
 #if DEBUG
             if (config.RandomItems || config.RandomEnemies)
             {
-                var moddedGameData = GameDataReader.Read(modPath, modPath);
+                var moddedGameData = GameDataReader.Read(modPath, modPath, config.Player);
                 DumpScripts(moddedGameData, Path.Combine(modPath, "scripts_modded"));
             }
 #endif

@@ -17,7 +17,7 @@ namespace rer
 
         public bool AssemblyFormat { get; set; }
         public int CurrentOffset { get; set; }
-        public byte[] CurrentOpcodeBytes { get; set; }
+        public byte[] CurrentOpcodeBytes { get; set; } = new byte[0];
 
         public void ResetIndent()
         {

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -9,13 +7,13 @@ namespace rer
 {
     internal static class GameDataReader
     {
-        public static GameData Read(string srcGamePath, string rndGamePath)
+        public static GameData Read(string srcGamePath, string rndGamePath, int player)
         {
-            var files = Directory.GetFiles(Path.Combine(srcGamePath, @"Pl1\Rdt"));
+            var files = Directory.GetFiles(Path.Combine(srcGamePath, @$"Pl{player}\Rdt"));
             var rdts = new List<Rdt>();
             foreach (var file in files)
             {
-                var randomFile = Path.Combine(rndGamePath, @"Pl1\Rdt", Path.GetFileName(file));
+                var randomFile = Path.Combine(rndGamePath, @$"Pl{player}\Rdt", Path.GetFileName(file));
                 try
                 {
                     var room = ReadRdt(file, randomFile);

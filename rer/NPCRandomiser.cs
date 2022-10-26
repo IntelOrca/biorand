@@ -10,19 +10,21 @@ namespace rer
     internal class NPCRandomiser
     {
         private readonly RandoLogger _logger;
-        private string _originalDataPath;
-        private string _modPath;
-        private GameData _gameData;
-        private Map _map;
-        private Rng _random;
-        private VoiceInfo[] _voiceInfo;
-        private VoiceInfo[] _available;
-        private List<VoiceInfo> _pool = new List<VoiceInfo>();
-        private HashSet<VoiceSample> _randomized = new HashSet<VoiceSample>();
+        private readonly RandoConfig _config;
+        private readonly string _originalDataPath;
+        private readonly string _modPath;
+        private readonly GameData _gameData;
+        private readonly Map _map;
+        private readonly Rng _random;
+        private readonly VoiceInfo[] _voiceInfo;
+        private readonly VoiceInfo[] _available;
+        private readonly List<VoiceInfo> _pool = new List<VoiceInfo>();
+        private readonly HashSet<VoiceSample> _randomized = new HashSet<VoiceSample>();
 
-        public NPCRandomiser(RandoLogger logger, string originalDataPath, string modPath, GameData gameData, Map map, Rng random)
+        public NPCRandomiser(RandoLogger logger, RandoConfig config, string originalDataPath, string modPath, GameData gameData, Map map, Rng random)
         {
             _logger = logger;
+            _config = config;
             _originalDataPath = originalDataPath;
             _modPath = modPath;
             _gameData = gameData;
@@ -80,6 +82,8 @@ namespace rer
 
         public void Randomise()
         {
+            var playerActor = _config.Player == 0 ? "leon" : "claire";
+
             _pool.AddRange(_available.Shuffle(_random));
 
             _logger.WriteHeading("Randomizing Characters, Voices:");
@@ -99,9 +103,30 @@ namespace rer
                     foreach (var enemy in rdt.Enemies)
                     {
                         // Marvin edge case
-                        if (rdt.RdtId.Stage == 1 && rdt.RdtId.Room == 2 && enemy.Offset != 0x1DF6)
+                        if (rdt.RdtId.Stage == 1 && rdt.RdtId.Room == 2)
                         {
-                            continue;
+                            if (_config.Player == 0)
+                            {
+                                if (enemy.Offset != 0x1E1C)
+                                {
+                                    continue;
+                                }
+                            }
+                            else
+                            {
+                                if (enemy.Offset != 0x1DF6)
+                                {
+                                    continue;
+                                }
+                            }
+                        }
+                        // Ben edge case
+                        else if (rdt.RdtId.Stage == 2 && rdt.RdtId.Room == 1)
+                        {
+                            if (enemy.Type == EnemyType.BenBertolucci1)
+                            {
+                                continue;
+                            }
                         }
 
                         if (IsNpc(enemy.Type))
@@ -117,7 +142,7 @@ namespace rer
 
                 foreach (var sound in rdt.Sounds)
                 {
-                    var voice = new VoiceSample(1, rdt.RdtId.Stage + 1, sound.Id);
+                    var voice = new VoiceSample(_config.Player, rdt.RdtId.Stage + 1, sound.Id);
                     var (actor, kind) = GetVoice(voice);
                     if (actor != null)
                     {
@@ -125,7 +150,7 @@ namespace rer
                         {
                             RandomizeVoice(voice, actor, actor, kind);
                         }
-                        if ((actor == "claire" && kind != "npc") || kind == "pc" || npcs.Length == 0)
+                        if ((actor == playerActor && kind != "npc") || kind == "pc" || npcs.Length == 0)
                         {
                             RandomizeVoice(voice, actor, actor, null);
                         }

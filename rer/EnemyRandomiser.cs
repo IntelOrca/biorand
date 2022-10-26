@@ -137,6 +137,9 @@ namespace rer
             if (enemySpec == null)
                 return;
 
+            if (enemySpec.Player != null && enemySpec.Player != _config.Player)
+                return;
+
             if (enemySpec.Scenario != null && enemySpec.Scenario != _config.Scenario)
                 return;
 
