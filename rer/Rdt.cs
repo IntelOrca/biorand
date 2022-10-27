@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
 using rer.Opcodes;
 
 namespace rer
@@ -14,6 +15,7 @@ namespace rer
         public string? Script { get; set; }
         public string? ScriptDisassembly { get; set; }
         public OpcodeBase[] Opcodes { get; set; } = new OpcodeBase[0];
+        public ScriptAst? Ast { get; set; }
 
         public IEnumerable<DoorAotSeOpcode> Doors => Opcodes.OfType<DoorAotSeOpcode>();
         public IEnumerable<SceEmSetOpcode> Enemies => Opcodes.OfType<SceEmSetOpcode>();
@@ -26,6 +28,8 @@ namespace rer
         {
             RdtId = rdtId;
         }
+
+        public IEnumerable<T> EnumerateOpcodes<T>(RandoConfig config) => AstEnumerator<T>.Enumerate(Ast!, config);
 
         public void SetDoorTarget(int id, DoorAotSeOpcode sourceDoor)
         {

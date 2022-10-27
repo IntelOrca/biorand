@@ -1,21 +1,20 @@
 100 ():
     Door #0: 101 (0x1096)
-    Enemy #0: ZombieRandom (0x11EA)
-    Enemy #1: ZombieRandom (0x1200)
-    Enemy #2: ZombieRandom (0x1216)
-    Enemy #3: ZombieRandom (0x122C)
-    Enemy #4: ZombieRandom (0x1242)
-    Enemy #5: ZombieRandom (0x1258)
-    Enemy #0: ZombieRandom (0x1272)
-    Enemy #1: ZombieRandom (0x1288)
-    Enemy #2: ZombieRandom (0x129E)
-    Enemy #3: ZombieRandom (0x12B4)
-    Enemy #4: ZombieRandom (0x12CA)
-    Enemy #5: ZombieRandom (0x12E0)
+    Enemy #0: ZombieRandom (0x11EA) [jpn]
+    Enemy #1: ZombieRandom (0x1200) [jpn]
+    Enemy #2: ZombieRandom (0x1216) [jpn]
+    Enemy #3: ZombieRandom (0x122C) [jpn]
+    Enemy #4: ZombieRandom (0x1242) [jpn]
+    Enemy #5: ZombieRandom (0x1258) [jpn]
+    Enemy #0: ZombieRandom (0x1272) [usa]
+    Enemy #1: ZombieRandom (0x1288) [usa]
+    Enemy #2: ZombieRandom (0x129E) [usa]
+    Enemy #3: ZombieRandom (0x12B4) [usa]
+    Enemy #4: ZombieRandom (0x12CA) [usa]
+    Enemy #5: ZombieRandom (0x12E0) [usa]
 101 ():
     Door #0: 100 (0x17A2)
     Door #1: 102 (0x17C2)
-    Item #11: Shotgun x5 (0x182C)
     Item #8: HandgunAmmo x15 (0x1852)
     Item #9: HandgunAmmo x15 (0x1868)
     Enemy #0: RobertKendo (0x1A94)
@@ -28,24 +27,19 @@
     Enemy #2: ZombieRandom (0x1BA6)
     Enemy #3: ZombieRandom (0x1BBC)
     Enemy #4: ZombieRandom (0x1BD2)
+    Item #11: Shotgun x5 (0x182C)
 102 ():
     Door #0: 101 (0x1802)
     Door #1: 118 (0x1822)
-    Item #7: HandgunAmmo x30 (0x1E9E)
-    Item #7: HandgunAmmo x15 (0x1EB8)
     Enemy #0: ZombieRandom (0x1868)
     Enemy #1: ZombieRandom (0x187E)
     Enemy #2: ZombieRandom (0x1894)
     Enemy #3: ZombieRandom (0x18AA)
-    Enemy #0: 0 (0x1ED4)
+    Item #7: HandgunAmmo x30 (0x1E9E) [jpn]
+    Item #7: HandgunAmmo x15 (0x1EB8) [usa]
 103 ():
     Door #0: 200 (0x368A)
-    Item #5: HerbG x1 (0x3702)
-    Item #31: SpecialKey x1 (0x40B6)
-    Enemy #0: ZombieBrad (0x40A0)
-    Enemy #1: ZombieRandom (0x40CC)
-    Enemy #2: ZombieRandom (0x40E2)
-    Enemy #3: ZombieRandom (0x40F8)
+    Item #5: HerbG x1 (0x3702) [usa]
     Enemy #1: ZombieRandom (0x4110)
     Enemy #2: ZombieRandom (0x4126)
     Enemy #3: ZombieRandom (0x413C)
@@ -55,6 +49,11 @@
     Enemy #6: ZombieRandom (0x41B4)
     Enemy #7: ZombieRandom (0x41CA)
     Enemy #8: ZombieRandom (0x41E0)
+    Enemy #0: ZombieBrad (0x40A0)
+    Item #31: SpecialKey x1 (0x40B6)
+    Enemy #1: ZombieRandom (0x40CC)
+    Enemy #2: ZombieRandom (0x40E2)
+    Enemy #3: ZombieRandom (0x40F8)
 104 ():
     Door #0: 105 (0xBB2)
     Enemy #0: ZombieRandom (0xCB8)
@@ -79,113 +78,111 @@
 106 ():
     Door #0: 105 (0xBBE)
     Door #1: 107 (0xBDE)
-    Item #2: InkRibbon x3 (0xC24)
-    Item #4: ValveHandle x1 (0xC42)
-    Item #3: HandgunAmmo x15 (0xC58)
-    Item #3: HandgunAmmo x15 (0xC72)
     Enemy #0: ZombieGuy1 (0xDD0)
     Enemy #1: ZombieGirl (0xDE6)
     Enemy #0: ZombieGuy1 (0xE86)
     Enemy #1: ZombieGirl (0xE9C)
+    Item #2: InkRibbon x3 (0xC24)
+    Item #4: ValveHandle x1 (0xC42) [a]
+    Item #3: HandgunAmmo x15 (0xC58) [a]
+    Item #3: HandgunAmmo x15 (0xC72) [b]
 107 ():
     Door #0: 106 (0xABE)
     Door #1: 108 (0xADE)
-    Enemy #0: ZombieCop (0xB14)
-    Enemy #1: ZombieCop (0xB2A)
-    Enemy #2: ZombieCop (0xB40)
-    Enemy #0: ZombieRandom (0xB5E)
-    Enemy #1: ZombieRandom (0xB74)
-    Enemy #2: ZombieRandom (0xB8A)
-    Enemy #3: ZombieGirl (0xBA0)
-    Enemy #0: ZombieRandom (0xBCC)
-    Enemy #1: ZombieRandom (0xBE2)
-    Enemy #2: ZombieRandom (0xBF8)
-    Enemy #3: ZombieGirl (0xC0E)
+    Enemy #0: ZombieCop (0xB14) [jpn]
+    Enemy #1: ZombieCop (0xB2A) [jpn]
+    Enemy #2: ZombieCop (0xB40) [jpn]
+    Enemy #0: ZombieRandom (0xB5E) [jpn]
+    Enemy #1: ZombieRandom (0xB74) [jpn]
+    Enemy #2: ZombieRandom (0xB8A) [jpn]
+    Enemy #3: ZombieGirl (0xBA0) [jpn]
+    Enemy #0: ZombieRandom (0xBCC) [usa]
+    Enemy #1: ZombieRandom (0xBE2) [usa]
+    Enemy #2: ZombieRandom (0xBF8) [usa]
+    Enemy #3: ZombieGirl (0xC0E) [usa]
 108 ():
     Door #0: 107 (0x192E)
     Door #1: 109 (0x194E)
 109 ():
-    Door #0: 108 (0x2086)
-    Door #0: 11C (0x20AE)
+    Door #0: 108 (0x2086) [normal]
+    Door #0: 11C (0x20AE) [bonus]
     Door #1: 10A (0x20D0)
     Door #2: 116 (0x20F0)
-    Item #5: HandgunAmmo x30 (0x227A)
-    Item #5: HandgunAmmo x30 (0x22E8)
+    Enemy #0: Tyrant1 (0x2118) [bonus]
+    Enemy #0: Crow (0x2722) [a]
+    Enemy #1: Crow (0x2738) [a]
+    Enemy #2: Crow (0x274E) [a]
+    Enemy #3: Crow (0x2764) [a]
+    Enemy #4: Crow (0x277A) [a]
+    Enemy #5: Crow (0x2790) [a]
+    Enemy #0: Crow (0x27A8) [a]
+    Enemy #1: Crow (0x27BE) [a]
+    Enemy #2: Crow (0x27D4) [a]
+    Enemy #3: Crow (0x27EA) [a]
+    Enemy #4: Crow (0x2800) [a]
+    Enemy #1: Crow (0x25BE) [b]
+    Enemy #2: Crow (0x25D4) [b]
+    Enemy #3: Crow (0x25EA) [b]
+    Enemy #4: Crow (0x2600) [b]
+    Enemy #5: Crow (0x2616) [b]
+    Enemy #6: Crow (0x262C) [b]
+    Enemy #7: Crow (0x2642) [b]
+    Enemy #8: Crow (0x2658) [b]
+    Enemy #1: Crow (0x2670) [b]
+    Enemy #2: Crow (0x2686) [b]
+    Enemy #3: Crow (0x269C) [b]
+    Enemy #4: Crow (0x26B2) [b]
+    Enemy #5: Crow (0x26C8) [b]
+    Enemy #6: Crow (0x26DE) [b]
+    Enemy #7: Crow (0x26F4) [b]
+    Enemy #8: Crow (0x270A) [b]
+    Enemy #0: Tyrant1 (0x2250) [b]
+    Item #5: HandgunAmmo x30 (0x227A) [b]
+    Item #5: HandgunAmmo x30 (0x22E8) [b]
     Item #3: HandgunAmmo x15 (0x2340)
-    Item #4: HerbG x1 (0x235E)
-    Enemy #0: Tyrant1 (0x2118)
-    Enemy #0: Tyrant1 (0x2250)
-    Enemy #1: Crow (0x25BE)
-    Enemy #2: Crow (0x25D4)
-    Enemy #3: Crow (0x25EA)
-    Enemy #4: Crow (0x2600)
-    Enemy #5: Crow (0x2616)
-    Enemy #6: Crow (0x262C)
-    Enemy #7: Crow (0x2642)
-    Enemy #8: Crow (0x2658)
-    Enemy #1: Crow (0x2670)
-    Enemy #2: Crow (0x2686)
-    Enemy #3: Crow (0x269C)
-    Enemy #4: Crow (0x26B2)
-    Enemy #5: Crow (0x26C8)
-    Enemy #6: Crow (0x26DE)
-    Enemy #7: Crow (0x26F4)
-    Enemy #8: Crow (0x270A)
-    Enemy #0: Crow (0x2722)
-    Enemy #1: Crow (0x2738)
-    Enemy #2: Crow (0x274E)
-    Enemy #3: Crow (0x2764)
-    Enemy #4: Crow (0x277A)
-    Enemy #5: Crow (0x2790)
-    Enemy #0: Crow (0x27A8)
-    Enemy #1: Crow (0x27BE)
-    Enemy #2: Crow (0x27D4)
-    Enemy #3: Crow (0x27EA)
-    Enemy #4: Crow (0x2800)
-    Enemy #0: Crow (0x2818)
+    Item #4: HerbG x1 (0x235E) [b]
 10A ():
     Door #0: 109 (0x19CA)
     Door #1: 10F (0x19EA)
     Door #2: 10B (0x1A0A)
     Door #3: 21B (0x1A2A)
-    Item #0: 31836 x61055 (0x1EF8)
-    Enemy #0: ZombieRandom (0x1A52)
-    Enemy #1: ZombieRandom (0x1A68)
-    Enemy #2: ZombieRandom (0x1A7E)
-    Enemy #3: ZombieRandom (0x1A94)
-    Enemy #4: ZombieRandom (0x1AAA)
-    Enemy #5: ZombieRandom (0x1AC0)
-    Enemy #0: ZombieCop (0x1B84)
-    Enemy #1: ZombieCop (0x1B9A)
-    Enemy #0: LickerRed (0x1BB4)
-    Enemy #1: LickerRed (0x1BCA)
-    Enemy #0: ZombieCop (0x1C0A)
-    Enemy #1: ZombieCop (0x1C20)
-    Enemy #0: LickerRed (0x1C3A)
-    Enemy #1: LickerRed (0x1C50)
+    Enemy #0: ZombieRandom (0x1A52) [bonus]
+    Enemy #1: ZombieRandom (0x1A68) [bonus]
+    Enemy #2: ZombieRandom (0x1A7E) [bonus]
+    Enemy #3: ZombieRandom (0x1A94) [bonus]
+    Enemy #4: ZombieRandom (0x1AAA) [bonus]
+    Enemy #5: ZombieRandom (0x1AC0) [bonus]
+    Enemy #0: ZombieCop (0x1B84) [a]
+    Enemy #1: ZombieCop (0x1B9A) [a]
+    Enemy #0: LickerRed (0x1BB4) [b]
+    Enemy #1: LickerRed (0x1BCA) [b]
+    Enemy #0: ZombieCop (0x1C0A) [leon, a]
+    Enemy #1: ZombieCop (0x1C20) [leon, a]
+    Enemy #0: LickerRed (0x1C3A) [leon, b]
+    Enemy #1: LickerRed (0x1C50) [leon, b]
 10B ():
     Door #1: 10A (0x158E)
-    Item #2: DiamondKey x2 (0x16D4)
-    Item #2: BlueCard x1 (0x1714)
-    Item #5: InkRibbon x3 (0x175A)
+    Item #2: DiamondKey x2 (0x16D4) [a]
+    Item #2: BlueCard x1 (0x1714) [b]
+    Item #5: InkRibbon x3 (0x175A) [usa]
+    Enemy #0: LickerRed (0x192E) [b]
+    Enemy #0: LickerRed (0x195C) [b]
     Item #16: KingPlug x1 (0x17BC)
-    Item #3: ShotgunAmmo x7 (0x1816)
-    Item #3: ShotgunAmmo x7 (0x1856)
-    Enemy #0: LickerRed (0x192E)
-    Enemy #0: LickerRed (0x195C)
+    Item #3: ShotgunAmmo x7 (0x1816) [jpn]
+    Item #3: ShotgunAmmo x7 (0x1856) [usa]
 10C ():
     Door #0: 207 (0x189E)
     Door #1: 113 (0x18BE)
     Door #2: 114 (0x18DE)
+    Enemy #0: Tyrant1 (0x191A) [bonus]
     Item #5: RedJewel x1 (0x1A5A)
-    Item #12: HandgunAmmo x15 (0x1AB8)
-    Enemy #0: Tyrant1 (0x191A)
+    Item #12: HandgunAmmo x15 (0x1AB8) [usa]
 10D ():
     Door #0: 10E (0x7B6)
     Door #1: 21B (0x7D6)
-    Item #10: ShotgunAmmo x7 (0x856)
+    Enemy #0: Tyrant1 (0x838) [leon, b]
+    Item #10: ShotgunAmmo x7 (0x856) [leon, b]
     Item #10: MagnumAmmo x8 (0x8C2)
-    Enemy #0: Tyrant1 (0x838)
 10E ():
     Door #0: 10D (0x1CB2)
     Item #3: 112 x1 (0x1D26)
@@ -193,46 +190,46 @@
 10F ():
     Door #0: 10A (0x5BE)
     Door #1: 110 (0x5DE)
-    Door #0: 10A (0x782)
-    Door #1: 110 (0x7A2)
     Item #4: 111 x1 (0x660)
     Item #3: InkRibbon x3 (0x69C)
+    Door #0: 10A (0x782) [bonus]
+    Door #1: 110 (0x7A2) [bonus]
+    Enemy #0: ZombieRandom (0x7E8) [bonus]
+    Enemy #1: ZombieRandom (0x7FE) [bonus]
+    Enemy #2: ZombieRandom (0x814) [bonus]
+    Enemy #3: ZombieRandom (0x82A) [bonus]
+    Enemy #4: ZombieRandom (0x840) [bonus]
+    Enemy #5: ZombieRandom (0x856) [bonus]
+    Enemy #6: ZombieRandom (0x86C) [bonus]
     Item #5: SmallKey x1 (0x6F0)
-    Item #2: HandgunAmmo x30 (0x734)
-    Enemy #0: ZombieRandom (0x7E8)
-    Enemy #1: ZombieRandom (0x7FE)
-    Enemy #2: ZombieRandom (0x814)
-    Enemy #3: ZombieRandom (0x82A)
-    Enemy #4: ZombieRandom (0x840)
-    Enemy #5: ZombieRandom (0x856)
-    Enemy #6: ZombieRandom (0x86C)
+    Item #2: HandgunAmmo x30 (0x734) [b]
 110 ():
     Door #2: 200 (0x2748)
     Door #0: 10F (0x2768)
     Door #4: 112 (0x2788)
-    Door #0: 10F (0x3068)
-    Door #4: 112 (0x3088)
-    Item #3: UnicornMedal x1 (0x27B0)
-    Enemy #0: ZombieCop (0x282C)
-    Enemy #1: ZombieCop (0x2842)
-    Enemy #2: ZombieCop (0x2858)
-    Enemy #0: ZombieCop (0x2872)
-    Enemy #1: ZombieCop (0x2888)
-    Enemy #2: ZombieCop (0x289E)
-    Enemy #3: ZombieCop (0x28B4)
-    Enemy #0: LickerRed (0x28D0)
-    Enemy #0: ZombieCop (0x28FC)
-    Enemy #1: ZombieCop (0x2912)
-    Enemy #2: ZombieCop (0x2928)
-    Enemy #0: ZombieRandom (0x2942)
-    Enemy #1: ZombieRandom (0x2958)
-    Enemy #2: ZombieRandom (0x296E)
-    Enemy #3: ZombieRandom (0x2984)
-    Enemy #4: ZombieRandom (0x299A)
-    Enemy #0: LickerRed (0x29B6)
-    Enemy #0: IvyPurple (0x30A8)
-    Enemy #1: IvyPurple (0x30BE)
-    Enemy #2: 47 (0x30D4)
+    Item #3: UnicornMedal x1 (0x27B0) [b]
+    Enemy #0: ZombieCop (0x282C) [a, jpn]
+    Enemy #1: ZombieCop (0x2842) [a, jpn]
+    Enemy #2: ZombieCop (0x2858) [a, jpn]
+    Enemy #0: ZombieCop (0x2872) [a, usa]
+    Enemy #1: ZombieCop (0x2888) [a, usa]
+    Enemy #2: ZombieCop (0x289E) [a, usa]
+    Enemy #3: ZombieCop (0x28B4) [a, usa]
+    Enemy #0: LickerRed (0x28D0) [a]
+    Enemy #0: ZombieCop (0x28FC) [b, jpn]
+    Enemy #1: ZombieCop (0x2912) [b, jpn]
+    Enemy #2: ZombieCop (0x2928) [b, jpn]
+    Enemy #0: ZombieRandom (0x2942) [b, usa]
+    Enemy #1: ZombieRandom (0x2958) [b, usa]
+    Enemy #2: ZombieRandom (0x296E) [b, usa]
+    Enemy #3: ZombieRandom (0x2984) [b, usa]
+    Enemy #4: ZombieRandom (0x299A) [b, usa]
+    Enemy #0: LickerRed (0x29B6) [b]
+    Door #0: 10F (0x3068) [bonus]
+    Door #4: 112 (0x3088) [bonus]
+    Enemy #0: IvyPurple (0x30A8) [bonus]
+    Enemy #1: IvyPurple (0x30BE) [bonus]
+    Enemy #2: 47 (0x30D4) [bonus]
 111 ():
     Door #0: 117 (0x1FDE)
     Door #1: 219 (0x1FFE)
@@ -243,85 +240,85 @@
     Door #2: 117 (0x28F2)
     Item #11: BishopPlug x1 (0x29A0)
     Item #12: HerbR x1 (0x2C08)
-    Enemy #0: ZombieRandom (0x3A6A)
-    Enemy #1: ZombieRandom (0x3A80)
-    Enemy #2: ZombieRandom (0x3A96)
-    Enemy #3: ZombieRandom (0x3AAC)
+    Enemy #0: ZombieRandom (0x3A6A) [a]
+    Enemy #1: ZombieRandom (0x3A80) [a]
+    Enemy #2: ZombieRandom (0x3A96) [a]
+    Enemy #3: ZombieRandom (0x3AAC) [a]
 113 ():
     Door #0: 114 (0xD10)
     Door #1: 112 (0xD30)
-    Door #0: 114 (0x212E)
-    Door #1: 112 (0x214E)
+    Door #0: 114 (0x212E) [bonus]
+    Door #1: 112 (0x214E) [bonus]
+    Enemy #0: LickerGrey (0x216E) [bonus]
+    Enemy #1: LickerGrey (0x2184) [bonus]
+    Enemy #2: LickerGrey (0x219A) [bonus]
     Item #4: HandgunParts x1 (0xE18)
-    Item #5: HandgunAmmo x15 (0xE64)
-    Item #5: ShotgunAmmo x7 (0xEA4)
-    Item #5: HandgunAmmo x15 (0xEEE)
-    Item #5: ShotgunAmmo x7 (0xF08)
-    Item #2: DiamondKey x2 (0xF2A)
-    Enemy #0: ClaireRedfield (0xFA4)
-    Enemy #1: SherryWithPendant (0xFC8)
-    Enemy #1: SherryWithPendant (0xFEA)
-    Enemy #0: ZombieRandom (0x11EA)
-    Enemy #1: ZombieRandom (0x1212)
-    Enemy #2: ZombieRandom (0x1228)
-    Enemy #3: ZombieRandom (0x123E)
-    Enemy #4: ZombieRandom (0x1254)
-    Enemy #1: ZombieRandom (0x1282)
-    Enemy #2: ZombieRandom (0x1298)
-    Enemy #3: ZombieRandom (0x12AE)
-    Enemy #4: ZombieRandom (0x12C4)
-    Enemy #0: ZombieRandom (0x1372)
-    Enemy #1: ZombieRandom (0x139A)
-    Enemy #2: ZombieRandom (0x13B0)
-    Enemy #3: ZombieRandom (0x13C6)
-    Enemy #4: ZombieRandom (0x13DC)
-    Enemy #5: ZombieRandom (0x13F2)
-    Enemy #1: ZombieRandom (0x1420)
-    Enemy #2: ZombieRandom (0x1436)
-    Enemy #3: ZombieRandom (0x144C)
-    Enemy #4: ZombieRandom (0x1462)
-    Enemy #5: ZombieRandom (0x1478)
-    Enemy #0: LickerGrey (0x216E)
-    Enemy #1: LickerGrey (0x2184)
-    Enemy #2: LickerGrey (0x219A)
+    Item #5: HandgunAmmo x15 (0xE64) [a, jpn]
+    Item #5: ShotgunAmmo x7 (0xEA4) [b, jpn]
+    Item #5: HandgunAmmo x15 (0xEEE) [a, usa]
+    Item #5: ShotgunAmmo x7 (0xF08) [b, usa]
+    Item #2: DiamondKey x2 (0xF2A) [b]
+    Enemy #0: ZombieRandom (0x11EA) [a, jpn]
+    Enemy #1: ZombieRandom (0x1212) [a, jpn]
+    Enemy #2: ZombieRandom (0x1228) [a, jpn]
+    Enemy #3: ZombieRandom (0x123E) [a, jpn]
+    Enemy #4: ZombieRandom (0x1254) [a, jpn]
+    Enemy #1: ZombieRandom (0x1282) [a, jpn]
+    Enemy #2: ZombieRandom (0x1298) [a, jpn]
+    Enemy #3: ZombieRandom (0x12AE) [a, jpn]
+    Enemy #4: ZombieRandom (0x12C4) [a, jpn]
+    Enemy #0: ZombieRandom (0x1372) [a, usa]
+    Enemy #1: ZombieRandom (0x139A) [a, usa]
+    Enemy #2: ZombieRandom (0x13B0) [a, usa]
+    Enemy #3: ZombieRandom (0x13C6) [a, usa]
+    Enemy #4: ZombieRandom (0x13DC) [a, usa]
+    Enemy #5: ZombieRandom (0x13F2) [a, usa]
+    Enemy #1: ZombieRandom (0x1420) [a, usa]
+    Enemy #2: ZombieRandom (0x1436) [a, usa]
+    Enemy #3: ZombieRandom (0x144C) [a, usa]
+    Enemy #4: ZombieRandom (0x1462) [a, usa]
+    Enemy #5: ZombieRandom (0x1478) [a, usa]
+    Enemy #0: ClaireRedfield (0xFA4) [b]
+    Enemy #1: SherryWithPendant (0xFC8) [b]
+    Enemy #1: SherryWithPendant (0xFEA) [b]
 114 ():
-    Door #0: 113 (0x9A2)
-    Door #2: 10C (0x9D6)
-    Door #0: 113 (0xA02)
-    Door #0: 113 (0xA26)
+    Door #0: 113 (0x9A2) [bonus]
+    Door #2: 10C (0x9D6) [bonus]
+    Door #0: 113 (0xA02) [a]
+    Door #0: 113 (0xA26) [b]
     Door #1: 115 (0xA48)
     Door #2: 10C (0xA68)
-    Enemy #0: ZombieRandom (0xAAA)
-    Enemy #1: ZombieRandom (0xAC0)
-    Enemy #2: ZombieRandom (0xAD6)
-    Enemy #3: ZombieRandom (0xAEC)
-    Enemy #4: ZombieRandom (0xB02)
-    Enemy #5: ZombieRandom (0xB18)
-    Enemy #6: ZombieRandom (0xB2E)
-    Enemy #0: ZombieCop (0xB80)
-    Enemy #1: ZombieCop (0xB96)
-    Enemy #2: ZombieCop (0xBAC)
-    Enemy #0: ZombieCop (0xBC6)
-    Enemy #1: ZombieCop (0xBDC)
-    Enemy #2: ZombieCop (0xBF2)
-    Enemy #3: ZombieCop (0xC08)
-    Enemy #4: ZombieCop (0xC1E)
-    Enemy #255: SherryWithPendant (0xC68)
-    Enemy #0: ZombieCop (0xC7E)
-    Enemy #0: ZombieCop (0xCA0)
+    Enemy #0: ZombieRandom (0xAAA) [bonus]
+    Enemy #1: ZombieRandom (0xAC0) [bonus]
+    Enemy #2: ZombieRandom (0xAD6) [bonus]
+    Enemy #3: ZombieRandom (0xAEC) [bonus]
+    Enemy #4: ZombieRandom (0xB02) [bonus]
+    Enemy #5: ZombieRandom (0xB18) [bonus]
+    Enemy #6: ZombieRandom (0xB2E) [bonus]
+    Enemy #0: ZombieCop (0xB80) [leon, a]
+    Enemy #1: ZombieCop (0xB96) [leon, a]
+    Enemy #2: ZombieCop (0xBAC) [leon, a]
+    Enemy #0: ZombieCop (0xBC6) [leon, b]
+    Enemy #1: ZombieCop (0xBDC) [leon, b]
+    Enemy #2: ZombieCop (0xBF2) [leon, b]
+    Enemy #3: ZombieCop (0xC08) [leon, b]
+    Enemy #4: ZombieCop (0xC1E) [leon, b]
+    Enemy #255: SherryWithPendant (0xC68) [claire]
+    Enemy #0: ZombieCop (0xC7E) [claire]
+    Enemy #0: ZombieCop (0xCA0) [claire]
 115 ():
     Door #0: 114 (0x1318)
-    Item #9: HandgunAmmo x15 (0x1422)
-    Item #9: HandgunAmmo x15 (0x1462)
-    Item #16: FAidSpray x1 (0x1482)
-    Item #2: UnicornMedal x1 (0x1498)
-    Item #13: Shotgun x5 (0x14D4)
-    Item #13: Magnum x8 (0x1514)
-    Item #7: 104 x1 (0x15A2)
-    Item #7: 104 x1 (0x169C)
+    Item #9: HandgunAmmo x15 (0x1422) [jpn]
+    Item #9: HandgunAmmo x15 (0x1462) [usa]
+    Item #16: FAidSpray x1 (0x1482) [a]
+    Item #2: UnicornMedal x1 (0x1498) [a]
+    Item #13: Shotgun x5 (0x14D4) [a]
+    Item #13: Magnum x8 (0x1514) [b]
     Item #29: FilmD x1 (0x1998)
-    Enemy #0: ClaireRedfield (0x1578)
-    Enemy #0: ClaireRedfield (0x1638)
+    Enemy #0: ClaireRedfield (0x1578) [a]
+    Item #7: 104 x1 (0x15A2) [a]
+    Enemy #0: ClaireRedfield (0x1638) [a]
+    Item #7: 104 x1 (0x169C) [b]
 116 ():
     Door #0: 20B (0x9DA)
     Door #1: 109 (0x9FA)
@@ -334,14 +331,14 @@
 118 ():
     Door #2: 102 (0x1E0A)
     Door #3: 119 (0x1E2A)
-    Item #4: HandgunAmmo x15 (0x1EFA)
-    Enemy #1: ZombieRandom (0x1E52)
-    Enemy #2: ZombieRandom (0x1E68)
-    Enemy #3: ZombieGirl (0x1E7E)
-    Enemy #0: ZombieRandom (0x1E98)
-    Enemy #1: ZombieRandom (0x1EAE)
-    Enemy #2: ZombieRandom (0x1EC4)
-    Enemy #3: ZombieGirl (0x1EDA)
+    Enemy #1: ZombieRandom (0x1E52) [jpn]
+    Enemy #2: ZombieRandom (0x1E68) [jpn]
+    Enemy #3: ZombieGirl (0x1E7E) [jpn]
+    Enemy #0: ZombieRandom (0x1E98) [usa]
+    Enemy #1: ZombieRandom (0x1EAE) [usa]
+    Enemy #2: ZombieRandom (0x1EC4) [usa]
+    Enemy #3: ZombieGirl (0x1EDA) [usa]
+    Item #4: HandgunAmmo x15 (0x1EFA) [usa]
 119 ():
     Door #0: 118 (0xC0A)
     Door #1: 11A (0xC2A)
@@ -357,24 +354,24 @@
 11A ():
     Door #0: 119 (0x4A2)
     Door #1: 11B (0x4C2)
-    Item #2: HandgunAmmo x15 (0x53A)
     Enemy #0: ZombieGuy1 (0x50E)
     Enemy #1: ZombieGirl (0x524)
+    Item #2: HandgunAmmo x15 (0x53A)
 11B ():
     Door #0: 11A (0x8EA)
     Door #1: 103 (0x90A)
-    Enemy #0: ZombieRandom (0xA2C)
-    Enemy #1: ZombieRandom (0xA42)
-    Enemy #2: ZombieRandom (0xA58)
-    Enemy #3: ZombieRandom (0xA6E)
-    Enemy #4: ZombieRandom (0xA84)
-    Enemy #5: ZombieRandom (0xA9A)
-    Enemy #0: ZombieRandom (0xAB4)
-    Enemy #1: ZombieRandom (0xACA)
-    Enemy #2: ZombieRandom (0xAE0)
-    Enemy #3: ZombieRandom (0xAF6)
-    Enemy #4: ZombieRandom (0xB0C)
-    Enemy #5: ZombieRandom (0xB22)
+    Enemy #0: ZombieRandom (0xA2C) [jpn]
+    Enemy #1: ZombieRandom (0xA42) [jpn]
+    Enemy #2: ZombieRandom (0xA58) [jpn]
+    Enemy #3: ZombieRandom (0xA6E) [jpn]
+    Enemy #4: ZombieRandom (0xA84) [jpn]
+    Enemy #5: ZombieRandom (0xA9A) [jpn]
+    Enemy #0: ZombieRandom (0xAB4) [usa]
+    Enemy #1: ZombieRandom (0xACA) [usa]
+    Enemy #2: ZombieRandom (0xAE0) [usa]
+    Enemy #3: ZombieRandom (0xAF6) [usa]
+    Enemy #4: ZombieRandom (0xB0C) [usa]
+    Enemy #5: ZombieRandom (0xB22) [usa]
 11C ():
     Door #0: 107 (0x8EA)
     Door #1: 109 (0x90A)
@@ -391,152 +388,145 @@
 200 ():
     Door #0: 103 (0x2538)
     Door #1: 201 (0x2558)
-    Door #2: 202 (0x2588)
-    Door #2: 202 (0x25AC)
-    Door #2: 202 (0x25D2)
+    Door #2: 202 (0x2588) [a]
+    Door #2: 202 (0x25AC) [a]
+    Door #2: 202 (0x25D2) [b]
     Door #3: 20A (0x25F4)
-    Door #17: 110 (0x274A)
-    Door #1: 201 (0x2DB8)
-    Door #3: 20A (0x2DEC)
-    Item #9: SpadeKey x2 (0x2662)
-    Item #9: SpadeKey x1 (0x267C)
+    Item #9: SpadeKey x2 (0x2662) [a]
+    Item #9: SpadeKey x1 (0x267C) [b]
     Item #4: InkRibbon x3 (0x26E0)
-    Item #19: HandgunAmmo x30 (0x27B8)
-    Item #19: Shotgun x5 (0x27F8)
+    Door #17: 110 (0x274A)
+    Door #1: 201 (0x2DB8) [bonus]
+    Door #3: 20A (0x2DEC) [bonus]
+    Item #19: HandgunAmmo x30 (0x27B8) [a]
+    Item #19: Shotgun x5 (0x27F8) [b]
 201 ():
     Door #0: 200 (0xBCA)
     Door #1: 204 (0xBEA)
-    Door #0: 200 (0x1088)
-    Door #1: 204 (0x10A8)
     Item #2: 107 x1 (0xC58)
-    Item #9: HandgunAmmo x15 (0xD3E)
-    Item #9: ShotgunAmmo x7 (0xD7E)
-    Enemy #0: LickerRed (0xDE0)
-    Enemy #1: ZombieGuy1 (0xE14)
-    Enemy #2: ZombieGuy1 (0xE2A)
-    Enemy #1: ZombieGuy1 (0xE44)
-    Enemy #2: ZombieGuy1 (0xE5A)
-    Enemy #3: ZombieGuy1 (0xE70)
-    Enemy #0: BabySpider (0x10EE)
-    Enemy #1: Spider (0x1104)
-    Enemy #2: Spider (0x111A)
+    Door #0: 200 (0x1088) [bonus]
+    Door #1: 204 (0x10A8) [bonus]
+    Enemy #0: BabySpider (0x10EE) [bonus]
+    Enemy #1: Spider (0x1104) [bonus]
+    Enemy #2: Spider (0x111A) [bonus]
+    Item #9: HandgunAmmo x15 (0xD3E) [a]
+    Item #9: ShotgunAmmo x7 (0xD7E) [b]
+    Enemy #0: LickerRed (0xDE0) [a]
+    Enemy #1: ZombieGuy1 (0xE14) [b, jpn]
+    Enemy #2: ZombieGuy1 (0xE2A) [b, jpn]
+    Enemy #1: ZombieGuy1 (0xE44) [b, usa]
+    Enemy #2: ZombieGuy1 (0xE5A) [b, usa]
+    Enemy #3: ZombieGuy1 (0xE70) [b, usa]
 202 ():
     Door #0: 200 (0x1B9A)
     Door #1: 209 (0x1BBA)
     Door #20: 200 (0x1BDA)
-    Item #4: SmallKey x1 (0x1C44)
+    Item #4: SmallKey x1 (0x1C44) [b]
     Item #7: HeartKey x1 (0x1C5C)
-    Item #12: HandgunAmmo x15 (0x1CE2)
-    Item #15: HandgunAmmo x15 (0x1D0A)
-    Item #15: HandgunAmmo x15 (0x1D24)
+    Item #12: HandgunAmmo x15 (0x1CE2) [usa]
+    Item #15: HandgunAmmo x15 (0x1D0A) [a, jpn]
+    Item #15: HandgunAmmo x15 (0x1D24) [b, jpn]
     Item #16: 106 x1 (0x1D3E)
     Item #18: HerbG x1 (0x1D54)
-    Enemy #0: MarvinBranagh (0x1E1C)
-    Enemy #0: MarvinBranagh (0x1E36)
-    Enemy #1: ZombieGuy3 (0x1E4C)
-    Enemy #0: MarvinBranagh (0x1E82)
-    Enemy #1: ZombieGuy3 (0x1E98)
-    Enemy #2: ZombieGuy3 (0x1EC0)
-    Enemy #3: ZombieGuy3 (0x1ED6)
-    Enemy #4: ZombieGuy3 (0x1EEC)
-    Enemy #1: ZombieRandom (0x1F06)
-    Enemy #2: ZombieRandom (0x1F1C)
-    Enemy #3: ZombieRandom (0x1F32)
-    Enemy #4: ZombieRandom (0x1F48)
-    Enemy #5: ZombieRandom (0x1F5E)
+    Enemy #0: MarvinBranagh (0x1E1C) [a]
+    Enemy #0: MarvinBranagh (0x1E36) [a]
+    Enemy #1: ZombieGuy3 (0x1E4C) [a]
+    Enemy #0: MarvinBranagh (0x1E82) [b]
+    Enemy #1: ZombieGuy3 (0x1E98) [b]
+    Enemy #2: ZombieGuy3 (0x1EC0) [b]
+    Enemy #3: ZombieGuy3 (0x1ED6) [b]
+    Enemy #4: ZombieGuy3 (0x1EEC) [b]
+    Enemy #1: ZombieRandom (0x1F06) [b]
+    Enemy #2: ZombieRandom (0x1F1C) [b]
+    Enemy #3: ZombieRandom (0x1F32) [b]
+    Enemy #4: ZombieRandom (0x1F48) [b]
+    Enemy #5: ZombieRandom (0x1F5E) [b]
 203 ():
     Door #0: 204 (0x6BE)
     Item #6: 118 x1 (0x6DE)
     Item #2: InkRibbon x3 (0x6F4)
-    Item #1: HandgunAmmo x15 (0x7D0)
-    Item #1: HandgunAmmo x15 (0x810)
-    Item #5: Crank x1 (0x828)
-    Item #1: FAidSpray x1 (0x868)
+    Item #1: HandgunAmmo x15 (0x7D0) [a, jpn]
+    Item #1: HandgunAmmo x15 (0x810) [a, usa]
+    Item #5: Crank x1 (0x828) [a]
+    Item #1: FAidSpray x1 (0x868) [b]
 204 ():
     Door #0: 201 (0x18DE)
     Door #1: 205 (0x18FE)
     Door #2: 203 (0x191E)
+    Enemy #0: LickerRed (0x1946) [bonus]
+    Enemy #1: LickerRed (0x195C) [bonus]
+    Enemy #2: LickerRed (0x1972) [bonus]
     Item #4: HandgunAmmo x15 (0x1A4C)
     Item #5: HerbG x1 (0x1A62)
-    Item #2: Knife x1 (0x248E)
-    Enemy #0: LickerRed (0x1946)
-    Enemy #1: LickerRed (0x195C)
-    Enemy #2: LickerRed (0x1972)
     Enemy #0: ZombieRandom (0x1AB4)
-    Enemy #1: LickerRed (0x1CFE)
-    Enemy #1: LickerRed (0x1D42)
-    Enemy #1: ZombieRandom (0x1D5C)
-    Enemy #2: ZombieRandom (0x1D72)
-    Enemy #3: ZombieRandom (0x1D88)
-    Enemy #4: ZombieRandom (0x1D9E)
-    Enemy #5: ZombieRandom (0x1DB4)
-    Enemy #1: ZombieRandom (0x1DCC)
-    Enemy #2: ZombieRandom (0x1DE2)
-    Enemy #3: ZombieRandom (0x1DF8)
-    Enemy #4: ZombieRandom (0x1E0E)
-    Enemy #5: ZombieRandom (0x1E24)
-    Enemy #6: ZombieRandom (0x1E3A)
-    Enemy #1: ZombieRandom (0x1E52)
-    Enemy #2: ZombieRandom (0x1E68)
-    Enemy #3: ZombieRandom (0x1E7E)
+    Enemy #1: LickerRed (0x1CFE) [a]
+    Enemy #1: LickerRed (0x1D42) [a]
+    Enemy #1: ZombieRandom (0x1DCC) [a]
+    Enemy #2: ZombieRandom (0x1DE2) [a]
+    Enemy #3: ZombieRandom (0x1DF8) [a]
+    Enemy #4: ZombieRandom (0x1E0E) [a]
+    Enemy #5: ZombieRandom (0x1E24) [a]
+    Enemy #6: ZombieRandom (0x1E3A) [a]
+    Enemy #1: ZombieRandom (0x1E52) [b]
+    Enemy #2: ZombieRandom (0x1E68) [b]
+    Enemy #3: ZombieRandom (0x1E7E) [b]
 205 ():
     Door #0: 204 (0x171E)
-    Door #1: 206 (0x175E)
+    Door #1: 206 (0x175E) [normal]
     Door #2: 207 (0x1780)
-    Enemy #0: 47 (0x17CA)
-    Enemy #1: Ivy (0x17E0)
-    Enemy #2: Ivy (0x17F6)
-    Enemy #0: ZombieArms (0x1970)
-    Enemy #1: ZombieArms (0x1986)
-    Enemy #2: ZombieArms (0x199C)
-    Enemy #3: ZombieArms (0x19B2)
-    Enemy #4: ZombieArms (0x19C8)
-    Enemy #5: ZombieArms (0x19DE)
-    Enemy #6: ZombieArms (0x19F4)
-    Enemy #7: ZombieArms (0x1A0A)
-    Enemy #8: ZombieArms (0x1A20)
-    Enemy #9: ZombieArms (0x1A36)
-    Enemy #0: ZombieCop (0x1B1C)
-    Enemy #1: ZombieCop (0x1B32)
-    Enemy #2: ZombieCop (0x1B48)
-    Enemy #3: ZombieCop (0x1B5E)
-    Enemy #0: ZombieCop (0x1B78)
-    Enemy #0: ZombieCop (0x1BA4)
-    Enemy #1: ZombieCop (0x1BBA)
-    Enemy #0: ZombieCop (0x1BD4)
-    Enemy #1: ZombieCop (0x1BEA)
+    Enemy #0: 47 (0x17CA) [bonus]
+    Enemy #1: Ivy (0x17E0) [bonus]
+    Enemy #2: Ivy (0x17F6) [bonus]
+    Enemy #0: ZombieArms (0x1970) [a]
+    Enemy #1: ZombieArms (0x1986) [a]
+    Enemy #2: ZombieArms (0x199C) [a]
+    Enemy #3: ZombieArms (0x19B2) [a]
+    Enemy #4: ZombieArms (0x19C8) [a]
+    Enemy #5: ZombieArms (0x19DE) [a]
+    Enemy #6: ZombieArms (0x19F4) [a]
+    Enemy #7: ZombieArms (0x1A0A) [a]
+    Enemy #8: ZombieArms (0x1A20) [a]
+    Enemy #9: ZombieArms (0x1A36) [a]
+    Enemy #0: ZombieCop (0x1B1C) [b]
+    Enemy #1: ZombieCop (0x1B32) [b]
+    Enemy #2: ZombieCop (0x1B48) [b]
+    Enemy #3: ZombieCop (0x1B5E) [b]
+    Enemy #0: ZombieCop (0x1B78) [b]
+    Enemy #0: ZombieCop (0x1BA4) [b]
+    Enemy #1: ZombieCop (0x1BBA) [b]
+    Enemy #0: ZombieCop (0x1BD4) [b]
+    Enemy #1: ZombieCop (0x1BEA) [b]
 206 ():
     Door #0: 205 (0x14D6)
-    Door #0: CAEF (0x1C7E)
     Item #3: RedJewel x1 (0x1534)
-    Item #4: 108 x1 (0x1626)
-    Item #4: 108 x1 (0x1666)
-    Item #5: HandgunAmmo x15 (0x16BC)
-    Item #5: HandgunAmmo x15 (0x16FE)
-    Item #5: HandgunAmmo x15 (0x1750)
+    Item #4: 108 x1 (0x1626) [a]
+    Item #4: 108 x1 (0x1666) [b]
+    Item #5: HandgunAmmo x15 (0x16BC) [leon, a, jpn]
+    Item #5: HandgunAmmo x15 (0x16FE) [b, jpn]
+    Item #5: HandgunAmmo x15 (0x1750) [leon, b, usa]
 207 ():
     Door #1: 205 (0xF16)
     Door #2: 208 (0xF36)
     Door #3: 10C (0xF56)
     Door #4: 209 (0xF76)
-    Door #1: 205 (0x1206)
-    Door #3: 10C (0x123A)
     Item #5: HerbG x1 (0xFFA)
     Item #6: HerbG x1 (0x1036)
-    Enemy #0: ZombieGirl (0x107A)
-    Enemy #1: ZombieRandom (0x1090)
-    Enemy #2: ZombieRandom (0x10A6)
-    Enemy #3: ZombieRandom (0x10BC)
-    Enemy #0: ZombieGirl (0x1168)
-    Enemy #1: ZombieRandom (0x117E)
-    Enemy #2: ZombieRandom (0x1194)
-    Enemy #3: ZombieRandom (0x11AA)
-    Enemy #4: ZombieRandom (0x11C0)
-    Enemy #0: ZombieGirl (0x11D8)
-    Enemy #1: ZombieRandom (0x11EE)
-    Enemy #0: IvyPurple (0x126E)
-    Enemy #1: IvyPurple (0x1284)
-    Enemy #2: 47 (0x129A)
+    Enemy #0: ZombieGirl (0x107A) [a]
+    Enemy #1: ZombieRandom (0x1090) [a]
+    Enemy #2: ZombieRandom (0x10A6) [a]
+    Enemy #3: ZombieRandom (0x10BC) [a]
+    Door #1: 205 (0x1206) [bonus]
+    Door #3: 10C (0x123A) [bonus]
+    Enemy #0: IvyPurple (0x126E) [bonus]
+    Enemy #1: IvyPurple (0x1284) [bonus]
+    Enemy #2: 47 (0x129A) [bonus]
+    Enemy #0: ZombieGirl (0x1168) [b]
+    Enemy #1: ZombieRandom (0x117E) [b]
+    Enemy #2: ZombieRandom (0x1194) [b]
+    Enemy #3: ZombieRandom (0x11AA) [b]
+    Enemy #4: ZombieRandom (0x11C0) [b]
+    Enemy #0: ZombieGirl (0x11D8) [b]
+    Enemy #1: ZombieRandom (0x11EE) [b]
 208 ():
     Door #0: 207 (0x12C6)
     Door #30: 208 (0x135A)
@@ -545,336 +535,333 @@
     Item #7: 116 x1 (0x13FE)
     Item #8: 117 x1 (0x1414)
     Item #4: 113 x1 (0x148C)
-    Item #12: ColtSAA x6 (0x14D0)
-    Item #13: HandgunAmmo x15 (0x14F0)
+    Item #12: ColtSAA x6 (0x14D0) [claire]
+    Item #13: HandgunAmmo x15 (0x14F0) [usa]
     Item #14: FilmD x1 (0x1508)
     Item #16: 123 x1 (0x151E)
 209 ():
     Door #0: 207 (0xCBA)
     Door #7: 202 (0xCDA)
-    Item #2: FilmA x1 (0xD02)
-    Item #2: FilmB x1 (0xD1C)
+    Item #2: FilmA x1 (0xD02) [a]
+    Item #2: FilmB x1 (0xD1C) [b]
+    Enemy #0: ZombieRandom (0xD78) [a]
+    Enemy #1: ZombieRandom (0xD8E) [a]
+    Enemy #2: ZombieRandom (0xDA4) [a]
+    Enemy #3: ZombieRandom (0xDBA) [a]
+    Enemy #4: ZombieRandom (0xDD0) [a]
+    Enemy #5: ZombieRandom (0xDE6) [a]
     Item #3: ShotgunAmmo x7 (0xED2)
-    Item #2: FilmA x1 (0xEF0)
-    Item #2: FilmB x1 (0xF0A)
-    Enemy #0: ZombieRandom (0xD78)
-    Enemy #1: ZombieRandom (0xD8E)
-    Enemy #2: ZombieRandom (0xDA4)
-    Enemy #3: ZombieRandom (0xDBA)
-    Enemy #4: ZombieRandom (0xDD0)
-    Enemy #5: ZombieRandom (0xDE6)
+    Item #2: FilmA x1 (0xEF0) [a]
+    Item #2: FilmB x1 (0xF0A) [b]
 20A ():
-    Door #0: 200 (0x82A)
-    Door #1: 20B (0x84A)
+    Door #0: 200 (0x82A) [bonus]
+    Door #1: 20B (0x84A) [bonus]
     Door #0: 200 (0x882)
     Door #1: 20B (0x8A2)
     Door #2: 20C (0x8C2)
+    Enemy #0: ZombieRandom (0x8F4) [bonus]
+    Enemy #1: ZombieRandom (0x90A) [bonus]
+    Enemy #2: ZombieRandom (0x920) [bonus]
+    Enemy #3: ZombieRandom (0x936) [bonus]
+    Enemy #4: ZombieRandom (0x94C) [bonus]
+    Enemy #5: ZombieRandom (0x962) [bonus]
     Item #8: HerbG x1 (0x9FA)
-    Enemy #0: ZombieRandom (0x8F4)
-    Enemy #1: ZombieRandom (0x90A)
-    Enemy #2: ZombieRandom (0x920)
-    Enemy #3: ZombieRandom (0x936)
-    Enemy #4: ZombieRandom (0x94C)
-    Enemy #5: ZombieRandom (0x962)
-    Enemy #0: ZombieRandom (0xA3E)
-    Enemy #1: ZombieRandom (0xA54)
-    Enemy #2: ZombieRandom (0xA6A)
-    Enemy #3: ZombieRandom (0xA80)
-    Enemy #4: ZombieRandom (0xA96)
-    Enemy #5: ZombieRandom (0xAAC)
-    Enemy #0: ZombieRandom (0xAC6)
-    Enemy #1: ZombieRandom (0xADC)
-    Enemy #2: ZombieRandom (0xAF2)
-    Enemy #3: ZombieRandom (0xB08)
-    Enemy #4: ZombieRandom (0xB1E)
-    Enemy #5: ZombieRandom (0xB34)
-    Enemy #95: 0 (0xB7C)
+    Enemy #0: ZombieRandom (0xA3E) [a]
+    Enemy #1: ZombieRandom (0xA54) [a]
+    Enemy #2: ZombieRandom (0xA6A) [a]
+    Enemy #3: ZombieRandom (0xA80) [a]
+    Enemy #4: ZombieRandom (0xA96) [a]
+    Enemy #5: ZombieRandom (0xAAC) [a]
+    Enemy #0: ZombieRandom (0xAC6) [b]
+    Enemy #1: ZombieRandom (0xADC) [b]
+    Enemy #2: ZombieRandom (0xAF2) [b]
+    Enemy #3: ZombieRandom (0xB08) [b]
+    Enemy #4: ZombieRandom (0xB1E) [b]
+    Enemy #5: ZombieRandom (0xB34) [b]
 20B ():
     Door #0: 20A (0x2F12)
-    Door #1: 20F (0x2F3A)
-    Door #1: 20F (0x2F5E)
+    Door #1: 20F (0x2F3A) [normal]
+    Door #1: 20F (0x2F5E) [bonus]
     Door #2: 116 (0x2F80)
-    Item #10: ShotgunAmmo x7 (0x3142)
-    Item #3: ValveHandle x1 (0x3208)
+    Enemy #0: ZombieRandom (0x2FB2) [bonus]
+    Enemy #1: ZombieRandom (0x2FC8) [bonus]
+    Enemy #2: ZombieRandom (0x2FDE) [bonus]
+    Enemy #3: ZombieRandom (0x2FF4) [bonus]
+    Enemy #4: ZombieRandom (0x300A) [bonus]
+    Enemy #5: ZombieRandom (0x3020) [bonus]
+    Enemy #6: ZombieRandom (0x3036) [bonus]
+    Enemy #0: ZombieRandom (0x3050) [normal]
+    Enemy #1: ZombieRandom (0x3858) [a]
+    Enemy #2: ZombieRandom (0x386E) [a]
+    Enemy #3: ZombieRandom (0x3884) [a]
+    Enemy #4: ZombieRandom (0x389A) [a]
+    Enemy #5: ZombieRandom (0x38B0) [a]
+    Enemy #1: ZombieRandom (0x38C8) [b]
+    Enemy #2: ZombieRandom (0x38DE) [b]
+    Enemy #3: ZombieRandom (0x38F4) [b]
+    Enemy #4: ZombieRandom (0x390A) [b]
     Item #4: HandgunAmmo x15 (0x36B0)
     Item #5: InkRibbon x3 (0x36EC)
-    Item #31: HandgunAmmo x15 (0x3730)
+    Item #31: HandgunAmmo x15 (0x3730) [b]
     Item #29: HerbG x1 (0x3748)
-    Item #28: HerbG x1 (0x3766)
-    Enemy #0: ZombieRandom (0x2FB2)
-    Enemy #1: ZombieRandom (0x2FC8)
-    Enemy #2: ZombieRandom (0x2FDE)
-    Enemy #3: ZombieRandom (0x2FF4)
-    Enemy #4: ZombieRandom (0x300A)
-    Enemy #5: ZombieRandom (0x3020)
-    Enemy #6: ZombieRandom (0x3036)
-    Enemy #0: ZombieRandom (0x3050)
-    Enemy #1: ZombieRandom (0x3858)
-    Enemy #2: ZombieRandom (0x386E)
-    Enemy #3: ZombieRandom (0x3884)
-    Enemy #4: ZombieRandom (0x389A)
-    Enemy #5: ZombieRandom (0x38B0)
-    Enemy #1: ZombieRandom (0x38C8)
-    Enemy #2: ZombieRandom (0x38DE)
-    Enemy #3: ZombieRandom (0x38F4)
-    Enemy #4: ZombieRandom (0x390A)
+    Item #28: HerbG x1 (0x3766) [usa]
+    Item #10: ShotgunAmmo x7 (0x3142)
+    Item #3: ValveHandle x1 (0x3208) [b]
 20C ():
     Door #0: 20A (0x1BAA)
     Door #1: 20D (0x1BCA)
     Door #2: 20E (0x1BEA)
     Door #3: 20E (0x1C0A)
-    Item #10: ShotgunAmmo x7 (0x1CF6)
-    Item #10: BowgunAmmo x36 (0x1D10)
-    Item #10: ShotgunAmmo x7 (0x1D6E)
-    Item #10: BowgunAmmo x36 (0x1DAE)
+    Enemy #0: ZombieRandom (0x1C40) [a]
+    Enemy #1: ZombieRandom (0x1C56) [a]
+    Enemy #2: ZombieRandom (0x1C6C) [a]
+    Enemy #3: ZombieGirl (0x1C82) [a]
+    Enemy #0: Tyrant1 (0x1CA8) [b]
+    Item #10: ShotgunAmmo x7 (0x1CF6) [leon, b]
+    Item #10: BowgunAmmo x36 (0x1D10) [claire, b]
+    Item #10: ShotgunAmmo x7 (0x1D6E) [leon]
+    Item #10: BowgunAmmo x36 (0x1DAE) [claire]
     Item #5: HerbR x1 (0x1E40)
-    Enemy #0: ZombieRandom (0x1C40)
-    Enemy #1: ZombieRandom (0x1C56)
-    Enemy #2: ZombieRandom (0x1C6C)
-    Enemy #3: ZombieGirl (0x1C82)
-    Enemy #0: Tyrant1 (0x1CA8)
 20D ():
     Door #0: 20C (0x109A)
-    Item #11: FAidSpray x1 (0x1140)
+    Item #11: FAidSpray x1 (0x1140) [usa]
     Item #1: Cog x1 (0x1158)
-    Item #2: FilmB x1 (0x119E)
-    Item #20: HandgunAmmo x30 (0x12A2)
+    Item #2: FilmB x1 (0x119E) [a]
+    Enemy #0: Tyrant1 (0x1262) [b]
+    Enemy #0: Tyrant1 (0x127C) [b]
+    Item #20: HandgunAmmo x30 (0x12A2) [b]
+    Enemy #0: LickerRed (0x132E) [claire, a]
     Item #20: HandgunAmmo x30 (0x1376)
-    Enemy #0: Tyrant1 (0x1262)
-    Enemy #0: Tyrant1 (0x127C)
-    Enemy #0: LickerRed (0x132E)
 20E ():
     Door #0: 20C (0x1716)
     Door #1: 20C (0x1736)
-    Item #3: RookPlug x1 (0x1986)
-    Item #3: RookPlug x1 (0x19A0)
-    Item #4: SmallKey x1 (0x19C0)
-    Item #5: HandgunAmmo x15 (0x19DA)
-    Item #8: Cord x1 (0x19FA)
-    Item #6: FAidSpray x1 (0x1A12)
-    Item #3: EagleStone x1 (0x1AF2)
-    Item #3: EagleStone x1 (0x1B0C)
-    Item #7: HandgunAmmo x15 (0x1B2C)
-    Item #5: HandgunAmmo x15 (0x1B46)
-    Item #6: FAidSpray x1 (0x1B5C)
-    Item #8: Cord x1 (0x1B7C)
     Enemy #0: LickerRed (0x17B6)
     Enemy #0: LickerRed (0x17E4)
-    Enemy #1: LickerRed (0x1802)
+    Enemy #1: LickerRed (0x1802) [b]
     Enemy #0: LickerRed (0x187E)
-    Enemy #1: LickerRed (0x189E)
+    Enemy #1: LickerRed (0x189E) [b]
+    Item #3: RookPlug x1 (0x1986) [leon]
+    Item #3: RookPlug x1 (0x19A0) [leon]
+    Item #4: SmallKey x1 (0x19C0) [leon, a]
+    Item #5: HandgunAmmo x15 (0x19DA) [leon, b]
+    Item #8: Cord x1 (0x19FA) [leon, a]
+    Item #6: FAidSpray x1 (0x1A12) [leon]
+    Item #3: EagleStone x1 (0x1AF2) [claire]
+    Item #3: EagleStone x1 (0x1B0C) [claire]
+    Item #7: HandgunAmmo x15 (0x1B2C) [claire, a]
+    Item #5: HandgunAmmo x15 (0x1B46) [claire, b]
+    Item #6: FAidSpray x1 (0x1B5C) [claire, b]
+    Item #8: Cord x1 (0x1B7C) [claire, a]
 20F ():
     Door #0: 20B (0x1732)
     Door #1: 211 (0x1752)
     Door #2: 210 (0x1772)
+    Enemy #0: Cerebrus (0x17A4) [bonus]
+    Enemy #1: Cerebrus (0x17BA) [bonus]
+    Enemy #2: Cerebrus (0x17D0) [bonus]
     Item #5: HerbG x1 (0x1810)
-    Item #6: HerbG x1 (0x1854)
-    Item #7: ShotgunAmmo x7 (0x1904)
-    Item #7: ShotgunAmmo x7 (0x191E)
-    Enemy #0: Cerebrus (0x17A4)
-    Enemy #1: Cerebrus (0x17BA)
-    Enemy #2: Cerebrus (0x17D0)
-    Enemy #0: Cerebrus (0x1F5C)
-    Enemy #0: ZombieRandom (0x1F7C)
-    Enemy #1: ZombieRandom (0x1F92)
-    Enemy #2: ZombieRandom (0x1FA8)
-    Enemy #3: ZombieRandom (0x1FBE)
-    Enemy #4: ZombieRandom (0x1FD4)
-    Enemy #0: ZombieRandom (0x1FF0)
-    Enemy #1: ZombieRandom (0x2006)
-    Enemy #2: ZombieRandom (0x201C)
-    Enemy #3: ZombieRandom (0x2032)
-    Enemy #4: ZombieRandom (0x2048)
+    Item #6: HerbG x1 (0x1854) [usa]
+    Item #7: ShotgunAmmo x7 (0x1904) [a, jpn]
+    Item #7: ShotgunAmmo x7 (0x191E) [a, usa]
+    Enemy #0: ZombieRandom (0x1F7C) [a]
+    Enemy #1: ZombieRandom (0x1F92) [a]
+    Enemy #2: ZombieRandom (0x1FA8) [a]
+    Enemy #3: ZombieRandom (0x1FBE) [a]
+    Enemy #4: ZombieRandom (0x1FD4) [a]
+    Enemy #0: ZombieRandom (0x1FF0) [b]
+    Enemy #1: ZombieRandom (0x2006) [b]
+    Enemy #2: ZombieRandom (0x201C) [b]
+    Enemy #3: ZombieRandom (0x2032) [b]
+    Enemy #4: ZombieRandom (0x2048) [b]
+    Enemy #0: Cerebrus (0x1F5C) [b]
 210 ():
     Door #0: 20F (0x127A)
-    Item #2: Magnum x8 (0x12D8)
-    Item #2: MagnumAmmo x8 (0x1318)
-    Item #3: ShotgunAmmo x7 (0x1330)
-    Item #4: InkRibbon x3 (0x1362)
-    Item #1: 119 x1 (0x140C)
     Enemy #1: ZombieCop (0x13B0)
+    Item #1: 119 x1 (0x140C)
+    Item #2: Magnum x8 (0x12D8) [a]
+    Item #2: MagnumAmmo x8 (0x1318) [b]
+    Item #3: ShotgunAmmo x7 (0x1330)
+    Item #4: InkRibbon x3 (0x1362) [usa]
 211 ():
     Door #2: 212 (0x16C6)
     Door #3: 213 (0x16E6)
     Door #8: 214 (0x1706)
     Door #6: 216 (0x1726)
     Door #7: 20F (0x1746)
+    Item #4: HandgunAmmo x15 (0x1782) [usa]
+    Door #6: 216 (0x1C5E) [bonus]
+    Door #7: 20F (0x1C7E) [bonus]
+    Enemy #0: Crow (0x1C9E) [bonus]
+    Enemy #1: Crow (0x1CB4) [bonus]
+    Enemy #2: Crow (0x1CCA) [bonus]
+    Enemy #3: Crow (0x1CE0) [bonus]
+    Enemy #4: Crow (0x1CF6) [bonus]
+    Enemy #5: Crow (0x1D0C) [bonus]
+    Enemy #6: Crow (0x1D22) [bonus]
+    Enemy #7: Crow (0x1D38) [bonus]
+    Enemy #8: Crow (0x1D4E) [bonus]
     Door #1: 215 (0x18C2)
-    Door #6: 216 (0x1C5E)
-    Door #7: 20F (0x1C7E)
-    Item #4: HandgunAmmo x15 (0x1782)
-    Enemy #0: Cerebrus (0x18FA)
-    Enemy #1: Cerebrus (0x1910)
-    Enemy #0: Cerebrus (0x192A)
-    Enemy #1: Cerebrus (0x1940)
-    Enemy #2: Cerebrus (0x1956)
-    Enemy #0: LickerRed (0x197A)
-    Enemy #0: LickerRed (0x1994)
-    Enemy #1: LickerRed (0x19AA)
-    Enemy #0: ZombieRandom (0x1A24)
-    Enemy #1: ZombieRandom (0x1A3A)
-    Enemy #2: ZombieRandom (0x1A50)
-    Enemy #3: ZombieRandom (0x1A66)
-    Enemy #4: ZombieRandom (0x1A7C)
-    Enemy #1: ZombieGuy1 (0x1A94)
-    Enemy #4: ZombieGuy1 (0x1AAA)
-    Enemy #0: Crow (0x1C9E)
-    Enemy #1: Crow (0x1CB4)
-    Enemy #2: Crow (0x1CCA)
-    Enemy #3: Crow (0x1CE0)
-    Enemy #4: Crow (0x1CF6)
-    Enemy #5: Crow (0x1D0C)
-    Enemy #6: Crow (0x1D22)
-    Enemy #7: Crow (0x1D38)
-    Enemy #8: Crow (0x1D4E)
+    Enemy #0: Cerebrus (0x18FA) [a, jpn]
+    Enemy #1: Cerebrus (0x1910) [a, jpn]
+    Enemy #0: Cerebrus (0x192A) [a, usa]
+    Enemy #1: Cerebrus (0x1940) [a, usa]
+    Enemy #2: Cerebrus (0x1956) [a, usa]
+    Enemy #0: LickerRed (0x197A) [a, jpn]
+    Enemy #0: LickerRed (0x1994) [a, usa]
+    Enemy #1: LickerRed (0x19AA) [a, usa]
+    Enemy #0: ZombieRandom (0x1A24) [b]
+    Enemy #1: ZombieRandom (0x1A3A) [b]
+    Enemy #2: ZombieRandom (0x1A50) [b]
+    Enemy #3: ZombieRandom (0x1A66) [b]
+    Enemy #4: ZombieRandom (0x1A7C) [b]
+    Enemy #1: ZombieGuy1 (0x1A94) [b]
+    Enemy #4: ZombieGuy1 (0x1AAA) [b]
 212 ():
     Door #0: 211 (0x7C2)
     Door #1: 307 (0x7E2)
-    Item #31: HerbR x2 (0x88E)
     Enemy #0: Cerebrus (0x80A)
     Enemy #1: Cerebrus (0x820)
     Enemy #0: Cerebrus (0x83A)
     Enemy #1: Cerebrus (0x850)
+    Item #31: HerbR x2 (0x88E)
 213 ():
     Door #0: 211 (0xE82)
-    Door #0: 1302 (0x18EA)
-    Item #2: HandgunAmmo x15 (0xEC2)
-    Item #2: HandgunAmmo x15 (0xEDC)
+    Item #2: HandgunAmmo x15 (0xEC2) [b, usa]
+    Item #2: HandgunAmmo x15 (0xEDC) [b, jpn]
     Item #6: HerbG x1 (0xFAA)
 214 ():
     Door #0: 211 (0x36A)
     Door #13: 214 (0x38A)
     Item #1: HandgunAmmo x15 (0x3BA)
     Item #2: HandgunAmmo x15 (0x3D0)
-    Item #5: MagnumAmmo x8 (0x3EE)
-    Item #5: ShotgunAmmo x7 (0x408)
+    Item #5: MagnumAmmo x8 (0x3EE) [b]
+    Item #5: ShotgunAmmo x7 (0x408) [a]
     Item #6: SMG x100 (0x4CE)
 215 ():
     Door #0: 211 (0x1288)
     Item #3: RedCard x1 (0x12A8)
-    Enemy #1: ZombieGuy1 (0x12D6)
-    Enemy #2: ZombieGuy1 (0x12EC)
-    Enemy #3: ZombieGuy1 (0x1302)
-    Enemy #1: ZombieGuy1 (0x1352)
-    Enemy #2: ZombieGuy1 (0x1368)
-    Enemy #3: ZombieGuy1 (0x137E)
-    Enemy #4: ZombieGuy1 (0x1394)
-    Enemy #0: ZombieGuy1 (0x13F4)
-    Enemy #5: ZombieGuy1 (0x140A)
-    Enemy #1: ZombieGuy1 (0x147C)
-    Enemy #2: ZombieGuy1 (0x1492)
-    Enemy #3: ZombieGuy1 (0x14A8)
-    Enemy #1: ZombieGuy1 (0x14C2)
-    Enemy #2: ZombieGuy1 (0x14D8)
-    Enemy #3: ZombieGuy1 (0x14EE)
-    Enemy #4: ZombieGuy1 (0x1504)
-    Enemy #0: ZombieGuy1 (0x151C)
-    Enemy #5: ZombieGuy1 (0x1532)
-    Enemy #6: LickerRed (0x15E0)
-    Enemy #7: LickerRed (0x15F6)
+    Enemy #1: ZombieGuy1 (0x12D6) [a, jpn]
+    Enemy #2: ZombieGuy1 (0x12EC) [a, jpn]
+    Enemy #3: ZombieGuy1 (0x1302) [a, jpn]
+    Enemy #1: ZombieGuy1 (0x1352) [a, usa]
+    Enemy #2: ZombieGuy1 (0x1368) [a, usa]
+    Enemy #3: ZombieGuy1 (0x137E) [a, usa]
+    Enemy #4: ZombieGuy1 (0x1394) [a, usa]
+    Enemy #0: ZombieGuy1 (0x13F4) [a]
+    Enemy #5: ZombieGuy1 (0x140A) [a]
+    Enemy #1: ZombieGuy1 (0x147C) [a, jpn]
+    Enemy #2: ZombieGuy1 (0x1492) [a, jpn]
+    Enemy #3: ZombieGuy1 (0x14A8) [a, jpn]
+    Enemy #1: ZombieGuy1 (0x14C2) [a, usa]
+    Enemy #2: ZombieGuy1 (0x14D8) [a, usa]
+    Enemy #3: ZombieGuy1 (0x14EE) [a, usa]
+    Enemy #4: ZombieGuy1 (0x1504) [a, usa]
+    Enemy #0: ZombieGuy1 (0x151C) [a]
+    Enemy #5: ZombieGuy1 (0x1532) [a]
+    Enemy #6: LickerRed (0x15E0) [b]
+    Enemy #7: LickerRed (0x15F6) [b]
 216 ():
     Door #0: 211 (0xEBA)
     Door #1: 219 (0xEDA)
-    Item #27: HerbG x1 (0x21EA)
-    Enemy #0: Cerebrus (0xF32)
-    Enemy #1: Cerebrus (0xF48)
-    Enemy #0: Cerebrus (0xF8E)
-    Enemy #1: Cerebrus (0xFA4)
-    Enemy #2: Cerebrus (0xFBA)
+    Enemy #0: Cerebrus (0xF32) [b]
+    Enemy #1: Cerebrus (0xF48) [b]
+    Enemy #0: Cerebrus (0xF8E) [bonus]
+    Enemy #1: Cerebrus (0xFA4) [bonus]
+    Enemy #2: Cerebrus (0xFBA) [bonus]
     Enemy #255: AdaWong1 (0x1006)
     Enemy #255: AdaWong1 (0x1052)
     Enemy #255: AdaWong1 (0x108A)
-    Enemy #96: 0 (0x222C)
+    Item #27: HerbG x1 (0x21EA)
 219 ():
     Door #0: 216 (0x95A)
     Door #2: 21A (0x97A)
-    Door #3: 301 (0x9BA)
-    Item #4: HandgunAmmo x15 (0xACA)
-    Item #4: FilmC x1 (0xB0A)
-    Enemy #0: ZombieRandom (0xA12)
-    Enemy #1: ZombieRandom (0xA28)
-    Enemy #2: ZombieRandom (0xA3E)
-    Enemy #3: ZombieRandom (0xA54)
-    Enemy #4: ZombieRandom (0xA6A)
-    Enemy #5: ZombieRandom (0xA80)
-    Enemy #255: AdaWong1 (0xB3E)
+    Door #3: 301 (0x9BA) [normal]
+    Enemy #0: ZombieRandom (0xA12) [bonus]
+    Enemy #1: ZombieRandom (0xA28) [bonus]
+    Enemy #2: ZombieRandom (0xA3E) [bonus]
+    Enemy #3: ZombieRandom (0xA54) [bonus]
+    Enemy #4: ZombieRandom (0xA6A) [bonus]
+    Enemy #5: ZombieRandom (0xA80) [bonus]
     Enemy #0: BenBertolucci1 (0xCDC)
-    Enemy #1: 48 (0xCFA)
-    Enemy #1: 48 (0xD14)
+    Enemy #1: 48 (0xCFA) [a]
+    Enemy #1: 48 (0xD14) [b]
+    Item #4: HandgunAmmo x15 (0xACA) [a]
+    Item #4: FilmC x1 (0xB0A) [b]
+    Enemy #255: AdaWong1 (0xB3E)
 21A ():
+    Item #13: HerbB x1 (0x1ABA)
     Door #1: 219 (0x1AF6)
     Door #2: 302 (0x1B16)
-    Door #1: 219 (0x273E)
-    Door #2: 302 (0x275E)
-    Item #13: HerbB x1 (0x1ABA)
-    Item #10: HerbR x1 (0x1DE0)
     Enemy #0: Cerebrus (0x1B58)
     Enemy #1: Cerebrus (0x1B94)
     Enemy #1: Cerebrus (0x1BAE)
     Enemy #0: Cerebrus (0x1C1A)
     Enemy #1: Cerebrus (0x1C30)
-    Enemy #0: Cerebrus (0x277E)
-    Enemy #1: Cerebrus (0x2794)
-    Enemy #2: Cerebrus (0x27AA)
+    Door #1: 219 (0x273E) [bonus]
+    Door #2: 302 (0x275E) [bonus]
+    Enemy #0: Cerebrus (0x277E) [bonus]
+    Enemy #1: Cerebrus (0x2794) [bonus]
+    Enemy #2: Cerebrus (0x27AA) [bonus]
+    Item #10: HerbR x1 (0x1DE0)
 21B ():
     Door #0: 10A (0x2476)
     Door #1: 10D (0x2496)
     Door #2: 308 (0x24B6)
     Door #3: 21B (0x24D6)
     Door #4: 21B (0x24F6)
-    Item #5: HandgunAmmo x15 (0x2526)
     Item #7: 120 x1 (0x26AE)
+    Item #5: HandgunAmmo x15 (0x2526)
 300 ():
     Door #0: 308 (0x1442)
     Door #1: 309 (0x1462)
     Enemy #0: ChiefIrons1 (0x14B6)
 301 ():
     Door #0: 219 (0x1A16)
-    Item #3: 110 x1 (0x1B90)
-    Item #3: 110 x1 (0x1CC0)
+    Enemy #255: AdaWong1 (0x1AC6)
+    Enemy #0: BenBertolucci2 (0x1ADC)
+    Enemy #255: AdaWong1 (0x1B4E) [a]
+    Enemy #0: BenBertolucci1 (0x1B64) [a]
+    Enemy #1: 39 (0x1B7A) [a]
+    Item #3: 110 x1 (0x1B90) [a]
+    Enemy #0: BenBertolucci2 (0x1C24) [a]
+    Enemy #0: BenBertolucci1 (0x1C52) [a]
+    Enemy #255: AdaWong1 (0x1C94) [b]
+    Enemy #0: BenBertolucci1 (0x1CAA) [b]
+    Item #3: 110 x1 (0x1CC0) [b]
+    Enemy #0: BenBertolucci2 (0x1D54) [b]
+    Enemy #0: BenBertolucci1 (0x1D82) [b]
     Item #5: ManholeOpener x1 (0x1E3C)
     Item #6: HerbB x1 (0x1E52)
     Item #7: HerbG x1 (0x1E68)
-    Enemy #255: AdaWong1 (0x1AC6)
-    Enemy #0: BenBertolucci2 (0x1ADC)
-    Enemy #255: AdaWong1 (0x1B4E)
-    Enemy #0: BenBertolucci1 (0x1B64)
-    Enemy #1: 39 (0x1B7A)
-    Enemy #0: BenBertolucci2 (0x1C24)
-    Enemy #0: BenBertolucci1 (0x1C52)
-    Enemy #255: AdaWong1 (0x1C94)
-    Enemy #0: BenBertolucci1 (0x1CAA)
-    Enemy #0: BenBertolucci2 (0x1D54)
-    Enemy #0: BenBertolucci1 (0x1D82)
 302 ():
     Door #0: 21A (0x9EA)
     Door #1: 30B (0xA0A)
-    Enemy #0: Spider (0xAD8)
-    Enemy #1: Spider (0xAEE)
-    Enemy #0: Spider (0xB08)
-    Enemy #1: Spider (0xB1E)
+    Enemy #0: Spider (0xAD8) [normal]
+    Enemy #1: Spider (0xAEE) [normal]
+    Enemy #0: Spider (0xB08) [bonus]
+    Enemy #1: Spider (0xB1E) [bonus]
 303 ():
     Door #0: 304 (0x15B8)
     Door #1: 30B (0x15D8)
-    Door #0: 304 (0x206C)
-    Door #1: 30B (0x208C)
-    Enemy #0: 40 (0x1C26)
-    Enemy #1: 39 (0x1C3C)
-    Enemy #0: 40 (0x1C66)
-    Enemy #1: 39 (0x1C7C)
-    Enemy #2: 39 (0x1C9A)
-    Enemy #3: 39 (0x1CB0)
-    Enemy #0: 48 (0x1CD8)
-    Enemy #0: 48 (0x1D28)
-    Enemy #0: ZombieGirl (0x20AC)
-    Enemy #1: ZombieRandom (0x20C2)
-    Enemy #2: ZombieRandom (0x20D8)
-    Enemy #3: ZombieRandom (0x20EE)
-    Enemy #4: ZombieRandom (0x2104)
+    Door #0: 304 (0x206C) [bonus]
+    Door #1: 30B (0x208C) [bonus]
+    Enemy #0: ZombieGirl (0x20AC) [bonus]
+    Enemy #1: ZombieRandom (0x20C2) [bonus]
+    Enemy #2: ZombieRandom (0x20D8) [bonus]
+    Enemy #3: ZombieRandom (0x20EE) [bonus]
+    Enemy #4: ZombieRandom (0x2104) [bonus]
+    Enemy #0: 40 (0x1C26) [a]
+    Enemy #1: 39 (0x1C3C) [a]
+    Enemy #0: 40 (0x1C66) [a]
+    Enemy #1: 39 (0x1C7C) [a]
+    Enemy #2: 39 (0x1C9A) [a]
+    Enemy #3: 39 (0x1CB0) [a]
+    Enemy #0: 48 (0x1CD8) [b]
+    Enemy #0: 48 (0x1D28) [b]
 304 ():
     Door #3: 303 (0x1004)
     Door #4: 402 (0x1024)
-    Door #3: 303 (0x191C)
+    Door #3: 303 (0x191C) [bonus]
     Enemy #255: AdaWong1 (0x1132)
     Enemy #255: AdaWong1 (0x115E)
     Enemy #255: AdaWong1 (0x1178)
@@ -882,12 +869,12 @@
     Door #4: 306 (0x16E6)
     Door #5: 307 (0x1706)
     Door #6: 30B (0x1726)
-    Enemy #0: Cerebrus (0x17A4)
-    Enemy #1: Cerebrus (0x17BA)
-    Enemy #0: ZombieRandom (0x17D4)
-    Enemy #1: ZombieRandom (0x17EA)
-    Enemy #2: ZombieRandom (0x1800)
-    Enemy #3: ZombieRandom (0x1816)
+    Enemy #0: Cerebrus (0x17A4) [a]
+    Enemy #1: Cerebrus (0x17BA) [a]
+    Enemy #0: ZombieRandom (0x17D4) [b]
+    Enemy #1: ZombieRandom (0x17EA) [b]
+    Enemy #2: ZombieRandom (0x1800) [b]
+    Enemy #3: ZombieRandom (0x1816) [b]
 306 ():
     Door #0: 305 (0x1DE6)
     Item #2: ClubKey x3 (0x1F74)
@@ -909,17 +896,17 @@
     Door #0: 303 (0xB56)
     Door #1: 305 (0xB76)
     Door #2: 302 (0xB96)
-    Door #3: 30C (0xBD6)
-    Item #4: ClubKey x3 (0xD1E)
-    Item #4: ClubKey x3 (0xD5E)
-    Item #5: ShotgunAmmo x7 (0xDCA)
+    Door #3: 30C (0xBD6) [normal]
     Enemy #255: LeonKennedyRpd (0xC40)
-    Enemy #0: SherryWithPendant (0xC5E)
+    Enemy #0: SherryWithPendant (0xC5E) [b]
+    Item #4: ClubKey x3 (0xD1E) [b]
+    Item #4: ClubKey x3 (0xD5E) [a]
+    Item #5: ShotgunAmmo x7 (0xDCA)
     Enemy #255: AdaWong1 (0xDEE)
-    Enemy #1: ZombieGuy1 (0xE5A)
-    Enemy #2: ZombieGuy1 (0xE70)
-    Enemy #3: ZombieGuy1 (0xE86)
-    Enemy #4: ZombieGuy1 (0xE9C)
+    Enemy #1: ZombieGuy1 (0xE5A) [bonus]
+    Enemy #2: ZombieGuy1 (0xE70) [bonus]
+    Enemy #3: ZombieGuy1 (0xE86) [bonus]
+    Enemy #4: ZombieGuy1 (0xE9C) [bonus]
 30C ():
     Door #0: 30B (0x402)
     Item #3: HerbB x1 (0x470)
@@ -930,11 +917,9 @@
     Door #0: 30A (0x1526)
     Door #1: 401 (0x1546)
     Door #2: 401 (0x1566)
-    Item #5: HerbB x1 (0x1A66)
-    Item #6: HerbB x1 (0x1AA2)
-    Enemy #0: ZombieGuy1 (0x15F8)
-    Enemy #1: ZombieGuy1 (0x160E)
-    Enemy #2: ZombieGuy1 (0x1624)
+    Enemy #0: ZombieGuy1 (0x15F8) [b]
+    Enemy #1: ZombieGuy1 (0x160E) [b]
+    Enemy #2: ZombieGuy1 (0x1624) [b]
 401 ():
     Door #0: 40F (0x21EA)
     Door #1: 400 (0x220A)
@@ -942,16 +927,16 @@
     Door #3: 404 (0x224A)
     Door #20: 401 (0x226A)
     Door #21: 401 (0x228A)
+    Enemy #255: AdaWong1 (0x2394)
+    Enemy #0: ZombieGuy2 (0x23AE)
+    Enemy #0: ZombieGuy2 (0x23EC)
+    Item #9: InkRibbon x3 (0x2690)
     Item #12: HandgunAmmo x15 (0x2408)
     Item #13: ShotgunAmmo x7 (0x2444)
     Item #14: MagnumAmmo x8 (0x2480)
     Item #15: HerbG x1 (0x24BC)
     Item #16: HerbG x1 (0x24F8)
     Item #17: HerbG x1 (0x2534)
-    Item #9: InkRibbon x3 (0x2690)
-    Enemy #255: AdaWong1 (0x2394)
-    Enemy #0: ZombieGuy2 (0x23AE)
-    Enemy #0: ZombieGuy2 (0x23EC)
 402 ():
     Door #1: 304 (0x856)
     Door #2: 403 (0x876)
@@ -969,14 +954,14 @@
     Item #14: FAidSpray x1 (0x2CAE)
     Item #16: HandgunAmmo x30 (0x2CE2)
     Item #21: 122 x1 (0x2CF8)
+    Enemy #255: AdaWong1 (0x2ABC)
     Item #19: ShotgunAmmo x7 (0x2DD0)
     Item #20: MagnumAmmo x8 (0x2DE6)
-    Enemy #255: AdaWong1 (0x2ABC)
 404 ():
-    Door #0: 401 (0xD16)
-    Door #0: 401 (0xD42)
-    Door #1: 403 (0xD6E)
-    Door #1: 403 (0xD9A)
+    Door #0: 401 (0xD16) [b]
+    Door #0: 401 (0xD42) [claire, a]
+    Door #1: 403 (0xD6E) [b]
+    Door #1: 403 (0xD9A) [leon, a]
     Door #2: 405 (0xDBE)
     Enemy #0: LeonKennedyRpd (0xE5E)
     Enemy #1: AnnetteBirkin1 (0xE74)
@@ -986,10 +971,10 @@
     Door #0: 407 (0xE2E)
     Door #1: 404 (0xE4E)
     Door #2: 40B (0xE6E)
-    Item #6: WolfMedal x1 (0xF1A)
-    Item #7: SmallKey x1 (0xF38)
-    Item #7: ShotgunAmmo x7 (0xF52)
     Enemy #7: AnnetteBirkin1 (0xEF0)
+    Item #6: WolfMedal x1 (0xF1A)
+    Item #7: SmallKey x1 (0xF38) [b]
+    Item #7: ShotgunAmmo x7 (0xF52) [a]
     Enemy #255: AdaWong1 (0xFAA)
     Enemy #255: AdaWong1 (0xFCC)
     Enemy #255: AdaWong1 (0xFEE)
@@ -1021,26 +1006,26 @@
     Door #1: 40A (0x27DE)
     Item #7: HerbG x1 (0x28E4)
     Item #8: HerbG x1 (0x28FA)
-    Item #9: ShotgunAmmo x7 (0x293E)
-    Item #9: FlameRounds x6 (0x2958)
-    Item #2: InkRibbon x3 (0x299E)
+    Item #9: ShotgunAmmo x7 (0x293E) [leon]
+    Item #9: FlameRounds x6 (0x2958) [claire]
+    Item #2: InkRibbon x3 (0x299E) [usa]
     Enemy #255: AdaWong1 (0x29F2)
     Enemy #255: AdaWong1 (0x2A0C)
 409 ():
     Door #0: 410 (0x2196)
     Door #1: 40B (0x21B6)
-    Item #10: 121 x1 (0x2288)
-    Item #10: 121 x1 (0x22C8)
-    Item #11: EagleMedal x1 (0x230E)
-    Item #11: EagleMedal x1 (0x234E)
+    Item #10: 121 x1 (0x2288) [leon]
+    Item #10: 121 x1 (0x22C8) [claire]
+    Item #11: EagleMedal x1 (0x230E) [leon]
+    Item #11: EagleMedal x1 (0x234E) [claire]
     Enemy #0: AnnetteBirkin1 (0x23DC)
     Enemy #255: AdaWong1 (0x242C)
     Enemy #255: AdaWong1 (0x2446)
 40A ():
     Door #0: 410 (0x2502)
     Door #1: 408 (0x2522)
-    Enemy #255: AdaWong1 (0x2564)
-    Enemy #255: SherryWithPendant (0x2586)
+    Enemy #255: AdaWong1 (0x2564) [leon]
+    Enemy #255: SherryWithPendant (0x2586) [claire, a]
     Enemy #0: Alligator (0x25A0)
     Enemy #255: AdaWong1 (0x2612)
     Enemy #255: AdaWong1 (0x262C)
@@ -1083,25 +1068,25 @@
     Door #0: 500 (0x364E)
     Door #5: 501 (0x3672)
     Door #1: 40D (0x3694)
-    Item #7: ShotgunAmmo x7 (0x3874)
-    Item #8: HandgunAmmo x15 (0x388A)
     Enemy #255: AdaWong1 (0x37D6)
     Enemy #255: AdaWong1 (0x37FE)
+    Item #7: ShotgunAmmo x7 (0x3874) [a]
+    Item #8: HandgunAmmo x15 (0x388A) [a]
 40F ():
 410 ():
     Door #0: 409 (0x11AE)
     Door #1: 40A (0x11CE)
-    Door #2: 404 (0x123A)
-    Door #2: 404 (0x126C)
-    Door #2: 404 (0x12A0)
-    Item #6: FAidSpray x1 (0x13D6)
-    Item #7: InkRibbon x3 (0x13EC)
-    Item #4: InkRibbon x3 (0x1C0A)
-    Item #6: FAidSpray x1 (0x1C20)
+    Door #2: 404 (0x123A) [b]
+    Door #2: 404 (0x126C) [b]
+    Door #2: 404 (0x12A0) [a]
     Enemy #255: AdaWong1 (0x12DE)
     Enemy #0: LeonKennedyBandaged (0x12F4)
     Enemy #255: AdaWong1 (0x1358)
     Enemy #255: AdaWong1 (0x1372)
+    Item #6: FAidSpray x1 (0x13D6)
+    Item #7: InkRibbon x3 (0x13EC)
+    Item #4: InkRibbon x3 (0x1C0A)
+    Item #6: FAidSpray x1 (0x1C20)
 500 ():
     Door #0: 501 (0x155E)
     Enemy #255: AdaWong1 (0x1630)
@@ -1110,14 +1095,12 @@
 501 ():
     Door #0: 40E (0x1302)
     Door #1: 502 (0x1322)
-    Item #2: WeaponBoxKey x1 (0x142E)
     Enemy #255: AdaWong1 (0x138E)
     Enemy #255: AdaWong1 (0x13EE)
+    Item #2: WeaponBoxKey x1 (0x142E)
 502 ():
     Door #0: 501 (0x14A6)
     Door #1: 508 (0x14C6)
-    Item #4: ShotgunParts x1 (0x1582)
-    Item #4: ShotgunParts x1 (0x15C2)
     Enemy #0: ZombieRandom (0x14E6)
     Enemy #1: ZombieRandom (0x14FC)
     Enemy #2: ZombieRandom (0x1512)
@@ -1125,81 +1108,80 @@
     Enemy #4: ZombieRandom (0x153E)
     Enemy #255: AdaWong1 (0x1616)
     Enemy #255: AdaWong1 (0x1630)
+    Item #4: ShotgunParts x1 (0x1582) [usa]
+    Item #4: ShotgunParts x1 (0x15C2) [jpn]
 503 ():
     Door #0: 508 (0x79E)
-    Door #1: 504 (0x7C6)
-    Door #1: 506 (0x7EA)
-    Door #7: 504 (0x80A)
+    Door #1: 504 (0x7C6) [a]
+    Door #1: 506 (0x7EA) [b]
+    Door #7: 504 (0x80A) [b]
+    Enemy #255: AdaWong1 (0x908) [b]
+    Enemy #255: AdaWong1 (0x942) [b]
+    Enemy #255: AdaWong1 (0xB12) [b]
+    Enemy #255: AdaWong1 (0xB2C) [b]
+    Enemy #255: AdaWong1 (0xB50) [b]
     Item #4: ShotgunAmmo x7 (0x9F0)
     Item #5: MagnumAmmo x8 (0xA2C)
     Item #15: FAidSpray x1 (0xA68)
     Item #3: InkRibbon x3 (0xAA4)
-    Enemy #255: AdaWong1 (0x908)
-    Enemy #255: AdaWong1 (0x942)
-    Enemy #255: AdaWong1 (0xB12)
-    Enemy #255: AdaWong1 (0xB2C)
-    Enemy #255: AdaWong1 (0xB50)
 504 ():
     Door #0: 503 (0x1BFE)
     Door #1: 505 (0x1C1E)
-    Item #2: HandgunAmmo x15 (0x1CF4)
-    Item #2: HandgunAmmo x15 (0x1D34)
-    Enemy #255: AdaWong1 (0x1C70)
-    Enemy #255: SherryWithPendant (0x1C8A)
+    Enemy #255: AdaWong1 (0x1C70) [leon]
+    Enemy #255: SherryWithPendant (0x1C8A) [claire]
+    Item #2: HandgunAmmo x15 (0x1CF4) [jpn]
+    Item #2: HandgunAmmo x15 (0x1D34) [usa]
 505 ():
     Door #0: 504 (0xB2E)
     Door #0: 509 (0xB5A)
-    Door #0: 607 (0xB90)
-    Door #0: 600 (0xBB4)
+    Door #0: 607 (0xB90) [a]
+    Door #0: 600 (0xBB4) [b]
     Door #0: 606 (0xBDA)
-    Item #7: MagnumAmmo x8 (0xC9E)
-    Item #7: MagnumAmmo x8 (0xCDE)
-    Item #7: FlameRounds x6 (0xD28)
-    Item #7: FlameRounds x6 (0xD68)
-    Item #5: DownKey x1 (0x109E)
+    Item #5: DownKey x1 (0x109E) [a]
     Enemy #255: AdaWong1 (0x10F6)
     Enemy #0: 49 (0x1124)
     Enemy #255: AdaWong2 (0x119E)
-    Enemy #255: AdaWong2 (0x120E)
-    Enemy #0: ZombieRandom (0x1CBA)
-    Enemy #1: ZombieRandom (0x1CD0)
+    Enemy #255: AdaWong2 (0x120E) [b]
     Enemy #255: AdaWong1 (0x1CF0)
-    Enemy #93: 0 (0x1D3C)
+    Item #7: MagnumAmmo x8 (0xC9E) [leon, usa]
+    Item #7: MagnumAmmo x8 (0xCDE) [leon, jpn]
+    Item #7: FlameRounds x6 (0xD28) [claire, usa]
+    Item #7: FlameRounds x6 (0xD68) [claire, jpn]
 506 ():
     Door #0: 503 (0xD32)
     Door #1: 507 (0xD52)
-    Item #2: HandgunAmmo x15 (0xDC0)
-    Item #2: HandgunAmmo x15 (0xE00)
+    Item #2: HandgunAmmo x15 (0xDC0) [jpn]
+    Item #2: HandgunAmmo x15 (0xE00) [usa]
 507 ():
     Door #0: 506 (0x2112)
-    Item #4: ShotgunAmmo x7 (0x217A)
-    Item #4: AcidRounds x6 (0x2194)
-    Item #4: ShotgunAmmo x7 (0x22BE)
-    Item #4: AcidRounds x6 (0x22D8)
-    Item #2: UpKey x1 (0x237C)
     Enemy #0: Tyrant1 (0x215C)
+    Item #4: ShotgunAmmo x7 (0x217A) [leon]
+    Item #4: AcidRounds x6 (0x2194) [claire]
+    Item #4: ShotgunAmmo x7 (0x22BE) [leon]
+    Item #4: AcidRounds x6 (0x22D8) [claire]
+    Item #2: UpKey x1 (0x237C)
 508 ():
-    Door #0: 502 (0x13D2)
-    Door #0: 502 (0x13F6)
-    Door #0: 502 (0x141C)
+    Door #0: 502 (0x13D2) [claire, a]
+    Door #0: 502 (0x13F6) [claire, b]
+    Door #0: 502 (0x141C) [leon]
     Door #1: 503 (0x143E)
-    Item #2: HerbG x1 (0x154C)
-    Item #3: HerbG x1 (0x1590)
-    Item #3: HerbB x1 (0x15D0)
-    Enemy #0: ZombieRandom (0x1466)
-    Enemy #1: ZombieRandom (0x147C)
-    Enemy #2: ZombieRandom (0x1492)
-    Enemy #3: ZombieRandom (0x14A8)
-    Enemy #0: ZombieRandom (0x14C2)
-    Enemy #1: ZombieRandom (0x14D8)
-    Enemy #2: ZombieRandom (0x14EE)
-    Enemy #3: ZombieRandom (0x1504)
+    Enemy #0: ZombieRandom (0x1466) [b]
+    Enemy #1: ZombieRandom (0x147C) [b]
+    Enemy #2: ZombieRandom (0x1492) [b]
+    Enemy #3: ZombieRandom (0x14A8) [b]
+    Enemy #0: ZombieRandom (0x14C2) [a]
+    Enemy #1: ZombieRandom (0x14D8) [a]
+    Enemy #2: ZombieRandom (0x14EE) [a]
+    Enemy #3: ZombieRandom (0x1504) [a]
     Enemy #255: AdaWong1 (0x1638)
     Enemy #255: AdaWong1 (0x1652)
+    Item #2: HerbG x1 (0x154C)
+    Item #3: HerbG x1 (0x1590) [a]
+    Item #3: HerbB x1 (0x15D0) [b]
 509 ():
     Door #0: 505 (0x197E)
-    Enemy #0: 49 (0x1C68)
-    Enemy #0: 51 (0x1C96)
+    Enemy #0: 49 (0x1C68) [a]
+    Enemy #0: 51 (0x1C96) [b]
 600 ():
     Door #0: 505 (0x157A)
     Door #1: 602 (0x159A)
@@ -1211,114 +1193,114 @@
 602 ():
     Door #3: 601 (0x872)
     Door #4: 603 (0x8AC)
-    Item #0: MagnumAmmo x8 (0x9FC)
-    Item #0: MagnumAmmo x8 (0xA5C)
-    Enemy #0: AnnetteBirkin1 (0x9AA)
-    Enemy #1: Tyrant1 (0x9E6)
+    Enemy #0: AnnetteBirkin1 (0x9AA) [b]
+    Enemy #1: Tyrant1 (0x9E6) [b]
+    Item #0: MagnumAmmo x8 (0x9FC) [b]
+    Item #0: MagnumAmmo x8 (0xA5C) [b]
 603 ():
     Door #0: 602 (0x29CA)
     Door #1: 604 (0x29EA)
     Door #2: 605 (0x2A0A)
+    Enemy #0: 44 (0x3948) [b]
+    Enemy #1: ZombieScientist (0x2A6A)
     Item #15: HerbG x1 (0x2CFC)
     Item #13: InkRibbon x3 (0x2D12)
-    Item #17: ShotgunAmmo x7 (0x2D56)
-    Item #17: FlameRounds x12 (0x2D96)
+    Item #17: ShotgunAmmo x7 (0x2D56) [leon]
+    Item #17: FlameRounds x12 (0x2D96) [claire]
     Item #18: 126 x1 (0x2DD4)
-    Enemy #1: ZombieScientist (0x2A6A)
-    Enemy #0: 44 (0x3948)
 604 ():
     Door #1: 603 (0x1FB0)
     Item #3: MasterKey x2 (0x2068)
-    Enemy #1: AdaWong2 (0x20E6)
-    Enemy #0: Tyrant1 (0x210E)
-    Enemy #1: AdaWong2 (0x2160)
+    Enemy #1: AdaWong2 (0x20E6) [b]
+    Enemy #0: Tyrant1 (0x210E) [b]
+    Enemy #1: AdaWong2 (0x2160) [b]
 605 ():
     Door #0: 603 (0x19B2)
     Enemy #0: LickerGrey (0x19D2)
     Enemy #1: LickerGrey (0x19E8)
 606 ():
     Door #0: 505 (0xE0A)
-    Door #1: 607 (0xE36)
-    Door #1: 607 (0xE5A)
+    Door #1: 607 (0xE36) [leon, b]
+    Door #1: 607 (0xE5A) [claire, a]
     Door #2: 601 (0xE7C)
-    Door #3: 611 (0xEA8)
-    Door #3: 608 (0xECC)
-    Enemy #0: ZombieNaked (0xF86)
-    Enemy #1: ZombieNaked (0xF9C)
-    Enemy #2: ZombieNaked (0xFB2)
-    Enemy #3: ZombieNaked (0xFC8)
-    Enemy #4: ZombieNaked (0xFDE)
+    Door #3: 611 (0xEA8) [leon]
+    Door #3: 608 (0xECC) [claire]
+    Enemy #0: ZombieNaked (0xF86) [a]
+    Enemy #1: ZombieNaked (0xF9C) [a]
+    Enemy #2: ZombieNaked (0xFB2) [a]
+    Enemy #3: ZombieNaked (0xFC8) [a]
+    Enemy #4: ZombieNaked (0xFDE) [a]
 607 ():
     Door #0: 606 (0xB36)
-    Door #1: 601 (0xB5E)
-    Item #3: InkRibbon x3 (0xC3C)
-    Item #4: HerbG x1 (0xC52)
-    Item #5: ShotgunAmmo x7 (0xC68)
-    Item #6: MagnumAmmo x8 (0xCA4)
-    Enemy #255: AdaWong2 (0xCE0)
-    Enemy #255: SherryWithClairesJacket (0xCFA)
+    Door #1: 601 (0xB5E) [leon]
+    Item #3: InkRibbon x3 (0xC3C) [a]
+    Item #4: HerbG x1 (0xC52) [a]
+    Item #5: ShotgunAmmo x7 (0xC68) [a]
+    Item #6: MagnumAmmo x8 (0xCA4) [a]
+    Enemy #255: AdaWong2 (0xCE0) [a]
+    Enemy #255: SherryWithClairesJacket (0xCFA) [b]
 608 ():
     Door #0: 606 (0x2732)
     Enemy #0: 63 (0x2812)
 609 ():
     Door #0: 60B (0x40C)
     Item #7: InkRibbon x3 (0x454)
-    Item #8: ShotgunAmmo x7 (0x498)
-    Item #9: ShotgunAmmo x7 (0x4D4)
     Enemy #0: LickerGrey (0x67A)
     Enemy #1: LickerGrey (0x690)
+    Item #8: ShotgunAmmo x7 (0x498)
+    Item #9: ShotgunAmmo x7 (0x4D4)
 60A ():
     Door #0: 60B (0x5F2)
     Door #1: 609 (0x612)
+    Enemy #0: 47 (0x12EC) [a]
+    Enemy #1: 47 (0x1302) [a]
+    Enemy #2: 47 (0x1318) [a]
+    Enemy #3: 47 (0x132E) [a]
+    Enemy #4: 47 (0x1344) [a]
+    Enemy #5: 47 (0x135A) [a]
+    Enemy #0: ZombieNaked (0x1372) [b]
+    Enemy #1: ZombieNaked (0x1388) [b]
+    Enemy #2: ZombieNaked (0x139E) [b]
     Item #9: 125 x1 (0x1434)
     Item #10: 114 x1 (0x1470)
-    Item #11: UmbrellaKeyCard x2 (0x14B4)
-    Item #13: Flamethrower x100 (0x14D4)
-    Item #13: BowgunAmmo x36 (0x14EE)
-    Enemy #0: 47 (0x12EC)
-    Enemy #1: 47 (0x1302)
-    Enemy #2: 47 (0x1318)
-    Enemy #3: 47 (0x132E)
-    Enemy #4: 47 (0x1344)
-    Enemy #5: 47 (0x135A)
-    Enemy #0: ZombieNaked (0x1372)
-    Enemy #1: ZombieNaked (0x1388)
-    Enemy #2: ZombieNaked (0x139E)
+    Item #11: UmbrellaKeyCard x2 (0x14B4) [b]
+    Item #13: Flamethrower x100 (0x14D4) [leon]
+    Item #13: BowgunAmmo x36 (0x14EE) [claire]
 60B ():
     Door #1: 609 (0x1156)
     Door #2: 60A (0x1176)
     Door #3: 60E (0x1196)
     Enemy #0: 47 (0x15AC)
-    Enemy #1: Ivy (0x15D2)
-    Enemy #2: Ivy (0x15E8)
-    Enemy #1: Ivy (0x160A)
-    Enemy #2: Ivy (0x1634)
-    Enemy #1: Ivy (0x166C)
-    Enemy #2: Ivy (0x1682)
-    Enemy #1: Ivy (0x16A4)
-    Enemy #2: Ivy (0x16CE)
-    Enemy #1: IvyPurple (0x16FE)
-    Enemy #2: IvyPurple (0x1714)
-    Enemy #1: IvyPurple (0x1736)
-    Enemy #2: IvyPurple (0x1760)
-    Enemy #1: Ivy (0x17AA)
-    Enemy #1: Ivy (0x17D4)
-    Enemy #2: Ivy (0x180A)
-    Enemy #2: Ivy (0x1830)
-    Enemy #1: IvyPurple (0x1862)
-    Enemy #1: IvyPurple (0x188C)
-    Enemy #2: IvyPurple (0x18C2)
-    Enemy #2: IvyPurple (0x18E8)
+    Enemy #1: Ivy (0x15D2) [a]
+    Enemy #2: Ivy (0x15E8) [a]
+    Enemy #1: Ivy (0x160A) [a]
+    Enemy #1: Ivy (0x17AA) [a]
+    Enemy #1: Ivy (0x17D4) [a]
+    Enemy #2: Ivy (0x1634) [a]
+    Enemy #2: Ivy (0x180A) [a]
+    Enemy #2: Ivy (0x1830) [a]
+    Enemy #1: Ivy (0x166C) [b]
+    Enemy #2: Ivy (0x1682) [b]
+    Enemy #1: Ivy (0x16A4) [b]
+    Enemy #2: Ivy (0x16CE) [b]
+    Enemy #1: IvyPurple (0x16FE) [b]
+    Enemy #2: IvyPurple (0x1714) [b]
+    Enemy #1: IvyPurple (0x1736) [b]
+    Enemy #1: IvyPurple (0x1862) [b]
+    Enemy #1: IvyPurple (0x188C) [b]
+    Enemy #2: IvyPurple (0x1760) [b]
+    Enemy #2: IvyPurple (0x18C2) [b]
+    Enemy #2: IvyPurple (0x18E8) [b]
 60C ():
     Door #0: 60D (0xF0A)
     Door #3: 60F (0xF7A)
-    Item #7: GVirus x1 (0x17E6)
-    Enemy #0: AnnetteBirkin1 (0x1712)
+    Enemy #0: AnnetteBirkin1 (0x1712) [a]
+    Item #7: GVirus x1 (0x17E6) [a]
 60D ():
     Door #0: 60C (0x8A2)
     Item #1: MainFuse x1 (0x8E6)
-    Item #3: FAidSpray x1 (0xA8A)
     Enemy #0: 62 (0x96A)
+    Item #3: FAidSpray x1 (0xA8A)
 60E ():
     Door #0: 60E (0x38E)
     Door #1: 60E (0x3AE)
@@ -1333,6 +1315,10 @@
     Enemy #4: 47 (0x678)
     Enemy #5: 47 (0x68E)
     Enemy #6: 47 (0x6A4)
+    Enemy #7: Ivy (0x7AA) [a]
+    Enemy #8: 47 (0x7C0) [a]
+    Enemy #7: IvyPurple (0x806) [b]
+    Enemy #8: 47 (0x81C) [b]
     Enemy #0: 47 (0x6BC)
     Enemy #1: 47 (0x6D2)
     Enemy #2: 47 (0x6E8)
@@ -1340,43 +1326,35 @@
     Enemy #4: 47 (0x714)
     Enemy #5: 47 (0x72A)
     Enemy #6: 47 (0x740)
-    Enemy #7: Ivy (0x758)
-    Enemy #8: 47 (0x76E)
-    Enemy #7: Ivy (0x7AA)
-    Enemy #8: 47 (0x7C0)
-    Enemy #7: Ivy (0x7D8)
-    Enemy #8: 47 (0x7EE)
-    Enemy #7: IvyPurple (0x806)
-    Enemy #8: 47 (0x81C)
 60F ():
     Door #0: 60C (0x716)
-    Item #2: SMG x100 (0x7BE)
-    Item #2: SMGAmmo x100 (0x7FE)
     Enemy #0: LickerGrey (0x74E)
     Enemy #1: LickerGrey (0x764)
     Enemy #2: LickerGrey (0x77A)
+    Item #2: SMG x100 (0x7BE)
+    Item #2: SMGAmmo x100 (0x7FE)
 610 ():
-    Item #6: MODisk x1 (0x12B6)
-    Item #7: FAidSpray x1 (0x12F2)
-    Item #3: MagnumAmmo x8 (0x132E)
-    Item #6: MagnumAmmo x16 (0x136E)
-    Enemy #2: 47 (0x1122)
-    Enemy #3: 47 (0x1138)
-    Enemy #0: Ivy (0x1150)
-    Enemy #1: Ivy (0x1166)
-    Enemy #0: IvyPurple (0x117E)
-    Enemy #1: IvyPurple (0x1194)
-    Enemy #0: ZombieTestSubject (0x1228)
-    Enemy #1: ZombieTestSubject (0x123E)
-    Enemy #2: ZombieTestSubject (0x1254)
-    Enemy #3: ZombieScientist (0x126A)
-    Enemy #4: ZombieScientist (0x1280)
+    Item #6: MODisk x1 (0x12B6) [a]
+    Item #7: FAidSpray x1 (0x12F2) [a]
+    Item #3: MagnumAmmo x8 (0x132E) [a]
+    Item #6: MagnumAmmo x16 (0x136E) [b]
+    Enemy #0: Ivy (0x1150) [b]
+    Enemy #1: Ivy (0x1166) [b]
+    Enemy #0: IvyPurple (0x117E) [b]
+    Enemy #1: IvyPurple (0x1194) [b]
+    Enemy #2: 47 (0x1122) [b]
+    Enemy #3: 47 (0x1138) [b]
+    Enemy #0: ZombieTestSubject (0x1228) [a]
+    Enemy #1: ZombieTestSubject (0x123E) [a]
+    Enemy #2: ZombieTestSubject (0x1254) [a]
+    Enemy #3: ZombieScientist (0x126A) [a]
+    Enemy #4: ZombieScientist (0x1280) [a]
 611 ():
     Door #0: 606 (0x316E)
     Enemy #0: 63 (0x3278)
-    Enemy #255: AdaWong2 (0x3528)
-    Enemy #1: AnnetteBirkin1 (0x353E)
-    Enemy #1: AnnetteBirkin1 (0x35DA)
+    Enemy #255: AdaWong2 (0x3528) [a]
+    Enemy #1: AnnetteBirkin1 (0x353E) [a]
+    Enemy #1: AnnetteBirkin1 (0x35DA) [a]
 612 ():
     Door #0: 614 (0x125A)
     Door #1: 616 (0x127A)
@@ -1393,44 +1371,44 @@
     Door #0: 613 (0xBB2)
     Door #1: 615 (0xBD2)
     Door #2: 612 (0xBF2)
-    Item #5: HerbR x1 (0xC70)
     Enemy #0: Maggots (0xC2C)
+    Item #5: HerbR x1 (0xC70)
 615 ():
     Door #0: 614 (0x2B96)
+    Enemy #0: ZombieNaked (0x2DD0) [b]
+    Enemy #1: ZombieNaked (0x2DE6) [b]
+    Enemy #2: ZombieNaked (0x2DFC) [b]
+    Enemy #3: ZombieNaked (0x2E12) [b]
+    Enemy #4: ZombieNaked (0x2E28) [b]
+    Enemy #0: ZombieScientist (0x2E42) [a]
+    Enemy #1: ZombieScientist (0x2E58) [a]
+    Enemy #2: ZombieScientist (0x2E6E) [a]
+    Enemy #3: ZombieScientist (0x2E84) [a]
+    Enemy #4: ZombieScientist (0x2E9A) [a]
+    Item #20: InkRibbon x3 (0x2FDC) [usa]
     Item #7: MagnumParts x1 (0x2BD6)
-    Item #13: FAidSpray x1 (0x2C36)
-    Item #13: FAidSpray x1 (0x2C50)
-    Item #5: PowerRoomKey x1 (0x2CBE)
-    Item #5: UmbrellaKeyCard x2 (0x2CFE)
-    Item #20: InkRibbon x3 (0x2FDC)
-    Enemy #0: ZombieNaked (0x2DD0)
-    Enemy #1: ZombieNaked (0x2DE6)
-    Enemy #2: ZombieNaked (0x2DFC)
-    Enemy #3: ZombieNaked (0x2E12)
-    Enemy #4: ZombieNaked (0x2E28)
-    Enemy #0: ZombieScientist (0x2E42)
-    Enemy #1: ZombieScientist (0x2E58)
-    Enemy #2: ZombieScientist (0x2E6E)
-    Enemy #3: ZombieScientist (0x2E84)
-    Enemy #4: ZombieScientist (0x2E9A)
+    Item #13: FAidSpray x1 (0x2C36) [b, usa]
+    Item #13: FAidSpray x1 (0x2C50) [b, jpn]
+    Item #5: PowerRoomKey x1 (0x2CBE) [b]
+    Item #5: UmbrellaKeyCard x2 (0x2CFE) [a]
 616 ():
     Door #0: 60E (0x1CEA)
     Door #1: 612 (0x1D0A)
     Door #2: 617 (0x1D2A)
+    Enemy #0: ZombieNaked (0x20BC) [a]
+    Enemy #1: ZombieNaked (0x20D2) [a]
+    Enemy #2: ZombieNaked (0x20E8) [a]
+    Enemy #3: ZombieNaked (0x20FE) [a]
+    Enemy #4: ZombieNaked (0x2114) [a]
+    Enemy #0: LickerGrey (0x1F88) [b]
+    Enemy #0: LickerGrey (0x1FC0) [b]
+    Enemy #1: LickerGrey (0x2010) [b]
+    Enemy #1: LickerGrey (0x2048) [b]
+    Enemy #2: LickerGrey (0x2078) [b]
+    Enemy #3: LickerGrey (0x208E) [b]
     Item #4: HerbG x1 (0x1DF8)
     Item #5: HerbG x1 (0x1E34)
     Item #6: HerbG x1 (0x1E70)
-    Enemy #0: LickerGrey (0x1F88)
-    Enemy #0: LickerGrey (0x1FC0)
-    Enemy #1: LickerGrey (0x2010)
-    Enemy #1: LickerGrey (0x2048)
-    Enemy #2: LickerGrey (0x2078)
-    Enemy #3: LickerGrey (0x208E)
-    Enemy #0: ZombieNaked (0x20BC)
-    Enemy #1: ZombieNaked (0x20D2)
-    Enemy #2: ZombieNaked (0x20E8)
-    Enemy #3: ZombieNaked (0x20FE)
-    Enemy #4: ZombieNaked (0x2114)
 617 ():
     Door #0: 616 (0x3582)
     Door #1: 700 (0x35A2)
@@ -1438,12 +1416,12 @@
 700 ():
     Door #0: 701 (0x143A)
     Door #1: 703 (0x145A)
-    Enemy #255: SherryWithClairesJacket (0x14A4)
-    Enemy #0: ZombieNaked (0x1680)
-    Enemy #1: ZombieNaked (0x1696)
-    Enemy #2: ZombieNaked (0x16AC)
-    Enemy #3: ZombieNaked (0x16C2)
-    Enemy #4: ZombieNaked (0x16D8)
+    Enemy #255: SherryWithClairesJacket (0x14A4) [b]
+    Enemy #0: ZombieNaked (0x1680) [b]
+    Enemy #1: ZombieNaked (0x1696) [b]
+    Enemy #2: ZombieNaked (0x16AC) [b]
+    Enemy #3: ZombieNaked (0x16C2) [b]
+    Enemy #4: ZombieNaked (0x16D8) [b]
 701 ():
     Door #0: 700 (0x1E52)
     Door #1: 702 (0x1E72)
@@ -1457,20 +1435,20 @@
 703 ():
     Door #0: 700 (0x1C58)
     Door #2: 704 (0x1C78)
-    Door #9: 703 (0x2470)
     Enemy #0: ClaireRedfieldNoJacket (0x1EBA)
     Enemy #1: SherryWithClairesJacket (0x1F00)
     Enemy #1: SherryWithClairesJacket (0x1F34)
     Enemy #1: SherryWithClairesJacket (0x1F6E)
+    Door #9: 703 (0x2470)
 704 ():
     Door #0: 703 (0x10FE)
-    Item #2: InkRibbon x3 (0x135A)
-    Item #3: PlatformKey x1 (0x1370)
     Enemy #0: 54 (0x11AC)
     Enemy #1: 55 (0x11C2)
     Enemy #2: 55 (0x11D8)
     Enemy #3: 55 (0x11EE)
     Enemy #4: 55 (0x1204)
+    Item #2: InkRibbon x3 (0x135A)
+    Item #3: PlatformKey x1 (0x1370)
 A00 ():
     Door #0: 101 (0x1096)
 A01 ():
@@ -1479,7 +1457,6 @@ A01 ():
 A02 ():
     Door #0: 101 (0x1802)
     Door #1: 118 (0x1822)
-    Enemy #0: 0 (0x1880)
 A03 ():
     Door #0: 200 (0x368A)
     Door #1: 11B (0x36AA)
@@ -1648,8 +1625,8 @@ B0F ():
     Door #2: 210 (0x1732)
 B10 ():
     Door #0: 20F (0x126A)
-    Item #31: AntivirusBomb x1 (0x1328)
     Enemy #2: 47 (0x12EC)
+    Item #31: AntivirusBomb x1 (0x1328)
 B11 ():
     Door #1: 212 (0x16B6)
     Door #2: 213 (0x16D6)
@@ -1808,20 +1785,6 @@ D05 ():
     Door #0: 407 (0xE56)
     Door #1: 404 (0xE76)
     Door #2: 40B (0xE96)
-    Enemy #0: ZombieGuy1 (0x1234)
-    Enemy #1: ZombieGuy1 (0x124A)
-    Enemy #2: ZombieGuy1 (0x1260)
-    Enemy #0: ZombieGuy1 (0x127A)
-    Enemy #1: ZombieGuy1 (0x1290)
-    Enemy #2: ZombieGuy1 (0x12A6)
-    Enemy #0: ZombieGuy1 (0x12DE)
-    Enemy #1: ZombieGuy1 (0x12F4)
-    Enemy #2: ZombieGuy1 (0x130A)
-    Enemy #0: ZombieGuy1 (0x1324)
-    Enemy #1: ZombieGuy1 (0x133A)
-    Enemy #2: ZombieGuy1 (0x1350)
-    Enemy #0: Spider (0x136E)
-    Enemy #1: Spider (0x1384)
 D07 ():
     Door #0: 40D (0x69A)
     Door #1: 408 (0x6BA)
@@ -1954,7 +1917,6 @@ F08 ():
     Enemy #3: ZombieRandom (0x2874)
     Enemy #4: ZombieRandom (0x288A)
     Enemy #5: ZombieRandom (0x28A0)
-    Enemy #6: 0 (0x2972)
 F09 ():
     Door #0: 60B (0x41E)
     Enemy #2: 47 (0x4AC)
@@ -2039,10 +2001,10 @@ G02 ():
 G03 ():
 G04 ():
     Door #0: 703 (0x10D6)
-    Item #2: InkRibbon x3 (0x1332)
-    Item #3: PlatformKey x1 (0x1348)
     Enemy #0: 54 (0x1184)
     Enemy #1: 55 (0x119A)
     Enemy #2: 55 (0x11B0)
     Enemy #3: 55 (0x11C6)
     Enemy #4: 55 (0x11DC)
+    Item #2: InkRibbon x3 (0x1332)
+    Item #3: PlatformKey x1 (0x1348)

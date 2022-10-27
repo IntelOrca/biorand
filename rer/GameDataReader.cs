@@ -77,6 +77,8 @@ namespace rer
             rdtFile.ReadScript(opcodeBuilder);
             rdt.Opcodes = opcodeBuilder.ToArray();
 
+            rdt.Ast = CreateAst(rdtFile);
+
             return rdt;
         }
 
@@ -85,6 +87,13 @@ namespace rer
             var scriptDecompiler = new ScriptDecompiler(assemblyFormat);
             rdtFile.ReadScript(scriptDecompiler);
             return scriptDecompiler.GetScript();
+        }
+
+        private static ScriptAst CreateAst(RdtFile rdtFile)
+        {
+            var builder = new ScriptAstBuilder();
+            rdtFile.ReadScript(builder);
+            return builder.Ast;
         }
     }
 }

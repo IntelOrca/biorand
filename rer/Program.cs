@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using System.Text.Json;
 
@@ -13,24 +11,13 @@ namespace rer
             var re2Path = @"F:\games\re2";
             var originalDataPath = Path.Combine(re2Path, "data");
             var modPath = Path.Combine(re2Path, @"mod_rando");
+
             var gameData = GameDataReader.Read(originalDataPath, modPath, 0);
-
-            // DumpRdtList(gameData, @"M:\git\rer\docs\rdt.txt");
+            DumpRdtList(gameData, @"M:\git\rer\docs\rdt_leon.txt");
             DumpScripts(gameData, @"F:\games\re2\mod_rando\scripts");
-            return;
 
-            var rng = new Rng();
-
-            var numbers = new List<double>();
-            for (int i = 0; i < 2048; i++)
-                // numbers.Add((5 + rng.NextGaussian(-5, 1)) / 10);
-                numbers.Add(rng.NextGaussian(-5, 2));
-            numbers.Sort();
-
-            // Generate(new RandoConfig()
-            // {
-            //     Seed = 0
-            // });
+            gameData = GameDataReader.Read(originalDataPath, modPath, 1);
+            DumpRdtList(gameData, @"M:\git\rer\docs\rdt_claire.txt");
         }
 
         public static void Generate(RandoConfig config, string re2Path)
@@ -151,20 +138,25 @@ namespace rer
             foreach (var rdt in gameData.Rdts)
             {
                 sb.AppendLine($"{rdt.RdtId} ():");
-                foreach (var door in rdt.Doors)
-                {
-                    sb.AppendLine($"    Door #{door.Id}: {new RdtId(door.Stage, door.Room)} (0x{door.Offset:X2})");
-                }
-                foreach (var item in rdt.Items)
-                {
-                    sb.AppendLine($"    Item #{item.Id}: {(ItemType)item.Type} x{item.Amount} (0x{item.Offset:X2})");
-                }
-                foreach (var enemy in rdt.Enemies)
-                {
-                    sb.AppendLine($"    Enemy #{enemy.Id}: {enemy.Type} (0x{enemy.Offset:X2})");
-                }
+                AstPrinter.Print(sb, rdt.Ast!);
             }
             File.WriteAllText(path, sb.ToString());
+        }
+
+        private static void DumpRdt(StringBuilder sb, Rdt rdt)
+        {
+            foreach (var door in rdt.Doors)
+            {
+                sb.AppendLine($"    Door #{door.Id}: {new RdtId(door.Stage, door.Room)} (0x{door.Offset:X2})");
+            }
+            foreach (var item in rdt.Items)
+            {
+                sb.AppendLine($"    Item #{item.Id}: {(ItemType)item.Type} x{item.Amount} (0x{item.Offset:X2})");
+            }
+            foreach (var enemy in rdt.Enemies)
+            {
+                sb.AppendLine($"    Enemy #{enemy.Id}: {enemy.Type} (0x{enemy.Offset:X2})");
+            }
         }
 
         private static void DumpScripts(GameData gameData, string scriptPath)

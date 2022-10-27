@@ -47,10 +47,8 @@
       ],
       "items": [
         {
-          "id": 5
-        },
-        {
-          "id": 31
+          "id": 31,
+          "type": 0
         }
       ],
       "enemies": {}
@@ -85,26 +83,6 @@
       "doors": [
         {
           "target": "107"
-        }
-      ],
-      "items": [
-        {
-          "id": 3,
-          "type": 12,
-          "amount": 18,
-          "player": 1,
-          "scenario": 0
-        },
-        {
-          "id": 3,
-          "type": 20,
-          "amount": 15,
-          "player": 1,
-          "scenario": 1
-        },
-        {
-          "id": 4,
-          "scenario": 1
         }
       ],
       "enemies": {
@@ -148,11 +126,8 @@
       ],
       "items": [
         {
-          "id": 4,
-          "scenario": 0
-        },
-        {
-          "id": 5
+          "id": 5,
+          "priority": "low"
         }
       ],
       "enemies": {
@@ -176,6 +151,12 @@
         },
         {
           "target": "21B",
+          "requires": [ 50 ],
+          "player": 0,
+          "scenario": 1
+        },
+        {
+          "target": "21B",
           "requires": [ 50, 64, 65 ],
           "player": 1
         }
@@ -187,33 +168,6 @@
         {
           "target": "10A"
         }
-      ],
-      "items": [
-        {
-          "id": 2,
-          "type": 90,
-          "scenario": 0
-        },
-        {
-          "id": 2,
-          "type": 53,
-          "scenario": 1
-        },
-        {
-          "id": 5
-        },
-        {
-          "id": 16,
-          "type": 62,
-          "requires": [ 51, 51 ],
-          "player": 0
-        },
-        {
-          "id": 16,
-          "type": 56,
-          "requires": [ 51, 51 ],
-          "player": 1
-        }
       ]
     },
     "10C": {
@@ -223,11 +177,6 @@
         },
         {
           "target": "114"
-        }
-      ],
-      "items": [
-        {
-          "id": 12
         }
       ]
     },
@@ -242,35 +191,24 @@
       ],
       "items": [
         {
-          "id": 10
+          "id": 10,
+          "type": 21,
+          "amount": 7,
+          "player": 0,
+          "priority": "low"
+        },
+        {
+          "id": 10,
+          "type": 0,
+          "player": 1
         }
       ]
     },
     "10E": {
-      "supportedNpcs": [
-        67,
-        68,
-        72,
-        74,
-        80,
-        90
-      ],
+      "supportedNpcs": [ 67, 68, 72, 74, 80, 90 ],
       "doors": [
         {
           "target": "10D"
-        }
-      ],
-      "items": [
-        {
-          "id": 4,
-          "type": 35,
-          "scenario": 0
-        },
-        {
-          "id": 4,
-          "type": 20,
-          "amount": 15,
-          "scenario": 1
         }
       ]
     },
@@ -281,20 +219,6 @@
         },
         {
           "target": "110"
-        }
-      ],
-      "items": [
-        {
-          "id": 5,
-          "type": 47,
-          "player": 1,
-          "scenario": 0
-        },
-        {
-          "id": 5,
-          "type": 20,
-          "player": 1,
-          "scenario": 1
         }
       ]
     },
@@ -312,16 +236,8 @@
         },
         {
           "target": "112",
-          "requires": [
-            53
-          ],
+          "requires": [ 53 ],
           "scenario": 1
-        }
-      ],
-      "items": [
-        {
-          "id": 3,
-          "scenario": 0
         }
       ],
       "enemies": {}
@@ -375,54 +291,6 @@
           "target": "112"
         }
       ],
-      "items": [
-        {
-          "id": 2,
-          "type": 90,
-          "amount": 2,
-          "player": 0,
-          "scenario": 1
-        },
-        {
-          "id": 4,
-          "type": 32,
-          "requires": [ 31 ],
-          "player": 0
-        },
-        {
-          "id": 4,
-          "type": 25,
-          "amount": 6,
-          "player": 1,
-          "scenario": 0
-        },
-        {
-          "id": 4,
-          "type": 20,
-          "amount": 15,
-          "player": 1,
-          "scenario": 1
-        },
-        {
-          "id": 5,
-          "type": 20,
-          "amount": 15,
-          "player": 0,
-          "scenario": 0
-        },
-        {
-          "id": 5,
-          "type": 21,
-          "amount": 7,
-          "player": 0,
-          "scenario": 1
-        },
-        {
-          "id": 5,
-          "scenario": 1,
-          "player": 1
-        }
-      ],
       "enemies": {}
     },
     "114": {
@@ -452,58 +320,6 @@
         {
           "target": "114"
         }
-      ],
-      "items": [
-        {
-          "id": 2,
-          "player": 0,
-          "scenario": 1
-        },
-        {
-          "id": 2,
-          "type": 71,
-          "player": 1,
-          "scenario": 0
-        },
-        {
-          "id": 2,
-          "type": 90,
-          "player": 1,
-          "scenario": 1
-        },
-        {
-          "id": 13,
-          "type": 21,
-          "player": 0,
-          "scenario": 0
-        },
-        {
-          "id": 13,
-          "type": 22,
-          "player": 0,
-          "scenario": 1
-        },
-        {
-          "id": 13,
-          "type": 9,
-          "player": 1,
-          "scenario": 0
-        },
-        {
-          "id": 13,
-          "type": 12,
-          "player": 1,
-          "scenario": 1
-        },
-        {
-          "id": 9,
-          "scenario": 1
-        },
-        {
-          "id": 16,
-          "player": 0,
-          "scenario": 1
-        }
       ]
     },
     "116": {
@@ -531,7 +347,8 @@
       ],
       "items": [
         {
-          "id": 0
+          "id": 0,
+          "priority": "low"
         }
       ],
       "enemies": {}
@@ -543,11 +360,6 @@
         },
         {
           "target": "119"
-        }
-      ],
-      "items": [
-        {
-          "id": 4
         }
       ],
       "enemies": {}
@@ -633,38 +445,6 @@
             53
           ]
         }
-      ],
-      "items": [
-        {
-          "id": 9,
-          "type": 89,
-          "amount": 2,
-          "requires": [
-            71
-          ],
-          "scenario": 0
-        },
-        {
-          "id": 9,
-          "type": 89,
-          "amount": 1,
-          "requires": [
-            71
-          ],
-          "scenario": 1
-        },
-        {
-          "id": 19,
-          "type": 9,
-          "amount": 6,
-          "scenario": 1
-        },
-        {
-          "id": 19,
-          "type": 20,
-          "amount": 30,
-          "scenario": 0
-        }
       ]
     },
     "201": {
@@ -679,19 +459,8 @@
       "items": [
         {
           "id": 9,
-          "type": 20,
-          "amount": 15,
           "requires": [ 31 ],
-          "player": 0,
-          "scenario": 0
-        },
-        {
-          "id": 9,
-          "type": 21,
-          "amount": 7,
-          "requires": [ 31 ],
-          "player": 1,
-          "scenario": 1
+          "player": 0
         }
       ],
       "enemies": {
@@ -700,28 +469,6 @@
     },
     "202": {
       "supportedNpcs": [ 66, 67, 68, 72, 79, 90 ],
-      "items": [
-        {
-          "id": 255,
-          "type": 53,
-          "amount": 1,
-          "priority": "low",
-          "scenario": 0
-        },
-        {
-          "id": 4,
-          "player": 0,
-          "scenario": 0
-        },
-        {
-          "id": 12
-        },
-        {
-          "id": 15,
-          "player": 0,
-          "scenario": 1
-        }
-      ],
       "doors": [
         {
           "target": "200"
@@ -729,6 +476,15 @@
         {
           "target": "209",
           "locked": true
+        }
+      ],
+      "items": [
+        {
+          "id": 255,
+          "type": 53,
+          "amount": 1,
+          "priority": "low",
+          "scenario": 0
         }
       ],
       "enemies": {
@@ -740,38 +496,6 @@
       "doors": [
         {
           "target": "204"
-        }
-      ],
-      "items": [
-        {
-          "id": 1,
-          "type": 20,
-          "amount": 15,
-          "player": 0,
-          "scenario": 0
-        },
-        {
-          "id": 1,
-          "type": 35,
-          "amount": 1,
-          "player": 0,
-          "scenario": 1
-        },
-        {
-          "id": 5,
-          "type": 67,
-          "scenario": 0
-        },
-        {
-          "id": 5,
-          "player": 0,
-          "scenario": 1
-        },
-        {
-          "id": 5,
-          "type": 47,
-          "player": 1,
-          "scenario": 1
         }
       ]
     },
@@ -791,11 +515,6 @@
           "requires": [
             89
           ]
-        }
-      ],
-      "items": [
-        {
-          "id": 2
         }
       ],
       "enemies": {
@@ -824,12 +543,7 @@
       "items": [
         {
           "id": 3,
-          "type": 51,
           "requires": [ 47 ]
-        },
-        {
-          "id": 5,
-          "scenario": 0
         }
       ]
     },
@@ -846,20 +560,13 @@
         },
         {
           "target": "209",
-          "requires": [
-            90
-          ]
+          "requires": [ 90 ]
         }
       ],
       "enemies": {}
     },
     "208": {
-      "requires": [
-        68,
-        69,
-        70,
-        80
-      ],
+      "requires": [ 68, 69, 70, 80 ],
       "doors": [
         {
           "target": "207"
@@ -870,13 +577,12 @@
       ],
       "items": [
         {
-          "id": 12
+          "id": 12,
+          "type": 0
         },
         {
-          "id": 13
-        },
-        {
-          "id": 14
+          "id": 14,
+          "type": 0
         }
       ]
     },
@@ -914,25 +620,10 @@
         },
         {
           "target": "20F",
-          "requires": [
-            91
-          ]
+          "requires": [ 91 ]
         },
         {
           "target": "116"
-        }
-      ],
-      "items": [
-        {
-          "id": 3,
-          "scenario": 0
-        },
-        {
-          "id": 28
-        },
-        {
-          "id": 31,
-          "scenario": 0
         }
       ],
       "enemies": {
@@ -946,20 +637,17 @@
         },
         {
           "target": "20D",
-          "requires": [
-            92
-          ]
+          "requires": [ 92 ]
         },
         {
           "target": "20E",
-          "requires": [
-            90
-          ]
+          "requires": [ 90 ]
         }
       ],
       "items": [
         {
-          "id": 10
+          "id": 10,
+          "priority": "low"
         }
       ],
       "enemies": {}
@@ -972,21 +660,12 @@
       ],
       "items": [
         {
-          "id": 11
-        },
-        {
-          "id": 20
-        },
-        {
           "id": 1,
-          "type": 74,
-          "requires": [
-            47
-          ]
+          "requires": [ 47 ]
         },
         {
-          "id": 2,
-          "scenario": 1
+          "id": 20,
+          "priority": "low"
         }
       ],
       "enemies": {}
@@ -995,41 +674,6 @@
       "doors": [
         {
           "target": "20C"
-        },
-        {
-          "target": "20C"
-        }
-      ],
-      "items": [
-        {
-          "id": 3,
-          "type": 60,
-          "player": 0
-        },
-        {
-          "id": 3,
-          "type": 58,
-          "player": 1
-        },
-        {
-          "id": 4,
-          "player": 1
-        },
-        {
-          "id": 5,
-          "scenario": 0
-        },
-        {
-          "id": 6,
-          "scenario": 0
-        },
-        {
-          "id": 7,
-          "scenario": 1
-        },
-        {
-          "id": 8,
-          "scenario": 1
         }
       ],
       "enemies": {
@@ -1038,9 +682,7 @@
       }
     },
     "20F": {
-      "requires": [
-        86
-      ],
+      "requires": [ 86 ],
       "doors": [
         {
           "target": "20B"
@@ -1050,24 +692,7 @@
         },
         {
           "target": "210",
-          "requires": [
-            92
-          ]
-        }
-      ],
-      "items": [
-        {
-          "id": 6
-        },
-        {
-          "id": 7,
-          "player": 0,
-          "scenario": 1
-        },
-        {
-          "id": 7,
-          "player": 1,
-          "scenario": 0
+          "requires": [ 92 ]
         }
       ],
       "enemies": {}
@@ -1076,11 +701,6 @@
       "doors": [
         {
           "target": "20F"
-        }
-      ],
-      "items": [
-        {
-          "id": 3
         }
       ],
       "enemies": {}
@@ -1095,9 +715,7 @@
         },
         {
           "target": "214",
-          "requires": [
-            52
-          ]
+          "requires": [ 52 ]
         },
         {
           "target": "216"
@@ -1107,14 +725,7 @@
         },
         {
           "target": "215",
-          "requires": [
-            92
-          ]
-        }
-      ],
-      "items": [
-        {
-          "id": 4
+          "requires": [ 92 ]
         }
       ],
       "enemies": {}
@@ -1134,54 +745,12 @@
         {
           "target": "211"
         }
-      ],
-      "items": [
-        {
-          "id": 2,
-          "scenario": 0
-        }
       ]
     },
     "214": {
       "doors": [
         {
           "target": "211"
-        }
-      ],
-      "items": [
-        {
-          "id": 2,
-          "type": 21,
-          "amount": 15,
-          "player": 0
-        },
-        {
-          "id": 2,
-          "type": 29,
-          "amount": 36,
-          "player": 1,
-          "scenario": 0
-        },
-        {
-          "id": 2,
-          "type": 26,
-          "amount": 6,
-          "player": 1,
-          "scenario": 1
-        },
-        {
-          "id": 5,
-          "type": 21,
-          "amount": 7,
-          "player": 0,
-          "scenario": 0
-        },
-        {
-          "id": 5,
-          "type": 22,
-          "amount": 8,
-          "player": 0,
-          "scenario": 1
         }
       ]
     },
@@ -1203,12 +772,6 @@
         },
         {
           "target": "219",
-          "scenario": 1
-        }
-      ],
-      "items": [
-        {
-          "id": 27,
           "scenario": 1
         }
       ],
@@ -1239,25 +802,12 @@
           "player": 0
         }
       ],
-      "items": [
-        {
-          "id": 13
-        }
-      ],
       "enemies": {
         "player": 1
       }
     },
     "21B": {
-      "supportedNpcs": [
-        67,
-        68,
-        72,
-        74,
-        79,
-        80,
-        90
-      ],
+      "supportedNpcs": [ 67, 68, 72, 74, 79, 80, 90 ],
       "doors": [
         {
           "target": "10A"
@@ -1268,12 +818,8 @@
         {
           "target": "308",
           "noReturn": true,
-          "requires": [
-            54,
-            56,
-            57,
-            58
-          ]
+          "requires": [ 54, 56, 57, 58 ],
+          "player": 1
         }
       ]
     },
@@ -1369,8 +915,6 @@
       "items": [
         {
           "id": 3,
-          "type": 21,
-          "amount": 7,
           "priority": "low",
           "player": 0
         },
@@ -1401,16 +945,7 @@
       ]
     },
     "30A": {
-      "supportedNpcs": [
-        66,
-        67,
-        68,
-        71,
-        72,
-        74,
-        79,
-        88
-      ],
+      "supportedNpcs": [ 66, 67, 68, 71, 72, 74, 79, 88 ],
       "doors": [
         {
           "target": "400",
@@ -1420,25 +955,6 @@
     },
     "30B": {
       "supportedNpcs": [ 66, 67, 68, 71, 72, 74, 79, 88 ],
-      "items": [
-        {
-          "id": 4,
-          "link": "306:2",
-          "player": 0
-        },
-        {
-          "id": 5,
-          "link": "307:3",
-          "player": 0
-        },
-        {
-          "id": 5,
-          "type": 24,
-          "amount": 6,
-          "priority": "low",
-          "player": 1
-        }
-      ],
       "doors": [
         {
           "target": "302",
@@ -1455,6 +971,23 @@
         {
           "target": "30C",
           "player": 0
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "link": "306:2",
+          "player": 0
+        },
+        {
+          "id": 5,
+          "link": "307:3",
+          "player": 0
+        },
+        {
+          "id": 5,
+          "priority": "low",
+          "player": 1
         }
       ]
     },
@@ -1491,10 +1024,8 @@
       ],
       "items": [
         {
-          "id": 8
-        },
-        {
-          "id": 12
+          "id": 8,
+          "type": 0
         }
       ],
       "enemies": {}
@@ -1549,12 +1080,6 @@
           "target": "404"
         }
       ],
-      "items": [
-        {
-          "id": 6,
-          "player": 1
-        }
-      ],
       "enemies": {
         "y": 0
       }
@@ -1563,10 +1088,7 @@
       "doors": [
         {
           "target": "40D",
-          "requires": [
-            72,
-            73
-          ]
+          "requires": [ 72, 73 ]
         },
         {
           "target": "408"
@@ -1580,41 +1102,14 @@
       }
     },
     "408": {
-      "supportedNpcs": [
-        66,
-        67,
-        68,
-        69,
-        72,
-        74,
-        80
-      ],
+      "supportedNpcs": [ 66, 67, 68, 69, 72, 74, 80 ],
       "doors": [
         {
           "target": "407"
         },
         {
           "target": "40A",
-          "requires": [
-            50
-          ]
-        }
-      ],
-      "items": [
-        {
-          "id": 2
-        },
-        {
-          "id": 9,
-          "type": 21,
-          "amount": 7,
-          "player": 0
-        },
-        {
-          "id": 9,
-          "type": 25,
-          "amount": 6,
-          "player": 1
+          "requires": [ 50 ]
         }
       ]
     },
@@ -1667,48 +1162,6 @@
       ]
     },
     "40E": {
-      "items": [
-        {
-          "id": 7,
-          "scenario": 1
-        },
-        {
-          "id": 8,
-          "scenario": 1
-        },
-        {
-          "id": 7,
-          "type": 21,
-          "amount": 7,
-          "priority": "low",
-          "player": 0,
-          "scenario": 0
-        },
-        {
-          "id": 8,
-          "type": 20,
-          "amount": 15,
-          "priority": "low",
-          "player": 0,
-          "scenario": 0
-        },
-        {
-          "id": 7,
-          "type": 20,
-          "amount": 15,
-          "priority": "low",
-          "player": 1,
-          "scenario": 0
-        },
-        {
-          "id": 8,
-          "type": 25,
-          "amount": 6,
-          "priority": "low",
-          "player": 1,
-          "scenario": 0
-        }
-      ],
       "doors": [
         {
           "target": "500",
@@ -1716,6 +1169,16 @@
         },
         {
           "target": "40D"
+        }
+      ],
+      "items": [
+        {
+          "id": 7,
+          "priority": "low"
+        },
+        {
+          "id": 8,
+          "priority": "low"
         }
       ]
     },
@@ -1742,24 +1205,15 @@
       "items": [
         {
           "id": 4,
-          "type": 30,
-          "amount": 3,
-          "priority": "low",
-          "player": 0
+          "priority": "low"
         },
         {
           "id": 6,
-          "type": 35,
-          "amount": 1,
-          "priority": "low",
-          "player": 0
+          "priority": "low"
         },
         {
           "id": 7,
-          "type": 30,
-          "amount": 3,
-          "priority": "low",
-          "player": 0
+          "priority": "low"
         },
         {
           "id": 8,
@@ -1817,29 +1271,6 @@
           "target": "506",
           "scenario": 1
         }
-      ],
-      "items": [
-        {
-          "id": 5,
-          "type": 22,
-          "amount": 8,
-          "player": 0,
-          "scenario": 0
-        },
-        {
-          "id": 5,
-          "type": 24,
-          "amount": 6,
-          "player": 1,
-          "scenario": 0
-        },
-        {
-          "id": 5,
-          "type": 26,
-          "amount": 6,
-          "player": 1,
-          "scenario": 1
-        }
       ]
     },
     "504": {
@@ -1861,29 +1292,13 @@
         {
           "target": "606",
           "noReturn": true,
-          "requires": [
-            93
-          ],
+          "requires": [ 93 ],
           "scenario": 0
         },
         {
           "target": "606",
           "noReturn": true,
           "scenario": 1
-        }
-      ],
-      "items": [
-        {
-          "id": 7,
-          "type": 22,
-          "amount": 7,
-          "player": 0
-        },
-        {
-          "id": 7,
-          "type": 25,
-          "amount": 6,
-          "player": 1
         }
       ]
     },
@@ -1905,7 +1320,8 @@
       ],
       "items": [
         {
-          "id": 7
+          "id": 4,
+          "priority": "low"
         }
       ]
     },
@@ -1987,18 +1403,6 @@
       ]
     },
     "608": {
-      "items": [
-        {
-          "id": 3,
-          "scenario": 0
-        },
-        {
-          "id": 3,
-          "type": 98,
-          "priority": "fixed",
-          "scenario": 1
-        }
-      ],
       "doors": [
         {
           "target": "606"
@@ -2008,6 +1412,12 @@
         },
         {
           "target": "60C"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "priority": "fixed"
         }
       ]
     },
@@ -2027,12 +1437,6 @@
           "target": "609"
         }
       ],
-      "items": [
-        {
-          "id": 11,
-          "scenario": 0
-        }
-      ],
       "enemies": {}
     },
     "60B": {
@@ -2049,9 +1453,7 @@
         },
         {
           "target": "60E",
-          "requires": [
-            76
-          ]
+          "requires": [ 76 ]
         }
       ],
       "enemies": {}
@@ -2076,9 +1478,7 @@
       "items": [
         {
           "id": 7,
-          "type": 82,
-          "priority": "fixed",
-          "player": 0
+          "priority": "fixed"
         }
       ]
     },
@@ -2124,44 +1524,14 @@
       ],
       "items": [
         {
-          "id": 3,
-          "scenario": 1
-        },
-        {
-          "id": 4,
-          "player": 0
-        },
-        {
-          "id": 4,
-          "scenario": 1
-        },
-        {
-          "id": 5
-        },
-        {
-          "id": 6,
-          "type": 96,
-          "scenario": 0
-        },
-        {
-          "id": 6,
-          "type": 24,
-          "amount": 6,
-          "scenario": 1
+          "id": 5,
+          "type": 0
         }
       ],
       "enemies": {}
     },
     "612": {
-      "supportedNpcs": [
-        66,
-        67,
-        68,
-        72,
-        74,
-        79,
-        80
-      ],
+      "supportedNpcs": [ 66, 67, 68, 72, 74, 79, 80 ],
       "doors": [
         {
           "target": "614"
@@ -2186,9 +1556,7 @@
       "doors": [
         {
           "target": "613",
-          "requires": [
-            97
-          ]
+          "requires": [ 97 ]
         },
         {
           "target": "615"
@@ -2207,39 +1575,15 @@
       "items": [
         {
           "id": 7,
-          "type": 33,
-          "requires": [ 63 ],
-          "player": 0
-        },
-        {
-          "id": 7,
-          "type": 24,
-          "requires": [ 63 ],
-          "player": 1
+          "requires": [ 63 ]
         },
         {
           "id": 8,
-          "type": 24,
-          "requires": [ 63 ],
-          "player": 1
+          "requires": [ 63 ]
         },
         {
-          "id": 5,
-          "type": 97,
-          "amount": 2,
-          "scenario": 0
-        },
-        {
-          "id": 5,
-          "type": 95,
-          "amount": 1,
-          "scenario": 1
-        },
-        {
-          "id": 6
-        },
-        {
-          "id": 20
+          "id": 6,
+          "priority": "fixed"
         }
       ],
       "enemies": {}
@@ -2299,7 +1643,8 @@
       ],
       "items": [
         {
-          "id": 5
+          "id": 5,
+          "type": 0
         }
       ]
     },

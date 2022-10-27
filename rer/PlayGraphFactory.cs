@@ -101,7 +101,7 @@ namespace rer
             }
 
             var checkpoint = graph.Start;
-            while (!_visitedRooms.Contains(graph.End))
+            while (!_visitedRooms.Contains(graph.End) || _requiredItems.Count != 0)
             {
                 PlaceKeyItem(_config.AlternativeRoutes);
                 var newCheckpoint = Search(checkpoint);
@@ -219,6 +219,10 @@ namespace rer
                     if (edge.NoReturn && _requiredItems.Count != 0)
                         continue;
 
+                    // HACK Leon must go to 30B before he can go to 21B
+                    if (_config.Player == 0 && edge.Node.RdtId.Stage == 1 && edge.Node.RdtId.Room == 0x1B && !_visitedRooms.Any(x => x.RdtId.Stage == 2 && x.RdtId.Room == 3))
+                        continue;
+
                     var requiredItems = edge.Requires == null ? new ushort[0] : edge.Requires.Except(_haveItems).ToArray()!;
                     if (requiredItems.Length == 0)
                     {
@@ -322,10 +326,25 @@ namespace rer
                 _logger.WriteLine($"        {Items.GetItemName(item)}");
             }
 
-            if (_requiredItems.Any(x => x != (ushort)ItemType.FilmC && x != (ushort)ItemType.Cord))
+            if (_requiredItems.Any(x => !IsOptionalItem(x)))
                 throw new Exception("Unable to find key item to swap");
 
             _requiredItems.Clear();
+        }
+
+        private static bool IsOptionalItem(ushort item)
+        {
+            switch ((ItemType)item)
+            {
+                case ItemType.FilmA:
+                case ItemType.FilmB:
+                case ItemType.FilmC:
+                case ItemType.FilmD:
+                case ItemType.Cord:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         private static bool IsTwinItem(ushort item)
@@ -642,7 +661,7 @@ namespace rer
                 return node;
 
             var rdt = _gameData.GetRdt(rdtId);
-            var items = rdt!.Items.Select(x => new ItemPoolEntry()
+            var items = rdt!.EnumerateOpcodes<ItemAotSetOpcode>(_config).Select(x => new ItemPoolEntry()
             {
                 RdtId = rdt.RdtId,
                 Id = x.Id,
@@ -691,7 +710,7 @@ namespace rer
                                 new ItemPoolEntry() {
                                     RdtId = rdtId,
                                     Id = correctedItem.Id,
-                                    Type = (ushort)correctedItem.Type,
+                                    Type = (ushort)(correctedItem.Type ?? 0),
                                     Amount = correctedItem.Amount ?? 1,
                                     Requires = correctedItem.Requires,
                                     Priority = ParsePriority(correctedItem.Priority)
@@ -705,7 +724,7 @@ namespace rer
                         {
                             if (correctedItem.Link == null)
                             {
-                                items[idx].Type = (ushort)correctedItem.Type;
+                                items[idx].Type = (ushort)(correctedItem.Type ?? items[idx].Type);
                                 items[idx].Amount = correctedItem.Amount ?? items[idx].Amount;
                             }
                             else
