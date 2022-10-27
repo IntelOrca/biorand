@@ -1300,6 +1300,7 @@
       ]
     },
     "304": {
+      "supportedNpcs": [ 66, 67, 68, 71, 72, 74, 79, 88 ],
       "doors": [
         {
           "target": "303"
@@ -1335,15 +1336,14 @@
       "supportedNpcs": [ 67, 68, 72, 74, 80, 90 ],
       "doors": [
         {
-          "target": "30D",
-          "player": 1
+          "target": "30D"
         },
         {
-          "target": "212",
-          "player": 1
+          "target": "212"
         },
         {
-          "target": "305"
+          "target": "305",
+          "player": 1
         }
       ],
       "items": [
@@ -1399,6 +1399,7 @@
       ]
     },
     "30B": {
+      "supportedNpcs": [ 66, 67, 68, 71, 72, 74, 79, 88 ],
       "items": [
         {
           "id": 4,
@@ -1428,7 +1429,8 @@
           "player": 0
         },
         {
-          "target": "305"
+          "target": "305",
+          "player": 0
         },
         {
           "target": "30C",
@@ -1502,6 +1504,7 @@
       ]
     },
     "404": {
+      "supportedNpcs": [ 66, 67, 68, 71, 72, 74, 79, 88 ],
       "doors": [
         {
           "target": "401",
@@ -1596,12 +1599,7 @@
       ]
     },
     "409": {
-      "supportedNpcs": [
-        65,
-        67,
-        69,
-        79
-      ],
+      "supportedNpcs": [ 65, 67, 69, 79 ],
       "doors": [
         {
           "target": "410"
@@ -1712,6 +1710,7 @@
       ]
     },
     "410": {
+      "supportedNpcs": [ 66, 67, 68, 71, 72, 74, 79, 88 ],
       "doors": [
         {
           "target": "409"
@@ -1722,8 +1721,30 @@
       ],
       "items": [
         {
+          "id": 4,
+          "type": 30,
+          "amount": 3,
+          "priority": "low",
+          "player": 0
+        },
+        {
+          "id": 6,
+          "type": 35,
+          "amount": 1,
+          "priority": "low",
+          "player": 0
+        },
+        {
+          "id": 7,
+          "type": 30,
+          "amount": 3,
+          "priority": "low",
+          "player": 0
+        },
+        {
           "id": 8,
-          "link": "40C:3"
+          "link": "40C:3",
+          "player": 1
         }
       ]
     },
