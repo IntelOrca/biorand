@@ -287,11 +287,13 @@
         {
           "id": 5,
           "type": 47,
+          "player": 1,
           "scenario": 0
         },
         {
           "id": 5,
           "type": 20,
+          "player": 1,
           "scenario": 1
         }
       ]
@@ -742,13 +744,33 @@
       ],
       "items": [
         {
+          "id": 1,
+          "type": 20,
+          "amount": 15,
+          "player": 0,
+          "scenario": 0
+        },
+        {
+          "id": 1,
+          "type": 35,
+          "amount": 1,
+          "player": 0,
+          "scenario": 1
+        },
+        {
           "id": 5,
           "type": 67,
           "scenario": 0
         },
         {
           "id": 5,
+          "player": 0,
+          "scenario": 1
+        },
+        {
+          "id": 5,
           "type": 47,
+          "player": 1,
           "scenario": 1
         }
       ]
@@ -803,9 +825,7 @@
         {
           "id": 3,
           "type": 51,
-          "requires": [
-            47
-          ]
+          "requires": [ 47 ]
         },
         {
           "id": 5,

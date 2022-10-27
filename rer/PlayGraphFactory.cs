@@ -23,8 +23,6 @@ namespace rer
         private HashSet<ushort> _haveItems = new HashSet<ushort>();
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
         private HashSet<RdtItemId> _visitedItems = new HashSet<RdtItemId>();
-        private bool _firstRedJewelPlaced;
-        private bool _firstSmallKeyPlaced;
         private Rng _rng;
         private bool _debugLogging;
 
@@ -82,6 +80,12 @@ namespace rer
             foreach (var kvp in _map.Rooms!)
             {
                 _nodes.Add(GetOrCreateNode(RdtId.Parse(kvp.Key)));
+            }
+
+            // Leon starts with a lighter
+            if (_config.Player == 0)
+            {
+                _haveItems.Add((ushort)ItemType.Lighter);
             }
 
             var graph = new PlayGraph();
@@ -293,6 +297,13 @@ namespace rer
             {
                 if (PlaceKeyItem(req, alternativeRoutes))
                 {
+                    if (IsTwinItem(req))
+                    {
+                        if (!PlaceKeyItem(req, true))
+                        {
+                            throw new Exception($"Unable to place 2nd {(ItemType)req}");
+                        }
+                    }
                     return;
                 }
             }
@@ -315,6 +326,11 @@ namespace rer
                 throw new Exception("Unable to find key item to swap");
 
             _requiredItems.Clear();
+        }
+
+        private static bool IsTwinItem(ushort item)
+        {
+            return item == (ushort)ItemType.SmallKey || item == (ushort)ItemType.RedJewel;
         }
 
         private bool PlaceKeyItem(ushort req, bool alternativeRoute)
@@ -372,18 +388,7 @@ namespace rer
             itemEntry.Type = req;
 
             // Remove new key item location from pool
-            if (req == (ushort)ItemType.RedJewel && !_firstRedJewelPlaced)
-            {
-                _firstRedJewelPlaced = true;
-            }
-            else if (req == (ushort)ItemType.SmallKey && !_firstSmallKeyPlaced)
-            {
-                _firstSmallKeyPlaced = true;
-            }
-            else
-            {
-                _requiredItems.Remove(req);
-            }
+            _requiredItems.Remove(req);
             _haveItems.Add(req);
             _currentPool.RemoveAt(index.Value);
             _definedPool.Add(itemEntry);
