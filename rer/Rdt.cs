@@ -81,8 +81,9 @@ namespace rer
 
         public void Nop(int offset)
         {
-            foreach (var opcode in Opcodes)
+            for (int i = 0; i < Opcodes.Length; i++)
             {
+                var opcode = Opcodes[i];
                 if (opcode.Offset == offset)
                 {
                     if (opcode is UnknownOpcode unk)
@@ -91,7 +92,9 @@ namespace rer
                     }
                     else
                     {
-                        throw new NotImplementedException();
+                        unk = new UnknownOpcode(offset, new byte[opcode.Length]);
+                        Opcodes[i] = unk;
+                        unk.NopOut();
                     }
                     break;
                 }

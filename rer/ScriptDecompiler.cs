@@ -244,7 +244,7 @@ namespace rer
                         }
                         else
                         {
-                            _blockEnds.Push((opcode, offset + blockLen));
+                            // _blockEnds.Push((opcode, offset + blockLen));
                             sb.Write("if (");
                             _constructingBinaryExpression = true;
                             _expressionCount = 0;
@@ -262,14 +262,18 @@ namespace rer
                         }
                         else
                         {
-                            while (_blockEnds.Count != 0 && _blockEnds.Peek().Item1 != Opcode.IfelCk)
-                            {
-                                CloseCurrentBlock();
-                            }
-                            if (_blockEnds.Count != 0 && _blockEnds.Peek().Item1 == Opcode.IfelCk)
-                            {
-                                CloseCurrentBlock();
-                            }
+                            _sb.CloseBlock();
+
+                            // CloseCurrentBlock();
+
+                            // while (_blockEnds.Count != 0 && _blockEnds.Peek().Item1 != Opcode.IfelCk)
+                            // {
+                            //     CloseCurrentBlock();
+                            // }
+                            // if (_blockEnds.Count != 0 && _blockEnds.Peek().Item1 == Opcode.IfelCk)
+                            // {
+                            //     CloseCurrentBlock();
+                            // }
 
                             _blockEnds.Push((opcode, offset + blockLen));
 
@@ -285,7 +289,8 @@ namespace rer
                     }
                     else
                     {
-                        CloseCurrentBlock();
+                        _sb.CloseBlock();
+                        // CloseCurrentBlock();
                     }
                     break;
                 case Opcode.Sleep:
