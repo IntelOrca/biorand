@@ -152,12 +152,31 @@ namespace rer
                 }
             }
 
+            var enemiesToChange = rdt.Enemies
+                .Where(e => enemySpec.ExcludeIds?.Contains(e.Id) != true)
+                .Where(e => enemySpec.ExcludeOffsets?.Contains(e.Offset) != true)
+                .Where(ShouldChangeEnemy)
+                .ToArray();
+            var numEnemies = enemiesToChange.DistinctBy(x => x.Id).Count();
+
             var includeTypes = enemySpec.IncludeTypes == null ?
                 null :
                 enemySpec.IncludeTypes.Select(x => (EnemyType)x).ToHashSet();
             var excludeTypes = enemySpec.ExcludeTypes == null ?
-                null :
+                new HashSet<EnemyType>() :
                 enemySpec.ExcludeTypes.Select(x => (EnemyType)x).ToHashSet();
+
+            if (_config.EnemyDifficulty <= 2)
+            {
+                if (numEnemies > 4)
+                {
+                    excludeTypes.Add(EnemyType.Cerebrus);
+                    excludeTypes.Add(EnemyType.LickerRed);
+                    excludeTypes.Add(EnemyType.LickerGrey);
+                    excludeTypes.Add(EnemyType.Tyrant1);
+                }
+            }
+
             var probTable = CreateEnemyProbabilityTable(includeTypes, excludeTypes);
 
 #if MULTIPLE_ENEMY_TYPES
@@ -173,16 +192,8 @@ namespace rer
             var enemyTypesId = ids.Select(x => randomEnemyType).ToArray();
 #endif
 
-            foreach (var enemy in rdt.Enemies)
+            foreach (var enemy in enemiesToChange)
             {
-                if (enemySpec.ExcludeIds?.Contains(enemy.Id) == true)
-                    continue;
-                if (enemySpec.ExcludeOffsets?.Contains(enemy.Offset) == true)
-                    continue;
-
-                if (!ShouldChangeEnemy(enemy))
-                    continue;
-
                 var index = Array.IndexOf(ids, enemy.Id);
                 var enemyType = enemyTypesId[index];
                 enemy.Type = enemyType;

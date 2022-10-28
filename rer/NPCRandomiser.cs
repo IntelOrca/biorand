@@ -185,7 +185,7 @@ namespace rer
 
         private VoiceSample? GetRandomVoice(string actor, string? kind)
         {
-            var index = _pool.FindIndex(x => x.Actor == actor && (kind == null || x.Kind == kind));
+            var index = _pool.FindIndex(x => x.Actor == actor && ((kind == null && x.Kind != "radio") || x.Kind == kind));
             if (index == -1)
             {
                 var newItems = _voiceInfo.Where(x => x.Actor == actor).Shuffle(_random).ToArray();

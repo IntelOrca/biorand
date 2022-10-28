@@ -89,16 +89,16 @@ namespace rer
                 factory.Save();
             }
 
-            if (config.RandomNPCs)
-            {
-                var npcRandomiser = new NPCRandomiser(logger, config, originalDataPath, modPath, gameData, map, randomNpcs);
-                npcRandomiser.Randomise();
-            }
-
             if (config.RandomEnemies)
             {
                 var enemyRandomiser = new EnemyRandomiser(logger, config, gameData, map, randomEnemies);
                 enemyRandomiser.Randomise();
+            }
+
+            if (config.RandomNPCs)
+            {
+                var npcRandomiser = new NPCRandomiser(logger, config, originalDataPath, modPath, gameData, map, randomNpcs);
+                npcRandomiser.Randomise();
             }
 
             if (config.RandomBgm)

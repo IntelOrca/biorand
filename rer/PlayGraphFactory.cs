@@ -383,6 +383,18 @@ namespace rer
                     }
                 }
             }
+            if (originalIndex == -1)
+            {
+                // Check original key was in a previous checkpoint area (edge case for Weapon Box Key)
+                var shuffleIndex = _shufflePool.FindIndex(x => x.Type == req);
+                if (shuffleIndex != -1)
+                {
+                    var item = _shufflePool[shuffleIndex];
+                    _shufflePool.RemoveAt(shuffleIndex);
+                    _currentPool.Add(item);
+                    originalIndex = _currentPool.Count - 1;
+                }
+            }
             if (originalIndex != -1)
             {
                 // Check original key can actually be moved
@@ -675,38 +687,39 @@ namespace rer
             _nodeMap.Add(rdtId, node);
 
             var mapRoom = _map.GetRoom(rdtId);
-            if (mapRoom != null)
+            if (mapRoom == null)
+                throw new Exception("No JSON definition for room");
+
+            node.Requires = mapRoom.Requires ?? Array.Empty<ushort>();
+
+            if (mapRoom.Doors != null)
             {
-                node.Requires = mapRoom.Requires ?? Array.Empty<ushort>();
-
-                if (mapRoom.Doors != null)
+                foreach (var door in mapRoom.Doors)
                 {
-                    foreach (var door in mapRoom.Doors)
-                    {
-                        if (door.Player != null && door.Player != _config.Player)
-                            continue;
-                        if (door.Scenario != null && door.Scenario != _config.Scenario)
-                            continue;
+                    if (door.Player != null && door.Player != _config.Player)
+                        continue;
+                    if (door.Scenario != null && door.Scenario != _config.Scenario)
+                        continue;
 
-                        var edgeNode = GetOrCreateNode(RdtId.Parse(door.Target!));
-                        var edge = new PlayEdge(edgeNode, door.Locked, door.NoReturn, door.Requires!);
-                        node.Edges.Add(edge);
-                    }
+                    var edgeNode = GetOrCreateNode(RdtId.Parse(door.Target!));
+                    var edge = new PlayEdge(edgeNode, door.Locked, door.NoReturn, door.Requires!);
+                    node.Edges.Add(edge);
                 }
+            }
 
-                if (mapRoom.Items != null)
+            if (mapRoom.Items != null)
+            {
+                foreach (var correctedItem in mapRoom.Items)
                 {
-                    foreach (var correctedItem in mapRoom.Items)
-                    {
-                        if (correctedItem.Player != null && correctedItem.Player != _config.Player)
-                            continue;
-                        if (correctedItem.Scenario != null && correctedItem.Scenario != _config.Scenario)
-                            continue;
+                    if (correctedItem.Player != null && correctedItem.Player != _config.Player)
+                        continue;
+                    if (correctedItem.Scenario != null && correctedItem.Scenario != _config.Scenario)
+                        continue;
 
-                        // HACK 255 is used for item get commands
-                        if (correctedItem.Id == 255)
-                        {
-                            items = items.Concat(new[] {
+                    // HACK 255 is used for item get commands
+                    if (correctedItem.Id == 255)
+                    {
+                        items = items.Concat(new[] {
                                 new ItemPoolEntry() {
                                     RdtId = rdtId,
                                     Id = correctedItem.Id,
@@ -716,32 +729,31 @@ namespace rer
                                     Priority = ParsePriority(correctedItem.Priority)
                                 }
                             }).ToArray();
-                            continue;
-                        }
-
-                        var idx = Array.FindIndex(items, x => x.Id == correctedItem.Id);
-                        if (idx != -1)
-                        {
-                            if (correctedItem.Link == null)
-                            {
-                                items[idx].Type = (ushort)(correctedItem.Type ?? items[idx].Type);
-                                items[idx].Amount = correctedItem.Amount ?? items[idx].Amount;
-                            }
-                            else
-                            {
-                                items[idx].Type = 0;
-
-                                var rdtItemId = RdtItemId.Parse(correctedItem.Link);
-                                node.LinkedItems.Add(correctedItem.Id, rdtItemId);
-                            }
-                            items[idx].Requires = correctedItem.Requires;
-                            items[idx].Priority = ParsePriority(correctedItem.Priority);
-                        }
+                        continue;
                     }
 
-                    // Remove any items that have no type (removed fixed items)
-                    node.Items = items.Where(x => x.Type != 0).ToArray();
+                    var idx = Array.FindIndex(items, x => x.Id == correctedItem.Id);
+                    if (idx != -1)
+                    {
+                        if (correctedItem.Link == null)
+                        {
+                            items[idx].Type = (ushort)(correctedItem.Type ?? items[idx].Type);
+                            items[idx].Amount = correctedItem.Amount ?? items[idx].Amount;
+                        }
+                        else
+                        {
+                            items[idx].Type = 0;
+
+                            var rdtItemId = RdtItemId.Parse(correctedItem.Link);
+                            node.LinkedItems.Add(correctedItem.Id, rdtItemId);
+                        }
+                        items[idx].Requires = correctedItem.Requires;
+                        items[idx].Priority = ParsePriority(correctedItem.Priority);
+                    }
                 }
+
+                // Remove any items that have no type (removed fixed items)
+                node.Items = items.Where(x => x.Type != 0).ToArray();
             }
             return node;
         }
