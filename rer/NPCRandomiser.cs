@@ -9,6 +9,10 @@ namespace rer
 {
     internal class NPCRandomiser
     {
+        private static object g_lock = new object();
+        private static VoiceInfo[] g_voiceInfo = new VoiceInfo[0];
+        private static VoiceInfo[] g_available = new VoiceInfo[0];
+
         private readonly RandoLogger _logger;
         private readonly RandoConfig _config;
         private readonly string _originalDataPath;
@@ -16,8 +20,6 @@ namespace rer
         private readonly GameData _gameData;
         private readonly Map _map;
         private readonly Rng _random;
-        private readonly VoiceInfo[] _voiceInfo;
-        private readonly VoiceInfo[] _available;
         private readonly List<VoiceInfo> _pool = new List<VoiceInfo>();
         private readonly HashSet<VoiceSample> _randomized = new HashSet<VoiceSample>();
 
@@ -30,61 +32,14 @@ namespace rer
             _gameData = gameData;
             _map = map;
             _random = random;
-            _voiceInfo = LoadVoiceInfo();
-            _available = RemoveDuplicateVoices(_voiceInfo, originalDataPath);
-        }
-
-        private static VoiceInfo[] LoadVoiceInfo()
-        {
-            var json = File.ReadAllText(@"M:\git\rer\rer\data\voice.json");
-            var voiceList = JsonSerializer.Deserialize<Dictionary<string, string>>(json, new JsonSerializerOptions()
-            {
-                ReadCommentHandling = JsonCommentHandling.Skip,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            });
-
-            var voiceInfos = new List<VoiceInfo>();
-            foreach (var kvp in voiceList!)
-            {
-                var path = kvp.Key;
-                var player = int.Parse(path.Substring(2, 1));
-                var stage = int.Parse(path.Substring(15, 1));
-                var id = int.Parse(path.Substring(18, 3));
-                var sample = new VoiceSample(player, stage, id);
-                var actorParts = kvp.Value.Split('_');
-                voiceInfos.Add(new VoiceInfo(sample, actorParts[0], actorParts.Length >= 2 ? actorParts[1] : ""));
-            }
-
-            return voiceInfos.ToArray();
-        }
-
-        private VoiceInfo[] RemoveDuplicateVoices(VoiceInfo[] voiceInfos, string originalDataPath)
-        {
-            var distinct = voiceInfos.ToList();
-            foreach (var group in voiceInfos.GroupBy(x => GetVoiceSize(originalDataPath, x)))
-            {
-                if (group.Count() <= 1)
-                    continue;
-
-                foreach (var item in group.Skip(1))
-                {
-                    distinct.RemoveAll(x => x.Sample == item.Sample);
-                }
-            }
-            return distinct.ToArray();
-        }
-
-        private static int GetVoiceSize(string basePath, VoiceInfo vi)
-        {
-            var path = GetVoicePath(basePath, vi.Sample);
-            return (int)new FileInfo(path).Length;
+            LoadVoiceInfo(originalDataPath);
         }
 
         public void Randomise()
         {
             var playerActor = _config.Player == 0 ? "leon" : "claire";
 
-            _pool.AddRange(_available.Shuffle(_random));
+            _pool.AddRange(g_available.Shuffle(_random));
 
             _logger.WriteHeading("Randomizing Characters, Voices:");
             foreach (var rdt in _gameData.Rdts)
@@ -137,7 +92,6 @@ namespace rer
                             enemy.Type = newNpcType;
                         }
                     }
-                    rdt.Save();
                 }
 
                 foreach (var sound in rdt.Sounds)
@@ -188,7 +142,7 @@ namespace rer
             var index = _pool.FindIndex(x => x.Actor == actor && ((kind == null && x.Kind != "radio") || x.Kind == kind));
             if (index == -1)
             {
-                var newItems = _voiceInfo.Where(x => x.Actor == actor).Shuffle(_random).ToArray();
+                var newItems = g_voiceInfo.Where(x => x.Actor == actor).Shuffle(_random).ToArray();
                 if (newItems.Length == 0)
                     return null;
 
@@ -216,7 +170,7 @@ namespace rer
 
         private (string?, string?) GetVoice(VoiceSample sample)
         {
-            var voiceInfo = _voiceInfo.FirstOrDefault(x => x.Sample == sample);
+            var voiceInfo = g_voiceInfo.FirstOrDefault(x => x.Sample == sample);
             return (voiceInfo?.Actor, voiceInfo?.Kind);
         }
 
@@ -272,6 +226,64 @@ namespace rer
                 default:
                     return null;
             }
+        }
+
+        private static void LoadVoiceInfo(string originalDataPath)
+        {
+            lock (g_lock)
+            {
+                if (g_voiceInfo.Length == 0 || g_available.Length == 0)
+                {
+                    g_voiceInfo = LoadVoiceInfoFromJson();
+                    g_available = RemoveDuplicateVoices(g_voiceInfo, originalDataPath);
+                }
+            }
+        }
+
+        private static VoiceInfo[] LoadVoiceInfoFromJson()
+        {
+            var json = Resources.voice;
+            var voiceList = JsonSerializer.Deserialize<Dictionary<string, string>>(json, new JsonSerializerOptions()
+            {
+                ReadCommentHandling = JsonCommentHandling.Skip,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
+
+            var voiceInfos = new List<VoiceInfo>();
+            foreach (var kvp in voiceList!)
+            {
+                var path = kvp.Key;
+                var player = int.Parse(path.Substring(2, 1));
+                var stage = int.Parse(path.Substring(15, 1));
+                var id = int.Parse(path.Substring(18, 3));
+                var sample = new VoiceSample(player, stage, id);
+                var actorParts = kvp.Value.Split('_');
+                voiceInfos.Add(new VoiceInfo(sample, actorParts[0], actorParts.Length >= 2 ? actorParts[1] : ""));
+            }
+
+            return voiceInfos.ToArray();
+        }
+
+        private static VoiceInfo[] RemoveDuplicateVoices(VoiceInfo[] voiceInfos, string originalDataPath)
+        {
+            var distinct = voiceInfos.ToList();
+            foreach (var group in voiceInfos.GroupBy(x => GetVoiceSize(originalDataPath, x)))
+            {
+                if (group.Count() <= 1)
+                    continue;
+
+                foreach (var item in group.Skip(1))
+                {
+                    distinct.RemoveAll(x => x.Sample == item.Sample);
+                }
+            }
+            return distinct.ToArray();
+        }
+
+        private static int GetVoiceSize(string basePath, VoiceInfo vi)
+        {
+            var path = GetVoicePath(basePath, vi.Sample);
+            return (int)new FileInfo(path).Length;
         }
     }
 

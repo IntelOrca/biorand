@@ -1,11 +1,14 @@
 ﻿using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace rer
 {
     public class Program
     {
+        private static Map? g_map;
+
         public static void Main(string[] args)
         {
             var re2Path = @"F:\games\re2";
@@ -37,34 +40,31 @@ namespace rer
             }
             Directory.CreateDirectory(modPath);
 
-            config = config.Clone();
+            var po = new ParallelOptions();
+#if DEBUG
+            po.MaxDegreeOfParallelism = 1;
+#endif
             if (config.GameVariant == 0)
             {
-
                 // Leon A / Claire B
-                config.Player = 0;
-                config.Scenario = 0;
-                GenerateRdts(config, originalDataPath, modPath);
-
-                config.Player = 1;
-                config.Scenario = 1;
-                GenerateRdts(config, originalDataPath, modPath);
+                Parallel.Invoke(po,
+                    () => GenerateRdts(config.WithPlayerScenario(0, 0), originalDataPath, modPath),
+                    () => GenerateRdts(config.WithPlayerScenario(1, 1), originalDataPath, modPath));
             }
             else
             {
                 // Leon B / Claire A
-                config.Player = 0;
-                config.Scenario = 1;
-                GenerateRdts(config, originalDataPath, modPath);
-
-                config.Player = 1;
-                config.Scenario = 0;
-                GenerateRdts(config, originalDataPath, modPath);
+                Parallel.Invoke(po,
+                    () => GenerateRdts(config.WithPlayerScenario(0, 1), originalDataPath, modPath),
+                    () => GenerateRdts(config.WithPlayerScenario(1, 0), originalDataPath, modPath));
             }
 
             if (config.RandomBgm)
             {
                 using var logger = new RandoLogger(Path.Combine(modPath, $"log_bgm.txt"));
+                logger.WriteHeading("Resident Evil Randomizer");
+                logger.WriteLine($"Seed: {config}");
+
                 var bgmRandomiser = new BgmRandomiser(logger, originalDataPath, modPath);
                 bgmRandomiser.Randomise(new Rng(config.Seed + 3));
             }
@@ -84,7 +84,7 @@ namespace rer
             logger.WriteLine($"Player: {config.Player} {GetPlayerName(config.Player)}");
             logger.WriteLine($"Scenario: {GetScenarioName(config.Scenario)}");
 
-            var map = LoadJsonMap(@"M:\git\rer\rer\data\rdt.json");
+            var map = GetJsonMap();
             var gameData = GameDataReader.Read(originalDataPath, modPath, config.Player);
 
             if (config.RandomItems)
@@ -93,7 +93,7 @@ namespace rer
                 // CheckRoomItems(gameData);
                 // factory.CreateDoorRando();
                 factory.Create();
-                factory.Save();
+                factory.SetItems();
             }
 
             if (config.RandomEnemies)
@@ -106,6 +106,11 @@ namespace rer
             {
                 var npcRandomiser = new NPCRandomiser(logger, config, originalDataPath, modPath, gameData, map, randomNpcs);
                 npcRandomiser.Randomise();
+            }
+
+            foreach (var rdt in gameData.Rdts)
+            {
+                rdt.Save();
             }
 
 #if DEBUG
@@ -121,9 +126,26 @@ namespace rer
         private static string GetPlayerName(int player) => player == 0 ? "Leon" : "Claire";
         private static string GetScenarioName(int scenario) => scenario == 0 ? "A" : "B";
 
+        private static Map GetJsonMap()
+        {
+            if (g_map == null)
+            {
+                var map = LoadJsonMap(@"M:\git\rer\rer\data\rdt.json");
+#if !DEBUG
+                g_map = map;
+#endif
+                return map;
+            }
+            return g_map;
+        }
+
         private static Map LoadJsonMap(string path)
         {
+#if DEBUG
             var jsonMap = File.ReadAllText(path);
+#else
+            var jsonMap = Resources.rdt;
+#endif
             var map = JsonSerializer.Deserialize<Map>(jsonMap, new JsonSerializerOptions()
             {
                 ReadCommentHandling = JsonCommentHandling.Skip,

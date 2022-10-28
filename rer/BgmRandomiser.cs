@@ -6,6 +6,7 @@ namespace rer
 {
     internal class BgmRandomiser
     {
+        private static BgmList? g_bgmList;
         private readonly RandoLogger _logger;
 
         public string GamePath { get; }
@@ -20,15 +21,8 @@ namespace rer
 
         public void Randomise(Rng random)
         {
-            var json = File.ReadAllText(@"M:\git\rer\rer\data\bgm.json");
-            var bgmList = JsonSerializer.Deserialize<BgmList>(json, new JsonSerializerOptions()
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            });
-            if (bgmList == null)
-                throw new Exception();
-
             _logger.WriteHeading("Shuffling BGM:");
+            var bgmList = GetBtmList();
             Swap(bgmList.Creepy!, bgmList.Creepy!.Shuffle(random));
             Swap(bgmList.Calm!, bgmList.Calm!.Shuffle(random));
             Swap(bgmList.Danger!, bgmList.Danger!.Shuffle(random));
@@ -56,6 +50,34 @@ namespace rer
             if (s.StartsWith("SUB", StringComparison.OrdinalIgnoreCase))
                 return "SUB_" + s.Substring(3);
             return s;
+        }
+
+        private static BgmList GetBtmList()
+        {
+            if (g_bgmList == null)
+            {
+                var json = GetBgmJson();
+                var bgmList = JsonSerializer.Deserialize<BgmList>(json, new JsonSerializerOptions()
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                });
+                if (bgmList == null)
+                    throw new Exception();
+#if !DEBUG
+                g_bgmList = bgmList;
+#endif
+                return bgmList;
+            }
+            return g_bgmList;
+        }
+
+        private static string GetBgmJson()
+        {
+#if DEBUG
+            return File.ReadAllText(@"M:\git\rer\rer\data\bgm.json");
+#else
+            return Resources.bgm;
+#endif
         }
 
         public class BgmList

@@ -65,10 +65,6 @@ namespace rer
                     }
                 }
             }
-            foreach (var rdt in _gameData.Rdts)
-            {
-                rdt.Save();
-            }
         }
 
         public PlayGraph Create()
@@ -642,7 +638,7 @@ namespace rer
             }
         }
 
-        public void Save()
+        public void SetItems()
         {
             foreach (var entry in _definedPool)
             {
@@ -661,8 +657,6 @@ namespace rer
                 {
                     rdt.SetItem(entry.Id, entry.Type, entry.Amount);
                 }
-
-                rdt.Save();
             }
         }
 

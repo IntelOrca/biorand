@@ -13,6 +13,18 @@ namespace rer
             var rdts = new List<Rdt>();
             foreach (var file in files)
             {
+                // Check the file is an RDT file
+                var fileName = Path.GetFileName(file);
+                if (!fileName.StartsWith("ROOM", System.StringComparison.OrdinalIgnoreCase) ||
+                    !fileName.EndsWith(".RDT", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                // Ignore RDTs that are not part of the main game
+                if (!char.IsDigit(fileName[4]))
+                    continue;
+
                 var randomFile = Path.Combine(rndGamePath, @$"Pl{player}\Rdt", Path.GetFileName(file));
                 try
                 {
@@ -66,7 +78,7 @@ namespace rer
         {
             var rdtFile = new RdtFile(path);
 
-            var rdt = new Rdt(RdtId.Parse(Path.GetFileNameWithoutExtension(path).Substring(4, 3)));
+            var rdt = new Rdt(rdtFile, RdtId.Parse(Path.GetFileNameWithoutExtension(path).Substring(4, 3)));
             rdt.OriginalPath = path;
             rdt.ModifiedPath = randomPath;
 

@@ -30,7 +30,6 @@ namespace rer
                 var enemies = rdt.Enemies.ToArray();
                 var logEnemies = enemies.Select(GetEnemyLogText).ToArray();
                 RandomiseRoom(rdt);
-                rdt.Save();
                 for (int i = 0; i < logEnemies.Length; i++)
                 {
                     var enemy = enemies[i];

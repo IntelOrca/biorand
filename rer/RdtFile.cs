@@ -6,18 +6,24 @@ namespace rer
 {
     internal class RdtFile
     {
-        private readonly byte[] _data;
         private readonly int[] _offsets;
+
+        public byte[] Data { get; }
 
         public RdtFile(string path)
         {
-            _data = File.ReadAllBytes(path);
+            Data = File.ReadAllBytes(path);
             _offsets = ReadHeader();
+        }
+
+        public MemoryStream GetStream()
+        {
+            return new MemoryStream(Data);
         }
 
         private int[] ReadHeader()
         {
-            var br = new BinaryReader(new MemoryStream(_data));
+            var br = new BinaryReader(new MemoryStream(Data));
             br.ReadBytes(8);
 
             var offsets = new int[23];
@@ -40,7 +46,7 @@ namespace rer
             if (scriptOffset == 0)
                 return;
 
-            var stream = new MemoryStream(_data);
+            var stream = new MemoryStream(Data);
             stream.Position = scriptOffset;
             var len = _offsets[offsetIndex + 1] - scriptOffset;
             ReadScript(kind, visitor, new BinaryReader(stream), len);

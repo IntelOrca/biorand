@@ -9,6 +9,8 @@ namespace rer
 {
     internal class Rdt
     {
+        private RdtFile _rdtFile;
+
         public RdtId RdtId { get; }
         public string? OriginalPath { get; set; }
         public string? ModifiedPath { get; set; }
@@ -24,8 +26,9 @@ namespace rer
         public IEnumerable<SceItemGetOpcode> ItemGets => Opcodes.OfType<SceItemGetOpcode>();
         public IEnumerable<XaOnOpcode> Sounds => Opcodes.OfType<XaOnOpcode>();
 
-        public Rdt(RdtId rdtId)
+        public Rdt(RdtFile rdtFile, RdtId rdtId)
         {
+            _rdtFile = rdtFile;
             RdtId = rdtId;
         }
 
@@ -107,15 +110,18 @@ namespace rer
 
         public void Save()
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(ModifiedPath!)!);
-            File.Copy(OriginalPath!, ModifiedPath!, true);
-            using var fs = new FileStream(ModifiedPath!, FileMode.Open, FileAccess.ReadWrite);
-            var bw = new BinaryWriter(fs);
-            foreach (var opcode in Opcodes)
+            using (var ms = _rdtFile.GetStream())
             {
-                fs.Position = opcode.Offset;
-                opcode.Write(bw);
+                var bw = new BinaryWriter(ms);
+                foreach (var opcode in Opcodes)
+                {
+                    ms.Position = opcode.Offset;
+                    opcode.Write(bw);
+                }
             }
+
+            Directory.CreateDirectory(Path.GetDirectoryName(ModifiedPath!)!);
+            File.WriteAllBytes(ModifiedPath!, _rdtFile.Data);
         }
 
         public void Print()

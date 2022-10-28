@@ -60,6 +60,14 @@ namespace rer
 
         public RandoConfig Clone() => FromString(ToString());
 
+        public RandoConfig WithPlayerScenario(int player, int scenario)
+        {
+            var result = Clone();
+            result.Player = player;
+            result.Scenario = scenario;
+            return result;
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder();
