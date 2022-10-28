@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net472</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Copyright>Copyright (C) Ted John 2022</Copyright>
+    <Product>Resident Evil Randomizer</Product>
+    <Version>1.0.0</Version>
+    <RootNamespace>IntelOrca.Biohazard.BioRand</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="6.0.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IntelOrca.Biohazard\IntelOrca.Biohazard.csproj" />
+  </ItemGroup>
+</Project>
