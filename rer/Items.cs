@@ -10,7 +10,7 @@ namespace rer
             {
                 return ((ItemType)id).ToString();
             }
-            return "?";
+            return $"{id}";
         }
     }
 }

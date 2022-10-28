@@ -673,13 +673,17 @@ namespace rer
                 return node;
 
             var rdt = _gameData.GetRdt(rdtId);
-            var items = rdt!.EnumerateOpcodes<ItemAotSetOpcode>(_config).Select(x => new ItemPoolEntry()
-            {
-                RdtId = rdt.RdtId,
-                Id = x.Id,
-                Type = x.Type,
-                Amount = x.Amount
-            }).DistinctBy(x => x.Id).Where(x => x.Type < 0x64).ToArray();
+            var items = rdt!.EnumerateOpcodes<ItemAotSetOpcode>(_config)
+                .DistinctBy(x => x.Id)
+                .Where(x => _config.IncludeDocuments || x.Type <= (ushort)ItemType.PlatformKey)
+                .Select(x => new ItemPoolEntry()
+                {
+                    RdtId = rdt.RdtId,
+                    Id = x.Id,
+                    Type = x.Type,
+                    Amount = x.Amount
+                })
+                .ToArray();
 
             node = new PlayNode(rdtId);
             node.Doors = GetAllDoorsToRoom(rdtId);

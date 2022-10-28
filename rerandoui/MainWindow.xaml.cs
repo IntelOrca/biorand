@@ -109,6 +109,7 @@ namespace rerandoui
                 chkRngItems.IsChecked = _config.RandomItems;
                 chkShuffleItems.IsChecked = _config.ShuffleItems;
                 chkAlternativeRoute.IsChecked = _config.AlternativeRoutes;
+                chkIncludeDocuments.IsChecked = _config.IncludeDocuments;
 
                 sliderEnemyDifficulty.Value = _config.EnemyDifficulty;
 
@@ -139,6 +140,7 @@ namespace rerandoui
             _config.RandomItems = chkRngItems.IsChecked == true;
             _config.ShuffleItems = chkShuffleItems.IsChecked == true;
             _config.AlternativeRoutes = chkAlternativeRoute.IsChecked == true;
+            _config.IncludeDocuments = chkIncludeDocuments.IsChecked == true;
 
             _config.EnemyDifficulty = (byte)sliderEnemyDifficulty.Value;
 

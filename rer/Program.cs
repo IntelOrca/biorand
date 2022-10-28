@@ -22,38 +22,6 @@ namespace rer
 
         public static void Generate(RandoConfig config, string re2Path)
         {
-            config = config.Clone();
-            if (config.GameVariant == 0)
-            {
-                // Leon A / Claire B
-                config.Player = 0;
-                config.Scenario = 0;
-                Generate2(config, re2Path);
-
-                // config.Player = 1;
-                // config.Scenario = 1;
-                // Generate2(config, re2Path);
-            }
-            else
-            {
-                // Leon B / Claire A
-                config.Player = 0;
-                config.Scenario = 1;
-                Generate2(config, re2Path);
-
-                // config.Player = 1;
-                // config.Scenario = 0;
-                // Generate2(config, re2Path);
-            }
-        }
-
-        public static void Generate2(RandoConfig config, string re2Path)
-        {
-            var randomItems = new Rng(config.Seed);
-            var randomNpcs = new Rng(config.Seed + 1);
-            var randomEnemies = new Rng(config.Seed + 2);
-            var randomMusic = new Rng(config.Seed + 3);
-
             var originalDataPath = Path.Combine(re2Path, "data");
             var modPath = Path.Combine(re2Path, @"mod_rando");
 
@@ -69,6 +37,47 @@ namespace rer
             }
             Directory.CreateDirectory(modPath);
 
+            config = config.Clone();
+            if (config.GameVariant == 0)
+            {
+
+                // Leon A / Claire B
+                config.Player = 0;
+                config.Scenario = 0;
+                GenerateRdts(config, originalDataPath, modPath);
+
+                config.Player = 1;
+                config.Scenario = 1;
+                GenerateRdts(config, originalDataPath, modPath);
+            }
+            else
+            {
+                // Leon B / Claire A
+                config.Player = 0;
+                config.Scenario = 1;
+                GenerateRdts(config, originalDataPath, modPath);
+
+                config.Player = 1;
+                config.Scenario = 0;
+                GenerateRdts(config, originalDataPath, modPath);
+            }
+
+            if (config.RandomBgm)
+            {
+                using var logger = new RandoLogger(Path.Combine(modPath, $"log_bgm.txt"));
+                var bgmRandomiser = new BgmRandomiser(logger, originalDataPath, modPath);
+                bgmRandomiser.Randomise(new Rng(config.Seed + 3));
+            }
+
+            File.WriteAllText(Path.Combine(modPath, "manifest.txt"), "[MOD]\nName = BIOHAZARD 2: RANDOMIZER\n");
+        }
+
+        public static void GenerateRdts(RandoConfig config, string originalDataPath, string modPath)
+        {
+            var randomItems = new Rng(config.Seed);
+            var randomNpcs = new Rng(config.Seed + 1);
+            var randomEnemies = new Rng(config.Seed + 2);
+
             using var logger = new RandoLogger(Path.Combine(modPath, $"log_pl{config.Player}.txt"));
             logger.WriteHeading("Resident Evil Randomizer");
             logger.WriteLine($"Seed: {config}");
@@ -77,8 +86,6 @@ namespace rer
 
             var map = LoadJsonMap(@"M:\git\rer\rer\data\rdt.json");
             var gameData = GameDataReader.Read(originalDataPath, modPath, config.Player);
-
-            DumpScripts(gameData, Path.Combine(modPath, "scripts"));
 
             if (config.RandomItems)
             {
@@ -101,21 +108,14 @@ namespace rer
                 npcRandomiser.Randomise();
             }
 
-            if (config.RandomBgm)
-            {
-                var bgmRandomiser = new BgmRandomiser(logger, originalDataPath, modPath);
-                bgmRandomiser.Randomise(randomMusic);
-            }
-
 #if DEBUG
             if (config.RandomItems || config.RandomEnemies)
             {
+                DumpScripts(gameData, Path.Combine(modPath, "scripts_pl0"));
                 var moddedGameData = GameDataReader.Read(modPath, modPath, config.Player);
                 DumpScripts(moddedGameData, Path.Combine(modPath, "scripts_modded"));
             }
 #endif
-
-            File.WriteAllText(Path.Combine(modPath, "manifest.txt"), "[MOD]\nName = BIOHAZARD 2: RANDOMIZER\n");
         }
 
         private static string GetPlayerName(int player) => player == 0 ? "Leon" : "Claire";

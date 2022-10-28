@@ -226,10 +226,11 @@
         {
           "target": "110"
         }
-      ],
-      "enemies": {
-        "nop": [ 1762, 1766, 1772, 1774, 1922, 1954, 1986 ]
-      }
+      ]
+      // ,
+      // "enemies": {
+      //   "nop": [ 1762, 1766, 1772, 1774, 1922, 1954, 1986 ]
+      // }
     },
     "110": {
       "doors": [
@@ -577,7 +578,6 @@
       "enemies": {}
     },
     "208": {
-      "requires": [ 68, 69, 70, 80 ],
       "doors": [
         {
           "target": "207"
@@ -588,12 +588,52 @@
       ],
       "items": [
         {
+          "id": 6,
+          "requires": [ 68 ],
+          "priority": "low",
+          "scenario": 0
+        },
+        {
+          "id": 0,
+          "type": 0,
+          "scenario": 1
+        },
+        {
+          "id": 7,
+          "requires": [ 69 ],
+          "priority": "low"
+        },
+        {
+          "id": 8,
+          "type": 0,
+          "player": 0,
+          "scenario": 0
+        },
+        {
+          "id": 8,
+          "requires": [ 70 ],
+          "priority": "low",
+          "player": 0,
+          "scenario": 1
+        },
+        {
+          "id": 8,
+          "requires": [ 70 ],
+          "priority": "low",
+          "player": 1
+        },
+        {
           "id": 12,
           "type": 0
         },
         {
           "id": 14,
           "type": 0
+        },
+        {
+          "id": 16,
+          "requires": [ 80 ],
+          "priority": "low"
         }
       ]
     },
@@ -832,6 +872,12 @@
           "requires": [ 54, 56, 57, 58 ],
           "player": 1
         }
+      ],
+      "items": [
+        {
+          "id": 8,
+          "priority": "low"
+        }
       ]
     },
     "300": {
@@ -849,6 +895,12 @@
       "doors": [
         {
           "target": "219"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "priority": "low"
         }
       ]
     },
@@ -1470,6 +1522,20 @@
           "target": "60B"
         }
       ],
+      "items": [
+        {
+          "id": 7,
+          "priority": "low"
+        },
+        {
+          "id": 8,
+          "priority": "low"
+        },
+        {
+          "id": 9,
+          "priority": "low"
+        }
+      ],
       "enemies": {}
     },
     "60A": {
@@ -1479,6 +1545,13 @@
         },
         {
           "target": "609"
+        }
+      ],
+      "items": [
+        {
+          "id": 13,
+          "type": 0,
+          "player": 0
         }
       ],
       "enemies": {}

@@ -27,6 +27,7 @@ namespace rer
         public bool RandomBgm { get; set; } = true;
         public bool ShuffleItems { get; set; } = true;
         public bool AlternativeRoutes { get; set; } = true;
+        public bool IncludeDocuments { get; set; } = true;
 
         // Numbers
         public byte RatioAmmo { get; set; } = 16;
@@ -108,6 +109,7 @@ namespace rer
             RandomBgm = (value & (1 << 0)) != 0;
             ShuffleItems = (value & (1 << 1)) != 0;
             AlternativeRoutes = (value & (1 << 2)) != 0;
+            IncludeDocuments = (value & (1 << 3)) != 0;
         }
 
         private byte GetFlags1()
@@ -119,6 +121,8 @@ namespace rer
                 result |= 1 << 1;
             if (AlternativeRoutes)
                 result |= 1 << 2;
+            if (IncludeDocuments)
+                result |= 1 << 3;
             return (byte)result;
         }
 
