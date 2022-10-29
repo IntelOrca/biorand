@@ -73,7 +73,7 @@ namespace IntelOrca.Biohazard
                 bgmRandomiser.Randomise(new Rng(config.Seed + 3));
             }
 
-            File.WriteAllText(Path.Combine(modPath, "manifest.txt"), "[MOD]\nName = BIOHAZARD 2: RANDOMIZER\n");
+            File.WriteAllText(Path.Combine(modPath, "manifest.txt"), "[MOD]\nName = BioRand: A Resident Evil Randomizer\n");
         }
 
         public static void GenerateRdts(RandoConfig config, string originalDataPath, string modPath)

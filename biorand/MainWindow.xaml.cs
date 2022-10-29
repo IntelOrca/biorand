@@ -341,7 +341,7 @@ namespace IntelOrca.Biohazard.BioRand
         private void ShowGenerateCompleteMessage()
         {
             var title = "Randomization Complete!";
-            var msg = "The Randomizer mod has successfully been generated. Run the game and choose \"BIOHAZARD 2: RANDOMIZER\" from the mod selection.";
+            var msg = "The Randomizer mod has successfully been generated. Run the game and choose \"BioRand: A Resident Evil Randomizer\" from the mod selection.";
             MessageBox.Show(this, msg, title, MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }

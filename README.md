@@ -1,8 +1,27 @@
+# BioRand: A Resident Evil Randomizer
+A new randomizer for the classic Resident Evil games for PC. Supports sophisticated key item placement, randomized non-key items, randomized enemies, randomized NPCs with matching random voices and random background music. All highly configurable and easy to share seeds and configurations.
 
+The randomizer currently only supports the Sourcenext port of Resident Evil 2 with the Classic REbirth patch.
+
+<a href="https://openrct2.io">
+    <img src="docs/images/screenshot.png" style="width: 256px;" alt="BioRand screenshot"/>
+</a>
+
+## How to use
+
+1. Download the latest release from https://github.com/IntelOrca/biorand/releases.
+2. Extract all the files to a directory of your choice.
+3. Run `biorand.exe` and type or browse for your RE2 game directory under the generate box. If browsing, select your `bio2 1.10.exe` file.
+4. Configure your settings, click `seed` for a random seed and then click generate.
+5. Run RE2 and select the mod: "BioRand: A Resident Evil Randomizer" from the list.
+
+## Reporting issues
+Please report any bugs, crashes or suggestions by raising an issue on https://github.com/OpenRCT2/OpenRCT2/issues.
+Include the seed you were using in your report.
 
 ## Features
 
-### Door randomization
+### Door randomization (coming soon)
 All doors will be changed to link to different rooms. A graph is constructed to provide an alternative route through the game, key items must still be picked up and doors must still be unlocked.
 
 ### Key item randomization
@@ -42,3 +61,6 @@ Randomizes all NPCs in the game and their voice lines. Voice lines are picked ba
 
 All background music tracks are shuffled. Music is shuffled by genre, so danger tracks are swapped with other danger tracks, calm tracks are swapped with other calm tracks.
 Some rooms contining only ambient sound effects, such as the power room in the basement are replaced with music tracks.
+
+## License
+BioRand is licensed under the MIT License.
