@@ -16,8 +16,10 @@ jobs:
       run: |
         dotnet publish -c Release --no-build
         cd bin/Release/net472/publish
+        cp ${{ github.workspace }}/README.md .
+        cp ${{ github.workspace }}/LICENSE .
         mkdir ${{ github.workspace }}/artefacts
-        7z a ${{ github.workspace }}/artefacts/biorand.zip *.exe *.dll
+        7z a ${{ github.workspace }}/artefacts/biorand.zip *.exe *.dll README.md LICENSE
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:

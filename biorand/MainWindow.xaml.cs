@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Reflection;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Interop;
-using IntelOrca.Biohazard;
 using Microsoft.Win32;
 
 namespace IntelOrca.Biohazard.BioRand
@@ -15,6 +19,8 @@ namespace IntelOrca.Biohazard.BioRand
     /// </summary>
     public partial class MainWindow : Window
     {
+        private static Version CurrentVersion = Assembly.GetEntryAssembly().GetName().Version;
+
         private Random _random = new Random();
         private RandoAppSettings _settings = new RandoAppSettings();
         private RandoConfig _config = new RandoConfig();
@@ -27,6 +33,7 @@ namespace IntelOrca.Biohazard.BioRand
             LoadSettings();
             UpdateUi();
             UpdateEnabledUi();
+            CheckForNewVersion();
         }
 
         private void LoadSettings()
@@ -344,5 +351,54 @@ namespace IntelOrca.Biohazard.BioRand
             var msg = "The Randomizer mod has successfully been generated. Run the game and choose \"BioRand: A Resident Evil Randomizer\" from the mod selection.";
             MessageBox.Show(this, msg, title, MessageBoxButton.OK, MessageBoxImage.Information);
         }
+
+        private void CheckForNewVersion()
+        {
+            Task.Run(async () =>
+            {
+                try
+                {
+                    var version = await GetLatestVersionAsync();
+                    if (version > CurrentVersion)
+                    {
+                        Dispatcher.Invoke(() => versionBox.Visibility = Visibility.Visible);
+                    }
+                }
+                catch
+                {
+                }
+            });
+        }
+
+        private async Task<Version> GetLatestVersionAsync()
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("BioRand", CurrentVersion.ToString()));
+            var response = await client.GetAsync("https://api.github.com/repos/IntelOrca/biorand/releases/latest");
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var body = JsonSerializer.Deserialize<VersionCheckBody>(jsonResponse);
+                var tagName = body.tag_name;
+                return Version.Parse(tagName.Substring(1));
+            }
+            throw new Exception("Unable to get latest version");
+        }
+
+        private void UpdateLink_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://github.com/IntelOrca/biorand/releases");
+        }
+
+        private void ReportIssue_Click(object sender, RoutedEventArgs e)
+        {
+            var body = UrlEncoder.Default.Encode("Seed: " + _config.ToString());
+            Process.Start($"https://github.com/IntelOrca/biorand/issues/new?body={body}");
+        }
+    }
+
+    public class VersionCheckBody
+    {
+        public string tag_name { get; set; }
     }
 }

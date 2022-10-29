@@ -20,4 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\IntelOrca.Biohazard\IntelOrca.Biohazard.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
 </Project>
