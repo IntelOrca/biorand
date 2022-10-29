@@ -1,0 +1,32 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  build:
+    name: Build biorand
+    runs-on: windows-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Restore
+      run: dotnet restore
+    - name: Build
+      run: dotnet build -c Release --no-restore
+    - name: Publish
+      working-directory: biorand
+      run: |
+        dotnet publish -c Release --no-build
+        cd bin/Release/net472/publish
+        mkdir ${{ github.workspace }}/artefacts
+        7z a ${{ github.workspace }}/artefacts/biorand.zip *.exe *.dll
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: biorand
+        path: biorand/bin/Release/net472/publish/**/*
+    - name: Create release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/v')
+      with:
+        fail_on_unmatched_files: true
+        files: |
+          artefacts/biorand.zip
