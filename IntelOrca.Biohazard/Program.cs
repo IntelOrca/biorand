@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -118,9 +120,9 @@ namespace IntelOrca.Biohazard
 #if DEBUG
             if (config.RandomItems || config.RandomEnemies)
             {
-                DumpScripts(gameData, Path.Combine(modPath, "scripts_pl0"));
+                DumpScripts(gameData, Path.Combine(modPath, $"scripts_pl{config.Player}"));
                 var moddedGameData = GameDataReader.Read(modPath, modPath, config.Player);
-                DumpScripts(moddedGameData, Path.Combine(modPath, "scripts_modded"));
+                DumpScripts(moddedGameData, Path.Combine(modPath, $"scripts_modded_pl{config.Player}"));
             }
 #endif
         }
@@ -144,7 +146,10 @@ namespace IntelOrca.Biohazard
         private static Map LoadJsonMap()
         {
 #if DEBUG
-            var jsonMap = File.ReadAllText(@"M:\git\rer\rer\data\rdt.json");
+            var jsonPath = Path.Combine(
+                Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
+                @"..\..\..\..\IntelOrca.BioHazard\data\rdt.json");
+            var jsonMap = File.ReadAllText(jsonPath);
 #else
             var jsonMap = Resources.rdt;
 #endif
