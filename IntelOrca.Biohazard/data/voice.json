@@ -24,7 +24,7 @@
   "pl0/voice/stage1/v009.sap": "kendo",
   "pl0/voice/stage1/v010.sap": "kendo",
   "pl0/voice/stage1/v011.sap": "kendo",
-  "pl0/voice/stage1/v012.sap": "leon",
+  // "pl0/voice/stage1/v012.sap": "leon", // Changing can stop cutscene from working
   "pl0/voice/stage1/v013.sap": "claire",
   "pl0/voice/stage1/v014.sap": "leon",
   "pl0/voice/stage1/v015.sap": "claire",

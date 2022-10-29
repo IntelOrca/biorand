@@ -319,7 +319,22 @@
           "excludeTypes": [ 42, 58 ]
         }
       ],
-      "npcs": [ {} ]
+      "npcs": [
+        {
+          "includeOffsets": [ 4040, 4074 ],
+          "includeTypes": [ 64, 67, 68, 69, 71, 72, 74 ],
+          "player": 0,
+          "scenario": 1
+        },
+        {
+          "includeOffsets": [ 4004 ],
+          "player": 0,
+          "scenario": 1
+        },
+        {
+          "player": 1
+        }
+      ]
     },
     "114": {
       "doors": [
@@ -354,7 +369,16 @@
           "target": "114"
         }
       ],
-      "npcs": [ {} ]
+      "npcs": [
+        {
+          "scenario": 0,
+          "player": 0
+        },
+        {
+          "scenario": 1,
+          "player": 1
+        }
+      ]
     },
     "116": {
       "doors": [
@@ -1182,7 +1206,8 @@
           "target": "403"
         }
       ],
-      "enemies": [ {} ]
+      "enemies": [ {} ],
+      "npcs": [ {} ]
     },
     "403": {
       "doors": [
@@ -1195,7 +1220,8 @@
         {
           "target": "404"
         }
-      ]
+      ],
+      "npcs": [ {} ]
     },
     "404": {
       "doors": [
@@ -1245,6 +1271,11 @@
       "enemies": [
         {
           "y": 0
+        }
+      ],
+      "npcs": [
+        {
+          "player": 0
         }
       ]
     },
@@ -1301,6 +1332,11 @@
         },
         {
           "target": "409"
+        }
+      ],
+      "npcs": [
+        {
+          "player": 0
         }
       ]
     },
@@ -1510,7 +1546,6 @@
       ],
       "npcs": [
         {
-          "player": 0
         }
       ]
     },
