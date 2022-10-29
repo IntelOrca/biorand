@@ -22,7 +22,7 @@ namespace IntelOrca.Biohazard.BioRand
         public static string GetSettingsDirectory()
         {
             var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            return Path.Combine(appData, "RERando");
+            return Path.Combine(appData, "biorand");
         }
 
         private static JsonSerializerOptions GetJsonSerializerOptions()

@@ -27,7 +27,7 @@ namespace IntelOrca.Biohazard
         public bool RandomBgm { get; set; } = true;
         public bool ShuffleItems { get; set; } = true;
         public bool AlternativeRoutes { get; set; } = true;
-        public bool IncludeDocuments { get; set; } = true;
+        public bool IncludeDocuments { get; set; }
 
         // Numbers
         public byte RatioAmmo { get; set; } = 16;

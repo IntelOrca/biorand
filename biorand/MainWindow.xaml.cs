@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Interop;
 using IntelOrca.Biohazard;
 using Microsoft.Win32;
 
@@ -32,6 +33,10 @@ namespace IntelOrca.Biohazard.BioRand
         {
             _settings = RandoAppSettings.Load();
             _config = _settings.Seed == null ? new RandoConfig() : RandoConfig.FromString(_settings.Seed);
+            if (_settings.Seed == null)
+            {
+                RandomizeSeed();
+            }
             txtGameDataLocation.Text = _settings.GamePath;
         }
 
@@ -191,8 +196,13 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void RandomizeSeed_Click(object sender, RoutedEventArgs e)
         {
-            _config.Seed = _random.Next(0, RandoConfig.MaxSeed);
+            RandomizeSeed();
             UpdateUi();
+        }
+
+        private void RandomizeSeed()
+        {
+            _config.Seed = _random.Next(0, RandoConfig.MaxSeed);
         }
 
         private void RandomizeConfig_Click(object sender, RoutedEventArgs e)
@@ -241,6 +251,13 @@ namespace IntelOrca.Biohazard.BioRand
         private async void btnGenerate_Click(object sender, RoutedEventArgs e)
         {
             var gamePath = txtGameDataLocation.Text;
+            if (!Path.IsPathRooted(gamePath) || !Directory.Exists(gamePath))
+            {
+                var msg = "You have not specified an RE2 game directory that exists.";
+                MessageBox.Show(this, msg, "Failed to Generate", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
             if (!ValidateGamePath(gamePath))
             {
                 if (!ShowGamePathWarning())
@@ -257,6 +274,10 @@ namespace IntelOrca.Biohazard.BioRand
                 await Task.Run(() => Program.Generate(_config, gamePath));
                 RandoAppSettings.LogGeneration(_config.ToString(), gamePath);
                 ShowGenerateCompleteMessage();
+            }
+            catch (AggregateException ex)
+            {
+                MessageBox.Show(ex.InnerException.Message, "Failed to Generate", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception ex)
             {

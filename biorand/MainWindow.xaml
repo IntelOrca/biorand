@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:IntelOrca.Biohazard.BioRand"
         mc:Ignorable="d"
-        Title="Resident Evil Randomizer"
+        Title="BioRand: A Resident Evil Randomizer"
         Width="500"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
@@ -37,7 +37,7 @@
         </GroupBox>
         <GroupBox Header="General">
             <StackPanel>
-                <CheckBox x:Name="chkRngDoors">Randomize doors</CheckBox>
+                <CheckBox x:Name="chkRngDoors" IsEnabled="false">Randomize doors (coming soon)</CheckBox>
                 <CheckBox x:Name="chkRngChars">Randomize characters, voice</CheckBox>
                 <CheckBox x:Name="chkRngBgm">Randomize background music</CheckBox>
             </StackPanel>
