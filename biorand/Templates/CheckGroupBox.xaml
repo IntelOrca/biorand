@@ -1,0 +1,23 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:IntelOrca.Biohazard.BioRand">
+    <Style x:Key="{x:Type local:CheckGroupBox}" TargetType="{x:Type local:CheckGroupBox}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:CheckGroupBox}">
+                    <Grid>
+                        <GroupBox x:Name="PART_group"
+                                      Header="{TemplateBinding ActualHeader}"
+                                      IsEnabled="{TemplateBinding IsChildrenEnabled}">
+                            <ContentPresenter Content="{TemplateBinding Content}" />
+                        </GroupBox>
+                        <CheckBox x:Name="PART_checkbox"
+                                      Margin="8,2,0,0"
+                                      VerticalAlignment="Top"
+                                      IsChecked="{Binding RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, Path=IsChecked}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

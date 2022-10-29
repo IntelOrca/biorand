@@ -5,82 +5,89 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:IntelOrca.Biohazard.BioRand"
         mc:Ignorable="d"
-        Title="Resident Evil Randomizer" Width="500" ResizeMode="NoResize" SizeToContent="Height">
+        Title="Resident Evil Randomizer"
+        Width="500"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        SizeToContent="Height">
     <Window.Resources>
         <Style TargetType="local:RandoSlider">
             <Setter Property="Maximum" Value="31" />
             <Setter Property="Value" Value="15" />
         </Style>
     </Window.Resources>
-    <StackPanel Orientation="Vertical" Margin="4">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="50" />
-                <ColumnDefinition />
-                <ColumnDefinition Width="50" />
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Content="Seed" Click="RandomizeSeed_Click" />
-            <TextBox x:Name="txtSeed"
-                     Grid.Column="1"
-                     FontFamily="Courier New"
-                     FontSize="24"
-                     TextAlignment="Center"
-                     TextChanged="txtSeed_TextChanged"
-                     Margin="4,0" />
-            <Button Grid.Column="2" Content="Config" Click="RandomizeConfig_Click" />
-        </Grid>
+    <StackPanel Margin="4">
+        <GroupBox Header="Seed">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="50" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="Seed" Click="RandomizeSeed_Click" />
+                <TextBox x:Name="txtSeed"
+                         Grid.Column="1"
+                         FontFamily="Courier New"
+                         FontSize="24"
+                         TextAlignment="Center"
+                         TextChanged="txtSeed_TextChanged"
+                         Margin="4,0" />
+                <Button Grid.Column="2" Content="Config" Click="RandomizeConfig_Click" />
+            </Grid>
+        </GroupBox>
         <GroupBox Header="General">
-            <StackPanel Orientation="Vertical">
+            <StackPanel>
                 <CheckBox x:Name="chkRngDoors">Randomize doors</CheckBox>
                 <CheckBox x:Name="chkRngChars">Randomize characters, voice</CheckBox>
                 <CheckBox x:Name="chkRngBgm">Randomize background music</CheckBox>
             </StackPanel>
         </GroupBox>
-        <GroupBox Header="Enemies">
-            <StackPanel Orientation="Vertical">
-                <CheckBox x:Name="chkRngEnemies">Randomize enemies</CheckBox>
-                <StackPanel x:Name="panelEnemySliders" Orientation="Vertical">
-                    <local:RandoSlider x:Name="sliderEnemyDifficulty" Heading="Difficulty" LowText="Ez" HighText="Hard" Maximum="3" />
+        <local:CheckGroupBox x:Name="chkRngEnemies" Header="Randomize Enemies">
+            <StackPanel>
+                <local:RandoSlider x:Name="sliderEnemyDifficulty" Heading="Difficulty" LowText="Ez" HighText="Hard" Maximum="3"
+                                   ToolTip="Adjust likelyhood of more easier / slower enemies (crows, ivies, spiders, zombies), or more difficult / faster enemies (ceberus', lickers, tyrants) being placed."/>
+            </StackPanel>
+        </local:CheckGroupBox>
+        <local:CheckGroupBox x:Name="chkRngItems" Header="Randomize Items">
+            <StackPanel>
+                <CheckBox x:Name="chkIncludeDocuments" ToolTip="When checked, documents will become potential key items or anything else. This includes photos developed in the dark room.">Include documents</CheckBox>
+                <CheckBox x:Name="chkAlternativeRoute" ToolTip="When checked, key items will be placed in any order. For example the spade key may be placed in the basement and the heart key in the main hall.">Allow alternative routes</CheckBox>
+                <CheckBox x:Name="chkProtectSoftLock" ToolTip="When checked, prevents lab keys from spawning in the police station.">Protect from soft lock</CheckBox>
+                <CheckBox x:Name="chkShuffleItems" ToolTip="When checked, keeps original items and quantities, but shuffles them.">Shuffle default items</CheckBox>
+                <StackPanel x:Name="panelItemSliders">
+                    <local:RandoSlider x:Name="sliderAmmo" Heading="Ammo probability" LowText="None" HighText="High"
+                                       ToolTip="Probability of non-key items being ammunition." />
+                    <local:RandoSlider x:Name="sliderHealth" Heading="Health probability" LowText="None" HighText="High"
+                                       ToolTip="Probability of non-key items being health." />
+                    <local:RandoSlider x:Name="sliderInkRibbons" Heading="Ink Ribbon probability" LowText="None" HighText="High"
+                                       ToolTip="Probability of non-key items being ink ribbons." />
+                    <local:RandoSlider x:Name="sliderAmmoQuantity" Heading="Ammo average quantity" LowText="None" HighText="High" Maximum="7"
+                                       ToolTip="Average quantity of ammunition per ammunition pick up." />
                 </StackPanel>
             </StackPanel>
-        </GroupBox>
-        <GroupBox Header="Items">
-            <StackPanel Orientation="Vertical">
-                <CheckBox x:Name="chkRngItems">Randomize items</CheckBox>
-                <StackPanel x:Name="panelItemOptions" Orientation="Vertical">
-                    <CheckBox x:Name="chkIncludeDocuments">Include documents</CheckBox>
-                    <CheckBox x:Name="chkAlternativeRoute">Allow alternative routes</CheckBox>
-                    <CheckBox x:Name="chkProtectSoftLock">Protect from soft lock</CheckBox>
-                    <CheckBox x:Name="chkShuffleItems">Shuffle default items</CheckBox>
-                    <StackPanel x:Name="panelItemSliders" Orientation="Vertical">
-                        <local:RandoSlider x:Name="sliderAmmo" Heading="Ammo probability" LowText="None" HighText="High" />
-                        <local:RandoSlider x:Name="sliderHealth" Heading="Health probability" LowText="None" HighText="High" />
-                        <local:RandoSlider x:Name="sliderInkRibbons" Heading="Ink Ribbon probability" LowText="None" HighText="High" />
-                        <Rectangle Margin="0,8,0,4" Height="1" Fill="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
-                        <local:RandoSlider x:Name="sliderAmmoQuantity" Heading="Ammo average quantity" LowText="None" HighText="High" Maximum="7" />
-                    </StackPanel>
-                </StackPanel>
+        </local:CheckGroupBox>
+        <GroupBox Header="Generate">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="30" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="txtGameDataLocation" Margin="4,4,2,4" Text="F:\games\re2" />
+                    <Button Grid.Column="1" Margin="2,4,4,4" Click="btnBrowse_Click">...</Button>
+                </Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="150" />
+                    </Grid.ColumnDefinitions>
+                    <ComboBox x:Name="dropdownVariant" Grid.Column="0" Margin="4" SelectedIndex="0">
+                        <ComboBoxItem Content="Leon A / Claire B" />
+                        <ComboBoxItem Content="Claire A / Leon B" />
+                    </ComboBox>
+                    <Button Grid.Column="1" Margin="4" Click="btnGenerate_Click">Generate</Button>
+                </Grid>
             </StackPanel>
         </GroupBox>
-        <Rectangle Margin="0,8,0,4" Height="1" Fill="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition Width="30" />
-            </Grid.ColumnDefinitions>
-            <TextBox x:Name="txtGameDataLocation" Margin="4,4,2,4" Text="F:\games\re2" />
-            <Button Grid.Column="1" Margin="2,4,4,4" Click="btnBrowse_Click">...</Button>
-        </Grid>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition Width="150" />
-            </Grid.ColumnDefinitions>
-            <ComboBox x:Name="dropdownVariant" Grid.Column="0" Margin="4" SelectedIndex="0">
-                <ComboBoxItem Content="Leon A / Claire B" />
-                <ComboBoxItem Content="Claire A / Leon B" />
-            </ComboBox>
-            <Button Grid.Column="1" Margin="4" Click="btnGenerate_Click">Generate</Button>
-        </Grid>
     </StackPanel>
 </Window>

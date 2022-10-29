@@ -51,6 +51,11 @@ namespace IntelOrca.Biohazard.BioRand
                     cb.Unchecked += OnCheckBoxChanged;
                     cb.Checked += OnCheckBoxChanged;
                 }
+                else if (control is CheckGroupBox cgb)
+                {
+                    cgb.Unchecked += OnCheckBoxChanged;
+                    cgb.Checked += OnCheckBoxChanged;
+                }
                 else if (control is Slider slider)
                 {
                     slider.ValueChanged += Slider_ValueChanged;
@@ -155,9 +160,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void UpdateEnabledUi()
         {
-            panelEnemySliders.IsEnabled = chkRngEnemies.IsChecked == true;
             panelItemSliders.IsEnabled = chkShuffleItems.IsChecked != true;
-            panelItemOptions.IsEnabled = chkRngItems.IsChecked == true;
         }
 
         private IEnumerable<FrameworkElement> GetAllControls(object parent)
