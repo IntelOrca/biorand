@@ -32,7 +32,7 @@ namespace IntelOrca.Biohazard
         public ushort[]? Requires { get; set; }
         public MapRoomDoor[]? Doors { get; set; }
         public MapRoomItem[]? Items { get; set; }
-        public MapRoomEnemies? Enemies { get; set; }
+        public MapRoomEnemies[]? Enemies { get; set; }
     }
 
     public class MapRoomDoor
@@ -61,7 +61,6 @@ namespace IntelOrca.Biohazard
     {
         public int[]? Nop { get; set; }
         public int[]? ExcludeOffsets { get; set; }
-        public int[]? ExcludeIds { get; set; }
         public int[]? ExcludeTypes { get; set; }
         public int[]? IncludeTypes { get; set; }
         public bool KeepState { get; set; }

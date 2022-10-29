@@ -10,9 +10,11 @@
           "target": "101"
         }
       ],
-      "enemies": {
-        "nop": [ 4888 ]
-      }
+      "enemies": [
+        {
+          "nop": [ 4888 ]
+        }
+      ]
     },
     "101": {
       "doors": [
@@ -34,10 +36,12 @@
           "target": "118"
         }
       ],
-      "enemies": {
-        "excludeTypes": [ 34, 36, 42, 46, 57, 58 ],
-        "keepAi": true
-      }
+      "enemies": [
+        {
+          "excludeTypes": [ 34, 36, 42, 46, 57, 58 ],
+          "keepAi": true
+        }
+      ]
     },
     "103": {
       "doors": [
@@ -51,7 +55,7 @@
           "type": 0
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "104": {
       "doors": [
@@ -59,9 +63,11 @@
           "target": "105"
         }
       ],
-      "enemies": {
-        "includeTypes": [ 16, 22, 23, 31, 32, 33 ]
-      }
+      "enemies": [
+        {
+          "includeTypes": [ 16, 22, 23, 31, 32, 33 ]
+        }
+      ]
     },
     "105": {
       "doors": [
@@ -73,11 +79,13 @@
           ]
         }
       ],
-      "enemies": {
-        "includeTypes": [ 16, 18, 19, 21, 22, 23, 24, 30, 31 ],
-        "keepState": true,
-        "keepAi": true
-      }
+      "enemies": [
+        {
+          "includeTypes": [ 16, 18, 19, 21, 22, 23, 24, 30, 31 ],
+          "keepState": true,
+          "keepAi": true
+        }
+      ]
     },
     "106": {
       "doors": [
@@ -85,11 +93,12 @@
           "target": "107"
         }
       ],
-      "enemies": {
-        "includeTypes": [ 16, 22, 23, 31, 33, 37, 58 ],
-        "keepAi": true,
-        "keepState": true
-      }
+      "enemies": [
+        {
+          "includeTypes": [ 16, 22, 23, 31, 33, 37, 58 ],
+          "keepAi": true
+        }
+      ]
     },
     "107": {
       "doors": [
@@ -100,7 +109,7 @@
           "target": "108"
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "108": {
       "doors": [
@@ -130,10 +139,13 @@
           "priority": "low"
         }
       ],
-      "enemies": {
-        "keepAi": true,
-        "y": 0
-      }
+      "enemies": [
+        {
+          "excludeTypes": [ 34, 36, 42, 45, 46, 57, 58 ],
+          "keepAi": true,
+          "y": 0
+        }
+      ]
     },
     "10A": {
       "doors": [
@@ -145,9 +157,7 @@
         },
         {
           "target": "10B",
-          "requires": [
-            50
-          ]
+          "requires": [ 50 ]
         },
         {
           "target": "21B",
@@ -161,7 +171,7 @@
           "player": 1
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "10B": {
       "doors": [
@@ -250,7 +260,7 @@
           "scenario": 1
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "111": {
       "doors": [
@@ -301,7 +311,11 @@
           "target": "112"
         }
       ],
-      "enemies": {}
+      "enemies": [
+        {
+          "excludeTypes": [ 42, 58 ]
+        }
+      ]
     },
     "114": {
       "supportedNpcs": [ 66, 67, 68, 71, 72, 74, 80 ],
@@ -322,6 +336,11 @@
         },
         {
           "target": "115"
+        }
+      ],
+      "enemies": [
+        {
+          "player": 0
         }
       ]
     },
@@ -361,7 +380,7 @@
           "priority": "low"
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "118": {
       "doors": [
@@ -372,7 +391,7 @@
           "target": "119"
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "119": {
       "doors": [
@@ -383,11 +402,13 @@
           "target": "11A"
         }
       ],
-      "enemies": {
-        "includeTypes": [ 23, 31 ],
-        "keepState": true,
-        "keepAi": true
-      }
+      "enemies": [
+        {
+          "includeTypes": [ 23, 31 ],
+          "keepState": true,
+          "keepAi": true
+        }
+      ]
     },
     "11A": {
       "doors": [
@@ -398,9 +419,11 @@
           "target": "11B"
         }
       ],
-      "enemies": {
-        "excludeTypes": [ 46, 57, 58 ]
-      }
+      "enemies": [
+        {
+          "excludeTypes": [ 42, 46, 57, 58 ]
+        }
+      ]
     },
     "11B": {
       "doors": [
@@ -412,27 +435,7 @@
           "noReturn": true
         }
       ],
-      "enemies": {}
-    },
-    "11C": {
-      "doors": [
-        {
-          "target": "107"
-        },
-        {
-          "target": "109"
-        }
-      ]
-    },
-    "11D": {
-      "doors": [
-        {
-          "target": "101"
-        },
-        {
-          "target": "103"
-        }
-      ]
+      "enemies": [ {} ]
     },
     "200": {
       "doors": [
@@ -475,9 +478,16 @@
           "player": 0
         }
       ],
-      "enemies": {
-        "excludeIds": [ 0 ]
-      }
+      "enemies": [
+        {
+          "excludeOffsets": [ 3552 ],
+          "player": 0
+        },
+        {
+          "excludeOffsets": [ 3470 ],
+          "player": 1
+        }
+      ]
     },
     "202": {
       "supportedNpcs": [ 66, 67, 68, 72, 79, 90 ],
@@ -499,10 +509,18 @@
           "scenario": 0
         }
       ],
-      "enemies": {
-        "nop": [ 7854, 7858, 7862, 7868, 8166, 8170, 8136, 8174, 8180, 8184 ],
-        "scenario": 1
-      }
+      "enemies": [
+        {
+          "nop": [ 7854, 7858, 7862, 7868, 8166, 8170, 8174, 8180, 8184 ],
+          "player": 0,
+          "scenario": 1
+        },
+        {
+          "nop": [ 7816, 7820, 7824, 7830, 8128, 8132, 8136, 8142, 8146 ],
+          "player": 1,
+          "scenario": 1
+        }
+      ]
     },
     "203": {
       "doors": [
@@ -529,9 +547,17 @@
           ]
         }
       ],
-      "enemies": {
-        "excludeOffsets": [ 6836, 7422, 7490 ]
-      }
+      "enemies": [
+        {
+          "excludeOffsets": [ 6836, 7422, 7490 ],
+          "excludeTypes": [ 34, 36, 42, 47, 57, 58 ],
+          "scenario": 0
+        },
+        {
+          "excludeOffsets": [ 6836, 7422, 7490 ],
+          "scenario": 1
+        }
+      ]
     },
     "205": {
       "doors": [
@@ -575,7 +601,7 @@
           "requires": [ 90 ]
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "208": {
       "doors": [
@@ -646,9 +672,11 @@
           "target": "202"
         }
       ],
-      "enemies": {
-        "excludeTypes": [ 42, 46, 57, 58 ]
-      }
+      "enemies": [
+        {
+          "excludeTypes": [ 34, 36, 42, 46, 57, 58 ]
+        }
+      ]
     },
     "20A": {
       "doors": [
@@ -662,7 +690,7 @@
           "target": "20C"
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "20B": {
       "doors": [
@@ -677,9 +705,11 @@
           "target": "116"
         }
       ],
-      "enemies": {
-        "excludeIds": [ 0 ]
-      }
+      "enemies": [
+        {
+          "excludeOffsets": [ 12368 ]
+        }
+      ]
     },
     "20C": {
       "doors": [
@@ -701,7 +731,7 @@
           "priority": "low"
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "20D": {
       "doors": [
@@ -719,7 +749,7 @@
           "priority": "low"
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "20E": {
       "doors": [
@@ -727,10 +757,12 @@
           "target": "20C"
         }
       ],
-      "enemies": {
-        "excludeOffsets": [ 6070, 6116, 6146 ],
-        "y": 0
-      }
+      "enemies": [
+        {
+          "excludeOffsets": [ 6070, 6116, 6146 ],
+          "y": 0
+        }
+      ]
     },
     "20F": {
       "requires": [ 86 ],
@@ -746,7 +778,7 @@
           "requires": [ 92 ]
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "210": {
       "doors": [
@@ -754,7 +786,7 @@
           "target": "20F"
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "211": {
       "doors": [
@@ -779,7 +811,7 @@
           "requires": [ 92 ]
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "212": {
       "doors": [
@@ -811,9 +843,17 @@
           "target": "211"
         }
       ],
-      "enemies": {
-        "y": 0
-      }
+      "enemies": [
+        {
+          "excludeTypes": [ 34, 36, 42, 46, 57, 58 ],
+          "y": 0,
+          "scenario": 0
+        },
+        {
+          "y": 0,
+          "scenario": 1
+        }
+      ]
     },
     "216": {
       "supportedNpcs": [ 68, 69, 71, 72, 81 ],
@@ -826,7 +866,7 @@
           "scenario": 1
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "219": {
       "doors": [
@@ -840,7 +880,7 @@
           "target": "301"
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "21A": {
       "doors": [
@@ -853,9 +893,11 @@
           "player": 0
         }
       ],
-      "enemies": {
-        "player": 1
-      }
+      "enemies": [
+        {
+          "player": 1
+        }
+      ]
     },
     "21B": {
       "supportedNpcs": [ 67, 68, 72, 74, 79, 80, 90 ],
@@ -913,9 +955,11 @@
           "target": "30B"
         }
       ],
-      "enemies": {
-        "y": 0
-      }
+      "enemies": [
+        {
+          "y": 0
+        }
+      ]
     },
     "303": {
       "doors": [
@@ -952,7 +996,7 @@
           "target": "30B"
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "306": {
       "doors": [
@@ -1091,7 +1135,7 @@
           "type": 0
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "402": {
       "doors": [
@@ -1102,7 +1146,7 @@
           "target": "403"
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "403": {
       "doors": [
@@ -1143,9 +1187,11 @@
           "target": "404"
         }
       ],
-      "enemies": {
-        "y": 0
-      }
+      "enemies": [
+        {
+          "y": 0
+        }
+      ]
     },
     "407": {
       "doors": [
@@ -1160,9 +1206,11 @@
           "target": "405"
         }
       ],
-      "enemies": {
-        "y": 0
-      }
+      "enemies": [
+        {
+          "y": 0
+        }
+      ]
     },
     "408": {
       "supportedNpcs": [ 66, 67, 68, 69, 72, 74, 80 ],
@@ -1311,9 +1359,11 @@
           "target": "508"
         }
       ],
-      "enemies": {
-        "excludeTypes": [ 46, 57, 58, 42 ]
-      }
+      "enemies": [
+        {
+          "excludeTypes": [ 34, 36, 42, 46, 57, 58 ]
+        }
+      ]
     },
     "503": {
       "doors": [
@@ -1403,9 +1453,11 @@
           "target": "503"
         }
       ],
-      "enemies": {
-        "excludeTypes": [ 46, 57, 58, 42 ]
-      }
+      "enemies": [
+        {
+          "excludeTypes": [ 34, 36, 42, 46, 57, 58 ]
+        }
+      ]
     },
     "600": {
       "doors": [
@@ -1473,7 +1525,7 @@
           "target": "603"
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "606": {
       "doors": [
@@ -1488,7 +1540,7 @@
           "target": "608"
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "607": {
       "supportedNpcs": [ 66, 68, 71, 72, 74, 80, 90 ],
@@ -1537,7 +1589,7 @@
           "priority": "low"
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "60A": {
       "doors": [
@@ -1554,7 +1606,7 @@
           "type": 0
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "60B": {
       "doors": [
@@ -1573,7 +1625,7 @@
           "requires": [ 76 ]
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "60C": {
       "doors": [
@@ -1615,7 +1667,7 @@
           "target": "616"
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "60F": {
       "doors": [
@@ -1631,7 +1683,7 @@
           "priority": "low"
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "610": {
       "doors": [
@@ -1645,7 +1697,7 @@
           "type": 0
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "612": {
       "supportedNpcs": [ 66, 67, 68, 72, 74, 79, 80 ],
@@ -1664,9 +1716,11 @@
           "target": "614"
         }
       ],
-      "enemies": {
-        "y": 0
-      }
+      "enemies": [
+        {
+          "y": 0
+        }
+      ]
     },
     "614": {
       "supportedNpcs": [ 66, 67, 68, 69, 72, 74, 80 ],
@@ -1703,7 +1757,7 @@
           "priority": "fixed"
         }
       ],
-      "enemies": {}
+      "enemies": [ {} ]
     },
     "616": {
       "doors": [
@@ -1726,9 +1780,11 @@
           "scenario": 0
         }
       ],
-      "enemies": {
-        "y": 0
-      }
+      "enemies": [
+        {
+          "excludeOffsets": [ 8072, 8128, 8208, 8264, 8312, 8334 ]
+        }
+      ]
     },
     "617": {},
     "700": {
@@ -1741,7 +1797,7 @@
           "target": "703"
         }
       ],
-      "enemies": { }
+      "enemies": [ {} ]
     },
     "701": {
       "doors": [

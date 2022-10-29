@@ -132,10 +132,18 @@ namespace IntelOrca.Biohazard
 
         private void RandomiseRoom(Rdt rdt)
         {
-            var enemySpec = _map.GetRoom(rdt.RdtId)?.Enemies;
-            if (enemySpec == null)
-                return;
+            var enemySpecs = _map.GetRoom(rdt.RdtId)?.Enemies;
+            if (enemySpecs != null)
+            {
+                foreach (var enemySpec in enemySpecs)
+                {
+                    RandomiseRoom(rdt, enemySpec);
+                }
+            }
+        }
 
+        private void RandomiseRoom(Rdt rdt, MapRoomEnemies enemySpec)
+        {
             if (enemySpec.Player != null && enemySpec.Player != _config.Player)
                 return;
 
@@ -152,7 +160,6 @@ namespace IntelOrca.Biohazard
             }
 
             var enemiesToChange = rdt.Enemies
-                .Where(e => enemySpec.ExcludeIds?.Contains(e.Id) != true)
                 .Where(e => enemySpec.ExcludeOffsets?.Contains(e.Offset) != true)
                 .Where(ShouldChangeEnemy)
                 .ToArray();
@@ -164,17 +171,6 @@ namespace IntelOrca.Biohazard
             var excludeTypes = enemySpec.ExcludeTypes == null ?
                 new HashSet<EnemyType>() :
                 enemySpec.ExcludeTypes.Select(x => (EnemyType)x).ToHashSet();
-
-            if (_config.EnemyDifficulty <= 2)
-            {
-                if (numEnemies > 4)
-                {
-                    excludeTypes.Add(EnemyType.Cerebrus);
-                    excludeTypes.Add(EnemyType.LickerRed);
-                    excludeTypes.Add(EnemyType.LickerGrey);
-                    excludeTypes.Add(EnemyType.Tyrant1);
-                }
-            }
 
             var probTable = CreateEnemyProbabilityTable(includeTypes, excludeTypes);
 
@@ -282,7 +278,7 @@ namespace IntelOrca.Biohazard
                 case EnemyType.ZombieRandom:
                 case EnemyType.ZombieScientist:
                 case EnemyType.ZombieTestSubject:
-                    return _rng.NextOf<byte>(1, 2);
+                    return 1;
                 case EnemyType.ZombieGirl:
                     return 10;
                 case EnemyType.ZombieNaked:
