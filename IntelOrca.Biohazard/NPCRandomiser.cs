@@ -38,6 +38,7 @@ namespace IntelOrca.Biohazard
         public void Randomise()
         {
             var playerActor = _config.Player == 0 ? "leon" : "claire";
+            var defaultIncludeTypes = new[] { 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 79, 80, 81, 84, 85, 88, 89, 90 };
 
             _pool.AddRange(g_available.Shuffle(_random));
 
@@ -45,52 +46,43 @@ namespace IntelOrca.Biohazard
             foreach (var rdt in _gameData.Rdts)
             {
                 var room = _map.GetRoom(rdt.RdtId);
-                if (room == null)
+                if (room == null || room.Npcs == null)
                     continue;
 
-                var currentCharacters = rdt.Enemies.Where(x => IsNpc(x.Type)).Select(x => x.Type).ToArray();
-                var currentActors = currentCharacters.Select(x => GetActor(x)).ToArray();
-
-                var npcs = new int[0];
-                if (room.SupportedNpcs != null && room.SupportedNpcs.Length != 0)
+                var actorToNewActorMap = new Dictionary<string, string>();
+                foreach (var npc in room.Npcs)
                 {
-                    npcs = room.SupportedNpcs.Shuffle(_random);
+                    if (npc.Player != null && npc.Player != _config.Player)
+                        continue;
+                    if (npc.Scenario != null && npc.Scenario != _config.Scenario)
+                        continue;
+
+                    var supportedNpcs = npc.IncludeTypes ?? defaultIncludeTypes;
+                    if (npc.ExcludeTypes != null)
+                    {
+                        supportedNpcs = supportedNpcs.Except(npc.ExcludeTypes).ToArray();
+                    }
+                    if (supportedNpcs.Length == 0)
+                    {
+                        continue;
+                    }
+                    supportedNpcs = supportedNpcs.Shuffle(_random);
                     foreach (var enemy in rdt.Enemies)
                     {
-                        // Marvin edge case
-                        if (rdt.RdtId.Stage == 1 && rdt.RdtId.Room == 2)
-                        {
-                            if (_config.Player == 0)
-                            {
-                                if (enemy.Offset != 0x1E1C)
-                                {
-                                    continue;
-                                }
-                            }
-                            else
-                            {
-                                if (enemy.Offset != 0x1DF6)
-                                {
-                                    continue;
-                                }
-                            }
-                        }
-                        // Ben edge case
-                        else if (rdt.RdtId.Stage == 2 && rdt.RdtId.Room == 1)
-                        {
-                            if (enemy.Type == EnemyType.BenBertolucci1)
-                            {
-                                continue;
-                            }
-                        }
+                        if (!IsNpc(enemy.Type))
+                            continue;
 
-                        if (IsNpc(enemy.Type))
-                        {
-                            var currentNpcIndex = Array.IndexOf(currentCharacters, enemy.Type);
-                            var newNpcType = (EnemyType)npcs[currentNpcIndex % npcs.Length];
-                            _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) [{enemy.Type}] becomes [{newNpcType}]");
-                            enemy.Type = newNpcType;
-                        }
+                        if (npc.IncludeOffsets != null && !npc.IncludeOffsets.Contains(enemy.Offset))
+                            continue;
+
+                        var newEnemyTypeIndex = Array.FindIndex(supportedNpcs, x => x != (int)enemy.Type);
+                        var newEnemyType = (EnemyType)(newEnemyTypeIndex == -1 ? supportedNpcs[0] : supportedNpcs[newEnemyTypeIndex]);
+                        var oldActor = GetActor(enemy.Type)!;
+                        var newActor = GetActor(newEnemyType)!;
+                        actorToNewActorMap[oldActor] = newActor;
+
+                        _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) [{enemy.Type}] becomes [{newEnemyType}]");
+                        enemy.Type = newEnemyType;
                     }
                 }
 
@@ -104,19 +96,13 @@ namespace IntelOrca.Biohazard
                         {
                             RandomizeVoice(voice, actor, actor, kind);
                         }
-                        if ((actor == playerActor && kind != "npc") || kind == "pc" || npcs.Length == 0)
+                        if ((actor == playerActor && kind != "npc") || kind == "pc")
                         {
                             RandomizeVoice(voice, actor, actor, null);
                         }
-                        else
+                        else if (actorToNewActorMap.TryGetValue(actor, out var newActor))
                         {
-                            var currentNpcIndex = Array.IndexOf(currentActors, actor);
-                            if (currentNpcIndex != -1)
-                            {
-                                var newNpcType = (EnemyType)npcs[currentNpcIndex % npcs.Length];
-                                var newActor = GetActor(newNpcType) ?? actor;
-                                RandomizeVoice(voice, actor, newActor, null);
-                            }
+                            RandomizeVoice(voice, actor, newActor, null);
                         }
                     }
                 }
@@ -189,7 +175,7 @@ namespace IntelOrca.Biohazard
             // }
         }
 
-        private static bool IsNpc(EnemyType type) => type >= EnemyType.ChiefIrons1;
+        private static bool IsNpc(EnemyType type) => type >= EnemyType.ChiefIrons1 && type != EnemyType.MayorsDaughter;
 
         private static string? GetActor(EnemyType type)
         {
