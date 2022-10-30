@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 
 namespace IntelOrca.Biohazard
@@ -37,34 +38,129 @@ namespace IntelOrca.Biohazard
 
         public void CreateDoorRando()
         {
-            var nodes = new List<PlayNode>();
+            _logger.WriteHeading("Creating Room Graph:");
+
+            // Create all nodes
+            _nodes.Clear();
             foreach (var kvp in _map.Rooms!)
             {
-                nodes.Add(GetOrCreateNode(RdtId.Parse(kvp.Key)));
+                var node = GetOrCreateNode(RdtId.Parse(kvp.Key));
+                foreach (var edge in node.Edges)
+                {
+                    edge.Node = null;
+                }
+                _nodes.Add(node);
             }
 
-            foreach (var node in nodes)
+            // Create start and end
+            var graph = new PlayGraph();
+            if (_config.Scenario == 0)
             {
-                var rdt = _gameData.GetRdt(node.RdtId);
-                if (rdt != null)
-                {
-                    foreach (var door in rdt.Doors)
-                    {
-                        // Get a random door to go to
-                        PlayNode targetNode;
-                        do
-                        {
-                            var nodeIndex = _rng.Next(0, nodes.Count);
-                            targetNode = nodes[nodeIndex];
-                        }
-                        while (targetNode.Doors.Length == 0);
-                        var doorIndex = _rng.Next(0, targetNode.Doors.Length);
-                        var targetDoor = targetNode.Doors[doorIndex];
+                graph.Start = GetOrCreateNode(RdtId.Parse(_map.StartA!));
+                graph.End = GetOrCreateNode(RdtId.Parse(_map.EndA!));
+            }
+            else
+            {
+                graph.Start = GetOrCreateNode(RdtId.Parse(_map.StartB!));
+                graph.End = GetOrCreateNode(RdtId.Parse(_map.EndB!));
+            }
 
-                        rdt.SetDoorTarget(door.Id, targetDoor);
+            // 
+            DoorUp(graph.Start);
+
+            // foreach (var node in _nodes)
+            // {
+            //     var rdt = _gameData.GetRdt(node.RdtId);
+            //     if (rdt != null)
+            //     {
+            //         foreach (var door in rdt.Doors)
+            //         {
+            //             // Get a random door to go to
+            //             PlayNode targetNode;
+            //             do
+            //             {
+            //                 var nodeIndex = _rng.Next(0, _nodes.Count);
+            //                 targetNode = nodes[nodeIndex];
+            //             }
+            //             while (targetNode.Doors.Length == 0);
+            //             var doorIndex = _rng.Next(0, targetNode.Doors.Length);
+            //             var targetDoor = targetNode.Doors[doorIndex];
+            // 
+            //             rdt.SetDoorTarget(door.Id, targetDoor.DestinationForThisRoom);
+            //         }
+            //     }
+            // }
+        }
+
+        private void DoorUp(PlayNode node)
+        {
+            _visitedRooms.Add(node);
+
+            var unconnectedDoors = GetUnconnectedDoorCount();
+            foreach (var edge in node.Edges)
+            {
+                if (edge.Node == null)
+                {
+                    // If we only have one door left, make sure we don't choose an existing room or a leaf
+                    var newRoomWithNoLeaves = unconnectedDoors <= 1;
+                    var targetNode = GetRandomRoom(newRoomWithNoLeaves);
+
+                    // Connect up
+                    ConnectDoor(node, edge, targetNode, targetNode.Edges.First(x => x.Node == null));
+                }
+            }
+        }
+
+        private void ConnectDoor(PlayNode a, PlayEdge aEdge, PlayNode b, PlayEdge bEdge)
+        {
+            aEdge.Node = b;
+            bEdge.Node = a;
+
+            var aRdt = _gameData.GetRdt(a.RdtId)!;
+            var bRdt = _gameData.GetRdt(b.RdtId)!;
+
+            var rdtDoorA = aRdt.Doors.First(x => x.Target == aEdge.OriginalTargetRdt);
+
+            // var aDoorL = a.Doors.First(x => x.Target == aEdge.OriginalTargetRdt);
+            // var bDoorL = b.Doors.First(x => x.Target == a.RdtId);
+            // 
+            // aRdt.SetDoorTarget(rdtDoorA.Id, b.Doors);
+        }
+
+        private PlayNode GetRandomRoom(bool newRoomWithNoLeaves)
+        {
+            PlayNode[] pool;
+            if (newRoomWithNoLeaves)
+            {
+                pool = _nodes
+                    .Where(x => !_visitedRooms.Contains(x) && x.Edges.Count > 1)
+                    .Where(x => x.Edges.Any(x => x.Node == null))
+                    .ToArray();
+            }
+            else
+            {
+                pool = _nodes
+                    .Where(x => x.Edges.Any(x => x.Node == null))
+                    .ToArray();
+            }
+            var index = _rng.Next(0, pool.Length);
+            return pool[index];
+        }
+
+        private int GetUnconnectedDoorCount()
+        {
+            var result = 0;
+            foreach (var nodes in _visitedRooms)
+            {
+                foreach (var edge in nodes.Edges)
+                {
+                    if (edge.Node == null)
+                    {
+                        result++;
                     }
                 }
             }
+            return result;
         }
 
         public PlayGraph Create()
@@ -208,7 +304,7 @@ namespace IntelOrca.Biohazard
 
                 foreach (var edge in node.Edges)
                 {
-                    if (seen.Contains(edge.Node.RdtId))
+                    if (seen.Contains(edge.Node!.RdtId))
                         continue;
                     if (edge.Locked)
                         continue;
@@ -684,7 +780,7 @@ namespace IntelOrca.Biohazard
                 .ToArray();
 
             node = new PlayNode(rdtId);
-            node.Doors = GetAllDoorsToRoom(rdtId);
+            node.Doors = GetAllDoorsToRoom(rdt);
             node.Items = items;
             _nodeMap.Add(rdtId, node);
 
@@ -774,33 +870,39 @@ namespace IntelOrca.Biohazard
             return null;
         }
 
-        private DoorAotSeOpcode[] GetAllDoorsToRoom(RdtId room)
+        private PlayNodeDoor[] GetAllDoorsToRoom(Rdt room)
         {
-            var doors = new List<DoorAotSeOpcode>();
+            var nodeDoors = new List<PlayNodeDoor>();
             foreach (var rdt in _gameData.Rdts)
             {
                 foreach (var door in rdt.Doors)
                 {
-                    if (door.Stage == room.Stage && door.Room == room.Room)
+                    if (door.Target == room.RdtId)
                     {
-                        if (!doors.Any(x => IsDoorTheSame(x, door)))
+                        var dd = DoorDestination.FromOpcode(door);
+                        if (!nodeDoors.Any(x => IsDoorTheSame(x.DestinationForThisRoom, dd)))
                         {
-                            doors.Add(door);
+                            var id = room.Doors.FirstOrDefault(x => x.Target == rdt.RdtId)?.Id;
+                            nodeDoors.Add(new PlayNodeDoor()
+                            {
+                                Id = id,
+                                DestinationForThisRoom = dd
+                            });
                         }
                     }
                 }
             }
-            return doors.ToArray();
+            return nodeDoors.ToArray();
         }
 
-        private static bool IsDoorTheSame(DoorAotSeOpcode a, DoorAotSeOpcode b)
+        private static bool IsDoorTheSame(DoorDestination a, DoorDestination b)
         {
             if (a.Camera != b.Camera)
                 return false;
 
-            var dx = a.NextX - b.NextX;
-            var dy = a.NextY - b.NextY;
-            var dz = a.NextZ - b.NextZ;
+            var dx = a.X - b.X;
+            var dy = a.Y - b.Y;
+            var dz = a.Z - b.Z;
             var d = Math.Sqrt((dx * dx) + (dy * dy) + (dz * dz));
             return d < 1024;
         }

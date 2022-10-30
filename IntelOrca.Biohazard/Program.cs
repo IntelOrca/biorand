@@ -105,9 +105,10 @@ namespace IntelOrca.Biohazard
             if (config.RandomItems)
             {
                 var factory = new PlayGraphFactory(logger, config, gameData, map, randomItems);
-                // CheckRoomItems(gameData);
-                // factory.CreateDoorRando();
-                factory.Create();
+                if (config.RandomDoors)
+                    factory.CreateDoorRando();
+                else
+                    factory.Create();
                 factory.SetItems();
             }
 

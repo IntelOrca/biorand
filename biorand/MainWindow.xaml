@@ -46,7 +46,7 @@
             </GroupBox>
             <GroupBox Header="General">
                 <StackPanel>
-                    <CheckBox x:Name="chkRngDoors" IsEnabled="false">Randomize doors (coming soon)</CheckBox>
+                    <CheckBox x:Name="chkRngDoors">Randomize doors</CheckBox>
                     <CheckBox x:Name="chkRngChars">Randomize characters, voice</CheckBox>
                     <CheckBox x:Name="chkRngBgm">Randomize background music</CheckBox>
                 </StackPanel>

@@ -32,6 +32,16 @@ namespace IntelOrca.Biohazard
         public byte DoorKey;
         public byte Unknown1F;
 
+        public RdtId Target
+        {
+            get => new RdtId(Stage, Room);
+            set
+            {
+                Stage = (byte)value.Stage;
+                Room = (byte)value.Room;
+            }
+        }
+
         public static DoorAotSeOpcode Read(BinaryReader br, int offset)
         {
             return new DoorAotSeOpcode()
