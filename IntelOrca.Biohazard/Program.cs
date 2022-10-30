@@ -13,24 +13,26 @@ namespace IntelOrca.Biohazard
         private static Map? g_map;
 #endif
 
+#if DEBUG
         public static void Main(string[] args)
         {
             var re2Path = @"F:\games\re2";
             var originalDataPath = Path.Combine(re2Path, "data");
-            var modPath = Path.Combine(re2Path, @"mod_rando");
+            var modPath = Path.Combine(re2Path, @"mod_biorand");
 
             var gameData = GameDataReader.Read(originalDataPath, modPath, 0);
             DumpRdtList(gameData, @"M:\git\rer\docs\rdt_leon.txt");
-            DumpScripts(gameData, @"F:\games\re2\mod_rando\scripts");
+            DumpScripts(gameData, @"F:\games\re2\mod_biorand\scripts");
 
             gameData = GameDataReader.Read(originalDataPath, modPath, 1);
             DumpRdtList(gameData, @"M:\git\rer\docs\rdt_claire.txt");
         }
+#endif
 
         public static void Generate(RandoConfig config, string re2Path)
         {
             var originalDataPath = Path.Combine(re2Path, "data");
-            var modPath = Path.Combine(re2Path, @"mod_rando");
+            var modPath = Path.Combine(re2Path, @"mod_biorand");
 
             if (Directory.Exists(modPath))
             {
