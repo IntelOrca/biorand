@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace IntelOrca.Biohazard
 {
@@ -35,15 +36,32 @@ namespace IntelOrca.Biohazard
         public int? DoorId { get; }
         public DoorEntrance? Entrance { get; set; }
 
-        public PlayEdge(PlayNode node, bool locked, bool noReturn, ushort[] requires, int? doorId, DoorEntrance? entrance)
+        public PlayEdge(PlayNode node, bool locked, bool noReturn, ushort[]? requires, int? doorId, DoorEntrance? entrance)
         {
             OriginalTargetRdt = node.RdtId;
             Node = node;
             Locked = locked;
             NoReturn = noReturn;
-            Requires = requires;
+            Requires = requires ?? new ushort[0];
             DoorId = doorId;
             Entrance = entrance;
+        }
+
+        public string RequiresString
+        {
+            get
+            {
+                var s = "";
+                if (Locked)
+                {
+                    s += "(locked) ";
+                }
+                if (Requires != null && Requires.Length != 0)
+                {
+                    s += "[" + string.Join(", ", Requires.Select(x => Items.GetItemName(x))) + "] ";
+                }
+                return s.Trim();
+            }
         }
 
         public override string ToString()
@@ -51,16 +69,7 @@ namespace IntelOrca.Biohazard
             if (Node == null)
                 return "(unconnected)";
 
-            var s = Node.RdtId.ToString();
-            if (Locked)
-            {
-                s += " (locked)";
-            }
-            if (Requires != null && Requires.Length != 0)
-            {
-                s += " [" + string.Join(", ", Requires) + "]";
-            }
-            return s;
+            return string.Join(" ", Node.RdtId, RequiresString);
         }
     }
 }
