@@ -16,7 +16,6 @@ namespace IntelOrca.Biohazard
         public Dictionary<byte, RdtItemId> LinkedItems { get; set; } = new Dictionary<byte, RdtItemId>();
         public ushort[] Requires { get; set; } = Array.Empty<ushort>();
         public List<PlayEdge> Edges { get; } = new List<PlayEdge>();
-        public PlayNodeDoor[] Doors { get; set; } = Array.Empty<PlayNodeDoor>();
 
         public PlayNode(RdtId rdtId)
         {
@@ -33,14 +32,18 @@ namespace IntelOrca.Biohazard
         public bool Locked { get; set; }
         public bool NoReturn { get; set; }
         public ushort[] Requires { get; }
+        public int? DoorId { get; }
+        public DoorEntrance? Entrance { get; set; }
 
-        public PlayEdge(PlayNode node, bool locked, bool noReturn, ushort[] requires)
+        public PlayEdge(PlayNode node, bool locked, bool noReturn, ushort[] requires, int? doorId, DoorEntrance? entrance)
         {
             OriginalTargetRdt = node.RdtId;
             Node = node;
             Locked = locked;
             NoReturn = noReturn;
             Requires = requires;
+            DoorId = doorId;
+            Entrance = entrance;
         }
 
         public override string ToString()
@@ -53,7 +56,7 @@ namespace IntelOrca.Biohazard
             {
                 s += " (locked)";
             }
-            if (Requires.Length != 0)
+            if (Requires != null && Requires.Length != 0)
             {
                 s += " [" + string.Join(", ", Requires) + "]";
             }

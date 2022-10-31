@@ -25,7 +25,10 @@ namespace IntelOrca.Biohazard
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
         private HashSet<RdtItemId> _visitedItems = new HashSet<RdtItemId>();
         private Rng _rng;
-        private bool _debugLogging = false;
+        private bool _debugLogging = true;
+
+        private PlayNode _endNode;
+        private bool _searchForOriginalKeyLocation;
 
         public PlayGraphFactory(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng random)
         {
@@ -65,50 +68,44 @@ namespace IntelOrca.Biohazard
                 graph.End = GetOrCreateNode(RdtId.Parse(_map.EndB!));
             }
 
-            // 
-            DoorUp(graph.Start);
+            _visitedRooms.Add(graph.Start);
+            _endNode = graph.End;
+            while (!ConnectEdges())
+            {
+            }
 
-            // foreach (var node in _nodes)
-            // {
-            //     var rdt = _gameData.GetRdt(node.RdtId);
-            //     if (rdt != null)
-            //     {
-            //         foreach (var door in rdt.Doors)
-            //         {
-            //             // Get a random door to go to
-            //             PlayNode targetNode;
-            //             do
-            //             {
-            //                 var nodeIndex = _rng.Next(0, _nodes.Count);
-            //                 targetNode = nodes[nodeIndex];
-            //             }
-            //             while (targetNode.Doors.Length == 0);
-            //             var doorIndex = _rng.Next(0, targetNode.Doors.Length);
-            //             var targetDoor = targetNode.Doors[doorIndex];
-            // 
-            //             rdt.SetDoorTarget(door.Id, targetDoor.DestinationForThisRoom);
-            //         }
-            //     }
-            // }
+            // RandomiseItems(graph);
+        }
+
+        private bool ConnectEdges()
+        {
+            var unfinishedNodes = _visitedRooms.Where(x => x.Edges.Any(y => y.Node == null)).Shuffle(_rng).ToArray();
+            if (unfinishedNodes.Length == 0)
+                return true;
+
+            DoorUp(unfinishedNodes[0]);
+            return _visitedRooms.Contains(_endNode);
         }
 
         private void DoorUp(PlayNode node)
         {
-            _visitedRooms.Add(node);
-
             var unconnectedDoors = GetUnconnectedDoorCount();
-            foreach (var edge in node.Edges)
-            {
-                if (edge.Node == null)
-                {
-                    // If we only have one door left, make sure we don't choose an existing room or a leaf
-                    var newRoomWithNoLeaves = unconnectedDoors <= 1;
-                    var targetNode = GetRandomRoom(newRoomWithNoLeaves);
+            var unconnectedEdges = node.Edges.Where(x => x.Node == null).Shuffle(_rng).ToArray();
+            if (unconnectedEdges.Length == 0)
+                throw new Exception();
 
-                    // Connect up
-                    ConnectDoor(node, edge, targetNode, targetNode.Edges.First(x => x.Node == null));
-                }
-            }
+            var edge = unconnectedEdges[0];
+
+            // If we only have one door left, make sure we don't choose an existing room or a leaf
+            var newRoomWithNoLeaves = unconnectedDoors <= 2;
+            var targetNode = GetRandomRoom(newRoomWithNoLeaves);
+            if (targetNode == null)
+                targetNode = _endNode;
+
+            _visitedRooms.Add(targetNode);
+
+            // Connect up
+            ConnectDoor(node, edge, targetNode, targetNode.Edges.First(x => x.Node == null));
         }
 
         private void ConnectDoor(PlayNode a, PlayEdge aEdge, PlayNode b, PlayEdge bEdge)
@@ -116,18 +113,19 @@ namespace IntelOrca.Biohazard
             aEdge.Node = b;
             bEdge.Node = a;
 
+            var aDoorId = aEdge.DoorId.Value;
+            var bDoorId = bEdge.DoorId.Value;
+
             var aRdt = _gameData.GetRdt(a.RdtId)!;
             var bRdt = _gameData.GetRdt(b.RdtId)!;
 
-            var rdtDoorA = aRdt.Doors.First(x => x.Target == aEdge.OriginalTargetRdt);
+            aRdt.SetDoorTarget(aDoorId, b.RdtId, bEdge.Entrance.Value);
+            bRdt.SetDoorTarget(bDoorId, a.RdtId, aEdge.Entrance.Value);
 
-            // var aDoorL = a.Doors.First(x => x.Target == aEdge.OriginalTargetRdt);
-            // var bDoorL = b.Doors.First(x => x.Target == a.RdtId);
-            // 
-            // aRdt.SetDoorTarget(rdtDoorA.Id, b.Doors);
+            _logger.WriteLine($"Connected {a.RdtId}:{aDoorId} to {b.RdtId}:{bDoorId}");
         }
 
-        private PlayNode GetRandomRoom(bool newRoomWithNoLeaves)
+        private PlayNode? GetRandomRoom(bool newRoomWithNoLeaves)
         {
             PlayNode[] pool;
             if (newRoomWithNoLeaves)
@@ -135,14 +133,26 @@ namespace IntelOrca.Biohazard
                 pool = _nodes
                     .Where(x => !_visitedRooms.Contains(x) && x.Edges.Count > 1)
                     .Where(x => x.Edges.Any(x => x.Node == null))
+                    .Where(x => x.Edges.All(x => x.DoorId != null && x.Entrance != null))
+                    .Where(x => x != _endNode)
+                    .Where(x => !x.Edges.Any(x => x.NoReturn))
+                    .Where(x => x.RdtId.Stage == 0)
                     .ToArray();
             }
             else
             {
                 pool = _nodes
                     .Where(x => x.Edges.Any(x => x.Node == null))
+                    .Where(x => x.Edges.All(x => x.DoorId != null && x.Entrance != null))
+                    .Where(x => x != _endNode)
+                    .Where(x => !x.Edges.Any(x => x.NoReturn))
+                    .Where(x => x.RdtId.Stage == 0)
                     .ToArray();
             }
+
+            if (pool.Length == 0)
+                return null;
+
             var index = _rng.Next(0, pool.Length);
             return pool[index];
         }
@@ -165,19 +175,10 @@ namespace IntelOrca.Biohazard
 
         public PlayGraph Create()
         {
-            _logger.WriteHeading("Randomizing Items:");
-            _logger.WriteLine("Placing key items:");
-
             // Create all nodes
             foreach (var kvp in _map.Rooms!)
             {
                 _nodes.Add(GetOrCreateNode(RdtId.Parse(kvp.Key)));
-            }
-
-            // Leon starts with a lighter
-            if (_config.Player == 0)
-            {
-                _haveItems.Add((ushort)ItemType.Lighter);
             }
 
             var graph = new PlayGraph();
@@ -192,7 +193,23 @@ namespace IntelOrca.Biohazard
                 graph.End = GetOrCreateNode(RdtId.Parse(_map.EndB!));
             }
 
+            RandomiseItems(graph);
+            return graph;
+        }
+
+        private void RandomiseItems(PlayGraph graph)
+        {
+            _logger.WriteHeading("Randomizing Items:");
+            _logger.WriteLine("Placing key items:");
+
+            // Leon starts with a lighter
+            if (_config.Player == 0)
+            {
+                _haveItems.Add((ushort)ItemType.Lighter);
+            }
+
             var checkpoint = graph.Start;
+            _visitedRooms.Clear();
             while (!_visitedRooms.Contains(graph.End) || _requiredItems.Count != 0)
             {
                 PlaceKeyItem(_config.AlternativeRoutes);
@@ -222,7 +239,6 @@ namespace IntelOrca.Biohazard
             }
 
             SetLinkedItems();
-            return graph;
         }
 
         private static Map LoadJsonMap(string path)
@@ -453,42 +469,47 @@ namespace IntelOrca.Biohazard
 
             var itemEntry = _currentPool[index.Value];
 
-            // Find original location of key item
-            var originalIndex = _currentPool.FindIndex(x => x.Type == req);
-            if (originalIndex == -1 && alternativeRoute)
+            if (_searchForOriginalKeyLocation)
             {
-                // Key must be in a later area, find it
-                foreach (var node in _nodes)
+                // Find original location of key item
+                var originalIndex = _currentPool.FindIndex(x => x.Type == req);
+                if (originalIndex == -1 && alternativeRoute)
                 {
-                    foreach (var item in node.Items)
+                    // Key must be in a later area, find it
+                    foreach (var node in _nodes)
                     {
-                        if (item.Type == req && item.Priority != ItemPriority.Fixed && !_visitedItems.Contains((RdtItemId)item.RdtItemId))
+                        foreach (var item in node.Items)
                         {
-                            _futurePool.Add(item);
-                            _currentPool.Add(item);
-                            if (_currentPool.DistinctBy(x => x.RdtItemId).Count() != _currentPool.Count())
-                                throw new Exception();
-                            _visitedItems.Add(item.RdtItemId);
-                            originalIndex = _currentPool.Count - 1;
-                            break;
+                            if (item.Type == req && item.Priority != ItemPriority.Fixed && !_visitedItems.Contains((RdtItemId)item.RdtItemId))
+                            {
+                                _futurePool.Add(item);
+                                _currentPool.Add(item);
+                                if (_currentPool.DistinctBy(x => x.RdtItemId).Count() != _currentPool.Count())
+                                    throw new Exception();
+                                _visitedItems.Add(item.RdtItemId);
+                                originalIndex = _currentPool.Count - 1;
+                                break;
+                            }
                         }
                     }
                 }
-            }
-            if (originalIndex == -1)
-            {
-                // Check original key was in a previous checkpoint area (edge case for Weapon Box Key)
-                var shuffleIndex = _shufflePool.FindIndex(x => x.Type == req);
-                if (shuffleIndex != -1)
+                if (originalIndex == -1)
                 {
-                    var item = _shufflePool[shuffleIndex];
-                    _shufflePool.RemoveAt(shuffleIndex);
-                    _currentPool.Add(item);
-                    originalIndex = _currentPool.Count - 1;
+                    // Check original key was in a previous checkpoint area (edge case for Weapon Box Key)
+                    var shuffleIndex = _shufflePool.FindIndex(x => x.Type == req);
+                    if (shuffleIndex != -1)
+                    {
+                        var item = _shufflePool[shuffleIndex];
+                        _shufflePool.RemoveAt(shuffleIndex);
+                        _currentPool.Add(item);
+                        originalIndex = _currentPool.Count - 1;
+                    }
                 }
-            }
-            if (originalIndex != -1)
-            {
+                if (originalIndex == -1)
+                {
+                    return false;
+                }
+
                 // Check original key can actually be moved
                 var originalItemEntry = _currentPool[originalIndex];
                 if (originalItemEntry.Priority == ItemPriority.Fixed)
@@ -506,7 +527,7 @@ namespace IntelOrca.Biohazard
             }
             else
             {
-                return false;
+                itemEntry.Amount = 1;
             }
             itemEntry.Type = req;
 
@@ -780,7 +801,6 @@ namespace IntelOrca.Biohazard
                 .ToArray();
 
             node = new PlayNode(rdtId);
-            node.Doors = GetAllDoorsToRoom(rdt);
             node.Items = items;
             _nodeMap.Add(rdtId, node);
 
@@ -799,8 +819,18 @@ namespace IntelOrca.Biohazard
                     if (door.Scenario != null && door.Scenario != _config.Scenario)
                         continue;
 
-                    var edgeNode = GetOrCreateNode(RdtId.Parse(door.Target!));
-                    var edge = new PlayEdge(edgeNode, door.Locked, door.NoReturn, door.Requires!);
+                    DoorEntrance? entrance = null;
+                    var target = RdtId.Parse(door.Target!);
+                    var doorId = rdt.Doors.FirstOrDefault(x => x.Target == target)?.Id;
+                    var targetRdt = _gameData.GetRdt(target)!;
+                    var targetExit = targetRdt.Doors.FirstOrDefault(x => x.Target == rdtId);
+                    if (targetExit != null)
+                    {
+                        entrance = DoorEntrance.FromOpcode(targetExit);
+                    }
+
+                    var edgeNode = GetOrCreateNode(target);
+                    var edge = new PlayEdge(edgeNode, door.Locked, door.NoReturn, door.Requires!, doorId, entrance);
                     node.Edges.Add(edge);
                 }
             }
@@ -870,41 +900,41 @@ namespace IntelOrca.Biohazard
             return null;
         }
 
-        private PlayNodeDoor[] GetAllDoorsToRoom(Rdt room)
-        {
-            var nodeDoors = new List<PlayNodeDoor>();
-            foreach (var rdt in _gameData.Rdts)
-            {
-                foreach (var door in rdt.Doors)
-                {
-                    if (door.Target == room.RdtId)
-                    {
-                        var dd = DoorDestination.FromOpcode(door);
-                        if (!nodeDoors.Any(x => IsDoorTheSame(x.DestinationForThisRoom, dd)))
-                        {
-                            var id = room.Doors.FirstOrDefault(x => x.Target == rdt.RdtId)?.Id;
-                            nodeDoors.Add(new PlayNodeDoor()
-                            {
-                                Id = id,
-                                DestinationForThisRoom = dd
-                            });
-                        }
-                    }
-                }
-            }
-            return nodeDoors.ToArray();
-        }
+        // private PlayNodeEntrance[] GetRoomEntrances(Rdt room)
+        // {
+        //     var nodeDoors = new List<PlayNodeEntrance>();
+        //     foreach (var rdt in _gameData.Rdts)
+        //     {
+        //         foreach (var door in rdt.Doors)
+        //         {
+        //             if (door.Target == room.RdtId)
+        //             {
+        //                 var dd = DoorDestination.FromOpcode(door);
+        //                 if (!nodeDoors.Any(x => IsDoorTheSame(x.DestinationForThisRoom, dd)))
+        //                 {
+        //                     var id = room.Doors.FirstOrDefault(x => x.Target == rdt.RdtId)?.Id;
+        //                     nodeDoors.Add(new PlayNodeEntrance()
+        //                     {
+        //                         Id = id,
+        //                         DestinationForThisRoom = dd
+        //                     });
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     return nodeDoors.ToArray();
+        // }
 
-        private static bool IsDoorTheSame(DoorDestination a, DoorDestination b)
-        {
-            if (a.Camera != b.Camera)
-                return false;
-
-            var dx = a.X - b.X;
-            var dy = a.Y - b.Y;
-            var dz = a.Z - b.Z;
-            var d = Math.Sqrt((dx * dx) + (dy * dy) + (dz * dz));
-            return d < 1024;
-        }
+        // private static bool IsDoorTheSame(DoorDestination a, DoorDestination b)
+        // {
+        //     if (a.Camera != b.Camera)
+        //         return false;
+        // 
+        //     var dx = a.X - b.X;
+        //     var dy = a.Y - b.Y;
+        //     var dz = a.Z - b.Z;
+        //     var d = Math.Sqrt((dx * dx) + (dy * dy) + (dz * dz));
+        //     return d < 1024;
+        // }
     }
 }

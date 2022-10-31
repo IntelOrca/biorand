@@ -34,7 +34,7 @@ namespace IntelOrca.Biohazard
 
         public IEnumerable<T> EnumerateOpcodes<T>(RandoConfig config) => AstEnumerator<T>.Enumerate(Ast!, config);
 
-        public void SetDoorTarget(int id, DoorDestination destination)
+        public void SetDoorTarget(int id, RdtId target, DoorEntrance destination)
         {
             foreach (var door in Doors)
             {
@@ -44,8 +44,9 @@ namespace IntelOrca.Biohazard
                     door.NextY = destination.Y;
                     door.NextZ = destination.Z;
                     door.NextD = destination.D;
-                    door.Target = destination.RdtId;
+                    door.Target = target;
                     door.Camera = destination.Camera;
+                    door.Floor = destination.Floor;
                 }
             }
         }

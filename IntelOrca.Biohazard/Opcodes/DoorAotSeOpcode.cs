@@ -24,7 +24,7 @@ namespace IntelOrca.Biohazard
         public byte Stage;
         public byte Room;
         public byte Camera;
-        public byte Unknown19;
+        public byte Floor;
         public byte DoorType;
         public byte DoorFlag;
         public byte Unknown1C;
@@ -61,7 +61,7 @@ namespace IntelOrca.Biohazard
                 Stage = br.ReadByte(),
                 Room = br.ReadByte(),
                 Camera = br.ReadByte(),
-                Unknown19 = br.ReadByte(),
+                Floor = br.ReadByte(),
                 DoorType = br.ReadByte(),
                 DoorFlag = br.ReadByte(),
                 Unknown1C = br.ReadByte(),
@@ -88,7 +88,7 @@ namespace IntelOrca.Biohazard
             bw.Write(Stage);
             bw.Write(Room);
             bw.Write(Camera);
-            bw.Write(Unknown19);
+            bw.Write(Floor);
             bw.Write(DoorType);
             bw.Write(DoorFlag);
             bw.Write(Unknown1C);
