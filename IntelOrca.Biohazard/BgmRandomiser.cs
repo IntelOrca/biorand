@@ -25,15 +25,41 @@ namespace IntelOrca.Biohazard
         {
             _logger.WriteHeading("Shuffling BGM:");
             var bgmList = GetBtmList();
-            Swap(bgmList.Creepy!, bgmList.Creepy!.Shuffle(random));
-            Swap(bgmList.Calm!, bgmList.Calm!.Shuffle(random));
-            Swap(bgmList.Danger!, bgmList.Danger!.Shuffle(random));
-            Swap(bgmList.Ambient!, bgmList.Creepy!.Shuffle(random));
-            Swap(bgmList.Alarm!, bgmList.Creepy!.Shuffle(random));
+            Swap(random, bgmList.Creepy!, bgmList.Creepy!.Shuffle(random));
+            Swap(random, bgmList.Calm!, bgmList.Calm!.Shuffle(random));
+            Swap(random, bgmList.Danger!, bgmList.Danger!.Shuffle(random));
+            Swap(random, bgmList.Ambient!, bgmList.Creepy!.Shuffle(random));
+            Swap(random, bgmList.Alarm!, bgmList.Creepy!.Shuffle(random));
         }
 
-        private void Swap(string[] dstList, string[] srcList)
+        private void RandomiseRE1(Rng random, string[] dstList)
         {
+            var files = Directory.GetFiles(@"F:\games\re1\JPN\sound", "bgm_*.wav", SearchOption.AllDirectories);
+            files = files.Shuffle(random);
+
+            var dstDir = Path.Combine(RngPath, @"Common\Sound\BGM");
+            Directory.CreateDirectory(dstDir);
+            for (int i = 0; i < dstList.Length; i++)
+            {
+                var src = files[i % files.Length];
+                var dst = Path.Combine(dstDir, dstList[i] + ".sap");
+
+                var data = File.ReadAllBytes(src);
+                using (var fs = new FileStream(dst, FileMode.Create, FileAccess.Write))
+                {
+                    var bw = new BinaryWriter(fs);
+                    bw.Write((long)1);
+                    bw.Write(data);
+                }
+                _logger.WriteLine($"Setting {dstList[i]} to {src}");
+            }
+        }
+
+        private void Swap(Rng random, string[] dstList, string[] srcList)
+        {
+            RandomiseRE1(random, dstList);
+            return;
+
             var srcDir = Path.Combine(GamePath, @"Common\Sound\BGM");
             var dstDir = Path.Combine(RngPath, @"Common\Sound\BGM");
             Directory.CreateDirectory(dstDir);
@@ -77,7 +103,7 @@ namespace IntelOrca.Biohazard
         private static string GetBgmJson()
         {
 #if DEBUG
-            return File.ReadAllText(@"M:\git\rer\rer\data\bgm.json");
+            return File.ReadAllText(@"..\..\..\..\IntelOrca.BioHazard\data\bgm.json");
 #else
             return Resources.bgm;
 #endif
