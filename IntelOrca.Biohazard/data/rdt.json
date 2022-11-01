@@ -269,7 +269,8 @@
     "110": {
       "doors": [
         {
-          "target": "200"
+          "target": "200",
+          "randomize": false
         },
         {
           "target": "10F"
@@ -489,6 +490,11 @@
       "doors": [
         {
           "target": "103"
+        },
+        {
+          "target": "110",
+          "lock": "gate",
+          "randomize": false
         },
         {
           "target": "202",

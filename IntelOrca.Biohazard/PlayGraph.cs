@@ -46,6 +46,7 @@ namespace IntelOrca.Biohazard
         public int? DoorId { get; }
         public DoorEntrance? Entrance { get; set; }
         public bool PreventLoopback { get; set; }
+        public bool Randomize { get; set; } = true;
 
         public PlayEdge(PlayNode node, bool noReturn, ushort[]? requires, int? doorId, DoorEntrance? entrance, bool preventLoopback)
         {

@@ -38,6 +38,7 @@ namespace IntelOrca.Biohazard
     public class MapRoomDoor
     {
         public string? Target { get; set; }
+        public bool? Randomize { get; set; }
         public string? Lock { get; set; }
         public bool NoReturn { get; set; }
         public ushort[]? Requires { get; set; }

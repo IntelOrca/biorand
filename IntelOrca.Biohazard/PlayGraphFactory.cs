@@ -109,7 +109,7 @@ namespace IntelOrca.Biohazard
 
         private bool ConnectEdges()
         {
-            var unfinishedNodes = _visitedRooms.Where(x => x.Edges.Any(y => y.Node == null && y.Lock != LockKind.Always)).Shuffle(_rng).ToArray();
+            var unfinishedNodes = _visitedRooms.Where(x => x.Edges.Any(y => y.Node == null && (y.Lock == LockKind.None || y.Lock == LockKind.Side))).Shuffle(_rng).ToArray();
             if (unfinishedNodes.Length == 0)
                 return false;
 
@@ -208,6 +208,10 @@ namespace IntelOrca.Biohazard
             if (edge.Lock == LockKind.Always)
                 return false;
 
+            // Do not connect a gate edge up, other side should be done first
+            if (edge.Lock == LockKind.Gate)
+                return false;
+
             // Do not connect this node up yet until we have visited all required rooms
             if (!edge.RequiresRoom.All(x => _visitedRooms.Contains(x)))
                 return false;
@@ -225,16 +229,20 @@ namespace IntelOrca.Biohazard
             if (exitEdge.Node != null)
                 return false;
 
+            // Fixed node connection
+            if (!edge.Randomize || !exitEdge.Randomize)
+                return edge.OriginalTargetRdt == exitNode.RdtId && exitEdge.OriginalTargetRdt == node.RdtId;
+
             // We do not want to connect to the end node
             if (exitNode == _endNode)
                 return false;
 
-            // Just do stage 0 for now
-            if (exitNode.RdtId.Stage != 0)
+            // Just do stage 1** and 200 for now
+            if (exitNode.RdtId.Stage != 0 && !(exitNode.RdtId.Stage == 1 && exitNode.RdtId.Room == 0))
                 return false;
 
             // For now, ignore any rooms with one way door setups
-            if (exitNode.Edges.Any(x => x.DoorId == null || x.Entrance == null))
+            if (exitNode.Edges.Any(x => x.Entrance == null))
                 return false;
 
             // Don't connect to a door with a key requirement on the other side
@@ -298,7 +306,7 @@ namespace IntelOrca.Biohazard
             {
                 foreach (var edge in nodes.Edges)
                 {
-                    if (edge.Node == null)
+                    if (edge.Node == null && edge.Lock != LockKind.Always && edge.Randomize)
                     {
                         _numUnconnectedEdges++;
                         if (edge.Lock == LockKind.None)
@@ -970,6 +978,7 @@ namespace IntelOrca.Biohazard
 
                     var edgeNode = GetOrCreateNode(target);
                     var edge = new PlayEdge(edgeNode, door.NoReturn, door.Requires, doorId, entrance, door.PreventLoopback);
+                    edge.Randomize = door.Randomize ?? true;
                     if (door.Lock != null)
                     {
                         edge.Lock = (LockKind)Enum.Parse(typeof(LockKind), door.Lock, true);
