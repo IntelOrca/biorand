@@ -309,7 +309,7 @@ namespace IntelOrca.Biohazard
                     if (edge.Node == null && edge.Lock != LockKind.Always && edge.Randomize)
                     {
                         _numUnconnectedEdges++;
-                        if (edge.Lock == LockKind.None)
+                        if (ValidateEntranceNode(nodes, edge))
                         {
                             if (edge.Requires.Length != 0)
                                 _numKeyEdges++;
