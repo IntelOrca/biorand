@@ -314,6 +314,13 @@
           "target": "112"
         }
       ],
+      "items": [
+        {
+          "id": 4,
+          "requires": [ 31 ],
+          "player": 0
+        }
+      ],
       "enemies": [
         {
           "excludeTypes": [ 42, 58 ]
