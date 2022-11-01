@@ -51,6 +51,18 @@ namespace IntelOrca.Biohazard
             }
         }
 
+        public void RemoveDoorLock(int id)
+        {
+            foreach (var door in Doors)
+            {
+                if (door.Id == id)
+                {
+                    door.DoorLockFlag = 0;
+                    door.DoorKey = 0;
+                }
+            }
+        }
+
         public void SetItem(byte id, ushort type, ushort amount)
         {
             foreach (var item in Items)

@@ -7,7 +7,8 @@
     "100": {
       "doors": [
         {
-          "target": "101"
+          "target": "101",
+          "noReturn": true
         }
       ],
       "enemies": [
@@ -19,7 +20,8 @@
     "101": {
       "doors": [
         {
-          "target": "100"
+          "target": "100",
+          "lock": "always"
         },
         {
           "target": "102"
@@ -34,7 +36,8 @@
     "102": {
       "doors": [
         {
-          "target": "101"
+          "target": "101",
+          "lock": "gate"
         },
         {
           "target": "118"
@@ -51,7 +54,7 @@
       "doors": [
         {
           "target": "11B",
-          "locked": true
+          "lock": "always"
         },
         {
           "target": "200"
@@ -80,6 +83,9 @@
     "105": {
       "doors": [
         {
+          "target": "104"
+        },
+        {
           "target": "106",
           "noReturn": true,
           "requires": [
@@ -97,6 +103,10 @@
     },
     "106": {
       "doors": [
+        {
+          "target": "105",
+          "lock": "always"
+        },
         {
           "target": "107"
         }
@@ -165,17 +175,23 @@
         },
         {
           "target": "10B",
-          "requires": [ 50 ]
+          "requires": [ 50 ],
+          "requiresRoom": [ "108" ],
+          "preventLoopback": true
         },
         {
           "target": "21B",
           "requires": [ 50 ],
+          "requiresRoom": [ "108", "30B" ],
+          "preventLoopback": true,
           "player": 0,
           "scenario": 1
         },
         {
           "target": "21B",
           "requires": [ 50, 64, 65 ],
+          "requiresRoom": [ "108" ],
+          "preventLoopback": true,
           "player": 1
         }
       ],
@@ -260,12 +276,7 @@
         },
         {
           "target": "112",
-          "scenario": 0
-        },
-        {
-          "target": "112",
-          "requires": [ 53 ],
-          "scenario": 1
+          "requires": [ 53 ]
         }
       ],
       "enemies": [ {} ]
@@ -398,7 +409,7 @@
         },
         {
           "target": "109",
-          "locked": true
+          "lock": "side"
         }
       ]
     },
@@ -481,7 +492,7 @@
         },
         {
           "target": "202",
-          "locked": true
+          "lock": "side"
         },
         {
           "target": "201",
@@ -533,7 +544,7 @@
         },
         {
           "target": "209",
-          "locked": true
+          "lock": "side"
         }
       ],
       "items": [
@@ -1464,7 +1475,7 @@
       "doors": [
         {
           "target": "40E",
-          "locked": true
+          "lock": "always"
         },
         {
           "target": "502"
@@ -1784,7 +1795,7 @@
         },
         {
           "target": "609",
-          "locked": true
+          "lock": "side"
         },
         {
           "target": "60A"

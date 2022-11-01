@@ -17,6 +17,7 @@ namespace IntelOrca.Biohazard
         public Dictionary<byte, RdtItemId> LinkedItems { get; set; } = new Dictionary<byte, RdtItemId>();
         public ushort[] Requires { get; set; } = Array.Empty<ushort>();
         public List<PlayEdge> Edges { get; } = new List<PlayEdge>();
+        public int[] DoorRandoRouteTokens { get; set; } = Array.Empty<int>();
 
         public PlayNode(RdtId rdtId)
         {
@@ -26,25 +27,35 @@ namespace IntelOrca.Biohazard
         public override string ToString() => RdtId.ToString();
     }
 
+    internal enum LockKind
+    {
+        None,
+        Always,
+        Side,
+        Gate
+    }
+
     internal class PlayEdge
     {
         public RdtId OriginalTargetRdt { get; set; }
         public PlayNode? Node { get; set; }
-        public bool Locked { get; set; }
+        public LockKind Lock { get; set; }
         public bool NoReturn { get; set; }
         public ushort[] Requires { get; }
+        public PlayNode[] RequiresRoom { get; set; } = Array.Empty<PlayNode>();
         public int? DoorId { get; }
         public DoorEntrance? Entrance { get; set; }
+        public bool PreventLoopback { get; set; }
 
-        public PlayEdge(PlayNode node, bool locked, bool noReturn, ushort[]? requires, int? doorId, DoorEntrance? entrance)
+        public PlayEdge(PlayNode node, bool noReturn, ushort[]? requires, int? doorId, DoorEntrance? entrance, bool preventLoopback)
         {
             OriginalTargetRdt = node.RdtId;
             Node = node;
-            Locked = locked;
             NoReturn = noReturn;
             Requires = requires ?? new ushort[0];
             DoorId = doorId;
             Entrance = entrance;
+            PreventLoopback = preventLoopback;
         }
 
         public string RequiresString
@@ -52,9 +63,9 @@ namespace IntelOrca.Biohazard
             get
             {
                 var s = "";
-                if (Locked)
+                if (Lock != LockKind.None)
                 {
-                    s += "(locked) ";
+                    s += $"({Lock.ToString().ToLowerInvariant()}) ";
                 }
                 if (Requires != null && Requires.Length != 0)
                 {

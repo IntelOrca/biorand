@@ -25,7 +25,7 @@ namespace IntelOrca.Biohazard
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
         private HashSet<RdtItemId> _visitedItems = new HashSet<RdtItemId>();
         private Rng _rng;
-        private bool _debugLogging = true;
+        private bool _debugLogging = false;
 
         private PlayNode _endNode;
         private bool _searchForOriginalKeyLocation;
@@ -33,6 +33,7 @@ namespace IntelOrca.Biohazard
         private int _numUnconnectedEdges;
         private int _numKeyEdges;
         private int _numUnlockedEdges;
+        private int _tokenCount;
 
         public PlayGraphFactory(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng random)
         {
@@ -55,6 +56,7 @@ namespace IntelOrca.Biohazard
                 foreach (var edge in node.Edges)
                 {
                     edge.Node = null;
+                    edge.NoReturn = false;
                 }
                 _nodes.Add(node);
             }
@@ -96,13 +98,18 @@ namespace IntelOrca.Biohazard
                 }
             }
 
+            if (!_visitedRooms.Contains(graph.End))
+            {
+                throw new Exception("End not reached");
+            }
+
             _searchForOriginalKeyLocation = false;
             RandomiseItems(graph);
         }
 
         private bool ConnectEdges()
         {
-            var unfinishedNodes = _visitedRooms.Where(x => x.Edges.Any(y => y.Node == null)).Shuffle(_rng).ToArray();
+            var unfinishedNodes = _visitedRooms.Where(x => x.Edges.Any(y => y.Node == null && y.Lock != LockKind.Always)).Shuffle(_rng).ToArray();
             if (unfinishedNodes.Length == 0)
                 return false;
 
@@ -111,7 +118,7 @@ namespace IntelOrca.Biohazard
             {
                 foreach (var edge in node.Edges)
                 {
-                    if (edge.Node == null)
+                    if (ValidateEntranceNode(node, edge))
                     {
                         if (TryConnectDoor(node, edge))
                         {
@@ -125,14 +132,28 @@ namespace IntelOrca.Biohazard
 
         private bool TryConnectDoor(PlayNode node, PlayEdge edge)
         {
-            var exitNodeEdge = GetRandomRoom(node);
+            var exitNodeEdge = GetRandomRoom(node, edge);
             if (exitNodeEdge == null)
             {
                 exitNodeEdge = (_endNode, _endNode.Edges[0]);
+                edge.NoReturn = true;
             }
             var (exitNode, exitEdge) = exitNodeEdge.Value;
 
-            _visitedRooms.Add(exitNode);
+            if (_visitedRooms.Add(exitNode))
+            {
+                if (edge.PreventLoopback || edge.Requires.Length != 0)
+                {
+                    exitNode.DoorRandoRouteTokens = node.DoorRandoRouteTokens
+                        .Append(_tokenCount)
+                        .ToArray();
+                    _tokenCount++;
+                }
+                else
+                {
+                    exitNode.DoorRandoRouteTokens = node.DoorRandoRouteTokens;
+                }
+            }
             _keyItemSpots += exitNode.Items.Count(x => x.Priority == ItemPriority.Normal && (x.Requires?.Length ?? 0) == 0);
             ConnectDoor(node, edge, exitNode, exitEdge);
             return true;
@@ -152,6 +173,18 @@ namespace IntelOrca.Biohazard
             aRdt.SetDoorTarget(aDoorId, b.RdtId, bEdge.Entrance.Value);
             bRdt.SetDoorTarget(bDoorId, a.RdtId, aEdge.Entrance.Value);
 
+            // Remove any side locks
+            if (aEdge.Lock == LockKind.Side)
+            {
+                aEdge.Lock = LockKind.None;
+                aRdt.RemoveDoorLock(aDoorId);
+            }
+            if (bEdge.Lock == LockKind.Side)
+            {
+                bEdge.Lock = LockKind.None;
+                bRdt.RemoveDoorLock(bDoorId);
+            }
+
             _logger.WriteLine($"Connected {GetEdgeString(a, aEdge)} to {GetEdgeString(b, bEdge)}");
         }
 
@@ -165,56 +198,85 @@ namespace IntelOrca.Biohazard
                 return $"{s} {rs}";
         }
 
-        private bool ValidateExitNode(PlayNode node, PlayEdge edge)
+        private bool ValidateEntranceNode(PlayNode node, PlayEdge edge)
         {
             // Already connected
             if (edge.Node != null)
                 return false;
 
-            // We do not want to connect to the end node
-            if (node == _endNode)
+            // Do not connect a blocked edge up
+            if (edge.Lock == LockKind.Always)
                 return false;
 
-            // Just do stage 0 for now
-            if (node.RdtId.Stage != 0)
-                return false;
-
-            // For now, ignore any rooms with one way door setups
-            if (node.Edges.Any(x => x.DoorId == null || x.Entrance == null || x.NoReturn))
-                return false;
-
-            var finishing = _visitedRooms.Contains(_endNode);
-            var remainingEdges = _numUnlockedEdges + _numKeyEdges - 1;
-            if (_visitedRooms.Contains(node))
-            {
-                // Seen room before, check if we have another space unconnected edge
-                return finishing || remainingEdges > 1;
-            }
-
-            // Don't connect to a door with a key requirement on the other side
-            if (edge.Requires.Length != 0)
-                return false;
-
-            var extraEdges = node.Edges.Count(x => x.Node == null && !x.Locked) - 1;
-            if (!finishing && remainingEdges > 0 && extraEdges == 0)
+            // Do not connect this node up yet until we have visited all required rooms
+            if (!edge.RequiresRoom.All(x => _visitedRooms.Contains(x)))
                 return false;
 
             return true;
         }
 
-        private (PlayNode, PlayEdge)? GetRandomRoom(PlayNode excludeNode)
+        private bool ValidateExitNode(PlayNode node, PlayEdge edge, PlayNode exitNode, PlayEdge exitEdge)
+        {
+            // Same node
+            if (node == exitNode)
+                return false;
+
+            // Already connected
+            if (exitEdge.Node != null)
+                return false;
+
+            // We do not want to connect to the end node
+            if (exitNode == _endNode)
+                return false;
+
+            // Just do stage 0 for now
+            if (exitNode.RdtId.Stage != 0)
+                return false;
+
+            // For now, ignore any rooms with one way door setups
+            if (exitNode.Edges.Any(x => x.DoorId == null || x.Entrance == null))
+                return false;
+
+            // Don't connect to a door with a key requirement on the other side
+            if (exitEdge.Requires.Length != 0)
+                return false;
+
+            // Don't connect to a door that is blocked / one way
+            if (exitEdge.Lock == LockKind.Always)
+                return false;
+
+            var finishing = _visitedRooms.Contains(_endNode);
+            var remainingEdges = _numUnlockedEdges + _numKeyEdges - 1;
+            if (_visitedRooms.Contains(exitNode))
+            {
+                // Check if this is a compatible loopback route (i.e. has the same tokens, no different ones)
+                var outliers = node.DoorRandoRouteTokens.UnionExcept(exitNode.DoorRandoRouteTokens).Count();
+                if (outliers != 0)
+                {
+                    return false;
+                }
+
+                // Seen room before, check if we have another space unconnected edge
+                return finishing || remainingEdges > 1;
+            }
+
+            var extraEdges = exitNode.Edges.Count(x => x.Node == null && (x.Lock == LockKind.None || x.Lock == LockKind.Side)) - 1;
+            if (!finishing && remainingEdges == 0 && extraEdges == 0)
+                return false;
+
+            return true;
+        }
+
+        private (PlayNode, PlayEdge)? GetRandomRoom(PlayNode node, PlayEdge edge)
         {
             var pool = new List<(PlayNode, PlayEdge)>();
-            foreach (var node in _nodes)
+            foreach (var exitNode in _nodes)
             {
-                if (node == excludeNode)
-                    continue;
-
-                foreach (var edge in node.Edges)
+                foreach (var exitEdge in exitNode.Edges)
                 {
-                    if (ValidateExitNode(node, edge))
+                    if (ValidateExitNode(node, edge, exitNode, exitEdge))
                     {
-                        pool.Add((node, edge));
+                        pool.Add((exitNode, exitEdge));
                     }
                 }
             }
@@ -239,7 +301,7 @@ namespace IntelOrca.Biohazard
                     if (edge.Node == null)
                     {
                         _numUnconnectedEdges++;
-                        if (!edge.Locked)
+                        if (edge.Lock == LockKind.None)
                         {
                             if (edge.Requires.Length != 0)
                                 _numKeyEdges++;
@@ -293,7 +355,7 @@ namespace IntelOrca.Biohazard
             {
                 PlaceKeyItem(_config.AlternativeRoutes);
                 var newCheckpoint = Search(checkpoint);
-                if (newCheckpoint != checkpoint)
+                if (newCheckpoint != checkpoint && _requiredItems.Count == 0)
                 {
                     _logger.WriteLine("    ------------ checkpoint ------------");
                     if (_config.ProtectFromSoftLock)
@@ -399,15 +461,13 @@ namespace IntelOrca.Biohazard
 
                 foreach (var edge in node.Edges)
                 {
-                    if (seen.Contains(edge.Node!.RdtId))
+                    if (edge.Node == null)
                         continue;
-                    if (edge.Locked)
+                    if (seen.Contains(edge.Node.RdtId))
                         continue;
-                    if (edge.NoReturn && _requiredItems.Count != 0)
+                    if (edge.Lock != LockKind.None)
                         continue;
-
-                    // HACK Leon must go to 30B before he can go to 21B
-                    if (_config.Player == 0 && edge.Node.RdtId.Stage == 1 && edge.Node.RdtId.Room == 0x1B && !_visitedRooms.Any(x => x.RdtId.Stage == 2 && x.RdtId.Room == 3))
+                    if (!edge.RequiresRoom.All(x => _visitedRooms.Contains(x)))
                         continue;
 
                     var requiredItems = edge.Requires == null ? new ushort[0] : edge.Requires.Except(_haveItems).ToArray()!;
@@ -909,7 +969,15 @@ namespace IntelOrca.Biohazard
                     }
 
                     var edgeNode = GetOrCreateNode(target);
-                    var edge = new PlayEdge(edgeNode, door.Locked, door.NoReturn, door.Requires, doorId, entrance);
+                    var edge = new PlayEdge(edgeNode, door.NoReturn, door.Requires, doorId, entrance, door.PreventLoopback);
+                    if (door.Lock != null)
+                    {
+                        edge.Lock = (LockKind)Enum.Parse(typeof(LockKind), door.Lock, true);
+                    }
+                    if (door.RequiresRoom != null)
+                    {
+                        edge.RequiresRoom = door.RequiresRoom.Select(x => GetOrCreateNode(RdtId.Parse(x))).ToArray();
+                    }
                     node.Edges.Add(edge);
                 }
             }
@@ -978,42 +1046,5 @@ namespace IntelOrca.Biohazard
                 return node;
             return null;
         }
-
-        // private PlayNodeEntrance[] GetRoomEntrances(Rdt room)
-        // {
-        //     var nodeDoors = new List<PlayNodeEntrance>();
-        //     foreach (var rdt in _gameData.Rdts)
-        //     {
-        //         foreach (var door in rdt.Doors)
-        //         {
-        //             if (door.Target == room.RdtId)
-        //             {
-        //                 var dd = DoorDestination.FromOpcode(door);
-        //                 if (!nodeDoors.Any(x => IsDoorTheSame(x.DestinationForThisRoom, dd)))
-        //                 {
-        //                     var id = room.Doors.FirstOrDefault(x => x.Target == rdt.RdtId)?.Id;
-        //                     nodeDoors.Add(new PlayNodeEntrance()
-        //                     {
-        //                         Id = id,
-        //                         DestinationForThisRoom = dd
-        //                     });
-        //                 }
-        //             }
-        //         }
-        //     }
-        //     return nodeDoors.ToArray();
-        // }
-
-        // private static bool IsDoorTheSame(DoorDestination a, DoorDestination b)
-        // {
-        //     if (a.Camera != b.Camera)
-        //         return false;
-        // 
-        //     var dx = a.X - b.X;
-        //     var dy = a.Y - b.Y;
-        //     var dz = a.Z - b.Z;
-        //     var d = Math.Sqrt((dx * dx) + (dy * dy) + (dz * dz));
-        //     return d < 1024;
-        // }
     }
 }

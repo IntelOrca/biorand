@@ -24,6 +24,11 @@ namespace IntelOrca.Biohazard
             return items.GroupBy(property).Select(x => x.First());
         }
 
+        public static IEnumerable<T> UnionExcept<T>(this IEnumerable<T> a, IEnumerable<T> b)
+        {
+            return a.Except(b).Union(b.Except(a));
+        }
+
         public static Queue<T> ToQueue<T>(this IEnumerable<T> items)
         {
             return new Queue<T>(items);
