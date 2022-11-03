@@ -924,10 +924,12 @@
         },
         {
           "target": "219",
-          "player": 0
+          "player": 0,
+          "lock": "unblock"
         },
         {
           "target": "219",
+          "lock": "unblock",
           "player": 1,
           "scenario": 1
         }
