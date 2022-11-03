@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using System.Text.Json;
 
 namespace IntelOrca.Biohazard
@@ -77,7 +78,10 @@ namespace IntelOrca.Biohazard
         private static string GetBgmJson()
         {
 #if DEBUG
-            return File.ReadAllText(@"M:\git\rer\rer\data\bgm.json");
+            var jsonPath = Path.Combine(
+                Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
+                @"..\..\..\..\IntelOrca.BioHazard\data\bgm.json");
+            return File.ReadAllText(jsonPath);
 #else
             return Resources.bgm;
 #endif
