@@ -92,7 +92,7 @@ namespace IntelOrca.Biohazard
             }
             foreach (var node in _nodes)
             {
-                if (node.RdtId.Stage == 0 && !_visitedRooms.Contains(node))
+                if (!_visitedRooms.Contains(node))
                 {
                     _logger.WriteLine($"{node.RdtId} not used");
                 }
@@ -109,7 +109,10 @@ namespace IntelOrca.Biohazard
 
         private bool ConnectEdges()
         {
-            var unfinishedNodes = _visitedRooms.Where(x => x.Edges.Any(y => y.Node == null && (y.Lock == LockKind.None || y.Lock == LockKind.Side))).Shuffle(_rng).ToArray();
+            var unfinishedNodes = _visitedRooms
+                .Where(x => x.Edges.Any(y => y.Node == null && (y.Lock == LockKind.None || y.Lock == LockKind.Side || y.Lock == LockKind.Unblock)))
+                .Shuffle(_rng)
+                .ToArray();
             if (unfinishedNodes.Length == 0)
                 return false;
 
@@ -142,7 +145,7 @@ namespace IntelOrca.Biohazard
 
             if (_visitedRooms.Add(exitNode))
             {
-                if (edge.PreventLoopback || edge.Requires.Length != 0)
+                if (edge.Requires.Length != 0)
                 {
                     exitNode.DoorRandoRouteTokens = node.DoorRandoRouteTokens
                         .Append(_tokenCount)
@@ -164,25 +167,28 @@ namespace IntelOrca.Biohazard
             aEdge.Node = b;
             bEdge.Node = a;
 
-            var aDoorId = aEdge.DoorId.Value;
-            var bDoorId = bEdge.DoorId.Value;
-
-            var aRdt = _gameData.GetRdt(a.RdtId)!;
-            var bRdt = _gameData.GetRdt(b.RdtId)!;
-
-            aRdt.SetDoorTarget(aDoorId, b.RdtId, bEdge.Entrance.Value);
-            bRdt.SetDoorTarget(bDoorId, a.RdtId, aEdge.Entrance.Value);
-
-            // Remove any side locks
-            if (aEdge.Lock == LockKind.Side)
+            if (a.Category != DoorRandoCategory.Static)
             {
-                aEdge.Lock = LockKind.None;
-                aRdt.RemoveDoorLock(aDoorId);
+                var aDoorId = aEdge.DoorId.Value;
+                var aRdt = _gameData.GetRdt(a.RdtId)!;
+                aRdt.SetDoorTarget(aDoorId, b.RdtId, bEdge.Entrance.Value);
+                if (aEdge.Lock == LockKind.Side)
+                {
+                    aEdge.Lock = LockKind.None;
+                    aRdt.RemoveDoorLock(aDoorId);
+                }
             }
-            if (bEdge.Lock == LockKind.Side)
+
+            if (b.Category != DoorRandoCategory.Static)
             {
-                bEdge.Lock = LockKind.None;
-                bRdt.RemoveDoorLock(bDoorId);
+                var bDoorId = bEdge.DoorId.Value;
+                var bRdt = _gameData.GetRdt(b.RdtId)!;
+                bRdt.SetDoorTarget(bDoorId, a.RdtId, aEdge.Entrance.Value);
+                if (bEdge.Lock == LockKind.Side && b.Category != DoorRandoCategory.Static)
+                {
+                    bEdge.Lock = LockKind.None;
+                    bRdt.RemoveDoorLock(bDoorId);
+                }
             }
 
             _logger.WriteLine($"Connected {GetEdgeString(a, aEdge)} to {GetEdgeString(b, bEdge)}");
@@ -221,6 +227,14 @@ namespace IntelOrca.Biohazard
 
         private bool ValidateExitNode(PlayNode node, PlayEdge edge, PlayNode exitNode, PlayEdge exitEdge)
         {
+            if (node.ToString() == "403")
+            {
+                if (exitNode.RdtId.ToString() != "402")
+                    return false;
+                if (exitEdge.Entrance != null && exitEdge.Entrance.Value.Floor != 1)
+                    return false;
+            }
+
             // Same node
             if (node == exitNode)
                 return false;
@@ -229,16 +243,18 @@ namespace IntelOrca.Biohazard
             if (exitEdge.Node != null)
                 return false;
 
+            // Just do stage 1** and 200 for now
+            // if (exitNode.RdtId.Stage != 0 && !(exitNode.RdtId.Stage == 1 && exitNode.RdtId.Room == 0))
+            //     return false;
+            if (exitNode.Category == DoorRandoCategory.Exclude)
+                return false;
+
             // Fixed node connection
             if (!edge.Randomize || !exitEdge.Randomize)
                 return edge.OriginalTargetRdt == exitNode.RdtId && exitEdge.OriginalTargetRdt == node.RdtId;
 
             // We do not want to connect to the end node
             if (exitNode == _endNode)
-                return false;
-
-            // Just do stage 1** and 200 for now
-            if (exitNode.RdtId.Stage != 0 && !(exitNode.RdtId.Stage == 1 && exitNode.RdtId.Room == 0))
                 return false;
 
             // For now, ignore any rooms with one way door setups
@@ -250,7 +266,7 @@ namespace IntelOrca.Biohazard
                 return false;
 
             // Don't connect to a door that is blocked / one way
-            if (exitEdge.Lock == LockKind.Always)
+            if (exitEdge.Lock == LockKind.Always || exitEdge.Lock == LockKind.Unblock)
                 return false;
 
             var finishing = _visitedRooms.Contains(_endNode);
@@ -268,7 +284,7 @@ namespace IntelOrca.Biohazard
                 return finishing || remainingEdges > 1;
             }
 
-            var extraEdges = exitNode.Edges.Count(x => x.Node == null && (x.Lock == LockKind.None || x.Lock == LockKind.Side)) - 1;
+            var extraEdges = exitNode.Edges.Count(x => x.Node == null && (x.Lock == LockKind.None || x.Lock == LockKind.Side || x.Lock == LockKind.Unblock)) - 1;
             if (!finishing && remainingEdges == 0 && extraEdges == 0)
                 return false;
 
@@ -473,7 +489,7 @@ namespace IntelOrca.Biohazard
                         continue;
                     if (seen.Contains(edge.Node.RdtId))
                         continue;
-                    if (edge.Lock != LockKind.None)
+                    if (edge.Lock != LockKind.None && edge.Lock != LockKind.Unblock)
                         continue;
                     if (!edge.RequiresRoom.All(x => _visitedRooms.Contains(x)))
                         continue;
@@ -967,18 +983,31 @@ namespace IntelOrca.Biohazard
                         continue;
 
                     DoorEntrance? entrance = null;
-                    var target = RdtId.Parse(door.Target!);
-                    var doorId = rdt.Doors.FirstOrDefault(x => x.Target == target)?.Id;
-                    var targetRdt = _gameData.GetRdt(target)!;
-                    var targetExit = targetRdt.Doors.FirstOrDefault(x => x.Target == rdtId);
+
+                    Rdt targetRdt;
+                    DoorAotSeOpcode? targetExit;
+                    if (door.Target!.Contains(":"))
+                    {
+                        var target = RdtItemId.Parse(door.Target!);
+                        targetRdt = _gameData.GetRdt(target.Rdt)!;
+                        targetExit = targetRdt.Doors.First(x => x.Id == target.Id);
+                    }
+                    else
+                    {
+                        var target = RdtId.Parse(door.Target!);
+                        targetRdt = _gameData.GetRdt(target)!;
+                        targetExit = targetRdt.Doors.FirstOrDefault(x => x.Target == rdtId);
+                    }
+                    var doorId = door.Id ?? rdt.Doors.FirstOrDefault(x => x.Target == targetRdt.RdtId)?.Id;
                     if (targetExit != null)
                     {
                         entrance = DoorEntrance.FromOpcode(targetExit);
                     }
 
-                    var edgeNode = GetOrCreateNode(target);
-                    var edge = new PlayEdge(edgeNode, door.NoReturn, door.Requires, doorId, entrance, door.PreventLoopback);
+                    var edgeNode = GetOrCreateNode(targetRdt.RdtId);
+                    var edge = new PlayEdge(edgeNode, door.NoReturn, door.Requires, doorId, entrance);
                     edge.Randomize = door.Randomize ?? true;
+                    edge.PreventLoopback = door.PreventLoopback;
                     if (door.Lock != null)
                     {
                         edge.Lock = (LockKind)Enum.Parse(typeof(LockKind), door.Lock, true);
@@ -1039,6 +1068,23 @@ namespace IntelOrca.Biohazard
                 // Remove any items that have no type (removed fixed items)
                 node.Items = items.Where(x => x.Type != 0).ToArray();
             }
+
+            if (mapRoom.DoorRando != null)
+            {
+                foreach (var spec in mapRoom.DoorRando)
+                {
+                    if (spec.Player != null && spec.Player != _config.Player)
+                        continue;
+                    if (spec.Scenario != null && spec.Scenario != _config.Scenario)
+                        continue;
+
+                    if (spec.Category != null)
+                    {
+                        node.Category = (DoorRandoCategory)Enum.Parse(typeof(DoorRandoCategory), spec.Category, true);
+                    }
+                }
+            }
+
             return node;
         }
 

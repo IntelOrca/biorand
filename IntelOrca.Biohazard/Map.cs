@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace IntelOrca.Biohazard
 {
@@ -33,10 +32,12 @@ namespace IntelOrca.Biohazard
         public MapRoomItem[]? Items { get; set; }
         public MapRoomEnemies[]? Enemies { get; set; }
         public MapRoomNpcs[]? Npcs { get; set; }
+        public DoorRandoSpec[]? DoorRando { get; set; }
     }
 
     public class MapRoomDoor
     {
+        public int? Id { get; set; }
         public string? Target { get; set; }
         public bool? Randomize { get; set; }
         public string? Lock { get; set; }
@@ -78,6 +79,13 @@ namespace IntelOrca.Biohazard
         public int[]? IncludeOffsets { get; set; }
         public int[]? IncludeTypes { get; set; }
         public int[]? ExcludeTypes { get; set; }
+        public int? Player { get; set; }
+        public int? Scenario { get; set; }
+    }
+
+    public class DoorRandoSpec
+    {
+        public string? Category { get; set; }
         public int? Player { get; set; }
         public int? Scenario { get; set; }
     }

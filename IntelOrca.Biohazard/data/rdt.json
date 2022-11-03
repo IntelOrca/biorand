@@ -777,7 +777,13 @@
           "requires": [ 92 ]
         },
         {
-          "target": "20E",
+          "id": 2,
+          "target": "20E:0",
+          "requires": [ 90 ]
+        },
+        {
+          "id": 3,
+          "target": "20E:1",
           "requires": [ 90 ]
         }
       ],
@@ -810,7 +816,12 @@
     "20E": {
       "doors": [
         {
-          "target": "20C"
+          "id": 0,
+          "target": "20C:2"
+        },
+        {
+          "id": 1,
+          "target": "20C:3"
         }
       ],
       "enemies": [
@@ -1152,6 +1163,11 @@
       ]
     },
     "30B": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "target": "302",
@@ -1245,6 +1261,11 @@
       "npcs": [ {} ]
     },
     "403": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "target": "402"
@@ -1548,7 +1569,8 @@
           "target": "503"
         },
         {
-          "target": "505"
+          "target": "505",
+          "randomize": false
         }
       ],
       "npcs": [
@@ -1560,7 +1582,8 @@
     "505": {
       "doors": [
         {
-          "target": "504"
+          "target": "504",
+          "randomize": false
         },
         {
           "target": "606",
@@ -1574,12 +1597,19 @@
           "scenario": 1
         }
       ],
-      "npcs": [
+      "npcs": [ {} ],
+      "doorRando": [
         {
+          "category": "static"
         }
       ]
     },
     "506": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "target": "503"
@@ -1659,13 +1689,15 @@
     "602": {
       "doors": [
         {
-          "target": "600"
+          "target": "600",
+          "lock": "always"
         },
         {
           "target": "601"
         },
         {
-          "target": "603"
+          "target": "603",
+          "randomize": false
         }
       ],
       "npcs": [
@@ -1677,7 +1709,8 @@
     "603": {
       "doors": [
         {
-          "target": "602"
+          "target": "602",
+          "randomize": false
         },
         {
           "target": "604",

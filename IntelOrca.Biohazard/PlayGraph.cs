@@ -18,6 +18,7 @@ namespace IntelOrca.Biohazard
         public ushort[] Requires { get; set; } = Array.Empty<ushort>();
         public List<PlayEdge> Edges { get; } = new List<PlayEdge>();
         public int[] DoorRandoRouteTokens { get; set; } = Array.Empty<int>();
+        public DoorRandoCategory Category { get; set; }
 
         public PlayNode(RdtId rdtId)
         {
@@ -32,7 +33,15 @@ namespace IntelOrca.Biohazard
         None,
         Always,
         Side,
-        Gate
+        Gate,
+        Unblock
+    }
+
+    internal enum DoorRandoCategory
+    {
+        Include,
+        Exclude,
+        Static
     }
 
     internal class PlayEdge
@@ -48,7 +57,7 @@ namespace IntelOrca.Biohazard
         public bool PreventLoopback { get; set; }
         public bool Randomize { get; set; } = true;
 
-        public PlayEdge(PlayNode node, bool noReturn, ushort[]? requires, int? doorId, DoorEntrance? entrance, bool preventLoopback)
+        public PlayEdge(PlayNode node, bool noReturn, ushort[]? requires, int? doorId, DoorEntrance? entrance)
         {
             OriginalTargetRdt = node.RdtId;
             Node = node;
@@ -56,7 +65,6 @@ namespace IntelOrca.Biohazard
             Requires = requires ?? new ushort[0];
             DoorId = doorId;
             Entrance = entrance;
-            PreventLoopback = preventLoopback;
         }
 
         public string RequiresString
