@@ -648,9 +648,6 @@
       "doors": [
         {
           "target": "207"
-        },
-        {
-          "target": "208"
         }
       ],
       "items": [
@@ -909,6 +906,11 @@
         },
         {
           "target": "219",
+          "player": 0
+        },
+        {
+          "target": "219",
+          "player": 1,
           "scenario": 1
         }
       ],
