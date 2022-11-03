@@ -33,7 +33,9 @@ namespace IntelOrca.Biohazard.BioRand
             LoadSettings();
             UpdateUi();
             UpdateEnabledUi();
+#if !DEBUG
             CheckForNewVersion();
+#endif
         }
 
         private void LoadSettings()
