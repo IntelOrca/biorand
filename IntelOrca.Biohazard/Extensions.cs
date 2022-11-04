@@ -33,5 +33,13 @@ namespace IntelOrca.Biohazard
         {
             return new Queue<T>(items);
         }
+
+        public static void RemoveMany<T>(this List<T> items, IEnumerable<T> removeList)
+        {
+            foreach (var item in removeList)
+            {
+                items.Remove(item);
+            }
+        }
     }
 }

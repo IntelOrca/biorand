@@ -49,6 +49,15 @@ namespace IntelOrca.Biohazard
                     door.Floor = destination.Floor;
                 }
             }
+            foreach (var reset in Resets)
+            {
+                if (reset.Id == id)
+                {
+                    reset.Type = (ushort)destination.X;
+                    reset.Amount = (ushort)destination.Y;
+                    reset.Unk8 = (ushort)destination.Z;
+                }
+            }
         }
 
         public void RemoveDoorLock(int id)

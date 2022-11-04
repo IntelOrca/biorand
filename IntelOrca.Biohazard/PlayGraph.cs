@@ -41,7 +41,9 @@ namespace IntelOrca.Biohazard
     {
         Include,
         Exclude,
-        Static
+        Static,
+        Bridge,
+        Box
     }
 
     internal class PlayEdge

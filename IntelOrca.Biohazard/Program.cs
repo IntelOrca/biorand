@@ -93,6 +93,7 @@ namespace IntelOrca.Biohazard
             var randomItems = new Rng(config.Seed);
             var randomNpcs = new Rng(config.Seed + 1);
             var randomEnemies = new Rng(config.Seed + 2);
+            var randomDoors = new Rng(config.Seed + 3);
 
             using var logger = new RandoLogger(Path.Combine(modPath, $"log_pl{config.Player}.txt"));
             logger.WriteHeading("Resident Evil Randomizer");
@@ -103,14 +104,20 @@ namespace IntelOrca.Biohazard
             var map = GetJsonMap();
             var gameData = GameDataReader.Read(originalDataPath, modPath, config.Player);
 
-            if (config.RandomItems)
+            if (config.RandomDoors || config.RandomItems)
             {
-                var factory = new PlayGraphFactory(logger, config, gameData, map, randomItems);
+                var doorRando = new DoorRandomiser(logger, config, gameData, map, randomDoors);
+                var itemRando = new ItemRandomiser(logger, config, gameData, map, randomItems);
                 if (config.RandomDoors)
-                    factory.CreateDoorRando();
+                {
+                    var graph = doorRando.CreateRandomGraph();
+                    itemRando.RandomiseItems(graph, false);
+                }
                 else
-                    factory.Create();
-                factory.SetItems();
+                {
+                    var graph = doorRando.CreateOriginalGraph();
+                    itemRando.RandomiseItems(graph, true);
+                }
             }
 
             if (config.RandomEnemies)
