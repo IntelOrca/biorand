@@ -9,7 +9,7 @@
         public byte Camera { get; set; }
         public byte Floor { get; set; }
 
-        public static DoorEntrance FromOpcode(DoorAotSeOpcode opcode)
+        public static DoorEntrance FromOpcode(IDoorAotSetOpcode opcode)
         {
             return new DoorEntrance()
             {
@@ -17,8 +17,8 @@
                 Y = opcode.NextY,
                 Z = opcode.NextZ,
                 D = opcode.NextD,
-                Camera = opcode.Camera,
-                Floor = opcode.Floor
+                Camera = opcode.NextCamera,
+                Floor = opcode.NextFloor
             };
         }
     }

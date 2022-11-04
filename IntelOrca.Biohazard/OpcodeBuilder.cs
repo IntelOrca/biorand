@@ -10,12 +10,6 @@ namespace IntelOrca.Biohazard
 
         public OpcodeBase[] ToArray() => _opcodes.ToArray();
 
-        protected override void VisitUnknownOpcode(UnknownOpcode opcode) => _opcodes.Add(opcode);
-        protected override void VisitDoorAotSe(DoorAotSeOpcode opcode) => _opcodes.Add(opcode);
-        protected override void VisitItemAotSet(ItemAotSetOpcode opcode) => _opcodes.Add(opcode);
-        protected override void VisitSceEmSet(SceEmSetOpcode opcode) => _opcodes.Add(opcode);
-        protected override void VisitAotReset(AotResetOpcode opcode) => _opcodes.Add(opcode);
-        protected override void VisitXaOn(XaOnOpcode opcode) => _opcodes.Add(opcode);
-        protected override void VisitSceItemGet(SceItemGetOpcode opcode) => _opcodes.Add(opcode);
+        protected override void VisitOpcode(OpcodeBase opcode) => _opcodes.Add(opcode);
     }
 }

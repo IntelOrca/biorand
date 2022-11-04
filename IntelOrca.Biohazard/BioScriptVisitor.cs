@@ -40,6 +40,9 @@ namespace IntelOrca.Biohazard
                 case Opcode.Ck:
                     VisitCk(CkOpcode.Read(br, offset));
                     break;
+                case Opcode.Cmp:
+                    VisitCmp(CmpOpcode.Read(br, offset));
+                    break;
                 case Opcode.DoorAotSe:
                     VisitDoorAotSe(DoorAotSeOpcode.Read(br, offset));
                     break;
@@ -58,6 +61,9 @@ namespace IntelOrca.Biohazard
                 case Opcode.SceItemGet:
                     VisitSceItemGet(SceItemGetOpcode.Read(br, offset));
                     break;
+                case Opcode.DoorAotSet4p:
+                    VisitDoorAotSet4p(DoorAotSet4pOpcode.Read(br, offset));
+                    break;
             }
         }
 
@@ -69,12 +75,14 @@ namespace IntelOrca.Biohazard
         protected virtual void VisitElseCk(ElseCkOpcode opcode) => VisitOpcode(opcode);
         protected virtual void VisitGosub(GosubOpcode opcode) => VisitOpcode(opcode);
         protected virtual void VisitCk(CkOpcode opcode) => VisitOpcode(opcode);
+        protected virtual void VisitCmp(CmpOpcode opcode) => VisitOpcode(opcode);
         protected virtual void VisitDoorAotSe(DoorAotSeOpcode opcode) => VisitOpcode(opcode);
         protected virtual void VisitSceEmSet(SceEmSetOpcode opcode) => VisitOpcode(opcode);
         protected virtual void VisitAotReset(AotResetOpcode opcode) => VisitOpcode(opcode);
         protected virtual void VisitItemAotSet(ItemAotSetOpcode opcode) => VisitOpcode(opcode);
         protected virtual void VisitXaOn(XaOnOpcode opcode) => VisitOpcode(opcode);
         protected virtual void VisitSceItemGet(SceItemGetOpcode opcode) => VisitOpcode(opcode);
+        protected virtual void VisitDoorAotSet4p(DoorAotSet4pOpcode opcode) => VisitOpcode(opcode);
     }
 
     internal enum BioScriptKind

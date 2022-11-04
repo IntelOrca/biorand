@@ -4,22 +4,25 @@ using IntelOrca.Biohazard.Opcodes;
 
 namespace IntelOrca.Biohazard
 {
-
     [DebuggerDisplay("{Opcode}")]
-    internal class DoorAotSeOpcode : OpcodeBase, IDoorAotSetOpcode
+    internal class DoorAotSet4pOpcode : OpcodeBase, IDoorAotSetOpcode
     {
-        public override Opcode Opcode => Opcode.DoorAotSe;
-        public override int Length => 32;
+        public override Opcode Opcode => Opcode.DoorAotSet4p;
+        public override int Length => 40;
 
         public byte Id { get; set; }
         public byte SCE { get; set; }
         public byte SAT { get; set; }
         public byte Floor { get; set; }
         public byte Super { get; set; }
-        public short X { get; set; }
-        public short Y { get; set; }
-        public short W { get; set; }
-        public short H { get; set; }
+        public short X0 { get; set; }
+        public short Z0 { get; set; }
+        public short X1 { get; set; }
+        public short Z1 { get; set; }
+        public short X2 { get; set; }
+        public short Z2 { get; set; }
+        public short X3 { get; set; }
+        public short Z3 { get; set; }
         public short NextX { get; set; }
         public short NextY { get; set; }
         public short NextZ { get; set; }
@@ -45,9 +48,9 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        public static DoorAotSeOpcode Read(BinaryReader br, int offset)
+        public static DoorAotSet4pOpcode Read(BinaryReader br, int offset)
         {
-            return new DoorAotSeOpcode()
+            return new DoorAotSet4pOpcode()
             {
                 Offset = offset,
                 Id = br.ReadByte(),
@@ -55,10 +58,14 @@ namespace IntelOrca.Biohazard
                 SAT = br.ReadByte(),
                 Floor = br.ReadByte(),
                 Super = br.ReadByte(),
-                X = br.ReadInt16(),
-                Y = br.ReadInt16(),
-                W = br.ReadInt16(),
-                H = br.ReadInt16(),
+                X0 = br.ReadInt16(),
+                Z0 = br.ReadInt16(),
+                X1 = br.ReadInt16(),
+                Z1 = br.ReadInt16(),
+                X2 = br.ReadInt16(),
+                Z2 = br.ReadInt16(),
+                X3 = br.ReadInt16(),
+                Z3 = br.ReadInt16(),
                 NextX = br.ReadInt16(),
                 NextY = br.ReadInt16(),
                 NextZ = br.ReadInt16(),
@@ -84,10 +91,14 @@ namespace IntelOrca.Biohazard
             bw.Write(SAT);
             bw.Write(Floor);
             bw.Write(Super);
-            bw.Write(X);
-            bw.Write(Y);
-            bw.Write(W);
-            bw.Write(H);
+            bw.Write(X0);
+            bw.Write(Z0);
+            bw.Write(X1);
+            bw.Write(Z1);
+            bw.Write(X2);
+            bw.Write(Z2);
+            bw.Write(X3);
+            bw.Write(Z3);
             bw.Write(NextX);
             bw.Write(NextY);
             bw.Write(NextZ);

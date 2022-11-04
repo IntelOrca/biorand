@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using IntelOrca.Biohazard.Opcodes;
@@ -13,6 +12,35 @@ namespace IntelOrca.Biohazard
         private bool _endDoWhile;
         private bool _constructingBinaryExpression;
         private int _expressionCount;
+
+        private static readonly string[] g_sceNames = new string[] {
+            "SCE_AUTO",
+            "SCE_DOOR",
+            "SCE_ITEM",
+            "SCE_NORMAL",
+            "SCE_MESSAGE",
+            "SCE_EVENT",
+            "SCE_FLAG_CHG",
+            "SCE_WATER",
+            "SCE_MOVE",
+            "SCE_SAVE",
+            "SCE_ITEMBOX",
+            "SCE_DAMAGE",
+            "SCE_STATUS",
+            "SCE_HIKIDASHI",
+            "SCE_WINDOWS"
+        };
+
+        private static readonly string[] g_workKinds = new string[]
+        {
+            "WK_NONE",
+            "WK_PLAYER",
+            "WK_SPLAYER",
+            "WK_ENEMY",
+            "WK_OBJECT",
+            "WK_DOOR",
+            "WK_ALL"
+        };
 
         public bool AssemblyFormat => _sb.AssemblyFormat;
 
@@ -160,12 +188,73 @@ namespace IntelOrca.Biohazard
 
         protected override void VisitDoorAotSe(DoorAotSeOpcode door)
         {
-            _sb.WriteStandardOpcode("door_aot_se", door.Id, $"{door.Stage:X}", $"0x{door.Room:X2}", door.DoorFlag, door.DoorLockFlag, door.DoorKey);
+            _sb.WriteStandardOpcode("door_aot_se",
+                door.Id,
+                GetSCE(door.SCE),
+                GetSAT(door.SAT),
+                door.Floor,
+                door.Super,
+                door.X,
+                door.Y,
+                door.W,
+                door.H,
+                door.NextX,
+                door.NextY,
+                door.NextZ,
+                door.NextD,
+                $"{door.NextStage:X}",
+                $"0x{door.NextRoom:X2}",
+                door.NextCamera,
+                door.NextFloor,
+                door.Texture,
+                door.Animation,
+                door.Sound,
+                door.KeyId,
+                door.KeyType,
+                door.Free);
+        }
+
+        protected override void VisitDoorAotSet4p(DoorAotSet4pOpcode door)
+        {
+            _sb.WriteStandardOpcode("door_aot_set_4p",
+                door.Id,
+                GetSCE(door.SCE),
+                GetSAT(door.SAT),
+                door.Floor,
+                door.Super,
+                door.X0,
+                door.Z0,
+                door.X1,
+                door.Z1,
+                door.X2,
+                door.Z2,
+                door.X3,
+                door.Z3,
+                door.NextX,
+                door.NextY,
+                door.NextZ,
+                door.NextD,
+                $"{door.NextStage:X}",
+                $"0x{door.NextRoom:X2}",
+                door.NextCamera,
+                door.NextFloor,
+                door.Texture,
+                door.Animation,
+                door.Sound,
+                door.KeyId,
+                door.KeyType,
+                door.Free);
         }
 
         protected override void VisitAotReset(AotResetOpcode reset)
         {
-            _sb.WriteStandardOpcode("aot_reset", reset.Id, reset.Type, reset.Amount, $"0x{reset.Unk8:X2}");
+            _sb.WriteStandardOpcode("aot_reset",
+                reset.Id,
+                GetSCE(reset.SCE),
+                GetSAT(reset.SAT),
+                reset.SCE == 2 ? GetItemConstant(reset.Data0) : reset.Data0.ToString(),
+                reset.Data1,
+                reset.Data2);
         }
 
         protected override void VisitSceEmSet(SceEmSetOpcode enemy)
@@ -529,7 +618,10 @@ namespace IntelOrca.Biohazard
 
                                 var ops = new[] { "==", ">", ">=", "<", "<=", "!=" };
                                 var opS = ops.Length > op ? ops[op] : "?";
-                                sb.Write($"arr[{index}] {opS} {value}");
+                                if (index == 27)
+                                    sb.Write($"game.last_room {opS} 0x{value:X3}");
+                                else
+                                    sb.Write($"arr[{index}] {opS} {value}");
                                 _expressionCount++;
                             }
                         }
@@ -573,16 +665,7 @@ namespace IntelOrca.Biohazard
                     {
                         var kind = br.ReadByte();
                         var id = br.ReadByte();
-
-                        var kindS = kind.ToString();
-                        if (kind == 1)
-                            kindS = "wk_player";
-                        else if (kind == 3)
-                            kindS = "wk_entity";
-                        else if (kind == 4)
-                            kindS = "wk_door";
-
-                        sb.WriteStandardOpcode("work_set", kindS, id);
+                        sb.WriteStandardOpcode("work_set", GetWorkKind(kind), id);
                         break;
                     }
                 case Opcode.Set:
@@ -630,11 +713,18 @@ namespace IntelOrca.Biohazard
                 case Opcode.AotSet:
                     {
                         var id = br.ReadByte();
-                        var type = br.ReadByte();
-                        br.ReadBytes(3);
-                        br.ReadBytes(8);
-                        br.ReadBytes(6);
-                        sb.WriteStandardOpcode("aot_set", id, $"0x{type:X}");
+                        var sce = br.ReadByte();
+                        var sat = br.ReadByte();
+                        var floor = br.ReadByte();
+                        var super = br.ReadByte();
+                        var x = br.ReadInt16();
+                        var z = br.ReadInt16();
+                        var w = br.ReadInt16();
+                        var d = br.ReadInt16();
+                        var data0 = br.ReadUInt16();
+                        var data1 = br.ReadUInt16();
+                        var data2 = br.ReadUInt16();
+                        sb.WriteStandardOpcode("aot_set", id, GetSCE(sce), GetSAT(sat), floor, super, x, z, w, d, data0, data1, data2);
                         break;
                     }
                 case Opcode.PosSet:
@@ -739,6 +829,13 @@ namespace IntelOrca.Biohazard
                         sb.WriteStandardOpcode("aot_on", id);
                         break;
                     }
+                case Opcode.CutReplace:
+                    {
+                        var id = br.ReadByte();
+                        var value = br.ReadByte();
+                        sb.WriteStandardOpcode("cut_replace", id, value);
+                        break;
+                    }
                 case Opcode.SceBgmControl:
                     {
                         var bgm = br.ReadByte();
@@ -787,6 +884,54 @@ namespace IntelOrca.Biohazard
                         break;
                     }
             }
+        }
+
+        private static string GetSCE(byte sce)
+        {
+            if (sce >= g_sceNames.Length)
+                return "SCE_NULL";
+            return g_sceNames[sce];
+        }
+
+        private static string GetSAT(byte sat)
+        {
+            if (sat == 0)
+                return "SAT_AUTO";
+
+            var s = "";
+            if ((sat & (1 << 0)) != 0)
+                s += "SAT_PL | ";
+            if ((sat & (1 << 1)) != 0)
+                s += "SAT_EM | ";
+            if ((sat & (1 << 2)) != 0)
+                s += "SAT_SPL | ";
+            if ((sat & (1 << 3)) != 0)
+                s += "SAT_OB | ";
+            if ((sat & (1 << 4)) != 0)
+                s += "SAT_MANUAL | ";
+            if ((sat & (1 << 5)) != 0)
+                s += "SAT_FRONT | ";
+            if ((sat & (1 << 6)) != 0)
+                s += "SAT_UNDER | ";
+            if ((sat & (1 << 7)) != 0)
+                s += "0x80 | ";
+            return s.TrimEnd(' ', '|');
+        }
+
+        private static string GetWorkKind(byte kind)
+        {
+            if (kind < g_workKinds.Length)
+                return g_workKinds[kind];
+            else if (kind == 0x80)
+                return "WK_PL_PARTS";
+            else if (kind == 0xA0)
+                return "WK_SPL_PARTS";
+            else if (kind == 0xC0)
+                return "WK_EM_PARTS";
+            else if (kind == 0xE0)
+                return "WK_OM_PARTS";
+            else
+                return "WK_NULL";
         }
 
         private static string GetEnemyConstant(EnemyType type)

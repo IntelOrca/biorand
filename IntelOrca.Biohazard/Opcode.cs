@@ -73,6 +73,7 @@
         AotOn,
         SuperSet,
         SuperReset,
+        CutReplace = 0x4B,
         ItemAotSet = 0x4E,
         SceBgmControl = 0x51,
         SceEsprControl,

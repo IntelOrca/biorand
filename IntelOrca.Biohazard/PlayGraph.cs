@@ -19,6 +19,7 @@ namespace IntelOrca.Biohazard
         public List<PlayEdge> Edges { get; } = new List<PlayEdge>();
         public int[] DoorRandoRouteTokens { get; set; } = Array.Empty<int>();
         public DoorRandoCategory Category { get; set; }
+        public int[] DoorRandoNop { get; set; } = Array.Empty<int>();
 
         public PlayNode(RdtId rdtId)
         {

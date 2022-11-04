@@ -72,6 +72,13 @@ namespace IntelOrca.Biohazard
                 if (node.Category == DoorRandoCategory.Exclude)
                     continue;
 
+                var rdt = _gameData.GetRdt(node.RdtId)!;
+                foreach (var offset in node.DoorRandoNop)
+                {
+                    rdt.Nop(offset);
+                    _logger.WriteLine($"{rdt.RdtId} (0x{offset:X2}) opcode removed");
+                }
+
                 foreach (var edge in node.Edges)
                 {
                     edge.Node = null;
@@ -94,7 +101,7 @@ namespace IntelOrca.Biohazard
                 graph.End = GetOrCreateNode(RdtId.Parse(_map.EndB!));
             }
 
-            var numAreas = 4;
+            var numAreas = 3;
 
             _nodesLeft.AddRange(_nodes);
             _nodesLeft.Remove(graph.Start);
@@ -149,7 +156,7 @@ namespace IntelOrca.Biohazard
             }
             foreach (var node in _allNodes)
             {
-                if (!_visitedRooms.Contains(node))
+                if (!_allVisitedRooms.Contains(node))
                 {
                     _logger.WriteLine($"{node.RdtId} not used");
                 }
@@ -206,6 +213,7 @@ namespace IntelOrca.Biohazard
             if (!list.Contains(node))
                 list.Add(node);
 
+            // Find all nodes this room requires
             foreach (var edge in node.Edges)
             {
                 if (!edge.Randomize)
@@ -215,6 +223,33 @@ namespace IntelOrca.Biohazard
                     {
                         list.Add(stickyNode);
                         AddStickyNodeGroup(stickyNode, list);
+                    }
+                }
+                foreach (var reqRoom in edge.RequiresRoom)
+                {
+                    if (!list.Contains(reqRoom))
+                    {
+                        list.Add(reqRoom);
+                        AddStickyNodeGroup(reqRoom, list);
+                    }
+                }
+            }
+
+            // Find all other nodes that require this node
+            foreach (var node2 in _nodesLeft)
+            {
+                foreach (var edge in node2.Edges)
+                {
+                    foreach (var reqRoom in edge.RequiresRoom)
+                    {
+                        if (reqRoom == node)
+                        {
+                            if (!list.Contains(node2))
+                            {
+                                list.Add(node2);
+                                AddStickyNodeGroup(reqRoom, list);
+                            }
+                        }
                     }
                 }
             }
@@ -285,7 +320,7 @@ namespace IntelOrca.Biohazard
             {
                 var aDoorId = aEdge.DoorId.Value;
                 var aRdt = _gameData.GetRdt(a.RdtId)!;
-                aRdt.SetDoorTarget(aDoorId, b.RdtId, bEdge.Entrance.Value);
+                aRdt.SetDoorTarget(aDoorId, b.RdtId, bEdge.Entrance.Value, aEdge.OriginalTargetRdt);
                 if (aEdge.Lock == LockKind.Side)
                 {
                     aEdge.Lock = LockKind.None;
@@ -297,7 +332,7 @@ namespace IntelOrca.Biohazard
             {
                 var bDoorId = bEdge.DoorId.Value;
                 var bRdt = _gameData.GetRdt(b.RdtId)!;
-                bRdt.SetDoorTarget(bDoorId, a.RdtId, aEdge.Entrance.Value);
+                bRdt.SetDoorTarget(bDoorId, a.RdtId, aEdge.Entrance.Value, bEdge.OriginalTargetRdt);
                 if (bEdge.Lock == LockKind.Side && b.Category != DoorRandoCategory.Static)
                 {
                     bEdge.Lock = LockKind.None;
@@ -364,7 +399,7 @@ namespace IntelOrca.Biohazard
                 return false;
 
             // For now, ignore any rooms with one way door setups
-            if (exitNode.Edges.Any(x => x.Entrance == null))
+            if (exitNode.Edges.Any(x => x.Entrance == null && x.Randomize))
                 return false;
 
             // Don't connect to a door with a key requirement on the other side
@@ -484,7 +519,7 @@ namespace IntelOrca.Biohazard
                     DoorEntrance? entrance = null;
 
                     Rdt targetRdt;
-                    DoorAotSeOpcode? targetExit;
+                    IDoorAotSetOpcode? targetExit;
                     if (door.Target!.Contains(":"))
                     {
                         var target = RdtItemId.Parse(door.Target!);
@@ -580,6 +615,10 @@ namespace IntelOrca.Biohazard
                     if (spec.Category != null)
                     {
                         node.Category = (DoorRandoCategory)Enum.Parse(typeof(DoorRandoCategory), spec.Category, true);
+                    }
+                    if (spec.Nop != null)
+                    {
+                        node.DoorRandoNop = spec.Nop;
                     }
                 }
             }

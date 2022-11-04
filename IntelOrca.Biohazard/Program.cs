@@ -196,7 +196,7 @@ namespace IntelOrca.Biohazard
         {
             foreach (var door in rdt.Doors)
             {
-                sb.AppendLine($"    Door #{door.Id}: {new RdtId(door.Stage, door.Room)} (0x{door.Offset:X2})");
+                sb.AppendLine($"    Door #{door.Id}: {new RdtId(door.NextStage, door.NextRoom)} (0x{door.Offset:X2})");
             }
             foreach (var item in rdt.Items)
             {

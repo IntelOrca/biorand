@@ -61,8 +61,8 @@ namespace IntelOrca.Biohazard
                 {
                     mapRoomDoors.Add(new MapRoomDoor()
                     {
-                        Target = new RdtId(door.Stage, door.Room).ToString(),
-                        Requires = door.DoorKey == 0 ? new ushort[0] : new ushort[] { door.DoorKey }
+                        Target = new RdtId(door.NextStage, door.NextRoom).ToString(),
+                        Requires = door.KeyType == 0 ? new ushort[0] : new ushort[] { door.KeyType }
                     });
                 }
                 mapRooms.Add(room.RdtId.ToString(), new MapRoom()

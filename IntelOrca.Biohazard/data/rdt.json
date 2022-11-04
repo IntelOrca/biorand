@@ -1025,6 +1025,9 @@
     "300": {
       "doors": [
         {
+          "target": "308"
+        },
+        {
           "target": "309"
         }
       ],
@@ -1163,6 +1166,9 @@
     },
     "308": {
       "doors": [
+        {
+          "target": "21B"
+        },
         {
           "target": "300"
         }
@@ -1322,6 +1328,11 @@
       "npcs": [ {} ]
     },
     "404": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "target": "401",
@@ -1446,18 +1457,12 @@
       ]
     },
     "40D": {
-      "doorRando": [
-        {
-          "category": "bridge"
-        }
-      ],
       "doors": [
         {
           "target": "407"
         },
         {
-          "target": "40E",
-          "randomize": false
+          "target": "40E"
         }
       ],
       "npcs": [
@@ -1474,8 +1479,7 @@
           "randomize": false
         },
         {
-          "target": "40D",
-          "randomize": false
+          "target": "40D"
         }
       ],
       "items": [
@@ -1574,8 +1578,7 @@
           "randomize": false
         },
         {
-          "target": "502",
-          "randomize": false
+          "target": "502"
         }
       ],
       "npcs": [
@@ -1585,10 +1588,18 @@
       ]
     },
     "502": {
+      "doorRando": [
+        {
+          "nop": [
+            5486,
+            5489,
+            5492
+          ]
+        }
+      ],
       "doors": [
         {
-          "target": "501",
-          "randomize": false
+          "target": "501"
         },
         {
           "target": "508"
@@ -1942,7 +1953,8 @@
         },
         {
           "target": "60E",
-          "requires": [ 76 ]
+          "requires": [ 76 ],
+          "requiresRoom": [ "608" ]
         }
       ],
       "enemies": [ {} ]
@@ -2025,6 +2037,11 @@
       "enemies": [ {} ]
     },
     "611": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "npcs": [ {} ]
     },
     "612": {
@@ -2127,6 +2144,12 @@
       ]
     },
     "700": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "scenario": 0
+        }
+      ],
       "doors": [
         {
           "target": "701",

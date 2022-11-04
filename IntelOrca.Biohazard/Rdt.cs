@@ -19,7 +19,7 @@ namespace IntelOrca.Biohazard
         public OpcodeBase[] Opcodes { get; set; } = new OpcodeBase[0];
         public ScriptAst? Ast { get; set; }
 
-        public IEnumerable<DoorAotSeOpcode> Doors => Opcodes.OfType<DoorAotSeOpcode>();
+        public IEnumerable<IDoorAotSetOpcode> Doors => Opcodes.OfType<IDoorAotSetOpcode>();
         public IEnumerable<SceEmSetOpcode> Enemies => Opcodes.OfType<SceEmSetOpcode>();
         public IEnumerable<ItemAotSetOpcode> Items => Opcodes.OfType<ItemAotSetOpcode>();
         public IEnumerable<AotResetOpcode> Resets => Opcodes.OfType<AotResetOpcode>();
@@ -34,7 +34,7 @@ namespace IntelOrca.Biohazard
 
         public IEnumerable<T> EnumerateOpcodes<T>(RandoConfig config) => AstEnumerator<T>.Enumerate(Ast!, config);
 
-        public void SetDoorTarget(int id, RdtId target, DoorEntrance destination)
+        public void SetDoorTarget(int id, RdtId target, DoorEntrance destination, RdtId originalId)
         {
             foreach (var door in Doors)
             {
@@ -45,17 +45,26 @@ namespace IntelOrca.Biohazard
                     door.NextZ = destination.Z;
                     door.NextD = destination.D;
                     door.Target = target;
-                    door.Camera = destination.Camera;
-                    door.Floor = destination.Floor;
+                    door.NextCamera = destination.Camera;
+                    door.NextFloor = destination.Floor;
                 }
             }
             foreach (var reset in Resets)
             {
-                if (reset.Id == id)
+                if (reset.Id == id && reset.SCE == 1)
                 {
-                    reset.Type = (ushort)destination.X;
-                    reset.Amount = (ushort)destination.Y;
-                    reset.Unk8 = (ushort)destination.Z;
+                    reset.Data0 = (ushort)destination.X;
+                    reset.Data1 = (ushort)destination.Y;
+                    reset.Data2 = (ushort)destination.Z;
+                }
+            }
+            foreach (var cmp in Opcodes.OfType<CmpOpcode>())
+            {
+                var oldValue = (short)(((originalId.Stage + 1) << 8) | originalId.Room);
+                var newValue = (short)(((target.Stage + 1) << 8) | target.Room);
+                if (cmp.Flag == 27 && cmp.Value == oldValue)
+                {
+                    cmp.Value = newValue;
                 }
             }
         }
@@ -66,8 +75,8 @@ namespace IntelOrca.Biohazard
             {
                 if (door.Id == id)
                 {
-                    door.DoorLockFlag = 0;
-                    door.DoorKey = 0;
+                    door.KeyId = 0;
+                    door.KeyType = 0;
                 }
             }
         }
@@ -84,10 +93,10 @@ namespace IntelOrca.Biohazard
             }
             foreach (var reset in Resets)
             {
-                if (reset.Id == id && reset.Type != 0)
+                if (reset.Id == id && reset.SCE == 2 && reset.Data0 != 0)
                 {
-                    reset.Type = type;
-                    reset.Amount = amount;
+                    reset.Data0 = type;
+                    reset.Data1 = amount;
                 }
             }
         }
@@ -153,12 +162,12 @@ namespace IntelOrca.Biohazard
             {
                 Console.WriteLine("DOOR  #{0:X2}: {1:X}{2:X2} {3} {4} {5} ({6})",
                     door.Id,
-                    door.Stage + 1,
-                    door.Room,
-                    door.DoorFlag,
-                    door.DoorLockFlag,
-                    door.DoorKey,
-                    door.DoorKey == 0xFF ? "side" : IntelOrca.Biohazard.Items.GetItemName(door.DoorKey));
+                    door.NextStage + 1,
+                    door.NextRoom,
+                    door.Animation,
+                    door.KeyId,
+                    door.KeyType,
+                    door.KeyType == 0xFF ? "side" : IntelOrca.Biohazard.Items.GetItemName(door.KeyType));
             }
             foreach (var item in Items)
             {
@@ -172,7 +181,7 @@ namespace IntelOrca.Biohazard
                 {
                     Console.WriteLine("RESET #{0:X2}: {1} x{2}",
                         reset.Id,
-                        IntelOrca.Biohazard.Items.GetItemName(reset.Type), reset.Amount);
+                        IntelOrca.Biohazard.Items.GetItemName(reset.Data0), reset.Data1);
                 }
             }
             Console.WriteLine("------------------------");
