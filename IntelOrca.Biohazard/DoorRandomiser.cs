@@ -101,7 +101,7 @@ namespace IntelOrca.Biohazard
                 graph.End = GetOrCreateNode(RdtId.Parse(_map.EndB!));
             }
 
-            var numAreas = 3;
+            var numAreas = 4;
 
             _nodesLeft.AddRange(_nodes);
             _nodesLeft.Remove(graph.Start);
@@ -151,6 +151,12 @@ namespace IntelOrca.Biohazard
                     if (edge.Node == null)
                     {
                         _logger.WriteLine($"{node.RdtId}:{edge.DoorId} -> null");
+
+                        // Connect door back to itself
+                        if (edge.DoorId != null && edge.Entrance != null)
+                        {
+                            ConnectDoor(node, edge, node, edge);
+                        }
                     }
                 }
             }
@@ -185,20 +191,23 @@ namespace IntelOrca.Biohazard
         private PlayNode[][] GetAreaSuperNodes(int count)
         {
             var superNodes = Enumerable.Range(0, count).Select(x => new List<PlayNode>()).ToArray();
-            var boxNodes = _nodesLeft.Where(x => x.Category == DoorRandoCategory.Box).Shuffle(_rng);
+            var superNodeIndex = _rng.Next(0, count);
 
-            var superNodeIndex = 0;
-            foreach (var node in boxNodes)
+            var boxNodes = _nodesLeft.Where(x => x.Category == DoorRandoCategory.Box).Shuffle(_rng).ToList();
+            while (boxNodes.Count > 0)
             {
+                var node = boxNodes[0];
                 var superNode = superNodes[superNodeIndex];
                 AddStickyNodeGroup(node, superNode);
                 _nodesLeft.RemoveMany(superNode);
+                boxNodes.RemoveMany(superNode);
                 superNodeIndex = (superNodeIndex + 1) % superNodes.Length;
             }
 
-            var remainingNodes = _nodesLeft.Shuffle(_rng);
-            foreach (var node in remainingNodes)
+            _nodesLeft = _nodesLeft.Shuffle(_rng).ToList();
+            while (_nodesLeft.Count > 0)
             {
+                var node = _nodesLeft[0];
                 var superNode = superNodes[superNodeIndex];
                 AddStickyNodeGroup(node, superNode);
                 _nodesLeft.RemoveMany(superNode);
@@ -265,29 +274,50 @@ namespace IntelOrca.Biohazard
                 return false;
 
             CalculateEdgeCounts();
-            foreach (var node in unfinishedNodes)
+            if (TryConnectNode(unfinishedNodes, false))
+                return true;
+            return TryConnectNode(unfinishedNodes, true);
+        }
+
+        private bool TryConnectNode(PlayNode[] nodes, bool end)
+        {
+            if (end)
+            {
+                nodes = nodes.OrderByDescending(x => x.DoorRandoRouteTokens.Length).ToArray();
+            }
+            foreach (var node in nodes)
             {
                 foreach (var edge in node.Edges)
                 {
                     if (ValidateEntranceNode(node, edge))
                     {
-                        if (TryConnectDoor(node, edge))
+                        if (TryConnectDoor(node, edge, end))
                         {
                             return true;
                         }
                     }
                 }
             }
-            return true;
+            return false;
         }
 
-        private bool TryConnectDoor(PlayNode node, PlayEdge edge)
+        private bool TryConnectDoor(PlayNode node, PlayEdge edge, bool end)
         {
             var exitNodeEdge = GetRandomRoom(node, edge);
             if (exitNodeEdge == null)
             {
-                exitNodeEdge = (_endNode, _endNode.Edges.First(x => x.Randomize));
-                edge.NoReturn = true;
+                if (end)
+                {
+                    exitNodeEdge = (_endNode, _endNode.Edges.First(x => x.Randomize && x.Requires.Length == 0));
+                    foreach (var e in _endNode.Edges)
+                    {
+                        e.NoReturn = true;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
             }
             var (exitNode, exitEdge) = exitNodeEdge.Value;
 
@@ -332,7 +362,14 @@ namespace IntelOrca.Biohazard
             {
                 var bDoorId = bEdge.DoorId.Value;
                 var bRdt = _gameData.GetRdt(b.RdtId)!;
-                bRdt.SetDoorTarget(bDoorId, a.RdtId, aEdge.Entrance.Value, bEdge.OriginalTargetRdt);
+                if (aEdge.Entrance == null)
+                {
+                    bRdt.SetDoorTarget(bDoorId, b.RdtId, bEdge.Entrance.Value, bEdge.OriginalTargetRdt);
+                }
+                else
+                {
+                    bRdt.SetDoorTarget(bDoorId, a.RdtId, aEdge.Entrance.Value, bEdge.OriginalTargetRdt);
+                }
                 if (bEdge.Lock == LockKind.Side && b.Category != DoorRandoCategory.Static)
                 {
                     bEdge.Lock = LockKind.None;
@@ -414,6 +451,12 @@ namespace IntelOrca.Biohazard
             var remainingEdges = _numUnlockedEdges + _numKeyEdges - 1;
             if (_visitedRooms.Contains(exitNode))
             {
+                // Do not loopback until all unvisited single edge rooms are visited
+                if (_nodes.Any(x => !_visitedRooms.Contains(x) && GetFreeEdgesForRoom(x) == 1))
+                {
+                    return false;
+                }
+
                 // Check if this is a compatible loopback route (i.e. has the same tokens, no different ones)
                 var outliers = node.DoorRandoRouteTokens.UnionExcept(exitNode.DoorRandoRouteTokens).Count();
                 if (outliers != 0)
@@ -425,11 +468,16 @@ namespace IntelOrca.Biohazard
                 return finishing || remainingEdges > 1;
             }
 
-            var extraEdges = exitNode.Edges.Count(x => x.Node == null && (x.Lock == LockKind.None || x.Lock == LockKind.Side || x.Lock == LockKind.Unblock)) - 1;
+            var extraEdges = GetFreeEdgesForRoom(exitNode) - 1;
             if (!finishing && remainingEdges == 0 && extraEdges == 0)
                 return false;
 
             return true;
+        }
+
+        private static int GetFreeEdgesForRoom(PlayNode node)
+        {
+            return node.Edges.Count(x => x.Node == null && (x.Lock == LockKind.None || x.Lock == LockKind.Side || x.Lock == LockKind.Unblock));
         }
 
         private (PlayNode, PlayEdge)? GetRandomRoom(PlayNode node, PlayEdge edge)

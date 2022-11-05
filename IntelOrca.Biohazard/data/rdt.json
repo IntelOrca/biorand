@@ -40,7 +40,8 @@
           "lock": "gate"
         },
         {
-          "target": "118"
+          "target": "118",
+          "lock": "unblock"
         }
       ],
       "enemies": [
@@ -275,6 +276,7 @@
       "doors": [
         {
           "target": "200",
+          "lock": "unblock",
           "randomize": false
         },
         {
@@ -288,6 +290,11 @@
       "enemies": [ {} ]
     },
     "111": {
+      "doorRando": [
+        {
+          "category": "bridge"
+        }
+      ],
       "doors": [
         {
           "target": "117"
@@ -554,6 +561,12 @@
       ]
     },
     "202": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "scenario": 0
+        }
+      ],
       "doors": [
         {
           "target": "200"
@@ -829,6 +842,11 @@
       "enemies": [ {} ]
     },
     "20E": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "id": 0,
@@ -886,7 +904,8 @@
         },
         {
           "target": "214",
-          "requires": [ 52 ]
+          "requires": [ 52 ],
+          "requiresRoom": [ "213" ]
         },
         {
           "target": "216"
@@ -1082,7 +1101,22 @@
       "doorRando": [
         {
           "category": "bridge",
-          "player": 0
+          "player": 0,
+          "nop": [
+            5518,
+            5522,
+            5558,
+
+            5526,
+            5530,
+            5534,
+            5538,
+            5542,
+            5546,
+            5550,
+
+            6184
+          ]
         }
       ],
       "doors": [
@@ -1183,12 +1217,18 @@
       ],
       "doors": [
         {
+          "target": "300"
+        },
+        {
           "target": "30A"
         }
       ]
     },
     "30A": {
       "doors": [
+        {
+          "target": "309"
+        },
         {
           "target": "400",
           "noReturn": true
@@ -1268,6 +1308,9 @@
     },
     "400": {
       "doors": [
+        {
+          "target": "30A"
+        },
         {
           "target": "401"
         }
@@ -1450,6 +1493,11 @@
       ]
     },
     "40C": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "target": "40F"
@@ -1499,6 +1547,11 @@
       ]
     },
     "40F": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "target": "401"
@@ -1578,7 +1631,8 @@
           "randomize": false
         },
         {
-          "target": "502"
+          "target": "502",
+          "lock": "unblock"
         }
       ],
       "npcs": [

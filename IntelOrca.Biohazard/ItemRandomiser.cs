@@ -60,8 +60,8 @@ namespace IntelOrca.Biohazard
                         _shufflePool.AddRange(_currentPool.Where(x => x.Priority == ItemPriority.Normal));
                         _currentPool.Clear();
                     }
+                    checkpoint = newCheckpoint;
                 }
-                checkpoint = newCheckpoint;
             }
             _shufflePool.AddRange(_currentPool.Where(x => x.Priority == ItemPriority.Normal));
             if (_shufflePool.DistinctBy(x => x.RdtItemId).Count() != _shufflePool.Count())
@@ -162,10 +162,13 @@ namespace IntelOrca.Biohazard
                     {
                         if (edge.NoReturn)
                         {
-                            checkpoint = edge.Node;
-                            if (_debugLogging)
+                            if (!_visitedRooms.Contains(edge.Node))
                             {
-                                _logger.WriteLine($"        {node} -> {edge.Node} (checkpoint)");
+                                checkpoint = edge.Node;
+                                if (_debugLogging)
+                                {
+                                    _logger.WriteLine($"        {node} -> {edge.Node} (checkpoint)");
+                                }
                             }
                         }
                         else
