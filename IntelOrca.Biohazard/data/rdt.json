@@ -1839,11 +1839,12 @@
           "lock": "always"
         },
         {
-          "target": "601"
+          "target": "601",
+          "requiresRoom": [ "605" ],
+          "lock": "unblock"
         },
         {
-          "target": "603",
-          "randomize": false
+          "target": "603"
         }
       ],
       "npcs": [
@@ -1860,8 +1861,7 @@
       ],
       "doors": [
         {
-          "target": "602",
-          "randomize": false
+          "target": "602"
         },
         {
           "target": "604",
