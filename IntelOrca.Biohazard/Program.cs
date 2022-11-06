@@ -18,6 +18,11 @@ namespace IntelOrca.Biohazard
         {
             var re2Path = @"F:\games\re2";
             var originalDataPath = Path.Combine(re2Path, "data");
+            if (!Directory.Exists(originalDataPath))
+            {
+                originalDataPath = re2Path;
+            }
+
             var modPath = Path.Combine(re2Path, @"mod_biorand");
 
             var gameData = GameDataReader.Read(originalDataPath, modPath, 0);
@@ -32,6 +37,10 @@ namespace IntelOrca.Biohazard
         public static void Generate(RandoConfig config, string re2Path)
         {
             var originalDataPath = Path.Combine(re2Path, "data");
+            if (!Directory.Exists(originalDataPath))
+            {
+                originalDataPath = re2Path;
+            }
             var modPath = Path.Combine(re2Path, @"mod_biorand");
 
             if (Directory.Exists(modPath))

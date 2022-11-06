@@ -337,7 +337,8 @@ namespace IntelOrca.Biohazard.BioRand
 
         private static bool ValidateGamePath(string path)
         {
-            return Directory.Exists(Path.Combine(path, "data", "pl0"));
+            return Directory.Exists(Path.Combine(path, "data", "pl0")) ||
+                Directory.Exists(Path.Combine(path, "pl0"));
         }
 
         private bool ShowGamePathWarning()
