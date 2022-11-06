@@ -36,6 +36,9 @@ namespace IntelOrca.Biohazard.BioRand
 #if !DEBUG
             CheckForNewVersion();
 #endif
+
+            var version = CurrentVersion;
+            Title += $" - v{version.Major}.{version.Minor}.{version.Build}";
         }
 
         private void LoadSettings()
