@@ -25,7 +25,6 @@ namespace IntelOrca.Biohazard
         private int _numUnconnectedEdges;
         private int _numKeyEdges;
         private int _numUnlockedEdges;
-        private int _tokenCount;
         private bool _boxRoomReached;
         private byte _lockId = 145;
         private List<PlayNode> _nodesLeft = new List<PlayNode>();
@@ -181,6 +180,8 @@ namespace IntelOrca.Biohazard
             {
                 if (edge.Node == null)
                     edge.NoReturn = true;
+                else
+                    edge.Lock = LockKind.Always;
             }
         }
 
@@ -313,15 +314,28 @@ namespace IntelOrca.Biohazard
 
         private bool ConnectUpRandomNode(PlayEdge[] unfinishedEdges)
         {
-            // Connect up an edge
-            var constraints = new ConnectConstraint[]
+            var strictConstraints = new ConnectConstraint[]
             {
                 new LockConstraint(),
                 new FixedLinkConstraint(),
                 new LoopbackConstraint(),
                 new LeafConstraint(),
-                // new BoxConstraint()
+                new BoxConstraint()
             };
+            var looseConstraints = new ConnectConstraint[]
+            {
+                new LockConstraint(),
+                new FixedLinkConstraint(),
+                new LoopbackConstraint(),
+                new LeafConstraint()
+            };
+            if (ConnectUpRandomNode(strictConstraints, unfinishedEdges))
+                return true;
+            return ConnectUpRandomNode(looseConstraints, unfinishedEdges);
+        }
+
+        private bool ConnectUpRandomNode(ConnectConstraint[] constraints, PlayEdge[] unfinishedEdges)
+        {
             foreach (var entrance in unfinishedEdges)
             {
                 var exit = GetRandomRoom(constraints, entrance);
@@ -377,14 +391,13 @@ namespace IntelOrca.Biohazard
                 _allVisitedRooms.Add(exitNode);
                 if (entrance.Requires.Length != 0)
                 {
-                    exitNode.DoorRandoRouteTokens = entrance.Parent.DoorRandoRouteTokens
-                        .Append(_tokenCount)
+                    exitNode.DoorRandoAllRequiredItems = entrance.Parent.DoorRandoAllRequiredItems
+                        .Union(entrance.Requires)
                         .ToArray();
-                    _tokenCount++;
                 }
                 else
                 {
-                    exitNode.DoorRandoRouteTokens = entrance.Parent.DoorRandoRouteTokens;
+                    exitNode.DoorRandoAllRequiredItems = entrance.Parent.DoorRandoAllRequiredItems;
                 }
                 exitNode.Depth = entrance.Parent.Depth + 1;
 
@@ -655,6 +668,8 @@ namespace IntelOrca.Biohazard
                         continue;
                     if (correctedItem.Scenario != null && correctedItem.Scenario != _config.Scenario)
                         continue;
+                    if (correctedItem.DoorRando != null && correctedItem.DoorRando != _config.RandomDoors)
+                        continue;
 
                     // HACK 255 is used for item get commands
                     if (correctedItem.Id == 255)
@@ -808,7 +823,7 @@ namespace IntelOrca.Biohazard
 
                 // Check if this is a compatible loopback route (i.e. has the same tokens, no different ones)
                 // var outliers = node.DoorRandoRouteTokens.UnionExcept(exitNode.DoorRandoRouteTokens).Count();
-                var outliers = exit.Parent.DoorRandoRouteTokens.Except(entrance.Parent.DoorRandoRouteTokens).Count();
+                var outliers = exit.Parent.DoorRandoAllRequiredItems.Except(entrance.Parent.DoorRandoAllRequiredItems).Count();
                 if (outliers != 0)
                     return false;
 

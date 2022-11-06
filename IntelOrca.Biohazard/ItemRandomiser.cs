@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 
 namespace IntelOrca.Biohazard
 {
@@ -33,10 +31,9 @@ namespace IntelOrca.Biohazard
             _rng = random;
         }
 
-        public void RandomiseItems(PlayGraph graph, bool searchForOriginalKeyLocation)
+        public void RandomiseItems(PlayGraph graph)
         {
             _nodes = graph.GetAllNodes();
-            _searchForOriginalKeyLocation = searchForOriginalKeyLocation;
 
             _logger.WriteHeading("Randomizing Items:");
             _logger.WriteLine("Placing key items:");
@@ -60,6 +57,14 @@ namespace IntelOrca.Biohazard
                     {
                         _shufflePool.AddRange(_currentPool.Where(x => x.Priority == ItemPriority.Normal));
                         _currentPool.Clear();
+                    }
+                    if (_config.RandomDoors)
+                    {
+                        _haveItems.Clear();
+                        foreach (var item in newCheckpoint.DoorRandoAllRequiredItems)
+                        {
+                            _haveItems.Add(item);
+                        }
                     }
                     checkpoint = newCheckpoint;
                 }
@@ -299,8 +304,9 @@ namespace IntelOrca.Biohazard
                 throw new Exception("Run out of free item slots");
 
             var itemEntry = _currentPool[index.Value];
+            var itemParentNode = _nodes.First(x => x.RdtId == itemEntry.RdtId);
 
-            if (_searchForOriginalKeyLocation)
+            if (!_config.RandomDoors)
             {
                 // Find original location of key item
                 var originalIndex = _currentPool.FindIndex(x => x.Type == req);
@@ -358,7 +364,7 @@ namespace IntelOrca.Biohazard
             }
             else
             {
-                itemEntry.Amount = 1;
+                itemEntry.Amount = GetTotalKeyRequirementCount(itemParentNode, req);
             }
             itemEntry.Type = req;
 
@@ -367,12 +373,7 @@ namespace IntelOrca.Biohazard
             _haveItems.Add(req);
             _currentPool.RemoveAt(index.Value);
             _definedPool.Add(itemEntry);
-
-            var node2 = _nodes.FirstOrDefault(x => x.RdtId == itemEntry.RdtId);
-            if (node2 != null)
-            {
-                node2.PlacedKeyItems.Add(itemEntry);
-            }
+            itemParentNode.PlacedKeyItems.Add(itemEntry);
 
             _logger.WriteLine($"    Placing key item ({Items.GetItemName(itemEntry.Type)}) in {itemEntry.RdtId}:{itemEntry.Id}");
             return true;
@@ -616,6 +617,56 @@ namespace IntelOrca.Biohazard
                 {
                     rdt.SetItem(entry.Id, entry.Type, entry.Amount);
                 }
+            }
+        }
+
+        private ushort GetTotalKeyRequirementCount(PlayNode node, ushort keyType)
+        {
+            if (!IsItemTypeDiscardable((ItemType)keyType))
+            {
+                return 1;
+            }
+
+            ushort total = 0;
+            var visited = new HashSet<PlayNode>();
+            var stack = new Stack<PlayNode>();
+            stack.Push(node);
+            visited.Add(node);
+            while (stack.Count != 0)
+            {
+                var n = stack.Pop();
+                if (n.Requires.Contains(keyType))
+                    total++;
+
+                foreach (var edge in n.Edges)
+                {
+                    if (edge.Requires.Contains(keyType))
+                        total++;
+                    if (edge.Node != null && edge.Lock != LockKind.Always && visited.Add(edge.Node))
+                    {
+                        stack.Push(edge.Node);
+                    }
+                }
+            }
+            return total;
+        }
+
+        private static bool IsItemTypeDiscardable(ItemType itemType)
+        {
+            switch (itemType)
+            {
+                case ItemType.CabinKey:
+                case ItemType.SpadeKey:
+                case ItemType.DiamondKey:
+                case ItemType.HeartKey:
+                case ItemType.ClubKey:
+                case ItemType.PowerRoomKey:
+                case ItemType.UmbrellaKeyCard:
+                case ItemType.MasterKey:
+                case ItemType.PlatformKey:
+                    return true;
+                default:
+                    return false;
             }
         }
     }

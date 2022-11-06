@@ -2111,7 +2111,8 @@
           "id": 2,
           "type": 27,
           "amount": 100,
-          "priority": "low"
+          "priority": "low",
+          "doorRando": false
         }
       ],
       "enemies": [ {} ]
