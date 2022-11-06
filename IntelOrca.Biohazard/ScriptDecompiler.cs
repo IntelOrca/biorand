@@ -162,6 +162,7 @@ namespace IntelOrca.Biohazard
             switch (opcode)
             {
                 case Opcode.DoorAotSe:
+                case Opcode.DoorAotSet4p:
                 case Opcode.SceEmSet:
                 case Opcode.AotReset:
                 case Opcode.ItemAotSet:

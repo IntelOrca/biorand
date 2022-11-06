@@ -178,13 +178,13 @@
           "target": "10B",
           "requires": [ 50 ],
           "requiresRoom": [ "108" ],
-          "preventLoopback": true
+          "lock": "unblock"
         },
         {
           "target": "21B",
           "requires": [ 50 ],
           "requiresRoom": [ "108", "30B" ],
-          "preventLoopback": true,
+          "lock": "unblock",
           "player": 0,
           "scenario": 1
         },
@@ -192,7 +192,7 @@
           "target": "21B",
           "requires": [ 50, 64, 65 ],
           "requiresRoom": [ "108" ],
-          "preventLoopback": true,
+          "lock": "unblock",
           "player": 1
         }
       ],
@@ -487,6 +487,11 @@
       ]
     },
     "11B": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "target": "11A"
@@ -1398,6 +1403,10 @@
         },
         {
           "target": "404"
+        },
+        {
+          "target": "40B",
+          "lock": "always"
         }
       ],
       "enemies": [
@@ -1448,6 +1457,11 @@
       ]
     },
     "409": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "target": "410"
@@ -1465,7 +1479,8 @@
     "40A": {
       "doors": [
         {
-          "target": "410"
+          "target": "410",
+          "lock": "unblock"
         },
         {
           "target": "408"
@@ -1806,6 +1821,11 @@
       ]
     },
     "600": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "target": "602"
@@ -1822,8 +1842,14 @@
         },
         {
           "target": "700",
+          "lock": "always",
+          "doorRando": true
+        },
+        {
+          "target": "700",
           "noReturn": true,
-          "requires": [ 98 ]
+          "requires": [ 98 ],
+          "doorRando": false
         }
       ],
       "npcs": [
@@ -2014,6 +2040,11 @@
       "enemies": [ {} ]
     },
     "60C": {
+      "doorRando": [
+        {
+          "nop": [ 4042 ]
+        }
+      ],
       "doors": [
         {
           "target": "608"
@@ -2023,7 +2054,16 @@
         },
         {
           "target": "60F",
-          "scenario": 1
+          "requires": [ 76 ],
+          "requiresRoom": [ "608" ],
+          "doorRando": true
+        },
+        {
+          "target": "60F",
+          "requires": [ 76 ],
+          "requiresRoom": [ "608" ],
+          "scenario": 1,
+          "doorRando": false
         },
         {
           "target": "610",

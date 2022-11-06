@@ -106,17 +106,20 @@ namespace IntelOrca.Biohazard
 
             if (config.RandomDoors || config.RandomItems)
             {
+                var dgmlPath = Path.Combine(modPath, $"graph_pl{config.Player}.dgml");
                 var doorRando = new DoorRandomiser(logger, config, gameData, map, randomDoors);
                 var itemRando = new ItemRandomiser(logger, config, gameData, map, randomItems);
                 if (config.RandomDoors)
                 {
                     var graph = doorRando.CreateRandomGraph();
                     itemRando.RandomiseItems(graph, false);
+                    graph.GenerateDgml(dgmlPath);
                 }
                 else
                 {
                     var graph = doorRando.CreateOriginalGraph();
                     itemRando.RandomiseItems(graph, true);
+                    graph.GenerateDgml(dgmlPath);
                 }
             }
 

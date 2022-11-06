@@ -11,7 +11,7 @@ namespace IntelOrca.Biohazard
         private readonly RandoLogger _logger;
         private RandoConfig _config;
         private GameData _gameData;
-        private List<PlayNode> _nodes = new List<PlayNode>();
+        private PlayNode[] _nodes = new PlayNode[0];
         private List<ItemPoolEntry> _futurePool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _currentPool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _shufflePool = new List<ItemPoolEntry>();
@@ -35,6 +35,7 @@ namespace IntelOrca.Biohazard
 
         public void RandomiseItems(PlayGraph graph, bool searchForOriginalKeyLocation)
         {
+            _nodes = graph.GetAllNodes();
             _searchForOriginalKeyLocation = searchForOriginalKeyLocation;
 
             _logger.WriteHeading("Randomizing Items:");
@@ -150,8 +151,6 @@ namespace IntelOrca.Biohazard
                 {
                     if (edge.Node == null)
                         continue;
-                    if (seen.Contains(edge.Node.RdtId))
-                        continue;
                     if (edge.Lock != LockKind.None && edge.Lock != LockKind.Unblock)
                         continue;
                     if (!edge.RequiresRoom.All(x => _visitedRooms.Contains(x)))
@@ -160,6 +159,9 @@ namespace IntelOrca.Biohazard
                     var requiredItems = edge.Requires == null ? new ushort[0] : edge.Requires.Except(_haveItems).ToArray()!;
                     if (requiredItems.Length == 0)
                     {
+                        if (seen.Contains(edge.Node.RdtId))
+                            continue;
+
                         if (edge.NoReturn)
                         {
                             if (!_visitedRooms.Contains(edge.Node))
@@ -365,6 +367,13 @@ namespace IntelOrca.Biohazard
             _haveItems.Add(req);
             _currentPool.RemoveAt(index.Value);
             _definedPool.Add(itemEntry);
+
+            var node2 = _nodes.FirstOrDefault(x => x.RdtId == itemEntry.RdtId);
+            if (node2 != null)
+            {
+                node2.PlacedKeyItems.Add(itemEntry);
+            }
+
             _logger.WriteLine($"    Placing key item ({Items.GetItemName(itemEntry.Type)}) in {itemEntry.RdtId}:{itemEntry.Id}");
             return true;
         }

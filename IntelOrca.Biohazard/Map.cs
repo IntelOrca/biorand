@@ -44,7 +44,7 @@ namespace IntelOrca.Biohazard
         public bool NoReturn { get; set; }
         public ushort[]? Requires { get; set; }
         public string[]? RequiresRoom { get; set; }
-        public bool PreventLoopback { get; set; }
+        public bool? DoorRando { get; set; }
         public int? Player { get; set; }
         public int? Scenario { get; set; }
     }
