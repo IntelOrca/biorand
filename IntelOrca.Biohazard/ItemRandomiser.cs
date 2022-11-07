@@ -48,12 +48,12 @@ namespace IntelOrca.Biohazard
             _visitedRooms.Clear();
             while (!_visitedRooms.Contains(graph.End) || _requiredItems.Count != 0)
             {
-                PlaceKeyItem(_config.AlternativeRoutes);
+                PlaceKeyItem(_config.RandomDoors || _config.AlternativeRoutes);
                 var newCheckpoint = Search(checkpoint);
                 if (newCheckpoint != checkpoint && _requiredItems.Count == 0)
                 {
                     _logger.WriteLine("    ------------ checkpoint ------------");
-                    if (_config.ProtectFromSoftLock)
+                    if (_config.RandomDoors || _config.ProtectFromSoftLock)
                     {
                         _shufflePool.AddRange(_currentPool.Where(x => x.Priority == ItemPriority.Normal));
                         _currentPool.Clear();
@@ -73,7 +73,7 @@ namespace IntelOrca.Biohazard
             if (_shufflePool.DistinctBy(x => x.RdtItemId).Count() != _shufflePool.Count())
                 throw new Exception();
 
-            if (_config.ShuffleItems)
+            if (!_config.RandomDoors && _config.ShuffleItems)
             {
                 ShuffleRemainingPool();
             }

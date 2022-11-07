@@ -12,8 +12,9 @@ namespace IntelOrca.Biohazard
         };
 
         public const int MaxSeed = 0b11111_11111_11111_11111;
+        public const byte LatestVersion = 1;
 
-        public byte Version { get; set; } = 0;
+        public byte Version { get; set; } = LatestVersion;
         public byte Game { get; set; } = 2;
         public byte GameVariant { get; set; } = 0;
         public int Seed { get; set; }
@@ -35,14 +36,16 @@ namespace IntelOrca.Biohazard
         public byte RatioInkRibbons { get; set; } = 16;
         public byte AmmoQuantity { get; set; } = 4;
         public byte EnemyDifficulty { get; set; } = 2;
+        public byte AreaCount { get; set; } = 3;
+        public byte AreaSize { get; set; } = 7;
 
         public static RandoConfig FromString(string code)
         {
             var chars = code?.ToCharArray() ?? new char[0];
-            Array.Resize(ref chars, 16);
+            Array.Resize(ref chars, 17);
 
             var result = new RandoConfig();
-            // result.Version = ParseSingle(chars[1]);
+            result.Version = ParseSingle(chars[1]);
             // result.Game = ParseSingle(chars[2]);
             result.GameVariant = Math.Min(ParseSingle(chars[3]), (byte)1);
 
@@ -54,6 +57,7 @@ namespace IntelOrca.Biohazard
             result.RatioHealth = ParseSingle(chars[13]);
             result.RatioInkRibbons = ParseSingle(chars[14]);
             result.SetD4(ParseSingle(chars[15]));
+            result.SetD5(ParseSingle(chars[16]));
 
             return result;
         }
@@ -84,6 +88,7 @@ namespace IntelOrca.Biohazard
             AppendSingle(sb, RatioHealth);
             AppendSingle(sb, RatioInkRibbons);
             AppendSingle(sb, GetD4());
+            AppendSingle(sb, GetD5());
             return sb.ToString();
         }
 
@@ -145,6 +150,20 @@ namespace IntelOrca.Biohazard
             var result = 0;
             result |= AmmoQuantity & 0b111;
             result |= (EnemyDifficulty & 0b11) << 3;
+            return (byte)result;
+        }
+
+        private void SetD5(byte value)
+        {
+            AreaCount = (byte)(value & 0b11);
+            AreaSize = (byte)((value & 0b11100) >> 2);
+        }
+
+        private byte GetD5()
+        {
+            var result = 0;
+            result |= AreaCount & 0b11;
+            result |= (AreaSize & 0b111) << 2;
             return (byte)result;
         }
 

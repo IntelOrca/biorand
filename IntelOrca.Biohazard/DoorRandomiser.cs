@@ -125,7 +125,7 @@ namespace IntelOrca.Biohazard
                 graph.End = GetOrCreateNode(RdtId.Parse(_map.EndB!));
             }
 
-            var numAreas = 4;
+            var numAreas = _config.AreaCount + 1;
 
             _nodesLeft.AddRange(_nodes);
             _nodesLeft.Remove(graph.Start);
@@ -228,7 +228,7 @@ namespace IntelOrca.Biohazard
                 _nodesLeft.RemoveMany(bridgeSuperNode);
                 bridgeSuperNodes.Add(bridgeSuperNode);
             }
-            return bridgeSuperNodes.ToArray();
+            return bridgeSuperNodes.Shuffle(_rng).ToArray();
         }
 
         private PlayNode[][] GetAreaSuperNodes(int count)
@@ -237,6 +237,11 @@ namespace IntelOrca.Biohazard
             var superNodeIndex = _rng.Next(0, count);
 
             var boxNodes = _nodesLeft.Where(x => x.Category == DoorRandoCategory.Box).Shuffle(_rng).ToList();
+            if (_config.AreaSize < 7)
+            {
+                var numNodes = 4 + ((boxNodes.Count - 4) * _config.AreaSize / 7);
+                boxNodes.RemoveRange(numNodes, boxNodes.Count - numNodes);
+            }
             while (boxNodes.Count > 0)
             {
                 var node = boxNodes[0];
@@ -248,6 +253,12 @@ namespace IntelOrca.Biohazard
             }
 
             // Divide up nodes of same edge count equally
+            _nodesLeft = _nodesLeft.Shuffle(_rng).ToList();
+            if (_config.AreaSize < 7)
+            {
+                var numNodes = (_nodesLeft.Count * (_config.AreaSize + 1)) / 8;
+                _nodesLeft.RemoveRange(numNodes, _nodesLeft.Count - numNodes);
+            }
             foreach (var subg in _nodesLeft.GroupBy(x => x.Edges.Count))
             {
                 var subgNodes = subg.Intersect(_nodesLeft).Shuffle(_rng).ToList();
