@@ -817,7 +817,13 @@
         {
           "id": 3,
           "target": "20E:1",
-          "requires": [ 90 ]
+          "doorRando": true
+        },
+        {
+          "id": 3,
+          "target": "20E:1",
+          "requires": [ 90 ],
+          "doorRando": false
         }
       ],
       "items": [
@@ -1015,6 +1021,12 @@
           "target": "302",
           "requires": [ 75 ],
           "player": 0
+        }
+      ],
+      "items": [
+        {
+          "id": 13,
+          "priority": "low"
         }
       ],
       "enemies": [
