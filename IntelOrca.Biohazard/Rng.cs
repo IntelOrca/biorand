@@ -78,7 +78,7 @@ namespace IntelOrca.Biohazard
             public T Next()
             {
                 if (_table.Count == 0)
-                    throw new InvalidOperationException("No probably entries added");
+                    throw new InvalidOperationException("No probability entries added");
                 if (_table.Count > 1)
                 {
                     var p = 0.0;

@@ -426,6 +426,10 @@ namespace IntelOrca.Biohazard
         private void RandomiseRemainingPool()
         {
             _logger.WriteLine("Randomizing non-key items:");
+            if (_config.RatioAmmo == 0 && _config.RatioHealth == 0 && _config.RatioInkRibbons == 0)
+            {
+                throw new Exception("No item ratios have been set.");
+            }
 
             // Shuffle the pool, keep low priority at the end
             var shuffled = _shufflePool
