@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Runtime.InteropServices;
-using OpenSoftware.DgmlTools.Model;
 
 namespace IntelOrca.Biohazard
 {
@@ -211,7 +208,7 @@ namespace IntelOrca.Biohazard
                 }
             }
 
-            if (!_allVisitedRooms.Contains(graph.End))
+            if (!_allVisitedRooms.Contains(graph.End!))
             {
                 throw new Exception("End not reached");
             }
@@ -431,9 +428,9 @@ namespace IntelOrca.Biohazard
 
             if (a.Category != DoorRandoCategory.Static)
             {
-                var aDoorId = aEdge.DoorId.Value;
+                var aDoorId = aEdge.DoorId!.Value;
                 var aRdt = _gameData.GetRdt(a.RdtId)!;
-                aRdt.SetDoorTarget(aDoorId, b.RdtId, bEdge.Entrance.Value, aEdge.OriginalTargetRdt);
+                aRdt.SetDoorTarget(aDoorId, b.RdtId, bEdge.Entrance!.Value, aEdge.OriginalTargetRdt);
                 if (aEdge == bEdge)
                 {
                     aRdt.AddDoorLock(aDoorId, 255);
@@ -451,11 +448,11 @@ namespace IntelOrca.Biohazard
 
             if (aEdge != bEdge && b.Category != DoorRandoCategory.Static && bEdge.Lock != LockKind.Always)
             {
-                var bDoorId = bEdge.DoorId.Value;
+                var bDoorId = bEdge.DoorId!.Value;
                 var bRdt = _gameData.GetRdt(b.RdtId)!;
                 if (aEdge.Entrance == null)
                 {
-                    bRdt.SetDoorTarget(bDoorId, b.RdtId, bEdge.Entrance.Value, bEdge.OriginalTargetRdt);
+                    bRdt.SetDoorTarget(bDoorId, b.RdtId, bEdge.Entrance!.Value, bEdge.OriginalTargetRdt);
                     bRdt.AddDoorLock(bDoorId, 255);
                 }
                 else

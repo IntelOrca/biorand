@@ -20,7 +20,6 @@ namespace IntelOrca.Biohazard
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
         private HashSet<RdtItemId> _visitedItems = new HashSet<RdtItemId>();
         private Rng _rng;
-        private bool _searchForOriginalKeyLocation;
         private bool _debugLogging = false;
 
         public ItemRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng random)
@@ -33,6 +32,9 @@ namespace IntelOrca.Biohazard
 
         public void RandomiseItems(PlayGraph graph)
         {
+            if (graph.Start == null || graph.End == null)
+                throw new ArgumentException("No start or end node", nameof(graph));
+
             _nodes = graph.GetAllNodes();
 
             _logger.WriteHeading("Randomizing Items:");
