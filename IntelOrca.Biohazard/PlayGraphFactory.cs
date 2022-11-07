@@ -106,13 +106,13 @@ namespace IntelOrca.Biohazard
                     _logger.WriteLine("    ------------ checkpoint ------------");
                     if (_config.ProtectFromSoftLock)
                     {
-                        _shufflePool.AddRange(_currentPool);
+                        _shufflePool.AddRange(_currentPool.Where(x => x.Priority == ItemPriority.Normal));
                         _currentPool.Clear();
                     }
                 }
                 checkpoint = newCheckpoint;
             }
-            _shufflePool.AddRange(_currentPool);
+            _shufflePool.AddRange(_currentPool.Where(x => x.Priority == ItemPriority.Normal));
             if (_shufflePool.DistinctBy(x => x.RdtItemId).Count() != _shufflePool.Count())
                 throw new Exception();
 
