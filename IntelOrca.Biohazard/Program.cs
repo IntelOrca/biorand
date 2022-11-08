@@ -71,7 +71,7 @@ namespace IntelOrca.Biohazard
             if (config.GameVariant == 0)
             {
                 // Leon A / Claire B
-                GenerateRdts(config.WithPlayerScenario(0, 0), originalDataPath, modPath);
+                // GenerateRdts(config.WithPlayerScenario(0, 0), originalDataPath, modPath);
                 // Parallel.Invoke(po,
                 //     () => GenerateRdts(config.WithPlayerScenario(0, 0), originalDataPath, modPath),
                 //     () => GenerateRdts(config.WithPlayerScenario(1, 1), originalDataPath, modPath));
@@ -79,7 +79,7 @@ namespace IntelOrca.Biohazard
             else
             {
                 // Leon B / Claire A
-                GenerateRdts(config.WithPlayerScenario(0, 1), originalDataPath, modPath);
+                GenerateRdts(config.WithPlayerScenario(1, 0), originalDataPath, modPath);
                 // Parallel.Invoke(po,
                 //     () => GenerateRdts(config.WithPlayerScenario(0, 1), originalDataPath, modPath),
                 //     () => GenerateRdts(config.WithPlayerScenario(1, 0), originalDataPath, modPath));

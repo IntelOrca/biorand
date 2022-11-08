@@ -306,7 +306,8 @@
     "111": {
       "doorRando": [
         {
-          "category": "bridge"
+          "category": "bridge",
+          "player": 0
         }
       ],
       "doors": [
@@ -1050,6 +1051,11 @@
       ]
     },
     "21B": {
+      "doorRando": [
+        {
+          "category": "bridge"
+        }
+      ],
       "doors": [
         {
           "target": "10A"
@@ -1148,6 +1154,10 @@
 
             6184
           ]
+        },
+        {
+          "category": "exclude",
+          "player": 1
         }
       ],
       "doors": [
@@ -1251,7 +1261,8 @@
           "target": "300"
         },
         {
-          "target": "30A"
+          "target": "30A",
+          "lock":  "unblock"
         }
       ]
     },
@@ -1338,6 +1349,11 @@
       ]
     },
     "400": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "target": "30A"
@@ -1409,7 +1425,11 @@
       "doorRando": [
         {
           "category": "box",
-          "nop": [ 9050, 9160 ]
+          "nop": [ 9050, 9160 ],
+          "player": 0
+        },
+        {
+          "category": "box"
         }
       ],
       "doors": [
@@ -1488,6 +1508,12 @@
       ]
     },
     "408": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "player": 1
+        }
+      ],
       "doors": [
         {
           "target": "407",
@@ -1723,7 +1749,8 @@
             5486,
             5489,
             5492
-          ]
+          ],
+          "player": 0
         }
       ],
       "doors": [
@@ -2090,7 +2117,8 @@
           "target": "60B"
         },
         {
-          "target": "609"
+          "target": "609",
+          "doorRando": false
         }
       ],
       "items": [
@@ -2303,6 +2331,7 @@
         {
           "target": "617",
           "requires": [ 79, 96 ],
+          "doorRando": false,
           "player": 1,
           "scenario": 0
         }
