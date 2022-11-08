@@ -4,10 +4,7 @@ namespace IntelOrca.Biohazard
 {
     public class Map
     {
-        public string? StartA { get; set; }
-        public string? EndA { get; set; }
-        public string? StartB { get; set; }
-        public string? EndB { get; set; }
+        public MapStartEnd[]? BeginEndRooms { get; set; }
         public Dictionary<string, MapRoom>? Rooms { get; set; }
 
         internal MapRoom? GetRoom(RdtId id)
@@ -19,10 +16,14 @@ namespace IntelOrca.Biohazard
         }
     }
 
-    public class MapStart
+    public class MapStartEnd
     {
-        public int Stage { get; set; }
-        public int Room { get; set; }
+        public string? Start { get; set; }
+        public string? End { get; set; }
+
+        public bool? DoorRando { get; set; }
+        public int? Player { get; set; }
+        public int? Scenario { get; set; }
     }
 
     public class MapRoom

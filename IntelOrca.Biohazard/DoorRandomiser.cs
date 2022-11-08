@@ -44,16 +44,9 @@ namespace IntelOrca.Biohazard
             }
 
             var graph = new PlayGraph();
-            if (_config.Scenario == 0)
-            {
-                graph.Start = GetOrCreateNode(RdtId.Parse(_map.StartA!));
-                graph.End = GetOrCreateNode(RdtId.Parse(_map.EndA!));
-            }
-            else
-            {
-                graph.Start = GetOrCreateNode(RdtId.Parse(_map.StartB!));
-                graph.End = GetOrCreateNode(RdtId.Parse(_map.EndB!));
-            }
+            var beginEnd = GetBeginEnd();
+            graph.Start = GetOrCreateNode(RdtId.Parse(beginEnd.Start!));
+            graph.End = GetOrCreateNode(RdtId.Parse(beginEnd.End!));
 
             var queue = new Queue<PlayNode>();
             queue.Enqueue(graph.Start);
@@ -86,16 +79,9 @@ namespace IntelOrca.Biohazard
 
             // Create start and end
             var graph = new PlayGraph();
-            if (_config.Scenario == 0)
-            {
-                graph.Start = GetOrCreateNode(RdtId.Parse(_map.StartA!));
-                graph.End = GetOrCreateNode(RdtId.Parse(_map.EndA!));
-            }
-            else
-            {
-                graph.Start = GetOrCreateNode(RdtId.Parse(_map.StartB!));
-                graph.End = GetOrCreateNode(RdtId.Parse(_map.EndB!));
-            }
+            var beginEnd = GetBeginEnd();
+            graph.Start = GetOrCreateNode(RdtId.Parse(beginEnd.Start!));
+            graph.End = GetOrCreateNode(RdtId.Parse(beginEnd.End!));
 
             var numAreas = _config.AreaCount + 1;
 
@@ -121,9 +107,26 @@ namespace IntelOrca.Biohazard
                     pool.AddRange(bridgeSuperNodes[i]);
                 }
             }
+            FinishOffEndNodes(graph.End);
 
             FinalChecks(graph);
             return graph;
+        }
+
+        private MapStartEnd GetBeginEnd()
+        {
+            foreach (var startEnd in _map.BeginEndRooms!)
+            {
+                if (startEnd.Player != null && startEnd.Player != _config.Player)
+                    continue;
+                if (startEnd.Scenario != null && startEnd.Scenario != _config.Scenario)
+                    continue;
+                if (startEnd.DoorRando != null && startEnd.DoorRando != _config.RandomDoors)
+                    continue;
+
+                return startEnd;
+            }
+            throw new Exception("No begin / end room set.");
         }
 
         private PlayNode[] CreateNodes()
@@ -755,6 +758,34 @@ namespace IntelOrca.Biohazard
             return node;
         }
 
+        private void FinishOffEndNodes(PlayNode endNode)
+        {
+            foreach (var edge in endNode.Edges)
+            {
+                edge.NoReturn = false;
+            }
+
+            var stack = new Stack<PlayNode>();
+            stack.Push(endNode);
+            while (stack.Count != 0)
+            {
+                var node = stack.Pop();
+                foreach (var edge in node.Edges)
+                {
+                    if (edge.Node == null && !edge.Randomize)
+                    {
+                        edge.Node = GetOrCreateNode(edge.OriginalTargetRdt);
+                        if (!edge.Node.Visited)
+                        {
+                            edge.Node.Visited = true;
+                            edge.Node.Depth = node.Depth + 1;
+                            stack.Push(edge.Node);
+                        }
+                    }
+                }
+            }
+        }
+
         private static ItemPriority ParsePriority(string? s)
         {
             if (s == null)
@@ -808,6 +839,10 @@ namespace IntelOrca.Biohazard
                 // Don't connect to a door with a key requirement on the other side
                 if (exit.Requires.Length != 0)
                     return false;
+
+                // HACK need to connect to one-way door
+                if (exit.Parent.RdtId.Stage == 6 && exit.Parent.RdtId.Room == 0)
+                    return true;
 
                 // Don't connect to a door that is blocked / one way
                 if (exit.Lock == LockKind.Always || exit.Lock == LockKind.Unblock)

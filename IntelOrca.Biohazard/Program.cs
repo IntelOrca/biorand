@@ -79,9 +79,10 @@ namespace IntelOrca.Biohazard
             else
             {
                 // Leon B / Claire A
-                Parallel.Invoke(po,
-                    () => GenerateRdts(config.WithPlayerScenario(0, 1), originalDataPath, modPath),
-                    () => GenerateRdts(config.WithPlayerScenario(1, 0), originalDataPath, modPath));
+                GenerateRdts(config.WithPlayerScenario(0, 1), originalDataPath, modPath);
+                // Parallel.Invoke(po,
+                //     () => GenerateRdts(config.WithPlayerScenario(0, 1), originalDataPath, modPath),
+                //     () => GenerateRdts(config.WithPlayerScenario(1, 0), originalDataPath, modPath));
             }
 
             if (config.RandomBgm)
