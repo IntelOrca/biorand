@@ -112,8 +112,14 @@ namespace IntelOrca.Biohazard
                 var graph = config.RandomDoors ?
                     doorRando.CreateRandomGraph() :
                     doorRando.CreateOriginalGraph();
-                itemRando.RandomiseItems(graph);
-                graph.GenerateDgml(dgmlPath);
+                try
+                {
+                    itemRando.RandomiseItems(graph);
+                }
+                finally
+                {
+                    graph.GenerateDgml(dgmlPath);
+                }
             }
 
             if (config.RandomEnemies)

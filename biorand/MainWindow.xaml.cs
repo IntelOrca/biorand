@@ -225,6 +225,7 @@ namespace IntelOrca.Biohazard.BioRand
         {
             _config.Version = RandoConfig.LatestVersion;
             _config.Seed = _random.Next(0, RandoConfig.MaxSeed);
+            SaveSettings();
         }
 
         private void RandomizeConfig_Click(object sender, RoutedEventArgs e)
@@ -238,6 +239,7 @@ namespace IntelOrca.Biohazard.BioRand
             _config.RatioInkRibbons = (byte)_random.Next(0, 32);
             _config.ShuffleItems = false;
             _config.AreaCount = (byte)_random.Next(1, 4);
+            SaveSettings();
             UpdateUi();
         }
 
@@ -274,6 +276,8 @@ namespace IntelOrca.Biohazard.BioRand
 
         private async void btnGenerate_Click(object sender, RoutedEventArgs e)
         {
+            SaveSettings();
+
             var gamePath = txtGameDataLocation.Text;
             if (!Path.IsPathRooted(gamePath) || !Directory.Exists(gamePath))
             {

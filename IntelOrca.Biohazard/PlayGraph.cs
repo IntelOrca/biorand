@@ -25,6 +25,12 @@ namespace IntelOrca.Biohazard
                         {
                             label += "\n" + Items.GetItemName(keyItem.Type) + " x" + keyItem.Amount;
                         }
+                        var itemsLeft = node.Items.Length - node.PlacedKeyItems.Count;
+                        if (itemsLeft > 0)
+                        {
+                            var potentialKeyItems = node.Items.Count(x => x.Priority == ItemPriority.Normal && (x.Requires?.Length ?? 0) == 0) - node.PlacedKeyItems.Count;
+                            label += $"\n{potentialKeyItems}/{node.Items.Length - node.PlacedKeyItems.Count} other items";
+                        }
 
                         var result = new Node()
                         {

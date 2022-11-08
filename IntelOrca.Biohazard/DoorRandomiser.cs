@@ -15,7 +15,8 @@ namespace IntelOrca.Biohazard
         private Rng _rng;
         private bool _debugLogging = false;
 
-        private int _keyItemSpots;
+        private int _keyItemSpotsLeft;
+        private int _keyItemRequiredCount;
         private int _numUnconnectedEdges;
         private int _numKeyEdges;
         private int _numUnlockedEdges;
@@ -154,6 +155,8 @@ namespace IntelOrca.Biohazard
         private void CreateArea(PlayNode begin, PlayNode end, List<PlayNode> pool)
         {
             _boxRoomReached = false;
+            _keyItemSpotsLeft = 0;
+            _keyItemRequiredCount = 0;
 
             PlayEdge[] unfinishedEdges;
             do
@@ -331,6 +334,7 @@ namespace IntelOrca.Biohazard
                 new FixedLinkConstraint(),
                 new LoopbackConstraint(),
                 new LeafConstraint(),
+                new KeyConstraint(),
                 new BoxConstraint()
             };
             var looseConstraints = new ConnectConstraint[]
@@ -338,7 +342,8 @@ namespace IntelOrca.Biohazard
                 new LockConstraint(),
                 new FixedLinkConstraint(),
                 new LoopbackConstraint(),
-                new LeafConstraint()
+                new LeafConstraint(),
+                new KeyConstraint()
             };
             if (ConnectUpRandomNode(strictConstraints, unfinishedEdges, availableExitNodes))
                 return true;
@@ -415,8 +420,11 @@ namespace IntelOrca.Biohazard
                 {
                     _boxRoomReached = true;
                 }
+
+                _keyItemSpotsLeft += exitNode.Items.Count(x => x.Priority == ItemPriority.Normal && (x.Requires?.Length ?? 0) == 0);
+                _keyItemRequiredCount += exitNode.Edges.Sum(x => x.Requires.Length);
+                _keyItemRequiredCount += exitNode.Requires.Length;
             }
-            _keyItemSpots += exitNode.Items.Count(x => x.Priority == ItemPriority.Normal && (x.Requires?.Length ?? 0) == 0);
 
             ConnectDoor(entrance, exit, loopback);
         }
@@ -826,6 +834,9 @@ namespace IntelOrca.Biohazard
                 if (!exit.Parent.Visited)
                     return true;
 
+                if (!entrance.Randomize || !exit.Randomize)
+                    return true;
+
                 // Do not connect back to a room that already connects to this room
                 if (exit.Parent.Edges.Any(x => x.Node == entrance.Parent))
                     return false;
@@ -856,6 +867,47 @@ namespace IntelOrca.Biohazard
                     return false;
 
                 return true;
+            }
+        }
+
+        private class KeyConstraint : ConnectConstraint
+        {
+            public override bool Validate(DoorRandomiser dr, PlayEdge entrance, PlayEdge exit)
+            {
+                var numRequiredKeys = dr._keyItemRequiredCount;
+                var numKeySlots = dr._keyItemSpotsLeft;
+                var unlockedEdges = dr._numUnlockedEdges;
+                if (entrance.Requires.Length == 0)
+                {
+                    unlockedEdges--;
+                }
+                else if (numKeySlots < numRequiredKeys)
+                {
+                    // Do not extend past a key door until we our rich in item pickups
+                    return false;
+                }
+
+                // Still a key free edge left
+                if (unlockedEdges > 0)
+                    return true;
+
+                var extraEdges = exit.Parent.Edges.Where(x => x != exit && IsAccessible(x)).ToArray();
+                var extraItems = exit.Parent.Items.Count(x => x.Priority == ItemPriority.Normal && (x.Requires?.Length ?? 0) == 0);
+                if (extraEdges.Length != 0)
+                {
+                    var minKeyReq = extraEdges.Min(x => x.Requires.Length);
+
+                    // Still a key free edge left
+                    if (minKeyReq == 0)
+                        return true;
+                }
+
+                // Make sure we have more items to pick up than required key items
+                var totalKeyReq = extraEdges.Sum(x => x.Requires.Length) + exit.Requires.Length + exit.Parent.Items.Sum(x => x.Requires?.Length ?? 0);
+                if (numKeySlots + extraItems >= numRequiredKeys + totalKeyReq)
+                    return true;
+
+                return false;
             }
         }
 

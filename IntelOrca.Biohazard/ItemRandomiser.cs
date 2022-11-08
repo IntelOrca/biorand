@@ -15,7 +15,7 @@ namespace IntelOrca.Biohazard
         private List<ItemPoolEntry> _shufflePool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _definedPool = new List<ItemPoolEntry>();
         private List<(RdtItemId, RdtItemId)> _linkedItems = new List<(RdtItemId, RdtItemId)>();
-        private HashSet<ushort> _requiredItems = new HashSet<ushort>();
+        private HashSet<KeyRequirement> _requiredItems = new HashSet<KeyRequirement>();
         private HashSet<ushort> _haveItems = new HashSet<ushort>();
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
         private HashSet<RdtItemId> _visitedItems = new HashSet<RdtItemId>();
@@ -104,52 +104,33 @@ namespace IntelOrca.Biohazard
                 if (_visitedRooms.Add(node))
                 {
                     // Add any required keys for the room (ones that don't guard an item, e.g. Film A, Film B, etc.)
-                    foreach (var r in node.Requires)
-                    {
-                        if (!_haveItems.Contains(r))
-                        {
-                            _requiredItems.Add(r);
-                        }
-                    }
+                    if (node.Requires.Length != 0)
+                        _requiredItems.Add(new KeyRequirement(node.Requires));
 
                     // First time we have visited room, add room items to pool
                     foreach (var item in node.Items)
                     {
-                        if (_visitedItems.Add(item.RdtItemId))
-                            _currentPool.Add(item);
-
-                        if (_currentPool.DistinctBy(x => x.RdtItemId).Count() != _currentPool.Count())
-                            throw new Exception();
-
-                        _futurePool.RemoveAll(x => x.RdtItemId == item.RdtItemId);
+                        // Don't add items we require a key for
+                        if (item.Requires != null && item.Requires.Length != 0)
+                        {
+                            _requiredItems.Add(new KeyRequirement(item.Requires, item));
+                        }
+                        else
+                        {
+                            AddItemToPool(item);
+                        }
                     }
                     foreach (var linkedItem in node.LinkedItems)
                     {
                         _linkedItems.Add((new RdtItemId(node.RdtId, linkedItem.Key), linkedItem.Value));
                     }
 
-                    if (node.Items.Length != 0)
+                    if (_debugLogging && node.Items.Length != 0)
                     {
-                        if (_debugLogging)
-                        {
-                            _logger.WriteLine($"    Room {node.RdtId} contains:");
-                        }
+                        _logger.WriteLine($"    Room {node.RdtId} contains:");
                         foreach (var item in node.Items)
                         {
-                            if (_debugLogging)
-                            {
-                                _logger.WriteLine($"        {item}");
-                            }
-                            if (item.Requires != null)
-                            {
-                                foreach (var r in item.Requires)
-                                {
-                                    if (!_haveItems.Contains(r))
-                                    {
-                                        _requiredItems.Add(r);
-                                    }
-                                }
-                            }
+                            _logger.WriteLine($"        {item}");
                         }
                     }
                 }
@@ -191,13 +172,7 @@ namespace IntelOrca.Biohazard
                     }
                     else
                     {
-                        foreach (var item in requiredItems)
-                        {
-                            if (!_haveItems.Contains(item))
-                            {
-                                _requiredItems.Add(item);
-                            }
-                        }
+                        _requiredItems.Add(new KeyRequirement(requiredItems, null, isDoor: true));
                     }
                 }
             }
@@ -239,10 +214,11 @@ namespace IntelOrca.Biohazard
 
         private void PlaceKeyItem(bool alternativeRoutes)
         {
-            if (_requiredItems.Count == 0)
+            var keyItemPlaceOrder = GetKeyItemPlaceOrder();
+            if (keyItemPlaceOrder.Length == 0)
                 return;
 
-            var checkList = _requiredItems.Shuffle(_rng);
+            var checkList = GetKeyItemPlaceOrder();
             foreach (var req in checkList)
             {
                 if (PlaceKeyItem(req, alternativeRoutes))
@@ -254,6 +230,7 @@ namespace IntelOrca.Biohazard
                             throw new Exception($"Unable to place 2nd {(ItemType)req}");
                         }
                     }
+                    UpdateRequiredItemList();
                     return;
                 }
             }
@@ -272,10 +249,36 @@ namespace IntelOrca.Biohazard
                 _logger.WriteLine($"        {Items.GetItemName(item)}");
             }
 
-            if (_requiredItems.Any(x => !IsOptionalItem(x)))
+            if (keyItemPlaceOrder.Any(x => !IsOptionalItem(x)))
                 throw new Exception("Unable to find key item to swap");
 
             _requiredItems.Clear();
+        }
+
+        private ushort[] GetKeyItemPlaceOrder()
+        {
+            UpdateRequiredItemList();
+            return _requiredItems
+                .Shuffle(_rng)
+                .OrderBy(x => x.IsDoor ? 0 : 1)
+                .ThenBy(x => x.Keys.Length)
+                .SelectMany(x => x.Keys)
+                .Where(x => !_haveItems.Contains(x))
+                .ToArray();
+        }
+
+        private void UpdateRequiredItemList()
+        {
+            var newItemsForPool = _requiredItems
+                .Where(x => x.Item != null && x.Keys.All(x => _haveItems.Contains(x)))
+                .Select(x => x.Item)
+                .ToArray();
+            foreach (var rq in newItemsForPool)
+            {
+                AddItemToPool(rq.Value);
+            }
+
+            _requiredItems.RemoveWhere(x => x.Keys.All(x => _haveItems.Contains(x)));
         }
 
         private static bool IsOptionalItem(ushort item)
@@ -321,11 +324,7 @@ namespace IntelOrca.Biohazard
                         {
                             if (item.Type == req && item.Priority != ItemPriority.Fixed && !_visitedItems.Contains((RdtItemId)item.RdtItemId))
                             {
-                                _futurePool.Add(item);
-                                _currentPool.Add(item);
-                                if (_currentPool.DistinctBy(x => x.RdtItemId).Count() != _currentPool.Count())
-                                    throw new Exception();
-                                _visitedItems.Add(item.RdtItemId);
+                                AddItemToPool(item, future: true);
                                 originalIndex = _currentPool.Count - 1;
                                 break;
                             }
@@ -371,7 +370,6 @@ namespace IntelOrca.Biohazard
             itemEntry.Type = req;
 
             // Remove new key item location from pool
-            _requiredItems.Remove(req);
             _haveItems.Add(req);
             _currentPool.RemoveAt(index.Value);
             _definedPool.Add(itemEntry);
@@ -379,6 +377,28 @@ namespace IntelOrca.Biohazard
 
             _logger.WriteLine($"    Placing key item ({Items.GetItemName(itemEntry.Type)}) in {itemEntry.RdtId}:{itemEntry.Id}");
             return true;
+        }
+
+        private void AddItemToPool(ItemPoolEntry item, bool future = false)
+        {
+            if (future)
+            {
+                if (_visitedItems.Add(item.RdtItemId))
+                {
+                    _currentPool.Add(item);
+                    _futurePool.Add(item);
+                }
+            }
+            else
+            {
+                if (_visitedItems.Add(item.RdtItemId))
+                    _currentPool.Add(item);
+
+                _futurePool.RemoveAll(x => x.RdtItemId == item.RdtItemId);
+            }
+
+            if (_currentPool.DistinctBy(x => x.RdtItemId).Count() != _currentPool.Count())
+                throw new Exception();
         }
 
         private void RandomiseRemainingPool()
@@ -669,6 +689,55 @@ namespace IntelOrca.Biohazard
                     return true;
                 default:
                     return false;
+            }
+        }
+
+        private class KeyRequirement : IEquatable<KeyRequirement>
+        {
+            public ushort[] Keys { get; }
+            public ItemPoolEntry? Item { get; }
+            public bool IsDoor { get; }
+
+            public KeyRequirement(IEnumerable<ushort> keys)
+                : this(keys, null, false)
+            {
+            }
+
+            public KeyRequirement(IEnumerable<ushort> keys, ItemPoolEntry? item, bool isDoor = false)
+            {
+                Keys = keys.OrderBy(x => x).ToArray();
+                if (Keys.Length == 0)
+                    throw new ArgumentException(nameof(keys));
+                Item = item;
+                IsDoor = isDoor;
+            }
+
+            public override int GetHashCode()
+            {
+                return string.Join(",", Keys).GetHashCode();
+            }
+
+            public override bool Equals(object obj)
+            {
+                return Equals(obj as KeyRequirement);
+            }
+
+            public bool Equals(KeyRequirement? other)
+            {
+                if (other == null)
+                    return false;
+                if (!Keys.SequenceEqual(other.Keys))
+                    return false;
+                if (!Item.Equals(other.Item))
+                    return false;
+                if (!Keys.SequenceEqual(other.Keys))
+                    return false;
+                return IsDoor == other.IsDoor;
+            }
+
+            public override string ToString()
+            {
+                return $"{string.Join(",", Keys.Select(x => Items.GetItemName(x)))}";
             }
         }
     }
