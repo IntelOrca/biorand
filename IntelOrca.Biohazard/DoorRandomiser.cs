@@ -444,6 +444,7 @@ namespace IntelOrca.Biohazard
                 var aDoorId = aEdge.DoorId!.Value;
                 var aRdt = _gameData.GetRdt(a.RdtId)!;
                 aRdt.SetDoorTarget(aDoorId, b.RdtId, bEdge.Entrance!.Value, aEdge.OriginalTargetRdt);
+                aRdt.RemoveDoorUnlock(aDoorId);
                 if (aEdge == bEdge)
                 {
                     aRdt.AddDoorLock(aDoorId, 255);
@@ -471,6 +472,7 @@ namespace IntelOrca.Biohazard
                 else
                 {
                     bRdt.SetDoorTarget(bDoorId, a.RdtId, aEdge.Entrance.Value, bEdge.OriginalTargetRdt);
+                    bRdt.RemoveDoorUnlock(bDoorId);
                     if (oneWay)
                     {
                         bEdge.Lock = LockKind.Side;

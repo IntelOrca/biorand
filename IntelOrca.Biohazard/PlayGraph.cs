@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using OpenSoftware.DgmlTools;
 using OpenSoftware.DgmlTools.Builders;
 using OpenSoftware.DgmlTools.Model;
@@ -18,70 +19,98 @@ namespace IntelOrca.Biohazard
             {
                 NodeBuilders = new[]
                 {
-                    new NodeBuilder<PlayNode>(node =>
-                    {
-                        var label = node.RdtId.ToString();
-                        foreach (var keyItem in node.PlacedKeyItems)
-                        {
-                            label += "\n" + Items.GetItemName(keyItem.Type) + " x" + keyItem.Amount;
-                        }
-                        var itemsLeft = node.Items.Length - node.PlacedKeyItems.Count;
-                        if (itemsLeft > 0)
-                        {
-                            var potentialKeyItems = node.Items.Count(x => x.Priority == ItemPriority.Normal && (x.Requires?.Length ?? 0) == 0) - node.PlacedKeyItems.Count;
-                            label += $"\n{potentialKeyItems}/{node.Items.Length - node.PlacedKeyItems.Count} other items";
-                        }
-
-                        var result = new Node()
-                        {
-                            Id = node.RdtId.ToString(),
-                            Label = label
-                        };
-
-                        if (node == Start || node == End)
-                            result.Properties["Background"] = "LightBlue";
-                        if (node.Category == DoorRandoCategory.Box)
-                            result.Properties["Background"] = "Green";
-                        if (node.Category == DoorRandoCategory.Bridge)
-                            result.Properties["Background"] = "Orange";
-                        return result;
-                    })
+                    new NodeBuilder<PlayNode>(GetNode)
                 },
                 LinkBuilders = new LinkBuilder[]
                 {
-                    new LinksBuilder<PlayNode>(node =>
-                    {
-                        var links = new List<Link>();
-                        foreach (var edge in node.Edges)
-                        {
-                            if (edge.Node == null || edge.Lock == LockKind.Always || edge.Node.Depth < node.Depth)
-                                continue;
-
-                            var label = edge.DoorId.ToString();
-                            if (edge.NoReturn)
-                            {
-                                label += $"\n(no return)";
-                            }
-                            foreach (var key in edge.Requires)
-                            {
-                                label += $"\n[{Items.GetItemName(key)}]";
-                            }
-
-                            links.Add(new Link()
-                            {
-                                Source = node.RdtId.ToString(),
-                                Target = edge.Node.RdtId.ToString(),
-                                Label = label
-                            });
-                        }
-                        return links;
-                    })
+                    new LinksBuilder<PlayNode>(GetLinksForNode)
                 },
                 CategoryBuilders = new CategoryBuilder[0],
                 StyleBuilders = new StyleBuilder[0]
             };
             var dgmlGraph = builder.Build(GetAllNodes());
             dgmlGraph.WriteToFile(path);
+        }
+
+        private Node GetNode(PlayNode node)
+        {
+            var label = node.RdtId.ToString();
+            foreach (var keyItem in node.PlacedKeyItems)
+            {
+                label += "\n" + Items.GetItemName(keyItem.Type) + " x" + keyItem.Amount;
+            }
+            var itemsLeft = node.Items.Length - node.PlacedKeyItems.Count;
+            if (itemsLeft > 0)
+            {
+                var potentialKeyItems = node.Items.Count(x => x.Priority == ItemPriority.Normal && (x.Requires?.Length ?? 0) == 0) - node.PlacedKeyItems.Count;
+                label += $"\n{potentialKeyItems}/{node.Items.Length - node.PlacedKeyItems.Count} other items";
+            }
+
+            var result = new Node()
+            {
+                Id = node.RdtId.ToString(),
+                Label = label
+            };
+
+            if (node == Start || node == End)
+                result.Properties["Background"] = "LightBlue";
+            if (node.Category == DoorRandoCategory.Box)
+                result.Properties["Background"] = "Green";
+            if (node.Category == DoorRandoCategory.Bridge)
+                result.Properties["Background"] = "Orange";
+            return result;
+        }
+
+        private List<Link> GetLinksForNode(PlayNode node)
+        {
+            var links = new List<Link>();
+            foreach (var edge in node.Edges)
+            {
+                if (!IsLinkAccessible(edge))
+                    continue;
+
+                var oppositeEdge = edge.Node!.Edges.FirstOrDefault(x => x.Node == node);
+                if (oppositeEdge != null && IsLinkAccessible(oppositeEdge) && edge.Node.Depth < node.Depth)
+                    continue;
+
+                var label = edge.DoorId.ToString();
+                if (edge.NoReturn)
+                {
+                    label += $"\n(no return)";
+                }
+                if (edge.Lock == LockKind.None)
+                {
+                    if (oppositeEdge != null && oppositeEdge.Lock == LockKind.Side)
+                    {
+                        label += $"\n(locked)";
+                    }
+                }
+                else
+                {
+                    label += $"\n({edge.Lock.ToString().ToLower()})";
+                }
+                foreach (var key in edge.Requires)
+                {
+                    label += $"\n[{Items.GetItemName(key)}]";
+                }
+
+                links.Add(new Link()
+                {
+                    Source = node.RdtId.ToString(),
+                    Target = edge.Node.RdtId.ToString(),
+                    Label = label
+                });
+            }
+            return links;
+        }
+
+        private static bool IsLinkAccessible(PlayEdge edge)
+        {
+            if (edge.Node == null)
+                return false;
+            if (edge.Lock != LockKind.None && edge.Lock != LockKind.Unblock)
+                return false;
+            return true;
         }
 
         public PlayNode[] GetAllNodes()

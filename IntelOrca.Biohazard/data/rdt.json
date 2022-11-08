@@ -51,8 +51,7 @@
     "102": {
       "doors": [
         {
-          "target": "101",
-          "lock": "gate"
+          "target": "101"
         },
         {
           "target": "118",
@@ -1356,7 +1355,12 @@
       ],
       "doors": [
         {
+          "id": 2,
+          "target": "400"
+        },
+        {
           "target": "40F",
+          "player": 1,
           "scenario": 0
         },
         {
@@ -1367,6 +1371,24 @@
         {
           "id": 8,
           "type": 0
+        },
+        {
+          "id": 13,
+          "type": 0,
+          "player": 0
+        },
+        {
+          "id": 13,
+          "player": 1
+        },
+        {
+          "id": 14,
+          "type": 0,
+          "player": 0
+        },
+        {
+          "id": 14,
+          "player": 1
         }
       ],
       "enemies": [ {} ]
@@ -1386,15 +1408,13 @@
     "403": {
       "doorRando": [
         {
-          "category": "exclude"
+          "category": "box",
+          "nop": [ 9050, 9160 ]
         }
       ],
       "doors": [
         {
           "target": "402"
-        },
-        {
-          "target": "403"
         },
         {
           "target": "404"
@@ -1470,11 +1490,24 @@
     "408": {
       "doors": [
         {
-          "target": "407"
+          "target": "407",
+          "doorRando": false
         },
         {
           "target": "40A",
-          "requires": [ 50 ]
+          "requires": [ 50 ],
+          "doorRando": false
+        },
+        // Force reversal, so items can be picked up before
+        // needing to use the valve handle
+        {
+          "target": "407",
+          "requires": [ 50 ],
+          "doorRando": true
+        },
+        {
+          "target": "40A",
+          "doorRando": true
         }
       ],
       "npcs": [
@@ -2281,6 +2314,12 @@
       ]
     },
     "617": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "scenario": 1
+        }
+      ],
       "doors": [
         {
           "target": "616"
