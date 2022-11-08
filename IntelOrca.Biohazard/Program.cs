@@ -36,6 +36,15 @@ namespace IntelOrca.Biohazard
 
         public static void Generate(RandoConfig config, string re2Path)
         {
+            if (config.Version < RandoConfig.LatestVersion)
+            {
+                throw new Exception($"This seed was generated with an older version of the randomizer and can not be played.");
+            }
+            else if (config.Version != RandoConfig.LatestVersion)
+            {
+                throw new Exception($"This seed was generated with a newer version of the randomizer and can not be played.");
+            }
+
             var originalDataPath = Path.Combine(re2Path, "data");
             if (!Directory.Exists(originalDataPath))
             {
