@@ -1267,6 +1267,12 @@
       ]
     },
     "30A": {
+      "doorRando": [
+        {
+          "nop": [ 5998 ],
+          "player": 1
+        }
+      ],
       "doors": [
         {
           "target": "309"
@@ -1371,11 +1377,18 @@
       ],
       "doors": [
         {
+          "id": 1,
+          "target": "400:2",
+          "lock": "unblock",
+          "player": 1
+        },
+        {
           "id": 2,
-          "target": "400"
+          "target": "400:1"
         },
         {
           "target": "40F",
+          "doorRando": false,
           "player": 1,
           "scenario": 0
         },
@@ -1438,6 +1451,18 @@
         },
         {
           "target": "404"
+        }
+      ],
+      "items": [
+        {
+          "id": 16,
+          "requires": [ 47 ],
+          "player": 1
+        },
+        {
+          "id": 19,
+          "requires": [ 47 ],
+          "player": 1
         }
       ],
       "npcs": [ {} ]

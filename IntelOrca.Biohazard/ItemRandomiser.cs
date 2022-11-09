@@ -40,13 +40,8 @@ namespace IntelOrca.Biohazard
             _logger.WriteHeading("Randomizing Items:");
             _logger.WriteLine("Placing key items:");
 
-            // Leon starts with a lighter
-            if (_config.Player == 0)
-            {
-                _haveItems.Add((ushort)ItemType.Lighter);
-            }
-
             var checkpoint = graph.Start;
+            ClearItems();
             _visitedRooms.Clear();
             while (!_visitedRooms.Contains(graph.End) || _requiredItems.Count != 0)
             {
@@ -62,7 +57,7 @@ namespace IntelOrca.Biohazard
                     }
                     if (_config.RandomDoors)
                     {
-                        _haveItems.Clear();
+                        ClearItems();
                         foreach (var item in newCheckpoint.DoorRandoAllRequiredItems)
                         {
                             _haveItems.Add(item);
@@ -86,6 +81,16 @@ namespace IntelOrca.Biohazard
 
             SetLinkedItems();
             SetItems();
+        }
+
+        private void ClearItems()
+        {
+            // Leon starts with a lighter
+            _haveItems.Clear();
+            if (_config.Player == 0)
+            {
+                _haveItems.Add((ushort)ItemType.Lighter);
+            }
         }
 
         private PlayNode Search(PlayNode start)
