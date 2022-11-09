@@ -1053,7 +1053,9 @@
     "21B": {
       "doorRando": [
         {
-          "category": "bridge"
+          "category": "bridge",
+          "nop": [ 10092, 15284 ],
+          "player": 1
         }
       ],
       "doors": [
@@ -1204,6 +1206,12 @@
       ]
     },
     "307": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "player": 1
+        }
+      ],
       "doors": [
         {
           "target": "30D"
@@ -1286,10 +1294,26 @@
     "30B": {
       "doorRando": [
         {
-          "category": "exclude"
+          "category": "exclude",
+          "player": 0
         }
       ],
       "doors": [
+        {
+          "target": "302",
+          "doorRando": true,
+          "player": 1
+        },
+        {
+          "target": "303",
+          "doorRando": true,
+          "player": 1
+        },
+        {
+          "target": "30C",
+          "doorRando": true,
+          "player": 1
+        },
         {
           "target": "302",
           "player": 0
@@ -1570,7 +1594,8 @@
     "409": {
       "doorRando": [
         {
-          "category": "exclude"
+          "category": "exclude",
+          "player": 0
         }
       ],
       "doors": [
@@ -1578,7 +1603,8 @@
           "target": "410"
         },
         {
-          "target": "40B"
+          "target": "40B",
+          "requires": [ 50 ]
         }
       ],
       "npcs": [
