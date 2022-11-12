@@ -37,84 +37,88 @@ namespace IntelOrca.Biohazard
 
         public void Randomise()
         {
+            _logger.WriteHeading("Randomizing Characters, Voices:");
+            _pool.AddRange(g_available.Shuffle(_random));
+            foreach (var rdt in _gameData.Rdts)
+            {
+                RandomizeRoom(_random.NextFork(), rdt);
+            }
+        }
+
+        private void RandomizeRoom(Rng rng, Rdt rdt)
+        {
             var playerActor = _config.Player == 0 ? "leon" : "claire";
             var defaultIncludeTypes = new[] { 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 79, 80, 81, 84, 85, 88, 89, 90 };
 
-            _pool.AddRange(g_available.Shuffle(_random));
+            var room = _map.GetRoom(rdt.RdtId);
+            if (room == null || room.Npcs == null)
+                return;
 
-            _logger.WriteHeading("Randomizing Characters, Voices:");
-            foreach (var rdt in _gameData.Rdts)
+            var actorToNewActorMap = new Dictionary<string, string>();
+            foreach (var npc in room.Npcs)
             {
-                var room = _map.GetRoom(rdt.RdtId);
-                if (room == null || room.Npcs == null)
+                if (npc.Player != null && npc.Player != _config.Player)
+                    continue;
+                if (npc.Scenario != null && npc.Scenario != _config.Scenario)
                     continue;
 
-                var actorToNewActorMap = new Dictionary<string, string>();
-                foreach (var npc in room.Npcs)
+                var supportedNpcs = npc.IncludeTypes ?? defaultIncludeTypes;
+                if (npc.ExcludeTypes != null)
                 {
-                    if (npc.Player != null && npc.Player != _config.Player)
-                        continue;
-                    if (npc.Scenario != null && npc.Scenario != _config.Scenario)
-                        continue;
-
-                    var supportedNpcs = npc.IncludeTypes ?? defaultIncludeTypes;
-                    if (npc.ExcludeTypes != null)
-                    {
-                        supportedNpcs = supportedNpcs.Except(npc.ExcludeTypes).ToArray();
-                    }
-                    if (supportedNpcs.Length == 0)
-                    {
-                        continue;
-                    }
-                    supportedNpcs = supportedNpcs.Shuffle(_random);
-                    foreach (var enemy in rdt.Enemies)
-                    {
-                        if (!IsNpc(enemy.Type))
-                            continue;
-
-                        if (npc.IncludeOffsets != null && !npc.IncludeOffsets.Contains(enemy.Offset))
-                            continue;
-
-                        var newEnemyTypeIndex = Array.FindIndex(supportedNpcs, x => x != (int)enemy.Type);
-                        var newEnemyType = (EnemyType)(newEnemyTypeIndex == -1 ? supportedNpcs[0] : supportedNpcs[newEnemyTypeIndex]);
-                        var oldActor = GetActor(enemy.Type)!;
-                        var newActor = GetActor(newEnemyType)!;
-                        actorToNewActorMap[oldActor] = newActor;
-
-                        _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) [{enemy.Type}] becomes [{newEnemyType}]");
-                        enemy.Type = newEnemyType;
-                    }
+                    supportedNpcs = supportedNpcs.Except(npc.ExcludeTypes).ToArray();
                 }
-
-                foreach (var sound in rdt.Sounds)
+                if (supportedNpcs.Length == 0)
                 {
-                    var voice = new VoiceSample(_config.Player, rdt.RdtId.Stage + 1, sound.Id);
-                    var (actor, kind) = GetVoice(voice);
-                    if (actor != null)
+                    continue;
+                }
+                supportedNpcs = supportedNpcs.Shuffle(_random);
+                foreach (var enemy in rdt.Enemies)
+                {
+                    if (!IsNpc(enemy.Type))
+                        continue;
+
+                    if (npc.IncludeOffsets != null && !npc.IncludeOffsets.Contains(enemy.Offset))
+                        continue;
+
+                    var newEnemyTypeIndex = Array.FindIndex(supportedNpcs, x => x != (int)enemy.Type);
+                    var newEnemyType = (EnemyType)(newEnemyTypeIndex == -1 ? supportedNpcs[0] : supportedNpcs[newEnemyTypeIndex]);
+                    var oldActor = GetActor(enemy.Type)!;
+                    var newActor = GetActor(newEnemyType)!;
+                    actorToNewActorMap[oldActor] = newActor;
+
+                    _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) [{enemy.Type}] becomes [{newEnemyType}]");
+                    enemy.Type = newEnemyType;
+                }
+            }
+
+            foreach (var sound in rdt.Sounds)
+            {
+                var voice = new VoiceSample(_config.Player, rdt.RdtId.Stage + 1, sound.Id);
+                var (actor, kind) = GetVoice(voice);
+                if (actor != null)
+                {
+                    if (kind == "radio")
                     {
-                        if (kind == "radio")
-                        {
-                            RandomizeVoice(voice, actor, actor, kind);
-                        }
-                        if ((actor == playerActor && kind != "npc") || kind == "pc")
-                        {
-                            RandomizeVoice(voice, actor, actor, null);
-                        }
-                        else if (actorToNewActorMap.TryGetValue(actor, out var newActor))
-                        {
-                            RandomizeVoice(voice, actor, newActor, null);
-                        }
+                        RandomizeVoice(rng, voice, actor, actor, kind);
+                    }
+                    if ((actor == playerActor && kind != "npc") || kind == "pc")
+                    {
+                        RandomizeVoice(rng, voice, actor, actor, null);
+                    }
+                    else if (actorToNewActorMap.TryGetValue(actor, out var newActor))
+                    {
+                        RandomizeVoice(rng, voice, actor, newActor, null);
                     }
                 }
             }
         }
 
-        private void RandomizeVoice(VoiceSample voice, string actor, string newActor, string? kind)
+        private void RandomizeVoice(Rng rng, VoiceSample voice, string actor, string newActor, string? kind)
         {
             if (_randomized.Contains(voice))
                 return;
 
-            var randomVoice = GetRandomVoice(newActor, kind);
+            var randomVoice = GetRandomVoice(rng, newActor, kind);
             if (randomVoice != null)
             {
                 SetVoice(voice, randomVoice.Value);
@@ -123,12 +127,12 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private VoiceSample? GetRandomVoice(string actor, string? kind)
+        private VoiceSample? GetRandomVoice(Rng rng, string actor, string? kind)
         {
             var index = _pool.FindIndex(x => x.Actor == actor && ((kind == null && x.Kind != "radio") || x.Kind == kind));
             if (index == -1)
             {
-                var newItems = g_voiceInfo.Where(x => x.Actor == actor).Shuffle(_random).ToArray();
+                var newItems = g_voiceInfo.Where(x => x.Actor == actor).Shuffle(rng).ToArray();
                 if (newItems.Length == 0)
                     return null;
 
