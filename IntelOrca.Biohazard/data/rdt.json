@@ -1748,6 +1748,7 @@
       ],
       "npcs": [
         {
+          "excludeTypes": [ 89, 90 ],
           "player": 0
         }
       ]
