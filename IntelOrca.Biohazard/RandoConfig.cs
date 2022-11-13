@@ -20,7 +20,7 @@ namespace IntelOrca.Biohazard
         public int Seed { get; set; }
 
         // Flags
-        public bool ProtectFromSoftLock { get; set; }
+        public bool ProtectFromSoftLock { get; set; } = true;
         public bool RandomDoors { get; set; }
         public bool RandomNPCs { get; set; } = true;
         public bool RandomEnemies { get; set; } = true;
