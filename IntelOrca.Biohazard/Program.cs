@@ -71,18 +71,16 @@ namespace IntelOrca.Biohazard
             if (config.GameVariant == 0)
             {
                 // Leon A / Claire B
-                // GenerateRdts(config.WithPlayerScenario(0, 0), originalDataPath, modPath);
-                // Parallel.Invoke(po,
-                //     () => GenerateRdts(config.WithPlayerScenario(0, 0), originalDataPath, modPath),
-                //     () => GenerateRdts(config.WithPlayerScenario(1, 1), originalDataPath, modPath));
+                Parallel.Invoke(po,
+                    () => GenerateRdts(config.WithPlayerScenario(0, 0), originalDataPath, modPath),
+                    () => GenerateRdts(config.WithPlayerScenario(1, 1), originalDataPath, modPath));
             }
             else
             {
                 // Leon B / Claire A
-                GenerateRdts(config.WithPlayerScenario(1, 0), originalDataPath, modPath);
-                // Parallel.Invoke(po,
-                //     () => GenerateRdts(config.WithPlayerScenario(0, 1), originalDataPath, modPath),
-                //     () => GenerateRdts(config.WithPlayerScenario(1, 0), originalDataPath, modPath));
+                Parallel.Invoke(po,
+                    () => GenerateRdts(config.WithPlayerScenario(0, 1), originalDataPath, modPath),
+                    () => GenerateRdts(config.WithPlayerScenario(1, 0), originalDataPath, modPath));
             }
 
             if (config.RandomBgm)
@@ -111,52 +109,60 @@ namespace IntelOrca.Biohazard
             logger.WriteLine($"Player: {config.Player} {GetPlayerName(config.Player)}");
             logger.WriteLine($"Scenario: {GetScenarioName(config.Scenario)}");
 
-            var map = GetJsonMap();
-            var gameData = GameDataReader.Read(originalDataPath, modPath, config.Player);
-
-            if (config.RandomDoors || config.RandomItems)
+            try
             {
-                var dgmlPath = Path.Combine(modPath, $"graph_pl{config.Player}.dgml");
-                var doorRando = new DoorRandomiser(logger, config, gameData, map, randomDoors);
-                var itemRando = new ItemRandomiser(logger, config, gameData, map, randomItems);
-                var graph = config.RandomDoors ?
-                    doorRando.CreateRandomGraph() :
-                    doorRando.CreateOriginalGraph();
-                try
+                var map = GetJsonMap();
+                var gameData = GameDataReader.Read(originalDataPath, modPath, config.Player);
+
+                if (config.RandomDoors || config.RandomItems)
                 {
-                    itemRando.RandomiseItems(graph);
+                    var dgmlPath = Path.Combine(modPath, $"graph_pl{config.Player}.dgml");
+                    var doorRando = new DoorRandomiser(logger, config, gameData, map, randomDoors);
+                    var itemRando = new ItemRandomiser(logger, config, gameData, map, randomItems);
+                    var graph = config.RandomDoors ?
+                        doorRando.CreateRandomGraph() :
+                        doorRando.CreateOriginalGraph();
+                    try
+                    {
+                        itemRando.RandomiseItems(graph);
+                    }
+                    finally
+                    {
+                        graph.GenerateDgml(dgmlPath);
+                    }
                 }
-                finally
+
+                if (config.RandomEnemies)
                 {
-                    graph.GenerateDgml(dgmlPath);
+                    var enemyRandomiser = new EnemyRandomiser(logger, config, gameData, map, randomEnemies);
+                    enemyRandomiser.Randomise();
                 }
-            }
 
-            if (config.RandomEnemies)
-            {
-                var enemyRandomiser = new EnemyRandomiser(logger, config, gameData, map, randomEnemies);
-                enemyRandomiser.Randomise();
-            }
+                if (config.RandomNPCs)
+                {
+                    var npcRandomiser = new NPCRandomiser(logger, config, originalDataPath, modPath, gameData, map, randomNpcs);
+                    npcRandomiser.Randomise();
+                }
 
-            if (config.RandomNPCs)
-            {
-                var npcRandomiser = new NPCRandomiser(logger, config, originalDataPath, modPath, gameData, map, randomNpcs);
-                npcRandomiser.Randomise();
-            }
-
-            foreach (var rdt in gameData.Rdts)
-            {
-                rdt.Save();
-            }
+                foreach (var rdt in gameData.Rdts)
+                {
+                    rdt.Save();
+                }
 
 #if DEBUG
-            if (config.RandomItems || config.RandomEnemies)
-            {
-                DumpScripts(gameData, Path.Combine(modPath, $"scripts_pl{config.Player}"));
-                var moddedGameData = GameDataReader.Read(modPath, modPath, config.Player);
-                DumpScripts(moddedGameData, Path.Combine(modPath, $"scripts_modded_pl{config.Player}"));
-            }
+                if (config.RandomItems || config.RandomEnemies)
+                {
+                    DumpScripts(gameData, Path.Combine(modPath, $"scripts_pl{config.Player}"));
+                    var moddedGameData = GameDataReader.Read(modPath, modPath, config.Player);
+                    DumpScripts(moddedGameData, Path.Combine(modPath, $"scripts_modded_pl{config.Player}"));
+                }
 #endif
+            }
+            catch (Exception ex)
+            {
+                logger.WriteLine(ex.Message);
+                throw;
+            }
         }
 
         private static string GetPlayerName(int player) => player == 0 ? "Leon" : "Claire";

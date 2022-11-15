@@ -764,6 +764,10 @@
           "id": 16,
           "requires": [ 80 ],
           "priority": "low"
+        },
+        {
+          "id": 4,
+          "type": 0
         }
       ]
     },
@@ -1053,7 +1057,6 @@
     "21B": {
       "doorRando": [
         {
-          "category": "bridge",
           "nop": [ 10092, 15284 ],
           "player": 1
         }
@@ -1081,6 +1084,12 @@
       "npcs": [ {} ]
     },
     "300": {
+      "doorRando": [
+        {
+          "category": "bridge",
+          "player": 1
+        }
+      ],
       "doors": [
         {
           "target": "308"

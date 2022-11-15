@@ -52,7 +52,7 @@ namespace IntelOrca.Biohazard
                     _logger.WriteLine("    ------------ checkpoint ------------");
                     if (_config.RandomDoors || _config.ProtectFromSoftLock)
                     {
-                        _shufflePool.AddRange(_currentPool.Where(x => x.Priority == ItemPriority.Normal));
+                        _shufflePool.AddRange(_currentPool.Where(x => x.Priority != ItemPriority.Fixed));
                         _currentPool.Clear();
                     }
                     if (_config.RandomDoors)
@@ -66,7 +66,7 @@ namespace IntelOrca.Biohazard
                     checkpoint = newCheckpoint;
                 }
             }
-            _shufflePool.AddRange(_currentPool.Where(x => x.Priority == ItemPriority.Normal));
+            _shufflePool.AddRange(_currentPool.Where(x => x.Priority != ItemPriority.Fixed));
             if (_shufflePool.DistinctBy(x => x.RdtItemId).Count() != _shufflePool.Count())
                 throw new Exception();
 
@@ -600,13 +600,16 @@ namespace IntelOrca.Biohazard
         private void ShuffleRemainingPool()
         {
             _logger.WriteLine("Shuffling non-key items:");
-            var shuffled = _shufflePool.Shuffle(_rng);
-            for (int i = 0; i < _shufflePool.Count; i++)
+            var shufflePool = _shufflePool
+                .Where(x => x.Priority != ItemPriority.Low)
+                .ToArray();
+            var shuffled = shufflePool.Shuffle(_rng);
+            for (int i = 0; i < shufflePool.Length; i++)
             {
-                var entry = _shufflePool[i];
+                var entry = shufflePool[i];
                 entry.Type = shuffled[i].Type;
                 entry.Amount = shuffled[i].Amount;
-                _logger.WriteLine($"    Swapped {_shufflePool[i]} with {shuffled[i]}");
+                _logger.WriteLine($"    Swapped {shufflePool[i]} with {shuffled[i]}");
                 _definedPool.Add(entry);
             }
             _shufflePool.Clear();
