@@ -20,9 +20,36 @@ namespace IntelOrca.Biohazard
         private int _numUnconnectedEdges;
         private int _numKeyEdges;
         private int _numUnlockedEdges;
+        private PlayEdge? _keyRichEdge;
+        private int _keyRichEdgeScore;
         private bool _boxRoomReached;
         private byte _lockId = 145;
         private List<PlayNode> _nodesLeft = new List<PlayNode>();
+
+        private static readonly ConnectConstraint[] g_strictConstraints = new ConnectConstraint[]
+        {
+            new LockConstraint(),
+            new FixedLinkConstraint(),
+            new LoopbackConstraint(),
+            new LeafConstraint(),
+            new KeyConstraint(),
+            new BoxConstraint()
+        };
+
+        private static readonly ConnectConstraint[] g_looseConstraints = new ConnectConstraint[]
+        {
+            new LockConstraint(),
+            new FixedLinkConstraint(),
+            new LoopbackConstraint(),
+            new LeafConstraint(),
+            new KeyConstraint()
+        };
+
+        private static readonly ConnectConstraint[] g_endConstraints = new ConnectConstraint[]
+        {
+            new LockConstraint(),
+            new FixedLinkConstraint()
+        };
 
         public DoorRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng random)
         {
@@ -331,26 +358,16 @@ namespace IntelOrca.Biohazard
 
         private bool ConnectUpRandomNode(IEnumerable<PlayEdge> unfinishedEdges, IEnumerable<PlayNode> availableExitNodes)
         {
-            var strictConstraints = new ConnectConstraint[]
-            {
-                new LockConstraint(),
-                new FixedLinkConstraint(),
-                new LoopbackConstraint(),
-                new LeafConstraint(),
-                new KeyConstraint(),
-                new BoxConstraint()
-            };
-            var looseConstraints = new ConnectConstraint[]
-            {
-                new LockConstraint(),
-                new FixedLinkConstraint(),
-                new LoopbackConstraint(),
-                new LeafConstraint(),
-                new KeyConstraint()
-            };
-            if (ConnectUpRandomNode(strictConstraints, unfinishedEdges, availableExitNodes))
+            // Connect key doors before non-key doors
+            unfinishedEdges = unfinishedEdges
+                .Shuffle(_rng)
+                .OrderBy(x => x.Requires.Length != 0 ? 1 : 0)
+                .ToArray();
+
+            if (ConnectUpRandomNode(g_strictConstraints, unfinishedEdges, availableExitNodes))
                 return true;
-            return ConnectUpRandomNode(looseConstraints, unfinishedEdges, availableExitNodes);
+
+            return ConnectUpRandomNode(g_looseConstraints, unfinishedEdges, availableExitNodes);
         }
 
         private bool ConnectUpRandomNode(IEnumerable<ConnectConstraint> constraints, IEnumerable<PlayEdge> unfinishedEdges, IEnumerable<PlayNode> availableExitNodes)
@@ -367,18 +384,18 @@ namespace IntelOrca.Biohazard
             return false;
         }
 
-        private bool ConnectUpNode(PlayNode endNode, PlayEdge[] unfinishedEdges)
+        private bool ConnectUpNode(PlayNode endNode, IEnumerable<PlayEdge> unfinishedEdges)
         {
-            var endConstraints = new ConnectConstraint[]
-            {
-                new LockConstraint(),
-                new FixedLinkConstraint()
-            };
+            // Order by most key rich edge first
+            unfinishedEdges = unfinishedEdges
+                .OrderByDescending(x => x.Parent.DoorRandoAllRequiredItems.Length + x.Requires.Length)
+                .ToArray();
+
             foreach (var exit in endNode.Edges.Shuffle(_rng))
             {
                 foreach (var entrance in unfinishedEdges)
                 {
-                    if (ValidateConnection(endConstraints, entrance, exit))
+                    if (ValidateConnection(g_endConstraints, entrance, exit))
                     {
                         ConnectEdges(entrance, exit);
                         return true;
@@ -394,8 +411,6 @@ namespace IntelOrca.Biohazard
                 .Where(x => x.Visited)
                 .SelectMany(x => x.Edges)
                 .Where(x => x.Node == null && IsAccessible(x))
-                .OrderBy(x => x.Requires.Length != 0 ? 0 : 1)
-                // .ThenBy(x => x.Parent.Depth)
                 .ToArray();
             return unfinishedEdges;
         }
@@ -586,6 +601,8 @@ namespace IntelOrca.Biohazard
             _numUnconnectedEdges = 0;
             _numUnlockedEdges = 0;
             _numKeyEdges = 0;
+            _keyRichEdge = null;
+            _keyRichEdgeScore = 0;
 
             foreach (var node in nodes)
             {
@@ -603,6 +620,13 @@ namespace IntelOrca.Biohazard
                                 _numKeyEdges++;
                             else
                                 _numUnlockedEdges++;
+
+                            var keyRichScore = edge.Parent.DoorRandoAllRequiredItems.Length + edge.Requires.Length;
+                            if (keyRichScore > _keyRichEdgeScore)
+                            {
+                                _keyRichEdge = edge;
+                                _keyRichEdgeScore = keyRichScore;
+                            }
                         }
                     }
                 }
@@ -868,11 +892,16 @@ namespace IntelOrca.Biohazard
         {
             public override bool Validate(DoorRandomiser dr, PlayEdge entrance, PlayEdge exit)
             {
+                // Check if this is a loopback node
                 if (!exit.Parent.Visited)
                     return true;
 
                 if (!entrance.Randomize || !exit.Randomize)
                     return true;
+
+                // Do not waste the edge requiring the most keys on a loopback
+                if (entrance == dr._keyRichEdge)
+                    return false;
 
                 // Do not connect back to a room that already connects to this room
                 if (exit.Parent.Edges.Any(x => x.Node == entrance.Parent))
@@ -898,9 +927,18 @@ namespace IntelOrca.Biohazard
         {
             public override bool Validate(DoorRandomiser dr, PlayEdge entrance, PlayEdge exit)
             {
+                // Check if this is a leaf node
                 var extraEdges = exit.Parent.Edges.Count(x => x != exit && ValidateEntranceNodeForCounting(x));
+                if (extraEdges != 0)
+                    return true;
+
+                // Do not connect to leaf node if this is our last edge (reserved for bridge node)
                 var remainingEdges = dr._numUnlockedEdges + dr._numKeyEdges - 1;
-                if (remainingEdges == 0 && extraEdges == 0)
+                if (remainingEdges == 0)
+                    return false;
+
+                // Do not waste the edge requiring the most keys on a leaf node
+                if (entrance == dr._keyRichEdge)
                     return false;
 
                 return true;
