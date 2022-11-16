@@ -2429,7 +2429,8 @@
     "700": {
       "doorRando": [
         {
-          "category": "exclude"
+          "category": "exclude",
+          "scenario": 0
         },
         {
           "nop": [ 5284, 5306, 5310 ],
@@ -2444,10 +2445,12 @@
         {
           "target": "701",
           "requires": [ 99 ],
-          "randomize": false
+          "randomize": false,
+          "scenario": 1
         },
         {
-          "target": "703"
+          "target": "703",
+          "scenario": 1
         }
       ],
       "enemies": [ {} ],
