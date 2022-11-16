@@ -11,7 +11,7 @@ namespace IntelOrca.Biohazard
         private GameData _gameData;
         private Map _map = new Map();
         private Dictionary<RdtId, PlayNode> _nodeMap = new Dictionary<RdtId, PlayNode>();
-        private PlayNode[] _allNodes = new PlayNode[0];
+        private List<PlayNode> _allNodes = new List<PlayNode>();
         private Rng _rng;
         private bool _debugLogging = false;
 
@@ -156,7 +156,7 @@ namespace IntelOrca.Biohazard
             throw new Exception("No begin / end room set.");
         }
 
-        private PlayNode[] CreateNodes()
+        private List<PlayNode> CreateNodes()
         {
             var nodes = new List<PlayNode>();
             foreach (var kvp in _map.Rooms!)
@@ -165,13 +165,6 @@ namespace IntelOrca.Biohazard
                 if (node.Category == DoorRandoCategory.Exclude)
                     continue;
 
-                var rdt = _gameData.GetRdt(node.RdtId)!;
-                foreach (var offset in node.DoorRandoNop)
-                {
-                    rdt.Nop(offset);
-                    _logger.WriteLine($"{rdt.RdtId} (0x{offset:X2}) opcode removed");
-                }
-
                 foreach (var edge in node.Edges)
                 {
                     edge.Node = null;
@@ -179,7 +172,7 @@ namespace IntelOrca.Biohazard
                 }
                 nodes.Add(node);
             }
-            return nodes.ToArray();
+            return nodes;
         }
 
         private void CreateArea(PlayNode begin, PlayNode end, List<PlayNode> pool)
@@ -219,8 +212,17 @@ namespace IntelOrca.Biohazard
             foreach (var node in _allNodes)
             {
                 if (!node.Visited)
-                    return;
+                    continue;
 
+                // NOP out instructions
+                var rdt = _gameData.GetRdt(node.RdtId)!;
+                foreach (var offset in node.DoorRandoNop)
+                {
+                    rdt.Nop(offset);
+                    _logger.WriteLine($"{rdt.RdtId} (0x{offset:X2}) opcode removed");
+                }
+
+                // Lock any unconnected doors and loopback to itself to be extra safe
                 foreach (var edge in node.Edges)
                 {
                     if (edge.Node == null)
@@ -815,6 +817,7 @@ namespace IntelOrca.Biohazard
                             edge.Node.Visited = true;
                             edge.Node.Depth = node.Depth + 1;
                             stack.Push(edge.Node);
+                            _allNodes.Add(edge.Node);
                         }
                     }
                 }
