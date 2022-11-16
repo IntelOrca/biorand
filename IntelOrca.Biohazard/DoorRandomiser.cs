@@ -16,7 +16,7 @@ namespace IntelOrca.Biohazard
         private bool _debugLogging = false;
 
         private int _keyItemSpotsLeft;
-        private int _keyItemRequiredCount;
+        private readonly HashSet<ushort> _keyItemRequiredSet = new HashSet<ushort>();
         private int _numUnconnectedEdges;
         private int _numKeyEdges;
         private int _numUnlockedEdges;
@@ -186,7 +186,7 @@ namespace IntelOrca.Biohazard
         {
             _boxRoomReached = false;
             _keyItemSpotsLeft = 0;
-            _keyItemRequiredCount = 0;
+            _keyItemRequiredSet.Clear();
 
             PlayEdge[] unfinishedEdges;
             do
@@ -440,11 +440,19 @@ namespace IntelOrca.Biohazard
                 }
 
                 _keyItemSpotsLeft += exitNode.Items.Count(x => x.Priority == ItemPriority.Normal && (x.Requires?.Length ?? 0) == 0);
-                _keyItemRequiredCount += exitNode.Edges.Sum(x => x.Requires.Length);
-                _keyItemRequiredCount += exitNode.Requires.Length;
+                AddToKeyItemRequiredCount(exitNode.Edges.SelectMany(x => x.Requires));
+                AddToKeyItemRequiredCount(exitNode.Requires);
             }
 
             ConnectDoor(entrance, exit, loopback);
+        }
+
+        private void AddToKeyItemRequiredCount(IEnumerable<ushort> keys)
+        {
+            foreach (var key in keys)
+            {
+                _keyItemRequiredSet.Add(key);
+            }
         }
 
         private void ConnectDoor(PlayEdge aEdge, PlayEdge bEdge, bool oneWay = false)
@@ -949,7 +957,7 @@ namespace IntelOrca.Biohazard
         {
             public override bool Validate(DoorRandomiser dr, PlayEdge entrance, PlayEdge exit)
             {
-                var numRequiredKeys = dr._keyItemRequiredCount;
+                var numRequiredKeys = dr._keyItemRequiredSet.Count;
                 var numKeySlots = dr._keyItemSpotsLeft;
                 var unlockedEdges = dr._numUnlockedEdges;
                 if (entrance.Requires.Length == 0)
