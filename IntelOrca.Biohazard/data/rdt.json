@@ -1175,7 +1175,12 @@
       "doors": [
         {
           "target": "304",
-          "requires": [ 59, 60, 61, 62 ]
+          "requires": [ 59, 60, 61, 62 ],
+          "player": 0
+        },
+        {
+          "target": "304",
+          "player": 1
         },
         {
           "target": "30B"
@@ -1311,34 +1316,53 @@
       "doors": [
         {
           "target": "302",
-          "doorRando": true,
-          "player": 1
-        },
-        {
-          "target": "303",
-          "doorRando": true,
-          "player": 1
-        },
-        {
-          "target": "30C",
-          "doorRando": true,
-          "player": 1
-        },
-        {
-          "target": "302",
+          "doorRando": false,
           "player": 0
         },
         {
           "target": "303",
+          "doorRando": false,
           "player": 0
         },
         {
           "target": "305",
+          "doorRando": false,
           "player": 0
         },
         {
           "target": "30C",
+          "doorRando": false,
           "player": 0
+        },
+        {
+          "target": "302",
+          "doorRando": false,
+          "player": 1,
+          "scenario": 1
+        },
+        {
+          "target": "303",
+          "doorRando": false,
+          "player": 1,
+          "scenario": 1
+        },
+        {
+          "target": "30C",
+          "doorRando": false,
+          "player": 1,
+          "scenario": 1
+        },
+        {
+          "target": "302",
+          "doorRando": true
+        },
+        {
+          "target": "303",
+          "doorRando": true
+        },
+        {
+          "target": "30C",
+          "doorRando": true
         }
       ],
       "items": [
@@ -1373,6 +1397,13 @@
       "doors": [
         {
           "target": "30B"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "priority": "low",
+          "doorRando": false
         }
       ]
     },
@@ -1432,6 +1463,36 @@
       ],
       "items": [
         {
+          "id": 9,
+          "priority": "low",
+          "doorRando": false,
+          "player": 0
+        },
+        {
+          "id": 12,
+          "priority": "low",
+          "doorRando": false,
+          "player": 0
+        },
+        {
+          "id": 15,
+          "priority": "low",
+          "doorRando": false,
+          "player": 0
+        },
+        {
+          "id": 16,
+          "priority": "low",
+          "doorRando": false,
+          "player": 0
+        },
+        {
+          "id": 17,
+          "priority": "low",
+          "doorRando": false,
+          "player": 0
+        },
+        {
           "id": 8,
           "type": 0
         },
@@ -1489,14 +1550,52 @@
       ],
       "items": [
         {
+          "id": 3,
+          "priorty": "low",
+          "doorRando": false,
+          "player": 1
+        },
+        {
+          "id": 14,
+          "priorty": "low",
+          "doorRando": false,
+          "player": 1
+        },
+        {
+          "id": 15,
+          "priorty": "low",
+          "doorRando": false,
+          "player": 1
+        },
+        {
+          "id": 20,
+          "priorty": "low",
+          "doorRando": false,
+          "player": 1
+        },
+        {
           "id": 16,
+          "priorty": "low",
           "requires": [ 47 ],
+          "doorRando": false,
           "player": 1
         },
         {
           "id": 19,
+          "priorty": "low",
           "requires": [ 47 ],
+          "doorRando": false,
           "player": 1
+        },
+        {
+          "id": 16,
+          "requires": [ 47 ],
+          "doorRando": true
+        },
+        {
+          "id": 19,
+          "requires": [ 47 ],
+          "doorRando": true
         }
       ],
       "npcs": [ {} ]
@@ -1510,11 +1609,21 @@
       "doors": [
         {
           "target": "401",
+          "player": 0,
+          "scenario": 1
+        },
+        {
+          "target": "401",
           "player": 1
         },
         {
           "target": "403",
           "player": 0
+        },
+        {
+          "target": "403",
+          "player": 1,
+          "scenario": 1
         },
         {
           "target": "405"
