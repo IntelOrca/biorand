@@ -1457,6 +1457,13 @@
         {
           "id": 1,
           "target": "400:2",
+          "requires": [ 31 ],
+          "lock": "unblock",
+          "player": 0
+        },
+        {
+          "id": 1,
+          "target": "400:2",
           "lock": "unblock",
           "player": 1
         },
@@ -1465,13 +1472,13 @@
           "target": "400:1"
         },
         {
+          "target": "404"
+        },
+        {
           "target": "40F",
           "doorRando": false,
           "player": 1,
           "scenario": 0
-        },
-        {
-          "target": "404"
         }
       ],
       "items": [
@@ -1483,6 +1490,20 @@
         },
         {
           "id": 12,
+          "priority": "low",
+          "doorRando": false,
+          "player": 0
+        },
+        {
+          "id": 13,
+          "requires": [ 31 ],
+          "priority": "low",
+          "doorRando": false,
+          "player": 0
+        },
+        {
+          "id": 14,
+          "requires": [ 31 ],
           "priority": "low",
           "doorRando": false,
           "player": 0
@@ -1506,26 +1527,20 @@
           "player": 0
         },
         {
+          "id": 13,
+          "doorRando": true,
+          "priority": "low", // HACK to avoid small key requirement
+          "player": 0
+        },
+        {
+          "id": 14,
+          "doorRando": true,
+          "priority": "low", // HACK to avoid small key requirement
+          "player": 0
+        },
+        {
           "id": 8,
           "type": 0
-        },
-        {
-          "id": 13,
-          "type": 0,
-          "player": 0
-        },
-        {
-          "id": 13,
-          "player": 1
-        },
-        {
-          "id": 14,
-          "type": 0,
-          "player": 0
-        },
-        {
-          "id": 14,
-          "player": 1
         }
       ],
       "enemies": [ {} ]

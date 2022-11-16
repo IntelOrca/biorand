@@ -465,6 +465,13 @@ namespace IntelOrca.Biohazard
             aEdge.Node = b;
             bEdge.Node = a;
 
+            if (aEdge.Requires.Length == 0 && aEdge.Lock == LockKind.Unblock)
+            {
+                // If the door is temporarily blocked, lock from the other side
+                // This is a safety measure for loopbacks
+                oneWay = true;
+            }
+
             if (a.Category != DoorRandoCategory.Static)
             {
                 var aDoorId = aEdge.DoorId!.Value;
@@ -480,7 +487,7 @@ namespace IntelOrca.Biohazard
                     aEdge.Lock = LockKind.None;
                     aRdt.RemoveDoorLock(aDoorId);
                 }
-                if (oneWay || aEdge.Lock == LockKind.Unblock)
+                if (oneWay)
                 {
                     aRdt.AddDoorUnlock(aDoorId, _lockId);
                 }
@@ -499,7 +506,7 @@ namespace IntelOrca.Biohazard
                 {
                     bRdt.SetDoorTarget(bDoorId, a.RdtId, aEdge.Entrance.Value, bEdge.OriginalTargetRdt);
                     bRdt.RemoveDoorUnlock(bDoorId);
-                    if (oneWay || aEdge.Lock == LockKind.Unblock)
+                    if (oneWay)
                     {
                         bEdge.Lock = LockKind.Side;
                         bRdt.RemoveDoorLock(bDoorId);

@@ -228,11 +228,19 @@ namespace IntelOrca.Biohazard
             {
                 if (PlaceKeyItem(req, alternativeRoutes))
                 {
-                    if (IsTwinItem(req))
+                    if (req == (ushort)ItemType.RedJewel ||
+                       (req == (ushort)ItemType.SmallKey && !_config.RandomDoors))
                     {
                         if (!PlaceKeyItem(req, true))
                         {
                             throw new Exception($"Unable to place 2nd {(ItemType)req}");
+                        }
+                        if (req == (ushort)ItemType.SmallKey && _config.Scenario == 1 && !_config.RandomDoors)
+                        {
+                            if (!PlaceKeyItem(req, true))
+                            {
+                                throw new Exception($"Unable to place 3rd {(ItemType)req}");
+                            }
                         }
                     }
                     UpdateRequiredItemList();
@@ -299,11 +307,6 @@ namespace IntelOrca.Biohazard
                 default:
                     return false;
             }
-        }
-
-        private static bool IsTwinItem(ushort item)
-        {
-            return item == (ushort)ItemType.SmallKey || item == (ushort)ItemType.RedJewel;
         }
 
         private bool PlaceKeyItem(ushort req, bool alternativeRoute)
@@ -380,7 +383,7 @@ namespace IntelOrca.Biohazard
             _definedPool.Add(itemEntry);
             itemParentNode.PlacedKeyItems.Add(itemEntry);
 
-            _logger.WriteLine($"    Placing key item ({Items.GetItemName(itemEntry.Type)}) in {itemEntry.RdtId}:{itemEntry.Id}");
+            _logger.WriteLine($"    Placing key item ({Items.GetItemName(itemEntry.Type)} x{itemEntry.Amount}) in {itemEntry.RdtId}:{itemEntry.Id}");
             return true;
         }
 
@@ -668,6 +671,12 @@ namespace IntelOrca.Biohazard
                 if (n.Requires.Contains(keyType))
                     total++;
 
+                foreach (var item in n.Items)
+                {
+                    if (item.Requires?.Contains(keyType) == true)
+                        total++;
+                }
+
                 foreach (var edge in n.Edges)
                 {
                     if (edge.Requires.Contains(keyType))
@@ -685,6 +694,7 @@ namespace IntelOrca.Biohazard
         {
             switch (itemType)
             {
+                case ItemType.SmallKey: // Small keys can be stacked
                 case ItemType.CabinKey:
                 case ItemType.SpadeKey:
                 case ItemType.DiamondKey:
