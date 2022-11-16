@@ -57,7 +57,7 @@ In Resident Evil 2, there are 3 significant points-of-no-return:
 * The train / lift transporting you from the marshaling yard to the lab.
 * The train platform at the end of scenario B.
 
-BioRand pretends there are two more points of return:
+BioRand pretends there are two more points-of-no-return:
 * The door leading to the sewers
 * The cable car transporting you from the sewers to the marshaling yard.
 
