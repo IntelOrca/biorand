@@ -2555,6 +2555,7 @@
           "scenario": 0
         },
         {
+          "category": "exclude",
           "nop": [ 5284, 5306, 5310 ],
           "scenario": 1
         }
@@ -2562,7 +2563,8 @@
       "doors": [
         {
           "target": "601",
-          "lock": "always"
+          "lock": "always",
+          "doorRando": false
         },
         {
           "target": "701",
@@ -2572,6 +2574,7 @@
         },
         {
           "target": "703",
+          "randomize": false,
           "scenario": 1
         }
       ],

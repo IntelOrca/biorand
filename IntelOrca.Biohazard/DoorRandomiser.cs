@@ -388,6 +388,7 @@ namespace IntelOrca.Biohazard
         {
             // Order by most key rich edge first
             unfinishedEdges = unfinishedEdges
+                .Shuffle(_rng)
                 .OrderByDescending(x => x.Parent.DoorRandoAllRequiredItems.Length + x.Requires.Length)
                 .ToArray();
 
