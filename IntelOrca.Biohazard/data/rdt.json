@@ -1072,10 +1072,23 @@
           "target": "308",
           "noReturn": true,
           "requires": [ 54, 56, 57, 58 ],
+          "requiresRoom": [ "10E" ],
           "player": 1
         }
       ],
       "items": [
+        {
+          "id": 6,
+          "priority": "low",
+          "doorRando": true,
+          "player": 1
+        },
+        {
+          "id": 7,
+          "priority": "low",
+          "doorRando": true,
+          "player": 1
+        },
         {
           "id": 8,
           "priority": "low"
