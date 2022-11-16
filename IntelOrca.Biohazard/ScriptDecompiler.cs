@@ -166,6 +166,7 @@ namespace IntelOrca.Biohazard
                 case Opcode.SceEmSet:
                 case Opcode.AotReset:
                 case Opcode.ItemAotSet:
+                case Opcode.ItemAotSet4p:
                 case Opcode.XaOn:
                     base.VisitOpcode(offset, opcode, operands);
                     break;
@@ -266,7 +267,44 @@ namespace IntelOrca.Biohazard
 
         protected override void VisitItemAotSet(ItemAotSetOpcode item)
         {
-            _sb.WriteStandardOpcode("item_aot_set", item.Id, GetItemConstant(item.Type), item.Amount);
+            _sb.WriteStandardOpcode("item_aot_set",
+                item.Id,
+                GetSCE(item.SCE),
+                GetSAT(item.SAT),
+                item.Floor,
+                item.Super,
+                item.X,
+                item.Y,
+                item.W,
+                item.H,
+                GetItemConstant(item.Type),
+                item.Amount,
+                item.Array8Idx,
+                item.MD1,
+                item.Action);
+        }
+
+        protected override void VisitItemAotSet4p(ItemAotSet4pOpcode item)
+        {
+            _sb.WriteStandardOpcode("item_aot_set_4p",
+                item.Id,
+                GetSCE(item.SCE),
+                GetSAT(item.SAT),
+                item.Floor,
+                item.Super,
+                item.X0,
+                item.Z0,
+                item.X1,
+                item.Z1,
+                item.X2,
+                item.Z2,
+                item.X3,
+                item.Z3,
+                GetItemConstant(item.Type),
+                item.Amount,
+                item.Array8Idx,
+                item.MD1,
+                item.Action);
         }
 
         protected override void VisitXaOn(XaOnOpcode sound)

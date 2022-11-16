@@ -21,7 +21,7 @@ namespace IntelOrca.Biohazard
 
         public IEnumerable<IDoorAotSetOpcode> Doors => Opcodes.OfType<IDoorAotSetOpcode>();
         public IEnumerable<SceEmSetOpcode> Enemies => Opcodes.OfType<SceEmSetOpcode>();
-        public IEnumerable<ItemAotSetOpcode> Items => Opcodes.OfType<ItemAotSetOpcode>();
+        public IEnumerable<IItemAotSetOpcode> Items => Opcodes.OfType<IItemAotSetOpcode>();
         public IEnumerable<AotResetOpcode> Resets => Opcodes.OfType<AotResetOpcode>();
         public IEnumerable<SceItemGetOpcode> ItemGets => Opcodes.OfType<SceItemGetOpcode>();
         public IEnumerable<XaOnOpcode> Sounds => Opcodes.OfType<XaOnOpcode>();

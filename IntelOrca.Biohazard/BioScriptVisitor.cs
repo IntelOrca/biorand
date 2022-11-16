@@ -64,6 +64,9 @@ namespace IntelOrca.Biohazard
                 case Opcode.DoorAotSet4p:
                     VisitDoorAotSet4p(DoorAotSet4pOpcode.Read(br, offset));
                     break;
+                case Opcode.ItemAotSet4p:
+                    VisitItemAotSet4p(ItemAotSet4pOpcode.Read(br, offset));
+                    break;
             }
         }
 
@@ -83,6 +86,7 @@ namespace IntelOrca.Biohazard
         protected virtual void VisitXaOn(XaOnOpcode opcode) => VisitOpcode(opcode);
         protected virtual void VisitSceItemGet(SceItemGetOpcode opcode) => VisitOpcode(opcode);
         protected virtual void VisitDoorAotSet4p(DoorAotSet4pOpcode opcode) => VisitOpcode(opcode);
+        protected virtual void VisitItemAotSet4p(ItemAotSet4pOpcode opcode) => VisitOpcode(opcode);
     }
 
     internal enum BioScriptKind

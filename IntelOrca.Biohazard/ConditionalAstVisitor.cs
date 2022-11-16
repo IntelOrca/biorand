@@ -202,6 +202,7 @@ namespace IntelOrca.Biohazard
                         break;
                     }
                 case Opcode.ItemAotSet:
+                case Opcode.ItemAotSet4p:
                     var item = (ItemAotSetOpcode)node.Opcode;
                     _sb.Append($"{indent}Item #{item.Id}: {(ItemType)item.Type} x{item.Amount} (0x{item.Offset:X2})");
                     AppendConditions();
