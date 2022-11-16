@@ -29,7 +29,7 @@ namespace IntelOrca.Biohazard
             {
                 var enemies = rdt.Enemies.ToArray();
                 var logEnemies = enemies.Select(GetEnemyLogText).ToArray();
-                RandomiseRoom(rdt);
+                RandomiseRoom(_rng.NextFork(), rdt);
                 for (int i = 0; i < logEnemies.Length; i++)
                 {
                     var enemy = enemies[i];
@@ -130,19 +130,19 @@ namespace IntelOrca.Biohazard
             return $"[{enemy.Type},{enemy.State},{enemy.Ai},{enemy.SoundBank},{enemy.Texture}]";
         }
 
-        private void RandomiseRoom(Rdt rdt)
+        private void RandomiseRoom(Rng rng, Rdt rdt)
         {
             var enemySpecs = _map.GetRoom(rdt.RdtId)?.Enemies;
             if (enemySpecs != null)
             {
                 foreach (var enemySpec in enemySpecs)
                 {
-                    RandomiseRoom(rdt, enemySpec);
+                    RandomiseRoom(rng, rdt, enemySpec);
                 }
             }
         }
 
-        private void RandomiseRoom(Rdt rdt, MapRoomEnemies enemySpec)
+        private void RandomiseRoom(Rng rng, Rdt rdt, MapRoomEnemies enemySpec)
         {
             if (enemySpec.Player != null && enemySpec.Player != _config.Player)
                 return;
@@ -211,7 +211,7 @@ namespace IntelOrca.Biohazard
                     case EnemyType.ZombieNaked:
                     case EnemyType.ZombieRandom:
                         if (!enemySpec.KeepState)
-                            enemy.State = _rng.NextOf<byte>(0, 1, 2, 3, 4, 6);
+                            enemy.State = rng.NextOf<byte>(0, 1, 2, 3, 4, 6);
                         enemy.SoundBank = GetZombieSoundBank(enemyType);
                         break;
                     case EnemyType.Cerebrus:
@@ -219,12 +219,12 @@ namespace IntelOrca.Biohazard
                         if (_config.EnemyDifficulty >= 3)
                         {
                             // %50 of running
-                            enemy.State = _rng.NextOf<byte>(0, 2);
+                            enemy.State = rng.NextOf<byte>(0, 2);
                         }
                         else if (_config.EnemyDifficulty >= 2)
                         {
                             // %25 of running
-                            enemy.State = _rng.NextOf<byte>(0, 0, 0, 2);
+                            enemy.State = rng.NextOf<byte>(0, 0, 0, 2);
                         }
                         enemy.SoundBank = 12;
                         break;

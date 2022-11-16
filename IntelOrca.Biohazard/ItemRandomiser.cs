@@ -1,122 +1,76 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.Json;
 
 namespace IntelOrca.Biohazard
 {
-    internal class PlayGraphFactory
+    internal class ItemRandomiser
     {
         private readonly RandoLogger _logger;
         private RandoConfig _config;
         private GameData _gameData;
-        private Map _map = new Map();
-        private List<PlayNode> _nodes = new List<PlayNode>();
-        private Dictionary<RdtId, PlayNode> _nodeMap = new Dictionary<RdtId, PlayNode>();
+        private PlayNode[] _nodes = new PlayNode[0];
         private List<ItemPoolEntry> _futurePool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _currentPool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _shufflePool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _definedPool = new List<ItemPoolEntry>();
         private List<(RdtItemId, RdtItemId)> _linkedItems = new List<(RdtItemId, RdtItemId)>();
-        private HashSet<ushort> _requiredItems = new HashSet<ushort>();
+        private HashSet<KeyRequirement> _requiredItems = new HashSet<KeyRequirement>();
         private HashSet<ushort> _haveItems = new HashSet<ushort>();
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
         private HashSet<RdtItemId> _visitedItems = new HashSet<RdtItemId>();
         private Rng _rng;
         private bool _debugLogging = false;
 
-        public PlayGraphFactory(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng random)
+        public ItemRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng random)
         {
             _logger = logger;
             _config = config;
             _gameData = gameData;
-            _map = map;
             _rng = random;
         }
 
-        public void CreateDoorRando()
+        public void RandomiseItems(PlayGraph graph)
         {
-            var nodes = new List<PlayNode>();
-            foreach (var kvp in _map.Rooms!)
-            {
-                nodes.Add(GetOrCreateNode(RdtId.Parse(kvp.Key)));
-            }
+            if (graph.Start == null || graph.End == null)
+                throw new ArgumentException("No start or end node", nameof(graph));
 
-            foreach (var node in nodes)
-            {
-                var rdt = _gameData.GetRdt(node.RdtId);
-                if (rdt != null)
-                {
-                    foreach (var door in rdt.Doors)
-                    {
-                        // Get a random door to go to
-                        PlayNode targetNode;
-                        do
-                        {
-                            var nodeIndex = _rng.Next(0, nodes.Count);
-                            targetNode = nodes[nodeIndex];
-                        }
-                        while (targetNode.Doors.Length == 0);
-                        var doorIndex = _rng.Next(0, targetNode.Doors.Length);
-                        var targetDoor = targetNode.Doors[doorIndex];
+            _nodes = graph.GetAllNodes();
 
-                        rdt.SetDoorTarget(door.Id, targetDoor);
-                    }
-                }
-            }
-        }
-
-        public PlayGraph Create()
-        {
             _logger.WriteHeading("Randomizing Items:");
             _logger.WriteLine("Placing key items:");
 
-            // Create all nodes
-            foreach (var kvp in _map.Rooms!)
-            {
-                _nodes.Add(GetOrCreateNode(RdtId.Parse(kvp.Key)));
-            }
-
-            // Leon starts with a lighter
-            if (_config.Player == 0)
-            {
-                _haveItems.Add((ushort)ItemType.Lighter);
-            }
-
-            var graph = new PlayGraph();
-            if (_config.Scenario == 0)
-            {
-                graph.Start = GetOrCreateNode(RdtId.Parse(_map.StartA!));
-                graph.End = GetOrCreateNode(RdtId.Parse(_map.EndA!));
-            }
-            else
-            {
-                graph.Start = GetOrCreateNode(RdtId.Parse(_map.StartB!));
-                graph.End = GetOrCreateNode(RdtId.Parse(_map.EndB!));
-            }
-
             var checkpoint = graph.Start;
+            ClearItems();
+            _visitedRooms.Clear();
             while (!_visitedRooms.Contains(graph.End) || _requiredItems.Count != 0)
             {
-                PlaceKeyItem(_config.AlternativeRoutes);
+                PlaceKeyItem(_config.RandomDoors || _config.AlternativeRoutes);
                 var newCheckpoint = Search(checkpoint);
-                if (newCheckpoint != checkpoint)
+                if (newCheckpoint != checkpoint && _requiredItems.Count == 0)
                 {
                     _logger.WriteLine("    ------------ checkpoint ------------");
-                    if (_config.ProtectFromSoftLock)
+                    if (_config.RandomDoors || _config.ProtectFromSoftLock)
                     {
-                        _shufflePool.AddRange(_currentPool.Where(x => x.Priority == ItemPriority.Normal));
+                        _shufflePool.AddRange(_currentPool.Where(x => x.Priority != ItemPriority.Fixed));
                         _currentPool.Clear();
                     }
+                    if (_config.RandomDoors)
+                    {
+                        ClearItems();
+                        foreach (var item in newCheckpoint.DoorRandoAllRequiredItems)
+                        {
+                            _haveItems.Add(item);
+                        }
+                    }
+                    checkpoint = newCheckpoint;
                 }
-                checkpoint = newCheckpoint;
             }
-            _shufflePool.AddRange(_currentPool.Where(x => x.Priority == ItemPriority.Normal));
+            _shufflePool.AddRange(_currentPool.Where(x => x.Priority != ItemPriority.Fixed));
             if (_shufflePool.DistinctBy(x => x.RdtItemId).Count() != _shufflePool.Count())
                 throw new Exception();
 
-            if (_config.ShuffleItems)
+            if (!_config.RandomDoors && _config.ShuffleItems)
             {
                 ShuffleRemainingPool();
             }
@@ -126,18 +80,17 @@ namespace IntelOrca.Biohazard
             }
 
             SetLinkedItems();
-            return graph;
+            SetItems();
         }
 
-        private static Map LoadJsonMap(string path)
+        private void ClearItems()
         {
-            var jsonMap = File.ReadAllText(path);
-            var map = JsonSerializer.Deserialize<Map>(jsonMap, new JsonSerializerOptions()
+            // Leon starts with a lighter
+            _haveItems.Clear();
+            if (_config.Player == 0)
             {
-                ReadCommentHandling = JsonCommentHandling.Skip,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            })!;
-            return map;
+                _haveItems.Add((ushort)ItemType.Lighter);
+            }
         }
 
         private PlayNode Search(PlayNode start)
@@ -156,78 +109,61 @@ namespace IntelOrca.Biohazard
                 if (_visitedRooms.Add(node))
                 {
                     // Add any required keys for the room (ones that don't guard an item, e.g. Film A, Film B, etc.)
-                    foreach (var r in node.Requires)
-                    {
-                        if (!_haveItems.Contains(r))
-                        {
-                            _requiredItems.Add(r);
-                        }
-                    }
+                    if (node.Requires.Length != 0)
+                        _requiredItems.Add(new KeyRequirement(node.Requires));
 
                     // First time we have visited room, add room items to pool
                     foreach (var item in node.Items)
                     {
-                        if (_visitedItems.Add(item.RdtItemId))
-                            _currentPool.Add(item);
-
-                        if (_currentPool.DistinctBy(x => x.RdtItemId).Count() != _currentPool.Count())
-                            throw new Exception();
-
-                        _futurePool.RemoveAll(x => x.RdtItemId == item.RdtItemId);
+                        // Don't add items we require a key for
+                        if (item.Requires != null && item.Requires.Length != 0)
+                        {
+                            _requiredItems.Add(new KeyRequirement(item.Requires, item));
+                        }
+                        else
+                        {
+                            AddItemToPool(item);
+                        }
                     }
                     foreach (var linkedItem in node.LinkedItems)
                     {
                         _linkedItems.Add((new RdtItemId(node.RdtId, linkedItem.Key), linkedItem.Value));
                     }
 
-                    if (node.Items.Length != 0)
+                    if (_debugLogging && node.Items.Length != 0)
                     {
-                        if (_debugLogging)
-                        {
-                            _logger.WriteLine($"    Room {node.RdtId} contains:");
-                        }
+                        _logger.WriteLine($"    Room {node.RdtId} contains:");
                         foreach (var item in node.Items)
                         {
-                            if (_debugLogging)
-                            {
-                                _logger.WriteLine($"        {item}");
-                            }
-                            if (item.Requires != null)
-                            {
-                                foreach (var r in item.Requires)
-                                {
-                                    if (!_haveItems.Contains(r))
-                                    {
-                                        _requiredItems.Add(r);
-                                    }
-                                }
-                            }
+                            _logger.WriteLine($"        {item}");
                         }
                     }
                 }
 
                 foreach (var edge in node.Edges)
                 {
-                    if (seen.Contains(edge.Node.RdtId))
+                    if (edge.Node == null)
                         continue;
-                    if (edge.Locked)
+                    if (edge.Lock != LockKind.None && edge.Lock != LockKind.Unblock)
                         continue;
-                    if (edge.NoReturn && _requiredItems.Count != 0)
-                        continue;
-
-                    // HACK Leon must go to 30B before he can go to 21B
-                    if (_config.Player == 0 && edge.Node.RdtId.Stage == 1 && edge.Node.RdtId.Room == 0x1B && !_visitedRooms.Any(x => x.RdtId.Stage == 2 && x.RdtId.Room == 3))
+                    if (!edge.RequiresRoom.All(x => _visitedRooms.Contains(x)))
                         continue;
 
                     var requiredItems = edge.Requires == null ? new ushort[0] : edge.Requires.Except(_haveItems).ToArray()!;
                     if (requiredItems.Length == 0)
                     {
+                        if (seen.Contains(edge.Node.RdtId))
+                            continue;
+
                         if (edge.NoReturn)
                         {
-                            checkpoint = edge.Node;
-                            if (_debugLogging)
+                            if (!_visitedRooms.Contains(edge.Node))
                             {
-                                _logger.WriteLine($"        {node} -> {edge.Node} (checkpoint)");
+                                checkpoint = edge.Node;
+                                if (_debugLogging)
+                                {
+                                    _logger.WriteLine($"        {node} -> {edge.Node} (checkpoint)");
+                                }
                             }
                         }
                         else
@@ -241,13 +177,7 @@ namespace IntelOrca.Biohazard
                     }
                     else
                     {
-                        foreach (var item in requiredItems)
-                        {
-                            if (!_haveItems.Contains(item))
-                            {
-                                _requiredItems.Add(item);
-                            }
-                        }
+                        _requiredItems.Add(new KeyRequirement(requiredItems, null, isDoor: true));
                     }
                 }
             }
@@ -289,10 +219,11 @@ namespace IntelOrca.Biohazard
 
         private void PlaceKeyItem(bool alternativeRoutes)
         {
-            if (_requiredItems.Count == 0)
+            var keyItemPlaceOrder = GetKeyItemPlaceOrder();
+            if (keyItemPlaceOrder.Length == 0)
                 return;
 
-            var checkList = _requiredItems.Shuffle(_rng);
+            var checkList = GetKeyItemPlaceOrder();
             foreach (var req in checkList)
             {
                 if (PlaceKeyItem(req, alternativeRoutes))
@@ -304,6 +235,7 @@ namespace IntelOrca.Biohazard
                             throw new Exception($"Unable to place 2nd {(ItemType)req}");
                         }
                     }
+                    UpdateRequiredItemList();
                     return;
                 }
             }
@@ -322,10 +254,36 @@ namespace IntelOrca.Biohazard
                 _logger.WriteLine($"        {Items.GetItemName(item)}");
             }
 
-            if (_requiredItems.Any(x => !IsOptionalItem(x)))
+            if (keyItemPlaceOrder.Any(x => !IsOptionalItem(x)))
                 throw new Exception("Unable to find key item to swap");
 
             _requiredItems.Clear();
+        }
+
+        private ushort[] GetKeyItemPlaceOrder()
+        {
+            UpdateRequiredItemList();
+            return _requiredItems
+                .Shuffle(_rng)
+                .OrderBy(x => x.IsDoor ? 0 : 1)
+                .ThenBy(x => x.Keys.Length)
+                .SelectMany(x => x.Keys)
+                .Where(x => !_haveItems.Contains(x))
+                .ToArray();
+        }
+
+        private void UpdateRequiredItemList()
+        {
+            var newItemsForPool = _requiredItems
+                .Where(x => x.Item != null && x.Keys.All(x => _haveItems.Contains(x)))
+                .Select(x => x.Item)
+                .ToArray();
+            foreach (var rq in newItemsForPool)
+            {
+                AddItemToPool(rq.Value);
+            }
+
+            _requiredItems.RemoveWhere(x => x.Keys.All(x => _haveItems.Contains(x)));
         }
 
         private static bool IsOptionalItem(ushort item)
@@ -356,43 +314,45 @@ namespace IntelOrca.Biohazard
                 throw new Exception("Run out of free item slots");
 
             var itemEntry = _currentPool[index.Value];
+            var itemParentNode = _nodes.First(x => x.RdtId == itemEntry.RdtId);
 
-            // Find original location of key item
-            var originalIndex = _currentPool.FindIndex(x => x.Type == req);
-            if (originalIndex == -1 && alternativeRoute)
+            if (!_config.RandomDoors)
             {
-                // Key must be in a later area, find it
-                foreach (var node in _nodes)
+                // Find original location of key item
+                var originalIndex = _currentPool.FindIndex(x => x.Type == req);
+                if (originalIndex == -1 && alternativeRoute)
                 {
-                    foreach (var item in node.Items)
+                    // Key must be in a later area, find it
+                    foreach (var node in _nodes)
                     {
-                        if (item.Type == req && item.Priority != ItemPriority.Fixed && !_visitedItems.Contains((RdtItemId)item.RdtItemId))
+                        foreach (var item in node.Items)
                         {
-                            _futurePool.Add(item);
-                            _currentPool.Add(item);
-                            if (_currentPool.DistinctBy(x => x.RdtItemId).Count() != _currentPool.Count())
-                                throw new Exception();
-                            _visitedItems.Add(item.RdtItemId);
-                            originalIndex = _currentPool.Count - 1;
-                            break;
+                            if (item.Type == req && item.Priority != ItemPriority.Fixed && !_visitedItems.Contains((RdtItemId)item.RdtItemId))
+                            {
+                                AddItemToPool(item, future: true);
+                                originalIndex = _currentPool.Count - 1;
+                                break;
+                            }
                         }
                     }
                 }
-            }
-            if (originalIndex == -1)
-            {
-                // Check original key was in a previous checkpoint area (edge case for Weapon Box Key)
-                var shuffleIndex = _shufflePool.FindIndex(x => x.Type == req);
-                if (shuffleIndex != -1)
+                if (originalIndex == -1)
                 {
-                    var item = _shufflePool[shuffleIndex];
-                    _shufflePool.RemoveAt(shuffleIndex);
-                    _currentPool.Add(item);
-                    originalIndex = _currentPool.Count - 1;
+                    // Check original key was in a previous checkpoint area (edge case for Weapon Box Key)
+                    var shuffleIndex = _shufflePool.FindIndex(x => x.Type == req);
+                    if (shuffleIndex != -1)
+                    {
+                        var item = _shufflePool[shuffleIndex];
+                        _shufflePool.RemoveAt(shuffleIndex);
+                        _currentPool.Add(item);
+                        originalIndex = _currentPool.Count - 1;
+                    }
                 }
-            }
-            if (originalIndex != -1)
-            {
+                if (originalIndex == -1)
+                {
+                    return false;
+                }
+
                 // Check original key can actually be moved
                 var originalItemEntry = _currentPool[originalIndex];
                 if (originalItemEntry.Priority == ItemPriority.Fixed)
@@ -410,17 +370,40 @@ namespace IntelOrca.Biohazard
             }
             else
             {
-                return false;
+                itemEntry.Amount = GetTotalKeyRequirementCount(itemParentNode, req);
             }
             itemEntry.Type = req;
 
             // Remove new key item location from pool
-            _requiredItems.Remove(req);
             _haveItems.Add(req);
             _currentPool.RemoveAt(index.Value);
             _definedPool.Add(itemEntry);
+            itemParentNode.PlacedKeyItems.Add(itemEntry);
+
             _logger.WriteLine($"    Placing key item ({Items.GetItemName(itemEntry.Type)}) in {itemEntry.RdtId}:{itemEntry.Id}");
             return true;
+        }
+
+        private void AddItemToPool(ItemPoolEntry item, bool future = false)
+        {
+            if (future)
+            {
+                if (_visitedItems.Add(item.RdtItemId))
+                {
+                    _currentPool.Add(item);
+                    _futurePool.Add(item);
+                }
+            }
+            else
+            {
+                if (_visitedItems.Add(item.RdtItemId))
+                    _currentPool.Add(item);
+
+                _futurePool.RemoveAll(x => x.RdtItemId == item.RdtItemId);
+            }
+
+            if (_currentPool.DistinctBy(x => x.RdtItemId).Count() != _currentPool.Count())
+                throw new Exception();
         }
 
         private void RandomiseRemainingPool()
@@ -617,13 +600,16 @@ namespace IntelOrca.Biohazard
         private void ShuffleRemainingPool()
         {
             _logger.WriteLine("Shuffling non-key items:");
-            var shuffled = _shufflePool.Shuffle(_rng);
-            for (int i = 0; i < _shufflePool.Count; i++)
+            var shufflePool = _shufflePool
+                .Where(x => x.Priority != ItemPriority.Low)
+                .ToArray();
+            var shuffled = shufflePool.Shuffle(_rng);
+            for (int i = 0; i < shufflePool.Length; i++)
             {
-                var entry = _shufflePool[i];
+                var entry = shufflePool[i];
                 entry.Type = shuffled[i].Type;
                 entry.Amount = shuffled[i].Amount;
-                _logger.WriteLine($"    Swapped {_shufflePool[i]} with {shuffled[i]}");
+                _logger.WriteLine($"    Swapped {shufflePool[i]} with {shuffled[i]}");
                 _definedPool.Add(entry);
             }
             _shufflePool.Clear();
@@ -642,7 +628,7 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        public void SetItems()
+        private void SetItems()
         {
             foreach (var entry in _definedPool)
             {
@@ -664,145 +650,103 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private PlayNode GetOrCreateNode(RdtId rdtId)
+        private ushort GetTotalKeyRequirementCount(PlayNode node, ushort keyType)
         {
-            var node = FindNode(rdtId);
-            if (node != null)
-                return node;
-
-            var rdt = _gameData.GetRdt(rdtId);
-            var items = rdt!.EnumerateOpcodes<ItemAotSetOpcode>(_config)
-                .DistinctBy(x => x.Id)
-                .Where(x => _config.IncludeDocuments || x.Type <= (ushort)ItemType.PlatformKey)
-                .Select(x => new ItemPoolEntry()
-                {
-                    RdtId = rdt.RdtId,
-                    Id = x.Id,
-                    Type = x.Type,
-                    Amount = x.Amount
-                })
-                .ToArray();
-
-            node = new PlayNode(rdtId);
-            node.Doors = GetAllDoorsToRoom(rdtId);
-            node.Items = items;
-            _nodeMap.Add(rdtId, node);
-
-            var mapRoom = _map.GetRoom(rdtId);
-            if (mapRoom == null)
-                throw new Exception("No JSON definition for room");
-
-            node.Requires = mapRoom.Requires ?? Array.Empty<ushort>();
-
-            if (mapRoom.Doors != null)
+            if (!IsItemTypeDiscardable((ItemType)keyType))
             {
-                foreach (var door in mapRoom.Doors)
-                {
-                    if (door.Player != null && door.Player != _config.Player)
-                        continue;
-                    if (door.Scenario != null && door.Scenario != _config.Scenario)
-                        continue;
-
-                    var edgeNode = GetOrCreateNode(RdtId.Parse(door.Target!));
-                    var edge = new PlayEdge(edgeNode, door.Locked, door.NoReturn, door.Requires!);
-                    node.Edges.Add(edge);
-                }
+                return 1;
             }
 
-            if (mapRoom.Items != null)
+            ushort total = 0;
+            var visited = new HashSet<PlayNode>();
+            var stack = new Stack<PlayNode>();
+            stack.Push(node);
+            visited.Add(node);
+            while (stack.Count != 0)
             {
-                foreach (var correctedItem in mapRoom.Items)
+                var n = stack.Pop();
+                if (n.Requires.Contains(keyType))
+                    total++;
+
+                foreach (var edge in n.Edges)
                 {
-                    if (correctedItem.Player != null && correctedItem.Player != _config.Player)
-                        continue;
-                    if (correctedItem.Scenario != null && correctedItem.Scenario != _config.Scenario)
-                        continue;
-
-                    // HACK 255 is used for item get commands
-                    if (correctedItem.Id == 255)
+                    if (edge.Requires.Contains(keyType))
+                        total++;
+                    if (edge.Node != null && edge.Lock != LockKind.Always && visited.Add(edge.Node))
                     {
-                        items = items.Concat(new[] {
-                                new ItemPoolEntry() {
-                                    RdtId = rdtId,
-                                    Id = correctedItem.Id,
-                                    Type = (ushort)(correctedItem.Type ?? 0),
-                                    Amount = correctedItem.Amount ?? 1,
-                                    Requires = correctedItem.Requires,
-                                    Priority = ParsePriority(correctedItem.Priority)
-                                }
-                            }).ToArray();
-                        continue;
-                    }
-
-                    var idx = Array.FindIndex(items, x => x.Id == correctedItem.Id);
-                    if (idx != -1)
-                    {
-                        if (correctedItem.Link == null)
-                        {
-                            items[idx].Type = (ushort)(correctedItem.Type ?? items[idx].Type);
-                            items[idx].Amount = correctedItem.Amount ?? items[idx].Amount;
-                        }
-                        else
-                        {
-                            items[idx].Type = 0;
-
-                            var rdtItemId = RdtItemId.Parse(correctedItem.Link);
-                            node.LinkedItems.Add(correctedItem.Id, rdtItemId);
-                        }
-                        items[idx].Requires = correctedItem.Requires;
-                        items[idx].Priority = ParsePriority(correctedItem.Priority);
-                    }
-                }
-
-                // Remove any items that have no type (removed fixed items)
-                node.Items = items.Where(x => x.Type != 0).ToArray();
-            }
-            return node;
-        }
-
-        private static ItemPriority ParsePriority(string? s)
-        {
-            if (s == null)
-                return ItemPriority.Normal;
-            return (ItemPriority)Enum.Parse(typeof(ItemPriority), s, true);
-        }
-
-        public PlayNode? FindNode(RdtId rdtId)
-        {
-            if (_nodeMap.TryGetValue(rdtId, out var node))
-                return node;
-            return null;
-        }
-
-        private DoorAotSeOpcode[] GetAllDoorsToRoom(RdtId room)
-        {
-            var doors = new List<DoorAotSeOpcode>();
-            foreach (var rdt in _gameData.Rdts)
-            {
-                foreach (var door in rdt.Doors)
-                {
-                    if (door.Stage == room.Stage && door.Room == room.Room)
-                    {
-                        if (!doors.Any(x => IsDoorTheSame(x, door)))
-                        {
-                            doors.Add(door);
-                        }
+                        stack.Push(edge.Node);
                     }
                 }
             }
-            return doors.ToArray();
+            return total;
         }
 
-        private static bool IsDoorTheSame(DoorAotSeOpcode a, DoorAotSeOpcode b)
+        private static bool IsItemTypeDiscardable(ItemType itemType)
         {
-            if (a.Camera != b.Camera)
-                return false;
+            switch (itemType)
+            {
+                case ItemType.CabinKey:
+                case ItemType.SpadeKey:
+                case ItemType.DiamondKey:
+                case ItemType.HeartKey:
+                case ItemType.ClubKey:
+                case ItemType.PowerRoomKey:
+                case ItemType.UmbrellaKeyCard:
+                case ItemType.MasterKey:
+                case ItemType.PlatformKey:
+                    return true;
+                default:
+                    return false;
+            }
+        }
 
-            var dx = a.NextX - b.NextX;
-            var dy = a.NextY - b.NextY;
-            var dz = a.NextZ - b.NextZ;
-            var d = Math.Sqrt((dx * dx) + (dy * dy) + (dz * dz));
-            return d < 1024;
+        private class KeyRequirement : IEquatable<KeyRequirement>
+        {
+            public ushort[] Keys { get; }
+            public ItemPoolEntry? Item { get; }
+            public bool IsDoor { get; }
+
+            public KeyRequirement(IEnumerable<ushort> keys)
+                : this(keys, null, false)
+            {
+            }
+
+            public KeyRequirement(IEnumerable<ushort> keys, ItemPoolEntry? item, bool isDoor = false)
+            {
+                Keys = keys.OrderBy(x => x).ToArray();
+                if (Keys.Length == 0)
+                    throw new ArgumentException(nameof(keys));
+                Item = item;
+                IsDoor = isDoor;
+            }
+
+            public override int GetHashCode()
+            {
+                return string.Join(",", Keys).GetHashCode();
+            }
+
+            public override bool Equals(object obj)
+            {
+                return Equals(obj as KeyRequirement);
+            }
+
+            public bool Equals(KeyRequirement? other)
+            {
+                if (other == null)
+                    return false;
+                if (!Keys.SequenceEqual(other.Keys))
+                    return false;
+                if (!Item.Equals(other.Item))
+                    return false;
+                if (!Keys.SequenceEqual(other.Keys))
+                    return false;
+                return IsDoor == other.IsDoor;
+            }
+
+            public override string ToString()
+            {
+                return $"{string.Join(",", Keys.Select(x => Items.GetItemName(x)))}";
+            }
         }
     }
 }

@@ -11,10 +11,11 @@ namespace IntelOrca.Biohazard
         public override int Length => 10;
 
         public byte Id { get; set; }
-        public ushort Unk2 { get; set; }
-        public ushort Type { get; set; }
-        public ushort Amount { get; set; }
-        public ushort Unk8 { get; set; }
+        public byte SCE { get; set; }
+        public byte SAT { get; set; }
+        public ushort Data0 { get; set; }
+        public ushort Data1 { get; set; }
+        public ushort Data2 { get; set; }
 
         public static AotResetOpcode Read(BinaryReader br, int offset)
         {
@@ -22,10 +23,11 @@ namespace IntelOrca.Biohazard
             {
                 Offset = offset,
                 Id = br.ReadByte(),
-                Unk2 = br.ReadUInt16(),
-                Type = br.ReadUInt16(),
-                Amount = br.ReadUInt16(),
-                Unk8 = br.ReadUInt16(),
+                SCE = br.ReadByte(),
+                SAT = br.ReadByte(),
+                Data0 = br.ReadUInt16(),
+                Data1 = br.ReadUInt16(),
+                Data2 = br.ReadUInt16(),
             };
         }
 
@@ -33,10 +35,11 @@ namespace IntelOrca.Biohazard
         {
             bw.Write((byte)Opcode);
             bw.Write(Id);
-            bw.Write(Unk2);
-            bw.Write(Type);
-            bw.Write(Amount);
-            bw.Write(Unk8);
+            bw.Write(SCE);
+            bw.Write(SAT);
+            bw.Write(Data0);
+            bw.Write(Data1);
+            bw.Write(Data2);
         }
     }
 }

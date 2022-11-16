@@ -125,11 +125,11 @@ namespace IntelOrca.Biohazard.BioRand
                 chkRngDoors.IsChecked = _config.RandomDoors;
                 chkRngChars.IsChecked = _config.RandomNPCs;
                 chkRngBgm.IsChecked = _config.RandomBgm;
-                chkProtectSoftLock.IsChecked = _config.ProtectFromSoftLock;
+                chkProtectSoftLock.IsChecked = _config.ProtectFromSoftLock || _config.RandomDoors;
                 chkRngEnemies.IsChecked = _config.RandomEnemies;
-                chkRngItems.IsChecked = _config.RandomItems;
-                chkShuffleItems.IsChecked = _config.ShuffleItems;
-                chkAlternativeRoute.IsChecked = _config.AlternativeRoutes;
+                chkRngItems.IsChecked = _config.RandomItems || _config.RandomDoors;
+                chkShuffleItems.IsChecked = _config.ShuffleItems && !_config.RandomDoors;
+                chkAlternativeRoute.IsChecked = _config.AlternativeRoutes && !_config.RandomDoors;
                 chkIncludeDocuments.IsChecked = _config.IncludeDocuments;
 
                 sliderEnemyDifficulty.Value = _config.EnemyDifficulty;
@@ -138,6 +138,9 @@ namespace IntelOrca.Biohazard.BioRand
                 sliderHealth.Value = _config.RatioHealth;
                 sliderInkRibbons.Value = _config.RatioInkRibbons;
                 sliderAmmoQuantity.Value = _config.AmmoQuantity;
+
+                sliderAreaCount.Value = _config.AreaCount;
+                sliderAreaSize.Value = _config.AreaSize;
 
                 dropdownVariant.SelectedIndex = _config.GameVariant;
 
@@ -156,11 +159,11 @@ namespace IntelOrca.Biohazard.BioRand
             _config.RandomDoors = chkRngDoors.IsChecked == true;
             _config.RandomNPCs = chkRngChars.IsChecked == true;
             _config.RandomBgm = chkRngBgm.IsChecked == true;
-            _config.ProtectFromSoftLock = chkProtectSoftLock.IsChecked == true;
+            _config.ProtectFromSoftLock = chkProtectSoftLock.IsChecked == true || _config.RandomDoors;
             _config.RandomEnemies = chkRngEnemies.IsChecked == true;
-            _config.RandomItems = chkRngItems.IsChecked == true;
-            _config.ShuffleItems = chkShuffleItems.IsChecked == true;
-            _config.AlternativeRoutes = chkAlternativeRoute.IsChecked == true;
+            _config.RandomItems = chkRngItems.IsChecked == true || _config.RandomDoors;
+            _config.ShuffleItems = chkShuffleItems.IsChecked == true && !_config.RandomDoors;
+            _config.AlternativeRoutes = chkAlternativeRoute.IsChecked == true && !_config.RandomDoors;
             _config.IncludeDocuments = chkIncludeDocuments.IsChecked == true;
 
             _config.EnemyDifficulty = (byte)sliderEnemyDifficulty.Value;
@@ -170,6 +173,9 @@ namespace IntelOrca.Biohazard.BioRand
             _config.RatioInkRibbons = (byte)sliderInkRibbons.Value;
             _config.AmmoQuantity = (byte)sliderAmmoQuantity.Value;
 
+            _config.AreaCount = (byte)sliderAreaCount.Value;
+            _config.AreaSize = (byte)sliderAreaSize.Value;
+
             _config.GameVariant = (byte)dropdownVariant.SelectedIndex;
 
             SaveSettings();
@@ -178,6 +184,9 @@ namespace IntelOrca.Biohazard.BioRand
         private void UpdateEnabledUi()
         {
             panelItemSliders.IsEnabled = chkShuffleItems.IsChecked != true;
+            chkShuffleItems.IsEnabled = chkRngDoors.IsChecked != true;
+            chkAlternativeRoute.IsEnabled = chkRngDoors.IsChecked != true;
+            chkProtectSoftLock.IsEnabled = chkRngDoors.IsChecked != true;
         }
 
         private IEnumerable<FrameworkElement> GetAllControls(object parent)
@@ -214,11 +223,14 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void RandomizeSeed()
         {
+            _config.Version = RandoConfig.LatestVersion;
             _config.Seed = _random.Next(0, RandoConfig.MaxSeed);
+            SaveSettings();
         }
 
         private void RandomizeConfig_Click(object sender, RoutedEventArgs e)
         {
+            _config.Version = RandoConfig.LatestVersion;
             _config.Seed = _random.Next(0, RandoConfig.MaxSeed);
             _config.EnemyDifficulty = (byte)_random.Next(0, 4);
             _config.AmmoQuantity = (byte)_random.Next(0, 8);
@@ -226,6 +238,8 @@ namespace IntelOrca.Biohazard.BioRand
             _config.RatioHealth = (byte)_random.Next(0, 32);
             _config.RatioInkRibbons = (byte)_random.Next(0, 32);
             _config.ShuffleItems = false;
+            _config.AreaCount = (byte)_random.Next(1, 4);
+            SaveSettings();
             UpdateUi();
         }
 
@@ -262,6 +276,8 @@ namespace IntelOrca.Biohazard.BioRand
 
         private async void btnGenerate_Click(object sender, RoutedEventArgs e)
         {
+            SaveSettings();
+
             var gamePath = txtGameDataLocation.Text;
             if (!Path.IsPathRooted(gamePath) || !Directory.Exists(gamePath))
             {

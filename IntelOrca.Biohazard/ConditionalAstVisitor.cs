@@ -193,12 +193,16 @@ namespace IntelOrca.Biohazard
             switch (node.Opcode.Opcode)
             {
                 case Opcode.DoorAotSe:
-                    var door = (DoorAotSeOpcode)node.Opcode;
-                    _sb.Append($"{indent}Door #{door.Id}: {new RdtId(door.Stage, door.Room)} (0x{door.Offset:X2})");
-                    AppendConditions();
-                    _sb.AppendLine();
-                    break;
+                case Opcode.DoorAotSet4p:
+                    {
+                        var door = (IDoorAotSetOpcode)node.Opcode;
+                        _sb.Append($"{indent}Door #{door.Id}: {new RdtId(door.NextStage, door.NextRoom)} (0x{door.Offset:X2})");
+                        AppendConditions();
+                        _sb.AppendLine();
+                        break;
+                    }
                 case Opcode.ItemAotSet:
+                case Opcode.ItemAotSet4p:
                     var item = (ItemAotSetOpcode)node.Opcode;
                     _sb.Append($"{indent}Item #{item.Id}: {(ItemType)item.Type} x{item.Amount} (0x{item.Offset:X2})");
                     AppendConditions();

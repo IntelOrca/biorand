@@ -18,6 +18,11 @@ namespace IntelOrca.Biohazard
             _random = new Random(seed);
         }
 
+        public Rng NextFork()
+        {
+            return new Rng(_random.Next());
+        }
+
         public double NextDouble()
         {
             return _random.NextDouble();

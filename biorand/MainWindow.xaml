@@ -46,7 +46,6 @@
             </GroupBox>
             <GroupBox Header="General">
                 <StackPanel>
-                    <CheckBox x:Name="chkRngDoors" IsEnabled="false">Randomize doors (coming soon)</CheckBox>
                     <CheckBox x:Name="chkRngChars">Randomize characters, voice</CheckBox>
                     <CheckBox x:Name="chkRngBgm">Randomize background music</CheckBox>
                 </StackPanel>
@@ -57,13 +56,44 @@
                                        ToolTip="Adjust likelyhood of more easier / slower enemies (crows, ivies, spiders, zombies), or more difficult / faster enemies (ceberus', lickers, tyrants) being placed."/>
                 </StackPanel>
             </local:CheckGroupBox>
+            <local:CheckGroupBox x:Name="chkRngDoors" Header="Randomize Doors">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="2*" />
+                    </Grid.ColumnDefinitions>
+                    <local:RandoSlider Grid.Column="0"
+                                       x:Name="sliderAreaCount"
+                                       Heading="Number of Segments"
+                                       LowText="1"
+                                       HighText="4"
+                                       Maximum="3"
+                                       ToolTip="The number of rooms per area." />
+                    <local:RandoSlider Grid.Column="2"
+                                       x:Name="sliderAreaSize"
+                                       Heading="Segment Size"
+                                       LowText="Low"
+                                       HighText="High"
+                                       Maximum="7"
+                                       ToolTip="The number of rooms per area."/>
+                </Grid>
+            </local:CheckGroupBox>
             <local:CheckGroupBox x:Name="chkRngItems" Header="Randomize Items">
-                <StackPanel>
-                    <CheckBox x:Name="chkIncludeDocuments" ToolTip="When checked, documents will become potential key items or anything else. This includes photos developed in the dark room.">Include documents</CheckBox>
-                    <CheckBox x:Name="chkAlternativeRoute" ToolTip="When checked, key items will be placed in any order. For example the spade key may be placed in the basement and the heart key in the main hall.">Allow alternative routes</CheckBox>
-                    <CheckBox x:Name="chkProtectSoftLock" ToolTip="When checked, prevents lab keys from spawning in the police station.">Protect from soft lock</CheckBox>
-                    <CheckBox x:Name="chkShuffleItems" ToolTip="When checked, keeps original items and quantities, but shuffles them.">Shuffle default items</CheckBox>
-                    <StackPanel x:Name="panelItemSliders">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="2*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <CheckBox x:Name="chkIncludeDocuments" ToolTip="When checked, documents will become potential key items or anything else. This includes photos developed in the dark room.">Include documents</CheckBox>
+                        <CheckBox x:Name="chkAlternativeRoute" ToolTip="When checked, key items will be placed in any order. For example the spade key may be placed in the basement and the heart key in the main hall.">Allow alternative routes</CheckBox>
+                        <CheckBox x:Name="chkProtectSoftLock" ToolTip="When checked, prevents lab keys from spawning in the police station.">Protect from soft lock</CheckBox>
+                        <CheckBox x:Name="chkShuffleItems" ToolTip="When checked, keeps original items and quantities, but shuffles them.">Shuffle default items</CheckBox>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2"
+                                x:Name="panelItemSliders">
                         <local:RandoSlider x:Name="sliderAmmo" Heading="Ammo probability" LowText="None" HighText="High"
                                            ToolTip="Probability of non-key items being ammunition." />
                         <local:RandoSlider x:Name="sliderHealth" Heading="Health probability" LowText="None" HighText="High"
@@ -73,7 +103,7 @@
                         <local:RandoSlider x:Name="sliderAmmoQuantity" Heading="Ammo average quantity" LowText="None" HighText="High" Maximum="7"
                                            ToolTip="Average quantity of ammunition per ammunition pick up." />
                     </StackPanel>
-                </StackPanel>
+                </Grid>
             </local:CheckGroupBox>
             <GroupBox Header="Generate">
                 <StackPanel>

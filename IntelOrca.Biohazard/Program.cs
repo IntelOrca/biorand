@@ -36,6 +36,15 @@ namespace IntelOrca.Biohazard
 
         public static void Generate(RandoConfig config, string re2Path)
         {
+            if (config.Version < RandoConfig.LatestVersion)
+            {
+                throw new Exception($"This seed was generated with an older version of the randomizer and can not be played.");
+            }
+            else if (config.Version != RandoConfig.LatestVersion)
+            {
+                throw new Exception($"This seed was generated with a newer version of the randomizer and can not be played.");
+            }
+
             var originalDataPath = Path.Combine(re2Path, "data");
             if (!Directory.Exists(originalDataPath))
             {
@@ -92,6 +101,7 @@ namespace IntelOrca.Biohazard
             var randomItems = new Rng(config.Seed);
             var randomNpcs = new Rng(config.Seed + 1);
             var randomEnemies = new Rng(config.Seed + 2);
+            var randomDoors = new Rng(config.Seed + 3);
 
             using var logger = new RandoLogger(Path.Combine(modPath, $"log_pl{config.Player}.txt"));
             logger.WriteHeading("Resident Evil Randomizer");
@@ -99,43 +109,60 @@ namespace IntelOrca.Biohazard
             logger.WriteLine($"Player: {config.Player} {GetPlayerName(config.Player)}");
             logger.WriteLine($"Scenario: {GetScenarioName(config.Scenario)}");
 
-            var map = GetJsonMap();
-            var gameData = GameDataReader.Read(originalDataPath, modPath, config.Player);
-
-            if (config.RandomItems)
+            try
             {
-                var factory = new PlayGraphFactory(logger, config, gameData, map, randomItems);
-                // CheckRoomItems(gameData);
-                // factory.CreateDoorRando();
-                factory.Create();
-                factory.SetItems();
-            }
+                var map = GetJsonMap();
+                var gameData = GameDataReader.Read(originalDataPath, modPath, config.Player);
 
-            if (config.RandomEnemies)
-            {
-                var enemyRandomiser = new EnemyRandomiser(logger, config, gameData, map, randomEnemies);
-                enemyRandomiser.Randomise();
-            }
+                if (config.RandomDoors || config.RandomItems)
+                {
+                    var dgmlPath = Path.Combine(modPath, $"graph_pl{config.Player}.dgml");
+                    var doorRando = new DoorRandomiser(logger, config, gameData, map, randomDoors);
+                    var itemRando = new ItemRandomiser(logger, config, gameData, map, randomItems);
+                    var graph = config.RandomDoors ?
+                        doorRando.CreateRandomGraph() :
+                        doorRando.CreateOriginalGraph();
+                    try
+                    {
+                        itemRando.RandomiseItems(graph);
+                    }
+                    finally
+                    {
+                        graph.GenerateDgml(dgmlPath);
+                    }
+                }
 
-            if (config.RandomNPCs)
-            {
-                var npcRandomiser = new NPCRandomiser(logger, config, originalDataPath, modPath, gameData, map, randomNpcs);
-                npcRandomiser.Randomise();
-            }
+                if (config.RandomEnemies)
+                {
+                    var enemyRandomiser = new EnemyRandomiser(logger, config, gameData, map, randomEnemies);
+                    enemyRandomiser.Randomise();
+                }
 
-            foreach (var rdt in gameData.Rdts)
-            {
-                rdt.Save();
-            }
+                if (config.RandomNPCs)
+                {
+                    var npcRandomiser = new NPCRandomiser(logger, config, originalDataPath, modPath, gameData, map, randomNpcs);
+                    npcRandomiser.Randomise();
+                }
+
+                foreach (var rdt in gameData.Rdts)
+                {
+                    rdt.Save();
+                }
 
 #if DEBUG
-            if (config.RandomItems || config.RandomEnemies)
-            {
-                DumpScripts(gameData, Path.Combine(modPath, $"scripts_pl{config.Player}"));
-                var moddedGameData = GameDataReader.Read(modPath, modPath, config.Player);
-                DumpScripts(moddedGameData, Path.Combine(modPath, $"scripts_modded_pl{config.Player}"));
-            }
+                if (config.RandomItems || config.RandomEnemies)
+                {
+                    DumpScripts(gameData, Path.Combine(modPath, $"scripts_pl{config.Player}"));
+                    var moddedGameData = GameDataReader.Read(modPath, modPath, config.Player);
+                    DumpScripts(moddedGameData, Path.Combine(modPath, $"scripts_modded_pl{config.Player}"));
+                }
 #endif
+            }
+            catch (Exception ex)
+            {
+                logger.WriteLine(ex.Message);
+                throw;
+            }
         }
 
         private static string GetPlayerName(int player) => player == 0 ? "Leon" : "Claire";
@@ -187,7 +214,7 @@ namespace IntelOrca.Biohazard
         {
             foreach (var door in rdt.Doors)
             {
-                sb.AppendLine($"    Door #{door.Id}: {new RdtId(door.Stage, door.Room)} (0x{door.Offset:X2})");
+                sb.AppendLine($"    Door #{door.Id}: {new RdtId(door.NextStage, door.NextRoom)} (0x{door.Offset:X2})");
             }
             foreach (var item in rdt.Items)
             {
