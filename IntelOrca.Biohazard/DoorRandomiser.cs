@@ -478,7 +478,7 @@ namespace IntelOrca.Biohazard
                     aEdge.Lock = LockKind.None;
                     aRdt.RemoveDoorLock(aDoorId);
                 }
-                if (oneWay)
+                if (oneWay || aEdge.Lock == LockKind.Unblock)
                 {
                     aRdt.AddDoorUnlock(aDoorId, _lockId);
                 }
@@ -497,7 +497,7 @@ namespace IntelOrca.Biohazard
                 {
                     bRdt.SetDoorTarget(bDoorId, a.RdtId, aEdge.Entrance.Value, bEdge.OriginalTargetRdt);
                     bRdt.RemoveDoorUnlock(bDoorId);
-                    if (oneWay)
+                    if (oneWay || aEdge.Lock == LockKind.Unblock)
                     {
                         bEdge.Lock = LockKind.Side;
                         bRdt.RemoveDoorLock(bDoorId);
