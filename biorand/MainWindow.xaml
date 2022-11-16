@@ -65,14 +65,14 @@
                     </Grid.ColumnDefinitions>
                     <local:RandoSlider Grid.Column="0"
                                        x:Name="sliderAreaCount"
-                                       Heading="Number of Areas"
+                                       Heading="Number of Segments"
                                        LowText="1"
                                        HighText="4"
                                        Maximum="3"
                                        ToolTip="The number of rooms per area." />
                     <local:RandoSlider Grid.Column="2"
                                        x:Name="sliderAreaSize"
-                                       Heading="Area Size"
+                                       Heading="Segment Size"
                                        LowText="Low"
                                        HighText="High"
                                        Maximum="7"
