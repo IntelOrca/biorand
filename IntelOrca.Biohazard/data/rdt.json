@@ -2594,7 +2594,9 @@
           "player": 0
         },
         {
-          "offset": 5372,
+          "readOffset": 5392,
+          "writeOffset": 5372,
+          "id": 5,
           "target": "601",
           "doorRando": true,
           "scenario": 1,
