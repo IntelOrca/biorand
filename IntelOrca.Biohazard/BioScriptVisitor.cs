@@ -43,6 +43,9 @@ namespace IntelOrca.Biohazard
                 case Opcode.Cmp:
                     VisitCmp(CmpOpcode.Read(br, offset));
                     break;
+                case Opcode.AotSet:
+                    VisitAotSet(AotSetOpcode.Read(br, offset));
+                    break;
                 case Opcode.DoorAotSe:
                     VisitDoorAotSe(DoorAotSeOpcode.Read(br, offset));
                     break;
@@ -79,6 +82,7 @@ namespace IntelOrca.Biohazard
         protected virtual void VisitGosub(GosubOpcode opcode) => VisitOpcode(opcode);
         protected virtual void VisitCk(CkOpcode opcode) => VisitOpcode(opcode);
         protected virtual void VisitCmp(CmpOpcode opcode) => VisitOpcode(opcode);
+        protected virtual void VisitAotSet(AotSetOpcode opcode) => VisitOpcode(opcode);
         protected virtual void VisitDoorAotSe(DoorAotSeOpcode opcode) => VisitOpcode(opcode);
         protected virtual void VisitSceEmSet(SceEmSetOpcode opcode) => VisitOpcode(opcode);
         protected virtual void VisitAotReset(AotResetOpcode opcode) => VisitOpcode(opcode);

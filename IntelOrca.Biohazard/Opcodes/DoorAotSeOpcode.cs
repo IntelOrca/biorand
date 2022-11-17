@@ -17,9 +17,9 @@ namespace IntelOrca.Biohazard
         public byte Floor { get; set; }
         public byte Super { get; set; }
         public short X { get; set; }
-        public short Y { get; set; }
-        public short W { get; set; }
-        public short H { get; set; }
+        public short Z { get; set; }
+        public ushort W { get; set; }
+        public ushort D { get; set; }
         public short NextX { get; set; }
         public short NextY { get; set; }
         public short NextZ { get; set; }
@@ -56,9 +56,9 @@ namespace IntelOrca.Biohazard
                 Floor = br.ReadByte(),
                 Super = br.ReadByte(),
                 X = br.ReadInt16(),
-                Y = br.ReadInt16(),
-                W = br.ReadInt16(),
-                H = br.ReadInt16(),
+                Z = br.ReadInt16(),
+                W = br.ReadUInt16(),
+                D = br.ReadUInt16(),
                 NextX = br.ReadInt16(),
                 NextY = br.ReadInt16(),
                 NextZ = br.ReadInt16(),
@@ -85,9 +85,9 @@ namespace IntelOrca.Biohazard
             bw.Write(Floor);
             bw.Write(Super);
             bw.Write(X);
-            bw.Write(Y);
+            bw.Write(Z);
             bw.Write(W);
-            bw.Write(H);
+            bw.Write(D);
             bw.Write(NextX);
             bw.Write(NextY);
             bw.Write(NextZ);

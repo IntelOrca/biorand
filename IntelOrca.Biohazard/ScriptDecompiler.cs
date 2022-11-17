@@ -161,6 +161,7 @@ namespace IntelOrca.Biohazard
 
             switch (opcode)
             {
+                case Opcode.AotSet:
                 case Opcode.DoorAotSe:
                 case Opcode.DoorAotSet4p:
                 case Opcode.SceEmSet:
@@ -188,6 +189,23 @@ namespace IntelOrca.Biohazard
             }
         }
 
+        protected override void VisitAotSet(AotSetOpcode set)
+        {
+            _sb.WriteStandardOpcode("aot_set",
+                set.Id,
+                GetSCE(set.SCE),
+                GetSAT(set.SAT),
+                set.Floor,
+                set.Super,
+                set.X,
+                set.Z,
+                set.W,
+                set.D,
+                set.Data0,
+                set.Data1,
+                set.Data2);
+        }
+
         protected override void VisitDoorAotSe(DoorAotSeOpcode door)
         {
             _sb.WriteStandardOpcode("door_aot_se",
@@ -197,9 +215,9 @@ namespace IntelOrca.Biohazard
                 door.Floor,
                 door.Super,
                 door.X,
-                door.Y,
+                door.Z,
                 door.W,
-                door.H,
+                door.D,
                 door.NextX,
                 door.NextY,
                 door.NextZ,
@@ -749,23 +767,6 @@ namespace IntelOrca.Biohazard
                         }
                         break;
                     }
-                case Opcode.AotSet:
-                    {
-                        var id = br.ReadByte();
-                        var sce = br.ReadByte();
-                        var sat = br.ReadByte();
-                        var floor = br.ReadByte();
-                        var super = br.ReadByte();
-                        var x = br.ReadInt16();
-                        var z = br.ReadInt16();
-                        var w = br.ReadInt16();
-                        var d = br.ReadInt16();
-                        var data0 = br.ReadUInt16();
-                        var data1 = br.ReadUInt16();
-                        var data2 = br.ReadUInt16();
-                        sb.WriteStandardOpcode("aot_set", id, GetSCE(sce), GetSAT(sat), floor, super, x, z, w, d, data0, data1, data2);
-                        break;
-                    }
                 case Opcode.PosSet:
                     {
                         var x = br.ReadInt16();
@@ -908,18 +909,6 @@ namespace IntelOrca.Biohazard
                     {
                         var item = br.ReadByte();
                         sb.WriteStandardOpcode("sce_item_lost", GetItemConstant(item));
-                        break;
-                    }
-                case Opcode.DoorAotSet4p:
-                    {
-                        var id = br.ReadByte();
-                        sb.WriteStandardOpcode("door_aot_set_4p", id);
-                        break;
-                    }
-                case Opcode.ItemAotSet4p:
-                    {
-                        var id = br.ReadByte();
-                        sb.WriteStandardOpcode("item_aot_set_4p", id);
                         break;
                     }
             }

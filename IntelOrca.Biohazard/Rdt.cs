@@ -174,6 +174,46 @@ namespace IntelOrca.Biohazard
             }
         }
 
+        public DoorAotSeOpcode ConvertToDoor(int readOffset, int writeOffset)
+        {
+            var exMsg = $"Unable to find aot_set at offset 0x{readOffset:X}";
+
+            var opcodeIndex = Array.FindIndex(Opcodes, x => x.Offset == readOffset);
+            if (opcodeIndex == -1)
+                throw new Exception(exMsg);
+
+            var opcode = Opcodes[opcodeIndex];
+            if (!(opcode is AotSetOpcode setOpcode))
+                throw new Exception(exMsg);
+
+            var door = new DoorAotSeOpcode();
+            door.Offset = writeOffset;
+            door.Id = setOpcode.Id;
+            door.SCE = 1;
+            door.SAT = setOpcode.SAT;
+            door.Floor = setOpcode.Floor;
+            door.Super = setOpcode.Super;
+            door.X = setOpcode.X;
+            door.Z = setOpcode.Z;
+            door.W = setOpcode.W;
+            door.D = setOpcode.D;
+
+            // We must remove any opcodes this overlaps
+            var endOffset = writeOffset + door.Length;
+            var opcodes = Opcodes.ToList();
+            opcodes.RemoveAll(x => x.Offset >= writeOffset + 1 && x.Offset < endOffset);
+            var nextOpcode = opcodes.FirstOrDefault(x => x.Offset >= endOffset);
+            if (nextOpcode.Offset > endOffset)
+            {
+                var nopOpcode = new UnknownOpcode(endOffset, new byte[nextOpcode.Offset - endOffset]);
+                opcodes.Insert(opcodeIndex + 1, nopOpcode);
+            }
+            opcodes[opcodeIndex] = door;
+            Opcodes = opcodes.ToArray();
+
+            return door;
+        }
+
         public void Save()
         {
             using (var ms = _rdtFile.GetStream())

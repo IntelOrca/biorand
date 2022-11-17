@@ -691,6 +691,12 @@ namespace IntelOrca.Biohazard
                     if (door.DoorRando != null && door.DoorRando != _config.RandomDoors)
                         continue;
 
+                    IDoorAotSetOpcode? targetEntrance = null;
+                    if (door.ReadOffset != null && door.WriteOffset != null)
+                    {
+                        targetEntrance = rdt.ConvertToDoor(door.ReadOffset.Value, door.WriteOffset.Value);
+                    }
+
                     DoorEntrance? entrance = null;
 
                     Rdt targetRdt;
@@ -711,6 +717,12 @@ namespace IntelOrca.Biohazard
                     if (targetExit != null)
                     {
                         entrance = DoorEntrance.FromOpcode(targetExit);
+                        if (targetEntrance != null)
+                        {
+                            targetEntrance.Texture = targetExit.Texture;
+                            targetEntrance.Animation = targetExit.Animation;
+                            targetEntrance.Sound = targetExit.Sound;
+                        }
                     }
 
                     var edgeNode = GetOrCreateNode(targetRdt.RdtId);
