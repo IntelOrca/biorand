@@ -276,13 +276,17 @@ namespace IntelOrca.Biohazard.BioRand
 
         private async void btnGenerate_Click(object sender, RoutedEventArgs e)
         {
+            var accessDeniedMessage =
+                "BioRand does not have permission to write to this location.\n" +
+                "If your game is installed in 'Program Files', you may need to run BioRand as administrator.";
+
             SaveSettings();
 
             var gamePath = txtGameDataLocation.Text;
             if (!Path.IsPathRooted(gamePath) || !Directory.Exists(gamePath))
             {
                 var msg = "You have not specified an RE2 game directory that exists.";
-                MessageBox.Show(this, msg, "Failed to Generate", MessageBoxButton.OK, MessageBoxImage.Error);
+                ShowGenerateFailedMessage(msg);
                 return;
             }
 
@@ -303,19 +307,36 @@ namespace IntelOrca.Biohazard.BioRand
                 RandoAppSettings.LogGeneration(_config.ToString(), gamePath);
                 ShowGenerateCompleteMessage();
             }
+            catch (UnauthorizedAccessException)
+            {
+                ShowGenerateFailedMessage(accessDeniedMessage);
+            }
             catch (AggregateException ex)
             {
-                MessageBox.Show(ex.InnerException.Message, "Failed to Generate", MessageBoxButton.OK, MessageBoxImage.Error);
+                if (ex.InnerException is UnauthorizedAccessException)
+                {
+                    ShowGenerateFailedMessage(accessDeniedMessage);
+                }
+                else
+                {
+                    ShowGenerateFailedMessage(ex.InnerException.Message);
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Failed to Generate", MessageBoxButton.OK, MessageBoxImage.Error);
+                ShowGenerateFailedMessage(ex.Message);
             }
             finally
             {
                 btn.Content = "Generate";
                 IsEnabled = true;
             }
+        }
+
+        private void ShowGenerateFailedMessage(string message)
+        {
+            var failedTitle = "Failed to Generate";
+            MessageBox.Show(this, message, failedTitle, MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void btnBrowse_Click(object sender, RoutedEventArgs e)
