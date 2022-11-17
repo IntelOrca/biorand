@@ -15,6 +15,10 @@ The randomizer currently only supports the Sourcenext port of Resident Evil 2 wi
 4. Configure your settings, click `seed` for a random seed and then click generate.
 5. Run RE2 and select the mod: "BioRand: A Resident Evil Randomizer" from the list.
 
+## Known issues
+* The game can occasionally crash at the end of playing the sourcenext logo. You can work around this issue by skipping the logo, or disabling movies from the REbirth launcher.
+* Some NPCs have the wrong voice, usually rooms where there are multiple cutscenes with the same NPC.
+
 ## Reporting issues
 Please report any bugs, crashes or suggestions by raising an issue on https://github.com/IntelOrca/biorand/issues.
 Include the seed you were using in your report.
