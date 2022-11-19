@@ -2311,13 +2311,19 @@
       "enemies": [ {} ]
     },
     "60A": {
+      "doorRando": [
+        {
+          "category": "bridge"
+        }
+      ],
       "doors": [
         {
           "target": "60B"
         },
         {
           "target": "609",
-          "doorRando": false
+          "lock": "unblock",
+          "requires": [ 47 ]
         }
       ],
       "items": [
