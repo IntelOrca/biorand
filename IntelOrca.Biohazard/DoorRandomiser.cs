@@ -465,7 +465,7 @@ namespace IntelOrca.Biohazard
             aEdge.Node = b;
             bEdge.Node = a;
 
-            if (aEdge.Requires.Length != 0 || aEdge.Lock == LockKind.Unblock)
+            if (aEdge.Requires.Length != 0 || (aEdge.Lock == LockKind.Unblock && bEdge.Lock != LockKind.Gate))
             {
                 // If the door is locked or temporarily blocked, lock from the other side
                 // This is a safety measure for loopbacks
