@@ -1427,7 +1427,13 @@
     "30D": {
       "doorRando": [
         {
-          "category": "box"
+          "category": "box",
+          "player": 0
+        },
+        {
+          "category": "box",
+          "nop": [ 786 ],
+          "player": 1
         }
       ],
       "doors": [
