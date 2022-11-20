@@ -78,11 +78,11 @@ namespace IntelOrca.Biohazard
         {
             if (config.Version < RandoConfig.LatestVersion)
             {
-                throw new Exception($"This seed was generated with an older version of the randomizer and can not be played.");
+                throw new BioRandVersionException($"This seed was generated with an older version of the randomizer and can not be played.");
             }
             else if (config.Version != RandoConfig.LatestVersion)
             {
-                throw new Exception($"This seed was generated with a newer version of the randomizer and can not be played.");
+                throw new BioRandVersionException($"This seed was generated with a newer version of the randomizer and can not be played.");
             }
 
             var originalDataPath = GetRe2DataPath(re2Path);

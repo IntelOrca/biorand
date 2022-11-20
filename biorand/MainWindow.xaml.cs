@@ -342,7 +342,9 @@ namespace IntelOrca.Biohazard.BioRand
             if (ex is AggregateException)
                 ex = ex.InnerException;
 
-            if (ex is UnauthorizedAccessException)
+            if (ex is BioRandVersionException)
+                ShowGenerateFailedMessage(ex.Message);
+            else if (ex is UnauthorizedAccessException)
                 ShowGenerateFailedMessage(accessDeniedMessage);
             else if (IsTypicalException(ex))
                 ShowGenerateFailedMessage("An error occured during generation.\nPlease report this seed and try another.");
