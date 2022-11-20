@@ -184,6 +184,7 @@ namespace IntelOrca.Biohazard
         public RdtId OriginalTargetRdt { get; set; }
         public PlayNode? Node { get; set; }
         public LockKind Lock { get; set; }
+        public byte LockId { get; set; }
         public bool NoReturn { get; set; }
         public ushort[] Requires { get; }
         public PlayNode[] RequiresRoom { get; set; } = Array.Empty<PlayNode>();
@@ -208,7 +209,11 @@ namespace IntelOrca.Biohazard
             get
             {
                 var s = "";
-                if (Lock != LockKind.None)
+                if (Lock == LockKind.Side)
+                {
+                    s += $"(locked #{LockId}) ";
+                }
+                else if (Lock != LockKind.None)
                 {
                     s += $"({Lock.ToString().ToLowerInvariant()}) ";
                 }

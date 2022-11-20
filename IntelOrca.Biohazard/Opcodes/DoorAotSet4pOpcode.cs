@@ -34,8 +34,8 @@ namespace IntelOrca.Biohazard
         public byte Texture { get; set; }
         public byte Animation { get; set; }
         public byte Sound { get; set; }
-        public byte KeyId { get; set; }
-        public byte KeyType { get; set; }
+        public byte LockId { get; set; }
+        public byte LockType { get; set; }
         public byte Free { get; set; }
 
         public RdtId Target
@@ -77,8 +77,8 @@ namespace IntelOrca.Biohazard
                 Texture = br.ReadByte(),
                 Animation = br.ReadByte(),
                 Sound = br.ReadByte(),
-                KeyId = br.ReadByte(),
-                KeyType = br.ReadByte(),
+                LockId = br.ReadByte(),
+                LockType = br.ReadByte(),
                 Free = br.ReadByte()
             };
         }
@@ -110,8 +110,8 @@ namespace IntelOrca.Biohazard
             bw.Write(Texture);
             bw.Write(Animation);
             bw.Write(Sound);
-            bw.Write(KeyId);
-            bw.Write(KeyType);
+            bw.Write(LockId);
+            bw.Write(LockType);
             bw.Write(Free);
         }
     }

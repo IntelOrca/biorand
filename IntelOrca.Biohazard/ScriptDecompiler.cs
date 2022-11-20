@@ -229,8 +229,8 @@ namespace IntelOrca.Biohazard
                 door.Texture,
                 door.Animation,
                 door.Sound,
-                door.KeyId,
-                door.KeyType,
+                door.LockId,
+                door.LockType,
                 door.Free);
         }
 
@@ -261,8 +261,8 @@ namespace IntelOrca.Biohazard
                 door.Texture,
                 door.Animation,
                 door.Sound,
-                door.KeyId,
-                door.KeyType,
+                door.LockId,
+                door.LockType,
                 door.Free);
         }
 

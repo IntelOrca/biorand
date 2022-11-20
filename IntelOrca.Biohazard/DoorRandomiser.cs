@@ -23,7 +23,7 @@ namespace IntelOrca.Biohazard
         private PlayEdge? _keyRichEdge;
         private int _keyRichEdgeScore;
         private bool _boxRoomReached;
-        private byte _lockId = 145;
+        private byte _lockId = 128;
         private List<PlayNode> _nodesLeft = new List<PlayNode>();
 
         private static readonly ConnectConstraint[] g_strictConstraints = new ConnectConstraint[]
@@ -458,18 +458,18 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private void ConnectDoor(PlayEdge aEdge, PlayEdge bEdge, bool oneWay = false)
+        private void ConnectDoor(PlayEdge aEdge, PlayEdge bEdge, bool isLocked = false)
         {
             var a = aEdge.Parent;
             var b = bEdge.Parent;
             aEdge.Node = b;
             bEdge.Node = a;
 
-            if (aEdge.Requires.Length == 0 && aEdge.Lock == LockKind.Unblock)
+            if (aEdge.Requires.Length != 0 || aEdge.Lock == LockKind.Unblock)
             {
-                // If the door is temporarily blocked, lock from the other side
+                // If the door is locked or temporarily blocked, lock from the other side
                 // This is a safety measure for loopbacks
-                oneWay = true;
+                isLocked = true;
             }
 
             if (a.Category != DoorRandoCategory.Static)
@@ -480,16 +480,20 @@ namespace IntelOrca.Biohazard
                 aRdt.RemoveDoorUnlock(aDoorId);
                 if (aEdge == bEdge)
                 {
-                    aRdt.AddDoorLock(aDoorId, 255);
+                    aRdt.SetDoorLock(aDoorId, 255);
                 }
                 else if (aEdge.Lock == LockKind.Side)
                 {
                     aEdge.Lock = LockKind.None;
                     aRdt.RemoveDoorLock(aDoorId);
                 }
-                if (oneWay)
+                if (isLocked)
                 {
-                    aRdt.AddDoorUnlock(aDoorId, _lockId);
+                    aEdge.LockId = _lockId;
+                    if (aEdge.Requires.Length == 0)
+                        aRdt.SetDoorUnlock(aDoorId, _lockId);
+                    else
+                        aRdt.EnsureDoorLockId(aDoorId, _lockId);
                 }
             }
 
@@ -500,19 +504,18 @@ namespace IntelOrca.Biohazard
                 if (aEdge.Entrance == null)
                 {
                     bRdt.SetDoorTarget(bDoorId, b.RdtId, bEdge.Entrance!.Value, bEdge.OriginalTargetRdt);
-                    bRdt.AddDoorLock(bDoorId, 255);
+                    bRdt.SetDoorLock(bDoorId, 255);
                 }
                 else
                 {
                     bRdt.SetDoorTarget(bDoorId, a.RdtId, aEdge.Entrance.Value, bEdge.OriginalTargetRdt);
-                    bRdt.RemoveDoorUnlock(bDoorId);
-                    if (oneWay)
+                    if (isLocked)
                     {
                         bEdge.Lock = LockKind.Side;
-                        bRdt.RemoveDoorLock(bDoorId);
-                        bRdt.AddDoorLock(bDoorId, _lockId);
+                        bEdge.LockId = _lockId;
+                        bRdt.SetDoorLock(bDoorId, _lockId);
                     }
-                    else if (bEdge.Lock == LockKind.Side && b.Category != DoorRandoCategory.Static)
+                    else if (b.Category != DoorRandoCategory.Static)
                     {
                         bEdge.Lock = LockKind.None;
                         bRdt.RemoveDoorLock(bDoorId);
@@ -520,7 +523,7 @@ namespace IntelOrca.Biohazard
                 }
             }
 
-            if (oneWay)
+            if (isLocked)
             {
                 _lockId++;
             }

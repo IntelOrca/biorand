@@ -22,8 +22,8 @@
         byte Texture { get; set; }
         byte Animation { get; set; }
         byte Sound { get; set; }
-        byte KeyId { get; set; }
-        byte KeyType { get; set; }
+        byte LockId { get; set; }
+        byte LockType { get; set; }
         byte Free { get; set; }
     }
 }

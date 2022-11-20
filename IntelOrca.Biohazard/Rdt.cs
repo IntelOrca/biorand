@@ -69,53 +69,44 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        public void AddDoorLock(int id, byte keyId)
+        public void EnsureDoorLockId(int id, byte lockId)
         {
             foreach (var door in Doors)
             {
-                if (door.Id == id)
+                if (door.Id == id && door.LockType != 0)
                 {
-                    door.KeyId = keyId;
-                    door.KeyType = 255;
+                    door.LockId = lockId;
                 }
             }
         }
 
-        public void AddDoorUnlock(int id, byte keyId)
+        public void SetDoorLock(int id, byte lockId, byte lockType = 255)
         {
             foreach (var door in Doors)
             {
                 if (door.Id == id)
                 {
-                    door.KeyId = keyId;
-                    door.KeyType = 254;
+                    door.LockId = lockId;
+                    door.LockType = lockType;
                 }
             }
         }
+
+        public void SetDoorUnlock(int id, byte lockId) => SetDoorLock(id, lockId, 254);
 
         public void RemoveDoorUnlock(int id)
         {
             foreach (var door in Doors)
             {
-                if (door.Id == id && door.KeyType == 254)
+                if (door.Id == id && door.LockType == 254)
                 {
-                    door.KeyId = 0;
-                    door.KeyType = 0;
+                    door.LockId = 0;
+                    door.LockType = 0;
                 }
             }
         }
 
-        public void RemoveDoorLock(int id)
-        {
-            foreach (var door in Doors)
-            {
-                if (door.Id == id)
-                {
-                    door.KeyId = 0;
-                    door.KeyType = 0;
-                }
-            }
-        }
+        public void RemoveDoorLock(int id) => SetDoorLock(id, 0, 0);
 
         public void SetItem(byte id, ushort type, ushort amount)
         {
@@ -241,9 +232,9 @@ namespace IntelOrca.Biohazard
                     door.NextStage + 1,
                     door.NextRoom,
                     door.Animation,
-                    door.KeyId,
-                    door.KeyType,
-                    door.KeyType == 0xFF ? "side" : IntelOrca.Biohazard.Items.GetItemName(door.KeyType));
+                    door.LockId,
+                    door.LockType,
+                    door.LockType == 0xFF ? "side" : IntelOrca.Biohazard.Items.GetItemName(door.LockType));
             }
             foreach (var item in Items)
             {
