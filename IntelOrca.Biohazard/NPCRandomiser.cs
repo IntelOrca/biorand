@@ -50,6 +50,17 @@ namespace IntelOrca.Biohazard
             var playerActor = _config.Player == 0 ? "leon" : "claire";
             var defaultIncludeTypes = new[] { 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 79, 80, 81, 84, 85, 88, 89, 90 };
 
+            // Alternative costumes for Leon / Claire cause issues if there are multiple occurances
+            // of them in the same cutscene. Only place them in rooms where we can guarantee there is only 1 NPC.
+            var npcCount = rdt.Enemies.Count(x => IsNpc(x.Type));
+            if (npcCount > 1)
+            {
+                var problematicTypes = new[] { 88, 89, 90 };
+                defaultIncludeTypes = defaultIncludeTypes
+                    .Except(problematicTypes)
+                    .ToArray();
+            }
+
             var room = _map.GetRoom(rdt.RdtId);
             if (room == null || room.Npcs == null)
                 return;
@@ -71,23 +82,26 @@ namespace IntelOrca.Biohazard
                 {
                     continue;
                 }
-                supportedNpcs = supportedNpcs.Shuffle(_random);
-                foreach (var enemy in rdt.Enemies)
+                foreach (var enemyGroup in rdt.Enemies.GroupBy(x => x.Type))
                 {
-                    if (!IsNpc(enemy.Type))
+                    if (!IsNpc(enemyGroup.Key))
                         continue;
 
-                    if (npc.IncludeOffsets != null && !npc.IncludeOffsets.Contains(enemy.Offset))
-                        continue;
+                    supportedNpcs = supportedNpcs.Shuffle(_random);
+                    foreach (var enemy in enemyGroup)
+                    {
+                        if (npc.IncludeOffsets != null && !npc.IncludeOffsets.Contains(enemy.Offset))
+                            continue;
 
-                    var newEnemyTypeIndex = Array.FindIndex(supportedNpcs, x => x != (int)enemy.Type);
-                    var newEnemyType = (EnemyType)(newEnemyTypeIndex == -1 ? supportedNpcs[0] : supportedNpcs[newEnemyTypeIndex]);
-                    var oldActor = GetActor(enemy.Type)!;
-                    var newActor = GetActor(newEnemyType)!;
-                    actorToNewActorMap[oldActor] = newActor;
+                        var newEnemyTypeIndex = Array.FindIndex(supportedNpcs, x => x != (int)enemy.Type);
+                        var newEnemyType = (EnemyType)(newEnemyTypeIndex == -1 ? supportedNpcs[0] : supportedNpcs[newEnemyTypeIndex]);
+                        var oldActor = GetActor(enemy.Type)!;
+                        var newActor = GetActor(newEnemyType)!;
+                        actorToNewActorMap[oldActor] = newActor;
 
-                    _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) [{enemy.Type}] becomes [{newEnemyType}]");
-                    enemy.Type = newEnemyType;
+                        _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) [{enemy.Type}] becomes [{newEnemyType}]");
+                        enemy.Type = newEnemyType;
+                    }
                 }
             }
 
