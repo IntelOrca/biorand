@@ -2260,7 +2260,15 @@
       "items": [
         {
           "id": 3,
-          "priority": "fixed"
+          "priority": "fixed",
+          "doorRando": false,
+          "player": 0
+        },
+        {
+          "id": 3,
+          "priority": "low",
+          "doorRando": true,
+          "player": 0
         }
       ],
       "npcs": [ {} ]
@@ -2325,6 +2333,13 @@
       "npcs": [ {} ]
     },
     "608": {
+      "doorRando": [
+        {
+          "nop": [ 10210, 10220 ],
+          "scenario": 1,
+          "player": 1
+        }
+      ],
       "doors": [
         {
           "target": "606"
@@ -2339,7 +2354,15 @@
       "items": [
         {
           "id": 3,
-          "priority": "fixed"
+          "priority": "fixed",
+          "doorRando": false,
+          "player": 1
+        },
+        {
+          "id": 3,
+          "priority": "low",
+          "doorRando": true,
+          "player": 1
         }
       ],
       "npcs": [
