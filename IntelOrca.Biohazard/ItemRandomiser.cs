@@ -10,7 +10,6 @@ namespace IntelOrca.Biohazard
         private RandoConfig _config;
         private GameData _gameData;
         private PlayNode[] _nodes = new PlayNode[0];
-        private List<ItemPoolEntry> _futurePool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _currentPool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _shufflePool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _definedPool = new List<ItemPoolEntry>();
@@ -20,7 +19,7 @@ namespace IntelOrca.Biohazard
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
         private HashSet<RdtItemId> _visitedItems = new HashSet<RdtItemId>();
         private Rng _rng;
-        private bool _debugLogging = false;
+        private bool _debugLogging = true;
 
         public ItemRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng random)
         {
@@ -322,54 +321,61 @@ namespace IntelOrca.Biohazard
             if (!_config.RandomDoors)
             {
                 // Find original location of key item
+                var futureItem = false;
                 var originalIndex = _currentPool.FindIndex(x => x.Type == req);
                 if (originalIndex == -1 && alternativeRoute)
                 {
-                    // Key must be in a later area, find it
-                    foreach (var node in _nodes)
+                    var t = FindKeyInLaterArea(req);
+                    if (t != null)
                     {
-                        foreach (var item in node.Items)
+                        var (futureNode, itemIndex) = t.Value;
+                        if (_debugLogging)
                         {
-                            if (item.Type == req && item.Priority != ItemPriority.Fixed && !_visitedItems.Contains((RdtItemId)item.RdtItemId))
-                            {
-                                AddItemToPool(item, future: true);
-                                originalIndex = _currentPool.Count - 1;
-                                break;
-                            }
+                            _logger.WriteLine($"        Found key as future item ({futureNode.Items[itemIndex]})");
+                        }
+
+                        // Change room item to the item we are going to replace
+                        var kc = futureNode.Items[itemIndex].Amount;
+                        futureNode.Items[itemIndex].Type = itemEntry.Type;
+                        futureNode.Items[itemIndex].Amount = itemEntry.Amount;
+                        itemEntry.Amount = kc;
+                        futureItem = true;
+                    }
+                }
+                if (!futureItem)
+                {
+                    if (originalIndex == -1)
+                    {
+                        // Check original key was in a previous checkpoint area (edge case for Weapon Box Key)
+                        var shuffleIndex = _shufflePool.FindIndex(x => x.Type == req);
+                        if (shuffleIndex != -1)
+                        {
+                            var item = _shufflePool[shuffleIndex];
+                            _shufflePool.RemoveAt(shuffleIndex);
+                            _currentPool.Add(item);
+                            originalIndex = _currentPool.Count - 1;
                         }
                     }
-                }
-                if (originalIndex == -1)
-                {
-                    // Check original key was in a previous checkpoint area (edge case for Weapon Box Key)
-                    var shuffleIndex = _shufflePool.FindIndex(x => x.Type == req);
-                    if (shuffleIndex != -1)
+                    if (originalIndex == -1)
                     {
-                        var item = _shufflePool[shuffleIndex];
-                        _shufflePool.RemoveAt(shuffleIndex);
-                        _currentPool.Add(item);
-                        originalIndex = _currentPool.Count - 1;
+                        return false;
                     }
-                }
-                if (originalIndex == -1)
-                {
-                    return false;
-                }
 
-                // Check original key can actually be moved
-                var originalItemEntry = _currentPool[originalIndex];
-                if (originalItemEntry.Priority == ItemPriority.Fixed)
-                {
-                    index = originalIndex;
-                    itemEntry = originalItemEntry;
-                }
+                    // Check original key can actually be moved
+                    var originalItemEntry = _currentPool[originalIndex];
+                    if (originalItemEntry.Priority == ItemPriority.Fixed)
+                    {
+                        index = originalIndex;
+                        itemEntry = originalItemEntry;
+                    }
 
-                // Change original key item to the item we are going to replace
-                var keyCount = originalItemEntry.Amount;
-                originalItemEntry.Type = itemEntry.Type;
-                originalItemEntry.Amount = itemEntry.Amount;
-                _currentPool[originalIndex] = originalItemEntry;
-                itemEntry.Amount = keyCount;
+                    // Change original key item to the item we are going to replace
+                    var keyCount = originalItemEntry.Amount;
+                    originalItemEntry.Type = itemEntry.Type;
+                    originalItemEntry.Amount = itemEntry.Amount;
+                    _currentPool[originalIndex] = originalItemEntry;
+                    itemEntry.Amount = keyCount;
+                }
             }
             else
             {
@@ -387,26 +393,35 @@ namespace IntelOrca.Biohazard
             return true;
         }
 
-        private void AddItemToPool(ItemPoolEntry item, bool future = false)
+        private (PlayNode, int)? FindKeyInLaterArea(ushort req)
         {
-            if (future)
+            foreach (var node in _nodes)
             {
-                if (_visitedItems.Add(item.RdtItemId))
+                for (int i = 0; i < node.Items.Length; i++)
                 {
-                    _currentPool.Add(item);
-                    _futurePool.Add(item);
+                    var item = node.Items[i];
+                    if (item.Type == req && item.Priority != ItemPriority.Fixed && !_visitedItems.Contains(item.RdtItemId))
+                    {
+                        return (node, i);
+                    }
                 }
             }
-            else
-            {
-                if (_visitedItems.Add(item.RdtItemId))
-                    _currentPool.Add(item);
+            return null;
+        }
 
-                _futurePool.RemoveAll(x => x.RdtItemId == item.RdtItemId);
+        private int AddItemToPool(ItemPoolEntry item)
+        {
+            if (_visitedItems.Add(item.RdtItemId))
+            {
+                _currentPool.Add(item);
+                if (_debugLogging)
+                    _logger.WriteLine($"    Add {item} to current pool");
             }
 
             if (_currentPool.DistinctBy(x => x.RdtItemId).Count() != _currentPool.Count())
                 throw new Exception();
+
+            return _currentPool.Count - 1;
         }
 
         private void RandomiseRemainingPool()
