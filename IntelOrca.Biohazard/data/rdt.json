@@ -2102,7 +2102,15 @@
           "scenario": 1
         }
       ],
-      "npcs": [ {} ]
+      "npcs": [
+        {
+          "player": 0
+        },
+        {
+          "scenario": 0,
+          "player": 1
+        }
+      ]
     },
     "506": {
       "doorRando": [
