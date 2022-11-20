@@ -14,6 +14,11 @@ The randomizer currently only supports the Sourcenext port of Resident Evil 2 wi
 3. Run `biorand.exe` and type or browse for your RE2 game directory under the generate box. If browsing, select your `bio2 1.10.exe` or `bio2.exe` file.
 4. Configure your settings, click `seed` for a random seed and then click generate.
 5. Run RE2 and select the mod: "BioRand: A Resident Evil Randomizer" from the list.
+6. If you want to play a new seed or configuration, simply update the settings and click generate again.
+
+The mod will generate a sub directory called `mod_biorand` in your RE2 installation folder. In this sub directory will be two log files: `log_pl0.txt` and `log_pl1.txt` for Leon and Claire respectively. These log files can be used to find out which doors got connected to which doors and where items got placed which may help you diagnose issues or provide a hint if you are stuck or lost.
+
+A `.dgml` file for both Leon and Claire is also generated which is a directed graph of the map. A DGML file can be converted to an image using third party software such as Visual Studio (+ DGML editor component).
 
 ## Known issues
 * The game can occasionally crash at the end of playing the sourcenext logo. You can work around this issue by skipping the logo, or disabling movies from the REbirth launcher.
@@ -41,7 +46,7 @@ If your constraints are too strict, you may get an error for some seeds where it
 <br clear="right"/>
 
 ### Key item randomization
-This randomizer is able to place key items accordingly so that they always appear in a location that can be accessed prior to the door or object that requires the key. Some items crash the game when changing them (such as the locker containing the flamethrower in the lab), and some items do not always spawn in. In the cases where an item isn't always available to pick up, a non-essential item will be placed there (i.e. not a key item or weapon).
+This randomizer is able to place key items accordingly so that they always appear in a location that can be accessed prior to the door or object that requires the key. Some items crash the game when changing them (such as the locker containing the flamethrower in the lab), and some items do not always spawn in. In the cases where an item isn't always available to pick up, a non-essential item will be placed there (i.e. not a key item or weapon). Only scripted tyrants from the original game will drop items, and these items will also be replaced with a non-essential item.
 
 There are several options that affect how items are placed:
 

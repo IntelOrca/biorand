@@ -470,6 +470,11 @@ namespace IntelOrca.Biohazard.BioRand
             var body = UrlEncoder.Default.Encode("Seed: " + _config.ToString());
             Process.Start($"https://github.com/IntelOrca/biorand/issues/new?body={body}");
         }
+
+        private void ViewDocs_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start($"https://github.com/IntelOrca/biorand#readme");
+        }
     }
 
     public class VersionCheckBody

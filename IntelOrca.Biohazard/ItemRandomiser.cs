@@ -19,7 +19,7 @@ namespace IntelOrca.Biohazard
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
         private HashSet<RdtItemId> _visitedItems = new HashSet<RdtItemId>();
         private Rng _rng;
-        private bool _debugLogging = true;
+        private bool _debugLogging = false;
 
         public ItemRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng random)
         {

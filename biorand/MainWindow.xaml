@@ -41,7 +41,14 @@
                              TextChanged="txtSeed_TextChanged"
                              Margin="4,0" />
                     <Button Grid.Column="2" Content="Config" Click="RandomizeConfig_Click" />
-                    <TextBlock Grid.Row="1" Grid.ColumnSpan="3"><Hyperlink Click="ReportIssue_Click">Report an issue with this seed</Hyperlink></TextBlock>
+                    <Grid Grid.Row="1" Grid.ColumnSpan="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" TextAlignment="Left"><Hyperlink Click="ReportIssue_Click">Report an issue with this seed</Hyperlink></TextBlock>
+                        <TextBlock Grid.Column="1" TextAlignment="Right"><Hyperlink Click="ViewDocs_Click">View Documentation</Hyperlink></TextBlock>
+                    </Grid>
                 </Grid>
             </GroupBox>
             <GroupBox Header="General">
