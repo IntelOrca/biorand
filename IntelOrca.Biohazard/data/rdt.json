@@ -210,7 +210,11 @@
           "player": 1
         }
       ],
-      "enemies": [ {} ]
+      "enemies": [
+        {
+          "y": 0
+        }
+      ]
     },
     "10B": {
       "doors": [
