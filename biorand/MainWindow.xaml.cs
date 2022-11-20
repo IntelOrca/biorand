@@ -276,10 +276,6 @@ namespace IntelOrca.Biohazard.BioRand
 
         private async void btnGenerate_Click(object sender, RoutedEventArgs e)
         {
-            var accessDeniedMessage =
-                "BioRand does not have permission to write to this location.\n" +
-                "If your game is installed in 'Program Files', you may need to run BioRand as administrator.";
-
             SaveSettings();
 
             var gamePath = txtGameDataLocation.Text;
@@ -298,6 +294,25 @@ namespace IntelOrca.Biohazard.BioRand
                 }
             }
 
+            try
+            {
+                var err = Program.DoIntegrityCheck(gamePath);
+                if (err == 2)
+                {
+                    ShowFailedMessage("Integrity Check Failed", "One or more of your room files are missing.\n" +
+                        "Check that your RE2 installation is integral.");
+                }
+                else if (err == 1)
+                {
+                    ShowFailedMessage("Integrity Check Failed", "One or more of your room files did not match the original version.\n" +
+                        "If you have installed over another mod, issues may occur so proceed with caution!");
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowFailedMessage("Failed to do integrity check!", ex.Message);
+            }
+
             var btn = (Button)sender;
             try
             {
@@ -307,24 +322,9 @@ namespace IntelOrca.Biohazard.BioRand
                 RandoAppSettings.LogGeneration(_config.ToString(), gamePath);
                 ShowGenerateCompleteMessage();
             }
-            catch (UnauthorizedAccessException)
-            {
-                ShowGenerateFailedMessage(accessDeniedMessage);
-            }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerException is UnauthorizedAccessException)
-                {
-                    ShowGenerateFailedMessage(accessDeniedMessage);
-                }
-                else
-                {
-                    ShowGenerateFailedMessage(ex.InnerException.Message);
-                }
-            }
             catch (Exception ex)
             {
-                ShowGenerateFailedMessage(ex.Message);
+                ShowMessageForException(ex);
             }
             finally
             {
@@ -333,10 +333,42 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
+        private void ShowMessageForException(Exception ex)
+        {
+            var accessDeniedMessage =
+                "BioRand does not have permission to write to this location.\n" +
+                "If your game is installed in 'Program Files', you may need to run BioRand as administrator.";
+
+            if (ex is AggregateException)
+                ex = ex.InnerException;
+
+            if (ex is UnauthorizedAccessException)
+                ShowGenerateFailedMessage(accessDeniedMessage);
+            else if (IsTypicalException(ex))
+                ShowGenerateFailedMessage("An error occured during generation.\nPlease report this seed and try another.");
+            else
+                ShowGenerateFailedMessage(ex.Message + "\n" + "Please report this seed and try another.");
+        }
+
+        private static bool IsTypicalException(Exception ex)
+        {
+            if (ex is ArgumentOutOfRangeException) return true;
+            if (ex is ArgumentNullException) return true;
+            if (ex is ArgumentException) return true;
+            if (ex is IndexOutOfRangeException) return true;
+            if (ex is InvalidOperationException) return true;
+            if (ex is NullReferenceException) return true;
+            return false;
+        }
+
         private void ShowGenerateFailedMessage(string message)
         {
-            var failedTitle = "Failed to Generate";
-            MessageBox.Show(this, message, failedTitle, MessageBoxButton.OK, MessageBoxImage.Error);
+            ShowFailedMessage("Failed to Generate", message);
+        }
+
+        private void ShowFailedMessage(string title, string message)
+        {
+            MessageBox.Show(this, message, title, MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void btnBrowse_Click(object sender, RoutedEventArgs e)

@@ -9,11 +9,13 @@ namespace IntelOrca.Biohazard
         private readonly int[] _offsets;
 
         public byte[] Data { get; }
+        public ulong Checksum { get; }
 
         public RdtFile(string path)
         {
             Data = File.ReadAllBytes(path);
             _offsets = ReadHeader();
+            Checksum = Data.CalculateFnv1a();
         }
 
         public MemoryStream GetStream()

@@ -7,10 +7,42 @@ namespace IntelOrca.Biohazard
 {
     internal static class GameDataReader
     {
-        public static GameData Read(string srcGamePath, string rndGamePath, int player)
+        public static Dictionary<RdtId, ulong> GetRdtChecksums(string baseDataPath, int player)
         {
-            var files = Directory.GetFiles(Path.Combine(srcGamePath, @$"Pl{player}\Rdt"));
+            var result = new Dictionary<RdtId, ulong>();
+            var rdtFiles = GetRdtPaths(baseDataPath, player);
+            foreach (var path in rdtFiles)
+            {
+                var rdtId = RdtId.Parse(Path.GetFileNameWithoutExtension(path).Substring(4, 3));
+                var rdtFile = new RdtFile(path);
+                result[rdtId] = rdtFile.Checksum;
+            }
+            return result;
+        }
+
+        public static GameData Read(string baseDataPath, string? modDataPath, int player)
+        {
             var rdts = new List<Rdt>();
+            var rdtFiles = GetRdtPaths(baseDataPath, player);
+            foreach (var file in rdtFiles)
+            {
+                var modRdtPath = modDataPath == null ? null : Path.Combine(modDataPath, @$"Pl{player}\Rdt", Path.GetFileName(file));
+                try
+                {
+                    var rdt = ReadRdt(file, modRdtPath);
+                    rdts.Add(rdt);
+                }
+                catch
+                {
+                }
+            }
+            return new GameData(rdts.ToArray());
+        }
+
+        private static string[] GetRdtPaths(string baseDataPath, int player)
+        {
+            var rdtPaths = new List<string>();
+            var files = Directory.GetFiles(Path.Combine(baseDataPath, @$"Pl{player}\Rdt"));
             foreach (var file in files)
             {
                 // Check the file is an RDT file
@@ -25,17 +57,9 @@ namespace IntelOrca.Biohazard
                 if (!char.IsDigit(fileName[4]))
                     continue;
 
-                var randomFile = Path.Combine(rndGamePath, @$"Pl{player}\Rdt", Path.GetFileName(file));
-                try
-                {
-                    var room = ReadRdt(file, randomFile);
-                    rdts.Add(room);
-                }
-                catch
-                {
-                }
+                rdtPaths.Add(file);
             }
-            return new GameData(rdts.ToArray());
+            return rdtPaths.ToArray();
         }
 
         private static void GenerateMapJson(GameData gameData)
@@ -74,13 +98,13 @@ namespace IntelOrca.Biohazard
             return map;
         }
 
-        private static Rdt ReadRdt(string path, string randomPath)
+        private static Rdt ReadRdt(string path, string? modPath)
         {
             var rdtFile = new RdtFile(path);
 
             var rdt = new Rdt(rdtFile, RdtId.Parse(Path.GetFileNameWithoutExtension(path).Substring(4, 3)));
             rdt.OriginalPath = path;
-            rdt.ModifiedPath = randomPath;
+            rdt.ModifiedPath = modPath;
 
             rdt.Script = Decompile(rdtFile, false);
             rdt.ScriptDisassembly = Decompile(rdtFile, true);

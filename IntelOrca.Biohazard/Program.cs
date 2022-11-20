@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -34,6 +36,44 @@ namespace IntelOrca.Biohazard
         }
 #endif
 
+        private static string GetRe2DataPath(string re2Path)
+        {
+            var originalDataPath = Path.Combine(re2Path, "data");
+            if (!Directory.Exists(originalDataPath))
+            {
+                originalDataPath = re2Path;
+            }
+            return originalDataPath;
+        }
+
+        public static int DoIntegrityCheck(string re2Path)
+        {
+            var allExpectedChecksums = JsonSerializer.Deserialize<Dictionary<string, ulong>[]>(Resources.checksum)!;
+
+            var result = 0;
+            var dataPath = GetRe2DataPath(re2Path);
+            for (int player = 0; player < 2; player++)
+            {
+                var actualChecksums = GameDataReader.GetRdtChecksums(dataPath, player);
+                var expectedChecksums = allExpectedChecksums[player];
+                foreach (var kvp in expectedChecksums)
+                {
+                    if (actualChecksums.TryGetValue(RdtId.Parse(kvp.Key), out var actualChecksum))
+                    {
+                        if (kvp.Value != actualChecksum)
+                        {
+                            result = 1;
+                        }
+                    }
+                    else
+                    {
+                        return 2;
+                    }
+                }
+            }
+            return result;
+        }
+
         public static void Generate(RandoConfig config, string re2Path)
         {
             if (config.Version < RandoConfig.LatestVersion)
@@ -45,11 +85,7 @@ namespace IntelOrca.Biohazard
                 throw new Exception($"This seed was generated with a newer version of the randomizer and can not be played.");
             }
 
-            var originalDataPath = Path.Combine(re2Path, "data");
-            if (!Directory.Exists(originalDataPath))
-            {
-                originalDataPath = re2Path;
-            }
+            var originalDataPath = GetRe2DataPath(re2Path);
             var modPath = Path.Combine(re2Path, @"mod_biorand");
 
             if (Directory.Exists(modPath))

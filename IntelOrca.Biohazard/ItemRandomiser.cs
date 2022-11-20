@@ -287,7 +287,7 @@ namespace IntelOrca.Biohazard
                 .ToArray();
             foreach (var rq in newItemsForPool)
             {
-                AddItemToPool(rq.Value);
+                AddItemToPool(rq!.Value);
             }
 
             _requiredItems.RemoveWhere(x => x.Keys.All(x => _haveItems.Contains(x)));
