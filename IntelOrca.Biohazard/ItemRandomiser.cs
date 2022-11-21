@@ -568,7 +568,7 @@ namespace IntelOrca.Biohazard
                     return ItemType.MagnumAmmo;
                 case ItemType.Bowgun:
                     return ItemType.BowgunAmmo;
-                case ItemType.SparkshotAmmo:
+                case ItemType.Sparkshot:
                     return ItemType.SparkshotAmmo;
                 case ItemType.Flamethrower:
                     return ItemType.FuelTank;
