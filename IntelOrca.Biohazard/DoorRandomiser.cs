@@ -490,10 +490,7 @@ namespace IntelOrca.Biohazard
                 if (isLocked)
                 {
                     aEdge.LockId = _lockId;
-                    if (aEdge.Requires.Length == 0)
-                        aRdt.SetDoorUnlock(aDoorId, _lockId);
-                    else
-                        aRdt.EnsureDoorLockId(aDoorId, _lockId);
+                    aRdt.EnsureDoorUnlock(aDoorId, _lockId);
                 }
             }
 

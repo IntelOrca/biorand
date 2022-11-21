@@ -69,13 +69,15 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        public void EnsureDoorLockId(int id, byte lockId)
+        public void EnsureDoorUnlock(int id, byte lockId)
         {
             foreach (var door in Doors)
             {
-                if (door.Id == id && door.LockType != 0)
+                if (door.Id == id)
                 {
                     door.LockId = lockId;
+                    if (door.LockType == 0)
+                        door.LockType = 254;
                 }
             }
         }
