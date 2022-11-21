@@ -2622,6 +2622,13 @@
           "target": "612"
         }
       ],
+      "items": [
+        {
+          "id": 5,
+          "priority": "low",
+          "player": 1
+        }
+      ],
       "npcs": [ {} ]
     },
     "615": {
