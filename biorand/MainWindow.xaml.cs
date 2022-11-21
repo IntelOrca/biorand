@@ -10,6 +10,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using Microsoft.Win32;
 
 namespace IntelOrca.Biohazard.BioRand
@@ -145,6 +146,8 @@ namespace IntelOrca.Biohazard.BioRand
                 dropdownVariant.SelectedIndex = _config.GameVariant;
 
                 txtSeed.Text = _config.ToString();
+
+                UpdateHints();
             }
             finally
             {
@@ -152,6 +155,41 @@ namespace IntelOrca.Biohazard.BioRand
             }
 
             UpdateEnabledUi();
+        }
+
+        private void UpdateHints()
+        {
+            var colour = Colors.Green;
+            if (_config.RandomDoors)
+            {
+                var lower = (_config.AreaCount + 1) * 60;
+                var upper = (_config.AreaSize + 1) * 45;
+                var lHours = ((lower + 30) / 60);
+                var uHours = ((upper + 30) / 60);
+                lHours = Math.Min(lHours, uHours);
+                uHours = Math.Max(lHours + 1, uHours);
+                string eta;
+                if (_config.AreaSize <= 0)
+                {
+                    eta = "15 to 30 minutes";
+                }
+                else if (_config.AreaSize <= 1)
+                {
+                    eta = "30 to 60 minutes";
+                    colour = Colors.Brown;
+                }
+                else
+                {
+                    eta = $"{(int)lHours} to {(int)uHours} hours";
+                    colour = Colors.Red;
+                }
+                lblEstimateCompletionTime.Text = $"Estimate completion time: {eta} per scenario";
+                lblEstimateCompletionTime.Foreground = new SolidColorBrush(colour);
+            }
+            else
+            {
+                lblEstimateCompletionTime.Text = "";
+            }
         }
 
         private void UpdateConfig()

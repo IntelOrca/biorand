@@ -64,27 +64,30 @@
                 </StackPanel>
             </local:CheckGroupBox>
             <local:CheckGroupBox x:Name="chkRngDoors" Header="Randomize Doors">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" />
-                        <ColumnDefinition Width="16" />
-                        <ColumnDefinition Width="2*" />
-                    </Grid.ColumnDefinitions>
-                    <local:RandoSlider Grid.Column="0"
-                                       x:Name="sliderAreaCount"
-                                       Heading="Number of Segments"
-                                       LowText="1"
-                                       HighText="4"
-                                       Maximum="3"
-                                       ToolTip="The number of rooms per area." />
-                    <local:RandoSlider Grid.Column="2"
-                                       x:Name="sliderAreaSize"
-                                       Heading="Segment Size"
-                                       LowText="Low"
-                                       HighText="High"
-                                       Maximum="7"
-                                       ToolTip="The number of rooms per area."/>
-                </Grid>
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="2*" />
+                        </Grid.ColumnDefinitions>
+                        <local:RandoSlider Grid.Column="0"
+                                           x:Name="sliderAreaCount"
+                                           Heading="Number of Segments"
+                                           LowText="1"
+                                           HighText="4"
+                                           Maximum="3"
+                                           ToolTip="The number of rooms per area." />
+                        <local:RandoSlider Grid.Column="2"
+                                           x:Name="sliderAreaSize"
+                                           Heading="Segment Size"
+                                           LowText="Low"
+                                           HighText="High"
+                                           Maximum="7"
+                                           ToolTip="The number of rooms per area."/>
+                    </Grid>
+                    <TextBlock x:Name="lblEstimateCompletionTime" Foreground="Brown" Text="Estimate completion time: 10 - 30 minutes" />
+                </StackPanel>
             </local:CheckGroupBox>
             <local:CheckGroupBox x:Name="chkRngItems" Header="Randomize Items">
                 <Grid>
