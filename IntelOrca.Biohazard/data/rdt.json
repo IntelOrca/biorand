@@ -1034,8 +1034,15 @@
         {
           "target": "219",
           "lock": "unblock",
+          "doorRando": false,
           "player": 1,
           "scenario": 1
+        },
+        {
+          "target": "219",
+          "lock": "always",
+          "doorRando": true,
+          "player": 1
         }
       ],
       "enemies": [ {} ],
