@@ -23,6 +23,7 @@ A `.dgml` file for both Leon and Claire is also generated which is a directed gr
 ## Known issues
 * The game can occasionally crash at the end of playing the sourcenext logo. You can work around this issue by skipping the logo, or disabling movies from the REbirth launcher.
 * Some NPCs have the wrong voice, usually rooms where there are multiple cutscenes with the same NPC.
+* When doors are randomized, room 60C (Lab B4 / SE corridor) has a camera glitch when entering from the middle door. You can reset the room by blind navigation to another door, or via the debug menu.
 
 ## Reporting issues
 Please report any bugs, crashes or suggestions by raising an issue on https://github.com/IntelOrca/biorand/issues.
