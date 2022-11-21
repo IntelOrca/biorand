@@ -93,8 +93,12 @@ namespace IntelOrca.Biohazard
                         if (npc.IncludeOffsets != null && !npc.IncludeOffsets.Contains(enemy.Offset))
                             continue;
 
+#if ALWAYS_SWAP_NPC
                         var newEnemyTypeIndex = Array.FindIndex(supportedNpcs, x => x != (int)enemy.Type);
                         var newEnemyType = (EnemyType)(newEnemyTypeIndex == -1 ? supportedNpcs[0] : supportedNpcs[newEnemyTypeIndex]);
+#else
+                        var newEnemyType = (EnemyType)supportedNpcs[0];
+#endif
                         var oldActor = GetActor(enemy.Type)!;
                         var newActor = GetActor(newEnemyType)!;
                         actorToNewActorMap[oldActor] = newActor;
@@ -122,6 +126,10 @@ namespace IntelOrca.Biohazard
                     else if (actorToNewActorMap.TryGetValue(actor, out var newActor))
                     {
                         RandomizeVoice(rng, voice, actor, newActor, null);
+                    }
+                    else
+                    {
+                        RandomizeVoice(rng, voice, actor, actor, null);
                     }
                 }
             }
