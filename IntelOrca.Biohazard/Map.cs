@@ -74,6 +74,7 @@ namespace IntelOrca.Biohazard
         public bool KeepState { get; set; }
         public bool KeepAi { get; set; }
         public short? Y { get; set; }
+        public string? Difficulty { get; set; }
         public int? Player { get; set; }
         public int? Scenario { get; set; }
     }

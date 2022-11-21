@@ -382,7 +382,8 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 42, 58 ]
+          "excludeTypes": [ 42, 58 ],
+          "difficulty": "hard"
         }
       ],
       "npcs": [
@@ -631,11 +632,13 @@
       "enemies": [
         {
           "nop": [ 7854, 7858, 7862, 7868, 8166, 8170, 8174, 8180, 8184 ],
+          "difficulty": "medium",
           "player": 0,
           "scenario": 1
         },
         {
           "nop": [ 7816, 7820, 7824, 7830, 8128, 8132, 8136, 8142, 8146 ],
+          "difficulty": "medium",
           "player": 1,
           "scenario": 1
         }
@@ -726,7 +729,11 @@
           "requires": [ 90 ]
         }
       ],
-      "enemies": [ {} ]
+      "enemies": [
+        {
+          "difficulty": "medium"
+        }
+      ]
     },
     "208": {
       "doorRando": [
@@ -821,7 +828,11 @@
           "target": "20C"
         }
       ],
-      "enemies": [ {} ]
+      "enemies": [
+        {
+          "difficulty": "hard"
+        }
+      ]
     },
     "20B": {
       "doors": [
@@ -838,7 +849,8 @@
       ],
       "enemies": [
         {
-          "excludeOffsets": [ 12368 ]
+          "excludeOffsets": [ 12368 ],
+          "difficulty": "medium"
         }
       ]
     },
@@ -880,7 +892,11 @@
           "priority": "low"
         }
       ],
-      "enemies": [ {} ]
+      "enemies": [
+        {
+          "difficulty": "medium"
+        }
+      ]
     },
     "20D": {
       "doors": [

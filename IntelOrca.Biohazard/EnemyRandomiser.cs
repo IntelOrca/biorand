@@ -172,6 +172,21 @@ namespace IntelOrca.Biohazard
                 new HashSet<EnemyType>() :
                 enemySpec.ExcludeTypes.Select(x => (EnemyType)x).ToHashSet();
 
+            if (enemySpec.Difficulty == "medium" && _config.EnemyDifficulty < 2)
+            {
+                excludeTypes.Add(EnemyType.LickerRed);
+                excludeTypes.Add(EnemyType.LickerGrey);
+                excludeTypes.Add(EnemyType.Cerebrus);
+                excludeTypes.Add(EnemyType.Tyrant1);
+            }
+            else if (enemySpec.Difficulty == "hard" && _config.EnemyDifficulty < 3)
+            {
+                excludeTypes.Add(EnemyType.LickerRed);
+                excludeTypes.Add(EnemyType.LickerGrey);
+                excludeTypes.Add(EnemyType.Cerebrus);
+                excludeTypes.Add(EnemyType.Tyrant1);
+            }
+
             var probTable = CreateEnemyProbabilityTable(includeTypes, excludeTypes);
 
 #if MULTIPLE_ENEMY_TYPES
