@@ -126,7 +126,7 @@ namespace IntelOrca.Biohazard
                 logger.WriteLine($"Seed: {config}");
 
                 var bgmRandomiser = new BgmRandomiser(logger, originalDataPath, modPath);
-                bgmRandomiser.Randomise(new Rng(config.Seed + 3));
+                bgmRandomiser.Randomise(new Rng(config.Seed));
             }
 
             File.WriteAllText(Path.Combine(modPath, "manifest.txt"), "[MOD]\nName = BioRand: A Resident Evil Randomizer\n");
@@ -134,10 +134,11 @@ namespace IntelOrca.Biohazard
 
         public static void GenerateRdts(RandoConfig config, string originalDataPath, string modPath)
         {
-            var randomItems = new Rng(config.Seed);
-            var randomNpcs = new Rng(config.Seed + 1);
-            var randomEnemies = new Rng(config.Seed + 2);
-            var randomDoors = new Rng(config.Seed + 3);
+            var baseSeed = config.Seed + config.Player;
+            var randomDoors = new Rng(baseSeed + 1);
+            var randomItems = new Rng(baseSeed + 2);
+            var randomEnemies = new Rng(baseSeed + 3);
+            var randomNpcs = new Rng(baseSeed + 4);
 
             using var logger = new RandoLogger(Path.Combine(modPath, $"log_pl{config.Player}.txt"));
             logger.WriteHeading("Resident Evil Randomizer");
