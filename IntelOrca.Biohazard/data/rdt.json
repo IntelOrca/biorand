@@ -1613,7 +1613,11 @@
         }
       ],
       "enemies": [ {} ],
-      "npcs": [ {} ]
+      "npcs": [
+        {
+          "player": 0
+        }
+      ]
     },
     "403": {
       "doorRando": [
@@ -1717,7 +1721,8 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 65, 67 ]
+          "excludeTypes": [ 65, 67 ],
+          "player": 0
         }
       ]
     },
@@ -1741,7 +1746,8 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 65, 67 ]
+          "excludeTypes": [ 65, 67 ],
+          "player": 0
         }
       ]
     },
