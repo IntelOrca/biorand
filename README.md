@@ -16,6 +16,8 @@ The randomizer currently only supports the Sourcenext port of Resident Evil 2 wi
 5. Run RE2 and select the mod: "BioRand: A Resident Evil Randomizer" from the list.
 6. If you want to play a new seed or configuration, simply update the settings and click generate again.
 
+It is recommended that you enable the in-game debug menu in case you need to reset the room if there is a soft lock (such as a cutscene getting stuck). To enable the debug menu, press F1 while on the REbirth launcher, and then press F5 in the game to access it. This will also allow you to, in desperate circumstances, give yourself a key you need, or cheat for ammo and health.
+
 The mod will generate a sub directory called `mod_biorand` in your RE2 installation folder. In this sub directory will be two log files: `log_pl0.txt` and `log_pl1.txt` for Leon and Claire respectively. These log files can be used to find out which doors got connected to which doors and where items got placed which may help you diagnose issues or provide a hint if you are stuck or lost.
 
 A `.dgml` file for both Leon and Claire is also generated which is a directed graph of the map. A DGML file can be converted to an image using third party software such as Visual Studio (+ DGML editor component).
@@ -23,7 +25,6 @@ A `.dgml` file for both Leon and Claire is also generated which is a directed gr
 ## Known issues
 * The game can occasionally crash at the end of playing the sourcenext logo. You can work around this issue by skipping the logo, or disabling movies from the REbirth launcher.
 * Some NPCs have the wrong voice, usually rooms where there are multiple cutscenes with the same NPC.
-* When doors are randomized, room 60C (Lab B4 / SE corridor) has a camera glitch when entering from the middle door. You can reset the room by blind navigation to another door, or via the debug menu.
 
 ## Reporting issues
 Please report any bugs, crashes or suggestions by raising an issue on https://github.com/IntelOrca/biorand/issues.
