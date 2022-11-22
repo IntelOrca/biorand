@@ -1,4 +1,13 @@
 {
+  "basement": [
+    "main03"
+  ],
+  "safe": [
+    "main0C"
+  ],
+  "results": [
+    "main2a"
+  ],
   "outside": [
     "main00",
     "main00_2",

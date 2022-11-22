@@ -7,10 +7,9 @@ namespace IntelOrca.Biohazard
 {
     internal static class GameDataReader
     {
-        public static Dictionary<RdtId, ulong> GetRdtChecksums(string baseDataPath, int player)
+        public static Dictionary<RdtId, ulong> GetRdtChecksums(string[] rdtFiles, int player)
         {
             var result = new Dictionary<RdtId, ulong>();
-            var rdtFiles = GetRdtPaths(baseDataPath, player);
             foreach (var path in rdtFiles)
             {
                 var rdtId = RdtId.Parse(Path.GetFileNameWithoutExtension(path).Substring(4, 3));
