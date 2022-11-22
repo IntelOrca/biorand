@@ -2496,7 +2496,8 @@
         },
         {
           "target": "610",
-          "requires": [ 97 ]
+          "requires": [ 97 ],
+          "cut": 6
         }
       ],
       "items": [

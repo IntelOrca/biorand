@@ -41,6 +41,7 @@ namespace IntelOrca.Biohazard
         public int? ReadOffset { get; set; }
         public int? WriteOffset { get; set; }
         public int? Id { get; set; }
+        public byte? Cut { get; set; }
         public string? Target { get; set; }
         public bool? Randomize { get; set; }
         public string? Lock { get; set; }

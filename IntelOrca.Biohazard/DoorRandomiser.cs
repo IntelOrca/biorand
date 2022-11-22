@@ -705,16 +705,15 @@ namespace IntelOrca.Biohazard
 
                     Rdt targetRdt;
                     IDoorAotSetOpcode? targetExit;
-                    if (door.Target!.Contains(":"))
+                    var target = RdtDoorTarget.Parse(door.Target!);
+                    if (target.Id != null)
                     {
-                        var target = RdtItemId.Parse(door.Target!);
                         targetRdt = _gameData.GetRdt(target.Rdt)!;
                         targetExit = targetRdt.Doors.First(x => x.Id == target.Id);
                     }
                     else
                     {
-                        var target = RdtId.Parse(door.Target!);
-                        targetRdt = _gameData.GetRdt(target)!;
+                        targetRdt = _gameData.GetRdt(target.Rdt)!;
                         targetExit = targetRdt.Doors.FirstOrDefault(x => x.Target == rdtId);
                     }
                     var doorId = door.Id ?? rdt.Doors.FirstOrDefault(x => x.Target == targetRdt.RdtId)?.Id;
@@ -726,6 +725,11 @@ namespace IntelOrca.Biohazard
                             targetEntrance.Texture = targetExit.Texture;
                             targetEntrance.Animation = targetExit.Animation;
                             targetEntrance.Sound = targetExit.Sound;
+                        }
+
+                        if (entrance != null && door.Cut != null)
+                        {
+                            entrance = entrance.Value.WithCamera(door.Cut.Value);
                         }
                     }
 

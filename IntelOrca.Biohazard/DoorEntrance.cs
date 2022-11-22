@@ -9,6 +9,13 @@
         public byte Camera { get; set; }
         public byte Floor { get; set; }
 
+        public DoorEntrance WithCamera(byte camera)
+        {
+            var result = this;
+            result.Camera = camera;
+            return result;
+        }
+
         public static DoorEntrance FromOpcode(IDoorAotSetOpcode opcode)
         {
             return new DoorEntrance()
