@@ -471,6 +471,10 @@ namespace IntelOrca.Biohazard
                 // This is a safety measure for loopbacks
                 isLocked = true;
             }
+            if (aEdge.NoUnlock)
+            {
+                isLocked = false;
+            }
 
             if (a.Category != DoorRandoCategory.Static)
             {
@@ -728,6 +732,7 @@ namespace IntelOrca.Biohazard
                     var edgeNode = GetOrCreateNode(targetRdt.RdtId);
                     var edge = new PlayEdge(node, edgeNode, door.NoReturn, door.Requires, doorId, entrance);
                     edge.Randomize = door.Randomize ?? true;
+                    edge.NoUnlock = door.NoUnlock;
                     if (door.Lock != null)
                     {
                         edge.Lock = (LockKind)Enum.Parse(typeof(LockKind), door.Lock, true);

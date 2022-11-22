@@ -1125,6 +1125,7 @@
           "noReturn": true,
           "requires": [ 54, 56, 57, 58 ],
           "requiresRoom": [ "10E" ],
+          "noUnlock": true,
           "player": 1
         }
       ],
