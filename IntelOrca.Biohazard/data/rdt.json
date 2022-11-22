@@ -957,12 +957,6 @@
           "target": "20F"
         }
       ],
-      "items": [
-        {
-          "id": 3,
-          "type": 0
-        }
-      ],
       "enemies": [ {} ]
     },
     "211": {
@@ -1596,10 +1590,6 @@
           "doorRando": true,
           "priority": "low", // HACK to avoid small key requirement
           "player": 0
-        },
-        {
-          "id": 8,
-          "type": 0
         }
       ],
       "enemies": [ {} ]
@@ -2437,12 +2427,6 @@
           "target": "609",
           "lock": "unblock",
           "requires": [ 47 ]
-        }
-      ],
-      "items": [
-        {
-          "id": 13,
-          "type": 0
         }
       ],
       "enemies": [ {} ]
