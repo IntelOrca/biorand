@@ -416,7 +416,7 @@ namespace IntelOrca.Biohazard.BioRand
                 ex = ex.InnerException;
 
             if (ex is BioRandVersionException)
-                ShowGenerateFailedMessage(ex.Message);
+                ShowGenerateFailedMessage(ex.Message + "\n" + "Click the seed button to pick a new seed.");
             else if (ex is UnauthorizedAccessException)
                 ShowGenerateFailedMessage(accessDeniedMessage);
             else if (IsTypicalException(ex))
