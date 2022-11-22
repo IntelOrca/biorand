@@ -101,6 +101,8 @@
                         <CheckBox x:Name="chkAlternativeRoute" ToolTip="When checked, key items will be placed in any order. For example the spade key may be placed in the basement and the heart key in the main hall.">Allow alternative routes</CheckBox>
                         <CheckBox x:Name="chkProtectSoftLock" ToolTip="When checked, prevents lab keys from spawning in the police station.">Protect from soft lock</CheckBox>
                         <CheckBox x:Name="chkShuffleItems" ToolTip="When checked, keeps original items and quantities, but shuffles them.">Shuffle default items</CheckBox>
+                        <local:PieChart x:Name="pieItemRatios" Padding="8,8,8,0" Width="120" />
+                        <TextBlock TextAlignment="Center">Item Pickup Distribution</TextBlock>
                     </StackPanel>
                     <StackPanel Grid.Column="2"
                                 x:Name="panelItemSliders">
@@ -111,7 +113,7 @@
                         <local:RandoSlider x:Name="sliderInkRibbons" Heading="Ink Ribbon probability" LowText="None" HighText="High"
                                            ToolTip="Probability of non-key items being ink ribbons." />
                         <local:RandoSlider x:Name="sliderAmmoQuantity" Heading="Ammo average quantity" LowText="None" HighText="High" Maximum="7"
-                                           ToolTip="Average quantity of ammunition per ammunition pick up." />
+                                           ToolTip="Average quantity of ammunition per ammunition pick up.&#xa;Highest setting will allow a maximum of 60 handgun bullets in a pickup, or 30 shotgun shells." />
                     </StackPanel>
                 </Grid>
             </local:CheckGroupBox>

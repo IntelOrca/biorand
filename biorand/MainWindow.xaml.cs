@@ -10,6 +10,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Win32;
 
@@ -190,6 +191,40 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 lblEstimateCompletionTime.Text = "";
             }
+
+            var keyItems = 1 / 8.0;
+            var totalRest = _config.RatioAmmo + _config.RatioHealth + _config.RatioInkRibbons;
+            var remaining = (1 - keyItems) / totalRest;
+            var ammo = _config.RatioAmmo * remaining;
+            var health = _config.RatioHealth * remaining;
+            var ink = _config.RatioInkRibbons * remaining;
+
+            pieItemRatios.Records.Clear();
+            pieItemRatios.Records.Add(new PieChart.Record()
+            {
+                Name = "Keys",
+                Value = keyItems,
+                Color = Colors.LightBlue
+            });
+            pieItemRatios.Records.Add(new PieChart.Record()
+            {
+                Name = "Ammo",
+                Value = ammo,
+                Color = Colors.IndianRed
+            });
+            pieItemRatios.Records.Add(new PieChart.Record()
+            {
+                Name = "Health",
+                Value = health,
+                Color = Colors.SpringGreen
+            });
+            pieItemRatios.Records.Add(new PieChart.Record()
+            {
+                Name = "Ink",
+                Value = ink,
+                Color = Colors.Black
+            });
+            pieItemRatios.Update();
         }
 
         private void UpdateConfig()
