@@ -158,12 +158,12 @@ namespace IntelOrca.Biohazard {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static System.Drawing.Bitmap title_bg {
+        internal static byte[] title_bg {
             get {
                 object obj = ResourceManager.GetObject("title_bg", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ((byte[])(obj));
             }
         }
         

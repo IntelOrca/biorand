@@ -25,7 +25,8 @@ namespace IntelOrca.Biohazard
             {
                 using (var g = Graphics.FromImage(titleBg))
                 {
-                    g.DrawImage(Resources.title_bg, 0, 0, titleBg.Width, titleBg.Height);
+                    var srcImage = new Bitmap(new MemoryStream(Resources.title_bg));
+                    g.DrawImage(srcImage, 0, 0, titleBg.Width, titleBg.Height);
 
                     var font = new Font(FontFamily.GenericSansSerif, 4);
 
