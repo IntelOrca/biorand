@@ -96,10 +96,7 @@ namespace IntelOrca.Biohazard {
         ///    &quot;sub0b&quot;,
         ///    &quot;sub10&quot;,
         ///    &quot;sub11&quot;,
-        ///    &quot;sub14&quot;,
-        ///    &quot;sub22&quot;,
-        ///    &quot;sub2e&quot;,
-        ///    &quot;su [rest of string was truncated]&quot;;.
+        ///    &quot;sub14&quot; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string bgm {
             get {
@@ -161,6 +158,16 @@ namespace IntelOrca.Biohazard {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap title_bg {
+            get {
+                object obj = ResourceManager.GetObject("title_bg", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {
         ///  &quot;pl0/voice/stage0/v001.sap&quot;: &quot;narrator&quot;,
         ///  &quot;pl0/voice/stage0/v002.sap&quot;: &quot;narrator&quot;,
@@ -173,7 +180,7 @@ namespace IntelOrca.Biohazard {
         ///  &quot;pl0/voice/stage0/v009.sap&quot;: &quot;narrator&quot;,
         ///  &quot;pl0/voice/stage0/v010.sap&quot;: &quot;narrator&quot;,
         ///  &quot;pl0/voice/stage0/v011.sap&quot;: &quot;narrator&quot;,
-        ///  &quot;pl0/voice/stage0/v012.sap&quot;: &quot;narra [rest of string was truncated]&quot;;.
+        ///  &quot;pl0/voice/stage0/v012. [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string voice {
             get {

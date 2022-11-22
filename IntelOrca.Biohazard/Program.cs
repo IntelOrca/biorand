@@ -11,6 +11,10 @@ namespace IntelOrca.Biohazard
 {
     public class Program
     {
+        public static Version CurrentVersion = Assembly.GetEntryAssembly().GetName().Version;
+        public static string CurrentVersionInfo => $"BioRand {CurrentVersion.Major}.{CurrentVersion.Minor}.{CurrentVersion.Build}";
+
+
 #if !DEBUG
         private static Map? g_map;
 #endif
@@ -129,6 +133,7 @@ namespace IntelOrca.Biohazard
                 bgmRandomiser.Randomise(new Rng(config.Seed));
             }
 
+            RandoBgCreator.Save(config, modPath);
             File.WriteAllText(Path.Combine(modPath, "manifest.txt"), "[MOD]\nName = BioRand: A Resident Evil Randomizer\n");
         }
 
