@@ -43,9 +43,9 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private Rng.Table<EnemyType> CreateEnemyProbabilityTable(HashSet<EnemyType>? includeTypes, HashSet<EnemyType>? excludeTypes)
+        private Rng.Table<EnemyType> CreateEnemyProbabilityTable(Rng rng, HashSet<EnemyType>? includeTypes, HashSet<EnemyType>? excludeTypes)
         {
-            var table = _rng.CreateProbabilityTable<EnemyType>();
+            var table = rng.CreateProbabilityTable<EnemyType>();
             switch (_config.EnemyDifficulty)
             {
                 case 0:
@@ -187,7 +187,7 @@ namespace IntelOrca.Biohazard
                 excludeTypes.Add(EnemyType.Tyrant1);
             }
 
-            var probTable = CreateEnemyProbabilityTable(includeTypes, excludeTypes);
+            var probTable = CreateEnemyProbabilityTable(rng, includeTypes, excludeTypes);
 
 #if MULTIPLE_ENEMY_TYPES
             var ids = rdt.Enemies.Select(x => x.Id).Distinct().ToArray();
