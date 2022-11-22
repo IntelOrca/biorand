@@ -202,6 +202,13 @@ namespace IntelOrca.Biohazard
             var enemyTypesId = ids.Select(x => randomEnemyType).ToArray();
 #endif
 
+            // Mute all enemies first, this ensures our random enemy type
+            // will be heard
+            foreach (var enemy in rdt.Enemies)
+            {
+                enemy.SoundBank = 0;
+            }
+
             foreach (var enemy in enemiesToChange)
             {
                 var index = Array.IndexOf(ids, enemy.Id);
