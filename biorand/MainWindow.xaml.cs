@@ -429,10 +429,16 @@ namespace IntelOrca.Biohazard.BioRand
             txtSeed.CaretIndex = Math.Min(caretIndex, txtSeed.Text.Length);
         }
 
+        private BaseRandomiser GetRandomiser()
+        {
+            return new Re1Randomiser();
+        }
+
         private async void btnGenerate_Click(object sender, RoutedEventArgs e)
         {
             SaveSettings();
 
+            var randomiser = GetRandomiser();
             var gamePath = txtGameDataLocation.Text;
             if (!Path.IsPathRooted(gamePath) || !Directory.Exists(gamePath))
             {
@@ -441,7 +447,7 @@ namespace IntelOrca.Biohazard.BioRand
                 return;
             }
 
-            if (!ValidateGamePath(gamePath))
+            if (!randomiser.ValidateGamePath(gamePath))
             {
                 if (!ShowGamePathWarning())
                 {
@@ -451,7 +457,7 @@ namespace IntelOrca.Biohazard.BioRand
 
             try
             {
-                var err = Program.DoIntegrityCheck(gamePath);
+                var err = randomiser.DoIntegrityCheck(gamePath);
                 if (err == 2)
                 {
                     ShowFailedMessage("Integrity Check Failed", "One or more of your room files are missing.\n" +
@@ -473,7 +479,7 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 btn.Content = "Generating...";
                 IsEnabled = false;
-                await Task.Run(() => Program.Generate(_config, gamePath));
+                await Task.Run(() => randomiser.Generate(_config, gamePath));
                 RandoAppSettings.LogGeneration(_config.ToString(), gamePath);
                 ShowGenerateCompleteMessage();
             }
@@ -556,20 +562,16 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
-        private static bool NormaliseGamePath(string path, out string normalised)
+        private bool NormaliseGamePath(string path, out string normalised)
         {
             normalised = path;
             if (!Directory.Exists(normalised))
             {
                 normalised = Path.GetDirectoryName(path);
             }
-            return ValidateGamePath(normalised);
-        }
 
-        private static bool ValidateGamePath(string path)
-        {
-            return Directory.Exists(Path.Combine(path, "data", "pl0")) ||
-                Directory.Exists(Path.Combine(path, "pl0"));
+            var randomiser = GetRandomiser();
+            return randomiser.ValidateGamePath(normalised);
         }
 
         private bool ShowGamePathWarning()

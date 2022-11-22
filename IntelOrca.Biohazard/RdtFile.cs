@@ -25,6 +25,9 @@ namespace IntelOrca.Biohazard
 
         private int[] ReadHeader()
         {
+            if (Data.Length <= 8)
+                return new int[0];
+
             var br = new BinaryReader(new MemoryStream(Data));
             br.ReadBytes(8);
 
