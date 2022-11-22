@@ -1098,6 +1098,10 @@
       ],
       "enemies": [
         {
+          "includeTypes": [ 32, 33, 42, 46, 57 ],
+          "player": 0
+        },
+        {
           "player": 1
         }
       ]
