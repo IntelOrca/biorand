@@ -156,6 +156,10 @@ namespace IntelOrca.Biohazard
                 var map = GetJsonMap();
                 var gameData = GameDataReader.Read(originalDataPath, modPath, config.Player);
 
+#if DEBUG
+                DumpScripts(gameData, Path.Combine(modPath, $"scripts_pl{config.Player}"));
+#endif
+
                 if (config.RandomDoors || config.RandomItems)
                 {
                     var dgmlPath = Path.Combine(modPath, $"graph_pl{config.Player}.dgml");
@@ -192,12 +196,8 @@ namespace IntelOrca.Biohazard
                 }
 
 #if DEBUG
-                if (config.RandomItems || config.RandomEnemies)
-                {
-                    DumpScripts(gameData, Path.Combine(modPath, $"scripts_pl{config.Player}"));
-                    var moddedGameData = GameDataReader.Read(modPath, modPath, config.Player);
-                    DumpScripts(moddedGameData, Path.Combine(modPath, $"scripts_modded_pl{config.Player}"));
-                }
+                var moddedGameData = GameDataReader.Read(modPath, modPath, config.Player);
+                DumpScripts(moddedGameData, Path.Combine(modPath, $"scripts_modded_pl{config.Player}"));
 #endif
             }
             catch (Exception ex)

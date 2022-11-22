@@ -76,6 +76,8 @@ namespace IntelOrca.Biohazard
 
                 var functionOffset = functionOffsets[i];
                 var functionEnd = functionOffsets[i + 1];
+                var functionEndMin = functionOffset;
+                var ifStack = 0;
                 stream.Position = functionOffset;
                 while (stream.Position < functionEnd)
                 {
@@ -88,6 +90,31 @@ namespace IntelOrca.Biohazard
                     var instructionSize = _instructionSizes[(byte)opcode];
                     var operands = br.ReadBytes(instructionSize - 1);
                     visitor.VisitOpcode(instructionPosition, opcode, new Span<byte>(operands));
+
+                    if (i == numFunctions - 1)
+                    {
+                        var isEnd = false;
+                        switch (opcode)
+                        {
+                            case Opcode.EvtEnd:
+                                if (instructionPosition >= functionEndMin && ifStack == 0)
+                                    isEnd = true;
+                                break;
+                            case Opcode.IfelCk:
+                                functionEndMin = instructionPosition + BitConverter.ToUInt16(operands, 1);
+                                ifStack++;
+                                break;
+                            case Opcode.ElseCk:
+                                ifStack--;
+                                functionEndMin = instructionPosition + BitConverter.ToUInt16(operands, 1);
+                                break;
+                            case Opcode.EndIf:
+                                ifStack--;
+                                break;
+                        }
+                        if (isEnd)
+                            break;
+                    }
                 }
 
                 visitor.VisitEndSubroutine(i);
