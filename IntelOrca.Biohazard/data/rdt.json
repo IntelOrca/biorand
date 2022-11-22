@@ -794,10 +794,6 @@
           "id": 16,
           "requires": [ 80 ],
           "priority": "low"
-        },
-        {
-          "id": 4,
-          "type": 0
         }
       ]
     },
