@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
 using IntelOrca.Biohazard.Opcodes;
+using IntelOrca.Biohazard.Script;
 
 namespace IntelOrca.Biohazard
 {

@@ -220,7 +220,7 @@ namespace IntelOrca.Biohazard
             foreach (var rdt in gameData.Rdts)
             {
                 sb.AppendLine($"{rdt.RdtId} ():");
-                AstPrinter.Print(sb, rdt.Ast!);
+                Script.AstPrinter.Print(sb, rdt.Ast!);
             }
             File.WriteAllText(path, sb.ToString());
         }

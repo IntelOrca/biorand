@@ -1,4 +1,4 @@
-﻿namespace IntelOrca.Biohazard
+﻿namespace IntelOrca.Biohazard.Script
 {
     internal enum OpcodeV2 : byte
     {

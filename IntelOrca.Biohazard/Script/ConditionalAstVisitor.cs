@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using IntelOrca.Biohazard.Opcodes;
+using IntelOrca.Biohazard.Script;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.Script
 {
     internal abstract class ConditionalAstVisitor : ScriptAstVisitor
     {
