@@ -24,6 +24,7 @@
         Tyrant2,
         ZombieArms = 45,
         Ivy = 46,
+        Vines = 47,
         IvyPurple = 57,
         GiantMoth = 58,
         Maggots,
