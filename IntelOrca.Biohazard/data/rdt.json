@@ -1999,6 +1999,12 @@
           "lock": "unblock"
         }
       ],
+      "items": [
+        {
+          "id": 2,
+          "requires": [ 47 ]
+        }
+      ],
       "npcs": [
         {
           "player": 0
