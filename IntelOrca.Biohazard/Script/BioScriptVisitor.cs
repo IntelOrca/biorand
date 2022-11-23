@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
-using IntelOrca.Biohazard.Opcodes;
-using IntelOrca.Biohazard.Script;
+using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.Script
 {

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace IntelOrca.Biohazard.Opcodes
+namespace IntelOrca.Biohazard.Script.Opcodes
 {
     internal abstract class OpcodeBase
     {

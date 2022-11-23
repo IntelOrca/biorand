@@ -1,9 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
-using IntelOrca.Biohazard.Opcodes;
-using IntelOrca.Biohazard.Script;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.Script.Opcodes
 {
     [DebuggerDisplay("cmp")]
     internal class CmpOpcode : OpcodeBase
