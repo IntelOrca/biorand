@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
 
-namespace IntelOrca.Biohazard.Opcodes
+namespace IntelOrca.Biohazard.Script.Opcodes
 {
     [DebuggerDisplay("{Opcode} Channel = {Channel} Id = {Id}")]
     internal class XaOnOpcode : OpcodeBase

@@ -1,8 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
-using IntelOrca.Biohazard.Opcodes;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.Script.Opcodes
 {
     [DebuggerDisplay("gosub")]
     internal class GosubOpcode : OpcodeBase

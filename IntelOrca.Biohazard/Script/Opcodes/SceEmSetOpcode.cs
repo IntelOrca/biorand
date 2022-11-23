@@ -1,8 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
-using IntelOrca.Biohazard.Script;
 
-namespace IntelOrca.Biohazard.Opcodes
+namespace IntelOrca.Biohazard.Script.Opcodes
 {
     [DebuggerDisplay("sce_em_set")]
     internal class SceEmSetOpcode : OpcodeBase

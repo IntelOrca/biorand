@@ -1,9 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
-using IntelOrca.Biohazard.Opcodes;
-using IntelOrca.Biohazard.Script;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.Script.Opcodes
 {
     [DebuggerDisplay("item_aot_set")]
     internal class ItemAotSetOpcode : OpcodeBase, IItemAotSetOpcode
