@@ -31,6 +31,10 @@ namespace IntelOrca.Biohazard.Script.Opcodes
         public byte LockType { get; set; }
         public byte Free { get; set; }
 
+        public byte Re1UnkA { get; set; }
+        public byte Re1UnkB { get; set; }
+        public byte Re1UnkC { get; set; }
+
         public RdtId Target
         {
             get => new RdtId(NextStage, NextRoom);
@@ -56,11 +60,11 @@ namespace IntelOrca.Biohazard.Script.Opcodes
                 op.Z = br.ReadInt16();
                 op.W = br.ReadUInt16();
                 op.D = br.ReadUInt16();
-                op.LockId = br.ReadByte();
-                op.Sound = br.ReadByte();           // ??
+                op.Re1UnkA = br.ReadByte();
+                op.Re1UnkB = br.ReadByte();
                 op.Animation = br.ReadByte();
-                op.Texture = br.ReadByte();
-                op.NextCamera = br.ReadByte();      // ??
+                op.Re1UnkC = br.ReadByte();
+                op.LockId = br.ReadByte();
 
                 var target = br.ReadByte();
                 op.NextStage = (byte)(target >> 5);

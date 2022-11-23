@@ -64,7 +64,7 @@ namespace IntelOrca.Biohazard
         private GameData ReadGameData(string dataPath, string modDataPath, int player, RdtId[] rdtIds)
         {
             var rdts = new List<Rdt>();
-            foreach (var rdtId in rdtIds.Take(2))
+            foreach (var rdtId in rdtIds.Take(10))
             {
                 var rdtPath = GetRdtPath(dataPath, rdtId, player);
                 var modRdtPath = GetRdtPath(modDataPath, rdtId, player);

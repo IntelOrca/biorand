@@ -22,6 +22,8 @@ namespace IntelOrca.Biohazard.Script
         public override void VisitBeginScript(BioScriptKind kind)
         {
             _subroutines.Clear();
+            if (_version == BioVersion.Biohazard1)
+                PushBasicBlock();
         }
 
         public override void VisitBeginSubroutine(int index)
