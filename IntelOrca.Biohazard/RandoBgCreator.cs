@@ -25,10 +25,13 @@ namespace IntelOrca.Biohazard
             {
                 using (var g = Graphics.FromImage(titleBg))
                 {
+                    g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
+                    g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
+
                     var srcImage = new Bitmap(new MemoryStream(Resources.title_bg));
                     g.DrawImage(srcImage, 0, 0, titleBg.Width, titleBg.Height);
 
-                    var font = new Font(FontFamily.GenericSansSerif, 4);
+                    var font = new Font(FontFamily.GenericSansSerif, 6);
 
                     var versionInfo = Program.CurrentVersionInfo;
                     var versionSize = g.MeasureString(versionInfo, font);
@@ -36,7 +39,7 @@ namespace IntelOrca.Biohazard
 
                     var seed = config.ToString();
                     var seedSize = g.MeasureString(seed, font);
-                    g.DrawString(seed, font, Brushes.White, titleBg.Width - seedSize.Width - 4, 0);
+                    g.DrawString(seed, font, Brushes.White, titleBg.Width - seedSize.Width + 5, 0);
                 }
                 titleBg.Save(destPath);
             }
