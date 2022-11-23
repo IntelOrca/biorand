@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.Script
 {
     internal class ScriptBuilder
     {

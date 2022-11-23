@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using IntelOrca.Biohazard.Opcodes;
-using IntelOrca.Biohazard.Script;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.Script
 {
     internal class ScriptDecompiler : BioScriptVisitor
     {
@@ -602,7 +601,7 @@ namespace IntelOrca.Biohazard
                         var cond = br.ReadByte();
                         var exOpcode = br.ReadByte();
                         var evnt = br.ReadByte();
-                        var exOpcodeS = $"OP_{ ((OpcodeV2)exOpcode).ToString().ToUpperInvariant()}";
+                        var exOpcodeS = $"OP_{((OpcodeV2)exOpcode).ToString().ToUpperInvariant()}";
                         if (cond == 255)
                             sb.WriteStandardOpcode("evt_exec", "CAMERA", exOpcodeS, $"sub_{evnt:X2}");
                         else
@@ -1157,21 +1156,21 @@ namespace IntelOrca.Biohazard
                 return "SAT_AUTO";
 
             var s = "";
-            if ((sat & (1 << 0)) != 0)
+            if ((sat & 1 << 0) != 0)
                 s += "SAT_PL | ";
-            if ((sat & (1 << 1)) != 0)
+            if ((sat & 1 << 1) != 0)
                 s += "SAT_EM | ";
-            if ((sat & (1 << 2)) != 0)
+            if ((sat & 1 << 2) != 0)
                 s += "SAT_SPL | ";
-            if ((sat & (1 << 3)) != 0)
+            if ((sat & 1 << 3) != 0)
                 s += "SAT_OB | ";
-            if ((sat & (1 << 4)) != 0)
+            if ((sat & 1 << 4) != 0)
                 s += "SAT_MANUAL | ";
-            if ((sat & (1 << 5)) != 0)
+            if ((sat & 1 << 5) != 0)
                 s += "SAT_FRONT | ";
-            if ((sat & (1 << 6)) != 0)
+            if ((sat & 1 << 6) != 0)
                 s += "SAT_UNDER | ";
-            if ((sat & (1 << 7)) != 0)
+            if ((sat & 1 << 7) != 0)
                 s += "0x80 | ";
             return s.TrimEnd(' ', '|');
         }

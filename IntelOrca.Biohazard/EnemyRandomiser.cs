@@ -206,7 +206,7 @@ namespace IntelOrca.Biohazard
             // will be heard
             foreach (var enemy in rdt.Enemies)
             {
-                if (enemy.Type == EnemyType.Vines || (IsZombie(enemy.Type) && enemy.State == 2))
+                if ((EnemyType)enemy.Type == EnemyType.Vines || (IsZombie((EnemyType)enemy.Type) && enemy.State == 2))
                     enemy.SoundBank = 0;
             }
 

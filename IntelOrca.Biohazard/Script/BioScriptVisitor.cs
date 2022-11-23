@@ -3,7 +3,7 @@ using System.IO;
 using IntelOrca.Biohazard.Opcodes;
 using IntelOrca.Biohazard.Script;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.Script
 {
     internal class BioScriptVisitor
     {

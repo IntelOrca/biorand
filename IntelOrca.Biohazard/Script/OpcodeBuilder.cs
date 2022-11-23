@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using IntelOrca.Biohazard.Opcodes;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.Script
 {
     internal class OpcodeBuilder : BioScriptVisitor
     {
