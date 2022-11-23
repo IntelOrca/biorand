@@ -194,6 +194,9 @@ namespace IntelOrca.Biohazard.BioRand
 
             var keyItems = 1 / 8.0;
             var totalRest = _config.RatioAmmo + _config.RatioHealth + _config.RatioInkRibbons;
+            if (totalRest == 0)
+                totalRest = 1;
+
             var remaining = (1 - keyItems) / totalRest;
             var ammo = _config.RatioAmmo * remaining;
             var health = _config.RatioHealth * remaining;
