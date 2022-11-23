@@ -92,10 +92,10 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        public void RecordOpcode(int offset, Opcode opcode, Span<byte> operands)
+        public void RecordOpcode(int offset, Span<byte> opcodeBytes)
         {
             CurrentOffset = offset;
-            CurrentOpcodeBytes = new[] { (byte)opcode }.Concat(operands.ToArray()).ToArray();
+            CurrentOpcodeBytes = opcodeBytes.ToArray();
 
             _offsetToPosition.Add(offset, _linePosition);
 

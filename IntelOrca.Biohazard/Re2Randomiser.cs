@@ -10,6 +10,8 @@ namespace IntelOrca.Biohazard
 {
     public class Re2Randomiser : BaseRandomiser
     {
+        protected override BioVersion BiohazardVersion => BioVersion.Biohazard2;
+
         protected override string GetPlayerName(int player) => player == 0 ? "Leon" : "Claire";
 
         public override bool ValidateGamePath(string path)
@@ -28,27 +30,42 @@ namespace IntelOrca.Biohazard
             return originalDataPath;
         }
 
-        protected override string[] GetRdtPaths(string dataPath, int player)
+        protected override RdtId[] GetRdtIds(string dataPath)
         {
-            var rdtPaths = new List<string>();
-            var files = Directory.GetFiles(Path.Combine(dataPath, @$"Pl{player}\Rdt"));
-            foreach (var file in files)
+            var rdtPaths = new HashSet<RdtId>();
+            for (int player = 0; player < 2; player++)
             {
-                // Check the file is an RDT file
-                var fileName = Path.GetFileName(file);
-                if (!fileName.StartsWith("ROOM", System.StringComparison.OrdinalIgnoreCase) ||
-                    !fileName.EndsWith(".RDT", System.StringComparison.OrdinalIgnoreCase))
+                var files = Directory.GetFiles(Path.Combine(dataPath, @$"Pl{player}\Rdt"));
+                foreach (var file in files)
                 {
-                    continue;
+                    // Check the file is an RDT file
+                    var fileName = Path.GetFileName(file);
+                    if (!fileName.StartsWith("ROOM", System.StringComparison.OrdinalIgnoreCase) ||
+                        !fileName.EndsWith(".RDT", System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    // Ignore RDTs that are not part of the main game
+                    if (!char.IsDigit(fileName[4]))
+                        continue;
+
+                    if (RdtId.TryParse(fileName.Substring(4, 3), out var rdtId))
+                    {
+                        rdtPaths.Add(rdtId);
+                    }
                 }
-
-                // Ignore RDTs that are not part of the main game
-                if (!char.IsDigit(fileName[4]))
-                    continue;
-
-                rdtPaths.Add(file);
             }
-            return rdtPaths.ToArray();
+            return rdtPaths
+                .OrderBy(x => x.Stage)
+                .ThenBy(x => x.Room)
+                .ToArray();
+        }
+
+        protected override string GetRdtPath(string dataPath, RdtId rdtId, int player)
+        {
+            var path = Path.Combine(dataPath, @$"Pl{player}\Rdt\ROOM{rdtId}{player}.RDT");
+            return path;
         }
 
         protected override Dictionary<RdtId, ulong> GetRdtChecksums(int player)
@@ -68,15 +85,15 @@ namespace IntelOrca.Biohazard
             {
                 // Leon A / Claire B
                 Parallel.Invoke(po,
-                    () => base.GenerateRdts(config.WithPlayerScenario(0, 0), installPath, modPath),
-                    () => base.GenerateRdts(config.WithPlayerScenario(1, 1), installPath, modPath));
+                    () => GenerateRdts(config.WithPlayerScenario(0, 0), installPath, modPath),
+                    () => GenerateRdts(config.WithPlayerScenario(1, 1), installPath, modPath));
             }
             else
             {
                 // Leon B / Claire A
                 Parallel.Invoke(po,
-                    () => base.GenerateRdts(config.WithPlayerScenario(0, 1), installPath, modPath),
-                    () => base.GenerateRdts(config.WithPlayerScenario(1, 0), installPath, modPath));
+                    () => GenerateRdts(config.WithPlayerScenario(0, 1), installPath, modPath),
+                    () => GenerateRdts(config.WithPlayerScenario(1, 0), installPath, modPath));
             }
 
             if (config.RandomBgm)

@@ -3,12 +3,9 @@ using System.IO;
 
 namespace IntelOrca.Biohazard.Opcodes
 {
-    [DebuggerDisplay("{Opcode} Item = {Item} Amount = {Amount}")]
+    [DebuggerDisplay("sce_item_get")]
     internal class SceItemGetOpcode : OpcodeBase
     {
-        public override Opcode Opcode => Opcode.SceItemGet;
-        public override int Length => 3;
-
         public byte Type { get; set; }
         public byte Amount { get; set; }
 
@@ -17,6 +14,9 @@ namespace IntelOrca.Biohazard.Opcodes
             return new SceItemGetOpcode()
             {
                 Offset = offset,
+                Length = 3,
+
+                Opcode = br.ReadByte(),
                 Type = br.ReadByte(),
                 Amount = br.ReadByte()
             };
@@ -24,7 +24,7 @@ namespace IntelOrca.Biohazard.Opcodes
 
         public override void Write(BinaryWriter bw)
         {
-            bw.Write((byte)Opcode);
+            bw.Write(Opcode);
             bw.Write(Type);
             bw.Write(Amount);
         }

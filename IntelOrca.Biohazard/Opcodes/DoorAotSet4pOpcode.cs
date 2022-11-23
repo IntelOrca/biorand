@@ -4,12 +4,9 @@ using IntelOrca.Biohazard.Opcodes;
 
 namespace IntelOrca.Biohazard
 {
-    [DebuggerDisplay("{Opcode}")]
+    [DebuggerDisplay("door_aot_set_4p")]
     internal class DoorAotSet4pOpcode : OpcodeBase, IDoorAotSetOpcode
     {
-        public override Opcode Opcode => Opcode.DoorAotSet4p;
-        public override int Length => 40;
-
         public byte Id { get; set; }
         public byte SCE { get; set; }
         public byte SAT { get; set; }
@@ -53,6 +50,9 @@ namespace IntelOrca.Biohazard
             return new DoorAotSet4pOpcode()
             {
                 Offset = offset,
+                Length = 40,
+
+                Opcode = br.ReadByte(),
                 Id = br.ReadByte(),
                 SCE = br.ReadByte(),
                 SAT = br.ReadByte(),
@@ -85,7 +85,7 @@ namespace IntelOrca.Biohazard
 
         public override void Write(BinaryWriter bw)
         {
-            bw.Write((byte)Opcode);
+            bw.Write(Opcode);
             bw.Write(Id);
             bw.Write(SCE);
             bw.Write(SAT);

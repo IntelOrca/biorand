@@ -3,7 +3,7 @@
     internal interface IDoorAotSetOpcode
     {
         int Offset { get; }
-        Opcode Opcode { get; }
+        byte Opcode { get; }
         RdtId Target { get; set; }
 
         byte Id { get; set; }

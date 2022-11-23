@@ -4,12 +4,9 @@ using IntelOrca.Biohazard.Opcodes;
 
 namespace IntelOrca.Biohazard
 {
-    [DebuggerDisplay("{Opcode}")]
+    [DebuggerDisplay("ck")]
     internal class CkOpcode : OpcodeBase
     {
-        public override Opcode Opcode => Opcode.Ck;
-        public override int Length => 4;
-
         public byte BitArray { get; set; }
         public byte Index { get; set; }
         public byte Value { get; set; }
@@ -19,6 +16,9 @@ namespace IntelOrca.Biohazard
             return new CkOpcode()
             {
                 Offset = offset,
+                Length = 4,
+
+                Opcode = br.ReadByte(),
                 BitArray = br.ReadByte(),
                 Index = br.ReadByte(),
                 Value = br.ReadByte()
@@ -27,7 +27,7 @@ namespace IntelOrca.Biohazard
 
         public override void Write(BinaryWriter bw)
         {
-            bw.Write((byte)Opcode);
+            bw.Write(Opcode);
             bw.Write(BitArray);
             bw.Write(Index);
             bw.Write(Value);

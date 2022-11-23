@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection.Emit;
 using IntelOrca.Biohazard.Opcodes;
+using IntelOrca.Biohazard.Script;
 
 namespace IntelOrca.Biohazard
 {
@@ -11,8 +11,14 @@ namespace IntelOrca.Biohazard
         private Stack<IfAstNode> _ifStack = new Stack<IfAstNode>();
         private Stack<List<IScriptAstNode>> _statementStack = new Stack<List<IScriptAstNode>>();
         private bool _endOfSubroutine;
+        private BioVersion _version;
 
         public ScriptAst Ast { get; set; } = new ScriptAst();
+
+        public override void VisitVersion(BioVersion version)
+        {
+            _version = version;
+        }
 
         public override void VisitBeginScript(BioScriptKind kind)
         {
@@ -33,64 +39,103 @@ namespace IntelOrca.Biohazard
             CheckEndIfElseStatement(opcode.Offset);
 
             var opcodeNode = new OpcodeAstNode(opcode);
-            switch (opcode.Opcode)
+            if (_version == BioVersion.Biohazard1)
             {
-                case Opcode.IfelCk:
-                    {
-                        var ifNode = new IfAstNode();
-                        ifNode.If = opcodeNode;
-                        _ifStack.Push(ifNode);
-                        PushBasicBlock();
+                switch ((OpcodeV1)opcode.Opcode)
+                {
+                    case OpcodeV1.IfelCk:
+                        VisitIfOpcode(opcodeNode);
                         break;
-                    }
-                case Opcode.Ck:
-                case Opcode.Cmp:
-                case Opcode.MemberCmp:
-                    {
-                        if (_ifStack.Count != 0)
-                        {
-                            var ifNode = _ifStack.Peek();
-                            ifNode.Conditions.Add(opcodeNode);
-                        }
+                    case OpcodeV1.Ck:
+                    case OpcodeV1.Cmp6:
+                    case OpcodeV1.Cmp7:
+                        VisitConditionOpcode(opcodeNode);
                         break;
-                    }
-                case Opcode.ElseCk:
-                    {
-                        var ifNode = _ifStack.Peek();
-                        ifNode.IfBlock = PopBasicBlock();
-                        ifNode.Else = opcodeNode;
-                        PushBasicBlock();
+                    case OpcodeV1.ElseCk:
+                        VisitElseOpcode(opcodeNode);
                         break;
-                    }
-                case Opcode.EndIf:
-                    {
-                        var ifNode = _ifStack.Pop();
-                        if (ifNode.IfBlock == null)
-                        {
-                            ifNode.IfBlock = PopBasicBlock();
-                        }
-                        else
-                        {
-                            ifNode.ElseBlock = PopBasicBlock();
-                        }
-                        ifNode.EndIf = opcodeNode;
-                        AddStatement(ifNode);
+                    case OpcodeV1.EndIf:
+                        VisitEndIfOpcode(opcodeNode);
                         break;
-                    }
-                case Opcode.EvtEnd:
-                    {
-                        AddStatement(opcodeNode);
-                        if (_ifStack.Count == 0)
-                        {
-                            _endOfSubroutine = true;
-                        }
-                        break;
-                    }
-                default:
-                    {
+                    default:
                         AddStatement(opcodeNode);
                         break;
-                    }
+                }
+            }
+            else
+            {
+                switch ((OpcodeV2)opcode.Opcode)
+                {
+                    case OpcodeV2.IfelCk:
+                        VisitIfOpcode(opcodeNode);
+                        break;
+                    case OpcodeV2.Ck:
+                    case OpcodeV2.Cmp:
+                    case OpcodeV2.MemberCmp:
+                        VisitConditionOpcode(opcodeNode);
+                        break;
+                    case OpcodeV2.ElseCk:
+                        VisitElseOpcode(opcodeNode);
+                        break;
+                    case OpcodeV2.EndIf:
+                        VisitEndIfOpcode(opcodeNode);
+                        break;
+                    case OpcodeV2.EvtEnd:
+                        VisitEndSubroutineOpcode(opcodeNode);
+                        break;
+                    default:
+                        AddStatement(opcodeNode);
+                        break;
+                }
+            }
+        }
+
+        private void VisitIfOpcode(OpcodeAstNode opcodeNode)
+        {
+            var ifNode = new IfAstNode();
+            ifNode.If = opcodeNode;
+            _ifStack.Push(ifNode);
+            PushBasicBlock();
+        }
+
+        private void VisitConditionOpcode(OpcodeAstNode opcodeNode)
+        {
+            if (_ifStack.Count != 0)
+            {
+                var ifNode = _ifStack.Peek();
+                ifNode.Conditions.Add(opcodeNode);
+            }
+        }
+
+        private void VisitElseOpcode(OpcodeAstNode opcodeNode)
+        {
+            var ifNode = _ifStack.Peek();
+            ifNode.IfBlock = PopBasicBlock();
+            ifNode.Else = opcodeNode;
+            PushBasicBlock();
+        }
+
+        private void VisitEndIfOpcode(OpcodeAstNode opcodeNode)
+        {
+            var ifNode = _ifStack.Pop();
+            if (ifNode.IfBlock == null)
+            {
+                ifNode.IfBlock = PopBasicBlock();
+            }
+            else
+            {
+                ifNode.ElseBlock = PopBasicBlock();
+            }
+            ifNode.EndIf = opcodeNode;
+            AddStatement(ifNode);
+        }
+
+        private void VisitEndSubroutineOpcode(OpcodeAstNode opcodeNode)
+        {
+            AddStatement(opcodeNode);
+            if (_ifStack.Count == 0)
+            {
+                _endOfSubroutine = true;
             }
         }
 

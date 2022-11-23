@@ -1,15 +1,13 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using IntelOrca.Biohazard.Opcodes;
+using IntelOrca.Biohazard.Script;
 
 namespace IntelOrca.Biohazard
 {
-    [DebuggerDisplay("{Opcode} Id = {Id} Type = {Type} Amount = {Amount}")]
+    [DebuggerDisplay("item_aot_set")]
     internal class ItemAotSetOpcode : OpcodeBase, IItemAotSetOpcode
     {
-        public override Opcode Opcode => Opcode.ItemAotSet;
-        public override int Length => 22;
-
         public byte Id { get; set; }
         public byte SCE { get; set; }
         public byte SAT { get; set; }
@@ -25,31 +23,55 @@ namespace IntelOrca.Biohazard
         public byte MD1 { get; set; }
         public byte Action { get; set; }
 
+        public byte[] Re1Unk { get; set; } = new byte[0];
+
         public static ItemAotSetOpcode Read(BinaryReader br, int offset)
         {
-            return new ItemAotSetOpcode()
+            var opcode = br.ReadByte();
+            if ((OpcodeV1)opcode == OpcodeV1.ItemAotSet)
             {
-                Offset = offset,
-                Id = br.ReadByte(),
-                SCE = br.ReadByte(),
-                SAT = br.ReadByte(),
-                Floor = br.ReadByte(),
-                Super = br.ReadByte(),
-                X = br.ReadInt16(),
-                Y = br.ReadInt16(),
-                W = br.ReadInt16(),
-                H = br.ReadInt16(),
-                Type = br.ReadUInt16(),
-                Amount = br.ReadUInt16(),
-                Array8Idx = br.ReadUInt16(),
-                MD1 = br.ReadByte(),
-                Action = br.ReadByte()
-            };
+                var op = new ItemAotSetOpcode();
+                op.Offset = offset;
+                op.Length = 18;
+
+                op.Id = br.ReadByte();
+                op.X = br.ReadInt16();
+                op.Y = br.ReadInt16();
+                op.W = br.ReadInt16();
+                op.H = br.ReadInt16();
+                op.Type = br.ReadByte();
+                op.Re1Unk = br.ReadBytes(7);
+                return op;
+            }
+            else
+            {
+                return new ItemAotSetOpcode()
+                {
+                    Offset = offset,
+                    Length = 22,
+
+                    Opcode = br.ReadByte(),
+                    Id = br.ReadByte(),
+                    SCE = br.ReadByte(),
+                    SAT = br.ReadByte(),
+                    Floor = br.ReadByte(),
+                    Super = br.ReadByte(),
+                    X = br.ReadInt16(),
+                    Y = br.ReadInt16(),
+                    W = br.ReadInt16(),
+                    H = br.ReadInt16(),
+                    Type = br.ReadUInt16(),
+                    Amount = br.ReadUInt16(),
+                    Array8Idx = br.ReadUInt16(),
+                    MD1 = br.ReadByte(),
+                    Action = br.ReadByte()
+                };
+            }
         }
 
         public override void Write(BinaryWriter bw)
         {
-            bw.Write((byte)Opcode);
+            bw.Write(Opcode);
             bw.Write(Id);
             bw.Write(SCE);
             bw.Write(SAT);

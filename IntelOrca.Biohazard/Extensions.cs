@@ -54,6 +54,14 @@ namespace IntelOrca.Biohazard
             return hash;
         }
 
+        public static byte PeekByte(this BinaryReader br)
+        {
+            var pos = br.BaseStream.Position;
+            var b = br.ReadByte();
+            br.BaseStream.Position = pos;
+            return b;
+        }
+
         public static void WriteASCII(this BinaryWriter bw, string s)
         {
             foreach (var c in s)

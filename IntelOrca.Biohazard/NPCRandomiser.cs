@@ -61,7 +61,7 @@ namespace IntelOrca.Biohazard
 
             // Alternative costumes for Leon / Claire cause issues if there are multiple occurances
             // of them in the same cutscene. Only place them in rooms where we can guarantee there is only 1 NPC.
-            var npcCount = rdt.Enemies.Count(x => IsNpc(x.Type));
+            var npcCount = rdt.Enemies.Count(x => IsNpc((EnemyType)x.Type));
             if (npcCount > 1)
             {
                 var problematicTypes = new[] { 88, 89, 90 };
@@ -93,7 +93,7 @@ namespace IntelOrca.Biohazard
                 }
                 foreach (var enemyGroup in rdt.Enemies.GroupBy(x => x.Type))
                 {
-                    if (!IsNpc(enemyGroup.Key))
+                    if (!IsNpc((EnemyType)enemyGroup.Key))
                         continue;
 
                     supportedNpcs = supportedNpcs.Shuffle(rng);
@@ -108,12 +108,12 @@ namespace IntelOrca.Biohazard
 #else
                         var newEnemyType = (EnemyType)supportedNpcs[0];
 #endif
-                        var oldActor = GetActor(enemy.Type)!;
+                        var oldActor = GetActor((EnemyType)enemy.Type)!;
                         var newActor = GetActor(newEnemyType)!;
                         actorToNewActorMap[oldActor] = newActor;
 
                         _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) [{enemy.Type}] becomes [{newEnemyType}]");
-                        enemy.Type = newEnemyType;
+                        enemy.Type = (byte)newEnemyType;
                     }
                 }
             }

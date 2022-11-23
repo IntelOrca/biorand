@@ -6,9 +6,6 @@ namespace IntelOrca.Biohazard.Opcodes
     [DebuggerDisplay("{Opcode} Channel = {Channel} Id = {Id}")]
     internal class XaOnOpcode : OpcodeBase
     {
-        public override Opcode Opcode => Opcode.XaOn;
-        public override int Length => 4;
-
         public byte Channel { get; set; }
         public ushort Id { get; set; }
 
@@ -17,6 +14,9 @@ namespace IntelOrca.Biohazard.Opcodes
             return new XaOnOpcode()
             {
                 Offset = offset,
+                Length = 4,
+
+                Opcode = br.ReadByte(),
                 Channel = br.ReadByte(),
                 Id = br.ReadUInt16()
             };
@@ -24,7 +24,7 @@ namespace IntelOrca.Biohazard.Opcodes
 
         public override void Write(BinaryWriter bw)
         {
-            bw.Write((byte)Opcode);
+            bw.Write(Opcode);
             bw.Write(Channel);
             bw.Write(Id);
         }

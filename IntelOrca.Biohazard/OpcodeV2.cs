@@ -1,6 +1,6 @@
 ﻿namespace IntelOrca.Biohazard
 {
-    internal enum Opcode : byte
+    internal enum OpcodeV2 : byte
     {
 
         Nop,
