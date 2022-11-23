@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace IntelOrca.Biohazard
 {
     public class Re1Randomiser : BaseRandomiser
     {
+        protected override BioVersion BiohazardVersion => BioVersion.Biohazard1;
+
         protected override string GetPlayerName(int player) => player == 0 ? "Chris" : "Jill";
 
         public override bool ValidateGamePath(string path)
@@ -25,10 +28,10 @@ namespace IntelOrca.Biohazard
             return originalDataPath;
         }
 
-        protected override string[] GetRdtPaths(string dataPath, int player)
+        protected override RdtId[] GetRdtIds(string dataPath)
         {
-            var rdtPaths = new List<string>();
-            for (int stage = 1; stage <= 7; stage++)
+            var rdtIds = new HashSet<RdtId>();
+            for (int stage = 1; stage <= 5; stage++)
             {
                 var files = Directory.GetFiles(Path.Combine(dataPath, @$"STAGE{stage}"));
                 foreach (var file in files)
@@ -41,21 +44,28 @@ namespace IntelOrca.Biohazard
                         continue;
                     }
 
-                    if (!char.IsDigit(fileName[7]))
-                        continue;
-
-                    var pl = fileName[7] - '0';
-                    if (pl != player)
-                        continue;
-
-                    rdtPaths.Add(file);
+                    if (RdtId.TryParse(fileName.Substring(4, 3), out var rdtId))
+                    {
+                        rdtIds.Add(rdtId);
+                    }
                 }
             }
-            return rdtPaths.ToArray();
+            return rdtIds
+                .OrderBy(x => x.Stage)
+                .ThenBy(x => x.Room)
+                .ToArray();
+        }
+
+        protected override string GetRdtPath(string dataPath, RdtId rdtId, int player)
+        {
+            var path = Path.Combine(dataPath, @$"STAGE{rdtId.Stage + 1}\ROOM{rdtId}{player}.RDT");
+            return path;
         }
 
         protected override void Generate(RandoConfig config, string installPath, string modPath)
         {
+            GenerateRdts(config.WithPlayerScenario(0, 0), installPath, modPath);
+
             if (config.RandomBgm)
             {
                 using var logger = new RandoLogger(Path.Combine(modPath, $"log_bgm.txt"));

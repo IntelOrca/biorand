@@ -4,12 +4,9 @@ using IntelOrca.Biohazard.Opcodes;
 
 namespace IntelOrca.Biohazard
 {
-    [DebuggerDisplay("{Opcode} Id = {Id} Type = {Type} Amount = {Amount}")]
+    [DebuggerDisplay("item_aot_set_4p")]
     internal class ItemAotSet4pOpcode : OpcodeBase, IItemAotSetOpcode
     {
-        public override Opcode Opcode => Opcode.ItemAotSet4p;
-        public override int Length => 30;
-
         public byte Id { get; set; }
         public byte SCE { get; set; }
         public byte SAT { get; set; }
@@ -34,6 +31,9 @@ namespace IntelOrca.Biohazard
             return new ItemAotSet4pOpcode()
             {
                 Offset = offset,
+                Length = 30,
+
+                Opcode = br.ReadByte(),
                 Id = br.ReadByte(),
                 SCE = br.ReadByte(),
                 SAT = br.ReadByte(),
@@ -57,7 +57,7 @@ namespace IntelOrca.Biohazard
 
         public override void Write(BinaryWriter bw)
         {
-            bw.Write((byte)Opcode);
+            bw.Write(Opcode);
             bw.Write(Id);
             bw.Write(SCE);
             bw.Write(SAT);

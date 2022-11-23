@@ -214,7 +214,7 @@ namespace IntelOrca.Biohazard
             {
                 var index = Array.IndexOf(ids, enemy.Id);
                 var enemyType = enemyTypesId[index];
-                enemy.Type = enemyType;
+                enemy.Type = (byte)enemyType;
                 if (!enemySpec.KeepState)
                     enemy.State = 0;
                 if (!enemySpec.KeepAi)
@@ -315,7 +315,7 @@ namespace IntelOrca.Biohazard
 
         private bool ShouldChangeEnemy(SceEmSetOpcode enemy)
         {
-            switch (enemy.Type)
+            switch ((EnemyType)enemy.Type)
             {
                 case EnemyType.Crow:
                 case EnemyType.Spider:
@@ -330,7 +330,7 @@ namespace IntelOrca.Biohazard
                     // Edge case: Marvin is only a zombie in scenario B
                     return _config.Scenario == 1;
                 default:
-                    return IsZombie(enemy.Type);
+                    return IsZombie((EnemyType)enemy.Type);
             }
         }
 

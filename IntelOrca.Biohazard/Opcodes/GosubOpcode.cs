@@ -4,12 +4,9 @@ using IntelOrca.Biohazard.Opcodes;
 
 namespace IntelOrca.Biohazard
 {
-    [DebuggerDisplay("{Opcode}")]
+    [DebuggerDisplay("gosub")]
     internal class GosubOpcode : OpcodeBase
     {
-        public override Opcode Opcode => Opcode.Gosub;
-        public override int Length => 2;
-
         public byte Index { get; set; }
 
         public static GosubOpcode Read(BinaryReader br, int offset)
@@ -17,13 +14,16 @@ namespace IntelOrca.Biohazard
             return new GosubOpcode()
             {
                 Offset = offset,
+                Length = 2,
+
+                Opcode = br.ReadByte(),
                 Index = br.ReadByte()
             };
         }
 
         public override void Write(BinaryWriter bw)
         {
-            bw.Write((byte)Opcode);
+            bw.Write(Opcode);
             bw.Write(Index);
         }
     }

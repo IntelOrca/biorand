@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 
@@ -8,10 +9,13 @@ namespace IntelOrca.Biohazard
 {
     public abstract class BaseRandomiser
     {
+        protected abstract BioVersion BiohazardVersion { get; }
+
         public abstract bool ValidateGamePath(string path);
 
         protected abstract string GetDataPath(string installPath);
-        protected abstract string[] GetRdtPaths(string installPath, int player);
+        protected abstract RdtId[] GetRdtIds(string dataPath);
+        protected abstract string GetRdtPath(string dataPath, RdtId rdtId, int player);
 
         protected virtual Dictionary<RdtId, ulong>? GetRdtChecksums(int player) => null;
 
@@ -19,10 +23,10 @@ namespace IntelOrca.Biohazard
         {
             var result = 0;
             var dataPath = GetDataPath(installPath);
+            var rdtIds = GetRdtIds(dataPath);
             for (int player = 0; player < 2; player++)
             {
-                var rdtPaths = GetRdtPaths(dataPath, player);
-                var actualChecksums = GameDataReader.GetRdtChecksums(rdtPaths, player);
+                var actualChecksums = GetRdtChecksums(dataPath, player, rdtIds);
                 var expectedChecksums = GetRdtChecksums(player);
                 if (expectedChecksums == null)
                     continue;
@@ -43,6 +47,37 @@ namespace IntelOrca.Biohazard
                 }
             }
             return result;
+        }
+
+        private Dictionary<RdtId, ulong> GetRdtChecksums(string dataPath, int player, RdtId[] rdtIds)
+        {
+            var result = new Dictionary<RdtId, ulong>();
+            foreach (var rdtId in rdtIds)
+            {
+                var rdtPath = GetRdtPath(dataPath, rdtId, player);
+                var rdtFile = new RdtFile(rdtPath, BiohazardVersion);
+                result[rdtId] = rdtFile.Checksum;
+            }
+            return result;
+        }
+
+        private GameData ReadGameData(string dataPath, string modDataPath, int player, RdtId[] rdtIds)
+        {
+            var rdts = new List<Rdt>();
+            foreach (var rdtId in rdtIds.Take(2))
+            {
+                var rdtPath = GetRdtPath(dataPath, rdtId, player);
+                var modRdtPath = GetRdtPath(modDataPath, rdtId, player);
+                try
+                {
+                    var rdt = GameDataReader.ReadRdt(BiohazardVersion, rdtPath, modRdtPath);
+                    rdts.Add(rdt);
+                }
+                catch
+                {
+                }
+            }
+            return new GameData(rdts.ToArray());
         }
 
         public void Generate(RandoConfig config, string installPath)
@@ -94,13 +129,15 @@ namespace IntelOrca.Biohazard
 
             try
             {
-                var map = GetMap();
-                var gameData = GameDataReader.Read(originalDataPath, modPath, config.Player);
+                var rdtIds = GetRdtIds(originalDataPath);
+                var gameData = ReadGameData(originalDataPath, modPath, config.Player, rdtIds);
 
 #if DEBUG
                 DumpScripts(gameData, Path.Combine(modPath, $"scripts_pl{config.Player}"));
 #endif
 
+                return;
+                var map = GetMap();
                 if (config.RandomDoors || config.RandomItems)
                 {
                     var dgmlPath = Path.Combine(modPath, $"graph_pl{config.Player}.dgml");
@@ -137,7 +174,7 @@ namespace IntelOrca.Biohazard
                 }
 
 #if DEBUG
-                var moddedGameData = GameDataReader.Read(modPath, modPath, config.Player);
+                var moddedGameData = ReadGameData(modPath, modPath, config.Player, rdtIds);
                 DumpScripts(moddedGameData, Path.Combine(modPath, $"scripts_modded_pl{config.Player}"));
 #endif
             }

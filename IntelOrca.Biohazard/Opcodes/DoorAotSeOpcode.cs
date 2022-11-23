@@ -1,16 +1,14 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using IntelOrca.Biohazard.Opcodes;
+using IntelOrca.Biohazard.Script;
 
 namespace IntelOrca.Biohazard
 {
 
-    [DebuggerDisplay("{Opcode}")]
+    [DebuggerDisplay("door_aot_set")]
     internal class DoorAotSeOpcode : OpcodeBase, IDoorAotSetOpcode
     {
-        public override Opcode Opcode => Opcode.DoorAotSe;
-        public override int Length => 32;
-
         public byte Id { get; set; }
         public byte SCE { get; set; }
         public byte SAT { get; set; }
@@ -47,38 +45,74 @@ namespace IntelOrca.Biohazard
 
         public static DoorAotSeOpcode Read(BinaryReader br, int offset)
         {
-            return new DoorAotSeOpcode()
+            var opcode = br.ReadByte();
+            if ((OpcodeV1)opcode == OpcodeV1.DoorAotSe)
             {
-                Offset = offset,
-                Id = br.ReadByte(),
-                SCE = br.ReadByte(),
-                SAT = br.ReadByte(),
-                Floor = br.ReadByte(),
-                Super = br.ReadByte(),
-                X = br.ReadInt16(),
-                Z = br.ReadInt16(),
-                W = br.ReadUInt16(),
-                D = br.ReadUInt16(),
-                NextX = br.ReadInt16(),
-                NextY = br.ReadInt16(),
-                NextZ = br.ReadInt16(),
-                NextD = br.ReadInt16(),
-                NextStage = br.ReadByte(),
-                NextRoom = br.ReadByte(),
-                NextCamera = br.ReadByte(),
-                NextFloor = br.ReadByte(),
-                Texture = br.ReadByte(),
-                Animation = br.ReadByte(),
-                Sound = br.ReadByte(),
-                LockId = br.ReadByte(),
-                LockType = br.ReadByte(),
-                Free = br.ReadByte()
-            };
+                var op = new DoorAotSeOpcode();
+                op.Offset = offset;
+                op.Length = 26;
+
+                op.Opcode = opcode;
+                op.Id = br.ReadByte();
+                op.X = br.ReadInt16();
+                op.Z = br.ReadInt16();
+                op.W = br.ReadUInt16();
+                op.D = br.ReadUInt16();
+                op.LockId = br.ReadByte();
+                op.Sound = br.ReadByte();           // ??
+                op.Animation = br.ReadByte();
+                op.Texture = br.ReadByte();
+                op.NextCamera = br.ReadByte();      // ??
+
+                var target = br.ReadByte();
+                op.NextStage = (byte)(target >> 5);
+                op.NextRoom = (byte)(target & 0b11111);
+                op.NextX = br.ReadInt16();
+                op.NextY = br.ReadInt16();
+                op.NextZ = br.ReadInt16();
+                op.NextD = br.ReadInt16();
+                op.LockType = br.ReadByte();
+                op.Free = br.ReadByte();
+                return op;
+            }
+            else
+            {
+                return new DoorAotSeOpcode()
+                {
+                    Offset = offset,
+                    Length = 32,
+
+                    Opcode = opcode,
+                    Id = br.ReadByte(),
+                    SCE = br.ReadByte(),
+                    SAT = br.ReadByte(),
+                    Floor = br.ReadByte(),
+                    Super = br.ReadByte(),
+                    X = br.ReadInt16(),
+                    Z = br.ReadInt16(),
+                    W = br.ReadUInt16(),
+                    D = br.ReadUInt16(),
+                    NextX = br.ReadInt16(),
+                    NextY = br.ReadInt16(),
+                    NextZ = br.ReadInt16(),
+                    NextD = br.ReadInt16(),
+                    NextStage = br.ReadByte(),
+                    NextRoom = br.ReadByte(),
+                    NextCamera = br.ReadByte(),
+                    NextFloor = br.ReadByte(),
+                    Texture = br.ReadByte(),
+                    Animation = br.ReadByte(),
+                    Sound = br.ReadByte(),
+                    LockId = br.ReadByte(),
+                    LockType = br.ReadByte(),
+                    Free = br.ReadByte()
+                };
+            }
         }
 
         public override void Write(BinaryWriter bw)
         {
-            bw.Write((byte)Opcode);
+            bw.Write(Opcode);
             bw.Write(Id);
             bw.Write(SCE);
             bw.Write(SAT);

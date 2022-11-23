@@ -3,7 +3,7 @@
     internal interface IItemAotSetOpcode
     {
         int Offset { get; }
-        Opcode Opcode { get; }
+        byte Opcode { get; }
 
         byte Id { get; set; }
         byte SCE { get; set; }

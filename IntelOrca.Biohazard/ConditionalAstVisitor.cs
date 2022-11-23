@@ -93,7 +93,7 @@ namespace IntelOrca.Biohazard
 
         public override void VisitOpcode(OpcodeAstNode node)
         {
-            if (node.Opcode.Opcode == Opcode.Gosub)
+            if ((OpcodeV2)node.Opcode.Opcode == OpcodeV2.Gosub)
             {
                 VisitSubroutine(((GosubOpcode)node.Opcode).Index);
             }
@@ -190,10 +190,10 @@ namespace IntelOrca.Biohazard
         {
             base.VisitOpcode(node);
             var indent = new string(' ', 4);
-            switch (node.Opcode.Opcode)
+            switch ((OpcodeV2)node.Opcode.Opcode)
             {
-                case Opcode.DoorAotSe:
-                case Opcode.DoorAotSet4p:
+                case OpcodeV2.DoorAotSe:
+                case OpcodeV2.DoorAotSet4p:
                     {
                         var door = (IDoorAotSetOpcode)node.Opcode;
                         _sb.Append($"{indent}Door #{door.Id}: {new RdtId(door.NextStage, door.NextRoom)} (0x{door.Offset:X2})");
@@ -201,14 +201,14 @@ namespace IntelOrca.Biohazard
                         _sb.AppendLine();
                         break;
                     }
-                case Opcode.ItemAotSet:
-                case Opcode.ItemAotSet4p:
+                case OpcodeV2.ItemAotSet:
+                case OpcodeV2.ItemAotSet4p:
                     var item = (ItemAotSetOpcode)node.Opcode;
                     _sb.Append($"{indent}Item #{item.Id}: {(ItemType)item.Type} x{item.Amount} (0x{item.Offset:X2})");
                     AppendConditions();
                     _sb.AppendLine();
                     break;
-                case Opcode.SceEmSet:
+                case OpcodeV2.SceEmSet:
                     var enemy = (SceEmSetOpcode)node.Opcode;
                     _sb.Append($"{indent}Enemy #{enemy.Id}: {enemy.Type} (0x{enemy.Offset:X2})");
                     AppendConditions();

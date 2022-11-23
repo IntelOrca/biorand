@@ -4,12 +4,9 @@ using IntelOrca.Biohazard.Opcodes;
 
 namespace IntelOrca.Biohazard
 {
-    [DebuggerDisplay("{Opcode}")]
+    [DebuggerDisplay("else")]
     internal class ElseCkOpcode : OpcodeBase
     {
-        public override Opcode Opcode => Opcode.ElseCk;
-        public override int Length => 4;
-
         public byte Id { get; set; }
         public byte Unk1 { get; set; }
         public ushort BlockLength { get; set; }
@@ -19,6 +16,9 @@ namespace IntelOrca.Biohazard
             return new ElseCkOpcode()
             {
                 Offset = offset,
+                Length = 4,
+
+                Opcode = br.ReadByte(),
                 Unk1 = br.ReadByte(),
                 BlockLength = br.ReadUInt16()
             };
@@ -26,7 +26,7 @@ namespace IntelOrca.Biohazard
 
         public override void Write(BinaryWriter bw)
         {
-            bw.Write((byte)Opcode);
+            bw.Write(Opcode);
             bw.Write(Unk1);
             bw.Write(BlockLength);
         }

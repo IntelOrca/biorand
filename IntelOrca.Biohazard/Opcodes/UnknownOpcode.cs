@@ -8,21 +8,20 @@ namespace IntelOrca.Biohazard.Opcodes
     {
         private byte[] _data;
 
-        public override Opcode Opcode => (Opcode)_data[0];
-        public override int Length => _data.Length;
-
-        public UnknownOpcode(int offset, byte[] data)
+        public UnknownOpcode(int offset, byte opcode, byte[] operands)
         {
             Offset = offset;
-            _data = data;
+            Length = 1 + operands.Length;
+
+            Opcode = opcode;
+            _data = operands;
         }
 
-        public static UnknownOpcode Read(BinaryReader br, Opcode opcode, int offset, int length)
+        public static UnknownOpcode Read(BinaryReader br, int offset, int length)
         {
-            var data = new byte[length];
-            data[0] = (byte)opcode;
-            br.Read(data, 1, length - 1);
-            return new UnknownOpcode(offset, data);
+            var opcode = br.ReadByte();
+            var data = br.ReadBytes(length - 1);
+            return new UnknownOpcode(offset, opcode, data);
         }
 
         public override void Write(BinaryWriter bw)
