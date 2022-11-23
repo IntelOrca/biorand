@@ -22,16 +22,15 @@ namespace IntelOrca.Biohazard.Script.Opcodes
         public ushort Animation { get; set; }
         public byte Unk15 { get; set; }
 
-        public byte Re1Unk0 { get; set; }
-        public byte Re1Unk1 { get; set; }
-        public byte Re1Unk2 { get; set; }
-        public byte Re1Unk3 { get; set; }
-        public byte Re1Unk4 { get; set; }
-        public byte Re1Unk5 { get; set; }
-        public byte Re1Unk6 { get; set; }
-        public byte Re1Unk7 { get; set; }
-        public byte Re1Unk8 { get; set; }
-        public byte Re1Unk9 { get; set; }
+        public byte Re1Unk04 { get; set; }
+        public byte Re1Unk05 { get; set; }
+        public byte Re1Unk06 { get; set; }
+        public byte Re1Unk07 { get; set; }
+        public byte Re1Unk0A { get; set; }
+        public byte Re1Unk0B { get; set; }
+        public byte Re1Unk13 { get; set; }
+        public byte Re1Unk14 { get; set; }
+        public byte Re1Unk15 { get; set; }
 
         public static SceEmSetOpcode Read(BinaryReader br, int offset)
         {
@@ -45,21 +44,21 @@ namespace IntelOrca.Biohazard.Script.Opcodes
                 op.Opcode = opcode;
                 op.Type = br.ReadByte();
                 op.State = br.ReadByte();
-                op.Re1Unk0 = br.ReadByte();
-                op.Re1Unk1 = br.ReadByte();
-                op.Re1Unk2 = br.ReadByte();
-                op.Re1Unk3 = br.ReadByte();
-                op.Re1Unk4 = br.ReadByte();
+                op.KillId = br.ReadByte();
+                op.Re1Unk04 = br.ReadByte();
+                op.Re1Unk05 = br.ReadByte();
+                op.Re1Unk06 = br.ReadByte();
+                op.Re1Unk07 = br.ReadByte();
                 op.D = br.ReadInt16();
-                op.Re1Unk5 = br.ReadByte();
-                op.Re1Unk6 = br.ReadByte();
+                op.Re1Unk0A = br.ReadByte();
+                op.Re1Unk0B = br.ReadByte();
                 op.X = br.ReadInt16();
                 op.Y = br.ReadInt16();
                 op.Z = br.ReadInt16();
                 op.Id = br.ReadByte();
-                op.Re1Unk7 = br.ReadByte();
-                op.Re1Unk8 = br.ReadByte();
-                op.Re1Unk9 = br.ReadByte();
+                op.Re1Unk13 = br.ReadByte();
+                op.Re1Unk14 = br.ReadByte();
+                op.Re1Unk15 = br.ReadByte();
                 return op;
             }
             else

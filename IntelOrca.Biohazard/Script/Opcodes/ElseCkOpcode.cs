@@ -12,15 +12,29 @@ namespace IntelOrca.Biohazard.Script.Opcodes
 
         public static ElseCkOpcode Read(BinaryReader br, int offset)
         {
-            return new ElseCkOpcode()
+            var opcode = br.ReadByte();
+            if ((OpcodeV1)opcode == OpcodeV1.ElseCk)
             {
-                Offset = offset,
-                Length = 4,
+                var op = new ElseCkOpcode();
+                op.Offset = offset;
+                op.Length = 2;
 
-                Opcode = br.ReadByte(),
-                Unk1 = br.ReadByte(),
-                BlockLength = br.ReadUInt16()
-            };
+                op.Opcode = opcode;
+                op.BlockLength = br.ReadByte();
+                return op;
+            }
+            else
+            {
+                return new ElseCkOpcode()
+                {
+                    Offset = offset,
+                    Length = 4,
+
+                    Opcode = opcode,
+                    Unk1 = br.ReadByte(),
+                    BlockLength = br.ReadUInt16()
+                };
+            }
         }
 
         public override void Write(BinaryWriter bw)

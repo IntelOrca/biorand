@@ -44,6 +44,9 @@ namespace IntelOrca.Biohazard.Script
                     default:
                         VisitUnknownOpcode(UnknownOpcode.Read(br, offset, length));
                         break;
+                    case OpcodeV1.ElseCk:
+                        VisitElseCk(ElseCkOpcode.Read(br, offset));
+                        break;
                     case OpcodeV1.DoorAotSe:
                         VisitDoorAotSe(DoorAotSeOpcode.Read(br, offset));
                         break;

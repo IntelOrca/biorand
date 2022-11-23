@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection.Emit;
 using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.Script
@@ -258,30 +259,55 @@ namespace IntelOrca.Biohazard.Script
 
         protected override void VisitDoorAotSe(DoorAotSeOpcode door)
         {
-            _sb.WriteStandardOpcode("door_aot_se",
-                door.Id,
-                GetSCE(door.SCE),
-                GetSAT(door.SAT),
-                door.Floor,
-                door.Super,
-                door.X,
-                door.Z,
-                door.W,
-                door.D,
-                door.NextX,
-                door.NextY,
-                door.NextZ,
-                door.NextD,
-                $"{door.NextStage:X}",
-                $"0x{door.NextRoom:X2}",
-                door.NextCamera,
-                door.NextFloor,
-                door.Texture,
-                door.Animation,
-                door.Sound,
-                door.LockId,
-                door.LockType,
-                door.Free);
+            if ((OpcodeV1)door.Opcode == OpcodeV1.DoorAotSe)
+            {
+                _sb.WriteStandardOpcode("door_aot_se",
+                    door.Id,
+                    door.X,
+                    door.Z,
+                    door.W,
+                    door.D,
+                    door.Re1UnkA,
+                    door.Re1UnkB,
+                    door.Animation,
+                    door.Re1UnkC,
+                    door.LockId,
+                    $"{door.NextStage:X}",
+                    $"0x{door.NextRoom:X2}",
+                    door.NextX,
+                    door.NextY,
+                    door.NextZ,
+                    door.NextD,
+                    GetLockConstant(door.LockType),
+                    door.Free);
+            }
+            else
+            {
+                _sb.WriteStandardOpcode("door_aot_se",
+                    door.Id,
+                    GetSCE(door.SCE),
+                    GetSAT(door.SAT),
+                    door.Floor,
+                    door.Super,
+                    door.X,
+                    door.Z,
+                    door.W,
+                    door.D,
+                    door.NextX,
+                    door.NextY,
+                    door.NextZ,
+                    door.NextD,
+                    $"{door.NextStage:X}",
+                    $"0x{door.NextRoom:X2}",
+                    door.NextCamera,
+                    door.NextFloor,
+                    door.Texture,
+                    door.Animation,
+                    door.Sound,
+                    door.LockId,
+                    GetLockConstant(door.LockType),
+                    door.Free);
+            }
         }
 
         protected override void VisitDoorAotSet4p(DoorAotSet4pOpcode door)
@@ -329,27 +355,53 @@ namespace IntelOrca.Biohazard.Script
 
         protected override void VisitSceEmSet(SceEmSetOpcode enemy)
         {
-            _sb.WriteStandardOpcode("sce_em_set", enemy.Id, GetEnemyConstant(enemy.Type),
-                enemy.State, enemy.Ai, enemy.Floor, enemy.SoundBank, enemy.Texture, enemy.KillId, enemy.X, enemy.Y, enemy.Z, enemy.D, enemy.Animation);
+            if ((OpcodeV1)enemy.Opcode == OpcodeV1.SceEmSet)
+            {
+                _sb.WriteStandardOpcode("sce_em_set",
+                    enemy.Id,
+                    GetEnemyConstant(enemy.Type),
+                    enemy.State,
+                    enemy.KillId,
+                    enemy.X, enemy.Y, enemy.Z, enemy.D);
+            }
+            else
+            {
+                _sb.WriteStandardOpcode("sce_em_set", enemy.Id, GetEnemyConstant(enemy.Type),
+                    enemy.State, enemy.Ai, enemy.Floor, enemy.SoundBank, enemy.Texture, enemy.KillId, enemy.X, enemy.Y, enemy.Z, enemy.D, enemy.Animation);
+            }
         }
 
         protected override void VisitItemAotSet(ItemAotSetOpcode item)
         {
-            _sb.WriteStandardOpcode("item_aot_set",
-                item.Id,
-                GetSCE(item.SCE),
-                GetSAT(item.SAT),
-                item.Floor,
-                item.Super,
-                item.X,
-                item.Y,
-                item.W,
-                item.H,
-                GetItemConstant(item.Type),
-                item.Amount,
-                item.Array8Idx,
-                item.MD1,
-                item.Action);
+            if ((OpcodeV1)item.Opcode == OpcodeV1.ItemAotSet)
+            {
+                _sb.WriteStandardOpcode("item_aot_set",
+                    item.Id,
+                    item.X,
+                    item.Y,
+                    item.W,
+                    item.H,
+                    GetItemConstant(item.Type),
+                    item.Amount);
+            }
+            else
+            {
+                _sb.WriteStandardOpcode("item_aot_set",
+                    item.Id,
+                    GetSCE(item.SCE),
+                    GetSAT(item.SAT),
+                    item.Floor,
+                    item.Super,
+                    item.X,
+                    item.Y,
+                    item.W,
+                    item.H,
+                    GetItemConstant(item.Type),
+                    item.Amount,
+                    item.Array8Idx,
+                    item.MD1,
+                    item.Action);
+            }
         }
 
         protected override void VisitItemAotSet4p(ItemAotSet4pOpcode item)
@@ -545,12 +597,6 @@ namespace IntelOrca.Biohazard.Script
                     {
                         var id = br.ReadByte();
                         sb.WriteStandardOpcode("item_12", id, "...");
-                        break;
-                    }
-                case OpcodeV1.ObjModelSet:
-                    {
-                        var id = br.ReadByte();
-                        sb.WriteStandardOpcode("obj_model_set", id, "...");
                         break;
                     }
                 case OpcodeV1.OmSet:
@@ -1199,6 +1245,17 @@ namespace IntelOrca.Biohazard.Script
         private string GetItemConstant(ushort item)
         {
             return _constantTable.GetItemName((byte)item);
+        }
+
+        private string GetLockConstant(byte item)
+        {
+            if (item == 255)
+                return "LOCKED";
+            else if (item == 254)
+                return "UNLOCK";
+            else if (item == 0)
+                return "UNLOCKED";
+            return GetItemConstant(item);
         }
 
         private static string GetVariableName(int id)
