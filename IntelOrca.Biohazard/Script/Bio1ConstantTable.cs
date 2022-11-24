@@ -41,7 +41,7 @@
             "Tyrant 1",
             "Yawn 1",
             "Plant42 (roots)",
-            "Plant42 (vine)",
+            "Fountain Plant",
             "Tyrant 2",
             "Zombie (Researcher)",
             "Yawn 2",

@@ -1,8 +1,8 @@
 {
   "beginEndRooms": [
     {
-      "start": "100",
-      "end": "103"
+      "start": "106",
+      "end": "11C"
     }
   ],
   "rooms": {
@@ -19,7 +19,8 @@
           "target": "100"
         },
         {
-          "target": "102"
+          "target": "102",
+          "requires": [ 52 ]
         },
         {
           "target": "103"
@@ -43,6 +44,335 @@
       "doors": [
         {
           "target": "101"
+        },
+        {
+          "target": "104"
+        },
+        {
+          "target": "10C"
+        },
+        {
+          "target": "10D"
+        },
+        {
+          "target": "10E",
+          "requires": [ 51 ]
+        }
+      ]
+    },
+    "104": {
+      "doors": [
+        {
+          "target": "103",
+          "lock": "side"
+        },
+        {
+          "target": "105"
+        },
+        {
+          "target": "10F",
+          "requires": [ 51 ]
+        },
+        {
+          "target": "110",
+          "lock": "side"
+        }
+      ]
+    },
+    "105": {
+      "doors": [
+        {
+          "target": "104"
+        },
+        {
+          "target": "106"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "requires": [ 32 ]
+        }
+      ]
+    },
+    "106": {
+      "doors": [
+        {
+          "target": "105"
+        },
+        {
+          "target": "107"
+        },
+        {
+          "target": "111",
+          "requires": [ 52 ]
+        },
+        {
+          "target": "203"
+        }
+      ]
+    },
+    "107": {
+      "doors": [
+        {
+          "target": "106"
+        },
+        {
+          "target": "108",
+          "requires": [ 51 ]
+        }
+      ]
+    },
+    "108": {
+      "doors": [
+        {
+          "target": "107"
+        },
+        {
+          "target": "109"
+        }
+      ]
+    },
+    "109": {
+      "doors": [
+        {
+          "target": "108"
+        },
+        {
+          "target": "10A"
+        },
+        {
+          "target": "114",
+          "requires": [ 52 ]
+        },
+        {
+          "target": "113"
+        },
+        {
+          "target": "115"
+        }
+      ]
+    },
+    "10A": {
+      "doors": [
+        {
+          "target": "109"
+        },
+        {
+          "target": "10B"
+        },
+        {
+          "target": "117"
+        },
+        {
+          "target": "119",
+          "requires": [ 54 ]
+        },
+        {
+          "target": "11A"
+        }
+      ]
+    },
+    "10B": {
+      "doors": [
+        {
+          "target": "107"
+        },
+        {
+          "target": "10A",
+          "lock": "side"
+        },
+        {
+          "target": "118"
+        }
+      ]
+    },
+    "10C": {
+      "doors": [
+        {
+          "target": "103"
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "requires": [ 38 ]
+        },
+        {
+          "id": 5,
+          "requires": [ 38 ]
+        },
+        {
+          "id": 6,
+          "requires": [ 38 ]
+        },
+        {
+          "id": 7,
+          "requires": [ 38 ]
+        },
+        {
+          "id": 8,
+          "requires": [ 38 ]
+        },
+        {
+          "id": 9,
+          "requires": [ 38 ]
+        },
+        {
+          "id": 10,
+          "requires": [ 38 ]
+        }
+      ]
+    },
+    "10D": {
+      "doors": [
+        {
+          "target": "103"
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "requires": [ 34 ]
+        },
+        {
+          "id": 131,
+          "requires": [ 33 ]
+        }
+      ]
+    },
+    "10E": {
+      "doors": [
+        {
+          "target": "103"
+        }
+      ]
+    },
+    "10F": {
+      "doors": [
+        {
+          "target": "104"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "type": 0
+        },
+        {
+          "id": 4,
+          "type": 32,
+          "priority": "fixed",
+          "requires": [ 35 ]
+        }
+      ]
+    },
+    "111": {
+      "doors": [
+        {
+          "target": "106"
+        },
+        {
+          "target": "112"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "requires": [ 61 ]
+        }
+      ]
+    },
+    "112": {
+      "doors": [
+        {
+          "target": "111"
+        },
+        {
+          "target": "11C",
+          "requires": [ 56 ]
+        }
+      ]
+    },
+    "113": {
+      "doors": [
+        {
+          "target": "109"
+        }
+      ]
+    },
+    "114": {
+      "doors": [
+        {
+          "target": "109"
+        }
+      ]
+    },
+    "115": {
+      "doors": [
+        {
+          "target": "109"
+        },
+        {
+          "target": "116"
+        }
+      ]
+    },
+    "116": {
+      "doors": [
+        {
+          "target": "115"
+        }
+      ],
+      "items": [
+        {
+          "id": 1,
+          "requires": [ 28 ]
+        },
+        {
+          "id": 2,
+          "type": 0
+        }
+      ]
+    },
+    "117": {
+      "doors": [
+        {
+          "target": "10A"
+        }
+      ]
+    },
+    "118": {
+      "doors": [
+        {
+          "target": "10B"
+        }
+      ]
+    },
+    "11A": {
+      "doors": [
+        {
+          "target": "10A"
+        },
+        {
+          "target": "11B"
+        }
+      ]
+    },
+    "11B": {
+      "doors": [
+        {
+          "target": "11A"
+        },
+        {
+          "target": "300"
+        }
+      ]
+    },
+    "11C": {
+      "doors": [
+        {
+          "target": "112"
         }
       ]
     }
