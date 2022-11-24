@@ -447,13 +447,13 @@ namespace IntelOrca.Biohazard
             {
                 if (_rng.Next(0, 3) >= 1)
                     items.Add(ItemType.HandgunParts);
-                if (_rng.Next(0, 2) >= 1)
+                if (_config.EnemyDifficulty >= 2 || _rng.Next(0, 2) >= 1)
                 {
                     items.Add(ItemType.Shotgun);
                     if (_rng.Next(0, 2) >= 1)
                         items.Add(ItemType.ShotgunParts);
                 }
-                if (_rng.Next(0, 3) >= 1)
+                if (_config.EnemyDifficulty >= 3 || _rng.Next(0, 3) >= 1)
                 {
                     items.Add(ItemType.Magnum);
                     if (_rng.Next(0, 2) >= 1)
@@ -466,9 +466,9 @@ namespace IntelOrca.Biohazard
             }
             else
             {
-                if (_rng.Next(0, 3) >= 1)
+                if (_config.EnemyDifficulty >= 2 || _rng.Next(0, 3) >= 1)
                     items.Add(ItemType.Bowgun);
-                if (_rng.Next(0, 3) >= 1)
+                if (_config.EnemyDifficulty >= 3 || _rng.Next(0, 3) >= 1)
                     items.Add(_rng.NextOf(ItemType.GrenadeLauncherExplosive, ItemType.GrenadeLauncherFlame, ItemType.GrenadeLauncherAcid));
                 if (_rng.Next(0, 2) == 0)
                     items.Add(ItemType.SMG);
@@ -501,11 +501,11 @@ namespace IntelOrca.Biohazard
             table.Add(ItemType.FAidSpray, health * 0.1);
 
             if (ammoTypes.Contains(ItemType.HandgunAmmo))
-                table.Add(ItemType.HandgunAmmo, ammo * 0.4);
+                table.Add(ItemType.HandgunAmmo, ammo * 0.3);
             if (ammoTypes.Contains(ItemType.ShotgunAmmo))
                 table.Add(ItemType.ShotgunAmmo, ammo * 0.2);
             if (ammoTypes.Contains(ItemType.BowgunAmmo))
-                table.Add(ItemType.BowgunAmmo, ammo * 0.1);
+                table.Add(ItemType.BowgunAmmo, ammo * 0.2);
             if (ammoTypes.Contains(ItemType.MagnumAmmo))
                 table.Add(ItemType.MagnumAmmo, ammo * 0.1);
             if (ammoTypes.Contains(ItemType.ExplosiveRounds) ||
