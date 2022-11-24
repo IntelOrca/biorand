@@ -31,8 +31,6 @@ namespace IntelOrca.Biohazard.Script.Opcodes
             var opcode = br.ReadByte();
             if ((OpcodeV1)opcode == OpcodeV1.ItemAotSet)
             {
-                // 18 NN XX XX ZZ ZZ ?? ?? ?? ?? HH VV ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? TA ??
-                // 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F 10 11 12 13 14 15 16 17 18 19
                 var op = new ItemAotSetOpcode();
                 op.Offset = offset;
                 op.Length = 26;
@@ -79,21 +77,39 @@ namespace IntelOrca.Biohazard.Script.Opcodes
 
         public override void Write(BinaryWriter bw)
         {
-            bw.Write(Opcode);
-            bw.Write(Id);
-            bw.Write(SCE);
-            bw.Write(SAT);
-            bw.Write(Floor);
-            bw.Write(Super);
-            bw.Write(X);
-            bw.Write(Y);
-            bw.Write(W);
-            bw.Write(H);
-            bw.Write(Type);
-            bw.Write(Amount);
-            bw.Write(Array8Idx);
-            bw.Write(MD1);
-            bw.Write(Action);
+            if ((OpcodeV1)Opcode == OpcodeV1.ItemAotSet)
+            {
+                bw.Write(Opcode);
+                bw.Write(Id);
+                bw.Write(X);
+                bw.Write(Y);
+                bw.Write(W);
+                bw.Write(H);
+                bw.Write((byte)Type);
+                bw.Write((byte)Amount);
+                bw.Write(Re1Unk0C);
+                bw.Write(Re1Unk14);
+                bw.Write(TakeAnimation);
+                bw.Write(Re1Unk19);
+            }
+            else
+            {
+                bw.Write(Opcode);
+                bw.Write(Id);
+                bw.Write(SCE);
+                bw.Write(SAT);
+                bw.Write(Floor);
+                bw.Write(Super);
+                bw.Write(X);
+                bw.Write(Y);
+                bw.Write(W);
+                bw.Write(H);
+                bw.Write(Type);
+                bw.Write(Amount);
+                bw.Write(Array8Idx);
+                bw.Write(MD1);
+                bw.Write(Action);
+            }
         }
     }
 }

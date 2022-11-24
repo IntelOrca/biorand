@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace IntelOrca.Biohazard
 {
-    internal class Rng
+    public class Rng
     {
         private readonly Random _random;
 

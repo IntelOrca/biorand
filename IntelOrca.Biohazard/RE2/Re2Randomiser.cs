@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.RE2
 {
     public class Re2Randomiser : BaseRandomiser
     {
         protected override BioVersion BiohazardVersion => BioVersion.Biohazard2;
+        protected override IItemHelper ItemHelper { get; } = new Re2ItemHelper();
 
         protected override string GetPlayerName(int player) => player == 0 ? "Leon" : "Claire";
 

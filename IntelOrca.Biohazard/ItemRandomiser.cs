@@ -6,9 +6,14 @@ namespace IntelOrca.Biohazard
 {
     internal class ItemRandomiser
     {
+        private static bool g_debugLogging = false;
+
         private readonly RandoLogger _logger;
         private RandoConfig _config;
         private GameData _gameData;
+        private Rng _rng;
+        private IItemHelper _itemHelper;
+
         private PlayNode[] _nodes = new PlayNode[0];
         private List<ItemPoolEntry> _currentPool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _shufflePool = new List<ItemPoolEntry>();
@@ -18,15 +23,14 @@ namespace IntelOrca.Biohazard
         private HashSet<ushort> _haveItems = new HashSet<ushort>();
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
         private HashSet<RdtItemId> _visitedItems = new HashSet<RdtItemId>();
-        private Rng _rng;
-        private bool _debugLogging = false;
 
-        public ItemRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng random)
+        public ItemRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Rng random, IItemHelper itemHelper)
         {
             _logger = logger;
             _config = config;
             _gameData = gameData;
             _rng = random;
+            _itemHelper = itemHelper;
         }
 
         public void RandomiseItems(PlayGraph graph)
@@ -130,7 +134,7 @@ namespace IntelOrca.Biohazard
                         _linkedItems.Add((new RdtItemId(node.RdtId, linkedItem.Key), linkedItem.Value));
                     }
 
-                    if (_debugLogging && node.Items.Length != 0)
+                    if (g_debugLogging && node.Items.Length != 0)
                     {
                         _logger.WriteLine($"    Room {node.RdtId} contains:");
                         foreach (var item in node.Items)
@@ -160,7 +164,7 @@ namespace IntelOrca.Biohazard
                             if (!_visitedRooms.Contains(edge.Node))
                             {
                                 checkpoint = edge.Node;
-                                if (_debugLogging)
+                                if (g_debugLogging)
                                 {
                                     _logger.WriteLine($"        {node} -> {edge.Node} (checkpoint)");
                                 }
@@ -168,7 +172,7 @@ namespace IntelOrca.Biohazard
                         }
                         else
                         {
-                            if (_debugLogging)
+                            if (g_debugLogging)
                             {
                                 _logger.WriteLine($"        {node} -> {edge.Node}");
                             }
@@ -342,7 +346,7 @@ namespace IntelOrca.Biohazard
                     if (t != null)
                     {
                         var (futureNode, itemIndex) = t.Value;
-                        if (_debugLogging)
+                        if (g_debugLogging)
                         {
                             _logger.WriteLine($"        Found key as future item ({futureNode.Items[itemIndex]})");
                         }
@@ -427,7 +431,7 @@ namespace IntelOrca.Biohazard
             if (_visitedItems.Add(item.RdtItemId))
             {
                 _currentPool.Add(item);
-                if (_debugLogging)
+                if (g_debugLogging)
                     _logger.WriteLine($"    Add {item} to current pool");
             }
 
@@ -454,50 +458,17 @@ namespace IntelOrca.Biohazard
             _shufflePool.Clear();
 
             // Weapons first
-            var ammoTypes = new HashSet<ItemType>() { ItemType.HandgunAmmo };
-            var items = new List<ItemType>();
-            if (_config.Player == 0)
-            {
-                if (_rng.Next(0, 3) >= 1)
-                    items.Add(ItemType.HandgunParts);
-                if (_config.EnemyDifficulty >= 2 || _rng.Next(0, 2) >= 1)
-                {
-                    items.Add(ItemType.Shotgun);
-                    if (_rng.Next(0, 2) >= 1)
-                        items.Add(ItemType.ShotgunParts);
-                }
-                if (_config.EnemyDifficulty >= 3 || _rng.Next(0, 3) >= 1)
-                {
-                    items.Add(ItemType.Magnum);
-                    if (_rng.Next(0, 2) >= 1)
-                        items.Add(ItemType.MagnumParts);
-                }
-                if (_rng.Next(0, 2) == 0)
-                    items.Add(ItemType.SMG);
-                if (_rng.Next(0, 2) == 0)
-                    items.Add(ItemType.Flamethrower);
-            }
-            else
-            {
-                if (_config.EnemyDifficulty >= 2 || _rng.Next(0, 3) >= 1)
-                    items.Add(ItemType.Bowgun);
-                if (_config.EnemyDifficulty >= 3 || _rng.Next(0, 3) >= 1)
-                    items.Add(_rng.NextOf(ItemType.GrenadeLauncherExplosive, ItemType.GrenadeLauncherFlame, ItemType.GrenadeLauncherAcid));
-                if (_rng.Next(0, 2) == 0)
-                    items.Add(ItemType.SMG);
-                if (_rng.Next(0, 2) == 0)
-                    items.Add(ItemType.Sparkshot);
-                if (_rng.Next(0, 2) == 0)
-                    items.Add(ItemType.ColtSAA);
-            }
-            if (_rng.Next(0, 2) == 0)
-                items.Add(ItemType.RocketLauncher);
+            var ammoTypes = new HashSet<byte>() { _itemHelper.GetItemId(CommonItemKind.HandgunAmmo) };
+            var items = _itemHelper.GetWeapons(_rng, _config);
             foreach (var itemType in items)
             {
-                var ammoType = GetAmmoTypeForWeapon(itemType);
-                var amount = GetRandomAmount(ammoType);
-                SpawnItem(shuffled, itemType, amount);
-                ammoTypes.Add(ammoType);
+                var weaponAmmoTypes = _itemHelper.GetAmmoTypeForWeapon(itemType);
+                foreach (var ammoType in weaponAmmoTypes)
+                {
+                    var amount = GetRandomAmount(ammoType);
+                    SpawnItem(shuffled, itemType, amount);
+                    ammoTypes.Add(ammoType);
+                }
             }
 
             // Now everything else
@@ -505,36 +476,18 @@ namespace IntelOrca.Biohazard
             double health = _config.RatioHealth / 32.0;
             double ink = _config.RatioInkRibbons / 32.0;
 
-            var table = _rng.CreateProbabilityTable<ItemType>();
-            table.Add(ItemType.InkRibbon, ink);
+            var table = _rng.CreateProbabilityTable<byte>();
+            table.Add(_itemHelper.GetItemId(CommonItemKind.InkRibbon), ink);
+            table.Add(_itemHelper.GetItemId(CommonItemKind.GreenHerb), health * 0.5);
+            table.Add(_itemHelper.GetItemId(CommonItemKind.RedHerb), health * 0.3);
+            table.Add(_itemHelper.GetItemId(CommonItemKind.BlueHerb), health * 0.1);
+            table.Add(_itemHelper.GetItemId(CommonItemKind.FirstAid), health * 0.1);
 
-            table.Add(ItemType.HerbG, health * 0.5);
-            table.Add(ItemType.HerbR, health * 0.3);
-            table.Add(ItemType.HerbB, health * 0.1);
-            table.Add(ItemType.FAidSpray, health * 0.1);
-
-            if (ammoTypes.Contains(ItemType.HandgunAmmo))
-                table.Add(ItemType.HandgunAmmo, ammo * 0.3);
-            if (ammoTypes.Contains(ItemType.ShotgunAmmo))
-                table.Add(ItemType.ShotgunAmmo, ammo * 0.2);
-            if (ammoTypes.Contains(ItemType.BowgunAmmo))
-                table.Add(ItemType.BowgunAmmo, ammo * 0.2);
-            if (ammoTypes.Contains(ItemType.MagnumAmmo))
-                table.Add(ItemType.MagnumAmmo, ammo * 0.1);
-            if (ammoTypes.Contains(ItemType.ExplosiveRounds) ||
-                ammoTypes.Contains(ItemType.FlameRounds) ||
-                ammoTypes.Contains(ItemType.AcidRounds))
+            foreach (var ammoType in ammoTypes)
             {
-                table.Add(ItemType.ExplosiveRounds, ammo * 0.1);
-                table.Add(ItemType.AcidRounds, ammo * 0.1);
-                table.Add(ItemType.FlameRounds, ammo * 0.1);
+                var probability = _itemHelper.GetItemProbability(ammoType);
+                table.Add(ammoType, ammo * probability);
             }
-            if (ammoTypes.Contains(ItemType.FuelTank))
-                table.Add(ItemType.FuelTank, ammo * 0.1);
-            if (ammoTypes.Contains(ItemType.SparkshotAmmo))
-                table.Add(ItemType.SparkshotAmmo, ammo * 0.1);
-            if (ammoTypes.Contains(ItemType.SMGAmmo))
-                table.Add(ItemType.SMGAmmo, ammo * 0.1);
 
             bool successful;
             do
@@ -544,13 +497,13 @@ namespace IntelOrca.Biohazard
             } while (successful);
         }
 
-        private bool SpawnItem(Queue<ItemPoolEntry> pool, ItemType itemType, byte amount)
+        private bool SpawnItem(Queue<ItemPoolEntry> pool, byte itemType, byte amount)
         {
             if (pool.Count != 0)
             {
                 var oldEntry = pool.Dequeue();
                 var newEntry = oldEntry;
-                newEntry.Type = (byte)itemType;
+                newEntry.Type = itemType;
                 newEntry.Amount = amount;
                 _logger.WriteLine($"    Replaced {oldEntry} with {newEntry}");
                 if (_definedPool.Any(x => x.RdtItemId == newEntry.RdtItemId))
@@ -564,68 +517,16 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private ItemType GetAmmoTypeForWeapon(ItemType type)
+        private byte GetRandomAmount(byte type)
         {
-            switch (type)
+            if (type == _itemHelper.GetItemId(CommonItemKind.InkRibbon))
             {
-                case ItemType.HandgunLeon:
-                case ItemType.HandgunClaire:
-                case ItemType.CustomHandgun:
-                case ItemType.ColtSAA:
-                case ItemType.Beretta:
-                    return ItemType.HandgunAmmo;
-                case ItemType.Shotgun:
-                    return ItemType.ShotgunAmmo;
-                case ItemType.Magnum:
-                case ItemType.CustomMagnum:
-                    return ItemType.MagnumAmmo;
-                case ItemType.Bowgun:
-                    return ItemType.BowgunAmmo;
-                case ItemType.Sparkshot:
-                    return ItemType.SparkshotAmmo;
-                case ItemType.Flamethrower:
-                    return ItemType.FuelTank;
-                case ItemType.SMG:
-                    return ItemType.SMGAmmo;
-                case ItemType.GrenadeLauncherFlame:
-                    return ItemType.FlameRounds;
-                case ItemType.GrenadeLauncherExplosive:
-                    return ItemType.ExplosiveRounds;
-                case ItemType.GrenadeLauncherAcid:
-                    return ItemType.AcidRounds;
-                default:
-                    return type;
+                return (byte)_rng.Next(1, 3);
             }
-        }
 
-        private byte GetRandomAmount(ItemType type)
-        {
             var multiplier = _config.AmmoQuantity / 8.0;
-            switch (type)
-            {
-                default:
-                    return 1;
-                case ItemType.InkRibbon:
-                    return (byte)_rng.Next(1, 3);
-                case ItemType.HandgunAmmo:
-                    return (byte)_rng.Next(1, (int)(60 * multiplier));
-                case ItemType.ShotgunAmmo:
-                    return (byte)_rng.Next(1, (int)(30 * multiplier));
-                case ItemType.BowgunAmmo:
-                    return (byte)_rng.Next(1, (int)(30 * multiplier));
-                case ItemType.MagnumAmmo:
-                    return (byte)_rng.Next(1, (int)(10 * multiplier));
-                case ItemType.ExplosiveRounds:
-                case ItemType.AcidRounds:
-                case ItemType.FlameRounds:
-                    return (byte)_rng.Next(1, (int)(10 * multiplier));
-                case ItemType.FuelTank:
-                case ItemType.SparkshotAmmo:
-                case ItemType.SMGAmmo:
-                    return (byte)_rng.Next(1, (int)(100 * multiplier));
-                case ItemType.RocketLauncher:
-                    return (byte)_rng.Next(1, (int)(5 * multiplier));
-            }
+            var max = _itemHelper.GetMaxAmmoForAmmoType(type);
+            return (byte)_rng.Next(1, (int)(max * multiplier));
         }
 
         private void ShuffleRemainingPool()

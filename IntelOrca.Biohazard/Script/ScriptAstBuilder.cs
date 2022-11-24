@@ -22,8 +22,6 @@ namespace IntelOrca.Biohazard.Script
         public override void VisitBeginScript(BioScriptKind kind)
         {
             _subroutines.Clear();
-            if (_version == BioVersion.Biohazard1)
-                PushBasicBlock();
         }
 
         public override void VisitBeginSubroutine(int index)
@@ -148,7 +146,7 @@ namespace IntelOrca.Biohazard.Script
 
         public override void VisitEndScript(BioScriptKind kind)
         {
-            var node = new ScriptAstNode(_subroutines.ToArray());
+            var node = new ScriptAstNode(_version, _subroutines.ToArray());
             if (kind == BioScriptKind.Init)
             {
                 Ast.Init = node;
@@ -270,10 +268,12 @@ namespace IntelOrca.Biohazard.Script
 
     internal class ScriptAstNode : IScriptAstNode
     {
+        public BioVersion Version { get; }
         public SubroutineAstNode[] Subroutines { get; } = new SubroutineAstNode[0];
 
-        public ScriptAstNode(SubroutineAstNode[] subroutines)
+        public ScriptAstNode(BioVersion version, SubroutineAstNode[] subroutines)
         {
+            Version = version;
             Subroutines = subroutines;
         }
 

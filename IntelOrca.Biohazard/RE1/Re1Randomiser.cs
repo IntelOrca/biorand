@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.RE1
 {
     public class Re1Randomiser : BaseRandomiser
     {
         protected override BioVersion BiohazardVersion => BioVersion.Biohazard1;
+        protected override IItemHelper ItemHelper { get; } = new Re1ItemHelper();
 
         protected override string GetPlayerName(int player) => player == 0 ? "Chris" : "Jill";
 
@@ -53,6 +53,7 @@ namespace IntelOrca.Biohazard
             return rdtIds
                 .OrderBy(x => x.Stage)
                 .ThenBy(x => x.Room)
+                .Take(10)
                 .ToArray();
         }
 
@@ -79,7 +80,15 @@ namespace IntelOrca.Biohazard
 
         protected override string GetJsonMap()
         {
-            throw new NotImplementedException();
+#if DEBUG
+            var jsonPath = Path.Combine(
+                Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
+                @"..\..\..\..\IntelOrca.BioHazard\data\re1\re1_rdt.json");
+            var jsonMap = File.ReadAllText(jsonPath);
+#else
+            var jsonMap = Resources.re1_rdt;
+#endif
+            return jsonMap;
         }
 
         private static string GetBgmJson()

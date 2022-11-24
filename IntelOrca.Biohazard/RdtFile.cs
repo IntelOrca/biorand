@@ -85,6 +85,7 @@ namespace IntelOrca.Biohazard
             var scriptEnd = scriptOffset + br.ReadUInt16();
 
             visitor.VisitBeginScript(kind);
+            visitor.VisitBeginSubroutine(0);
             try
             {
                 while (stream.Position < scriptEnd)
@@ -104,6 +105,7 @@ namespace IntelOrca.Biohazard
             catch (Exception ex)
             {
             }
+            visitor.VisitEndSubroutine(0);
             visitor.VisitEndScript(kind);
         }
 
