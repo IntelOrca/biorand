@@ -26,6 +26,7 @@ namespace IntelOrca.Biohazard.Script.Opcodes
 
         public override void Write(BinaryWriter bw)
         {
+            bw.Write(Opcode);
             bw.Write(_data);
         }
 

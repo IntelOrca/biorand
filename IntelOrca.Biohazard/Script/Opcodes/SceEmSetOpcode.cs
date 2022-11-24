@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using System.Reflection.Emit;
 
 namespace IntelOrca.Biohazard.Script.Opcodes
 {
@@ -90,22 +91,46 @@ namespace IntelOrca.Biohazard.Script.Opcodes
 
         public override void Write(BinaryWriter bw)
         {
-            bw.Write(Opcode);
-            bw.Write(Unk01);
-            bw.Write(Id);
-            bw.Write(Type);
-            bw.Write(State);
-            bw.Write(Ai);
-            bw.Write(Floor);
-            bw.Write(SoundBank);
-            bw.Write(Texture);
-            bw.Write(KillId);
-            bw.Write(X);
-            bw.Write(Y);
-            bw.Write(Z);
-            bw.Write(D);
-            bw.Write(Animation);
-            bw.Write(Unk15);
+            if ((OpcodeV1)Opcode == OpcodeV1.SceEmSet)
+            {
+                bw.Write(Opcode);
+                bw.Write(Type);
+                bw.Write(State);
+                bw.Write(KillId);
+                bw.Write(Re1Unk04);
+                bw.Write(Re1Unk05);
+                bw.Write(Re1Unk06);
+                bw.Write(Re1Unk07);
+                bw.Write(D);
+                bw.Write(Re1Unk0A);
+                bw.Write(Re1Unk0B);
+                bw.Write(X);
+                bw.Write(Y);
+                bw.Write(Z);
+                bw.Write(Id);
+                bw.Write(Re1Unk13);
+                bw.Write(Re1Unk14);
+                bw.Write(Re1Unk15);
+            }
+            else
+            {
+                bw.Write(Opcode);
+                bw.Write(Unk01);
+                bw.Write(Id);
+                bw.Write(Type);
+                bw.Write(State);
+                bw.Write(Ai);
+                bw.Write(Floor);
+                bw.Write(SoundBank);
+                bw.Write(Texture);
+                bw.Write(KillId);
+                bw.Write(X);
+                bw.Write(Y);
+                bw.Write(Z);
+                bw.Write(D);
+                bw.Write(Animation);
+                bw.Write(Unk15);
+            }
         }
     }
 }

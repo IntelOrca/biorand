@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using IntelOrca.Biohazard.RE1;
 using Microsoft.Win32;
 
 namespace IntelOrca.Biohazard.BioRand

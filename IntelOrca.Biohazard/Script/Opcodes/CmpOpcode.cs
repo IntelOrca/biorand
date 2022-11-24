@@ -45,11 +45,21 @@ namespace IntelOrca.Biohazard.Script.Opcodes
 
         public override void Write(BinaryWriter bw)
         {
-            bw.Write(Opcode);
-            bw.Write(Unknown1);
-            bw.Write(Flag);
-            bw.Write(Operator);
-            bw.Write(Value);
+            if ((OpcodeV1)Opcode == OpcodeV1.Cmp6)
+            {
+                bw.Write(Opcode);
+                bw.Write(Flag);
+                bw.Write(Operator);
+                bw.Write(Value);
+            }
+            else
+            {
+                bw.Write(Opcode);
+                bw.Write(Unknown1);
+                bw.Write(Flag);
+                bw.Write(Operator);
+                bw.Write(Value);
+            }
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
 
@@ -10,13 +9,13 @@ namespace IntelOrca.Biohazard
     public abstract class BaseRandomiser
     {
         protected abstract BioVersion BiohazardVersion { get; }
+        protected abstract IItemHelper ItemHelper { get; }
 
         public abstract bool ValidateGamePath(string path);
 
         protected abstract string GetDataPath(string installPath);
         protected abstract RdtId[] GetRdtIds(string dataPath);
         protected abstract string GetRdtPath(string dataPath, RdtId rdtId, int player);
-
         protected virtual Dictionary<RdtId, ulong>? GetRdtChecksums(int player) => null;
 
         public int DoIntegrityCheck(string installPath)
@@ -64,7 +63,7 @@ namespace IntelOrca.Biohazard
         private GameData ReadGameData(string dataPath, string modDataPath, int player, RdtId[] rdtIds)
         {
             var rdts = new List<Rdt>();
-            foreach (var rdtId in rdtIds.Take(10))
+            foreach (var rdtId in rdtIds)
             {
                 var rdtPath = GetRdtPath(dataPath, rdtId, player);
                 var modRdtPath = GetRdtPath(modDataPath, rdtId, player);
@@ -136,13 +135,12 @@ namespace IntelOrca.Biohazard
                 DumpScripts(gameData, Path.Combine(modPath, $"scripts_pl{config.Player}"));
 #endif
 
-                return;
                 var map = GetMap();
                 if (config.RandomDoors || config.RandomItems)
                 {
                     var dgmlPath = Path.Combine(modPath, $"graph_pl{config.Player}.dgml");
                     var doorRando = new DoorRandomiser(logger, config, gameData, map, randomDoors);
-                    var itemRando = new ItemRandomiser(logger, config, gameData, map, randomItems);
+                    var itemRando = new ItemRandomiser(logger, config, gameData, randomItems, ItemHelper);
                     var graph = config.RandomDoors ?
                         doorRando.CreateRandomGraph() :
                         doorRando.CreateOriginalGraph();

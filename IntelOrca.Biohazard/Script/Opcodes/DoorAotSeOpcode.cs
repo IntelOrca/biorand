@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using System.Reflection.Emit;
 
 namespace IntelOrca.Biohazard.Script.Opcodes
 {
@@ -114,30 +115,54 @@ namespace IntelOrca.Biohazard.Script.Opcodes
 
         public override void Write(BinaryWriter bw)
         {
-            bw.Write(Opcode);
-            bw.Write(Id);
-            bw.Write(SCE);
-            bw.Write(SAT);
-            bw.Write(Floor);
-            bw.Write(Super);
-            bw.Write(X);
-            bw.Write(Z);
-            bw.Write(W);
-            bw.Write(D);
-            bw.Write(NextX);
-            bw.Write(NextY);
-            bw.Write(NextZ);
-            bw.Write(NextD);
-            bw.Write(NextStage);
-            bw.Write(NextRoom);
-            bw.Write(NextCamera);
-            bw.Write(NextFloor);
-            bw.Write(Texture);
-            bw.Write(Animation);
-            bw.Write(Sound);
-            bw.Write(LockId);
-            bw.Write(LockType);
-            bw.Write(Free);
+            if ((OpcodeV1)Opcode == OpcodeV1.DoorAotSe)
+            {
+                bw.Write(Opcode);
+                bw.Write(Id);
+                bw.Write(X);
+                bw.Write(Z);
+                bw.Write(W);
+                bw.Write(D);
+                bw.Write(Re1UnkA);
+                bw.Write(Re1UnkB);
+                bw.Write(Animation);
+                bw.Write(Re1UnkC);
+                bw.Write(LockId);
+                bw.Write((byte)((NextStage << 5) | (NextRoom & 0b11111)));
+                bw.Write(NextX);
+                bw.Write(NextY);
+                bw.Write(NextZ);
+                bw.Write(NextD);
+                bw.Write(LockType);
+                bw.Write(Free);
+            }
+            else
+            {
+                bw.Write(Opcode);
+                bw.Write(Id);
+                bw.Write(SCE);
+                bw.Write(SAT);
+                bw.Write(Floor);
+                bw.Write(Super);
+                bw.Write(X);
+                bw.Write(Z);
+                bw.Write(W);
+                bw.Write(D);
+                bw.Write(NextX);
+                bw.Write(NextY);
+                bw.Write(NextZ);
+                bw.Write(NextD);
+                bw.Write(NextStage);
+                bw.Write(NextRoom);
+                bw.Write(NextCamera);
+                bw.Write(NextFloor);
+                bw.Write(Texture);
+                bw.Write(Animation);
+                bw.Write(Sound);
+                bw.Write(LockId);
+                bw.Write(LockType);
+                bw.Write(Free);
+            }
         }
     }
 }

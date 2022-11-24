@@ -94,6 +94,9 @@ namespace IntelOrca.Biohazard.Script
 
         public override void VisitOpcode(OpcodeAstNode node)
         {
+            if (_scriptNode.Version == BioVersion.Biohazard1)
+                return;
+
             if ((OpcodeV2)node.Opcode.Opcode == OpcodeV2.Gosub)
             {
                 VisitSubroutine(((GosubOpcode)node.Opcode).Index);
