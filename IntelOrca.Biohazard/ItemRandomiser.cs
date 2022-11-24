@@ -269,7 +269,7 @@ namespace IntelOrca.Biohazard
             _logger.WriteLine("    Unable to place the following key items:");
             foreach (var item in checkList)
             {
-                _logger.WriteLine($"        {Items.GetItemName(item)}");
+                _logger.WriteLine($"        {_itemHelper.GetItemName((byte)item)}");
             }
 
             if (keyItemPlaceOrder.Any(x => !IsOptionalItem(x)))
@@ -406,7 +406,7 @@ namespace IntelOrca.Biohazard
             _definedPool.Add(itemEntry);
             itemParentNode.PlacedKeyItems.Add(itemEntry);
 
-            _logger.WriteLine($"    Placing key item ({Items.GetItemName(itemEntry.Type)} x{itemEntry.Amount}) in {itemEntry.RdtId}:{itemEntry.Id}");
+            _logger.WriteLine($"    Placing key item ({_itemHelper.GetItemName((byte)itemEntry.Type)} x{itemEntry.Amount}) in {itemEntry.RdtId}:{itemEntry.Id}");
             return true;
         }
 

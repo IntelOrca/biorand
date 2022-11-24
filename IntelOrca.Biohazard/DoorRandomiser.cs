@@ -7,6 +7,8 @@ namespace IntelOrca.Biohazard
 {
     internal class DoorRandomiser
     {
+        private static bool g_debugLogging = false;
+
         private readonly RandoLogger _logger;
         private RandoConfig _config;
         private GameData _gameData;
@@ -14,7 +16,7 @@ namespace IntelOrca.Biohazard
         private Dictionary<RdtId, PlayNode> _nodeMap = new Dictionary<RdtId, PlayNode>();
         private List<PlayNode> _allNodes = new List<PlayNode>();
         private Rng _rng;
-        private bool _debugLogging = false;
+        private IItemHelper _itemHelper;
 
         private int _keyItemSpotsLeft;
         private readonly HashSet<ushort> _keyItemRequiredSet = new HashSet<ushort>();
@@ -52,13 +54,14 @@ namespace IntelOrca.Biohazard
             new FixedLinkConstraint()
         };
 
-        public DoorRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng random)
+        public DoorRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng random, IItemHelper itemHelper)
         {
             _logger = logger;
             _config = config;
             _gameData = gameData;
             _map = map;
             _rng = random;
+            _itemHelper = itemHelper;
         }
 
         public PlayGraph CreateOriginalGraph()
@@ -188,7 +191,7 @@ namespace IntelOrca.Biohazard
                 CalculateEdgeCounts(pool);
                 unfinishedEdges = GetUnfinishedEdges(pool);
 
-                if (_debugLogging)
+                if (g_debugLogging)
                     _logger.WriteLine($"        Edges left: {_numUnconnectedEdges} (key = {_numKeyEdges}, unlocked = {_numUnlockedEdges})");
             } while (ConnectUpRandomNode(unfinishedEdges, pool));
             if (!ConnectUpNode(end, unfinishedEdges))
@@ -553,9 +556,9 @@ namespace IntelOrca.Biohazard
             _logger.WriteLine($"    Connected {GetEdgeString(a, aEdge)} to {GetEdgeString(b, bEdge)}");
         }
 
-        private static string GetEdgeString(PlayNode node, PlayEdge edge)
+        private string GetEdgeString(PlayNode node, PlayEdge edge)
         {
-            var rs = edge.RequiresString;
+            var rs = edge.GetRequiresString(_itemHelper);
             var s = $"{node.RdtId}:{edge.DoorId}";
             if (string.IsNullOrEmpty(rs))
                 return s;

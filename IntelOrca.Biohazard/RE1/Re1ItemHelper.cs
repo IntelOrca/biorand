@@ -1,9 +1,15 @@
 ﻿using System;
+using IntelOrca.Biohazard.Script;
 
 namespace IntelOrca.Biohazard.RE1
 {
     internal class Re1ItemHelper : IItemHelper
     {
+        public string GetItemName(byte type)
+        {
+            return new Bio1ConstantTable().GetItemName(type);
+        }
+
         public byte[] GetAmmoTypeForWeapon(byte type)
         {
             throw new NotImplementedException();

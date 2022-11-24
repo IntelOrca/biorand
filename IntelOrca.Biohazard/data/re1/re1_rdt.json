@@ -67,25 +67,28 @@
           "lock": "side"
         },
         {
-          "target": "105"
+          "target": "105",
+          "randomize": false
         },
         {
           "target": "10F",
           "requires": [ 51 ]
-        },
-        {
-          "target": "110",
-          "lock": "side"
         }
+        // ,{
+        //   "target": "110",
+        //   "lock": "side"
+        // }
       ]
     },
     "105": {
       "doors": [
         {
-          "target": "104"
+          "target": "104",
+          "randomize": false
         },
         {
-          "target": "106"
+          "target": "106",
+          "randomize": false
         }
       ],
       "items": [
@@ -98,7 +101,8 @@
     "106": {
       "doors": [
         {
-          "target": "105"
+          "target": "105",
+          "randomize": false
         },
         {
           "target": "107"
@@ -106,10 +110,10 @@
         {
           "target": "111",
           "requires": [ 52 ]
-        },
-        {
-          "target": "203"
         }
+        // ,{
+        //   "target": "203"
+        // }
       ]
     },
     "107": {
@@ -120,6 +124,12 @@
         {
           "target": "108",
           "requires": [ 51 ]
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "type": 0
         }
       ]
     },
@@ -159,15 +169,16 @@
           "target": "109"
         },
         {
-          "target": "10B"
+          "target": "10B",
+          "lock": "side"
         },
         {
           "target": "117"
         },
-        {
-          "target": "119",
-          "requires": [ 54 ]
-        },
+        // {
+        //   "target": "119",
+        //   "requires": [ 54 ]
+        // },
         {
           "target": "11A"
         }
@@ -175,9 +186,9 @@
     },
     "10B": {
       "doors": [
-        {
-          "target": "107"
-        },
+        // {
+        //   "target": "207"
+        // },
         {
           "target": "10A",
           "lock": "side"
@@ -355,7 +366,8 @@
           "target": "10A"
         },
         {
-          "target": "11B"
+          "target": "11B",
+          "requires": [ 41, 44, 45, 46 ]
         }
       ]
     },
@@ -363,10 +375,10 @@
       "doors": [
         {
           "target": "11A"
-        },
-        {
-          "target": "300"
         }
+        // ,{
+        //   "target": "300"
+        // }
       ]
     },
     "11C": {
