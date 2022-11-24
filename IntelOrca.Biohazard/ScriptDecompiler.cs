@@ -374,9 +374,9 @@ namespace IntelOrca.Biohazard
                         var evnt = br.ReadByte();
                         var exOpcodeS = $"OP_{ ((Opcode)exOpcode).ToString().ToUpperInvariant()}";
                         if (cond == 255)
-                            sb.WriteStandardOpcode("evt_exec", "CAMERA", exOpcodeS, evnt);
+                            sb.WriteStandardOpcode("evt_exec", "CAMERA", exOpcodeS, $"sub_{evnt:X2}");
                         else
-                            sb.WriteStandardOpcode("evt_exec", cond, exOpcodeS, evnt);
+                            sb.WriteStandardOpcode("evt_exec", cond, exOpcodeS, $"sub_{evnt:X2}");
                         break;
                     }
                 case Opcode.IfelCk:

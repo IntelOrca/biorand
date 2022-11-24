@@ -2271,7 +2271,8 @@
     "603": {
       "doorRando": [
         {
-          "category": "box"
+          "category": "box",
+          "nop": [ 10856 ]
         }
       ],
       "doors": [
