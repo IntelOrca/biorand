@@ -575,11 +575,11 @@ namespace IntelOrca.Biohazard
                 case ItemType.SMG:
                     return ItemType.SMGAmmo;
                 case ItemType.GrenadeLauncherFlame:
-                    return ItemType.GrenadeLauncherFlame;
+                    return ItemType.FlameRounds;
                 case ItemType.GrenadeLauncherExplosive:
-                    return ItemType.GrenadeLauncherExplosive;
+                    return ItemType.ExplosiveRounds;
                 case ItemType.GrenadeLauncherAcid:
-                    return ItemType.GrenadeLauncherAcid;
+                    return ItemType.AcidRounds;
                 default:
                     return type;
             }
