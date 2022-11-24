@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection.Emit;
 
@@ -68,7 +69,7 @@ namespace IntelOrca.Biohazard.Script.Opcodes
                 op.LockId = br.ReadByte();
 
                 var target = br.ReadByte();
-                op.NextStage = (byte)(target >> 5);
+                op.NextStage = (byte)Math.Max(0, (target >> 5) - 1);
                 op.NextRoom = (byte)(target & 0b11111);
                 op.NextX = br.ReadInt16();
                 op.NextY = br.ReadInt16();
@@ -128,7 +129,10 @@ namespace IntelOrca.Biohazard.Script.Opcodes
                 bw.Write(Animation);
                 bw.Write(Re1UnkC);
                 bw.Write(LockId);
-                bw.Write((byte)((NextStage << 5) | (NextRoom & 0b11111)));
+                if (NextStage == 0)
+                    bw.Write((byte)((NextStage << 5) | (NextRoom & 0b11111)));
+                else
+                    bw.Write((byte)(((NextStage + 1) << 5) | (NextRoom & 0b11111)));
                 bw.Write(NextX);
                 bw.Write(NextY);
                 bw.Write(NextZ);

@@ -2,6 +2,7 @@
 {
     public interface IItemHelper
     {
+        string GetItemName(byte type);
         byte GetItemId(CommonItemKind kind);
         byte[] GetAmmoTypeForWeapon(byte type);
         byte GetMaxAmmoForAmmoType(byte type);

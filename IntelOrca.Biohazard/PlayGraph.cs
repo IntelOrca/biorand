@@ -206,25 +206,22 @@ namespace IntelOrca.Biohazard
             Entrance = entrance;
         }
 
-        public string RequiresString
+        public string GetRequiresString(IItemHelper itemHelper)
         {
-            get
+            var s = "";
+            if (Lock == LockKind.Side)
             {
-                var s = "";
-                if (Lock == LockKind.Side)
-                {
-                    s += $"(locked #{LockId}) ";
-                }
-                else if (Lock != LockKind.None)
-                {
-                    s += $"({Lock.ToString().ToLowerInvariant()}) ";
-                }
-                if (Requires != null && Requires.Length != 0)
-                {
-                    s += "[" + string.Join(", ", Requires.Select(x => Items.GetItemName(x))) + "] ";
-                }
-                return s.Trim();
+                s += $"(locked #{LockId}) ";
             }
+            else if (Lock != LockKind.None)
+            {
+                s += $"({Lock.ToString().ToLowerInvariant()}) ";
+            }
+            if (Requires != null && Requires.Length != 0)
+            {
+                s += "[" + string.Join(", ", Requires.Select(x => itemHelper?.GetItemName((byte)x) ?? x.ToString())) + "] ";
+            }
+            return s.Trim();
         }
 
         public override string ToString()
@@ -232,7 +229,7 @@ namespace IntelOrca.Biohazard
             if (Node == null)
                 return "(unconnected)";
 
-            return string.Join(" ", Node.RdtId, RequiresString);
+            return string.Join(" ", Node.RdtId, GetRequiresString(null));
         }
     }
 }

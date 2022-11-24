@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using IntelOrca.Biohazard.Script;
 
 namespace IntelOrca.Biohazard.RE2
 {
     internal class Re2ItemHelper : IItemHelper
     {
+        public string GetItemName(byte type)
+        {
+            return Items.GetItemName(type);
+        }
+
         public byte GetItemId(CommonItemKind kind)
         {
             switch (kind)
