@@ -14,6 +14,7 @@
         CutSet9,
         CutSetA,
         DoorAotSe = 0x0C,
+        NonItemSet = 0x0D,
         Item12 = 0x12,
         ItemAotSet = 0x18,
         SceEmSet = 0x1B,

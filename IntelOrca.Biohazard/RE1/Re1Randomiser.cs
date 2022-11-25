@@ -53,8 +53,23 @@ namespace IntelOrca.Biohazard.RE1
             return rdtIds
                 .OrderBy(x => x.Stage)
                 .ThenBy(x => x.Room)
-                .Except(new[] { new RdtId(0, 0x10), new RdtId(0, 0x19) })
-                .Take(27)
+                .Except(new[] {
+                    new RdtId(0, 0x10),
+                    new RdtId(0, 0x19),
+                    new RdtId(1, 0x00),
+                    new RdtId(1, 0x0C),
+                    new RdtId(1, 0x13),
+                    new RdtId(1, 0x14),
+                    new RdtId(1, 0x15),
+                    new RdtId(1, 0x16),
+                    new RdtId(1, 0x17),
+                    new RdtId(1, 0x18),
+                    new RdtId(1, 0x19),
+                    new RdtId(1, 0x1A),
+                    new RdtId(1, 0x1B),
+                    new RdtId(1, 0x1C)
+                })
+                .Take(60)
                 .ToArray();
         }
 

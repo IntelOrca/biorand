@@ -59,7 +59,13 @@ namespace IntelOrca.Biohazard
             rdtFile.ReadScript(opcodeBuilder);
             rdt.Opcodes = opcodeBuilder.ToArray();
 
-            rdt.Ast = CreateAst(rdtFile);
+            try
+            {
+                rdt.Ast = CreateAst(rdtFile);
+            }
+            catch
+            {
+            }
 
             return rdt;
         }
