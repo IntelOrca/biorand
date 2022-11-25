@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection.Emit;
 using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.Script
@@ -591,6 +590,26 @@ namespace IntelOrca.Biohazard.Script
                         {
                             sb.WriteLine($"$${src} = {value};");
                         }
+                        break;
+                    }
+                case OpcodeV1.NonItemSet:
+                    {
+                        var id = br.ReadByte();
+                        var x = br.ReadInt16();
+                        var z = br.ReadInt16();
+                        var w = br.ReadInt16();
+                        var d = br.ReadInt16();
+                        var type = br.ReadByte();
+                        var szType = type.ToString();
+                        if (type == 7)
+                            szType = "NI_EVENT";
+                        if (type == 8)
+                            szType = "NI_BOX";
+                        if (type == 9)
+                            szType = "NI_TRIGGER";
+                        if (type == 10)
+                            szType = "NI_TYPEWRITER";
+                        sb.WriteStandardOpcode("non_item_set", id, x, z, w, d, szType);
                         break;
                     }
                 case OpcodeV1.Item12:
