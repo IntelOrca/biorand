@@ -27,6 +27,8 @@ namespace IntelOrca.Biohazard.Script
         public override void VisitBeginSubroutine(int index)
         {
             _endOfSubroutine = false;
+            _ifStack.Clear();
+            _statementStack.Clear();
             PushBasicBlock();
         }
 
@@ -140,6 +142,8 @@ namespace IntelOrca.Biohazard.Script
 
         public override void VisitEndSubroutine(int index)
         {
+            while (_statementStack.Count > 1)
+                PopBasicBlock();
             var basicBlockNode = PopBasicBlock();
             _subroutines.Add(new SubroutineAstNode(index, basicBlockNode.Statements));
         }

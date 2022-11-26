@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks.Sources;
 using IntelOrca.Biohazard.Script;
 
 namespace IntelOrca.Biohazard.RE2
@@ -30,6 +31,68 @@ namespace IntelOrca.Biohazard.RE2
                     return (byte)ItemType.FAidSpray;
             }
             throw new NotImplementedException();
+        }
+
+        public bool IsOptionalItem(byte type)
+        {
+            switch ((ItemType)type)
+            {
+                case ItemType.FilmA:
+                case ItemType.FilmB:
+                case ItemType.FilmC:
+                case ItemType.FilmD:
+                case ItemType.Cord:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public bool IsItemTypeDiscardable(byte type)
+        {
+            switch ((ItemType)type)
+            {
+                case ItemType.SmallKey: // Small keys can be stacked
+                case ItemType.CabinKey:
+                case ItemType.SpadeKey:
+                case ItemType.DiamondKey:
+                case ItemType.HeartKey:
+                case ItemType.ClubKey:
+                case ItemType.PowerRoomKey:
+                case ItemType.UmbrellaKeyCard:
+                case ItemType.MasterKey:
+                case ItemType.PlatformKey:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public bool IsItemDocument(byte type)
+        {
+            return type <= (byte)ItemType.PlatformKey;
+        }
+
+        public byte[] GetInitialItems(RandoConfig config)
+        {
+            if (config.Player == 0)
+            {
+                return new[] { (byte)ItemType.Lighter };
+            }
+            return new byte[0];
+        }
+
+        public int GetItemQuantity(RandoConfig config, byte item)
+        {
+            if (item == (byte)ItemType.RedJewel)
+                return 2;
+
+            if (item == (byte)ItemType.SmallKey && !config.RandomDoors)
+            {
+                return config.Scenario == 1 ? 3 : 2;
+            }
+
+            return 1;
         }
 
         public byte[] GetAmmoTypeForWeapon(byte type)
