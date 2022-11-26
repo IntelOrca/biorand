@@ -46,7 +46,7 @@ namespace IntelOrca.Biohazard
             var checkpoint = graph.Start;
             ClearItems();
             _visitedRooms.Clear();
-            while (!_visitedRooms.Contains(graph.End) || _requiredItems.Count != 0)
+            while (!_visitedRooms.Contains(graph.End) || !JustOptionalItemsLeft())
             {
                 PlaceKeyItem(_config.RandomDoors || _config.AlternativeRoutes);
                 var newCheckpoint = Search(checkpoint);
@@ -87,13 +87,21 @@ namespace IntelOrca.Biohazard
             PatchDesk();
         }
 
+        private bool JustOptionalItemsLeft()
+        {
+            if (_requiredItems.Count == 0)
+                return true;
+
+            return _requiredItems.All(x => x.Item == null || _itemHelper.IsOptionalItem((byte)x.Item.Value.Type));
+        }
+
         private void ClearItems()
         {
             // Leon starts with a lighter
             _haveItems.Clear();
-            if (_config.Player == 0)
+            foreach (var item in _itemHelper.GetInitialItems(_config))
             {
-                _haveItems.Add((ushort)ItemType.Lighter);
+                _haveItems.Add(item);
             }
         }
 
@@ -227,6 +235,19 @@ namespace IntelOrca.Biohazard
             return bestI;
         }
 
+        private static string GetNth(int i)
+        {
+            while (i >= 20)
+                i /= 10;
+            if (i == 1)
+                return $"{i}st";
+            if (i == 2)
+                return $"{i}nd";
+            if (i == 3)
+                return $"{i}rd";
+            return $"{i}th";
+        }
+
         private void PlaceKeyItem(bool alternativeRoutes)
         {
             var keyItemPlaceOrder = GetKeyItemPlaceOrder();
@@ -238,19 +259,12 @@ namespace IntelOrca.Biohazard
             {
                 if (PlaceKeyItem(req, alternativeRoutes))
                 {
-                    if (req == (ushort)ItemType.RedJewel ||
-                       (req == (ushort)ItemType.SmallKey && !_config.RandomDoors))
+                    var quantity = _itemHelper.GetItemQuantity(_config, (byte)req);
+                    for (int i = 1; i < quantity; i++)
                     {
                         if (!PlaceKeyItem(req, true))
                         {
-                            throw new Exception($"Unable to place 2nd {(ItemType)req}");
-                        }
-                        if (req == (ushort)ItemType.SmallKey && _config.Scenario == 1 && !_config.RandomDoors)
-                        {
-                            if (!PlaceKeyItem(req, true))
-                            {
-                                throw new Exception($"Unable to place 3rd {(ItemType)req}");
-                            }
+                            throw new Exception($"Unable to place {GetNth(i + 1)} {(ItemType)req}");
                         }
                     }
                     UpdateRequiredItemList();
@@ -272,7 +286,7 @@ namespace IntelOrca.Biohazard
                 _logger.WriteLine($"        {_itemHelper.GetItemName((byte)item)}");
             }
 
-            if (keyItemPlaceOrder.Any(x => !IsOptionalItem(x)))
+            if (keyItemPlaceOrder.Any(x => !_itemHelper.IsOptionalItem((byte)x)))
                 throw new Exception("Unable to find key item to swap");
 
             _requiredItems.Clear();
@@ -302,21 +316,6 @@ namespace IntelOrca.Biohazard
             }
 
             _requiredItems.RemoveWhere(x => x.Keys.All(x => _haveItems.Contains(x)));
-        }
-
-        private static bool IsOptionalItem(ushort item)
-        {
-            switch ((ItemType)item)
-            {
-                case ItemType.FilmA:
-                case ItemType.FilmB:
-                case ItemType.FilmC:
-                case ItemType.FilmD:
-                case ItemType.Cord:
-                    return true;
-                default:
-                    return false;
-            }
         }
 
         private bool PlaceKeyItem(ushort req, bool alternativeRoute)
@@ -597,7 +596,7 @@ namespace IntelOrca.Biohazard
 
         private ushort GetTotalKeyRequirementCount(PlayNode node, ushort keyType)
         {
-            if (!IsItemTypeDiscardable((ItemType)keyType))
+            if (!_itemHelper.IsItemTypeDiscardable((byte)keyType))
             {
                 return 1;
             }
@@ -630,26 +629,6 @@ namespace IntelOrca.Biohazard
                 }
             }
             return total;
-        }
-
-        private static bool IsItemTypeDiscardable(ItemType itemType)
-        {
-            switch (itemType)
-            {
-                case ItemType.SmallKey: // Small keys can be stacked
-                case ItemType.CabinKey:
-                case ItemType.SpadeKey:
-                case ItemType.DiamondKey:
-                case ItemType.HeartKey:
-                case ItemType.ClubKey:
-                case ItemType.PowerRoomKey:
-                case ItemType.UmbrellaKeyCard:
-                case ItemType.MasterKey:
-                case ItemType.PlatformKey:
-                    return true;
-                default:
-                    return false;
-            }
         }
 
         private class KeyRequirement : IEquatable<KeyRequirement>

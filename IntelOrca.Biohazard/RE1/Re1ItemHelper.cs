@@ -7,7 +7,51 @@ namespace IntelOrca.Biohazard.RE1
     {
         public string GetItemName(byte type)
         {
-            return new Bio1ConstantTable().GetItemName(type);
+            var name = new Bio1ConstantTable().GetItemName(type);
+            return name
+                .Remove(0, 5)
+                .Replace("_", " ");
+        }
+
+        public bool IsOptionalItem(byte type)
+        {
+            return type == 56;
+        }
+
+        public bool IsItemTypeDiscardable(byte type)
+        {
+            switch (type)
+            {
+                case 0x33:
+                case 0x34:
+                case 0x35:
+                case 0x36:
+                case 0x37:
+                case 0x38:
+                case 0x39:
+                case 0x3A:
+                case 0x3B:
+                case 0x3C:
+                case 0x3D:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public bool IsItemDocument(byte type)
+        {
+            return false;
+        }
+
+        public byte[] GetInitialItems(RandoConfig config)
+        {
+            return new byte[0];
+        }
+
+        public int GetItemQuantity(RandoConfig config, byte item)
+        {
+            return 1;
         }
 
         public byte[] GetAmmoTypeForWeapon(byte type)

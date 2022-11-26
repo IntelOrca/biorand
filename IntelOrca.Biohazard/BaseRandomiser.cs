@@ -150,7 +150,7 @@ namespace IntelOrca.Biohazard
                     }
                     finally
                     {
-                        graph.GenerateDgml(dgmlPath);
+                        graph.GenerateDgml(dgmlPath, ItemHelper);
                     }
                 }
 
