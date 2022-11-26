@@ -31,7 +31,7 @@ namespace IntelOrca.Biohazard.RE1
         protected override RdtId[] GetRdtIds(string dataPath)
         {
             var rdtIds = new HashSet<RdtId>();
-            for (int stage = 1; stage <= 5; stage++)
+            for (int stage = 1; stage <= 7; stage++)
             {
                 var files = Directory.GetFiles(Path.Combine(dataPath, @$"STAGE{stage}"));
                 foreach (var file in files)
@@ -69,7 +69,6 @@ namespace IntelOrca.Biohazard.RE1
                     new RdtId(1, 0x1B),
                     new RdtId(1, 0x1C)
                 })
-                .Take(60)
                 .ToArray();
         }
 
