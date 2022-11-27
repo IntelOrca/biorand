@@ -205,7 +205,7 @@ namespace IntelOrca.Biohazard
             Entrance = entrance;
         }
 
-        public string GetRequiresString(IItemHelper itemHelper)
+        public string GetRequiresString(IItemHelper? itemHelper)
         {
             var s = "";
             if (Lock == LockKind.Side)
@@ -218,9 +218,16 @@ namespace IntelOrca.Biohazard
             }
             if (Requires != null && Requires.Length != 0)
             {
-                s += "[" + string.Join(", ", Requires.Select(x => itemHelper?.GetItemName((byte)x) ?? x.ToString())) + "] ";
+                s += "[" + string.Join(", ", Requires.Select(x => GetItemName(itemHelper, (byte)x) ?? x.ToString())) + "] ";
             }
             return s.Trim();
+        }
+
+        private string GetItemName(IItemHelper? itemHelper, byte item)
+        {
+            if (itemHelper == null)
+                return item.ToString();
+            return itemHelper.GetItemName(item);
         }
 
         public override string ToString()

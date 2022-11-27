@@ -103,7 +103,7 @@ namespace IntelOrca.Biohazard
                             continue;
 
 #if ALWAYS_SWAP_NPC
-                        var newEnemyTypeIndex = Array.FindIndex(supportedNpcs, x => GetActor((EnemyType)x) != GetActor(enemy.Type));
+                        var newEnemyTypeIndex = Array.FindIndex(supportedNpcs, x => GetActor((EnemyType)x) != GetActor((EnemyType)enemy.Type));
                         var newEnemyType = (EnemyType)(newEnemyTypeIndex == -1 ? supportedNpcs[0] : supportedNpcs[newEnemyTypeIndex]);
 #else
                         var newEnemyType = (EnemyType)supportedNpcs[0];

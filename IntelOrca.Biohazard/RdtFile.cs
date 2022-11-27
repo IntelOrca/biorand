@@ -59,7 +59,7 @@ namespace IntelOrca.Biohazard
 
         public void ReadScript(BioScriptVisitor visitor)
         {
-            visitor.VisitVersion(BioVersion.Biohazard1);
+            visitor.VisitVersion(Version);
             if (Version == BioVersion.Biohazard1)
             {
                 ReadScript1(BioScriptKind.Init, visitor, 6);
@@ -102,7 +102,7 @@ namespace IntelOrca.Biohazard
                     visitor.VisitOpcode(instructionPosition, new Span<byte>(bytes));
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
             visitor.VisitEndSubroutine(0);
@@ -125,7 +125,6 @@ namespace IntelOrca.Biohazard
         {
             var stream = br.BaseStream;
 
-            visitor.VisitVersion(BioVersion.Biohazard2);
             visitor.VisitBeginScript(kind);
 
             var start = (int)stream.Position;
