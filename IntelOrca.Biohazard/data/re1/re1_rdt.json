@@ -17,6 +17,16 @@
         {
           "target": "101"
         }
+      ],
+      "items": [
+        {
+          "id": 6,
+          "type": 0
+        },
+        {
+          "id": 7,
+          "type": 0
+        }
       ]
     },
     "101": {
@@ -105,7 +115,8 @@
       "items": [
         {
           "id": 3,
-          "requires": [ 32 ]
+          "requires": [ 32 ],
+          "requiresRoom": [ "10F" ]
         },
         {
           "id": 5,
@@ -298,7 +309,7 @@
         {
           "id": 4,
           "priority": "fixed",
-          "requires": [ 35 ]
+          "requires": [ 31, 35 ]
         }
       ]
     },
@@ -394,6 +405,20 @@
       "doors": [
         {
           "target": "10B"
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "priority": "low"
+        },
+        {
+          "id": 4,
+          "priority": "low"
+        },
+        {
+          "id": 5,
+          "priority": "low"
         }
       ]
     },
@@ -671,7 +696,8 @@
     "302": {
       "doors": [
         {
-          "target": "300"
+          "target": "300",
+          "requires": [ 39 ]
         },
         {
           "target": "301"
@@ -680,7 +706,9 @@
           "target": "304"
         },
         {
-          "target": "307"
+          "target": "307",
+          "requiresRoom": [ "301" ],
+          "noReturn": true
         }
       ]
     },
@@ -717,7 +745,8 @@
         },
         {
           "target": "310",
-          "requires": [ 63, 64 ]
+          "requires": [ 63, 64 ],
+          "noReturn": true
         }
       ]
     },
@@ -884,6 +913,12 @@
         {
           "target": "402"
         }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "requires": [ 61 ]
+        }
       ]
     },
     "402": {
@@ -937,6 +972,12 @@
         {
           "target": "40D"
         }
+      ],
+      "items": [
+        {
+          "id": 6,
+          "requires": [ 61 ]
+        }
       ]
     },
     "407": {
@@ -965,6 +1006,36 @@
         {
           "target": "408"
         }
+      ],
+      "items": [
+        {
+          "id": 1,
+          "type": 0
+        },
+        {
+          "id": 2,
+          "type": 0
+        },
+        {
+          "id": 3,
+          "type": 0
+        },
+        {
+          "id": 4,
+          "type": 0
+        },
+        {
+          "id": 5,
+          "type": 0
+        },
+        {
+          "id": 6,
+          "type": 0
+        },
+        {
+          "id": 7,
+          "type": 0
+        }
       ]
     },
     "40A": {
@@ -978,6 +1049,12 @@
         {
           "target": "40C",
           "requires": [ 62 ]
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "type": 0
         }
       ]
     },
@@ -1024,10 +1101,12 @@
           "target": "40F"
         },
         {
-          "target": "410"
+          "target": "410",
+          "requiresRoom": [ "411" ]
         },
         {
-          "target": "411"
+          "target": "411",
+          "requires": [ 59 ]
         }
       ]
     },
@@ -1059,7 +1138,8 @@
         },
         {
           "target": "501",
-          "requires": [ 55 ]
+          "requires": [ 55 ],
+          "requiresRoom": [ "505", "513" ]
         },
         {
           "target": "502"
@@ -1072,7 +1152,8 @@
           "target": "500"
         },
         {
-          "target": "50D"
+          "target": "50D",
+          "requires": [ 39 ]
         }
       ]
     },
@@ -1147,7 +1228,8 @@
         {
           "target": "50C"
         }
-      ]
+      ],
+      "requires": [ 40 ]
     },
     "508": {
       "doors": [
@@ -1161,7 +1243,8 @@
           "target": "50A"
         },
         {
-          "target": "50B"
+          "target": "50B",
+          "requiresRoom": [ "507", "509", "510" ]
         }
       ]
     },
@@ -1170,7 +1253,8 @@
         {
           "target": "508"
         }
-      ]
+      ],
+      "requires": [ 40 ]
     },
     "50A": {
       "doors": [
@@ -1249,7 +1333,8 @@
         {
           "target": "511"
         }
-      ]
+      ],
+      "requires": [ 40 ]
     },
     "511": {
       "doors": [
@@ -1269,6 +1354,12 @@
       "doors": [
         {
           "target": "514"
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "priority": "low"
         }
       ]
     },
@@ -1372,6 +1463,12 @@
         },
         {
           "target": "718"
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "requires": [ 61 ]
         }
       ]
     },
