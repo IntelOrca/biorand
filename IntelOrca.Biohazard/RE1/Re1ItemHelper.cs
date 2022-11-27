@@ -27,12 +27,12 @@ namespace IntelOrca.Biohazard.RE1
                 case Re1ItemIds.ArmorKey:
                 case Re1ItemIds.SheildKey:
                 case Re1ItemIds.HelmetKey:
-                case Re1ItemIds.LabKey1:
+                case Re1ItemIds.MasterKey:
                 case Re1ItemIds.SpecialKey:
                 case Re1ItemIds.DormKey002:
                 case Re1ItemIds.DormKey003:
-                case Re1ItemIds.CRoomKey:
-                case Re1ItemIds.LabKey2:
+                case Re1ItemIds.ControlRoomKey:
+                case Re1ItemIds.PowerRoomKey:
                 case Re1ItemIds.SmallKey:
                     return true;
                 default:
@@ -54,6 +54,15 @@ namespace IntelOrca.Biohazard.RE1
 
         public int GetItemQuantity(RandoConfig config, byte item)
         {
+            switch (item)
+            {
+                case Re1ItemIds.Battery:
+                    return 2;
+                case Re1ItemIds.SmallKey:
+                    return 5;
+                case Re1ItemIds.MODisk:
+                    return 3;
+            }
             return 1;
         }
 

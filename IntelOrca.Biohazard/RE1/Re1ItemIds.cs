@@ -57,12 +57,12 @@
         public const byte ArmorKey = 52;
         public const byte SheildKey = 53;
         public const byte HelmetKey = 54;
-        public const byte LabKey1 = 55;
+        public const byte MasterKey = 55;
         public const byte SpecialKey = 56;
         public const byte DormKey002 = 57;
         public const byte DormKey003 = 58;
-        public const byte CRoomKey = 59;
-        public const byte LabKey2 = 60;
+        public const byte ControlRoomKey = 59;
+        public const byte PowerRoomKey = 60;
         public const byte SmallKey = 61;
         public const byte RedBook = 62;
         public const byte DoomBook2 = 63;
