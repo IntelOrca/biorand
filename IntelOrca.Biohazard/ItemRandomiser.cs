@@ -162,7 +162,8 @@ namespace IntelOrca.Biohazard
                         continue;
 
                     var requiredItems = edge.Requires == null ? new ushort[0] : edge.Requires.Except(_haveItems).ToArray()!;
-                    if (requiredItems.Length == 0)
+                    var justOptionalLeft = requiredItems.All(x => _itemHelper.IsOptionalItem((byte)x));
+                    if (requiredItems.Length == 0 || justOptionalLeft)
                     {
                         if (seen.Contains(edge.Node.RdtId))
                             continue;
@@ -461,11 +462,14 @@ namespace IntelOrca.Biohazard
             var items = _itemHelper.GetWeapons(_rng, _config);
             foreach (var itemType in items)
             {
+                // Spawn weapon
+                var amount = GetRandomAmount(itemType);
+                SpawnItem(shuffled, itemType, amount);
+
+                // Add supported ammo types
                 var weaponAmmoTypes = _itemHelper.GetAmmoTypeForWeapon(itemType);
                 foreach (var ammoType in weaponAmmoTypes)
                 {
-                    var amount = GetRandomAmount(ammoType);
-                    SpawnItem(shuffled, itemType, amount);
                     ammoTypes.Add(ammoType);
                 }
             }
@@ -504,7 +508,7 @@ namespace IntelOrca.Biohazard
                 var newEntry = oldEntry;
                 newEntry.Type = itemType;
                 newEntry.Amount = amount;
-                _logger.WriteLine($"    Replaced {oldEntry} with {newEntry}");
+                _logger.WriteLine($"    Replaced {oldEntry.ToString(_itemHelper)} with {newEntry.ToString(_itemHelper)}");
                 if (_definedPool.Any(x => x.RdtItemId == newEntry.RdtItemId))
                     throw new Exception();
                 _definedPool.Add(newEntry);

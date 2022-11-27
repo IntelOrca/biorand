@@ -100,6 +100,10 @@
         {
           "id": 3,
           "requires": [ 32 ]
+        },
+        {
+          "id": 5,
+          "type": 0
         }
       ]
     },
@@ -277,7 +281,6 @@
         },
         {
           "id": 4,
-          "type": 32,
           "priority": "fixed",
           "requires": [ 35 ]
         }
@@ -637,6 +640,14 @@
           "target": "500",
           "lock": "always"
         }
+      ],
+      "items": [
+        {
+          "id": 1
+        },
+        {
+          "id": 2
+        }
       ]
     },
     "304": {
@@ -682,7 +693,8 @@
           "target": "308"
         },
         {
-          "target": "30B"
+          "target": "30B",
+          "requires": [ 30 ]
         }
       ]
     },
@@ -777,7 +789,8 @@
           "target": "305"
         },
         {
-          "target": "306"
+          "target": "306",
+          "requires": [ 30 ]
         },
         {
           "target": "30D"
@@ -933,6 +946,12 @@
         },
         {
           "target": "408"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "priority": "fixed"
         }
       ]
     },
@@ -1145,7 +1164,8 @@
           "target": "501"
         },
         {
-          "target": "303"
+          "target": "303",
+          "noReturn": true
         }
       ]
     },

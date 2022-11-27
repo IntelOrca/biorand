@@ -19,6 +19,11 @@
             }
         }
 
+        public string ToString(IItemHelper itemHelper)
+        {
+            return $"{RdtId}:{Id} [{itemHelper.GetItemName((byte)Type)} x{Amount}]";
+        }
+
         public override string ToString()
         {
             return $"{RdtId}:{Id} [{Items.GetItemName(Type)} x{Amount}]";

@@ -137,8 +137,35 @@ namespace IntelOrca.Biohazard.RE2
             {
                 default:
                     return 1;
+
                 case ItemType.InkRibbon:
                     return 3;
+
+                case ItemType.HandgunLeon:
+                case ItemType.CustomHandgun:
+                    return 18;
+                case ItemType.HandgunClaire:
+                    return 13;
+                case ItemType.ColtSAA:
+                    return 6;
+                case ItemType.Bowgun:
+                    return 18;
+                case ItemType.Shotgun:
+                    return 5;
+                case ItemType.CustomShotgun:
+                    return 7;
+                case ItemType.Magnum:
+                case ItemType.CustomMagnum:
+                    return 8;
+                case ItemType.GrenadeLauncherAcid:
+                case ItemType.GrenadeLauncherExplosive:
+                case ItemType.GrenadeLauncherFlame:
+                    return 6;
+                case ItemType.SMG:
+                case ItemType.Sparkshot:
+                case ItemType.Flamethrower:
+                    return 100;
+
                 case ItemType.HandgunAmmo:
                     return 60;
                 case ItemType.ShotgunAmmo:
@@ -153,8 +180,6 @@ namespace IntelOrca.Biohazard.RE2
                 case ItemType.SparkshotAmmo:
                 case ItemType.SMGAmmo:
                     return 100;
-                case ItemType.RocketLauncher:
-                    return 5;
             }
         }
 
@@ -182,18 +207,20 @@ namespace IntelOrca.Biohazard.RE2
 
         public byte[] GetWeapons(Rng rng, RandoConfig config)
         {
+            var enemyDifficulty = config.RandomEnemies ? config.EnemyDifficulty : 0;
+
             var items = new List<ItemType>();
             if (config.Player == 0)
             {
                 if (rng.Next(0, 3) >= 1)
                     items.Add(ItemType.HandgunParts);
-                if (config.EnemyDifficulty >= 2 || rng.Next(0, 2) >= 1)
+                if (enemyDifficulty >= 2 || rng.Next(0, 2) >= 1)
                 {
                     items.Add(ItemType.Shotgun);
                     if (rng.Next(0, 2) >= 1)
                         items.Add(ItemType.ShotgunParts);
                 }
-                if (config.EnemyDifficulty >= 3 || rng.Next(0, 3) >= 1)
+                if (enemyDifficulty >= 3 || rng.Next(0, 3) >= 1)
                 {
                     items.Add(ItemType.Magnum);
                     if (rng.Next(0, 2) >= 1)
@@ -206,9 +233,9 @@ namespace IntelOrca.Biohazard.RE2
             }
             else
             {
-                if (config.EnemyDifficulty >= 2 || rng.Next(0, 3) >= 1)
+                if (enemyDifficulty >= 2 || rng.Next(0, 3) >= 1)
                     items.Add(ItemType.Bowgun);
-                if (config.EnemyDifficulty >= 3 || rng.Next(0, 3) >= 1)
+                if (enemyDifficulty >= 3 || rng.Next(0, 3) >= 1)
                     items.Add(rng.NextOf(ItemType.GrenadeLauncherExplosive, ItemType.GrenadeLauncherFlame, ItemType.GrenadeLauncherAcid));
                 if (rng.Next(0, 2) == 0)
                     items.Add(ItemType.SMG);
