@@ -28,6 +28,7 @@ namespace IntelOrca.Biohazard
 
     public class MapRoom
     {
+        public string LinkedRoom { get; set; }
         public ushort[]? Requires { get; set; }
         public MapRoomDoor[]? Doors { get; set; }
         public MapRoomItem[]? Items { get; set; }

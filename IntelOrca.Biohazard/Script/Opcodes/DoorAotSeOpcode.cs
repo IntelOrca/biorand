@@ -69,8 +69,15 @@ namespace IntelOrca.Biohazard.Script.Opcodes
                 op.LockId = br.ReadByte();
 
                 var target = br.ReadByte();
-                op.NextStage = (byte)Math.Max(0, (target >> 5) - 1);
-                op.NextRoom = (byte)(target & 0b11111);
+                var stage = (byte)(target >> 5);
+                var room = (byte)(target & 0b11111);
+                if (stage == 0)
+                    stage = 255;
+                else
+                    stage--;
+
+                op.NextStage = stage;
+                op.NextRoom = room;
                 op.NextX = br.ReadInt16();
                 op.NextY = br.ReadInt16();
                 op.NextZ = br.ReadInt16();
@@ -129,8 +136,8 @@ namespace IntelOrca.Biohazard.Script.Opcodes
                 bw.Write(Animation);
                 bw.Write(Re1UnkC);
                 bw.Write(LockId);
-                if (NextStage == 0)
-                    bw.Write((byte)((NextStage << 5) | (NextRoom & 0b11111)));
+                if (NextStage == 255)
+                    bw.Write((byte)(NextRoom & 0b11111));
                 else
                     bw.Write((byte)(((NextStage + 1) << 5) | (NextRoom & 0b11111)));
                 bw.Write(NextX);

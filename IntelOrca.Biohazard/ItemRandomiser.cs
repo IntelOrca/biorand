@@ -579,13 +579,17 @@ namespace IntelOrca.Biohazard
         private void SetLinkedItems()
         {
             _logger.WriteLine("Setting up linked items:");
-            foreach (var (targetId, sourceId) in _linkedItems)
+            foreach (var (sourceId, targetId) in _linkedItems)
             {
-                var sourceItem = _definedPool.Find(x => x.RdtItemId == sourceId);
-                var targetItem = sourceItem;
-                targetItem.RdtItemId = targetId;
-                _definedPool.Add(targetItem);
-                _logger.WriteLine($"    {sourceItem} placed at {targetId}");
+                var sourceItemIndex = _definedPool.FindIndex(x => x.RdtItemId == sourceId);
+                if (sourceItemIndex != -1)
+                {
+                    var sourceItem = _definedPool[sourceItemIndex];
+                    var targetItem = sourceItem;
+                    targetItem.RdtItemId = targetId;
+                    _definedPool.Add(targetItem);
+                    _logger.WriteLine($"    {sourceItem.ToString(_itemHelper)} placed at {targetId}");
+                }
             }
         }
 
