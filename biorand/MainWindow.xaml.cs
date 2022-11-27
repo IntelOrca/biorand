@@ -13,7 +13,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.RE2;
-using Microsoft.Win32;
 
 namespace IntelOrca.Biohazard.BioRand
 {
@@ -43,7 +42,7 @@ namespace IntelOrca.Biohazard.BioRand
 
             var version = CurrentVersion;
             Title += $" - v{version.Major}.{version.Minor}.{version.Build}";
-            SelectedGame = 1;
+            SelectedGame = _settings.LastSelectedGame;
         }
 
         private void LoadSettings()
@@ -55,13 +54,21 @@ namespace IntelOrca.Biohazard.BioRand
                 RandomizeSeed();
             }
 
-            gameLocation1.Location = _settings.GamePath1;
-            gameLocation2.Location = _settings.GamePath2;
-            gameLocation3.Location = _settings.GamePath3;
+            try
+            {
+                _suspendEvents = true;
+                gameLocation1.Location = _settings.GamePath1;
+                gameLocation2.Location = _settings.GamePath2;
+                gameLocation3.Location = _settings.GamePath3;
 
-            gameLocation1.IsChecked = _settings.GameEnabled1;
-            gameLocation2.IsChecked = _settings.GameEnabled2;
-            gameLocation3.IsChecked = _settings.GameEnabled3;
+                gameLocation1.IsChecked = _settings.GameEnabled1;
+                gameLocation2.IsChecked = _settings.GameEnabled2;
+                gameLocation3.IsChecked = _settings.GameEnabled3;
+            }
+            finally
+            {
+                _suspendEvents = false;
+            }
         }
 
         private void SaveSettings()
@@ -632,6 +639,9 @@ namespace IntelOrca.Biohazard.BioRand
                     Visibility.Visible :
                     Visibility.Hidden;
             }
+
+            _settings.LastSelectedGame = index;
+            _settings.Save();
         }
 
         private BaseRandomiser GetRandomizer()

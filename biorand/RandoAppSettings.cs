@@ -8,6 +8,8 @@ namespace IntelOrca.Biohazard.BioRand
     {
         public string Seed { get; set; }
 
+        public int LastSelectedGame { get; set; }
+
         public string GamePath1 { get; set; }
         public string GamePath2 { get; set; }
         public string GamePath3 { get; set; }
