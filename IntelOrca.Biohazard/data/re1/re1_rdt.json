@@ -7,6 +7,7 @@
   ],
   "rooms": {
     "100": {
+      "linkedRoom": "600",
       "doorRando": [
         {
           "category": "box"
@@ -19,6 +20,7 @@
       ]
     },
     "101": {
+      "linkedRoom": "601",
       "doors": [
         {
           "target": "100"
@@ -33,6 +35,7 @@
       ]
     },
     "102": {
+      "linkedRoom": "602",
       "doors": [
         {
           "target": "101"
@@ -46,6 +49,7 @@
       ]
     },
     "103": {
+      "linkedRoom": "603",
       "doors": [
         {
           "target": "101"
@@ -66,6 +70,7 @@
       ]
     },
     "104": {
+      "linkedRoom": "604",
       "doors": [
         {
           "target": "103",
@@ -86,6 +91,7 @@
       ]
     },
     "105": {
+      "linkedRoom": "605",
       "doors": [
         {
           "target": "104",
@@ -108,6 +114,7 @@
       ]
     },
     "106": {
+      "linkedRoom": "606",
       "doors": [
         {
           "target": "105",
@@ -126,6 +133,7 @@
       ]
     },
     "107": {
+      "linkedRoom": "607",
       "doors": [
         {
           "target": "106"
@@ -143,6 +151,7 @@
       ]
     },
     "108": {
+      "linkedRoom": "608",
       "doors": [
         {
           "target": "107"
@@ -153,6 +162,7 @@
       ]
     },
     "109": {
+      "linkedRoom": "609",
       "doors": [
         {
           "target": "108"
@@ -173,6 +183,7 @@
       ]
     },
     "10A": {
+      "linkedRoom": "60A",
       "doors": [
         {
           "target": "109"
@@ -194,6 +205,7 @@
       ]
     },
     "10B": {
+      "linkedRoom": "60B",
       "doors": [
         {
           "target": "10A",
@@ -208,6 +220,7 @@
       ]
     },
     "10C": {
+      "linkedRoom": "60C",
       "doors": [
         {
           "target": "103"
@@ -245,6 +258,7 @@
       ]
     },
     "10D": {
+      "linkedRoom": "60D",
       "doors": [
         {
           "target": "103"
@@ -262,6 +276,7 @@
       ]
     },
     "10E": {
+      "linkedRoom": "60E",
       "doors": [
         {
           "target": "103"
@@ -269,6 +284,7 @@
       ]
     },
     "10F": {
+      "linkedRoom": "60F",
       "doors": [
         {
           "target": "104"
@@ -287,6 +303,7 @@
       ]
     },
     "111": {
+      "linkedRoom": "611",
       "doors": [
         {
           "target": "106"
@@ -303,6 +320,7 @@
       ]
     },
     "112": {
+      "linkedRoom": "612",
       "doors": [
         {
           "target": "111"
@@ -314,6 +332,7 @@
       ]
     },
     "113": {
+      "linkedRoom": "613",
       "doors": [
         {
           "target": "109"
@@ -321,6 +340,7 @@
       ]
     },
     "114": {
+      "linkedRoom": "614",
       "doors": [
         {
           "target": "109"
@@ -328,6 +348,7 @@
       ]
     },
     "115": {
+      "linkedRoom": "615",
       "doors": [
         {
           "target": "109"
@@ -338,6 +359,7 @@
       ]
     },
     "116": {
+      "linkedRoom": "616",
       "doors": [
         {
           "target": "115"
@@ -355,6 +377,7 @@
       ]
     },
     "117": {
+      "linkedRoom": "617",
       "doors": [
         {
           "target": "10A"
@@ -362,6 +385,7 @@
       ]
     },
     "118": {
+      "linkedRoom": "618",
       "doorRando": [
         {
           "category": "box"
@@ -374,6 +398,7 @@
       ]
     },
     "11A": {
+      "linkedRoom": "61A",
       "doors": [
         {
           "target": "10A"
@@ -385,6 +410,7 @@
       ]
     },
     "11B": {
+      "linkedRoom": "61B",
       "doors": [
         {
           "target": "11A"
@@ -395,6 +421,7 @@
       ]
     },
     "11C": {
+      "linkedRoom": "61C",
       "doors": [
         {
           "target": "112"
@@ -402,6 +429,7 @@
       ]
     },
     "201": {
+      "linkedRoom": "701",
       "doors": [
         {
           "target": "101"
@@ -419,6 +447,7 @@
       ]
     },
     "202": {
+      "linkedRoom": "702",
       "doors": [
         {
           "target": "201"
@@ -429,6 +458,7 @@
       ]
     },
     "203": {
+      "linkedRoom": "703",
       "doors": [
         {
           "target": "106"
@@ -445,6 +475,7 @@
       ]
     },
     "204": {
+      "linkedRoom": "704",
       "doors": [
         {
           "target": "203"
@@ -467,6 +498,7 @@
       ]
     },
     "205": {
+      "linkedRoom": "705",
       "doors": [
         {
           "target": "204"
@@ -474,6 +506,7 @@
       ]
     },
     "206": {
+      "linkedRoom": "706",
       "doors": [
         {
           "target": "204"
@@ -484,6 +517,7 @@
       ]
     },
     "207": {
+      "linkedRoom": "707",
       "doors": [
         {
           "target": "10B"
@@ -501,6 +535,7 @@
       ]
     },
     "208": {
+      "linkedRoom": "708",
       "doors": [
         {
           "target": "207"
@@ -514,6 +549,7 @@
       ]
     },
     "209": {
+      "linkedRoom": "709",
       "doors": [
         {
           "target": "208"
@@ -521,6 +557,7 @@
       ]
     },
     "20A": {
+      "linkedRoom": "70A",
       "doors": [
         {
           "target": "208"
@@ -528,6 +565,7 @@
       ]
     },
     "20B": {
+      "linkedRoom": "70B",
       "doors": [
         {
           "target": "207"
@@ -539,6 +577,7 @@
       ]
     },
     "20D": {
+      "linkedRoom": "70D",
       "doors": [
         {
           "target": "204"
@@ -549,12 +588,13 @@
       ]
     },
     "20E": {
+      "linkedRoom": "70E",
       "doors": [
         {
-          "target": "204"
+          "target": "20D"
         },
         {
-          "target": "20E"
+          "target": "20F"
         },
         {
           "target": "210",
@@ -563,13 +603,21 @@
       ]
     },
     "20F": {
+      "linkedRoom": "70F",
       "doors": [
         {
           "target": "20E"
         }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "requires": [ 48 ]
+        }
       ]
     },
     "210": {
+      "linkedRoom": "710",
       "doors": [
         {
           "target": "20E"
@@ -577,6 +625,7 @@
       ]
     },
     "211": {
+      "linkedRoom": "711",
       "doors": [
         {
           "target": "203"
@@ -587,6 +636,7 @@
       ]
     },
     "212": {
+      "linkedRoom": "712",
       "doors": [
         {
           "target": "211"

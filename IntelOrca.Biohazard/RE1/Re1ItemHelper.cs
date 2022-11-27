@@ -168,6 +168,8 @@ namespace IntelOrca.Biohazard.RE1
             var enemyDifficulty = config.RandomEnemies ? 0 : config.EnemyDifficulty;
 
             var items = new List<byte>();
+            if (config.Player == 0)
+                items.Add(Re1ItemIds.Beretta);
             if (enemyDifficulty >= 2 || rng.Next(0, 2) >= 1)
                 items.Add(Re1ItemIds.Shotgun);
             if (enemyDifficulty >= 3 || rng.Next(0, 3) >= 1)
