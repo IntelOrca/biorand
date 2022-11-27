@@ -54,7 +54,8 @@
       "items": [
         {
           "id": 2,
-          "requires": [ 61 ]
+          "requires": [ 61 ],
+          "player": 0
         }
       ]
     },
@@ -326,7 +327,8 @@
       "items": [
         {
           "id": 3,
-          "requires": [ 61 ]
+          "requires": [ 61 ],
+          "player": 0
         }
       ]
     },
@@ -917,7 +919,8 @@
       "items": [
         {
           "id": 4,
-          "requires": [ 61 ]
+          "requires": [ 61 ],
+          "player": 0
         }
       ]
     },
@@ -976,7 +979,8 @@
       "items": [
         {
           "id": 6,
-          "requires": [ 61 ]
+          "requires": [ 61 ],
+          "player": 0
         }
       ]
     },
@@ -1468,7 +1472,8 @@
       "items": [
         {
           "id": 4,
-          "requires": [ 61 ]
+          "requires": [ 61 ],
+          "player": 0
         }
       ]
     },

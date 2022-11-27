@@ -49,6 +49,10 @@ namespace IntelOrca.Biohazard.RE1
 
         public byte[] GetInitialItems(RandoConfig config)
         {
+            // Jill has the lockpick which can open sword key doors
+            if (config.Player == 1)
+                return new[] { Re1ItemIds.SwordKey };
+
             return new byte[0];
         }
 
