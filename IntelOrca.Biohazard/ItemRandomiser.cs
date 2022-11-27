@@ -266,7 +266,7 @@ namespace IntelOrca.Biohazard
                     {
                         if (!PlaceKeyItem(req, true))
                         {
-                            throw new Exception($"Unable to place {GetNth(i + 1)} {(ItemType)req}");
+                            throw new Exception($"Unable to place {GetNth(i + 1)} {_itemHelper.GetItemName((byte)req)}");
                         }
                     }
                     UpdateRequiredItemList();

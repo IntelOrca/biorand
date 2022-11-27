@@ -82,6 +82,7 @@ namespace IntelOrca.Biohazard.RE1
         protected override void Generate(RandoConfig config, ReInstallConfig reConfig, string installPath, string modPath)
         {
             GenerateRdts(config.WithPlayerScenario(0, 0), installPath, modPath);
+            GenerateRdts(config.WithPlayerScenario(1, 0), installPath, modPath);
 
             if (config.RandomBgm)
             {
