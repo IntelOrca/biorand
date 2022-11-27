@@ -458,6 +458,18 @@ namespace IntelOrca.Biohazard.BioRand
             return new Re1Randomiser();
         }
 
+        private ReInstallConfig GetInstallConfig()
+        {
+            var config = new ReInstallConfig();
+            config.SetEnabled(0, _settings.GameEnabled1);
+            config.SetEnabled(1, _settings.GameEnabled2);
+            config.SetEnabled(2, _settings.GameEnabled3);
+            config.SetInstallPath(0, _settings.GamePath1);
+            config.SetInstallPath(1, _settings.GamePath2);
+            config.SetInstallPath(2, _settings.GamePath3);
+            return config;
+        }
+
         private async void btnGenerate_Click(object sender, RoutedEventArgs e)
         {
             SaveSettings();
@@ -503,7 +515,7 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 btn.Content = "Generating...";
                 IsEnabled = false;
-                await Task.Run(() => randomiser.Generate(_config, gamePath));
+                await Task.Run(() => randomiser.Generate(_config, GetInstallConfig()));
                 RandoAppSettings.LogGeneration(_config.ToString(), gamePath);
                 ShowGenerateCompleteMessage();
             }
