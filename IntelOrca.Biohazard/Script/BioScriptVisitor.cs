@@ -6,11 +6,11 @@ namespace IntelOrca.Biohazard.Script
 {
     internal class BioScriptVisitor
     {
-        private BioVersion _version;
+        protected BioVersion Version;
 
         public virtual void VisitVersion(BioVersion version)
         {
-            _version = version;
+            Version = version;
         }
 
         public virtual void VisitBeginScript(BioScriptKind kind)
@@ -37,7 +37,7 @@ namespace IntelOrca.Biohazard.Script
         private void VisitOpcode(int offset, int length, BinaryReader br)
         {
             var opcode = br.PeekByte();
-            if (_version == BioVersion.Biohazard1)
+            if (Version == BioVersion.Biohazard1)
             {
                 switch ((OpcodeV1)opcode)
                 {

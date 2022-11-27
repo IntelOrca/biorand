@@ -12,7 +12,16 @@
     <ApplicationIcon>biorand.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="resources\re1.png" />
+    <None Remove="resources\re2.png" />
+    <None Remove="resources\re3.png" />
+    <None Remove="resources\settings.png" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="biorand.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="resources\settings.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="6.0.6" />
@@ -22,5 +31,10 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Net.Http" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="resources\re1.png" />
+    <Resource Include="resources\re2.png" />
+    <Resource Include="resources\re3.png" />
   </ItemGroup>
 </Project>

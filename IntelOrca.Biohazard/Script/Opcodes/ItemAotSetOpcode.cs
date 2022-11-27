@@ -56,7 +56,7 @@ namespace IntelOrca.Biohazard.Script.Opcodes
                     Offset = offset,
                     Length = 22,
 
-                    Opcode = br.ReadByte(),
+                    Opcode = opcode,
                     Id = br.ReadByte(),
                     SCE = br.ReadByte(),
                     SAT = br.ReadByte(),

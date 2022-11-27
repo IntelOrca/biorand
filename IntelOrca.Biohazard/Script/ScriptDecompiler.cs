@@ -12,7 +12,6 @@ namespace IntelOrca.Biohazard.Script
         private bool _endDoWhile;
         private bool _constructingBinaryExpression;
         private int _expressionCount;
-        private BioVersion _version;
         private IConstantTable _constantTable = new Bio2ConstantTable();
 
         private static readonly string[] g_sceNames = new string[] {
@@ -58,8 +57,8 @@ namespace IntelOrca.Biohazard.Script
 
         public override void VisitVersion(BioVersion version)
         {
-            _version = version;
-            if (_version == BioVersion.Biohazard1)
+            base.VisitVersion(version);
+            if (version == BioVersion.Biohazard1)
                 _constantTable = new Bio1ConstantTable();
 
             _sb.WriteLine("#version " + (int)version);
@@ -174,7 +173,7 @@ namespace IntelOrca.Biohazard.Script
                 CloseCurrentBlock();
             }
 
-            if (_version == BioVersion.Biohazard1)
+            if (Version == BioVersion.Biohazard1)
             {
                 switch ((OpcodeV1)opcode)
                 {
@@ -211,7 +210,7 @@ namespace IntelOrca.Biohazard.Script
 
         private bool IsOpcodeCondition(byte opcodeB)
         {
-            if (_version == BioVersion.Biohazard1)
+            if (Version == BioVersion.Biohazard1)
             {
                 var opcode = (OpcodeV1)opcodeB;
                 return opcode == OpcodeV1.Ck ||

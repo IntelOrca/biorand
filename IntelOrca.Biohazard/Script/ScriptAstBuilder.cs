@@ -10,14 +10,8 @@ namespace IntelOrca.Biohazard.Script
         private Stack<IfAstNode> _ifStack = new Stack<IfAstNode>();
         private Stack<List<IScriptAstNode>> _statementStack = new Stack<List<IScriptAstNode>>();
         private bool _endOfSubroutine;
-        private BioVersion _version;
 
         public ScriptAst Ast { get; set; } = new ScriptAst();
-
-        public override void VisitVersion(BioVersion version)
-        {
-            _version = version;
-        }
 
         public override void VisitBeginScript(BioScriptKind kind)
         {
@@ -40,7 +34,7 @@ namespace IntelOrca.Biohazard.Script
             CheckEndIfElseStatement(opcode.Offset);
 
             var opcodeNode = new OpcodeAstNode(opcode);
-            if (_version == BioVersion.Biohazard1)
+            if (Version == BioVersion.Biohazard1)
             {
                 switch ((OpcodeV1)opcode.Opcode)
                 {
@@ -150,7 +144,7 @@ namespace IntelOrca.Biohazard.Script
 
         public override void VisitEndScript(BioScriptKind kind)
         {
-            var node = new ScriptAstNode(_version, _subroutines.ToArray());
+            var node = new ScriptAstNode(Version, _subroutines.ToArray());
             if (kind == BioScriptKind.Init)
             {
                 Ast.Init = node;

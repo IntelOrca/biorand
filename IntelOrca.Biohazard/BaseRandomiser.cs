@@ -54,8 +54,17 @@ namespace IntelOrca.Biohazard
             foreach (var rdtId in rdtIds)
             {
                 var rdtPath = GetRdtPath(dataPath, rdtId, player);
-                var rdtFile = new RdtFile(rdtPath, BiohazardVersion);
-                result[rdtId] = rdtFile.Checksum;
+                try
+                {
+                    if (File.Exists(rdtPath))
+                    {
+                        var rdtFile = new RdtFile(rdtPath, BiohazardVersion);
+                        result[rdtId] = rdtFile.Checksum;
+                    }
+                }
+                catch
+                {
+                }
             }
             return result;
         }
