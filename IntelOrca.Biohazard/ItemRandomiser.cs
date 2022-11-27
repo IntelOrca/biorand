@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace IntelOrca.Biohazard
 {
@@ -463,7 +464,7 @@ namespace IntelOrca.Biohazard
             foreach (var itemType in items)
             {
                 // Spawn weapon
-                var amount = GetRandomAmount(itemType);
+                var amount = GetRandomAmount(itemType, true);
                 SpawnItem(shuffled, itemType, amount);
 
                 // Add supported ammo types
@@ -475,29 +476,54 @@ namespace IntelOrca.Biohazard
             }
 
             // Now everything else
-            double ammo = _config.RatioAmmo / 32.0;
-            double health = _config.RatioHealth / 32.0;
-            double ink = _config.RatioInkRibbons / 32.0;
-
-            var table = _rng.CreateProbabilityTable<byte>();
-            table.Add(_itemHelper.GetItemId(CommonItemKind.InkRibbon), ink);
-            table.Add(_itemHelper.GetItemId(CommonItemKind.GreenHerb), health * 0.5);
-            table.Add(_itemHelper.GetItemId(CommonItemKind.RedHerb), health * 0.3);
-            table.Add(_itemHelper.GetItemId(CommonItemKind.BlueHerb), health * 0.1);
-            table.Add(_itemHelper.GetItemId(CommonItemKind.FirstAid), health * 0.1);
-
+            var ammoTable = _rng.CreateProbabilityTable<byte>();
             foreach (var ammoType in ammoTypes)
             {
                 var probability = _itemHelper.GetItemProbability(ammoType);
-                table.Add(ammoType, ammo * probability);
+                ammoTable.Add(ammoType, probability);
             }
 
-            bool successful;
-            do
+            var healthTable = _rng.CreateProbabilityTable<byte>();
+            healthTable.Add(_itemHelper.GetItemId(CommonItemKind.GreenHerb), 0.5);
+            healthTable.Add(_itemHelper.GetItemId(CommonItemKind.RedHerb), 0.3);
+            healthTable.Add(_itemHelper.GetItemId(CommonItemKind.BlueHerb), 0.1);
+            healthTable.Add(_itemHelper.GetItemId(CommonItemKind.FirstAid), 0.1);
+
+            var inkTable = _rng.CreateProbabilityTable<byte>();
+            inkTable.Add(_itemHelper.GetItemId(CommonItemKind.InkRibbon), 1);
+
+            var numAmmo = (int)((_config.RatioAmmo / 32.0) * shuffled.Count);
+            var numHealth = (int)((_config.RatioHealth / 32.0) * shuffled.Count);
+            var numInk = (int)((_config.RatioInkRibbons / 32.0) * shuffled.Count);
+
+            var proportions = new List<(int, Rng.Table<byte>)>();
+            proportions.Add((numAmmo, ammoTable));
+            proportions.Add((numHealth, healthTable));
+            proportions.Add((numInk, inkTable));
+            proportions = proportions
+                .Where(x => x.Item1 != 0)
+                .OrderBy(x => x.Item1)
+                .ToList();
+            var lastP = proportions[proportions.Count - 1];
+            lastP.Item1 = int.MaxValue;
+            proportions[proportions.Count - 1] = lastP;
+
+            foreach (var p in proportions)
             {
-                var itemType = table.Next();
-                successful = SpawnItem(shuffled, itemType, GetRandomAmount(itemType));
-            } while (successful);
+                SpawnItems(shuffled, p.Item1, p.Item2);
+            }
+        }
+
+        private void SpawnItems(Queue<ItemPoolEntry> pool, int count, Rng.Table<byte> probabilityTable)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                var itemType = probabilityTable.Next();
+                if (!SpawnItem(pool, itemType, GetRandomAmount(itemType, false)))
+                {
+                    break;
+                }
+            }
         }
 
         private bool SpawnItem(Queue<ItemPoolEntry> pool, byte itemType, byte amount)
@@ -520,16 +546,16 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private byte GetRandomAmount(byte type)
+        private byte GetRandomAmount(byte type, bool fullQuantity)
         {
             if (type == _itemHelper.GetItemId(CommonItemKind.InkRibbon))
             {
                 return (byte)_rng.Next(1, 3);
             }
 
-            var multiplier = _config.AmmoQuantity / 8.0;
+            var multiplier = fullQuantity ? 1 : (_config.AmmoQuantity / 8.0);
             var max = _itemHelper.GetMaxAmmoForAmmoType(type);
-            return (byte)_rng.Next(1, (int)(max * multiplier));
+            return (byte)_rng.Next(1, (int)(max * multiplier) + 1);
         }
 
         private void ShuffleRemainingPool()
