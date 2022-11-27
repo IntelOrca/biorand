@@ -88,7 +88,7 @@ namespace IntelOrca.Biohazard
             return new GameData(rdts.ToArray());
         }
 
-        public void Generate(RandoConfig config, string installPath)
+        public void Generate(RandoConfig config, ReInstallConfig reConfig)
         {
             if (config.Version < RandoConfig.LatestVersion)
             {
@@ -99,6 +99,7 @@ namespace IntelOrca.Biohazard
                 throw new BioRandVersionException($"This seed was generated with a newer version of the randomizer and cannot be played.");
             }
 
+            var installPath = reConfig.GetInstallPath(BiohazardVersion);
             var originalDataPath = GetDataPath(installPath);
             var modPath = Path.Combine(installPath, @"mod_biorand");
 
@@ -114,12 +115,12 @@ namespace IntelOrca.Biohazard
             }
             Directory.CreateDirectory(modPath);
 
-            Generate(config, originalDataPath, modPath);
+            Generate(config, reConfig, originalDataPath, modPath);
 
             File.WriteAllText(Path.Combine(modPath, "manifest.txt"), "[MOD]\nName = BioRand: A Resident Evil Randomizer\n");
         }
 
-        protected abstract void Generate(RandoConfig config, string installPath, string modPath);
+        protected abstract void Generate(RandoConfig config, ReInstallConfig reConfig, string installPath, string modPath);
 
         public void GenerateRdts(RandoConfig config, string originalDataPath, string modPath)
         {

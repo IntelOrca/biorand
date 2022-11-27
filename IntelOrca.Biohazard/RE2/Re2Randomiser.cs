@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
+using IntelOrca.Biohazard.RE1;
 
 namespace IntelOrca.Biohazard.RE2
 {
@@ -75,7 +76,7 @@ namespace IntelOrca.Biohazard.RE2
             return checksums.ToDictionary(x => RdtId.Parse(x.Key), x => x.Value);
         }
 
-        protected override void Generate(RandoConfig config, string installPath, string modPath)
+        protected override void Generate(RandoConfig config, ReInstallConfig reConfig, string installPath, string modPath)
         {
             var po = new ParallelOptions();
 #if DEBUG
@@ -102,10 +103,25 @@ namespace IntelOrca.Biohazard.RE2
                 logger.WriteHeading("Resident Evil Randomizer");
                 logger.WriteLine($"Seed: {config}");
 
-                var bgmRandomiser = new BgmRandomiser(logger, installPath, modPath, @"Common\Sound\BGM", GetBgmJson(), new Rng(config.Seed));
+                var bgmDirectory = Path.Combine(modPath, @"Common\Sound\BGM");
+                var bgmRandomiser = new BgmRandomiser(logger, bgmDirectory, GetBgmJson(), false, new Rng(config.Seed));
+                AddMusicSelection(bgmRandomiser, reConfig);
+                if (reConfig.IsEnabled(BioVersion.Biohazard1))
+                {
+                    var re1r = new Re1Randomiser();
+                    re1r.AddMusicSelection(bgmRandomiser, reConfig);
+                }
+                bgmRandomiser.Randomise();
             }
 
             RandoBgCreator.Save(config, modPath);
+        }
+
+        public void AddMusicSelection(BgmRandomiser bgmRandomizer, ReInstallConfig reConfig)
+        {
+            var dataPath = GetDataPath(reConfig.GetInstallPath(BioVersion.Biohazard2));
+            var srcBgmDirectory = Path.Combine(dataPath, @"Common\Sound\BGM");
+            bgmRandomizer.AddToSelection(GetBgmJson(), srcBgmDirectory, ".sap");
         }
 
         protected override string GetJsonMap()

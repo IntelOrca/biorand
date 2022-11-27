@@ -3,7 +3,7 @@ using System.IO;
 
 namespace IntelOrca.Biohazard
 {
-    internal class RandoLogger : IDisposable
+    public class RandoLogger : IDisposable
     {
         private readonly StreamWriter _sw;
 

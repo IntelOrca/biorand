@@ -7,7 +7,7 @@ using NVorbis;
 
 namespace IntelOrca.Biohazard
 {
-    internal class BgmRandomiser
+    public class BgmRandomiser
     {
         public const string TagAlarm = "alarm";
         public const string TagAmbient = "ambient";
@@ -21,29 +21,32 @@ namespace IntelOrca.Biohazard
         public const string TagSafe = "safe";
 
         private readonly RandoLogger _logger;
+        private readonly BgmList _srcBgmList = new BgmList();
+        private readonly string _bgmJson;
+        private readonly string _bgmDirectory;
+        private readonly bool _isWav;
         private readonly Rng _rng;
 
-        public string GamePath { get; }
-        public string ModPath { get; }
-        public string BgmSubDirectory { get; }
-        public string BgmJson { get; }
-
-        public bool IsWav { get; set; }
-
-        public BgmRandomiser(RandoLogger logger, string gamePath, string modPath, string bgmSubDirectory, string bgmJson, Rng rng)
+        public BgmRandomiser(RandoLogger logger, string bgmDirectory, string bgmJson, bool isWav, Rng rng)
         {
             _logger = logger;
+            _bgmJson = bgmJson;
+            _bgmDirectory = bgmDirectory;
+            _isWav = isWav;
             _rng = rng;
-            GamePath = gamePath;
-            ModPath = modPath;
-            BgmSubDirectory = bgmSubDirectory;
-            BgmJson = bgmJson;
         }
 
-        public void Randomise(Rng random)
+        public void AddToSelection(string bgmJson, string bgmSubDirectory, string extension)
+        {
+            var bgmList = GetBtmList(bgmJson);
+            bgmList.MakeFullPath(bgmSubDirectory, extension);
+            _srcBgmList.Union(bgmList);
+        }
+
+        public void Randomise()
         {
             _logger.WriteHeading("Shuffling BGM:");
-            var bgmList = GetBtmList();
+            var bgmList = GetBtmList(_bgmJson);
             Shuffle(bgmList, TagCreepy, TagCreepy);
             Shuffle(bgmList, TagCalm, TagCalm);
             Shuffle(bgmList, TagDanger, TagDanger);
@@ -59,31 +62,90 @@ namespace IntelOrca.Biohazard
 
         private void Shuffle(BgmList bgmList, string dstTag, string srcTag)
         {
-            var list = bgmList.GetList(dstTag);
-            var shuffled = bgmList.GetList(srcTag).Shuffle(_rng);
-            Swap(list, shuffled);
-        }
-
-        private void Swap(string[] dstList, string[] srcList)
-        {
-            var extension = IsWav ? ".wav" : ".sap";
-            var srcDir = Path.Combine(GamePath, BgmSubDirectory);
-            var dstDir = Path.Combine(ModPath, BgmSubDirectory);
+            var dstList = bgmList.GetList(dstTag);
+            var srcList = _srcBgmList
+                .GetList(srcTag)
+                .Shuffle(_rng);
+            var extension = _isWav ? ".wav" : ".sap";
+            var dstDir = _bgmDirectory;
             Directory.CreateDirectory(dstDir);
-            for (int i = 0; i < dstList.Length; i++)
+            for (int i = 0; i < dstList.Count; i++)
             {
-                var src = Path.Combine(srcDir, srcList[i] + extension);
+                var src = srcList[i];
                 var dst = Path.Combine(dstDir, dstList[i] + extension);
-                File.Copy(src, dst, true);
+                CopyMusicTrack(src, dst);
 
                 _logger.WriteLine($"Setting {dstList[i]} to {srcList[i]}");
             }
         }
 
-        private BgmList GetBtmList()
+        private void CopyMusicTrack(string src, string dst)
         {
-            var json = BgmJson;
-            var dict = JsonSerializer.Deserialize<Dictionary<string, string[]>>(json, new JsonSerializerOptions()
+            var srcExtension = Path.GetExtension(src);
+            var dstExtension = Path.GetExtension(dst);
+            if (string.Equals(srcExtension, dstExtension, StringComparison.OrdinalIgnoreCase))
+            {
+                File.Copy(src, dst, true);
+            }
+            else if (srcExtension.Equals(".wav", StringComparison.OrdinalIgnoreCase))
+            {
+                var srcBytes = File.ReadAllBytes(src);
+                using (var fs = new FileStream(dst, FileMode.Create))
+                {
+                    var bw = new BinaryWriter(fs);
+                    bw.Write((ulong)1);
+                    bw.Write(srcBytes);
+                }
+            }
+            else if (srcExtension.Equals(".sap", StringComparison.OrdinalIgnoreCase))
+            {
+#if USE_FFMPEG
+                RunFFMPEG(src, dst);
+#else
+                var srcBytes = File.ReadAllBytes(src);
+                File.WriteAllBytes(dst, srcBytes.Skip(8).ToArray());
+#endif
+            }
+        }
+
+#if USE_FFMPEG
+        private bool RunFFMPEG(string src, string dst)
+        {
+            var tempFile = Path.GetTempFileName();
+            try
+            {
+                var srcBytes = File.ReadAllBytes(src);
+                File.WriteAllBytes(tempFile, srcBytes.Skip(8).ToArray());
+
+                var ffmpegPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "ffmpeg.exe");
+                var psi = new ProcessStartInfo()
+                {
+                    FileName = ffmpegPath,
+                    Arguments = $"-i \"{tempFile}\" -acodec pcm_s16le \"{dst}\"",
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+                var p = Process.Start(psi);
+                p.WaitForExit();
+                return p.ExitCode == 0;
+            }
+            finally
+            {
+                try
+                {
+                    if (File.Exists(tempFile))
+                        File.Delete(tempFile);
+                }
+                catch
+                {
+                }
+            }
+        }
+#endif
+
+        private BgmList GetBtmList(string bgmJson)
+        {
+            var dict = JsonSerializer.Deserialize<Dictionary<string, string[]>>(bgmJson, new JsonSerializerOptions()
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 ReadCommentHandling = JsonCommentHandling.Skip
@@ -166,17 +228,17 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        public void RandomizeFromOwnMusic(string fileName, string name, byte[] resource)
+        private void RandomizeFromOwnMusic(string fileName, string name, byte[] resource)
         {
             var ms = new MemoryStream(resource);
             using (var vorbis = new VorbisReader(ms))
             {
-                var extension = IsWav ? ".wav" : ".sap";
-                var dst = Path.Combine(BgmSubDirectory, fileName + extension);
+                var extension = _isWav ? ".wav" : ".sap";
+                var dst = Path.Combine(_bgmDirectory, fileName + extension);
                 using (var fs = new FileStream(dst, FileMode.Create))
                 {
                     var bw = new BinaryWriter(fs);
-                    if (!IsWav)
+                    if (!_isWav)
                     {
                         bw.Write((ulong)1);
                     }
@@ -224,20 +286,49 @@ namespace IntelOrca.Biohazard
 
         private class BgmList
         {
-            private Dictionary<string, string[]> _samples = new Dictionary<string, string[]>();
+            private Dictionary<string, List<string>> _samples = new Dictionary<string, List<string>>();
+
+            public BgmList()
+            {
+            }
 
             public BgmList(Dictionary<string, string[]> samples)
             {
-                _samples = samples;
+                _samples = samples
+                    .ToDictionary(x => x.Key, x => x.Value.ToList());
             }
 
-            public string[] GetList(string tag)
+            public void Union(BgmList other)
+            {
+                foreach (var kvp in other._samples)
+                {
+                    var list = GetList(kvp.Key);
+                    list.AddRange(kvp.Value);
+                }
+            }
+
+            public List<string> GetList(string tag)
             {
                 if (_samples.TryGetValue(tag, out var list))
                 {
                     return list;
                 }
-                return new string[0];
+
+                list = new List<string>();
+                _samples.Add(tag, list);
+                return list;
+            }
+
+            public void MakeFullPath(string bgmSubDirectory, string extension)
+            {
+                foreach (var kvp in _samples)
+                {
+                    var list = kvp.Value;
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        list[i] = Path.Combine(bgmSubDirectory, list[i]) + extension;
+                    }
+                }
             }
         }
     }
