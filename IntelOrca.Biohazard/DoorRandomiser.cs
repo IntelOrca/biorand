@@ -125,6 +125,7 @@ namespace IntelOrca.Biohazard
             var beginNode = graph.Start;
             beginNode.Visited = true;
             var pool = new List<PlayNode>() { beginNode };
+            AddStickyNodeGroup(beginNode, pool);
             for (int i = 0; i < numAreas; i++)
             {
                 pool.AddRange(areaSuperNodes[i]);
