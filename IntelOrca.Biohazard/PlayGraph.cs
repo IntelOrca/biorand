@@ -233,9 +233,9 @@ namespace IntelOrca.Biohazard
         public override string ToString()
         {
             if (Node == null)
-                return "(unconnected)";
+                return $"{Parent} -> (unconnected)";
 
-            return string.Join(" ", Node.RdtId, GetRequiresString(null));
+            return $"{Parent} -> {Node.RdtId} {GetRequiresString(null)}";
         }
     }
 }

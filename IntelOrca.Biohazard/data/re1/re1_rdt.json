@@ -1380,6 +1380,11 @@
       ]
     },
     "515": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ]
       "doors": [
         {
           "target": "50C"
@@ -1417,12 +1422,18 @@
       ]
     },
     "70C": {
+      "doorRando": [
+        {
+          "category": "bridge"
+        }
+      ],
       "doors": [
         {
           "target": "20B"
         },
         {
-          "target": "71A"
+          "target": "71A",
+          "lock": "unblock"
         }
       ]
     },
@@ -1529,7 +1540,8 @@
           "target": "610"
         },
         {
-          "target": "71B"
+          "target": "71B",
+          "lock": "side"
         }
       ]
     }
