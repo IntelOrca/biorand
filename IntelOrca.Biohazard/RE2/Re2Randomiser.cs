@@ -114,7 +114,7 @@ namespace IntelOrca.Biohazard.RE2
                 bgmRandomiser.Randomise();
             }
 
-            RandoBgCreator.Save(config, modPath);
+            RandoBgCreator.Save(config, modPath, BiohazardVersion);
         }
 
         public void AddMusicSelection(BgmRandomiser bgmRandomizer, ReInstallConfig reConfig)
