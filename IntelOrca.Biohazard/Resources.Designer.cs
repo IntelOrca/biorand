@@ -313,9 +313,19 @@ namespace IntelOrca.Biohazard {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] title_bg {
+        internal static byte[] title_bg_1 {
             get {
-                object obj = ResourceManager.GetObject("title_bg", resourceCulture);
+                object obj = ResourceManager.GetObject("title_bg_1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] title_bg_2 {
+            get {
+                object obj = ResourceManager.GetObject("title_bg_2", resourceCulture);
                 return ((byte[])(obj));
             }
         }
