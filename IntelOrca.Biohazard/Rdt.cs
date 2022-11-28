@@ -12,6 +12,7 @@ namespace IntelOrca.Biohazard
     {
         private RdtFile _rdtFile;
 
+        public BioVersion Version => _rdtFile.Version;
         public RdtId RdtId { get; }
         public string? OriginalPath { get; set; }
         public string? ModifiedPath { get; set; }

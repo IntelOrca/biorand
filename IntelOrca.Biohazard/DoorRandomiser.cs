@@ -162,6 +162,8 @@ namespace IntelOrca.Biohazard
 
         private List<PlayNode> CreateNodes()
         {
+            FixRE1Doors();
+
             var nodes = new List<PlayNode>();
             foreach (var kvp in _map.Rooms!)
             {
@@ -177,6 +179,41 @@ namespace IntelOrca.Biohazard
                 nodes.Add(node);
             }
             return nodes;
+        }
+
+        private void FixRE1Doors()
+        {
+            // For RE 1 doors that have 0 as target stage, that means keep the stage
+            // the same. This replaces every door with an explicit stage to simplify things
+            foreach (var rdt in _gameData.Rdts)
+            {
+                if (rdt.Version == BioVersion.Biohazard1)
+                {
+                    foreach (var door in rdt.Doors)
+                    {
+                        var target = door.Target;
+                        if (target.Stage == 255)
+                            target = new RdtId(rdt.RdtId.Stage, target.Room);
+                        door.Target = GetRE1FixedId(target);
+                    }
+                }
+            }
+        }
+
+        private RdtId GetRE1FixedId(RdtId rdtId)
+        {
+            var rooms = _map.Rooms!;
+            if (rdtId.Stage == 0 || rdtId.Stage == 1)
+            {
+                if (!rooms.ContainsKey(rdtId.ToString()))
+                    return new RdtId(rdtId.Stage + 5, rdtId.Room);
+            }
+            else if (rdtId.Stage == 5 || rdtId.Stage == 6)
+            {
+                if (!rooms.ContainsKey(rdtId.ToString()))
+                    return new RdtId(rdtId.Stage - 5, rdtId.Room);
+            }
+            return rdtId;
         }
 
         private void CreateArea(PlayNode begin, PlayNode end, List<PlayNode> pool)
@@ -685,8 +722,8 @@ namespace IntelOrca.Biohazard
             if (node != null)
                 return node;
 
-            var rdt = _gameData.GetRdt(rdtId);
-            var items = rdt!.EnumerateOpcodes<IItemAotSetOpcode>(_config)
+            var rdt = _gameData.GetRdt(rdtId)!;
+            var items = rdt.EnumerateOpcodes<IItemAotSetOpcode>(_config)
                 .DistinctBy(x => x.Id)
                 .Where(x => _config.IncludeDocuments || !_itemHelper.IsItemDocument((byte)x.Type))
                 .Select(x => new ItemPoolEntry()
@@ -756,6 +793,9 @@ namespace IntelOrca.Biohazard
                             entrance = entrance.Value.WithCamera(door.Cut.Value);
                         }
                     }
+
+                    if (doorId == null || entrance == null)
+                        doorId = doorId;
 
                     var edgeNode = GetOrCreateNode(targetRdt.RdtId);
                     var edge = new PlayEdge(node, edgeNode, door.NoReturn, door.Requires, doorId, entrance);

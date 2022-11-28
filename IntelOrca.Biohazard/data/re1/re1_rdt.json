@@ -2,7 +2,7 @@
   "beginEndRooms": [
     {
       "start": "106",
-      "end": "303"
+      "end": "501"
     }
   ],
   "rooms": {
@@ -140,7 +140,8 @@
           "requires": [ 52 ]
         },
         {
-          "target": "203"
+          "target": "203",
+          "randomize": false
         }
       ]
     },
@@ -488,7 +489,8 @@
       "linkedRoom": "703",
       "doors": [
         {
-          "target": "106"
+          "target": "106",
+          "randomize": false
         },
         {
           "target": "202"
