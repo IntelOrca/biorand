@@ -311,6 +311,97 @@ namespace IntelOrca.Biohazard {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {
+        ///  &quot;outside&quot;: [],
+        ///  &quot;creepy&quot;: [
+        ///    &quot;BGM_00&quot;,
+        ///    &quot;BGM_0A&quot;,
+        ///    &quot;BGM_0E&quot;,
+        ///    &quot;BGM_1A&quot;,
+        ///    &quot;BGM_1B&quot;,
+        ///    &quot;BGM_1C&quot;,
+        ///    &quot;BGM_1D&quot;,
+        ///    &quot;BGM_1E&quot;,
+        ///    &quot;BGM_02&quot;,
+        ///    &quot;BGM_2D&quot;,
+        ///    &quot;BGM_2E&quot;,
+        ///    &quot;BGM_3A&quot;,
+        ///    &quot;BGM_3E&quot;,
+        ///    &quot;BGM_07&quot;,
+        ///    &quot;BGM_09&quot;,
+        ///    &quot;BGM_14&quot;,
+        ///    &quot;BGM_15&quot;,
+        ///    &quot;BGM_16&quot;,
+        ///    &quot;BGM_17&quot;,
+        ///    &quot;BGM_18&quot;,
+        ///    &quot;BGM_19&quot;,
+        ///    &quot;BGM_20&quot;,
+        ///    &quot;BGM_26&quot;,
+        ///    &quot;BGM_30&quot;,
+        ///    &quot;BGM_32&quot;,
+        ///    &quot;BGM_33&quot;,
+        ///    &quot;BGM_34&quot;,
+        ///    &quot;BGM_36&quot;,
+        ///    &quot;BGM_37&quot;,
+        ///    &quot;BGM_40&quot;,
+        ///    &quot;BGM_49&quot;
+        ///  ],
+        ///  &quot;calm&quot;: [
+        ///    &quot;BGM_0C&quot;,
+        ///    &quot;BGM_3F&quot;,
+        ///  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string re1_bgm {
+            get {
+                return ResourceManager.GetString("re1_bgm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///  &quot;beginEndRooms&quot;: [
+        ///    {
+        ///      &quot;start&quot;: &quot;106&quot;,
+        ///      &quot;end&quot;: &quot;501&quot;
+        ///    }
+        ///  ],
+        ///  &quot;rooms&quot;: {
+        ///    &quot;100&quot;: {
+        ///      &quot;linkedRoom&quot;: &quot;600&quot;,
+        ///      &quot;doorRando&quot;: [
+        ///        {
+        ///          &quot;category&quot;: &quot;box&quot;
+        ///        }
+        ///      ],
+        ///      &quot;doors&quot;: [
+        ///        {
+        ///          &quot;target&quot;: &quot;101&quot;
+        ///        }
+        ///      ],
+        ///      &quot;items&quot;: [
+        ///        {
+        ///          &quot;id&quot;: 6,
+        ///          &quot;type&quot;: 0
+        ///        },
+        ///        {
+        ///          &quot;id&quot;: 7,
+        ///          &quot;type&quot;: 0
+        ///        }
+        ///      ]
+        ///    },
+        ///    &quot;101&quot;: {
+        ///      &quot;linkedRoom&quot;: &quot;601&quot;,
+        ///      &quot;doors&quot;: [
+        ///        {
+        ///           [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string re1_rdt {
+            get {
+                return ResourceManager.GetString("re1_rdt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] title_bg_1 {
@@ -319,7 +410,7 @@ namespace IntelOrca.Biohazard {
                 return ((byte[])(obj));
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
