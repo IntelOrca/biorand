@@ -145,7 +145,7 @@ namespace IntelOrca.Biohazard
                 DumpScripts(gameData, Path.Combine(modPath, $"scripts_pl{config.Player}"));
 #endif
 
-                var map = GetMap();
+                var map = GetMapFromJson();
                 if (config.RandomDoors || config.RandomItems)
                 {
                     var dgmlPath = Path.Combine(modPath, $"graph_pl{config.Player}.dgml");
@@ -195,19 +195,6 @@ namespace IntelOrca.Biohazard
 
         protected abstract string GetPlayerName(int player);
         private string GetScenarioName(int scenario) => scenario == 0 ? "A" : "B";
-
-        private Map GetMap()
-        {
-#if DEBUG
-            return GetMapFromJson();
-#else
-            if (g_map == null)
-            {
-                g_map = LoadJsonMap();
-            }
-            return g_map;
-#endif
-        }
 
         private Map GetMapFromJson()
         {
