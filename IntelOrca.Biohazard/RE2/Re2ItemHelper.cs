@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks.Sources;
-using IntelOrca.Biohazard.Script;
 
 namespace IntelOrca.Biohazard.RE2
 {
@@ -70,7 +68,7 @@ namespace IntelOrca.Biohazard.RE2
 
         public bool IsItemDocument(byte type)
         {
-            return type <= (byte)ItemType.PlatformKey;
+            return type > (byte)ItemType.PlatformKey;
         }
 
         public byte[] GetInitialItems(RandoConfig config)
@@ -246,7 +244,7 @@ namespace IntelOrca.Biohazard.RE2
             }
             if (rng.Next(0, 2) == 0)
                 items.Add(ItemType.RocketLauncher);
-            return items.Cast<byte>().ToArray();
+            return items.Select(x => (byte)x).ToArray();
         }
     }
 }
