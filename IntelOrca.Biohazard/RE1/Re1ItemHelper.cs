@@ -14,9 +14,9 @@ namespace IntelOrca.Biohazard.RE1
                 .Replace("_", " ");
         }
 
-        public bool IsOptionalItem(byte type)
+        public bool IsOptionalItem(RandoConfig config, byte type)
         {
-            return type == 56;
+            return false;
         }
 
         public bool IsItemTypeDiscardable(byte type)
@@ -101,7 +101,7 @@ namespace IntelOrca.Biohazard.RE1
             switch (kind)
             {
                 case CommonItemKind.HandgunAmmo:
-                    return Re1ItemIds.Beretta;
+                    return Re1ItemIds.Clip;
                 case CommonItemKind.InkRibbon:
                     return Re1ItemIds.InkRibbon;
                 case CommonItemKind.GreenHerb:

@@ -272,10 +272,7 @@ namespace IntelOrca.Biohazard
                         _logger.WriteLine($"{node.RdtId}:{edge.DoorId} -> null");
 
                         // Connect door back to itself
-                        if (edge.DoorId != null && edge.Entrance != null)
-                        {
-                            ConnectDoor(edge, edge);
-                        }
+                        LockDoor(edge);
 
                         // Remove requirement of keys
                         edge.Requires = new ushort[0];
@@ -594,6 +591,22 @@ namespace IntelOrca.Biohazard
             _logger.WriteLine($"    Connected {GetEdgeString(a, aEdge)} to {GetEdgeString(b, bEdge)}");
         }
 
+        private void LockDoor(PlayEdge edge)
+        {
+            if (edge.DoorId == null)
+                return;
+
+            if (edge.Entrance != null)
+            {
+                ConnectDoor(edge, edge);
+                return;
+            }
+
+            var doorId = edge.DoorId.Value;
+            var rdt = _gameData.GetRdt(edge.Parent.RdtId)!;
+            rdt.SetDoorLock(doorId, _lockId++);
+        }
+
         private string GetEdgeString(PlayNode node, PlayEdge edge)
         {
             var rs = edge.GetRequiresString(_itemHelper);
@@ -794,9 +807,6 @@ namespace IntelOrca.Biohazard
                             entrance = entrance.Value.WithCamera(door.Cut.Value);
                         }
                     }
-
-                    if (doorId == null || entrance == null)
-                        doorId = doorId;
 
                     var edgeNode = GetOrCreateNode(targetRdt.RdtId);
                     var edge = new PlayEdge(node, edgeNode, door.NoReturn, door.Requires, doorId, entrance);

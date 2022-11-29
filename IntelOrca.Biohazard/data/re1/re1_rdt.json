@@ -20,12 +20,24 @@
       ],
       "items": [
         {
+          "id": 3,
+          "type": 0,
+          "player": 1
+        },
+        {
+          "id": 4,
+          "type": 0,
+          "player": 1
+        },
+        {
           "id": 6,
-          "type": 0
+          "type": 0,
+          "player": 0
         },
         {
           "id": 7,
-          "type": 0
+          "type": 0,
+          "player": 0
         }
       ]
     },
@@ -66,7 +78,7 @@
           "target": "101"
         },
         {
-          "target": "104"
+          "target": "604"
         },
         {
           "target": "10C"
@@ -80,8 +92,8 @@
         }
       ]
     },
-    "104": {
-      "linkedRoom": "604",
+    "604": {
+      "linkedRoom": "104",
       "doors": [
         {
           "target": "103",
@@ -105,7 +117,7 @@
       "linkedRoom": "605",
       "doors": [
         {
-          "target": "104",
+          "target": "604",
           "randomize": false
         },
         {
@@ -120,8 +132,29 @@
           "requiresRoom": [ "10F" ]
         },
         {
+          "id": 4,
+          "type": 0,
+          "player": 0
+        },
+        {
           "id": 5,
-          "type": 0
+          "type": 0,
+          "player": 0
+        },
+        {
+          "id": 7,
+          "type": 0,
+          "player": 1
+        },
+        {
+          "id": 8,
+          "type": 0,
+          "player": 1
+        },
+        {
+          "id": 23,
+          "priority": "low",
+          "doorRando": true
         }
       ]
     },
@@ -300,7 +333,7 @@
       "linkedRoom": "60F",
       "doors": [
         {
-          "target": "104"
+          "target": "604"
         }
       ],
       "items": [
@@ -338,10 +371,6 @@
       "doors": [
         {
           "target": "111"
-        },
-        {
-          "target": "11C",
-          "requires": [ 56 ]
         }
       ]
     },
@@ -426,6 +455,11 @@
       ]
     },
     "11A": {
+      "doorRando": [
+        {
+          "category": "bridge"
+        }
+      ],
       "linkedRoom": "61A",
       "doors": [
         {
@@ -541,7 +575,13 @@
           "target": "204"
         },
         {
-          "target": "207"
+          "target": "207",
+          "doorRando": false
+        },
+        {
+          "target": "207",
+          "lock": "always",
+          "doorRando": true
         }
       ]
     },
@@ -682,18 +722,25 @@
         },
         {
           "target": "302",
-          "lock": "side"
+          "randomize": false,
+          "lock": "gate"
         }
       ]
     },
     "301": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "target": "300"
         },
         {
           "target": "302",
-          "requires": [ 29 ]
+          "requires": [ 29 ],
+          "randomize": false
         }
       ]
     },
@@ -701,22 +748,31 @@
       "doors": [
         {
           "target": "300",
-          "requires": [ 39 ]
+          "randomize": false,
+          "requires": [ 39 ],
+          "lock": "unblock",
+          "noUnlock": true
         },
         {
-          "target": "301"
+          "target": "301",
+          "randomize": false
         },
         {
           "target": "304"
         },
         {
           "target": "307",
-          "requiresRoom": [ "301" ],
+          "randomize": false,
           "noReturn": true
         }
       ]
     },
     "303": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "target": "500",
@@ -725,10 +781,12 @@
       ],
       "items": [
         {
-          "id": 1
+          "id": 1,
+          "type": 0
         },
         {
-          "id": 2
+          "id": 2,
+          "type": 0
         }
       ]
     },
@@ -743,6 +801,11 @@
       ]
     },
     "305": {
+      "doorRando": [
+        {
+          "category": "bridge"
+        }
+      ],
       "doors": [
         {
           "target": "30F"
@@ -750,6 +813,7 @@
         {
           "target": "310",
           "requires": [ 63, 64 ],
+          "noUnlock": true,
           "noReturn": true
         }
       ]
@@ -770,7 +834,8 @@
     "307": {
       "doors": [
         {
-          "target": "302"
+          "target": "302",
+          "randomize": false
         },
         {
           "target": "308"
@@ -850,7 +915,12 @@
         },
         {
           "target": "30F",
-          "requires": [ 6 ]
+          "requires": [ 6 ],
+          "player": 0
+        },
+        {
+          "target": "30F",
+          "player": 1
         }
       ]
     },
@@ -881,6 +951,11 @@
       ]
     },
     "310": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "target": "305"
@@ -975,7 +1050,8 @@
           "target": "407"
         },
         {
-          "target": "40D"
+          "target": "40D",
+          "lock": "unblock"
         }
       ],
       "items": [
@@ -1054,7 +1130,8 @@
         },
         {
           "target": "40C",
-          "requires": [ 62 ]
+          "requires": [ 62 ],
+          "randomize": false
         }
       ],
       "items": [
@@ -1094,7 +1171,8 @@
           "target": "406"
         },
         {
-          "target": "40E"
+          "target": "40E",
+          "lock": "unblock"
         }
       ]
     },
@@ -1159,7 +1237,8 @@
         },
         {
           "target": "50D",
-          "requires": [ 39 ]
+          "requires": [ 39 ],
+          "randomize": false
         }
       ]
     },
@@ -1232,7 +1311,20 @@
           "target": "505"
         },
         {
-          "target": "50C"
+          "target": "50C",
+          "doorRando": true
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "type": 0,
+          "doorRando": true
+        },
+        {
+          "id": 15,
+          "type": 0,
+          "doorRando": true
         }
       ],
       "requires": [ 40 ]
@@ -1243,7 +1335,8 @@
           "target": "505"
         },
         {
-          "target": "509"
+          "target": "509",
+          "requiresRoom": [ "506" ]
         },
         {
           "target": "50A"
@@ -1299,12 +1392,19 @@
       ]
     },
     "50D": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
-          "target": "501"
+          "target": "501",
+          "randomize": false
         },
         {
           "target": "303",
+          "randomize": false,
           "noReturn": true
         }
       ]
@@ -1357,6 +1457,11 @@
       ]
     },
     "513": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "target": "514"
@@ -1384,7 +1489,7 @@
         {
           "category": "exclude"
         }
-      ]
+      ],
       "doors": [
         {
           "target": "50C"
@@ -1397,7 +1502,7 @@
     "610": {
       "doors": [
         {
-          "target": "104"
+          "target": "604"
         },
         {
           "target": "71C"
@@ -1412,6 +1517,11 @@
       ]
     },
     "700": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "target": "713"

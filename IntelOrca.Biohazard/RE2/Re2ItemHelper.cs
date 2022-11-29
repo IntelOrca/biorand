@@ -31,8 +31,11 @@ namespace IntelOrca.Biohazard.RE2
             throw new NotImplementedException();
         }
 
-        public bool IsOptionalItem(byte type)
+        public bool IsOptionalItem(RandoConfig config, byte type)
         {
+            if (config.RandomDoors)
+                return false;
+
             switch ((ItemType)type)
             {
                 case ItemType.FilmA:
