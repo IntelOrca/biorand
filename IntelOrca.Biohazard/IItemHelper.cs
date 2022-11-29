@@ -4,7 +4,7 @@
     {
         string GetItemName(byte type);
         byte GetItemId(CommonItemKind kind);
-        bool IsOptionalItem(byte type);
+        bool IsOptionalItem(RandoConfig config, byte type);
         bool IsItemTypeDiscardable(byte type);
         bool IsItemDocument(byte type);
         byte[] GetInitialItems(RandoConfig config);

@@ -93,7 +93,7 @@ namespace IntelOrca.Biohazard
             if (_requiredItems.Count == 0)
                 return true;
 
-            return _requiredItems.All(x => x.Item == null || _itemHelper.IsOptionalItem((byte)x.Item.Value.Type));
+            return _requiredItems.All(x => x.Item == null || _itemHelper.IsOptionalItem(_config, (byte)x.Item.Value.Type));
         }
 
         private void ClearItems()
@@ -163,7 +163,7 @@ namespace IntelOrca.Biohazard
                         continue;
 
                     var requiredItems = edge.Requires == null ? new ushort[0] : edge.Requires.Except(_haveItems).ToArray()!;
-                    var justOptionalLeft = requiredItems.All(x => _itemHelper.IsOptionalItem((byte)x));
+                    var justOptionalLeft = requiredItems.All(x => _itemHelper.IsOptionalItem(_config, (byte)x));
                     if (requiredItems.Length == 0 || justOptionalLeft)
                     {
                         if (seen.Contains(edge.Node.RdtId))
@@ -288,7 +288,7 @@ namespace IntelOrca.Biohazard
                 _logger.WriteLine($"        {_itemHelper.GetItemName((byte)item)}");
             }
 
-            if (keyItemPlaceOrder.Any(x => !_itemHelper.IsOptionalItem((byte)x)))
+            if (keyItemPlaceOrder.Any(x => !_itemHelper.IsOptionalItem(_config, (byte)x)))
                 throw new Exception("Unable to find key item to swap");
 
             _requiredItems.Clear();
