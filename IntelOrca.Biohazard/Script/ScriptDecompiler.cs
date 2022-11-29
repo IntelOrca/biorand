@@ -222,7 +222,7 @@ namespace IntelOrca.Biohazard.Script
                 var opcode = (OpcodeV2)opcodeB;
                 return opcode == OpcodeV2.Ck ||
                     opcode == OpcodeV2.Cmp ||
-                    opcode != OpcodeV2.MemberCmp;
+                    opcode == OpcodeV2.MemberCmp;
             }
         }
 
