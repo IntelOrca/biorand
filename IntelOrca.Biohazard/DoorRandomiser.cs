@@ -190,6 +190,9 @@ namespace IntelOrca.Biohazard
             {
                 if (rdt.Version == BioVersion.Biohazard1)
                 {
+                    if (!ShouldFixRE1Rdt(rdt.RdtId))
+                        continue;
+
                     foreach (var door in rdt.Doors)
                     {
                         var target = door.Target;
@@ -199,6 +202,31 @@ namespace IntelOrca.Biohazard
                     }
                 }
             }
+        }
+
+        private bool ShouldFixRE1Rdt(RdtId rdtId)
+        {
+            var room = _map.GetRoom(rdtId);
+            if (room == null || room.DoorRando == null)
+                return true;
+
+            foreach (var spec in room.DoorRando)
+            {
+                if (spec.Player != null && spec.Player != _config.Player)
+                    continue;
+                if (spec.Scenario != null && spec.Scenario != _config.Scenario)
+                    continue;
+
+                if (spec.Category != null)
+                {
+                    var category = (DoorRandoCategory)Enum.Parse(typeof(DoorRandoCategory), spec.Category, true);
+                    if (category == DoorRandoCategory.Exclude)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         private RdtId GetRE1FixedId(RdtId rdtId)
