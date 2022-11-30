@@ -78,7 +78,7 @@
           "target": "101"
         },
         {
-          "target": "604"
+          "target": "104"
         },
         {
           "target": "10C"
@@ -92,8 +92,8 @@
         }
       ]
     },
-    "604": {
-      "linkedRoom": "104",
+    "104": {
+      "linkedRoom": "604",
       "doors": [
         {
           "target": "103",
@@ -117,7 +117,7 @@
       "linkedRoom": "605",
       "doors": [
         {
-          "target": "604",
+          "target": "104",
           "randomize": false
         },
         {
@@ -333,7 +333,7 @@
       "linkedRoom": "60F",
       "doors": [
         {
-          "target": "604"
+          "target": "104"
         }
       ],
       "items": [
@@ -1502,7 +1502,7 @@
     "610": {
       "doors": [
         {
-          "target": "604"
+          "target": "104"
         },
         {
           "target": "71C"
