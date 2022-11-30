@@ -554,7 +554,7 @@ namespace IntelOrca.Biohazard
             {
                 isLocked = false;
             }
-            else (!aEdge.Randomize || !bEdge.Randomize)
+            else if (!aEdge.Randomize || !bEdge.Randomize)
             {
                 isLocked = false;
             }

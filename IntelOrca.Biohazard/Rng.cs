@@ -65,6 +65,8 @@ namespace IntelOrca.Biohazard
             private readonly List<(T, double)> _table = new List<(T, double)>();
             private double _total;
 
+            public bool IsEmpty => _table.Count == 0;
+
             public Table(Rng rng)
             {
                 _rng = rng;

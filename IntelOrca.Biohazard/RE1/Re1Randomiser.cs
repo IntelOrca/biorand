@@ -2,14 +2,14 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using IntelOrca.Biohazard.RE2;
 
 namespace IntelOrca.Biohazard.RE1
 {
     public class Re1Randomiser : BaseRandomiser
     {
         protected override BioVersion BiohazardVersion => BioVersion.Biohazard1;
-        protected override IItemHelper ItemHelper { get; } = new Re1ItemHelper();
+        internal override IItemHelper ItemHelper { get; } = new Re1ItemHelper();
+        internal override IEnemyHelper EnemyHelper { get; } = new Re1EnemyHelper();
 
         protected override string GetPlayerName(int player) => player == 0 ? "Chris" : "Jill";
 

@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.IO;
-using System.Reflection.Emit;
 
 namespace IntelOrca.Biohazard.Script.Opcodes
 {
