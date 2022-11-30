@@ -182,6 +182,7 @@ namespace IntelOrca.Biohazard
             return nodes;
         }
 
+        // TODO is this still needed?
         private void FixRE1Doors()
         {
             // For RE 1 doors that have 0 as target stage, that means keep the stage
@@ -776,6 +777,15 @@ namespace IntelOrca.Biohazard
             return rdt;
         }
 
+        private static bool IsSameRdtId(Rdt rdt, RdtId id, RdtId other)
+        {
+            if (rdt.Version == BioVersion.Biohazard1 && id.Stage == 255)
+            {
+                return new RdtId(rdt.RdtId.Stage, id.Room) == other;
+            }
+            return id == other;
+        }
+
         private PlayNode GetOrCreateNode(RdtId rdtId)
         {
             var node = FindNode(rdtId);
@@ -794,6 +804,13 @@ namespace IntelOrca.Biohazard
                     Amount = x.Amount
                 })
                 .ToArray();
+
+            // RE1 Jill does not have ink ribbons
+            if (rdt.Version == BioVersion.Biohazard1 && _config.Player == 1)
+            {
+                var inkRibbonType = _itemHelper.GetItemId(CommonItemKind.InkRibbon);
+                items = items.Where(x => x.Type != inkRibbonType).ToArray();
+            }
 
             node = new PlayNode(rdtId);
             node.Items = items;
@@ -835,7 +852,7 @@ namespace IntelOrca.Biohazard
                     else
                     {
                         targetRdt = GetIdealRdt(target.Rdt);
-                        targetExit = targetRdt.Doors.FirstOrDefault(x => x.Target == rdtId);
+                        targetExit = targetRdt.Doors.FirstOrDefault(x => IsSameRdtId(targetRdt, x.Target, rdtId));
                     }
                     var doorId = door.Id ?? rdt.Doors.FirstOrDefault(x => x.Target == target.Rdt)?.Id;
                     if (targetExit != null)
