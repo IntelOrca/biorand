@@ -553,6 +553,10 @@ namespace IntelOrca.Biohazard
             {
                 isLocked = false;
             }
+            else (!aEdge.Randomize || !bEdge.Randomize)
+            {
+                isLocked = false;
+            }
             else if (aEdge == bEdge)
             {
                 isLocked = true;
@@ -758,6 +762,20 @@ namespace IntelOrca.Biohazard
             }
         }
 
+        private Rdt GetIdealRdt(RdtId rtdId)
+        {
+            var rdt = _gameData.GetRdt(rtdId)!;
+            if (rdt.Version == BioVersion.Biohazard1)
+            {
+                // The mansion 2 RDTs are better for door positions
+                if (rtdId.Stage <= 1)
+                {
+                    return _gameData.GetRdt(new RdtId(rtdId.Stage + 5, rtdId.Room))!;
+                }
+            }
+            return rdt;
+        }
+
         private PlayNode GetOrCreateNode(RdtId rdtId)
         {
             var node = FindNode(rdtId);
@@ -811,15 +829,15 @@ namespace IntelOrca.Biohazard
                     var target = RdtDoorTarget.Parse(door.Target!);
                     if (target.Id != null)
                     {
-                        targetRdt = _gameData.GetRdt(target.Rdt)!;
+                        targetRdt = GetIdealRdt(target.Rdt);
                         targetExit = targetRdt.Doors.First(x => x.Id == target.Id);
                     }
                     else
                     {
-                        targetRdt = _gameData.GetRdt(target.Rdt)!;
+                        targetRdt = GetIdealRdt(target.Rdt);
                         targetExit = targetRdt.Doors.FirstOrDefault(x => x.Target == rdtId);
                     }
-                    var doorId = door.Id ?? rdt.Doors.FirstOrDefault(x => x.Target == targetRdt.RdtId)?.Id;
+                    var doorId = door.Id ?? rdt.Doors.FirstOrDefault(x => x.Target == target.Rdt)?.Id;
                     if (targetExit != null)
                     {
                         entrance = DoorEntrance.FromOpcode(targetExit);
@@ -836,7 +854,7 @@ namespace IntelOrca.Biohazard
                         }
                     }
 
-                    var edgeNode = GetOrCreateNode(targetRdt.RdtId);
+                    var edgeNode = GetOrCreateNode(target.Rdt);
                     var edge = new PlayEdge(node, edgeNode, door.NoReturn, door.Requires, doorId, entrance);
                     edge.Randomize = door.Randomize ?? true;
                     edge.NoUnlock = door.NoUnlock;
