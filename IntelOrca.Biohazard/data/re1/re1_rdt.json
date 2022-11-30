@@ -176,6 +176,13 @@
           "target": "203",
           "randomize": false
         }
+      ],
+      "items": [
+        {
+          "id": 6,
+          "priority": "low",
+          "player": 1
+        }
       ]
     },
     "107": {
@@ -1388,7 +1395,9 @@
           "target": "50F"
         },
         {
-          "target": "515"
+          "target": "515",
+          "requiresRoom": [ "50F", "511" ],
+          "noUnlock": true
         }
       ]
     },
@@ -1476,6 +1485,11 @@
       ]
     },
     "514": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "target": "513"
