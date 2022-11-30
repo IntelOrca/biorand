@@ -467,7 +467,8 @@
         },
         {
           "target": "11B",
-          "requires": [ 41, 44, 45, 46 ]
+          "requires": [ 41, 44, 45, 46 ],
+          "noUnlock": true
         }
       ]
     },
