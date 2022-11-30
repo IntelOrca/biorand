@@ -11,7 +11,8 @@ namespace IntelOrca.Biohazard.RE2
     public class Re2Randomiser : BaseRandomiser
     {
         protected override BioVersion BiohazardVersion => BioVersion.Biohazard2;
-        protected override IItemHelper ItemHelper { get; } = new Re2ItemHelper();
+        internal override IItemHelper ItemHelper { get; } = new Re2ItemHelper();
+        internal override IEnemyHelper EnemyHelper { get; } = new Re2EnemyHelper();
 
         protected override string GetPlayerName(int player) => player == 0 ? "Leon" : "Claire";
 

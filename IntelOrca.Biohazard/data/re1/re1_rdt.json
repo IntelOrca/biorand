@@ -308,7 +308,8 @@
           "id": 10,
           "requires": [ 38 ]
         }
-      ]
+      ],
+      "enemies": []
     },
     "10D": {
       "linkedRoom": "60D",
@@ -432,7 +433,8 @@
         {
           "target": "10A"
         }
-      ]
+      ],
+      "enemies": []
     },
     "118": {
       "linkedRoom": "618",
@@ -699,6 +701,12 @@
         {
           "target": "20E"
         }
+      ],
+      "enemies": [
+        {
+          "keepState": true,
+          "includeTypes": [ 12, 13 ]
+        }
       ]
     },
     "211": {
@@ -718,7 +726,8 @@
         {
           "target": "211"
         }
-      ]
+      ],
+      "enemies": []
     },
     "300": {
       "doors": [
@@ -1033,7 +1042,8 @@
         {
           "target": "400"
         }
-      ]
+      ],
+      "enemies": []
     },
     "405": {
       "doors": [
@@ -1514,6 +1524,9 @@
         }
       ]
     },
+    "60C": {
+      "enemies": []
+    },
     "610": {
       "doors": [
         {
@@ -1523,6 +1536,9 @@
           "target": "71C"
         }
       ]
+    },
+    "617": {
+      "enemies": []
     },
     "619": {
       "doors": [
@@ -1560,7 +1576,24 @@
           "target": "71A",
           "lock": "unblock"
         }
+      ],
+      "enemies": [
+        {
+          "keepState": true,
+          "includeTypes": [ 12, 18 ]
+        }
       ]
+    },
+    "710": {
+      "enemies": [
+        {
+          "keepState": true,
+          "includeTypes": [ 12, 13 ]
+        }
+      ]
+    },
+    "712": {
+      "enemies": []
     },
     "713": {
       "doors": [

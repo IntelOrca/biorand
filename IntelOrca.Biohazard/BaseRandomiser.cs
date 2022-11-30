@@ -9,7 +9,8 @@ namespace IntelOrca.Biohazard
     public abstract class BaseRandomiser
     {
         protected abstract BioVersion BiohazardVersion { get; }
-        protected abstract IItemHelper ItemHelper { get; }
+        internal abstract IItemHelper ItemHelper { get; }
+        internal abstract IEnemyHelper EnemyHelper { get; }
 
         public abstract bool ValidateGamePath(string path);
 
@@ -166,7 +167,7 @@ namespace IntelOrca.Biohazard
 
                 if (config.RandomEnemies)
                 {
-                    var enemyRandomiser = new EnemyRandomiser(logger, config, gameData, map, randomEnemies);
+                    var enemyRandomiser = new EnemyRandomiser(logger, config, gameData, map, randomEnemies, EnemyHelper);
                     enemyRandomiser.Randomise();
                 }
 
