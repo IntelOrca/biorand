@@ -39,7 +39,8 @@
           "type": 0,
           "player": 0
         }
-      ]
+      ],
+      "npcs": [ {} ]
     },
     "101": {
       "linkedRoom": "601",
@@ -156,7 +157,8 @@
           "priority": "low",
           "doorRando": true
         }
-      ]
+      ],
+      "npcs": [ {} ]
     },
     "106": {
       "linkedRoom": "606",
@@ -183,7 +185,8 @@
           "priority": "low",
           "player": 1
         }
-      ]
+      ],
+      "npcs": [ {} ]
     },
     "107": {
       "linkedRoom": "607",

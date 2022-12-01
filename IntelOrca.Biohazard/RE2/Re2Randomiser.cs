@@ -13,6 +13,7 @@ namespace IntelOrca.Biohazard.RE2
         protected override BioVersion BiohazardVersion => BioVersion.Biohazard2;
         internal override IItemHelper ItemHelper { get; } = new Re2ItemHelper();
         internal override IEnemyHelper EnemyHelper { get; } = new Re2EnemyHelper();
+        internal override INpcHelper NpcHelper { get; } = new Re2NpcHelper();
 
         protected override string GetPlayerName(int player) => player == 0 ? "Leon" : "Claire";
 

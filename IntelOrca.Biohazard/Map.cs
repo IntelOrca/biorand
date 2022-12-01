@@ -85,8 +85,8 @@ namespace IntelOrca.Biohazard
     public class MapRoomNpcs
     {
         public int[]? IncludeOffsets { get; set; }
-        public int[]? IncludeTypes { get; set; }
-        public int[]? ExcludeTypes { get; set; }
+        public byte[]? IncludeTypes { get; set; }
+        public byte[]? ExcludeTypes { get; set; }
         public int? Player { get; set; }
         public int? Scenario { get; set; }
     }
