@@ -380,24 +380,40 @@ namespace IntelOrca.Biohazard {
         ///      ],
         ///      &quot;items&quot;: [
         ///        {
-        ///          &quot;id&quot;: 6,
-        ///          &quot;type&quot;: 0
+        ///          &quot;id&quot;: 3,
+        ///          &quot;type&quot;: 0,
+        ///          &quot;player&quot;: 1
         ///        },
         ///        {
-        ///          &quot;id&quot;: 7,
-        ///          &quot;type&quot;: 0
-        ///        }
-        ///      ]
-        ///    },
-        ///    &quot;101&quot;: {
-        ///      &quot;linkedRoom&quot;: &quot;601&quot;,
-        ///      &quot;doors&quot;: [
+        ///          &quot;id&quot;: 4,
+        ///          &quot;type&quot;: 0,
+        ///          &quot;player&quot;: 1
+        ///        },
         ///        {
-        ///           [rest of string was truncated]&quot;;.
+        ///          &quot;id&quot;: 6,
+        ///          &quot;type&quot; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string re1_rdt {
             get {
                 return ResourceManager.GetString("re1_rdt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///  &quot;voice/V004_00.wav&quot;: { &quot;actor&quot;: &quot;rebecca&quot;, &quot;rdt&quot;: &quot;100&quot; },
+        ///  &quot;voice/V004_01.wav&quot;: { &quot;actor&quot;: &quot;rebecca&quot;, &quot;rdt&quot;: &quot;100&quot; },
+        ///  &quot;voice/V004_02.wav&quot;: { &quot;actor&quot;: &quot;rebecca&quot;, &quot;rdt&quot;: &quot;100&quot; },
+        ///  &quot;voice/V004_03.wav&quot;: { &quot;actor&quot;: &quot;rebecca&quot;, &quot;rdt&quot;: &quot;100&quot; },
+        ///  &quot;voice/V004_04.wav&quot;: { &quot;actor&quot;: &quot;chris&quot;, &quot;rdt&quot;: &quot;100&quot; },
+        ///  &quot;voice/V004_05.wav&quot;: { &quot;actor&quot;: &quot;rebecca&quot;, &quot;rdt&quot;: &quot;100&quot; },
+        ///  &quot;voice/V004_06.wav&quot;: { &quot;actor&quot;: &quot;chris&quot;, &quot;rdt&quot;: &quot;100&quot; },
+        ///  &quot;voice/V004_07.wav&quot;: { &quot;actor&quot;: &quot;rebecca&quot;, &quot;rdt&quot;: &quot;100&quot; },
+        ///  &quot;voice/V004_08. [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string re1_voice {
+            get {
+                return ResourceManager.GetString("re1_voice", resourceCulture);
             }
         }
         

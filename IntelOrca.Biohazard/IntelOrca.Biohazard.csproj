@@ -3,6 +3,7 @@
     <TargetFramework>net472</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>8.0</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="6.0.6" />

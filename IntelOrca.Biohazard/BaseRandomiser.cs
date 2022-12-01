@@ -11,6 +11,7 @@ namespace IntelOrca.Biohazard
         protected abstract BioVersion BiohazardVersion { get; }
         internal abstract IItemHelper ItemHelper { get; }
         internal abstract IEnemyHelper EnemyHelper { get; }
+        internal abstract INpcHelper NpcHelper { get; }
 
         public abstract bool ValidateGamePath(string path);
 
@@ -173,7 +174,7 @@ namespace IntelOrca.Biohazard
 
                 if (config.RandomNPCs)
                 {
-                    var npcRandomiser = new NPCRandomiser(logger, config, originalDataPath, modPath, gameData, map, randomNpcs);
+                    var npcRandomiser = new NPCRandomiser(logger, config, originalDataPath, modPath, gameData, map, randomNpcs, NpcHelper);
                     npcRandomiser.Randomise();
                 }
 

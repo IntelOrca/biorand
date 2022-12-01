@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace IntelOrca.Biohazard
 {
@@ -68,6 +69,27 @@ namespace IntelOrca.Biohazard
             {
                 bw.Write((byte)c);
             }
+        }
+
+        public static unsafe T ReadStruct<T>(this BinaryReader br) where T : struct
+        {
+            var bytes = br.ReadBytes(Marshal.SizeOf<T>());
+            fixed (byte* b = bytes)
+            {
+                return Marshal.PtrToStructure<T>((IntPtr)b);
+            }
+        }
+
+        public static unsafe T Write<T>(this BinaryWriter bw, T structure) where T : struct
+        {
+            var result = default(T);
+            var bytes = new byte[Marshal.SizeOf<T>()];
+            fixed (byte* b = bytes)
+            {
+                Marshal.StructureToPtr(structure, (IntPtr)b, false);
+            }
+            bw.Write(bytes);
+            return result;
         }
     }
 }
