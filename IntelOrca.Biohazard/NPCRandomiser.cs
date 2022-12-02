@@ -66,11 +66,12 @@ namespace IntelOrca.Biohazard
             }
 
             var room = _map.GetRoom(rdt.RdtId);
-            if (room == null || room.Npcs == null)
-                return;
+            var npcs = room?.Npcs;
+            if (npcs == null)
+                npcs = new[] { new MapRoomNpcs() };
 
             var actorToNewActorMap = new Dictionary<string, string>();
-            foreach (var npc in room.Npcs)
+            foreach (var npc in npcs)
             {
                 if (npc.Player != null && npc.Player != _config.Player)
                     continue;
