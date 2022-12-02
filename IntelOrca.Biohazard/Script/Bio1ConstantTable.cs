@@ -71,6 +71,7 @@
             "Barry 2",
             "Barry (Stars)",
             "Rebecca (Stars)",
+            "Barry 3",
             "Wesker (Stars)",
             "Chris (Jacket)",
             "Jill (Black Shirt)",

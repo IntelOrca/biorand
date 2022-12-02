@@ -37,10 +37,11 @@
         public const byte Barry2 = 42;
         public const byte BarryStars2 = 43;
         public const byte RebeccaStars2 = 44;
-        public const byte WeskerStars2 = 45;
-        public const byte ChrisJacket = 46;
-        public const byte JillBlackShirt = 47;
-        public const byte ChrisJacket2 = 48;
-        public const byte JillRedShirt = 49;
+        public const byte Barry3 = 45;
+        public const byte WeskerStars2 = 46;
+        public const byte ChrisJacket = 47;
+        public const byte JillBlackShirt = 48;
+        public const byte ChrisJacket2 = 49;
+        public const byte JillRedShirt = 50;
     }
 }

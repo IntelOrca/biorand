@@ -59,6 +59,7 @@ namespace IntelOrca.Biohazard.RE1
                 case Re1EnemyIds.BarryStars:
                 case Re1EnemyIds.Barry2:
                 case Re1EnemyIds.BarryStars2:
+                case Re1EnemyIds.Barry3:
                     return "barry";
                 case Re1EnemyIds.RebeccaStars:
                 case Re1EnemyIds.RebeccaStars2:
