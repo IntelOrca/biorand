@@ -59,7 +59,7 @@ Whether or not documents will be replaced with key items or random items. This i
 
 This will spawn key items in such a way that you may not be able to unlock doors or use objects in the same order as the original game. For example, in Resident Evil 2, the heart key might be spawned in the main hall, and the spade key might be spawned in the basement. This means you **must** first visit the basement before you can visit the library.
 
-#### Protect from soft lock
+#### Safe key placement
 
 This will ensure all key items are placed within an area of the game that is accessible from the door or object that requires the key item. If this is disabled, lab key items can be placed in the police station. The player must therefore be thorough and check every item to make sure all key items are collected before activating any point-of-no-return.
 

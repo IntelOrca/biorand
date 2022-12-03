@@ -99,7 +99,7 @@
                     <StackPanel Grid.Column="0">
                         <CheckBox x:Name="chkIncludeDocuments" ToolTip="When checked, documents will become potential key items or anything else. This includes photos developed in the dark room.">Include documents</CheckBox>
                         <CheckBox x:Name="chkAlternativeRoute" ToolTip="When checked, key items will be placed in any order. For example the spade key may be placed in the basement and the heart key in the main hall.">Allow alternative routes</CheckBox>
-                        <CheckBox x:Name="chkProtectSoftLock" ToolTip="When checked, prevents lab keys from spawning in the police station.">Protect from soft lock</CheckBox>
+                        <CheckBox x:Name="chkProtectSoftLock" ToolTip="When checked, prevents lab keys from spawning in the police station.">Safe key placement</CheckBox>
                         <CheckBox x:Name="chkShuffleItems" ToolTip="When checked, keeps original items and quantities, but shuffles them.">Shuffle default items</CheckBox>
                         <local:PieChart x:Name="pieItemRatios" Padding="8,8,8,0" Width="120" />
                         <TextBlock TextAlignment="Center">Item Pickup Distribution</TextBlock>
