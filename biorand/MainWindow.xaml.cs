@@ -453,7 +453,8 @@ namespace IntelOrca.Biohazard.BioRand
         {
             var dialog = new OpenFileDialog();
             dialog.Title = "Select Resident Evil 2 / Biohazard Game Location";
-            dialog.InitialDirectory = txtGameDataLocation.Text;
+            if (Directory.Exists(txtGameDataLocation.Text))
+                dialog.InitialDirectory = txtGameDataLocation.Text;
             dialog.Filter = "Executable Files (*.exe)|*.exe";
             dialog.CheckFileExists = false;
             dialog.CheckPathExists = false;
