@@ -1901,8 +1901,9 @@
           "player": 0
         },
         {
-          "nop": [ 14404, 14778 ],
-          "player": 1
+          "category": "exclude",
+          "player": 1,
+          "scenario": 1
         }
       ],
       "doors": [
@@ -1990,6 +1991,11 @@
       "doorRando": [
         {
           "category": "static"
+        },
+        {
+          "category": "exclude",
+          "player": 1,
+          "scenario": 1
         }
       ],
       "doors": [
@@ -2011,6 +2017,13 @@
       ]
     },
     "501": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "player": 1,
+          "scenario": 1
+        }
+      ],
       "doors": [
         {
           "target": "500",
