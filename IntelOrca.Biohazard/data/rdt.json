@@ -1060,7 +1060,7 @@
       "enemies": [ {} ],
       "npcs": [
         {
-          "includeTypes": [ 68, 69, 71, 72, 81 ]
+          "includeTypes": [ 68, 69, 81 ]
         }
       ]
     },
