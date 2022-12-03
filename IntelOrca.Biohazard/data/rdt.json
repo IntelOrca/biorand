@@ -2456,9 +2456,10 @@
         {
           "target": "609",
           "lock": "unblock",
-          "requires": [ 47 ]
+          "noUnlock": true
         }
       ],
+      "requires": [ 47 ],
       "enemies": [ {} ]
     },
     "60B": {
