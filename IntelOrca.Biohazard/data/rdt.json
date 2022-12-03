@@ -830,6 +830,7 @@
       ],
       "enemies": [
         {
+          "excludeTypes": [ 58 ],
           "difficulty": "hard"
         }
       ]
@@ -850,6 +851,7 @@
       "enemies": [
         {
           "excludeOffsets": [ 12368 ],
+          "excludeTypes": [ 58 ],
           "difficulty": "medium"
         }
       ]
