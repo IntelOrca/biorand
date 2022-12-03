@@ -281,7 +281,11 @@
           "target": "10D"
         }
       ],
-      "npcs": [ {} ]
+      "npcs": [
+        {
+          "excludeTypes": [ 64, 66 ]
+        }
+      ]
     },
     "10F": {
       "doorRando": [
@@ -1999,6 +2003,7 @@
       ],
       "npcs": [
         {
+          "excludeTypes": [ 64, 66 ],
           "player": 0
         }
       ]
