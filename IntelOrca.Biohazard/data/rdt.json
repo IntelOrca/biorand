@@ -2345,6 +2345,16 @@
       "enemies": [ {} ]
     },
     "606": {
+      "doorRando": [
+        {
+          "nop": [ 3850, 3878 ],
+          "player": 0
+        },
+        {
+          "nop": [ 3892, 3962 ],
+          "player": 1
+        }
+      ],
       "doors": [
         {
           "target": "505",
@@ -2358,7 +2368,12 @@
         },
         {
           "target": "601",
-          "scenario": 1
+          "scenario": 1,
+          "doorRando": false
+        },
+        {
+          "target": "601",
+          "doorRando": true
         },
         {
           "target": "607",
