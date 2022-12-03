@@ -107,6 +107,76 @@ namespace IntelOrca.Biohazard {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] bgm_clown {
+            get {
+                object obj = ResourceManager.GetObject("bgm_clown", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bgm_code {
+            get {
+                object obj = ResourceManager.GetObject("bgm_code", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bgm_re0 {
+            get {
+                object obj = ResourceManager.GetObject("bgm_re0", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bgm_re1 {
+            get {
+                object obj = ResourceManager.GetObject("bgm_re1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bgm_re3 {
+            get {
+                object obj = ResourceManager.GetObject("bgm_re3", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bgm_re4a {
+            get {
+                object obj = ResourceManager.GetObject("bgm_re4a", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bgm_re4b {
+            get {
+                object obj = ResourceManager.GetObject("bgm_re4b", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] checksum {
             get {
                 object obj = ResourceManager.GetObject("checksum", resourceCulture);

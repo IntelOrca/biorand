@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace IntelOrca.Biohazard
@@ -51,6 +52,14 @@ namespace IntelOrca.Biohazard
                 hash *= 0x100000001B3UL;
             }
             return hash;
+        }
+
+        public static void WriteASCII(this BinaryWriter bw, string s)
+        {
+            foreach (var c in s)
+            {
+                bw.Write((byte)c);
+            }
         }
     }
 }

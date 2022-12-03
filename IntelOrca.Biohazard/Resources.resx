@@ -121,6 +121,27 @@
   <data name="bgm" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>data\bgm.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="bgm_clown" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>data\bgm\bgm_clown.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bgm_code" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>data\bgm\bgm_code.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bgm_re0" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>data\bgm\bgm_re0.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bgm_re1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>data\bgm\bgm_re1.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bgm_re3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>data\bgm\bgm_re3.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bgm_re4a" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>data\bgm\bgm_re4a.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bgm_re4b" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>data\bgm\bgm_re4b.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="checksum" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>data\checksum.json;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
