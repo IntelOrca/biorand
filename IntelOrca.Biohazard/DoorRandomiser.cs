@@ -967,6 +967,9 @@ namespace IntelOrca.Biohazard
         {
             public override bool Validate(DoorRandomiser dr, PlayEdge entrance, PlayEdge exit)
             {
+                if (!entrance.Randomize || !exit.Randomize)
+                    return true;
+
                 // Check if this is a leaf node
                 var extraEdges = exit.Parent.Edges.Count(x => x != exit && ValidateEntranceNodeForCounting(x));
                 if (extraEdges != 0)
