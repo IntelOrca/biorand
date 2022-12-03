@@ -1456,7 +1456,7 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 64, 66 ]
+          "excludeTypes": [ 64, 65, 66, 67 ]
         }
       ]
     },
