@@ -14,6 +14,7 @@ namespace IntelOrca.Biohazard.BioRand
     public partial class PieChart : UserControl
     {
         public List<Record> Records { get; } = new List<Record>();
+        public ChartKind Kind { get; set; }
 
         public PieChart()
         {
@@ -22,6 +23,17 @@ namespace IntelOrca.Biohazard.BioRand
 
         public void Update()
         {
+            if (Kind == ChartKind.Pie)
+                UpdatePie();
+            else
+                UpdateBar();
+        }
+
+        public void UpdatePie()
+        {
+            viewBox.Visibility = Visibility.Visible;
+            horizontalGrid.Visibility = Visibility.Collapsed;
+
             var gridItems = new List<UIElement>();
             var records = Records.Where(x => x.Value != 0).ToArray();
             var radius = 50;
@@ -87,6 +99,46 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
+        public void UpdateBar()
+        {
+            viewBox.Visibility = Visibility.Collapsed;
+            horizontalGrid.Visibility = Visibility.Visible;
+
+            horizontalGrid.ColumnDefinitions.Clear();
+            horizontalGrid.Children.Clear();
+
+            var index = 0;
+            foreach (var record in Records)
+            {
+                if (record.Value == 0)
+                    continue;
+
+                horizontalGrid.ColumnDefinitions.Add(new ColumnDefinition()
+                {
+                    Width = new GridLength(record.Value, GridUnitType.Star)
+                });
+
+                var border = new Border();
+                border.Background = new SolidColorBrush(record.Color);
+
+                var textBlock = new TextBlock();
+                textBlock.Background = new SolidColorBrush(record.Color);
+                textBlock.Foreground = GetLuma(record.Color) >= 0.5 ?
+                    new SolidColorBrush(Colors.Black) :
+                    new SolidColorBrush(Colors.White);
+                textBlock.Text = record.Name;
+                textBlock.TextAlignment = TextAlignment.Center;
+                textBlock.ToolTip = record.Name;
+                textBlock.Padding = new Thickness(2, 0, 2, 0);
+                textBlock.TextTrimming = TextTrimming.CharacterEllipsis;
+
+                border.Child = textBlock;
+                Grid.SetColumn(border, index);
+                horizontalGrid.Children.Add(border);
+                index++;
+            }
+        }
+
         private static TextBlock CreatePieLabel(Record record, Point position)
         {
             var textBlock = new TextBlock();
@@ -111,6 +163,12 @@ namespace IntelOrca.Biohazard.BioRand
             public string Name { get; set; }
             public double Value { get; set; }
             public Color Color { get; set; }
+        }
+
+        public enum ChartKind
+        {
+            Pie,
+            Bar
         }
     }
 }

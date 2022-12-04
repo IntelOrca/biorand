@@ -160,6 +160,13 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void UpdateHints()
         {
+            UpdateEstimateCompletion();
+            UpdateItemPie();
+            UpdateEnemyPie();
+        }
+
+        private void UpdateEstimateCompletion()
+        {
             var colour = Colors.Green;
             if (_config.RandomDoors)
             {
@@ -191,7 +198,10 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 lblEstimateCompletionTime.Text = "";
             }
+        }
 
+        private void UpdateItemPie()
+        {
             var keyItems = 1 / 8.0;
             var totalRest = _config.RatioAmmo + _config.RatioHealth + _config.RatioInkRibbons;
             if (totalRest == 0)
@@ -228,6 +238,75 @@ namespace IntelOrca.Biohazard.BioRand
                 Color = Colors.Black
             });
             pieItemRatios.Update();
+        }
+
+        private void UpdateEnemyPie()
+        {
+            pieEnemies.Records.Clear();
+
+            switch (_config.EnemyDifficulty)
+            {
+                case 0:
+                    AddRatio("Crow", Colors.Black, 10);
+                    AddRatio("Arms", Colors.LightGray, 10);
+                    AddRatio("Spider", Colors.YellowGreen, 10);
+                    AddRatio("Moth", Colors.DarkOliveGreen, 10);
+                    AddRatio("Ivy", Colors.SpringGreen, 15);
+                    AddRatio("Ivy", Colors.Purple, 5);
+                    AddRatio("Tyrant", Colors.DarkGray, 1);
+                    AddRatio("Zombie", Colors.LightGray, 30);
+                    AddRatio("Licker", Colors.IndianRed, 2);
+                    AddRatio("Licker", Colors.Gray, 2);
+                    AddRatio("Cerebrus", Colors.Black, 5);
+                    break;
+                case 1:
+                    AddRatio("Crow", Colors.Black, 5);
+                    AddRatio("Arms", Colors.LightGray, 5);
+                    AddRatio("Spider", Colors.YellowGreen, 6);
+                    AddRatio("Moth", Colors.DarkOliveGreen, 5);
+                    AddRatio("Ivy", Colors.SpringGreen, 6);
+                    AddRatio("Ivy", Colors.Purple, 6);
+                    AddRatio("Tyrant", Colors.DarkGray, 2);
+                    AddRatio("Zombie", Colors.LightGray, 40);
+                    AddRatio("Licker", Colors.IndianRed, 10);
+                    AddRatio("Licker", Colors.Gray, 5);
+                    AddRatio("Cerebrus", Colors.Black, 10);
+                    break;
+                case 2:
+                    AddRatio("Spider", Colors.YellowGreen, 7);
+                    AddRatio("Moth", Colors.DarkOliveGreen, 3);
+                    AddRatio("Ivy", Colors.SpringGreen, 6);
+                    AddRatio("Ivy", Colors.Purple, 6);
+                    AddRatio("Tyrant", Colors.DarkGray, 3);
+                    AddRatio("Zombie", Colors.LightGray, 25);
+                    AddRatio("Licker", Colors.IndianRed, 15);
+                    AddRatio("Licker", Colors.Gray, 10);
+                    AddRatio("Cerebrus", Colors.Black, 25);
+                    break;
+                case 3:
+                default:
+                    AddRatio("Spider", Colors.YellowGreen, 5);
+                    AddRatio("Moth", Colors.DarkOliveGreen, 2);
+                    AddRatio("Ivy", Colors.SpringGreen, 3);
+                    AddRatio("Ivy", Colors.Purple, 3);
+                    AddRatio("Tyrant", Colors.DarkGray, 5);
+                    AddRatio("Zombie", Colors.LightGray, 17);
+                    AddRatio("Licker", Colors.IndianRed, 5);
+                    AddRatio("Licker", Colors.Gray, 20);
+                    AddRatio("Cerebrus", Colors.Black, 40);
+                    break;
+            }
+            pieEnemies.Update();
+
+            void AddRatio(string enemyName, Color color, double value)
+            {
+                pieEnemies.Records.Add(new PieChart.Record()
+                {
+                    Name = enemyName,
+                    Value = value,
+                    Color = color
+                });
+            }
         }
 
         private void UpdateConfig()
