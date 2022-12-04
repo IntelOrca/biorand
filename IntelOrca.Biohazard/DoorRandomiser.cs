@@ -468,6 +468,7 @@ namespace IntelOrca.Biohazard
             aEdge.Node = b;
             bEdge.Node = a;
 
+            var isAlwaysLocked = false;
             if (aEdge.Requires.Length != 0 || (aEdge.Lock == LockKind.Unblock && bEdge.Lock != LockKind.Gate))
             {
                 // If the door is locked or temporarily blocked, lock from the other side
@@ -481,6 +482,7 @@ namespace IntelOrca.Biohazard
             else if (aEdge == bEdge)
             {
                 isLocked = true;
+                isAlwaysLocked = true;
             }
 
             // Do not rewrite last room comparisons if edge is the same
@@ -497,7 +499,12 @@ namespace IntelOrca.Biohazard
                     aEdge.Lock = LockKind.None;
                     aRdt.RemoveDoorLock(aDoorId);
                 }
-                if (isLocked)
+                if (isAlwaysLocked)
+                {
+                    aEdge.LockId = _lockId;
+                    aRdt.SetDoorLock(aDoorId, _lockId);
+                }
+                else if (isLocked)
                 {
                     aEdge.LockId = _lockId;
                     aRdt.EnsureDoorUnlock(aDoorId, _lockId);
