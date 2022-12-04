@@ -35,7 +35,7 @@ namespace IntelOrca.Biohazard
 
         public IEnumerable<T> EnumerateOpcodes<T>(RandoConfig config) => AstEnumerator<T>.Enumerate(Ast!, config);
 
-        public void SetDoorTarget(int id, RdtId target, DoorEntrance destination, RdtId originalId)
+        public void SetDoorTarget(int id, RdtId target, DoorEntrance destination, RdtId originalId, bool noCompareRewrite = false)
         {
             foreach (var door in Doors)
             {
@@ -59,13 +59,16 @@ namespace IntelOrca.Biohazard
                     reset.Data2 = (ushort)destination.Z;
                 }
             }
-            foreach (var cmp in Opcodes.OfType<CmpOpcode>())
+            if (noCompareRewrite)
             {
-                var oldValue = (short)(((originalId.Stage + 1) << 8) | originalId.Room);
-                var newValue = (short)(((target.Stage + 1) << 8) | target.Room);
-                if (cmp.Flag == 27 && cmp.Value == oldValue)
+                foreach (var cmp in Opcodes.OfType<CmpOpcode>())
                 {
-                    cmp.Value = newValue;
+                    var oldValue = (short)(((originalId.Stage + 1) << 8) | originalId.Room);
+                    var newValue = (short)(((target.Stage + 1) << 8) | target.Room);
+                    if (cmp.Flag == 27 && cmp.Value == oldValue)
+                    {
+                        cmp.Value = newValue;
+                    }
                 }
             }
         }

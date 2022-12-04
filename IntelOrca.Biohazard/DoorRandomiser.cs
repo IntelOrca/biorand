@@ -483,11 +483,14 @@ namespace IntelOrca.Biohazard
                 isLocked = true;
             }
 
+            // Do not rewrite last room comparisons if edge is the same
+            // this breaks rooms like 401 (South Office) when a door is unconnected
+            var noCompareRewrite = aEdge == bEdge;
             if (a.Category != DoorRandoCategory.Static)
             {
                 var aDoorId = aEdge.DoorId!.Value;
                 var aRdt = _gameData.GetRdt(a.RdtId)!;
-                aRdt.SetDoorTarget(aDoorId, b.RdtId, bEdge.Entrance!.Value, aEdge.OriginalTargetRdt);
+                aRdt.SetDoorTarget(aDoorId, b.RdtId, bEdge.Entrance!.Value, aEdge.OriginalTargetRdt, noCompareRewrite);
                 aRdt.RemoveDoorUnlock(aDoorId);
                 if (aEdge.Lock == LockKind.Side)
                 {
@@ -507,12 +510,12 @@ namespace IntelOrca.Biohazard
                 var bRdt = _gameData.GetRdt(b.RdtId)!;
                 if (aEdge.Entrance == null)
                 {
-                    bRdt.SetDoorTarget(bDoorId, b.RdtId, bEdge.Entrance!.Value, bEdge.OriginalTargetRdt);
+                    bRdt.SetDoorTarget(bDoorId, b.RdtId, bEdge.Entrance!.Value, bEdge.OriginalTargetRdt, noCompareRewrite);
                     bRdt.SetDoorLock(bDoorId, 255);
                 }
                 else
                 {
-                    bRdt.SetDoorTarget(bDoorId, a.RdtId, aEdge.Entrance.Value, bEdge.OriginalTargetRdt);
+                    bRdt.SetDoorTarget(bDoorId, a.RdtId, aEdge.Entrance.Value, bEdge.OriginalTargetRdt, noCompareRewrite);
                     if (isLocked)
                     {
                         bEdge.Lock = LockKind.Side;
