@@ -186,7 +186,7 @@ namespace IntelOrca.Biohazard
         public LockKind Lock { get; set; }
         public byte LockId { get; set; }
         public bool NoReturn { get; set; }
-        public ushort[] Requires { get; }
+        public ushort[] Requires { get; set; }
         public PlayNode[] RequiresRoom { get; set; } = Array.Empty<PlayNode>();
         public int? DoorId { get; }
         public DoorEntrance? Entrance { get; set; }

@@ -234,6 +234,9 @@ namespace IntelOrca.Biohazard
                         {
                             ConnectDoor(edge, edge);
                         }
+
+                        // Remove requirement of keys
+                        edge.Requires = new ushort[0];
                     }
                 }
             }
