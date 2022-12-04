@@ -10,7 +10,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Win32;
 
@@ -35,6 +34,7 @@ namespace IntelOrca.Biohazard.BioRand
             LoadSettings();
             UpdateUi();
             UpdateEnabledUi();
+            UpdateLogButtons();
 #if !DEBUG
             CheckForNewVersion();
 #endif
@@ -485,6 +485,7 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 btn.Content = "Generate";
                 IsEnabled = true;
+                UpdateLogButtons();
             }
         }
 
@@ -581,7 +582,8 @@ namespace IntelOrca.Biohazard.BioRand
         private void ShowGenerateCompleteMessage()
         {
             var title = "Randomization Complete!";
-            var msg = "The Randomizer mod has successfully been generated. Run the game and choose \"BioRand: A Resident Evil Randomizer\" from the mod selection.";
+            var msg = "The Randomizer mod has successfully been generated. Run the game and choose \"BioRand: A Resident Evil Randomizer\" from the mod selection." +
+                "\n\nClick the log buttons to see where items were placed.";
             MessageBox.Show(this, msg, title, MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
@@ -632,6 +634,46 @@ namespace IntelOrca.Biohazard.BioRand
         private void ViewDocs_Click(object sender, RoutedEventArgs e)
         {
             Process.Start($"https://github.com/IntelOrca/biorand#readme");
+        }
+
+        private void btnLeonLog_Click(object sender, RoutedEventArgs e)
+        {
+            ViewLog(0);
+        }
+
+        private void btnClaireLog_Click(object sender, RoutedEventArgs e)
+        {
+            ViewLog(1);
+        }
+
+        private void UpdateLogButtons()
+        {
+            var buttons = new[] { btnLog0, btnLog1 };
+            for (int i = 0; i < 2; i++)
+            {
+                var btn = buttons[i];
+                var path = GetLogPath(i);
+                btn.IsEnabled = File.Exists(path);
+            }
+        }
+
+        private void ViewLog(int player)
+        {
+            var path = GetLogPath(player);
+            if (File.Exists(path))
+            {
+                Process.Start(path);
+            }
+            else
+            {
+                ShowFailedMessage("View Log", $"Unable to find log file: '{path}'");
+            }
+        }
+
+        private string GetLogPath(int player)
+        {
+            var path = Path.Combine(txtGameDataLocation.Text, "mod_biorand", $"log_pl{player}.txt");
+            return path;
         }
     }
 
