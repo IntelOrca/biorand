@@ -18,6 +18,7 @@ namespace IntelOrca.Biohazard
         public string? ScriptDisassembly { get; set; }
         public OpcodeBase[] Opcodes { get; set; } = new OpcodeBase[0];
         public ScriptAst? Ast { get; set; }
+        public List<KeyValuePair<int, byte>> Patches { get; } = new List<KeyValuePair<int, byte>>();
 
         public IEnumerable<IDoorAotSetOpcode> Doors => Opcodes.OfType<IDoorAotSetOpcode>();
         public IEnumerable<SceEmSetOpcode> Enemies => Opcodes.OfType<SceEmSetOpcode>();
@@ -216,6 +217,11 @@ namespace IntelOrca.Biohazard
                 {
                     ms.Position = opcode.Offset;
                     opcode.Write(bw);
+                }
+                foreach (var patch in Patches)
+                {
+                    ms.Position = patch.Key;
+                    bw.Write(patch.Value);
                 }
             }
 

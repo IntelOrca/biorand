@@ -80,6 +80,7 @@ namespace IntelOrca.Biohazard
 
             SetLinkedItems();
             SetItems();
+            PatchDesk();
         }
 
         private void ClearItems()
@@ -666,6 +667,19 @@ namespace IntelOrca.Biohazard
                     rdt.SetItem(entry.Id, entry.Type, entry.Amount);
                 }
             }
+        }
+
+        private void PatchDesk()
+        {
+            var rdt = _gameData.GetRdt(new RdtId(0, 0x15));
+            if (rdt == null)
+                return;
+
+            // Only take 5 inspections for the item rather than 50
+            if (_config.Player == 0)
+                rdt.Patches.Add(new KeyValuePair<int, byte>(0x1A20, 5));
+            else
+                rdt.Patches.Add(new KeyValuePair<int, byte>(0x1C7A, 5));
         }
 
         private ushort GetTotalKeyRequirementCount(PlayNode node, ushort keyType)
