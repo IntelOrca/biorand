@@ -440,6 +440,17 @@
           "target": "114"
         }
       ],
+      "items": [
+        {
+          "id": 7,
+          "priority": "low"
+        },
+        {
+          "id": 19,
+          "priority": "low",
+          "player": 1
+        }
+      ],
       "npcs": [
         {
           "scenario": 0,
