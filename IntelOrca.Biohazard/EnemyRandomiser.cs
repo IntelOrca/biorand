@@ -233,6 +233,7 @@ namespace IntelOrca.Biohazard
                     case EnemyType.ZombieScientist:
                     case EnemyType.ZombieNaked:
                     case EnemyType.ZombieRandom:
+                    case EnemyType.ZombieBrad:
                         if (!enemySpec.KeepState)
                             enemy.State = rng.NextOf<byte>(0, 1, 2, 3, 4, 6);
                         enemy.SoundBank = GetZombieSoundBank(enemyType);
@@ -301,6 +302,7 @@ namespace IntelOrca.Biohazard
                 case EnemyType.ZombieRandom:
                 case EnemyType.ZombieScientist:
                 case EnemyType.ZombieTestSubject:
+                case EnemyType.ZombieBrad:
                     return 1;
                 case EnemyType.ZombieGirl:
                     return 10;
@@ -324,8 +326,6 @@ namespace IntelOrca.Biohazard
                 case EnemyType.Ivy:
                 case EnemyType.IvyPurple:
                     return true;
-                case EnemyType.ZombieBrad:
-                    return false;
                 case EnemyType.MarvinBranagh:
                     // Edge case: Marvin is only a zombie in scenario B
                     return _config.Scenario == 1;
@@ -379,7 +379,8 @@ namespace IntelOrca.Biohazard
             EnemyType.ZombieNaked,
             EnemyType.ZombieGuy2,
             EnemyType.ZombieGuy3,
-            EnemyType.ZombieRandom
+            EnemyType.ZombieRandom,
+            EnemyType.ZombieBrad
         };
     }
 }
