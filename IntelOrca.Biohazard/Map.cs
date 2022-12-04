@@ -94,6 +94,7 @@ namespace IntelOrca.Biohazard
     {
         public string? Category { get; set; }
         public int[]? Nop { get; set; }
+        public bool Cutscene { get; set; }
         public int? Player { get; set; }
         public int? Scenario { get; set; }
     }

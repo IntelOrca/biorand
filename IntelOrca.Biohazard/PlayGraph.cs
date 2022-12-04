@@ -151,6 +151,7 @@ namespace IntelOrca.Biohazard
         public List<ItemPoolEntry> PlacedKeyItems { get; } = new List<ItemPoolEntry>();
         public int Depth { get; set; }
         public bool Visited { get; set; }
+        public bool HasCutscene { get; set; }
 
         public PlayNode(RdtId rdtId)
         {

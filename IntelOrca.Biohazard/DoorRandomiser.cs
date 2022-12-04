@@ -273,7 +273,11 @@ namespace IntelOrca.Biohazard
             var superNodes = Enumerable.Range(0, count).Select(x => new List<PlayNode>()).ToArray();
             var superNodeIndex = _rng.Next(0, count);
 
-            var boxNodes = _nodesLeft.Where(x => x.Category == DoorRandoCategory.Box).Shuffle(_rng).ToList();
+            var boxNodes = _nodesLeft
+                .Where(x => x.Category == DoorRandoCategory.Box)
+                .Shuffle(_rng)
+                .OrderBy(x => x.HasCutscene ? 0 : 1)
+                .ToList();
             if (_config.AreaSize < 7)
             {
                 var minNodes = _config.AreaCount + 1;
@@ -291,7 +295,10 @@ namespace IntelOrca.Biohazard
             }
 
             // Divide up nodes of same edge count equally
-            _nodesLeft = _nodesLeft.Shuffle(_rng).ToList();
+            _nodesLeft = _nodesLeft
+                .Shuffle(_rng)
+                .OrderBy(x => x.HasCutscene ? 0 : 1)
+                .ToList();
             if (_config.AreaSize < 7)
             {
                 var numNodes = (_nodesLeft.Count * (_config.AreaSize + 1)) / 8;
@@ -830,6 +837,7 @@ namespace IntelOrca.Biohazard
                     {
                         node.DoorRandoNop = spec.Nop;
                     }
+                    node.HasCutscene = spec.Cutscene;
                 }
             }
 

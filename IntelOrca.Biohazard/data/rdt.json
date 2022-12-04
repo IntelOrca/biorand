@@ -33,6 +33,11 @@
       ]
     },
     "101": {
+      "doorRando": [
+        {
+          "cutscene": true
+        }
+      ],
       "doors": [
         {
           "target": "100",
@@ -276,6 +281,12 @@
       ]
     },
     "10E": {
+      "doorRando": [
+        {
+          "cutscene": true,
+          "player": 1
+        }
+      ],
       "doors": [
         {
           "target": "10D"
@@ -369,6 +380,18 @@
       ]
     },
     "113": {
+      "doorRando": [
+        {
+          "cutscene": true,
+          "player": 0,
+          "scenario": 1
+        },
+        {
+          "cutscene": true,
+          "player": 1,
+          "scenario": 0
+        }
+      ],
       "doors": [
         {
           "target": "114"
@@ -408,6 +431,12 @@
       ]
     },
     "114": {
+      "doorRando": [
+        {
+          "cutscene": true,
+          "player": 1
+        }
+      ],
       "doors": [
         {
           "target": "10C"
@@ -435,6 +464,18 @@
       "npcs": [ {} ]
     },
     "115": {
+      "doorRando": [
+        {
+          "cutscene": true,
+          "player": 0,
+          "scenario": 0
+        },
+        {
+          "cutscene": true,
+          "player": 1,
+          "scenario": 1
+        }
+      ],
       "doors": [
         {
           "target": "114"
@@ -1045,6 +1086,12 @@
       ]
     },
     "216": {
+      "doorRando": [
+        {
+          "cutscene": true,
+          "player": 0
+        }
+      ],
       "doors": [
         {
           "target": "211"
@@ -1079,6 +1126,7 @@
       "doorRando": [
         {
           "nop": [ 2922, 3776 ],
+          "cutscene": true,
           "player": 0
         }
       ],
@@ -1127,6 +1175,7 @@
       "doorRando": [
         {
           "nop": [ 10092, 10276, 15284 ],
+          "cutscene": true,
           "player": 1
         }
       ],
@@ -1193,6 +1242,12 @@
       ]
     },
     "301": {
+      "doorRando": [
+        {
+          "cutscene": true,
+          "player": 0
+        }
+      ],
       "doors": [
         {
           "target": "219"
@@ -2332,6 +2387,12 @@
       ]
     },
     "604": {
+      "doorRando": [
+        {
+          "cutscene": true,
+          "scenario": 1
+        }
+      ],
       "doors": [
         {
           "target": "603"
@@ -2431,6 +2492,7 @@
       "doorRando": [
         {
           "nop": [ 10210, 10220 ],
+          "cutscene": true,
           "scenario": 1,
           "player": 1
         }
@@ -2535,6 +2597,7 @@
         },
         {
           "nop": [ 4010 ],
+          "cutscene": true,
           "player": 1
         }
       ],
@@ -2642,7 +2705,13 @@
     "612": {
       "doorRando": [
         {
-          "category": "box"
+          "category": "box",
+          "player": 0
+        },
+        {
+          "category": "box",
+          "cutscene": true,
+          "player": 1
         }
       ],
       "doors": [
@@ -2672,6 +2741,12 @@
       ]
     },
     "614": {
+      "doorRando": [
+        {
+          "cutscene": true,
+          "player": 1
+        }
+      ],
       "doors": [
         {
           "target": "613",
@@ -2694,6 +2769,13 @@
       "npcs": [ {} ]
     },
     "615": {
+      "doorRando": [
+        {
+          "cutscene": true,   // Item pickup in room needed for cutscene trigger in 614
+          "player": 1,
+          "scenario": 0
+        }
+      ],
       "doors": [
         {
           "target": "614"
