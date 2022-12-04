@@ -478,6 +478,10 @@ namespace IntelOrca.Biohazard
             {
                 isLocked = false;
             }
+            else if (aEdge == bEdge)
+            {
+                isLocked = true;
+            }
 
             if (a.Category != DoorRandoCategory.Static)
             {
@@ -485,11 +489,7 @@ namespace IntelOrca.Biohazard
                 var aRdt = _gameData.GetRdt(a.RdtId)!;
                 aRdt.SetDoorTarget(aDoorId, b.RdtId, bEdge.Entrance!.Value, aEdge.OriginalTargetRdt);
                 aRdt.RemoveDoorUnlock(aDoorId);
-                if (aEdge == bEdge)
-                {
-                    aRdt.SetDoorLock(aDoorId, 255);
-                }
-                else if (aEdge.Lock == LockKind.Side)
+                if (aEdge.Lock == LockKind.Side)
                 {
                     aEdge.Lock = LockKind.None;
                     aRdt.RemoveDoorLock(aDoorId);
