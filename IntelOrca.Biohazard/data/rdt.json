@@ -2829,6 +2829,16 @@
           "requires": [ 84, 85 ],
           "randomize": false
         }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "priority": "low"
+        },
+        {
+          "id": 5,
+          "priority": "low"
+        }
       ]
     },
     "702": {
