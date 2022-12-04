@@ -2689,7 +2689,9 @@
       "items": [
         {
           "id": 5,
-          "type": 0
+          "requires": [ 79 ],
+          "player": 1,
+          "scenario": 0
         }
       ],
       "enemies": [ {} ]
@@ -2792,7 +2794,18 @@
         },
         {
           "id": 6,
-          "priority": "fixed"
+          "priority": "fixed",
+          "requires": [ 81 ],
+          "doorRando": false,
+          "player": 1,
+          "scenario": 0
+        },
+        {
+          "id": 6,
+          "requires": [ 81 ],
+          "doorRando": true,
+          "player": 1,
+          "scenario": 0
         }
       ],
       "enemies": [ {} ]
