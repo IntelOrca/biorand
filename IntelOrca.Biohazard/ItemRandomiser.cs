@@ -199,20 +199,26 @@ namespace IntelOrca.Biohazard
             return true;
         }
 
-        private int? FindNewKeyItemLocation(int type)
+        private int? FindNewKeyItemLocation(int type, bool includeLowPriority)
         {
             var randomOrder = Enumerable.Range(0, _currentPool.Count).Shuffle(_rng).ToArray();
             var bestI = (int?)null;
             foreach (var i in randomOrder)
             {
                 var item = _currentPool[i];
-                if (item.Priority == ItemPriority.Normal && HasAllRequiredItems(item.Requires))
-                {
-                    if (item.Type == type)
-                        bestI = i;
-                    else
-                        return i;
-                }
+                if (item.Priority == ItemPriority.Fixed)
+                    continue;
+
+                if (!includeLowPriority && item.Priority == ItemPriority.Low)
+                    continue;
+
+                if (!HasAllRequiredItems(item.Requires))
+                    continue;
+
+                if (item.Type == type)
+                    bestI = i;
+                else
+                    return i;
             }
             return bestI;
         }
@@ -312,9 +318,15 @@ namespace IntelOrca.Biohazard
         private bool PlaceKeyItem(ushort req, bool alternativeRoute)
         {
             // Get a new location for the key item
-            var index = FindNewKeyItemLocation(req);
+            var index = FindNewKeyItemLocation(req, false);
             if (index == null)
-                throw new Exception("Run out of free item slots");
+            {
+                index = FindNewKeyItemLocation(req, true);
+                if (index == null)
+                {
+                    throw new Exception("Run out of free item slots");
+                }
+            }
 
             var itemEntry = _currentPool[index.Value];
             var itemParentNode = _nodes.First(x => x.RdtId == itemEntry.RdtId);
