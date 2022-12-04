@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define ALWAYS_SWAP_NPC
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -49,6 +51,13 @@ namespace IntelOrca.Biohazard
         {
             var playerActor = _config.Player == 0 ? "leon" : "claire";
             var defaultIncludeTypes = new[] { 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 79, 80, 81, 84, 85, 88, 89, 90 };
+            if (rng.Next(0, 8) != 0)
+            {
+                // Make it rare for player to also be an NPC
+                defaultIncludeTypes = defaultIncludeTypes
+                    .Where(x => GetActor((EnemyType)x) != playerActor)
+                    .ToArray();
+            }
 
             // Alternative costumes for Leon / Claire cause issues if there are multiple occurances
             // of them in the same cutscene. Only place them in rooms where we can guarantee there is only 1 NPC.
@@ -87,14 +96,14 @@ namespace IntelOrca.Biohazard
                     if (!IsNpc(enemyGroup.Key))
                         continue;
 
-                    supportedNpcs = supportedNpcs.Shuffle(_random);
+                    supportedNpcs = supportedNpcs.Shuffle(rng);
                     foreach (var enemy in enemyGroup)
                     {
                         if (npc.IncludeOffsets != null && !npc.IncludeOffsets.Contains(enemy.Offset))
                             continue;
 
 #if ALWAYS_SWAP_NPC
-                        var newEnemyTypeIndex = Array.FindIndex(supportedNpcs, x => x != (int)enemy.Type);
+                        var newEnemyTypeIndex = Array.FindIndex(supportedNpcs, x => GetActor((EnemyType)x) != GetActor(enemy.Type));
                         var newEnemyType = (EnemyType)(newEnemyTypeIndex == -1 ? supportedNpcs[0] : supportedNpcs[newEnemyTypeIndex]);
 #else
                         var newEnemyType = (EnemyType)supportedNpcs[0];
