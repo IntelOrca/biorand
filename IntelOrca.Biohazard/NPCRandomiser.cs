@@ -78,10 +78,10 @@ namespace IntelOrca.Biohazard
                 if (npc.Scenario != null && npc.Scenario != _config.Scenario)
                     continue;
 
-                var supportedNpcs = npc.IncludeTypes ?? defaultIncludeTypes;
+                var supportedNpcs = npc.IncludeTypes?.Select(x => (byte)x).ToArray() ?? defaultIncludeTypes;
                 if (npc.ExcludeTypes != null)
                 {
-                    supportedNpcs = supportedNpcs.Except(npc.ExcludeTypes).ToArray();
+                    supportedNpcs = supportedNpcs.Except(npc.ExcludeTypes.Select(x => (byte)x)).ToArray();
                 }
                 if (supportedNpcs.Length == 0)
                 {
