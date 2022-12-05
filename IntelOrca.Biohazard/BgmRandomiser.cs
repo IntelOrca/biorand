@@ -1,8 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Runtime.Remoting.Channels;
-using System.Security.Cryptography;
 using System.Text.Json;
 using NVorbis;
 
@@ -37,6 +36,9 @@ namespace IntelOrca.Biohazard
 
             RandomizeBasementTheme(random);
             RandomizeSaveTheme(random);
+            RandomizeCreepyTheme(random, bgmList);
+            RandomizeDangerTheme(random, bgmList);
+            RandomizeResultsTheme(random, bgmList);
         }
 
         private void Swap(string[] dstList, string[] srcList)
@@ -95,25 +97,99 @@ namespace IntelOrca.Biohazard
 
         public void RandomizeSaveTheme(Rng rng)
         {
-            var names = new[] { "SAVE_RE0", "SAVE_RE1", "SAVE_RE3", "SAVE_RE4A", "SAVE_RE4B", "SAVE_CODE" };
-            var resources = new[]
+            try
             {
-                Resources.bgm_re0,
-                Resources.bgm_re1,
-                Resources.bgm_re3,
-                Resources.bgm_re4a,
-                Resources.bgm_re4b,
-                Resources.bgm_code
-            };
-            var index = rng.Next(0, resources.Length);
-            RandomizeFromOwnMusic("main0C", names[index], resources[index]);
+                var names = new[] { "SAVE_RE0", "SAVE_RE1", "SAVE_RE3", "SAVE_RE4A", "SAVE_RE4B", "SAVE_CODE" };
+                var resources = new[]
+                {
+                    Resources.bgm_re0,
+                    Resources.bgm_re1,
+                    Resources.bgm_re3,
+                    Resources.bgm_re4a,
+                    Resources.bgm_re4b,
+                    Resources.bgm_code
+                };
+                var index = rng.Next(0, resources.Length);
+                RandomizeFromOwnMusic("main0C", names[index], resources[index]);
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteException(ex);
+            }
         }
 
         public void RandomizeBasementTheme(Rng rng)
         {
-            if (rng.Next(0, 4) == 0)
+            try
             {
-                RandomizeFromOwnMusic("main03", "clown", Resources.bgm_clown);
+                if (rng.Next(0, 4) == 0)
+                {
+                    RandomizeFromOwnMusic("main03", "clown", Resources.bgm_clown);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteException(ex);
+            }
+        }
+
+        public void RandomizeCreepyTheme(Rng rng, BgmList bgmList)
+        {
+            try
+            {
+                var resources = new[]
+                {
+                    Resources.bgm_re4_creepy_0,
+                    Resources.bgm_re4_creepy_1,
+                    Resources.bgm_re4_creepy_2,
+                    Resources.bgm_re4_creepy_3
+                };
+                var creepy = bgmList.Creepy!
+                    .Where(x => x.StartsWith("main", StringComparison.OrdinalIgnoreCase))
+                    .Shuffle(rng)
+                    .ToArray();
+                for (int i = 0; i < resources.Length; i++)
+                {
+                    RandomizeFromOwnMusic(creepy[i], $"re4_creepy_{i}", resources[i]);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteException(ex);
+            }
+        }
+
+        public void RandomizeDangerTheme(Rng rng, BgmList bgmList)
+        {
+            try
+            {
+                var resources = new[]
+                {
+                    Resources.bgm_re4_danger_0,
+                    Resources.bgm_re4_danger_1,
+                    Resources.bgm_re4_danger_2
+                };
+                var danger = bgmList.Danger!.Shuffle(rng).ToArray();
+                for (int i = 0; i < resources.Length; i++)
+                {
+                    RandomizeFromOwnMusic(danger[i], $"re4_danger_{i}", resources[i]);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteException(ex);
+            }
+        }
+
+        public void RandomizeResultsTheme(Rng rng, BgmList bgmList)
+        {
+            try
+            {
+                RandomizeFromOwnMusic("main2a", "re4_results", Resources.bgm_re4_results);
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteException(ex);
             }
         }
 

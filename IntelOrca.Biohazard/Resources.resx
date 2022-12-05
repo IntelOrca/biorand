@@ -142,6 +142,30 @@
   <data name="bgm_re4b" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>data\bgm\bgm_re4b.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="bgm_re4_creepy_0" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>data\bgm\bgm_re4_creepy_0.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bgm_re4_creepy_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>data\bgm\bgm_re4_creepy_1.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bgm_re4_creepy_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>data\bgm\bgm_re4_creepy_2.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bgm_re4_creepy_3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>data\bgm\bgm_re4_creepy_3.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bgm_re4_danger_0" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>data\bgm\bgm_re4_danger_0.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bgm_re4_danger_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>data\bgm\bgm_re4_danger_1.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bgm_re4_danger_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>data\bgm\bgm_re4_danger_2.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bgm_re4_results" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>data\bgm\bgm_re4_results.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="checksum" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>data\checksum.json;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

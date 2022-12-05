@@ -28,5 +28,10 @@ namespace IntelOrca.Biohazard
             _sw.WriteLine($"    {s}");
             _sw.Flush();
         }
+
+        public void WriteException(Exception ex)
+        {
+            WriteLine($"Exception: {ex.Message}");
+        }
     }
 }
