@@ -31,7 +31,7 @@ namespace IntelOrca.Biohazard
                     var srcImage = new Bitmap(new MemoryStream(Resources.title_bg));
                     g.DrawImage(srcImage, 0, 0, titleBg.Width, titleBg.Height);
 
-                    var font = new Font("Courier New", 12);
+                    var font = new Font("Courier New", 16, GraphicsUnit.Pixel);
 
                     var versionInfo = Program.CurrentVersionInfo;
                     var versionSize = g.MeasureString(versionInfo, font);
