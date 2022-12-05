@@ -111,7 +111,8 @@
           "target": "610",
           "lock": "side"
         }
-      ]
+      ],
+      "npcs": []
     },
     "105": {
       "linkedRoom": "605",
@@ -157,11 +158,7 @@
           "doorRando": true
         }
       ],
-      "npcs": [
-        {
-          "excludedTypes": [ 35 ]
-        }
-      ]
+      "enemies": []
     },
     "106": {
       "linkedRoom": "606",
