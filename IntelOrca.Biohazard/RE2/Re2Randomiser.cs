@@ -73,7 +73,7 @@ namespace IntelOrca.Biohazard.RE2
 
         protected override Dictionary<RdtId, ulong> GetRdtChecksums(int player)
         {
-            var checksumsForEachPlayer = JsonSerializer.Deserialize<Dictionary<string, ulong>[]>(Resources.checksum)!;
+            var checksumsForEachPlayer = JsonSerializer.Deserialize<Dictionary<string, ulong>[]>(Resources.re2_checksum)!;
             var checksums = checksumsForEachPlayer[player];
             return checksums.ToDictionary(x => RdtId.Parse(x.Key), x => x.Value);
         }
@@ -131,10 +131,10 @@ namespace IntelOrca.Biohazard.RE2
 #if DEBUG
             var jsonPath = Path.Combine(
                 Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
-                @"..\..\..\..\IntelOrca.BioHazard\data\rdt.json");
+                @"..\..\..\..\IntelOrca.BioHazard\data\re2\re2_rdt.json");
             var jsonMap = File.ReadAllText(jsonPath);
 #else
-            var jsonMap = Resources.rdt;
+            var jsonMap = Resources.re2_rdt;
 #endif
             return jsonMap;
         }
@@ -144,10 +144,10 @@ namespace IntelOrca.Biohazard.RE2
 #if DEBUG
             var jsonPath = Path.Combine(
                 Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
-                @"..\..\..\..\IntelOrca.BioHazard\data\bgm.json");
+                @"..\..\..\..\IntelOrca.BioHazard\data\re2\re2_bgm.json");
             return File.ReadAllText(jsonPath);
 #else
-            return Resources.bgm;
+            return Resources.re2_bgm;
 #endif
         }
     }

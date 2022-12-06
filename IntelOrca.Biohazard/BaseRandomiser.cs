@@ -144,7 +144,7 @@ namespace IntelOrca.Biohazard
                 var gameData = ReadGameData(originalDataPath, modPath, config.Player, rdtIds);
 
 #if DEBUG
-                DumpScripts(gameData, Path.Combine(modPath, $"scripts_pl{config.Player}"));
+                DumpScripts(config, gameData, Path.Combine(modPath, $"scripts_pl{config.Player}"));
 #endif
 
                 var map = GetMapFromJson();
@@ -185,7 +185,7 @@ namespace IntelOrca.Biohazard
 
 #if DEBUG
                 var moddedGameData = ReadGameData(modPath, modPath, config.Player, rdtIds);
-                DumpScripts(moddedGameData, Path.Combine(modPath, $"scripts_modded_pl{config.Player}"));
+                DumpScripts(config, moddedGameData, Path.Combine(modPath, $"scripts_modded_pl{config.Player}"));
 #endif
             }
             catch (Exception ex)
@@ -238,7 +238,7 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private void DumpScripts(GameData gameData, string scriptPath)
+        private void DumpScripts(RandoConfig config, GameData gameData, string scriptPath)
         {
             Directory.CreateDirectory(scriptPath);
             foreach (var rdt in gameData.Rdts)
@@ -246,6 +246,29 @@ namespace IntelOrca.Biohazard
                 File.WriteAllText(Path.Combine(scriptPath, $"{rdt.RdtId}.bio"), rdt.Script);
                 File.WriteAllText(Path.Combine(scriptPath, $"{rdt.RdtId}.s"), rdt.ScriptDisassembly);
             }
+
+            // var player = config.Player;
+            // var options = new JsonSerializerOptions()
+            // {
+            //     ReadCommentHandling = JsonCommentHandling.Skip
+            // };
+            // var old = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(@"M:\git\rer\IntelOrca.Biohazard\data\voice.json"), options)!;
+            // var sb = new StringBuilder();
+            // var done = new HashSet<string>();
+            // foreach (var rdt in gameData.Rdts)
+            // {
+            //     foreach (var sound in rdt.Sounds)
+            //     {
+            //         var stage = rdt.RdtId.Stage;
+            //         var id = sound.Id;
+            //         var path = $"pl{player}/voice/stage{stage + 1}/v{id:000}.sap";
+            //         if (done.Add(path) && old.TryGetValue(path, out var value))
+            //         {
+            //             var actor = value;
+            //             sb.AppendLine($"\"{path}\": {{ \"rdt\": \"{rdt.RdtId}\", \"player\": {player}, \"actor\": \"{actor}\" }},");
+            //         }
+            //     }
+            // }
         }
     }
 }

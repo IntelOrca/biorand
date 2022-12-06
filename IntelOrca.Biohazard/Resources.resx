@@ -118,9 +118,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="bgm" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>data\bgm.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
   <data name="bgm_clown" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>data\bgm\bgm_clown.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -166,12 +163,6 @@
   <data name="bgm_re4_results" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>data\bgm\bgm_re4_results.ogg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="checksum" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>data\checksum.json;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="rdt" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>data\rdt.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
   <data name="re1_bgm" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>data\re1\re1_bgm.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
@@ -181,16 +172,25 @@
   <data name="re1_voice" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>data\re1\re1_voice.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="re2_bgm" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>data\re2\re2_bgm.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="re2_checksum" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>data\re2\re2_checksum.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="re2_rdt" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>data\re2\re2_rdt.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="re2_voice" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>data\re2\re2_voice.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="re2_voice1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>data\re2\re2_voice.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="title_bg_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>data\title_bg_1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>data\re1\title_bg_1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="title_bg_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>data\title_bg_2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="voice" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>data\voice.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <value>data\re2\title_bg_2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>
