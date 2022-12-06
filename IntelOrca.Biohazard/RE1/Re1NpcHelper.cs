@@ -80,5 +80,10 @@ namespace IntelOrca.Biohazard.RE1
                     return null;
             }
         }
+
+        public string GetVoiceJson()
+        {
+            return Resources.re1_voice;
+        }
     }
 }

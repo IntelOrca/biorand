@@ -7,5 +7,6 @@
         byte[] GetDefaultIncludeTypes(Rdt rdt);
         bool IsNpc(byte type);
         string? GetActor(byte type);
+        string GetVoiceJson();
     }
 }
