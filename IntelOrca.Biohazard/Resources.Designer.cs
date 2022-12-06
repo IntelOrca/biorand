@@ -62,6 +62,15 @@ namespace IntelOrca.Biohazard {
         
         /// <summary>
         ///   Looks up a localized string similar to {
+        ///  &quot;basement&quot;: [
+        ///    &quot;main03&quot;
+        ///  ],
+        ///  &quot;safe&quot;: [
+        ///    &quot;main0C&quot;
+        ///  ],
+        ///  &quot;results&quot;: [
+        ///    &quot;main2a&quot;
+        ///  ],
         ///  &quot;outside&quot;: [
         ///    &quot;main00&quot;,
         ///    &quot;main00_2&quot;,
@@ -92,14 +101,7 @@ namespace IntelOrca.Biohazard {
         ///    &quot;main30&quot;,
         ///    &quot;main31&quot;,
         ///    &quot;sub01&quot;,
-        ///    &quot;sub05&quot;,
-        ///    &quot;sub0b&quot;,
-        ///    &quot;sub10&quot;,
-        ///    &quot;sub11&quot;,
-        ///    &quot;sub14&quot;,
-        ///    &quot;sub22&quot;,
-        ///    &quot;sub2e&quot;,
-        ///    &quot;su [rest of string was truncated]&quot;;.
+        ///  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string bgm {
             get {
@@ -401,19 +403,53 @@ namespace IntelOrca.Biohazard {
         
         /// <summary>
         ///   Looks up a localized string similar to {
-        ///  &quot;voice/V004_00.wav&quot;: { &quot;actor&quot;: &quot;rebecca&quot;, &quot;rdt&quot;: &quot;100&quot; },
-        ///  &quot;voice/V004_01.wav&quot;: { &quot;actor&quot;: &quot;rebecca&quot;, &quot;rdt&quot;: &quot;100&quot; },
-        ///  &quot;voice/V004_02.wav&quot;: { &quot;actor&quot;: &quot;rebecca&quot;, &quot;rdt&quot;: &quot;100&quot; },
-        ///  &quot;voice/V004_03.wav&quot;: { &quot;actor&quot;: &quot;rebecca&quot;, &quot;rdt&quot;: &quot;100&quot; },
-        ///  &quot;voice/V004_04.wav&quot;: { &quot;actor&quot;: &quot;chris&quot;, &quot;rdt&quot;: &quot;100&quot; },
-        ///  &quot;voice/V004_05.wav&quot;: { &quot;actor&quot;: &quot;rebecca&quot;, &quot;rdt&quot;: &quot;100&quot; },
-        ///  &quot;voice/V004_06.wav&quot;: { &quot;actor&quot;: &quot;chris&quot;, &quot;rdt&quot;: &quot;100&quot; },
-        ///  &quot;voice/V004_07.wav&quot;: { &quot;actor&quot;: &quot;rebecca&quot;, &quot;rdt&quot;: &quot;100&quot; },
-        ///  &quot;voice/V004_08. [rest of string was truncated]&quot;;.
+        ///  &quot;voice/V001_00.wav&quot;: { &quot;rdt&quot;: &quot;106&quot;, &quot;player&quot;: 0, &quot;actor&quot;: &quot;jill&quot; },
+        ///  &quot;voice/V001_01.wav&quot;: {
+        ///    &quot;rdt&quot;: &quot;106&quot;,
+        ///    &quot;player&quot;: 0,
+        ///    &quot;actors&quot;: [
+        ///      {
+        ///        &quot;actor&quot;: &quot;chris&quot;,
+        ///        &quot;split&quot;: 2.5
+        ///      },
+        ///      {
+        ///        &quot;actor&quot;: &quot;wesker&quot;
+        ///      }
+        ///    ]
+        ///  },
+        ///  &quot;voice/V001_02.wav&quot;: { &quot;rdt&quot;: &quot;106&quot;, &quot;player&quot;: 0, &quot;actor&quot;: &quot;jill&quot; },
+        ///  &quot;voice/V001_03.wav&quot;: {
+        ///    &quot;rdt&quot;: &quot;106&quot;,
+        ///    &quot;player&quot;: 0,
+        ///    &quot;actors&quot;: [
+        ///      {
+        ///        &quot;actor&quot;: &quot;jill&quot;,
+        ///        &quot;split&quot;: 1
+        ///      },
+        ///      {
+        ///        &quot;actor&quot;: &quot;chris&quot;,
+        ///     [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string re1_voice {
             get {
                 return ResourceManager.GetString("re1_voice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///    &quot;pl0/voice/stage0/v001.sap&quot;: { &quot;player&quot;: 0, &quot;actor&quot;: &quot;narrator&quot; },
+        ///    &quot;pl0/voice/stage0/v002.sap&quot;: { &quot;player&quot;: 0, &quot;actor&quot;: &quot;narrator&quot; },
+        ///    &quot;pl0/voice/stage0/v003.sap&quot;: { &quot;player&quot;: 0, &quot;actor&quot;: &quot;narrator&quot; },
+        ///    &quot;pl0/voice/stage0/v004.sap&quot;: { &quot;player&quot;: 0, &quot;actor&quot;: &quot;narrator&quot; },
+        ///    &quot;pl0/voice/stage0/v005.sap&quot;: { &quot;player&quot;: 0, &quot;actor&quot;: &quot;narrator&quot; },
+        ///    &quot;pl0/voice/stage0/v006.sap&quot;: { &quot;player&quot;: 0, &quot;actor&quot;: &quot;narrator&quot; },
+        ///    &quot;pl0/voice/stage0/v007.sap&quot;: { &quot;player&quot;: 0, &quot;actor&quot;: &quot;narrator&quot; },
+        ///    &quot; [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string re2_voice {
+            get {
+                return ResourceManager.GetString("re2_voice", resourceCulture);
             }
         }
         
@@ -450,7 +486,7 @@ namespace IntelOrca.Biohazard {
         ///  &quot;pl0/voice/stage0/v009.sap&quot;: &quot;narrator&quot;,
         ///  &quot;pl0/voice/stage0/v010.sap&quot;: &quot;narrator&quot;,
         ///  &quot;pl0/voice/stage0/v011.sap&quot;: &quot;narrator&quot;,
-        ///  &quot;pl0/voice/stage0/v012.sap&quot;: &quot;narra [rest of string was truncated]&quot;;.
+        ///  &quot;pl0/voice/stage0/v012. [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string voice {
             get {
