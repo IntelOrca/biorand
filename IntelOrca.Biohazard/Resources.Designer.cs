@@ -61,55 +61,6 @@ namespace IntelOrca.Biohazard {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {
-        ///  &quot;basement&quot;: [
-        ///    &quot;main03&quot;
-        ///  ],
-        ///  &quot;safe&quot;: [
-        ///    &quot;main0C&quot;
-        ///  ],
-        ///  &quot;results&quot;: [
-        ///    &quot;main2a&quot;
-        ///  ],
-        ///  &quot;outside&quot;: [
-        ///    &quot;main00&quot;,
-        ///    &quot;main00_2&quot;,
-        ///    &quot;main2d&quot;,
-        ///    &quot;main2e&quot;,
-        ///    &quot;main2f&quot;
-        ///  ],
-        ///  &quot;creepy&quot;: [
-        ///    &quot;main01&quot;,
-        ///    &quot;main02&quot;,
-        ///    &quot;main03&quot;,
-        ///    &quot;main05&quot;,
-        ///    &quot;main06&quot;,
-        ///    &quot;main07&quot;,
-        ///    &quot;main08&quot;,
-        ///    &quot;main0e&quot;,
-        ///    &quot;main13&quot;,
-        ///    &quot;main17&quot;,
-        ///    &quot;main18&quot;,
-        ///    &quot;main1f&quot;,
-        ///    &quot;main22&quot;,
-        ///    &quot;main24&quot;,
-        ///    &quot;main25&quot;,
-        ///    &quot;main27&quot;,
-        ///    &quot;main29&quot;,
-        ///    &quot;main2b&quot;,
-        ///    &quot;main2c&quot;,
-        ///    &quot;main30&quot;,
-        ///    &quot;main31&quot;,
-        ///    &quot;sub01&quot;,
-        ///  [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string bgm {
-            get {
-                return ResourceManager.GetString("bgm", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] bgm_clown {
@@ -260,59 +211,6 @@ namespace IntelOrca.Biohazard {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] checksum {
-            get {
-                object obj = ResourceManager.GetObject("checksum", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {
-        ///  &quot;beginEndRooms&quot;: [
-        ///    {
-        ///      &quot;start&quot;: &quot;100&quot;,
-        ///      &quot;end&quot;: &quot;617&quot;,
-        ///      &quot;scenario&quot;: 0
-        ///    },
-        ///    {
-        ///      &quot;start&quot;: &quot;104&quot;,
-        ///      &quot;end&quot;: &quot;702&quot;,
-        ///      &quot;scenario&quot;: 1,
-        ///      &quot;doorRando&quot;: false
-        ///    },
-        ///    {
-        ///      &quot;start&quot;: &quot;104&quot;,
-        ///      &quot;end&quot;: &quot;700&quot;,
-        ///      &quot;scenario&quot;: 1,
-        ///      &quot;doorRando&quot;: true
-        ///    }
-        ///  ],
-        ///  &quot;rooms&quot;: {
-        ///    &quot;100&quot;: {
-        ///      &quot;doors&quot;: [
-        ///        {
-        ///          &quot;target&quot;: &quot;101&quot;,
-        ///          &quot;noReturn&quot;: true
-        ///        }
-        ///      ],
-        ///      &quot;enemies&quot;: [
-        ///        {
-        ///          &quot;nop&quot;: [ 4888 ]
-        ///        }
-        ///      ]
-        ///    },
-        ///    [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string rdt {
-            get {
-                return ResourceManager.GetString("rdt", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to {
         ///  &quot;outside&quot;: [],
         ///  &quot;creepy&quot;: [
@@ -438,6 +336,124 @@ namespace IntelOrca.Biohazard {
         
         /// <summary>
         ///   Looks up a localized string similar to {
+        ///  &quot;basement&quot;: [
+        ///    &quot;main03&quot;
+        ///  ],
+        ///  &quot;safe&quot;: [
+        ///    &quot;main0C&quot;
+        ///  ],
+        ///  &quot;results&quot;: [
+        ///    &quot;main2a&quot;
+        ///  ],
+        ///  &quot;outside&quot;: [
+        ///    &quot;main00&quot;,
+        ///    &quot;main00_2&quot;,
+        ///    &quot;main2d&quot;,
+        ///    &quot;main2e&quot;,
+        ///    &quot;main2f&quot;
+        ///  ],
+        ///  &quot;creepy&quot;: [
+        ///    &quot;main01&quot;,
+        ///    &quot;main02&quot;,
+        ///    &quot;main03&quot;,
+        ///    &quot;main05&quot;,
+        ///    &quot;main06&quot;,
+        ///    &quot;main07&quot;,
+        ///    &quot;main08&quot;,
+        ///    &quot;main0e&quot;,
+        ///    &quot;main13&quot;,
+        ///    &quot;main17&quot;,
+        ///    &quot;main18&quot;,
+        ///    &quot;main1f&quot;,
+        ///    &quot;main22&quot;,
+        ///    &quot;main24&quot;,
+        ///    &quot;main25&quot;,
+        ///    &quot;main27&quot;,
+        ///    &quot;main29&quot;,
+        ///    &quot;main2b&quot;,
+        ///    &quot;main2c&quot;,
+        ///    &quot;main30&quot;,
+        ///    &quot;main31&quot;,
+        ///    &quot;sub01&quot;,
+        ///  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string re2_bgm {
+            get {
+                return ResourceManager.GetString("re2_bgm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [
+        ///  {
+        ///    &quot;100&quot;: 11540303924482159729,
+        ///    &quot;101&quot;: 13484268733146939713,
+        ///    &quot;102&quot;: 5121006935139844277,
+        ///    &quot;103&quot;: 10341030386208010764,
+        ///    &quot;104&quot;: 11191520104056313003,
+        ///    &quot;105&quot;: 5215203298627972236,
+        ///    &quot;106&quot;: 16585113434961875648,
+        ///    &quot;107&quot;: 17825891442521666128,
+        ///    &quot;108&quot;: 3097568301807621346,
+        ///    &quot;109&quot;: 10000667466794830110,
+        ///    &quot;10A&quot;: 3484893664893460510,
+        ///    &quot;10B&quot;: 17768578808045182216,
+        ///    &quot;10C&quot;: 6179190804579467222,
+        ///    &quot;10D&quot;: 9902988025485380595,
+        ///    &quot;10E&quot;: 2723650462499140465,
+        ///    &quot;10F&quot;: 1859652 [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string re2_checksum {
+            get {
+                return ResourceManager.GetString("re2_checksum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///  &quot;beginEndRooms&quot;: [
+        ///    {
+        ///      &quot;start&quot;: &quot;100&quot;,
+        ///      &quot;end&quot;: &quot;617&quot;,
+        ///      &quot;scenario&quot;: 0
+        ///    },
+        ///    {
+        ///      &quot;start&quot;: &quot;104&quot;,
+        ///      &quot;end&quot;: &quot;702&quot;,
+        ///      &quot;scenario&quot;: 1,
+        ///      &quot;doorRando&quot;: false
+        ///    },
+        ///    {
+        ///      &quot;start&quot;: &quot;104&quot;,
+        ///      &quot;end&quot;: &quot;700&quot;,
+        ///      &quot;scenario&quot;: 1,
+        ///      &quot;doorRando&quot;: true
+        ///    }
+        ///  ],
+        ///  &quot;rooms&quot;: {
+        ///    &quot;100&quot;: {
+        ///      &quot;doors&quot;: [
+        ///        {
+        ///          &quot;target&quot;: &quot;101&quot;,
+        ///          &quot;noReturn&quot;: true
+        ///        }
+        ///      ],
+        ///      &quot;enemies&quot;: [
+        ///        {
+        ///          &quot;nop&quot;: [ 4888 ]
+        ///        }
+        ///      ]
+        ///    },
+        ///    [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string re2_rdt {
+            get {
+                return ResourceManager.GetString("re2_rdt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
         ///    &quot;pl0/voice/stage0/v001.sap&quot;: { &quot;player&quot;: 0, &quot;actor&quot;: &quot;narrator&quot; },
         ///    &quot;pl0/voice/stage0/v002.sap&quot;: { &quot;player&quot;: 0, &quot;actor&quot;: &quot;narrator&quot; },
         ///    &quot;pl0/voice/stage0/v003.sap&quot;: { &quot;player&quot;: 0, &quot;actor&quot;: &quot;narrator&quot; },
@@ -450,6 +466,23 @@ namespace IntelOrca.Biohazard {
         internal static string re2_voice {
             get {
                 return ResourceManager.GetString("re2_voice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {
+        ///    &quot;pl0/voice/stage0/v001.sap&quot;: { &quot;player&quot;: 0, &quot;actor&quot;: &quot;narrator&quot; },
+        ///    &quot;pl0/voice/stage0/v002.sap&quot;: { &quot;player&quot;: 0, &quot;actor&quot;: &quot;narrator&quot; },
+        ///    &quot;pl0/voice/stage0/v003.sap&quot;: { &quot;player&quot;: 0, &quot;actor&quot;: &quot;narrator&quot; },
+        ///    &quot;pl0/voice/stage0/v004.sap&quot;: { &quot;player&quot;: 0, &quot;actor&quot;: &quot;narrator&quot; },
+        ///    &quot;pl0/voice/stage0/v005.sap&quot;: { &quot;player&quot;: 0, &quot;actor&quot;: &quot;narrator&quot; },
+        ///    &quot;pl0/voice/stage0/v006.sap&quot;: { &quot;player&quot;: 0, &quot;actor&quot;: &quot;narrator&quot; },
+        ///    &quot;pl0/voice/stage0/v007.sap&quot;: { &quot;player&quot;: 0, &quot;actor&quot;: &quot;narrator&quot; },
+        ///    &quot; [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string re2_voice1 {
+            get {
+                return ResourceManager.GetString("re2_voice1", resourceCulture);
             }
         }
         
@@ -470,27 +503,6 @@ namespace IntelOrca.Biohazard {
             get {
                 object obj = ResourceManager.GetObject("title_bg_2", resourceCulture);
                 return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {
-        ///  &quot;pl0/voice/stage0/v001.sap&quot;: &quot;narrator&quot;,
-        ///  &quot;pl0/voice/stage0/v002.sap&quot;: &quot;narrator&quot;,
-        ///  &quot;pl0/voice/stage0/v003.sap&quot;: &quot;narrator&quot;,
-        ///  &quot;pl0/voice/stage0/v004.sap&quot;: &quot;narrator&quot;,
-        ///  &quot;pl0/voice/stage0/v005.sap&quot;: &quot;narrator&quot;,
-        ///  &quot;pl0/voice/stage0/v006.sap&quot;: &quot;narrator&quot;,
-        ///  &quot;pl0/voice/stage0/v007.sap&quot;: &quot;narrator&quot;,
-        ///  &quot;pl0/voice/stage0/v008.sap&quot;: &quot;narrator&quot;,
-        ///  &quot;pl0/voice/stage0/v009.sap&quot;: &quot;narrator&quot;,
-        ///  &quot;pl0/voice/stage0/v010.sap&quot;: &quot;narrator&quot;,
-        ///  &quot;pl0/voice/stage0/v011.sap&quot;: &quot;narrator&quot;,
-        ///  &quot;pl0/voice/stage0/v012. [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string voice {
-            get {
-                return ResourceManager.GetString("voice", resourceCulture);
             }
         }
     }
