@@ -1,4 +1,10 @@
 {
+  "basement": [
+    "BGM_1A"
+  ],
+  "safe": [
+    "BGM_31"
+  ],
   "outside": [],
   "creepy": [
     "BGM_00",
@@ -31,7 +37,8 @@
     "BGM_36",
     "BGM_37",
     "BGM_40",
-    "BGM_49"
+    "BGM_49",
+    "BGM_2B"
   ],
   "calm": [
     "BGM_0C",
@@ -59,7 +66,6 @@
     "BGM_57"
   ],
   "ambient": [
-    "SE_01",
     "SE_03",
     "SE_3C",
     "SE_44",
@@ -68,12 +74,27 @@
   "alarm": [
     "SE_50"
   ],
-  "instrument": [
-    "BGM_1F",
-    "BGM_2B",
-    "BGM_10",
-    "BGM_11",
-    "BGM_12",
-    "BGM_3B"
+  "instrument_bad": [
+    "*BGM_10",
+    "*BGM_12",
+    "!BGM_0F",
+    "!BGM_2C",
+    "!SELECT05",
+    "!SE_45",
+    "!ENDING06"
+  ],
+  "instrument_progress": [
+    "*BGM_1F",
+    "*BGM_11",
+    "!BGM_2D",
+    "!BGM_37",
+    "!BGM_2E",
+    "!BGM_3F"
+  ],
+  "instrument_good": [
+    "*BGM_2B",
+    "!BGM_3B",
+    "!BGM_0C",
+    "!BGM_2E"
   ]
 }

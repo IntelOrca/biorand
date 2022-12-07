@@ -19,6 +19,9 @@ namespace IntelOrca.Biohazard
         public const string TagOutside = "outside";
         public const string TagResults = "results";
         public const string TagSafe = "safe";
+        public const string TagInstrumentBad = "instrument_bad";
+        public const string TagInstrumentProgress = "instrument_progress";
+        public const string TagInstrumentGood = "instrument_good";
 
         private readonly RandoLogger _logger;
         private readonly BgmList _srcBgmList = new BgmList();
@@ -47,17 +50,21 @@ namespace IntelOrca.Biohazard
         {
             _logger.WriteHeading("Shuffling BGM:");
             var bgmList = GetBtmList(_bgmJson);
-            Shuffle(bgmList, TagCreepy, TagCreepy);
-            Shuffle(bgmList, TagCalm, TagCalm);
-            Shuffle(bgmList, TagDanger, TagDanger);
+
+            var tags = new[] { TagCreepy, TagCalm, TagDanger, TagInstrumentBad, TagInstrumentProgress, TagInstrumentGood };
+            foreach (var tag in tags)
+            {
+                Shuffle(bgmList, tag, tag);
+            }
             Shuffle(bgmList, TagAmbient, TagCreepy);
             Shuffle(bgmList, TagAlarm, TagCreepy);
 
-            RandomizeBasementTheme(bgmList);
-            RandomizeSaveTheme(bgmList);
             RandomizeCreepyTheme(bgmList);
             RandomizeDangerTheme(bgmList);
             RandomizeResultsTheme(bgmList);
+            RandomizePianoTheme(bgmList);
+            RandomizeSaveTheme(bgmList);
+            RandomizeBasementTheme(bgmList);
         }
 
         private void Shuffle(BgmList bgmList, string dstTag, string srcTag)
@@ -71,11 +78,17 @@ namespace IntelOrca.Biohazard
             Directory.CreateDirectory(dstDir);
             for (int i = 0; i < dstList.Count; i++)
             {
+                var dstName = dstList[i];
+                if (dstName.StartsWith("!"))
+                    continue;
+                if (dstName.StartsWith("*"))
+                    dstName = dstName.Substring(1);
+
                 var src = srcList[i];
-                var dst = Path.Combine(dstDir, dstList[i] + extension);
+                var dst = Path.Combine(dstDir, dstName + extension);
                 CopyMusicTrack(src, dst);
 
-                _logger.WriteLine($"Setting {dstList[i]} to {srcList[i]}");
+                _logger.WriteLine($"Setting {dstName} to {srcList[i]}");
             }
         }
 
@@ -99,49 +112,10 @@ namespace IntelOrca.Biohazard
             }
             else if (srcExtension.Equals(".sap", StringComparison.OrdinalIgnoreCase))
             {
-#if USE_FFMPEG
-                RunFFMPEG(src, dst);
-#else
-                var srcBytes = File.ReadAllBytes(src);
-                File.WriteAllBytes(dst, srcBytes.Skip(8).ToArray());
-#endif
+                var decoder = new ADPCMDecoder();
+                decoder.Convert(src, dst);
             }
         }
-
-#if USE_FFMPEG
-        private bool RunFFMPEG(string src, string dst)
-        {
-            var tempFile = Path.GetTempFileName();
-            try
-            {
-                var srcBytes = File.ReadAllBytes(src);
-                File.WriteAllBytes(tempFile, srcBytes.Skip(8).ToArray());
-
-                var ffmpegPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "ffmpeg.exe");
-                var psi = new ProcessStartInfo()
-                {
-                    FileName = ffmpegPath,
-                    Arguments = $"-i \"{tempFile}\" -acodec pcm_s16le \"{dst}\"",
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-                var p = Process.Start(psi);
-                p.WaitForExit();
-                return p.ExitCode == 0;
-            }
-            finally
-            {
-                try
-                {
-                    if (File.Exists(tempFile))
-                        File.Delete(tempFile);
-                }
-                catch
-                {
-                }
-            }
-        }
-#endif
 
         private BgmList GetBtmList(string bgmJson)
         {
@@ -157,24 +131,30 @@ namespace IntelOrca.Biohazard
 
         private void RandomizeSaveTheme(BgmList bgmList)
         {
-            var names = new[] { "SAVE_RE0", "SAVE_RE1", "SAVE_RE3", "SAVE_RE4A", "SAVE_RE4B", "SAVE_CODE" };
-            var resources = new[]
+            RandomizeTheme(bgmList, TagSafe, new[]
             {
-                Resources.bgm_re0,
-                Resources.bgm_re1,
-                Resources.bgm_re3,
-                Resources.bgm_re4a,
-                Resources.bgm_re4b,
-                Resources.bgm_code
-            };
-            RandomizeTheme(bgmList, TagSafe, resources, names);
+                nameof(Resources.bgm_re0),
+                nameof(Resources.bgm_re1),
+                nameof(Resources.bgm_re3),
+                nameof(Resources.bgm_re4a),
+                nameof(Resources.bgm_re4b),
+                nameof(Resources.bgm_code)
+            });
+        }
+
+        private void RandomizePianoTheme(BgmList bgmList)
+        {
+            if (_rng.Next(0, 2) == 0)
+            {
+                RandomizeTheme(bgmList, TagInstrumentBad, nameof(Resources.bgm_clown));
+            }
         }
 
         private void RandomizeBasementTheme(BgmList bgmList)
         {
             if (_rng.Next(0, 4) == 0)
             {
-                RandomizeTheme(bgmList, TagBasement, new[] { Resources.bgm_clown });
+                RandomizeTheme(bgmList, TagBasement, nameof(Resources.bgm_clown));
             }
         }
 
@@ -182,10 +162,10 @@ namespace IntelOrca.Biohazard
         {
             RandomizeTheme(bgmList, TagCreepy, new[]
             {
-                Resources.bgm_re4_creepy_0,
-                Resources.bgm_re4_creepy_1,
-                Resources.bgm_re4_creepy_2,
-                Resources.bgm_re4_creepy_3
+                nameof(Resources.bgm_re4_creepy_0),
+                nameof(Resources.bgm_re4_creepy_1),
+                nameof(Resources.bgm_re4_creepy_2),
+                nameof(Resources.bgm_re4_creepy_3)
             });
         }
 
@@ -193,9 +173,9 @@ namespace IntelOrca.Biohazard
         {
             RandomizeTheme(bgmList, TagDanger, new[]
             {
-                Resources.bgm_re4_danger_0,
-                Resources.bgm_re4_danger_1,
-                Resources.bgm_re4_danger_2
+                nameof(Resources.bgm_re4_danger_0),
+                nameof(Resources.bgm_re4_danger_1),
+                nameof(Resources.bgm_re4_danger_2)
             });
         }
 
@@ -203,23 +183,28 @@ namespace IntelOrca.Biohazard
         {
             RandomizeTheme(bgmList, TagResults, new[]
             {
-                Resources.bgm_re4_results
+                nameof(Resources.bgm_re4_results)
             });
         }
 
-        private void RandomizeTheme(BgmList bgmList, string tag, byte[][] resources, string[]? names = null)
+        private void RandomizeTheme(BgmList bgmList, string tag, params string[] resourceNames)
         {
             try
             {
-                resources = resources.Shuffle(_rng);
+                resourceNames = resourceNames.Shuffle(_rng);
                 var samples = bgmList.GetList(tag);
                 var shuffledSamples = samples
+                    .Where(x => !x.StartsWith("!"))
                     .Shuffle(_rng)
                     .ToArray();
-                var min = Math.Min(shuffledSamples.Length, resources.Length);
+                var min = Math.Min(shuffledSamples.Length, resourceNames.Length);
                 for (int i = 0; i < min; i++)
                 {
-                    RandomizeFromOwnMusic(shuffledSamples[i], names == null ? $"re4_{tag}_{i}" : names[i], resources[i]);
+                    var resource = (byte[])Resources.ResourceManager.GetObject(resourceNames[i]);
+                    var dst = shuffledSamples[i];
+                    if (dst.StartsWith("*"))
+                        dst = dst.Substring(1);
+                    RandomizeFromOwnMusic(dst, resourceNames[i], resource);
                 }
             }
             catch (Exception ex)
@@ -303,7 +288,13 @@ namespace IntelOrca.Biohazard
                 foreach (var kvp in other._samples)
                 {
                     var list = GetList(kvp.Key);
-                    list.AddRange(kvp.Value);
+                    foreach (var item in kvp.Value)
+                    {
+                        if (!string.IsNullOrEmpty(item))
+                        {
+                            list.Add(item);
+                        }
+                    }
                 }
             }
 
@@ -326,7 +317,20 @@ namespace IntelOrca.Biohazard
                     var list = kvp.Value;
                     for (int i = 0; i < list.Count; i++)
                     {
-                        list[i] = Path.Combine(bgmSubDirectory, list[i]) + extension;
+                        var name = list[i];
+                        if (name.Length > 0)
+                        {
+                            if (name[0] == '*')
+                            {
+                                list[i] = "";
+                            }
+                            else
+                            {
+                                if (name[0] == '!')
+                                    name = name.Substring(1);
+                                list[i] = Path.Combine(bgmSubDirectory, name) + extension;
+                            }
+                        }
                     }
                 }
             }
