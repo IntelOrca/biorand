@@ -112,6 +112,11 @@
           "lock": "side"
         }
       ],
+      "enemies": [
+        {
+          "excludeTypes": [ 10 ]
+        }
+      ],
       "npcs": []
     },
     "105": {
@@ -134,7 +139,8 @@
         },
         {
           "id": 4,
-          "type": 0,
+          "type": 31,
+          "priority": "fixed",
           "player": 0
         },
         {
@@ -144,7 +150,8 @@
         },
         {
           "id": 7,
-          "type": 0,
+          "type": 31,
+          "priority": "fixed",
           "player": 1
         },
         {
@@ -353,6 +360,7 @@
         },
         {
           "id": 4,
+          "type": 32,
           "priority": "fixed",
           "requires": [ 31, 35 ]
         }
