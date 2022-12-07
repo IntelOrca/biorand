@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using IntelOrca.Biohazard.RE2;
 
 namespace IntelOrca.Biohazard.RE1
 {
@@ -96,12 +97,11 @@ namespace IntelOrca.Biohazard.RE1
                 var bgmRandomiser = new BgmRandomiser(logger, dstBgmDirectory, GetBgmJson(), true, new Rng(config.Seed));
                 AddMusicSelection(bgmRandomiser, reConfig);
 
-                // RE2 uses ADPCM, so we can't just copy it into RE1
-                // if (reConfig.IsEnabled(BioVersion.Biohazard2))
-                // {
-                //     var re2r = new Re2Randomiser();
-                //     re2r.AddMusicSelection(bgmRandomiser, reConfig);
-                // }
+                if (reConfig.IsEnabled(BioVersion.Biohazard2))
+                {
+                    var re2r = new Re2Randomiser();
+                    re2r.AddMusicSelection(bgmRandomiser, reConfig);
+                }
 
                 bgmRandomiser.Randomise();
             }
