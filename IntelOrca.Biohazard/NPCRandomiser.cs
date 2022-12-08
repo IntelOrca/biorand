@@ -69,6 +69,21 @@ namespace IntelOrca.Biohazard
             if (npcs == null)
                 npcs = new[] { new MapRoomNpcs() };
 
+            var offsetToActorMap = new Dictionary<int, string>();
+            foreach (var cutscene in npcs.GroupBy(x => x.Cutscene))
+            {
+                var pc = cutscene.First().PlayerActor ?? playerActor;
+                var actorToNewActorMap  = RandomizeCharacters(rdt, npcRng, defaultIncludeTypes, cutscene.ToArray(), offsetToActorMap);
+                RandomizeVoices(rdt, voiceRng, pc, cutscene.Key, actorToNewActorMap);
+                if (actorToNewActorMap.Count != 0)
+                {
+                    _logger.WriteLine($"  cutscene #{cutscene.Key} contains {pc}, {string.Join(", ", actorToNewActorMap.Values)}");
+                }
+            }
+        }
+
+        private Dictionary<string, string> RandomizeCharacters(Rdt rdt, Rng rng, byte[] defaultIncludeTypes, MapRoomNpcs[] npcs, Dictionary<int, string> offsetToActorMap)
+        {
             var actorToNewActorMap = new Dictionary<string, string>();
             foreach (var npc in npcs)
             {
@@ -91,32 +106,51 @@ namespace IntelOrca.Biohazard
                     if (!_npcHelper.IsNpc(enemyGroup.Key))
                         continue;
 
-                    supportedNpcs = supportedNpcs.Shuffle(npcRng);
+                    supportedNpcs = supportedNpcs.Shuffle(rng);
+                    {
+                        // Avoid using the same actor again, unless we run out
+                        var noDuplicatesSupportedNpcs = supportedNpcs
+                            .Where(x => !actorToNewActorMap.Values.Contains(_npcHelper.GetActor(x)))
+                            .ToArray();
+                        if (noDuplicatesSupportedNpcs.Length != 0)
+                        {
+                            supportedNpcs = noDuplicatesSupportedNpcs;
+                        }
+                    }
                     foreach (var enemy in enemyGroup)
                     {
                         if (npc.IncludeOffsets != null && !npc.IncludeOffsets.Contains(enemy.Offset))
                             continue;
 
-#if ALWAYS_SWAP_NPC
-                        var newEnemyTypeIndex = Array.FindIndex(supportedNpcs, x => _npcHelper.GetActor(x) != _npcHelper.GetActor(enemy.Type));
-                        var newEnemyType = newEnemyTypeIndex == -1 ? supportedNpcs[0] : supportedNpcs[newEnemyTypeIndex];
-#else
-                        var newEnemyType = supportedNpcs[0];
-#endif
                         var oldActor = _npcHelper.GetActor(enemy.Type)!;
-                        var newActor = _npcHelper.GetActor(newEnemyType)!;
+                        if (!offsetToActorMap.TryGetValue(enemy.Offset, out var newActor))
+                        {
+#if ALWAYS_SWAP_NPC
+                            var newEnemyTypeIndex = Array.FindIndex(supportedNpcs, x => _npcHelper.GetActor(x) != _npcHelper.GetActor(enemy.Type));
+                            var newEnemyType = newEnemyTypeIndex == -1 ? supportedNpcs[0] : supportedNpcs[newEnemyTypeIndex];
+#else
+                            var newEnemyType = supportedNpcs[0];
+#endif
+                            newActor = _npcHelper.GetActor(newEnemyType)!;
+                            _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) [{_npcHelper.GetNpcName(enemy.Type)}] becomes [{_npcHelper.GetNpcName(newEnemyType)}]");
+                            enemy.Type = newEnemyType;
+                            offsetToActorMap[enemy.Offset] = newActor;
+                        }
                         actorToNewActorMap[oldActor] = newActor;
-
-                        _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) [{_npcHelper.GetNpcName(enemy.Type)}] becomes [{_npcHelper.GetNpcName(newEnemyType)}]");
-                        enemy.Type = (byte)newEnemyType;
                     }
                 }
             }
+            return actorToNewActorMap;
+        }
 
+        private void RandomizeVoices(Rdt rdt, Rng rng, string playerActor, int cutscene, Dictionary<string, string> actorToNewActorMap)
+        {
             var actors = actorToNewActorMap.Values.Append(playerActor).ToArray();
             foreach (var sample in available)
             {
-                if (sample.Player == _config.Player && rdt.RdtId.ToString() == sample.Rdt)
+                if (sample.Player == _config.Player &&
+                    sample.Cutscene == cutscene &&
+                    rdt.RdtId.ToString() == sample.Rdt)
                 {
                     if (sample.NoReplace)
                     {
@@ -127,19 +161,19 @@ namespace IntelOrca.Biohazard
                     var kind = sample.Kind;
                     if (kind == "radio")
                     {
-                        RandomizeVoice(voiceRng, sample, actor, actor, sample.Kind, actors);
+                        RandomizeVoice(rng, sample, actor, actor, sample.Kind, actors);
                     }
                     if ((actor == playerActor && kind != "npc") || kind == "pc")
                     {
-                        RandomizeVoice(voiceRng, sample, actor, actor, null, actors);
+                        RandomizeVoice(rng, sample, actor, actor, null, actors);
                     }
                     else if (actorToNewActorMap.TryGetValue(actor, out var newActor))
                     {
-                        RandomizeVoice(voiceRng, sample, actor, newActor, null, actors);
+                        RandomizeVoice(rng, sample, actor, newActor, null, actors);
                     }
                     else
                     {
-                        RandomizeVoice(voiceRng, sample, actor, actor, null, actors);
+                        RandomizeVoice(rng, sample, actor, actor, null, actors);
                     }
                 }
             }
@@ -155,7 +189,10 @@ namespace IntelOrca.Biohazard
             {
                 SetVoice(voice, randomVoice);
                 _randomized.Add(voice);
-                _logger.WriteLine($"    {voice.Path} [{actor}] becomes {randomVoice.Path} [{newActor}]");
+
+                var logKindSource = kind == null ? "" : $",{kind}";
+                var logKindTarget = randomVoice.Kind == null ? "" : $",{randomVoice.Kind}";
+                _logger.WriteLine($"    {voice.Path} [{actor}{logKindSource}] becomes {randomVoice.Path} [{newActor}{logKindTarget}]");
             }
         }
 
@@ -352,6 +389,7 @@ namespace IntelOrca.Biohazard
         public string? Kind { get; set; }
         public string? Rdt { get; set; }
         public int? Player { get; set; }
+        public int Cutscene { get; set; }
 
         public double Start { get; set; }
         public double End { get; set; }

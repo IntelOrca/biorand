@@ -4,7 +4,7 @@
     {
         public string GetEnemyName(byte kind)
         {
-            return $"ENEMY_{kind.ToString().ToUpperInvariant()}";
+            return $"ENEMY_{((EnemyType)kind).ToString().ToUpperInvariant()}";
         }
 
         public string GetItemName(byte kind)
