@@ -53,6 +53,9 @@
         },
         {
           "target": "103"
+        },
+        {
+          "target": "201"
         }
       ]
     },
@@ -221,7 +224,8 @@
         {
           "target": "109"
         }
-      ]
+      ],
+      "enemies": []
     },
     "109": {
       "linkedRoom": "609",
@@ -519,9 +523,10 @@
         {
           "target": "202"
         },
-        // {
-        //   "target": "714"
-        // },
+        {
+          "target": "714",
+          "lock": "always"
+        },
         {
           "target": "715",
           "requires": [ 54 ]
@@ -815,7 +820,8 @@
           "id": 2,
           "type": 0
         }
-      ]
+      ],
+      "enemies": []
     },
     "304": {
       "doors": [
@@ -1584,7 +1590,8 @@
         },
         {
           "target": "71A",
-          "lock": "unblock"
+          "lock": "unblock",
+          "noUnlock": true
         }
       ],
       "enemies": [
