@@ -1342,11 +1342,12 @@
     "507": {
       "doors": [
         {
-          "target": "505"
+          "target": "505",
+          "doorRando": true
         },
         {
           "target": "50C",
-          "doorRando": true
+          "doorRando": false
         }
       ],
       "items": [
