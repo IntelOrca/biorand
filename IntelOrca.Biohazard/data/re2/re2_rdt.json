@@ -356,6 +356,7 @@
           "id": 2,
           "type": 61,
           "requires": [ 67, 74 ],
+          "doorRando": false,
           "player": 0
         },
         {
@@ -363,7 +364,13 @@
           "type": 57,
           "priority": "fixed",
           "requires": [ 67, 74 ],
+          "doorRando": false,
           "player": 1
+        },
+        {
+          "id": 2,
+          "requires": [ 67, 74 ],
+          "doorRando": true
         }
       ]
     },
@@ -1214,7 +1221,28 @@
           "priority": "low"
         }
       ],
-      "npcs": [ {} ]
+      "npcs": [
+        {
+          "includeOffsets": [ 11176 ],
+          "cutscene": 0,
+          "player": 1
+        },
+        {
+          "includeOffsets": [],
+          "cutscene": 1,
+          "player": 1
+        },
+        {
+          "includeOffsets": [ 15292, 15334 ],
+          "cutscene": 2,
+          "player": 1
+        },
+        {
+          "includeOffsets": [],
+          "cutscene": 3,
+          "player": 1
+        }
+      ]
     },
     "300": {
       "doorRando": [
@@ -1417,7 +1445,21 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 64, 66 ]
+          "includeOffsets": [ 4342 ],
+          "playerActor": "sherry",
+          "cutscene": 0,
+          "player": 1
+        },
+        {
+          "includeOffsets": [ 4396, 4422 ],
+          "excludeTypes": [ 64, 66 ],
+          "cutscene": 1,
+          "player": 1
+        },
+        {
+          "includeOffsets": [],
+          "cutscene": 2,
+          "player": 1
         }
       ]
     },
@@ -1428,6 +1470,12 @@
         },
         {
           "target": "300"
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 2568 ],
+          "player": 1
         }
       ]
     },
@@ -1444,9 +1492,10 @@
         },
         {
           "target": "30A",
-          "lock":  "unblock"
+          "lock": "unblock"
         }
-      ]
+      ],
+      "npcs": []
     },
     "30A": {
       "doorRando": [
@@ -1463,7 +1512,8 @@
           "target": "400",
           "noReturn": true
         }
-      ]
+      ],
+      "npcs": []
     },
     "30B": {
       "doorRando": [
@@ -1613,6 +1663,13 @@
         {
           "target": "401"
         }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 5730 ],
+          "playerActor": "sherry",
+          "player": 1
+        }
       ]
     },
     "401": {
@@ -1707,7 +1764,8 @@
           "player": 0
         }
       ],
-      "enemies": [ {} ]
+      "enemies": [ {} ],
+      "npcs": []
     },
     "402": {
       "doors": [
@@ -2291,6 +2349,13 @@
       ],
       "npcs": [
         {
+          "includeOffsets": [ 4342, 7408 ],
+          "cutscene": 0,
+          "player": 0
+        },
+        {
+          "includeOffsets": [ 4510, 4622 ],
+          "cutscene": 1,
           "player": 0
         },
         {
@@ -2520,7 +2585,8 @@
           "target": "608"
         }
       ],
-      "enemies": [ {} ]
+      "enemies": [ {} ],
+      "npcs": []
     },
     "607": {
       "doorRando": [
@@ -2539,7 +2605,26 @@
           "randomize": false
         }
       ],
-      "npcs": [ {} ]
+      "npcs": [
+        {
+          "includeOffsets": [ 3296 ],
+          "cutscene": 0,
+          "player": 0
+        },
+        {
+          "includeOffsets": [],
+          "cutscene": 1,
+          "player": 0
+        },
+        {
+          "includeOffsets": [ 3322 ],
+          "cutscene": 2,
+          "player": 0
+        },
+        {
+          "player": 1
+        }
+      ]
     },
     "608": {
       "doorRando": [
@@ -2759,7 +2844,23 @@
           "category": "exclude"
         }
       ],
-      "npcs": [ {} ]
+      "npcs": [
+        {
+          "includeOffsets": [ 13608 ],
+          "cutscene": 0,
+          "player": 0
+        },
+        {
+          "includeOffsets": [ 13608, 13630, 13786 ],
+          "cutscene": 1,
+          "player": 0
+        },
+        {
+          "includeOffsets": [],
+          "cutscene": 2,
+          "player": 0
+        }
+      ]
     },
     "612": {
       "doorRando": [
@@ -2783,7 +2884,16 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 88, 89, 90 ]
+          "includeOffsets": [ 5016 ],
+          "excludeTypes": [ 88, 89, 90 ],
+          "cutscene": 0,
+          "player": 1
+        },
+        {
+          "includeOffsets": [ 4870, 4892 ],
+          "excludeTypes": [ 88, 89, 90 ],
+          "cutscene": 1,
+          "player": 1
         }
       ]
     },
