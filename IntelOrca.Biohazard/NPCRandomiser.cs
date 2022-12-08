@@ -113,59 +113,44 @@ namespace IntelOrca.Biohazard
                 }
             }
 
+            var actors = actorToNewActorMap.Values.Append(playerActor).ToArray();
             foreach (var sample in available)
             {
                 if (sample.Player == _config.Player && rdt.RdtId.ToString() == sample.Rdt)
                 {
-                    if (sample.Start != 0)
+                    if (sample.NoReplace)
                     {
                         continue;
                     }
 
                     var actor = sample.Actor!;
-                    if (actor == playerActor)
+                    var kind = sample.Kind;
+                    if (kind == "radio")
                     {
-                        RandomizeVoice(voiceRng, sample, playerActor, playerActor, null);
+                        RandomizeVoice(voiceRng, sample, actor, actor, sample.Kind, actors);
+                    }
+                    if ((actor == playerActor && kind != "npc") || kind == "pc")
+                    {
+                        RandomizeVoice(voiceRng, sample, actor, actor, null, actors);
                     }
                     else if (actorToNewActorMap.TryGetValue(actor, out var newActor))
                     {
-                        RandomizeVoice(voiceRng, sample, actor, newActor, null);
+                        RandomizeVoice(voiceRng, sample, actor, newActor, null, actors);
+                    }
+                    else
+                    {
+                        RandomizeVoice(voiceRng, sample, actor, actor, null, actors);
                     }
                 }
             }
-
-            // foreach (var sound in rdt.Sounds)
-            // {
-            //     var voice = new VoiceSample(_config.Player, rdt.RdtId.Stage + 1, sound.Id);
-            //     var (actor, kind) = GetVoice(voice);
-            //     if (actor != null)
-            //     {
-            //         if (kind == "radio")
-            //         {
-            //             RandomizeVoice(rng, voice, actor, actor, kind);
-            //         }
-            //         if ((actor == playerActor && kind != "npc") || kind == "pc")
-            //         {
-            //             RandomizeVoice(rng, voice, actor, actor, null);
-            //         }
-            //         else if (actorToNewActorMap.TryGetValue(actor, out var newActor))
-            //         {
-            //             RandomizeVoice(rng, voice, actor, newActor, null);
-            //         }
-            //         else
-            //         {
-            //             RandomizeVoice(rng, voice, actor, actor, null);
-            //         }
-            //     }
-            // }
         }
 
-        private void RandomizeVoice(Rng rng, VoiceSample voice, string actor, string newActor, string? kind)
+        private void RandomizeVoice(Rng rng, VoiceSample voice, string actor, string newActor, string? kind, string[] actors)
         {
             if (_randomized.Contains(voice))
                 return;
 
-            var randomVoice = GetRandomVoice(rng, newActor, kind);
+            var randomVoice = GetRandomVoice(rng, newActor, kind, actors);
             if (randomVoice != null)
             {
                 SetVoice(voice, randomVoice);
@@ -174,9 +159,9 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private VoiceSample? GetRandomVoice(Rng rng, string actor, string? kind)
+        private VoiceSample? GetRandomVoice(Rng rng, string actor, string? kind, string[] actors)
         {
-            var index = _pool.FindIndex(x => x.Actor == actor && ((kind == null && x.Kind != "radio") || x.Kind == kind));
+            var index = _pool.FindIndex(x => x.Actor == actor && ((kind == null && x.Kind != "radio") || x.Kind == kind) && x.CheckConditions(actors));
             if (index == -1)
             {
                 var newItems = voiceInfo
@@ -280,7 +265,8 @@ namespace IntelOrca.Biohazard
             if (voiceInfo.Length == 0 || available.Length == 0)
             {
                 voiceInfo = LoadVoiceInfoFromJson();
-                available = RemoveDuplicateVoices(voiceInfo, originalDataPath);
+                available = voiceInfo;
+                // available = RemoveDuplicateVoices(voiceInfo, originalDataPath);
             }
         }
 
@@ -301,11 +287,14 @@ namespace IntelOrca.Biohazard
                 if (sample.Actors != null)
                 {
                     var start = 0.0;
+                    var noReplace = false;
                     foreach (var sub in sample.Actors)
                     {
                         var slice = sample.CreateSlice(sub.Actor!, start, sub.Split);
+                        slice.NoReplace = noReplace;
                         start = sub.Split;
                         samples.Add(slice);
+                        noReplace = true;
                     }
                 }
                 else
@@ -367,6 +356,9 @@ namespace IntelOrca.Biohazard
         public double Start { get; set; }
         public double End { get; set; }
 
+        public string? Condition { get; set; }
+
+        public bool NoReplace { get; set; }
         public VoiceSampleSplit[]? Actors { get; set; }
 
         public VoiceSample CreateSlice(string actor, double start, double end)
@@ -380,6 +372,36 @@ namespace IntelOrca.Biohazard
                 Start = start,
                 End = end
             };
+        }
+
+        public bool CheckConditions(string[] otherActors)
+        {
+            if (Condition == null)
+                return true;
+
+            var conditions = Condition.Replace("&&", "&").Split('&');
+            foreach (var singleCondition in conditions)
+            {
+                var sc = singleCondition.Trim();
+                if (sc.StartsWith("!"))
+                {
+                    var cc = sc.Substring(1);
+                    if (otherActors.Contains(cc))
+                    {
+                        return false;
+                    }
+                }
+                else if (sc.StartsWith("@"))
+                {
+                    var cc = sc.Substring(1);
+                    if (!otherActors.Contains(cc))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
     }
 
