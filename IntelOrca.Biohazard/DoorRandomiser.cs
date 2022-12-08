@@ -142,6 +142,7 @@ namespace IntelOrca.Biohazard
             FinishOffEndNodes(graph.End);
 
             FinalChecks(graph);
+            UnfixRE1Doors();
             return graph;
         }
 
@@ -200,6 +201,28 @@ namespace IntelOrca.Biohazard
                         if (target.Stage == 255)
                             target = new RdtId(rdt.RdtId.Stage, target.Room);
                         door.Target = GetRE1FixedId(target);
+                    }
+                }
+            }
+        }
+
+        private void UnfixRE1Doors()
+        {
+            foreach (var rdt in _gameData.Rdts)
+            {
+                if (rdt.Version == BioVersion.Biohazard1)
+                {
+                    if (!ShouldFixRE1Rdt(rdt.RdtId))
+                        continue;
+
+                    foreach (var door in rdt.Doors)
+                    {
+                        var target = door.Target;
+                        if (target.Stage == rdt.RdtId.Stage)
+                        {
+                            target = new RdtId(255, target.Room);
+                            door.Target = target;
+                        }
                     }
                 }
             }
