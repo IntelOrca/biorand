@@ -1262,11 +1262,31 @@
       ],
       "npcs": [
         {
-          "includeOffsets": [ 6854, 6990, 7316 ],
-          "includeTypes": [ 65, 67, 69, 79 ]
+          "includeOffsets": [ 6876, 7204, 7508 ],
+          "cutscene": 0 // Leon,[Ben]
         },
         {
-          "includeOffsets": [ 6876, 7204, 7508 ]
+          "includeOffsets": [ 6876, 7204, 7508 ],
+          "cutscene": 1 // Leon,[Ben],Ada
+        },
+        {
+          "includeOffsets": [ 6854 ],
+          "includeTypes": [ 65, 67, 69, 79 ],
+          "cutscene": 1 // Leon,Ben,[Ada]
+        },
+        {
+          "includeOffsets": [ 7012, 7250, 7338, 7554 ],
+          "includeTypes": [ 68 ],
+          "cutscene": 2 // Leon,[Ben]
+        },
+        {
+          "includeOffsets": [ 6990, 7316 ],
+          "includeTypes": [ 65, 67, 69, 79 ],
+          "cutscene": 3 // Leon,[Ada]
+        },
+        {
+          "includeOffsets": [],
+          "cutscene": 4 // Leon,Claire
         }
       ]
     },
@@ -1523,7 +1543,23 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 64, 65, 66, 67 ]
+          "includeOffsets": [ 3136 ],
+          "playerActor": "ada",
+          "cutscene": 0 // Ada, [Leon]
+        },
+        {
+          "includeOffsets": [ 3166 ],
+          "playerActor": "ada",
+          "cutscene": 1 // Ada, [Sherry]
+        },
+        {
+          "includeOffsets": [ 3566 ],
+          "excludeTypes": [ 64, 65, 66, 67 ],
+          "cutscene": 2 // Leon, [Ada]
+        },
+        {
+          "includeOffsets": [],
+          "cutscene": 3 // Leon, Claire
         }
       ]
     },
@@ -1791,8 +1827,16 @@
       ],
       "npcs": [
         {
+          "includeOffsets": [ 3678, 3700, 3806 ],
           "excludeTypes": [ 65, 67 ],
-          "player": 0
+          "playerActor": "ada",
+          "player": 0,
+          "cutscene": 0
+        },
+        {
+          "includeOffsets": [],
+          "player": 0,
+          "cutscene": 1
         }
       ]
     },
@@ -1898,7 +1942,15 @@
       ],
       "npcs": [
         {
+          "includeOffsets": [ 9180 ],
           "excludeTypes": [ 65, 66, 67, 73, 80, 81 ],
+          "playerActor": "ada",
+          "cutscene": 0,
+          "player": 0
+        },
+        {
+          "includeOffsets": [ 9260, 9286 ],
+          "cutscene": 1,
           "player": 0
         }
       ]

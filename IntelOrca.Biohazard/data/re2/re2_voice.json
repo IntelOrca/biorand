@@ -33,7 +33,7 @@
     "pl0/voice/stage1/v019.sap": { "rdt": "113", "player": 0, "actor": "leon" },
     "pl0/voice/stage1/v020.sap": { "rdt": "113", "player": 0, "actor": "leon" },
     "pl0/voice/stage1/v021.sap": { "rdt": "113", "player": 0, "actor": "claire" },
-    "pl0/voice/stage1/v022.sap": { "rdt": "113", "player": 0, "actor": "claire", "condition": "@leon" },
+    "pl0/voice/stage1/v022.sap": { "rdt": "115", "player": 0, "actor": "claire", "condition": "@leon" },
     "pl0/voice/stage1/v023.sap": { "rdt": "115", "player": 0, "actor": "leon" },
     "pl0/voice/stage1/v024.sap": { "rdt": "115", "player": 0, "actor": "leon" },
     "pl0/voice/stage1/v025.sap": { "rdt": "115", "player": 0, "actor": "leon" },
@@ -71,50 +71,51 @@
     "pl0/voice/stage2/v030.sap": { "rdt": "219", "player": 0, "actor": "ben" },
     "pl0/voice/stage2/v032.sap": { "rdt": "219", "player": 0, "actor": "leon", "condition": "@ada" }, // could remove the name to work w/everyone
 
-    "pl0/voice/stage3/v000.sap": { "rdt": "301", "player": 0, "actor": "leon" }, // since leon doesn't know who's ben, could be funny to keep it with everyone
-    "pl0/voice/stage3/v001.sap": { "rdt": "301", "player": 0, "actor": "ben" },
-    "pl0/voice/stage3/v002.sap": { "rdt": "301", "player": 0, "actor": "ben" },
-    "pl0/voice/stage3/v003.sap": { "rdt": "301", "player": 0, "actor": "ada", "condition": "@ben" }, // could remove the name to work w/everyone
-    "pl0/voice/stage3/v004.sap": { "rdt": "301", "player": 0, "actor": "ben" },
-    "pl0/voice/stage3/v006.sap": { "rdt": "301", "player": 0, "actor": "ada" },
-    "pl0/voice/stage3/v007.sap": { "rdt": "301", "player": 0, "actor": "ada" },
-    "pl0/voice/stage3/v008.sap": { "rdt": "301", "player": 0, "actor": "ben" },
-    "pl0/voice/stage3/v009.sap": { "rdt": "301", "player": 0, "actor": "leon" },
-    "pl0/voice/stage3/v010.sap": { "rdt": "301", "player": 0, "actor": "ben" },
-    "pl0/voice/stage3/v011.sap": { "rdt": "301", "player": 0, "actor": "ben" },
-    "pl0/voice/stage3/v012.sap": { "rdt": "301", "player": 0, "actor": "leon" },
-    "pl0/voice/stage3/v013.sap": { "rdt": "301", "player": 0, "actor": "ben" },
-    "pl0/voice/stage3/v014.sap": { "rdt": "301", "player": 0, "actor": "ben" },
-    "pl0/voice/stage3/v015.sap": { "rdt": "301", "player": 0, "actor": "leon" },
-    "pl0/voice/stage3/v016.sap": { "rdt": "301", "player": 0, "actor": "ben" },
-    "pl0/voice/stage3/v017.sap": { "rdt": "301", "player": 0, "actor": "leon" },
-    "pl0/voice/stage3/v018.sap": { "rdt": "301", "player": 0, "actor": "ben" },
-    "pl0/voice/stage3/v019.sap": { "rdt": "301", "player": 0, "actor": "ben" },
-    "pl0/voice/stage3/v020.sap": { "rdt": "301", "player": 0, "actor": "ada" },
-    "pl0/voice/stage3/v021.sap": { "rdt": "301", "player": 0, "actor": "leon" , "condition": "@ben" },
-    "pl0/voice/stage3/v022.sap": { "rdt": "301", "player": 0, "actor": "ben" },
-    "pl0/voice/stage3/v023.sap": { "rdt": "301", "player": 0, "actor": "leon" , "condition": "@ben" },
-    "pl0/voice/stage3/v024.sap": { "rdt": "301", "player": 0, "actor": "ben" },
-    "pl0/voice/stage3/v025.sap": { "rdt": "301", "player": 0, "actor": "ben" },
-    "pl0/voice/stage3/v026.sap": { "rdt": "301", "player": 0, "actor": "leon", "condition": "@ben" }, // could remove the name to work w/everyone
-    "pl0/voice/stage3/v027.sap": { "rdt": "301", "player": 0, "actor": "ben" },
-    "pl0/voice/stage3/v028.sap": { "rdt": "301", "player": 0, "actor": "leon" },
-    "pl0/voice/stage3/v030.sap": { "rdt": "301", "player": 0, "actor": "ben" },
-    "pl0/voice/stage3/v031.sap": { "rdt": "301", "player": 0, "actor": "ben" },
-    "pl0/voice/stage3/v032.sap": { "rdt": "301", "player": 0, "actor": "ada" },
-    "pl0/voice/stage3/v033.sap": { "rdt": "301", "player": 0, "actor": "ada", "condition": "@leon" },
-    "pl0/voice/stage3/v034.sap": { "rdt": "301", "player": 0, "actor": "leon" },
-    "pl0/voice/stage3/v035.sap": { "rdt": "301", "player": 0, "actor": "leon", "condition": "@ada" }, // could remove the name to work w/everyone
-    "pl0/voice/stage3/v036.sap": { "rdt": "301", "player": 0, "actor": "ada" },
-    "pl0/voice/stage3/v037.sap": { "rdt": "301", "player": 0, "actor": "leon" , "condition": "@ada" }, // could remove the name to work w/everyone
-    "pl0/voice/stage3/v038.sap": { "rdt": "301", "player": 0, "actor": "leon", "condition": "@claire" }, // could remove the name to work w/everyone
-    "pl0/voice/stage3/v039.sap": { "rdt": "301", "player": 0, "actor": "claire", "kind": "radio" },
-    "pl0/voice/stage3/v040.sap": { "rdt": "301", "player": 0, "actor": "leon" },
-    "pl0/voice/stage3/v041.sap": { "rdt": "301", "player": 0, "actor": "claire", "kind": "radio" },
-    "pl0/voice/stage3/v042.sap": { "rdt": "301", "player": 0, "actor": "claire", "kind": "radio", "condition": "@leon" }, // could remove the name to work w/everyone
-    "pl0/voice/stage3/v043.sap": { "rdt": "301", "player": 0, "actor": "leon" },
-    "pl0/voice/stage3/v044.sap": { "rdt": "301", "player": 0, "actor": "claire", "kind": "radio" },
-    "pl0/voice/stage3/v045.sap": { "rdt": "301", "player": 0, "actor": "leon", "condition": "@claire" }, // could remove the name to work w/everyone
+    "pl0/voice/stage3/v000.sap": { "rdt": "301", "player": 0, "cutscene": 0, "actor": "leon" }, // since leon doesn't know who's ben, could be funny to keep it with everyone
+    "pl0/voice/stage3/v001.sap": { "rdt": "301", "player": 0, "cutscene": 0, "actor": "ben" },
+    "pl0/voice/stage3/v002.sap": { "rdt": "301", "player": 0, "cutscene": 1, "actor": "leon" },
+    "pl0/voice/stage3/v003.sap": { "rdt": "301", "player": 0, "cutscene": 1, "actor": "ada", "condition": "@ben" }, // could remove the name to work w/everyone
+    "pl0/voice/stage3/v004.sap": { "rdt": "301", "player": 0, "cutscene": 1, "actor": "ben" },
+    "pl0/voice/stage3/v006.sap": { "rdt": "301", "player": 0, "cutscene": 1, "actor": "ada" },
+    "pl0/voice/stage3/v007.sap": { "rdt": "301", "player": 0, "cutscene": 1, "actor": "ada" },
+    "pl0/voice/stage3/v008.sap": { "rdt": "301", "player": 0, "cutscene": 1, "actor": "ben" },
+    "pl0/voice/stage3/v009.sap": { "rdt": "301", "player": 0, "cutscene": 1, "actor": "leon" },
+    "pl0/voice/stage3/v010.sap": { "rdt": "301", "player": 0, "cutscene": 1, "actor": "ben" },
+    "pl0/voice/stage3/v011.sap": { "rdt": "301", "player": 0, "cutscene": 1, "actor": "ben" },
+    "pl0/voice/stage3/v012.sap": { "rdt": "301", "player": 0, "cutscene": 1, "actor": "leon" },
+    "pl0/voice/stage3/v013.sap": { "rdt": "301", "player": 0, "cutscene": 1, "actor": "ben" },
+    "pl0/voice/stage3/v014.sap": { "rdt": "301", "player": 0, "cutscene": 1, "actor": "ben" },
+    "pl0/voice/stage3/v015.sap": { "rdt": "301", "player": 0, "cutscene": 1, "actor": "leon" },
+    "pl0/voice/stage3/v016.sap": { "rdt": "301", "player": 0, "cutscene": 1, "actor": "ben" },
+    "pl0/voice/stage3/v017.sap": { "rdt": "301", "player": 0, "cutscene": 1, "actor": "leon" },
+    "pl0/voice/stage3/v018.sap": { "rdt": "301", "player": 0, "cutscene": 1, "actor": "ben" },
+    "pl0/voice/stage3/v019.sap": { "rdt": "301", "player": 0, "cutscene": 1, "actor": "ben" },
+    "pl0/voice/stage3/v020.sap": { "rdt": "301", "player": 0, "cutscene": 1, "actor": "ada" },
+    "pl0/voice/stage3/v021.sap": { "rdt": "301", "player": 0, "cutscene": 2, "actor": "leon" , "condition": "@ben" },
+    "pl0/voice/stage3/v022.sap": { "rdt": "301", "player": 0, "cutscene": 2, "actor": "ben" },
+    "pl0/voice/stage3/v023.sap": { "rdt": "301", "player": 0, "cutscene": 2, "actor": "leon" , "condition": "@ben" },
+    "pl0/voice/stage3/v024.sap": { "rdt": "301", "player": 0, "cutscene": 2, "actor": "ben" },
+    "pl0/voice/stage3/v025.sap": { "rdt": "301", "player": 0, "cutscene": 2, "actor": "ben" },
+    "pl0/voice/stage3/v026.sap": { "rdt": "301", "player": 0, "cutscene": 2, "actor": "leon", "condition": "@ben" }, // could remove the name to work w/everyone
+    "pl0/voice/stage3/v027.sap": { "rdt": "301", "player": 0, "cutscene": 2, "actor": "ben" },
+    "pl0/voice/stage3/v028.sap": { "rdt": "301", "player": 0, "cutscene": 2, "actor": "leon" },
+    "pl0/voice/stage3/v030.sap": { "rdt": "301", "player": 0, "cutscene": 2, "actor": "ben" },
+    "pl0/voice/stage3/v031.sap": { "rdt": "301", "player": 0, "cutscene": 2, "actor": "ben" },
+    "pl0/voice/stage3/v032.sap": { "rdt": "301", "player": 0, "cutscene": 3, "actor": "ada" },
+    "pl0/voice/stage3/v033.sap": { "rdt": "301", "player": 0, "cutscene": 3, "actor": "ada", "condition": "@leon" },
+    "pl0/voice/stage3/v034.sap": { "rdt": "301", "player": 0, "cutscene": 3, "actor": "leon" },
+    "pl0/voice/stage3/v035.sap": { "rdt": "301", "player": 0, "cutscene": 3, "actor": "leon", "condition": "@ada" }, // could remove the name to work w/everyone
+    "pl0/voice/stage3/v036.sap": { "rdt": "301", "player": 0, "cutscene": 3, "actor": "ada" },
+    "pl0/voice/stage3/v037.sap": { "rdt": "301", "player": 0, "cutscene": 3, "actor": "leon" , "condition": "@ada" }, // could remove the name to work w/everyone
+    "pl0/voice/stage3/v038.sap": { "rdt": "301", "player": 0, "cutscene": 4, "actor": "leon", "condition": "@claire" }, // could remove the name to work w/everyone
+    "pl0/voice/stage3/v039.sap": { "rdt": "301", "player": 0, "cutscene": 4, "actor": "claire", "kind": "radio" },
+    "pl0/voice/stage3/v040.sap": { "rdt": "301", "player": 0, "cutscene": 4, "actor": "leon" },
+    "pl0/voice/stage3/v041.sap": { "rdt": "301", "player": 0, "cutscene": 4, "actor": "claire", "kind": "radio" },
+    "pl0/voice/stage3/v042.sap": { "rdt": "301", "player": 0, "cutscene": 4, "actor": "claire", "kind": "radio", "condition": "@leon" }, // could remove the name to work w/everyone
+    "pl0/voice/stage3/v043.sap": { "rdt": "301", "player": 0, "cutscene": 4, "actor": "leon" },
+    "pl0/voice/stage3/v044.sap": { "rdt": "301", "player": 0, "cutscene": 4, "actor": "claire", "kind": "radio" },
+    "pl0/voice/stage3/v045.sap": { "rdt": "301", "player": 0, "cutscene": 4, "actor": "leon", "condition": "@claire" }, // could remove the name to work w/everyone
+
     "pl0/voice/stage3/v049.sap": { "rdt": "304", "player": 0, "actor": "leon", "condition": "@ada" },
     "pl0/voice/stage3/v050.sap": { "rdt": "304", "player": 0, "actor": "leon" },
     "pl0/voice/stage3/v051.sap": { "rdt": "304", "player": 0, "actor": "ada", "condition": "@leon" }, // could remove the name to work w/everyone
@@ -122,24 +123,26 @@
     "pl0/voice/stage3/v053.sap": { "rdt": "304", "player": 0, "actor": "leon" },
     "pl0/voice/stage3/v054.sap": { "rdt": "304", "player": 0, "actor": "ada" },
     "pl0/voice/stage3/v055.sap": { "rdt": "304", "player": 0, "actor": "leon", "condition": "!ben" },
-    "pl0/voice/stage3/v058.sap": { "rdt": "30B", "player": 0, "actor": "leon", "kind": "npc", "condition": "@ada" },
-    "pl0/voice/stage3/v059.sap": { "rdt": "30B", "player": 0, "actor": "leon", "kind": "npc" },
-    "pl0/voice/stage3/v060.sap": { "rdt": "30B", "player": 0, "actor": "leon", "kind": "npc" },
-    "pl0/voice/stage3/v061.sap": { "rdt": "30B", "player": 0, "actor": "ada", "kind": "pc" },
-    "pl0/voice/stage3/v062.sap": { "rdt": "30B", "player": 0, "actor": "ada", "kind": "pc" },
-    "pl0/voice/stage3/v063.sap": { "rdt": "30B", "player": 0, "actor": "ada", "kind": "pc" },
-    "pl0/voice/stage3/v064.sap": { "rdt": "30B", "player": 0, "actor": "ada", "condition": "@leon" }, // could remove the name to work w/everyone
-    "pl0/voice/stage3/v065.sap": { "rdt": "30B", "player": 0, "actor": "leon", "condition": "@ada" }, // could remove the name to work w/everyone
-    "pl0/voice/stage3/v066.sap": { "rdt": "30B", "player": 0, "actor": "ada" },
-    "pl0/voice/stage3/v067.sap": { "rdt": "30B", "player": 0, "actor": "ada" },
-    "pl0/voice/stage3/v068.sap": { "rdt": "30B", "player": 0, "actor": "ada" },
-    "pl0/voice/stage3/v069.sap": { "rdt": "30B", "player": 0, "actor": "leon", "condition": "@ada" }, // could remove the name to work w/everyone
-    "pl0/voice/stage3/v070.sap": { "rdt": "30B", "player": 0, "actor": "claire", "kind": "radio", "condition": "@leon" }, // could remove the name to work w/everyone
-    "pl0/voice/stage3/v071.sap": { "rdt": "30B", "player": 0, "actor": "leon" },
 
-    "pl0/voice/stage4/v001.sap": { "rdt": "404", "player": 0, "actor": "ada", "kind": "pc", "condition": "@leon" },
-    "pl0/voice/stage4/v002.sap": { "rdt": "404", "player": 0, "actor": "ada", "kind": "pc" },
-    "pl0/voice/stage4/v003.sap": { "rdt": "404", "player": 0, "actor": "leon", "condition": "@ada" }, // could remove the name to work w/everyone
+    "pl0/voice/stage3/v058.sap": { "rdt": "30B", "player": 0, "cutscene": 0, "actor": "leon", "kind": "npc", "condition": "@ada" },
+    "pl0/voice/stage3/v059.sap": { "rdt": "30B", "player": 0, "cutscene": 0, "actor": "leon", "kind": "npc" },
+    "pl0/voice/stage3/v060.sap": { "rdt": "30B", "player": 0, "cutscene": 0, "actor": "leon", "kind": "npc" },
+    "pl0/voice/stage3/v061.sap": { "rdt": "30B", "player": 0, "cutscene": 0, "actor": "ada", "kind": "pc" },
+    "pl0/voice/stage3/v062.sap": { "rdt": "30B", "player": 0, "cutscene": 0, "actor": "ada", "kind": "pc" },
+    "pl0/voice/stage3/v063.sap": { "rdt": "30B", "player": 0, "cutscene": 1, "actor": "ada", "kind": "pc" },
+    "pl0/voice/stage3/v064.sap": { "rdt": "30B", "player": 0, "cutscene": 2, "actor": "ada", "condition": "@leon" }, // could remove the name to work w/everyone
+    "pl0/voice/stage3/v065.sap": { "rdt": "30B", "player": 0, "cutscene": 2, "actor": "leon", "condition": "@ada" }, // could remove the name to work w/everyone
+    "pl0/voice/stage3/v066.sap": { "rdt": "30B", "player": 0, "cutscene": 2, "actor": "ada" },
+    "pl0/voice/stage3/v067.sap": { "rdt": "30B", "player": 0, "cutscene": 2, "actor": "ada" },
+    "pl0/voice/stage3/v068.sap": { "rdt": "30B", "player": 0, "cutscene": 2, "actor": "ada" },
+    "pl0/voice/stage3/v069.sap": { "rdt": "30B", "player": 0, "cutscene": 2, "actor": "leon", "condition": "@ada" }, // could remove the name to work w/everyone
+    "pl0/voice/stage3/v070.sap": { "rdt": "30B", "player": 0, "cutscene": 3, "actor": "claire", "kind": "radio", "condition": "@leon" }, // could remove the name to work w/everyone
+    "pl0/voice/stage3/v071.sap": { "rdt": "30B", "player": 0, "cutscene": 3, "actor": "leon" },
+
+    "pl0/voice/stage4/v001.sap": { "rdt": "404", "player": 0, "cutscene": 0, "actor": "ada", "kind": "pc", "condition": "@leon" },
+    "pl0/voice/stage4/v002.sap": { "rdt": "404", "player": 0, "cutscene": 0, "actor": "ada", "kind": "pc" },
+    "pl0/voice/stage4/v003.sap": { "rdt": "404", "player": 0, "cutscene": 1, "actor": "leon", "condition": "@ada" }, // could remove the name to work w/everyone
+
     "pl0/voice/stage4/v004.sap": { "rdt": "409", "player": 0, "actor": "annette" },
     "pl0/voice/stage4/v005.sap": { "rdt": "409", "player": 0, "actor": "ada", "kind": "pc" },
     "pl0/voice/stage4/v006.sap": { "rdt": "409", "player": 0, "actor": "annette" },
@@ -237,8 +240,8 @@
     "pl0/voice/stage6/v045.sap": { "rdt": "611", "player": 0, "actor": "leon", "condition": "!annette" },
     "pl0/voice/stage6/v046.sap": { "rdt": "611", "player": 0, "actor": "ada" },
     "pl0/voice/stage6/v047.sap": { "rdt": "611", "player": 0, "actor": "ada" },
-    "pl0/voice/stage6/v048.sap": { "rdt": "611", "player": 0, "actor": "leon", "condition": "@ada" },
-    "pl0/voice/stage6/v050.sap": { "rdt": "611", "player": 0, "actor": "leon" },
+    "pl0/voice/stage6/v048.sap": { "rdt": "611", "player": 0, "actor": "leon" },
+    "pl0/voice/stage6/v050.sap": { "rdt": "611", "player": 0, "actor": "leon", "condition": "@ada" },
     "pl0/voice/stage6/v051.sap": { "rdt": "611", "player": 0, "actor": "annette" },
     "pl0/voice/stage6/v052.sap": { "rdt": "611", "player": 0, "actor": "leon", "condition": "@ada" }, // could remove the name to work w/everyone
     "pl0/voice/stage6/v053.sap": { "rdt": "611", "player": 0, "actor": "ada", "condition": "@leon" }, // could remove the name to work w/everyone
