@@ -215,7 +215,7 @@ namespace IntelOrca.Biohazard.RE1
             }
         }
 
-        private static bool IsEnemy(byte type)
+        public bool IsEnemy(byte type)
         {
             return type <= Re1EnemyIds.Yawn2;
         }
