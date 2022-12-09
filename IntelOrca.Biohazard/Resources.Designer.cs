@@ -212,6 +212,12 @@ namespace IntelOrca.Biohazard {
         
         /// <summary>
         ///   Looks up a localized string similar to {
+        ///  &quot;basement&quot;: [
+        ///    &quot;BGM_1A&quot;
+        ///  ],
+        ///  &quot;safe&quot;: [
+        ///    &quot;BGM_31&quot;
+        ///  ],
         ///  &quot;outside&quot;: [],
         ///  &quot;creepy&quot;: [
         ///    &quot;BGM_00&quot;,
@@ -243,13 +249,7 @@ namespace IntelOrca.Biohazard {
         ///    &quot;BGM_34&quot;,
         ///    &quot;BGM_36&quot;,
         ///    &quot;BGM_37&quot;,
-        ///    &quot;BGM_40&quot;,
-        ///    &quot;BGM_49&quot;
-        ///  ],
-        ///  &quot;calm&quot;: [
-        ///    &quot;BGM_0C&quot;,
-        ///    &quot;BGM_3F&quot;,
-        ///  [rest of string was truncated]&quot;;.
+        ///    &quot;BGM_ [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string re1_bgm {
             get {
@@ -296,6 +296,38 @@ namespace IntelOrca.Biohazard {
         internal static string re1_rdt {
             get {
                 return ResourceManager.GetString("re1_rdt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;Rooms&gt;
+        ///  &lt;Room id=&quot;100&quot;&gt;
+        ///    &lt;Sound&gt;
+        ///      &lt;!-- enemy --&gt;
+        ///      &lt;Entry&gt;&lt;/Entry&gt;
+        ///      &lt;Entry&gt;&lt;/Entry&gt;
+        ///      &lt;Entry&gt;&lt;/Entry&gt;
+        ///      &lt;Entry&gt;&lt;/Entry&gt;
+        ///      &lt;Entry&gt;&lt;/Entry&gt;
+        ///      &lt;Entry&gt;&lt;/Entry&gt;
+        ///      &lt;Entry&gt;&lt;/Entry&gt;
+        ///      &lt;Entry&gt;&lt;/Entry&gt;
+        ///      &lt;Entry&gt;&lt;/Entry&gt;
+        ///      &lt;Entry&gt;&lt;/Entry&gt;
+        ///      &lt;Entry&gt;&lt;/Entry&gt;
+        ///      &lt;Entry&gt;&lt;/Entry&gt;
+        ///      &lt;Entry&gt;&lt;/Entry&gt;
+        ///      &lt;Entry&gt;&lt;/Entry&gt;
+        ///      &lt;Entry&gt;&lt;/Entry&gt;
+        ///      &lt;Entry&gt;&lt;/Entry&gt;
+        ///      &lt;!-- block 1 --&gt;
+        ///      &lt;Entry&gt;&lt;/Entry&gt;
+        ///      &lt;Entry&gt;&lt;/Entry&gt;
+        ///      &lt;Entr [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string re1_sounds {
+            get {
+                return ResourceManager.GetString("re1_sounds", resourceCulture);
             }
         }
         

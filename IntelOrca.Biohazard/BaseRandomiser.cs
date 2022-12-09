@@ -132,6 +132,10 @@ namespace IntelOrca.Biohazard
             var randomEnemies = new Rng(baseSeed + 3);
             var randomNpcs = new Rng(baseSeed + 4);
 
+            // In RE1, room sounds are not in the RDT, so enemies must be same for both players
+            if (BiohazardVersion == BioVersion.Biohazard1)
+                randomEnemies = new Rng(config.Seed + 3);
+
             using var logger = new RandoLogger(Path.Combine(modPath, $"log_pl{config.Player}.txt"));
             logger.WriteHeading("Resident Evil Randomizer");
             logger.WriteLine($"Seed: {config}");
@@ -168,7 +172,7 @@ namespace IntelOrca.Biohazard
 
                 if (config.RandomEnemies)
                 {
-                    var enemyRandomiser = new EnemyRandomiser(logger, config, gameData, map, randomEnemies, EnemyHelper);
+                    var enemyRandomiser = new EnemyRandomiser(logger, config, gameData, map, randomEnemies, EnemyHelper, modPath);
                     enemyRandomiser.Randomise();
                 }
 

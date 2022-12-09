@@ -1,4 +1,5 @@
 ﻿using System;
+using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.RE2
@@ -253,6 +254,11 @@ namespace IntelOrca.Biohazard.RE2
                 default:
                     return false;
             }
+        }
+
+        public bool IsEnemy(byte type)
+        {
+            return type < (byte)EnemyType.ChiefIrons1;
         }
     }
 }

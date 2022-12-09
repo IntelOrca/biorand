@@ -11,5 +11,6 @@ namespace IntelOrca.Biohazard
         bool ShouldChangeEnemy(RandoConfig config, SceEmSetOpcode enemy);
         void BeginRoom(Rdt rdt);
         void SetEnemy(RandoConfig config, Rng rng, SceEmSetOpcode enemy, MapRoomEnemies enemySpec, byte enemyTypeRaw);
+        bool IsEnemy(byte type);
     }
 }
