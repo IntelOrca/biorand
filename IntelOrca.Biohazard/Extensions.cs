@@ -91,5 +91,23 @@ namespace IntelOrca.Biohazard
             bw.Write(bytes);
             return result;
         }
+
+        public static void CopyAmountTo(this Stream source, Stream destination, long length)
+        {
+            var buffer = new byte[4096];
+            long count = 0;
+            while (count < length)
+            {
+                var readLen = (int)Math.Min(buffer.Length, length - count);
+                var read = source.Read(buffer, 0, readLen);
+                if (read == 0)
+                    break;
+
+                destination.Write(buffer, 0, read);
+                count += read;
+            }
+            if (count != length)
+                throw new IOException($"Unable to copy {length} bytes to new stream.");
+        }
     }
 }
