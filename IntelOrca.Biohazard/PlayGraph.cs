@@ -143,6 +143,7 @@ namespace IntelOrca.Biohazard
         public ItemPoolEntry[] Items { get; set; } = Array.Empty<ItemPoolEntry>();
         public Dictionary<byte, RdtItemId> LinkedItems { get; set; } = new Dictionary<byte, RdtItemId>();
         public ushort[] Requires { get; set; } = Array.Empty<ushort>();
+        public PlayNode[] RequiresRoom { get; set; } = Array.Empty<PlayNode>();
         public List<PlayEdge> Edges { get; } = new List<PlayEdge>();
         public ushort[] DoorRandoAllRequiredItems { get; set; } = Array.Empty<ushort>();
         public DoorRandoCategory Category { get; set; }

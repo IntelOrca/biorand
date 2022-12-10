@@ -418,6 +418,15 @@ namespace IntelOrca.Biohazard
                 list.Add(node);
 
             // Find all nodes this room requires
+            foreach (var reqRoom in node.RequiresRoom)
+            {
+                if (!list.Contains(reqRoom))
+                {
+                    list.Add(reqRoom);
+                    AddStickyNodeGroup(reqRoom, list);
+                }
+            }
+
             foreach (var edge in node.Edges)
             {
                 if (!edge.Randomize)
@@ -442,6 +451,17 @@ namespace IntelOrca.Biohazard
             // Find all other nodes that require this node
             foreach (var node2 in _nodesLeft)
             {
+                foreach (var reqRoom in node2.RequiresRoom)
+                {
+                    if (reqRoom == node)
+                    {
+                        if (!list.Contains(node2))
+                        {
+                            list.Add(node2);
+                            AddStickyNodeGroup(node2, list);
+                        }
+                    }
+                }
                 foreach (var edge in node2.Edges)
                 {
                     foreach (var reqRoom in edge.RequiresRoom)
@@ -844,6 +864,13 @@ namespace IntelOrca.Biohazard
                 throw new Exception("No JSON definition for room");
 
             node.Requires = mapRoom.Requires ?? Array.Empty<ushort>();
+            if (mapRoom.Items != null)
+            {
+                node.RequiresRoom = mapRoom.Items
+                    .SelectMany(x => x.RequiresRoom ?? Array.Empty<string>())
+                    .Select(x => GetOrCreateNode(RdtId.Parse(x)))
+                    .ToArray();
+            }
 
             if (mapRoom.Doors != null)
             {

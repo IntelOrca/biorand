@@ -141,8 +141,7 @@
       "items": [
         {
           "id": 3,
-          "requires": [ 32 ],
-          "requiresRoom": [ "10F" ]
+          "requires": [ 32 ]
         },
         {
           "id": 4,
@@ -167,9 +166,18 @@
           "player": 1
         },
         {
-          "id": 23,
+          "id": 18,
+          "requiresRoom": [ "202" ],
           "priority": "low",
-          "doorRando": true
+          "doorRando": true,
+          "player": 0
+        },
+        {
+          "id": 23,
+          "requiresRoom": [ "202" ],
+          "priority": "low",
+          "doorRando": true,
+          "player": 1
         }
       ],
       "enemies": [],
@@ -379,9 +387,15 @@
         },
         {
           "id": 4,
-          "type": 32,
-          "priority": "fixed",
+          // "type": 32,
+          // "priority": "fixed",
           "requires": [ 31, 35 ]
+        },
+        {
+          "id": 5,
+          "type": 35,
+          "priority": "fixed",
+          "player": 1
         }
       ]
     },
