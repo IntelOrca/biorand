@@ -1059,13 +1059,13 @@ namespace IntelOrca.Biohazard
                 if (entrance.Lock == LockKind.Gate)
                     return false;
 
-                // Ignore rest of checks if this is a fixed edge
-                if (!entrance.Randomize || !exit.Randomize)
-                    return true;
-
                 // Do not connect this node up yet until we have visited all required rooms (e.g. armory)
                 if (!entrance.RequiresRoom.All(x => x.Visited))
                     return false;
+
+                // Ignore rest of checks if this is a fixed edge
+                if (!entrance.Randomize || !exit.Randomize)
+                    return true;
 
                 // Exit node must have an entrance
                 if (exit.Entrance == null)

@@ -40,6 +40,18 @@ namespace IntelOrca.Biohazard.RE1
             }
         }
 
+        public bool IsItemInfinite(byte type)
+        {
+            switch (type)
+            {
+                case Re1ItemIds.SquareCrank:
+                case Re1ItemIds.HexCrank:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         public bool IsItemDocument(byte type)
         {
             return type > Re1ItemIds.MixedBrightBlueGreen &&
@@ -60,9 +72,6 @@ namespace IntelOrca.Biohazard.RE1
         {
             switch (item)
             {
-                case Re1ItemIds.SquareCrank:
-                case Re1ItemIds.HexCrank:
-                    return 0;
                 case Re1ItemIds.Battery:
                     return 2;
                 case Re1ItemIds.SmallKey:
@@ -197,6 +206,11 @@ namespace IntelOrca.Biohazard.RE1
             if (rng.Next(0, 2) == 0)
                 items.Add(Re1ItemIds.RocketLauncher);
             return items.ToArray();
+        }
+
+        public bool HasInkRibbons(RandoConfig config)
+        {
+            return config.Player == 0;
         }
     }
 }

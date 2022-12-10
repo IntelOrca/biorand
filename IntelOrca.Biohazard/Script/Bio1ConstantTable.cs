@@ -69,13 +69,13 @@
             "Enrico",
             "Kenneth 2",
             "Barry 2",
-            "Barry (Stars)",
-            "Rebecca (Stars)",
+            "Barry 2 (Stars)",
+            "Rebecca 2 (Stars)",
             "Barry 3",
-            "Wesker (Stars)",
+            "Wesker 2 (Stars)",
             "Chris (Jacket)",
             "Jill (Black Shirt)",
-            "Chris (Jacket)",
+            "Chris 2 (Jacket)",
             "Jill (Red Shirt)",
         };
 
