@@ -59,7 +59,7 @@ namespace IntelOrca.Biohazard
                     reset.Data2 = (ushort)destination.Z;
                 }
             }
-            if (noCompareRewrite)
+            if (!noCompareRewrite)
             {
                 foreach (var cmp in Opcodes.OfType<CmpOpcode>())
                 {
