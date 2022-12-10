@@ -69,6 +69,11 @@ namespace IntelOrca.Biohazard.RE2
             }
         }
 
+        public bool IsItemInfinite(byte type)
+        {
+            return false;
+        }
+
         public bool IsItemDocument(byte type)
         {
             return type > (byte)ItemType.PlatformKey;
@@ -248,6 +253,11 @@ namespace IntelOrca.Biohazard.RE2
             if (rng.Next(0, 2) == 0)
                 items.Add(ItemType.RocketLauncher);
             return items.Select(x => (byte)x).ToArray();
+        }
+
+        public bool HasInkRibbons(RandoConfig config)
+        {
+            return true;
         }
     }
 }

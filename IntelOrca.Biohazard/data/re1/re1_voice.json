@@ -360,23 +360,7 @@
   "voice/V012_12.wav": { "rdt": "514", "player": 0, "actor": "wesker" },
   "voice/V013_00.wav": { "rdt": "513", "player": 0, "actor": "chris" },
   "voice/V013_01.wav": { "rdt": "513", "player": 0, "actor": "wesker" },
-  "voice/V013_02.wav": {
-    "rdt": "513",
-    "player": 0,
-    "actors": [
-      {
-        "actor": "chris",
-        "split": 1.7
-      },
-      {
-        "actor": "wesker",
-        "split": 2.4
-      },
-      {
-        "actor": "chris"
-      }
-    ]
-  },
+  "voice/V013_02.wav": { "rdt": "513", "player": 0, "actor": "chris", "condition": "@wesker" }, // Chris' laugh overlaps wesker's speaking
   "voice/V013_03.wav": { "rdt": "513", "player": 0, "actor": "chris" },
   "voice/V013_04.wav": { "rdt": "513", "player": 0, "actor": "chris" },
   "voice/V013_05.wav": { "rdt": "513", "player": 0, "actor": "wesker" },

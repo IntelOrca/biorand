@@ -13,7 +13,7 @@ namespace IntelOrca.Biohazard
             var array = items.ToArray();
             for (int i = 0; i < array.Length - 1; i++)
             {
-                var ri = rng.Next(i + 1, array.Length);
+                var ri = rng.Next(i, array.Length);
                 var tmp = array[ri];
                 array[ri] = array[i];
                 array[i] = tmp;

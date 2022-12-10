@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 
 namespace IntelOrca.Biohazard
 {
@@ -499,7 +498,10 @@ namespace IntelOrca.Biohazard
             var proportions = new List<(int, Rng.Table<byte>)>();
             proportions.Add((numAmmo, ammoTable));
             proportions.Add((numHealth, healthTable));
-            proportions.Add((numInk, inkTable));
+            if (_itemHelper.HasInkRibbons(_config))
+            {
+                proportions.Add((numInk, inkTable));
+            }
             proportions = proportions
                 .Where(x => x.Item1 != 0)
                 .OrderBy(x => x.Item1)
@@ -630,10 +632,11 @@ namespace IntelOrca.Biohazard
 
         private ushort GetTotalKeyRequirementCount(PlayNode node, ushort keyType)
         {
+            if (_itemHelper.IsItemInfinite((byte)keyType))
+                return 0;
+
             if (!_itemHelper.IsItemTypeDiscardable((byte)keyType))
-            {
                 return 1;
-            }
 
             ushort total = 0;
             var visited = new HashSet<PlayNode>();
