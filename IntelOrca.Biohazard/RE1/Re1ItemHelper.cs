@@ -60,6 +60,9 @@ namespace IntelOrca.Biohazard.RE1
         {
             switch (item)
             {
+                case Re1ItemIds.SquareCrank:
+                case Re1ItemIds.HexCrank:
+                    return 0;
                 case Re1ItemIds.Battery:
                     return 2;
                 case Re1ItemIds.SmallKey:
