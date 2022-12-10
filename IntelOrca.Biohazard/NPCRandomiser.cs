@@ -187,7 +187,7 @@ namespace IntelOrca.Biohazard
             if (_randomized.Contains(voice))
                 return;
 
-            var randomVoice = GetRandomVoice(rng, newActor, kind, actors, voice.Length);
+            var randomVoice = GetRandomVoice(rng, newActor, kind, actors, voice.MaxLength);
             if (randomVoice != null)
             {
                 voice.Replacement = randomVoice;
@@ -201,7 +201,7 @@ namespace IntelOrca.Biohazard
 
         private VoiceSample? GetRandomVoice(Rng rng, string actor, string? kind, string[] actors, double maxLength)
         {
-            var index = _pool.FindIndex(x => x.Actor == actor && ((kind == null && x.Kind != "radio") || x.Kind == kind) && x.CheckConditions(actors) && x.Length <= maxLength);
+            var index = _pool.FindIndex(x => x.Actor == actor && ((kind == null && x.Kind != "radio") || x.Kind == kind) && x.CheckConditions(actors) && (maxLength == 0 || x.Length <= maxLength));
             if (index == -1)
             {
                 var newItems = voiceInfo
@@ -225,28 +225,29 @@ namespace IntelOrca.Biohazard
             var groups = available.GroupBy(x => x.Path);
             foreach (var group in groups)
             {
-                if (group.Count() == 1)
+                var sampleOrder = group.OrderBy(x => x.Start).ToArray();
+                if (sampleOrder.All(x => x.Replacement == null))
+                    continue;
+
+                var firstSample = sampleOrder[0];
+                var dstPath = GetVoicePath(_modPath, firstSample);
+                Directory.CreateDirectory(Path.GetDirectoryName(dstPath)!);
+
+                if (sampleOrder.Length == 1 && firstSample.Replacement?.Vanilla == true)
                 {
-                    var sample = group.First();
-                    if (sample.Replacement != null)
-                    {
-                        SetVoice(sample, sample.Replacement);
-                    }
+                    var srcPath = GetVoicePath(_originalDataPath, firstSample.Replacement);
+                    File.Copy(srcPath, dstPath, true);
                 }
                 else
                 {
-                    var sampleOrder = group.OrderBy(x => x.Start).ToArray();
-                    if (sampleOrder.All(x => x.Replacement == null))
-                        continue;
-
-                    var builder = new WaveformBuilder(GetVoicePath(_originalDataPath, sampleOrder[0]));
+                    var builder = new WaveformBuilder();
                     foreach (var sample in sampleOrder)
                     {
                         var replacement = sample.Replacement;
                         if (replacement != null)
                         {
-                            var srcPath = GetVoicePath(_originalDataPath, replacement);
-                            builder.Append(srcPath, replacement.Start, replacement.End);
+                            var sliceSrcPath = GetVoicePath(_originalDataPath, replacement);
+                            builder.Append(sliceSrcPath, replacement.Start, replacement.End);
                             builder.AppendSilence(sample.Length - replacement.Length);
                         }
                         else
@@ -254,70 +255,7 @@ namespace IntelOrca.Biohazard
                             builder.AppendSilence(sample.Length);
                         }
                     }
-
-                    var dstPath = GetVoicePath(_modPath, sampleOrder[0]);
-                    Directory.CreateDirectory(Path.GetDirectoryName(dstPath)!);
                     builder.Save(dstPath);
-                }
-            }
-        }
-
-        private void SetVoice(VoiceSample dst, VoiceSample src)
-        {
-            var srcPath = GetVoicePath(_originalDataPath, src);
-            var dstPath = GetVoicePath(_modPath, dst);
-            Directory.CreateDirectory(Path.GetDirectoryName(dstPath)!);
-            if (src.Start == 0 && src.End == 0)
-            {
-                File.Copy(srcPath, dstPath, true);
-            }
-            else
-            {
-                Stream inputStream = new FileStream(srcPath, FileMode.Open, FileAccess.Read);
-                Stream wavStream;
-                if (srcPath.EndsWith(".sap", StringComparison.OrdinalIgnoreCase))
-                {
-                    inputStream.Position = 8;
-                    wavStream = new MemoryStream();
-                    var decoder = new ADPCMDecoder();
-                    decoder.Convert(inputStream, wavStream);
-                    wavStream.Position = 0;
-                }
-                else
-                {
-                    wavStream = inputStream;
-                }
-
-                // Assume 8-bit
-                WaveHeader header;
-                var pcm = new byte[0];
-                using (wavStream)
-                {
-                    var br = new BinaryReader(wavStream);
-                    header = br.ReadStruct<WaveHeader>();
-
-                    // Move to start
-                    var startOffset = ((int)(src.Start * header.nAvgBytesPerSec) / header.nBlockAlign) * header.nBlockAlign;
-                    var endOffset = src.End == 0 ?
-                        (int)wavStream.Length :
-                        ((int)(src.End * header.nAvgBytesPerSec) / header.nBlockAlign) * header.nBlockAlign;
-                    var length = endOffset - startOffset;
-                    wavStream.Position += startOffset;
-                    pcm = br.ReadBytes(length);
-                }
-
-                // Create new file
-                header.nRiffLength = (uint)(pcm.Length + 44 - 8);
-                header.nDataLength = (uint)pcm.Length;
-                using (var fs = new FileStream(dstPath, FileMode.Create))
-                {
-                    var bw = new BinaryWriter(fs);
-                    if (dstPath.EndsWith(".sap", StringComparison.OrdinalIgnoreCase))
-                    {
-                        bw.Write((ulong)1);
-                    }
-                    bw.Write(header);
-                    bw.Write(pcm);
                 }
             }
         }
@@ -325,21 +263,6 @@ namespace IntelOrca.Biohazard
         private static string GetVoicePath(string basePath, VoiceSample sample)
         {
             return Path.Combine(basePath, sample.Path);
-        }
-
-        private void ConvertSapFiles(string path)
-        {
-            var wavFiles = Directory.GetFiles(path, "*.wav", SearchOption.AllDirectories);
-            var wavLen = wavFiles.GroupBy(x => new FileInfo(x).Length).Where(x => x.Count() > 1).ToArray();
-
-            // var sapFiles = Directory.GetFiles(path, "*.sap", SearchOption.AllDirectories);
-            // foreach (var sapFile in sapFiles)
-            // {
-            //     var wavFile = Path.ChangeExtension(sapFile, ".wav");
-            //     var bytes = File.ReadAllBytes(sapFile);
-            //     File.WriteAllBytes(wavFile, bytes.Skip(8).ToArray());
-            //     File.Delete(sapFile);
-            // }
         }
 
         private void LoadVoiceInfo(string originalDataPath)
@@ -372,19 +295,29 @@ namespace IntelOrca.Biohazard
                     var start = 0.0;
                     foreach (var sub in sample.Actors)
                     {
+                        var limited = true;
                         var end = sub.Split;
                         if (end == 0)
                         {
                             end = totalLength;
+                            limited = false;
                         }
                         var slice = sample.CreateSlice(sub.Actor!, start, end);
+                        slice.Limited = limited;
                         start = sub.Split;
                         samples.Add(slice);
                     }
                 }
                 else
                 {
-                    sample.End = totalLength;
+                    if (sample.End == 0)
+                    {
+                        sample.End = totalLength;
+                        if (sample.Start == 0)
+                        {
+                            sample.Vanilla = true;
+                        }
+                    }
                     samples.Add(sample);
                 }
             }
@@ -464,7 +397,9 @@ namespace IntelOrca.Biohazard
 
         public string? Condition { get; set; }
 
-        public bool NoReplace { get; set; }
+        public double MaxLength { get; set; }
+        public bool Vanilla { get; set; }
+        public bool Limited { get; set; }
         public VoiceSampleSplit[]? Actors { get; set; }
 
         public VoiceSample? Replacement { get; set; }
@@ -478,7 +413,8 @@ namespace IntelOrca.Biohazard
                 Rdt = Rdt,
                 Player = Player,
                 Start = start,
-                End = end
+                End = end,
+                MaxLength = end - start
             };
         }
 
