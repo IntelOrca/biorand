@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using IntelOrca.Biohazard.Opcodes;
+using System.Xml;
+using IntelOrca.Biohazard.RE1;
+using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard
 {
@@ -12,14 +15,19 @@ namespace IntelOrca.Biohazard
         private readonly GameData _gameData;
         private readonly Map _map;
         private readonly Rng _rng;
+        private readonly IEnemyHelper _enemyHelper;
+        private readonly string _modPath;
+        private XmlDocument? _re1sounds;
 
-        public EnemyRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng random)
+        public EnemyRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng rng, IEnemyHelper enemyHelper, string modPath)
         {
             _logger = logger;
             _config = config;
             _gameData = gameData;
             _map = map;
-            _rng = random;
+            _rng = rng;
+            _enemyHelper = enemyHelper;
+            _modPath = modPath;
         }
 
         public void Randomise()
@@ -27,6 +35,7 @@ namespace IntelOrca.Biohazard
             _logger.WriteHeading("Randomizing enemies:");
             foreach (var rdt in _gameData.Rdts)
             {
+                byte? fixType = null;
                 var enemies = rdt.Enemies.ToArray();
                 var logEnemies = enemies.Select(GetEnemyLogText).ToArray();
                 RandomiseRoom(_rng.NextFork(), rdt);
@@ -38,107 +47,48 @@ namespace IntelOrca.Biohazard
                     if (oldLog != newLog)
                     {
                         _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) {oldLog} becomes {newLog}");
+                        fixType ??= enemy.Type;
                     }
+                }
+
+                if (rdt.Version == BioVersion.Biohazard1 && fixType != null)
+                {
+                    FixRE1Sounds(rdt.RdtId, fixType.Value);
                 }
             }
         }
 
-        private Rng.Table<EnemyType> CreateEnemyProbabilityTable(Rng rng, HashSet<EnemyType>? includeTypes, HashSet<EnemyType>? excludeTypes)
+        private Rng.Table<byte> CreateEnemyProbabilityTable(Rng rng, HashSet<byte>? includeTypes, HashSet<byte>? excludeTypes)
         {
-            var table = rng.CreateProbabilityTable<EnemyType>();
-            switch (_config.EnemyDifficulty)
-            {
-                case 0:
-                    AddIfSupported(EnemyType.Crow, 10);
-                    AddIfSupported(EnemyType.ZombieArms, 10);
-                    AddIfSupported(EnemyType.Spider, 10);
-                    AddIfSupported(EnemyType.GiantMoth, 10);
-                    AddIfSupported(EnemyType.Ivy, 15);
-                    AddIfSupported(EnemyType.IvyPurple, 5);
-                    AddIfSupported(EnemyType.Tyrant1, 1);
-                    AddIfSupported(EnemyType.ZombieRandom, 30);
-                    AddIfSupported(EnemyType.Cerebrus, 5);
-                    AddIfSupported(EnemyType.LickerRed, 2);
-                    AddIfSupported(EnemyType.LickerGrey, 2);
-                    break;
-                case 1:
-                    AddIfSupported(EnemyType.Crow, 5);
-                    AddIfSupported(EnemyType.ZombieArms, 5);
-                    AddIfSupported(EnemyType.Spider, 6);
-                    AddIfSupported(EnemyType.GiantMoth, 5);
-                    AddIfSupported(EnemyType.Ivy, 6);
-                    AddIfSupported(EnemyType.IvyPurple, 6);
-                    AddIfSupported(EnemyType.Tyrant1, 2);
-                    AddIfSupported(EnemyType.ZombieRandom, 40);
-                    AddIfSupported(EnemyType.Cerebrus, 10);
-                    AddIfSupported(EnemyType.LickerRed, 10);
-                    AddIfSupported(EnemyType.LickerGrey, 5);
-                    break;
-                case 2:
-                    AddIfSupported(EnemyType.Spider, 7);
-                    AddIfSupported(EnemyType.GiantMoth, 3);
-                    AddIfSupported(EnemyType.Ivy, 6);
-                    AddIfSupported(EnemyType.IvyPurple, 6);
-                    AddIfSupported(EnemyType.Tyrant1, 3);
-                    AddIfSupported(EnemyType.ZombieRandom, 25);
-                    AddIfSupported(EnemyType.Cerebrus, 25);
-                    AddIfSupported(EnemyType.LickerRed, 15);
-                    AddIfSupported(EnemyType.LickerGrey, 10);
-                    break;
-                case 3:
-                default:
-                    AddIfSupported(EnemyType.Spider, 5);
-                    AddIfSupported(EnemyType.GiantMoth, 2);
-                    AddIfSupported(EnemyType.Ivy, 3);
-                    AddIfSupported(EnemyType.IvyPurple, 3);
-                    AddIfSupported(EnemyType.Tyrant1, 5);
-                    AddIfSupported(EnemyType.ZombieRandom, 17);
-                    AddIfSupported(EnemyType.Cerebrus, 40);
-                    AddIfSupported(EnemyType.LickerRed, 5);
-                    AddIfSupported(EnemyType.LickerGrey, 20);
-                    break;
-            }
+            var table = rng.CreateProbabilityTable<byte>();
+            _enemyHelper.GetEnemyProbabilities(_config, AddIfSupported);
             return table;
 
-            void AddIfSupported(EnemyType type, int prob)
+            void AddIfSupported(byte type, double prob)
             {
-                if (type == EnemyType.ZombieRandom)
+                if (excludeTypes?.Contains(type) != true &&
+                    includeTypes?.Contains(type) != false)
                 {
-                    var zp = (double)prob / _zombieTypes.Length;
-                    foreach (var zt in _zombieTypes)
-                    {
-                        if (excludeTypes?.Contains(zt) != true &&
-                            includeTypes?.Contains(zt) != false)
-                        {
-                            table.Add(zt, zp);
-                        }
-                    }
-                }
-                else
-                {
-                    if (excludeTypes?.Contains(type) != true &&
-                        includeTypes?.Contains(type) != false)
-                    {
-                        table.Add(type, prob);
-                    }
+                    table.Add(type, prob);
                 }
             }
         }
 
-        private static string GetEnemyLogText(SceEmSetOpcode enemy)
+        private string GetEnemyLogText(SceEmSetOpcode enemy)
         {
-            return $"[{enemy.Type},{enemy.State},{enemy.Ai},{enemy.SoundBank},{enemy.Texture}]";
+            return $"[{_enemyHelper.GetEnemyName(enemy.Type)},{enemy.State},{enemy.Ai},{enemy.SoundBank},{enemy.Texture}]";
         }
 
         private void RandomiseRoom(Rng rng, Rdt rdt)
         {
             var enemySpecs = _map.GetRoom(rdt.RdtId)?.Enemies;
-            if (enemySpecs != null)
+            if (enemySpecs == null)
             {
-                foreach (var enemySpec in enemySpecs)
-                {
-                    RandomiseRoom(rng, rdt, enemySpec);
-                }
+                enemySpecs = new[] { new MapRoomEnemies() };
+            }
+            foreach (var enemySpec in enemySpecs)
+            {
+                RandomiseRoom(rng, rdt, enemySpec);
             }
         }
 
@@ -161,33 +111,22 @@ namespace IntelOrca.Biohazard
 
             var enemiesToChange = rdt.Enemies
                 .Where(e => enemySpec.ExcludeOffsets?.Contains(e.Offset) != true)
-                .Where(ShouldChangeEnemy)
+                .Where(e => _enemyHelper.ShouldChangeEnemy(_config, e))
                 .ToArray();
             var numEnemies = enemiesToChange.DistinctBy(x => x.Id).Count();
 
             var includeTypes = enemySpec.IncludeTypes == null ?
                 null :
-                enemySpec.IncludeTypes.Select(x => (EnemyType)x).ToHashSet();
+                enemySpec.IncludeTypes.Select(x => (byte)x).ToHashSet();
             var excludeTypes = enemySpec.ExcludeTypes == null ?
-                new HashSet<EnemyType>() :
-                enemySpec.ExcludeTypes.Select(x => (EnemyType)x).ToHashSet();
+                new HashSet<byte>() :
+                enemySpec.ExcludeTypes.Select(x => (byte)x).ToHashSet();
 
-            if (enemySpec.Difficulty == "medium" && _config.EnemyDifficulty < 2)
-            {
-                excludeTypes.Add(EnemyType.LickerRed);
-                excludeTypes.Add(EnemyType.LickerGrey);
-                excludeTypes.Add(EnemyType.Cerebrus);
-                excludeTypes.Add(EnemyType.Tyrant1);
-            }
-            else if (enemySpec.Difficulty == "hard" && _config.EnemyDifficulty < 3)
-            {
-                excludeTypes.Add(EnemyType.LickerRed);
-                excludeTypes.Add(EnemyType.LickerGrey);
-                excludeTypes.Add(EnemyType.Cerebrus);
-                excludeTypes.Add(EnemyType.Tyrant1);
-            }
+            _enemyHelper.ExcludeEnemies(_config, rdt, enemySpec.Difficulty ?? "", x => excludeTypes.Add(x));
 
             var probTable = CreateEnemyProbabilityTable(rng, includeTypes, excludeTypes);
+            if (probTable.IsEmpty)
+                return;
 
 #if MULTIPLE_ENEMY_TYPES
             var ids = rdt.Enemies.Select(x => x.Id).Distinct().ToArray();
@@ -202,13 +141,7 @@ namespace IntelOrca.Biohazard
             var enemyTypesId = ids.Select(x => randomEnemyType).ToArray();
 #endif
 
-            // Mute dead zombies or vines, this ensures our random enemy type
-            // will be heard
-            foreach (var enemy in rdt.Enemies)
-            {
-                if (enemy.Type == EnemyType.Vines || (IsZombie(enemy.Type) && enemy.State == 2))
-                    enemy.SoundBank = 0;
-            }
+            _enemyHelper.BeginRoom(rdt);
 
             foreach (var enemy in enemiesToChange)
             {
@@ -222,115 +155,7 @@ namespace IntelOrca.Biohazard
                 enemy.Texture = 0;
                 if (enemySpec.Y != null)
                     enemy.Y = enemySpec.Y.Value;
-                switch (enemyType)
-                {
-                    case EnemyType.ZombieGuy1:
-                    case EnemyType.ZombieGuy2:
-                    case EnemyType.ZombieGuy3:
-                    case EnemyType.ZombieGirl:
-                    case EnemyType.ZombieCop:
-                    case EnemyType.ZombieTestSubject:
-                    case EnemyType.ZombieScientist:
-                    case EnemyType.ZombieNaked:
-                    case EnemyType.ZombieRandom:
-                    case EnemyType.ZombieBrad:
-                        if (!enemySpec.KeepState)
-                            enemy.State = rng.NextOf<byte>(0, 1, 2, 3, 4, 6);
-                        enemy.SoundBank = GetZombieSoundBank(enemyType);
-                        break;
-                    case EnemyType.Cerebrus:
-                        enemy.State = 0;
-                        if (_config.EnemyDifficulty >= 3)
-                        {
-                            // %50 of running
-                            enemy.State = rng.NextOf<byte>(0, 2);
-                        }
-                        else if (_config.EnemyDifficulty >= 2)
-                        {
-                            // %25 of running
-                            enemy.State = rng.NextOf<byte>(0, 0, 0, 2);
-                        }
-                        enemy.SoundBank = 12;
-                        break;
-                    case EnemyType.ZombieArms:
-                        enemy.State = 0;
-                        enemy.SoundBank = 17;
-                        break;
-                    case EnemyType.Crow:
-                        enemy.State = 0;
-                        enemy.SoundBank = 13;
-                        break;
-                    case EnemyType.BabySpider:
-                    case EnemyType.Spider:
-                        enemy.State = 0;
-                        enemy.SoundBank = 16;
-                        break;
-                    case EnemyType.LickerRed:
-                    case EnemyType.LickerGrey:
-                        enemy.State = 0;
-                        enemy.SoundBank = 14;
-                        break;
-                    case EnemyType.Cockroach:
-                        enemy.State = 0;
-                        enemy.SoundBank = 15;
-                        break;
-                    case EnemyType.Ivy:
-                    case EnemyType.IvyPurple:
-                        enemy.State = 0;
-                        enemy.SoundBank = 19;
-                        break;
-                    case EnemyType.GiantMoth:
-                        enemy.State = 0;
-                        enemy.SoundBank = 23;
-                        break;
-                    case EnemyType.Tyrant1:
-                        enemy.State = 0;
-                        enemy.SoundBank = 18;
-                        break;
-                }
-            }
-        }
-
-        private byte GetZombieSoundBank(EnemyType type)
-        {
-            switch (type)
-            {
-                case EnemyType.ZombieCop:
-                case EnemyType.ZombieGuy1:
-                case EnemyType.ZombieGuy2:
-                case EnemyType.ZombieGuy3:
-                case EnemyType.ZombieRandom:
-                case EnemyType.ZombieScientist:
-                case EnemyType.ZombieTestSubject:
-                case EnemyType.ZombieBrad:
-                    return 1;
-                case EnemyType.ZombieGirl:
-                    return 10;
-                case EnemyType.ZombieNaked:
-                    return 46;
-                default:
-                    return 0;
-            }
-        }
-
-        private bool ShouldChangeEnemy(SceEmSetOpcode enemy)
-        {
-            switch (enemy.Type)
-            {
-                case EnemyType.Crow:
-                case EnemyType.Spider:
-                case EnemyType.GiantMoth:
-                case EnemyType.LickerRed:
-                case EnemyType.LickerGrey:
-                case EnemyType.Cerebrus:
-                case EnemyType.Ivy:
-                case EnemyType.IvyPurple:
-                    return true;
-                case EnemyType.MarvinBranagh:
-                    // Edge case: Marvin is only a zombie in scenario B
-                    return _config.Scenario == 1;
-                default:
-                    return IsZombie(enemy.Type);
+                _enemyHelper.SetEnemy(_config, rng, enemy, enemySpec, enemyType);
             }
         }
 
@@ -349,38 +174,116 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private static bool IsZombie(EnemyType type)
+        private void FixRE1Sounds(RdtId rdtId, byte enemyType)
         {
-            switch (type)
+            var roomNode = GetRoomXml(rdtId);
+            if (roomNode == null)
+                return;
+
+            var template = GetTemplateXml(enemyType);
+            var entryNodes = roomNode.SelectNodes("Sound/Entry");
+            for (int i = 0; i < 16; i++)
             {
-                case EnemyType.ZombieCop:
-                case EnemyType.ZombieBrad:
-                case EnemyType.ZombieGuy1:
-                case EnemyType.ZombieGirl:
-                case EnemyType.ZombieTestSubject:
-                case EnemyType.ZombieScientist:
-                case EnemyType.ZombieNaked:
-                case EnemyType.ZombieGuy2:
-                case EnemyType.ZombieGuy3:
-                case EnemyType.ZombieRandom:
-                    return true;
-                default:
-                    return false;
+                entryNodes[i].InnerText = template[i] ?? "";
             }
+
+            var xmlDir = Path.Combine(_modPath, "tables");
+            var xmlPath = Path.Combine(xmlDir, $"room_{rdtId}.xml");
+            var xml = roomNode.InnerXml;
+            Directory.CreateDirectory(xmlDir);
+            File.WriteAllText(xmlPath, xml);
         }
 
-        private static readonly EnemyType[] _zombieTypes = new[]
+        private XmlNode? GetRoomXml(RdtId rdtId)
         {
-            EnemyType.ZombieCop,
-            EnemyType.ZombieGuy1,
-            EnemyType.ZombieGirl,
-            EnemyType.ZombieTestSubject,
-            EnemyType.ZombieScientist,
-            EnemyType.ZombieNaked,
-            EnemyType.ZombieGuy2,
-            EnemyType.ZombieGuy3,
-            EnemyType.ZombieRandom,
-            EnemyType.ZombieBrad
-        };
+            var doc = _re1sounds;
+            if (doc == null)
+            {
+                var xml = Resources.re1_sounds;
+                doc = new XmlDocument();
+                doc.LoadXml(xml);
+                _re1sounds = doc;
+            }
+
+            var roomNodes = doc.SelectNodes("Rooms/Room");
+            foreach (XmlNode roomNode in roomNodes)
+            {
+                var idAttribute = roomNode.Attributes["id"];
+                if (idAttribute == null)
+                    continue;
+
+                if (!RdtId.TryParse(idAttribute.Value, out var roomId))
+                    continue;
+
+                if (roomId != rdtId)
+                    continue;
+
+                return roomNode;
+            }
+
+            return null;
+        }
+
+        private string[] GetTemplateXml(byte enemyType)
+        {
+            string[]? result = null;
+            switch (enemyType)
+            {
+                case Re1EnemyIds.Zombie:
+                    result = new[] { "z_taore", "z_ftL", "z_ftR", "z_kamu", "z_k02", "z_k01", "z_head", "z_haki", "z_sanj", "z_k03" };
+                    break;
+                case Re1EnemyIds.ZombieNaked:
+                    result = new[] { "z_taore", "zep_ftL", "z_ftR", "ze_kamu", "z_nisi2", "z_nisi1", "ze_head", "ze_haki", "ze_sanj", "z_nisi3", "FL_walk", "FL_jump", "steam_b", "FL_ceil", "FL_fall", "FL_slash" };
+                    break;
+                case Re1EnemyIds.Cerberus:
+                    result = new[] { "cer_foot", "cer_taoA", "cer_unar", "cer_bite", "cer_cryA", "cer_taoB", "cer_jkMX", "cer_kamu", "cer_cryB", "cer_runMX" };
+                    break;
+                case Re1EnemyIds.SpiderBrown:
+                    result = new[] { "kuasi_A", "kuasi_B", "kuasi_C", "sp_rakk", "sp_atck", "sp_bomb", "sp_fumu", "sp_Doku", "sp_sanj2" };
+                    break;
+                case Re1EnemyIds.SpiderBlack:
+                    result = new[] { "kuasi_A", "kuasi_B", "kuasi_C", "sp_rakk", "sp_atck", "sp_bomb", "sp_fumu", "sp_Doku", "poison" };
+                    break;
+                case Re1EnemyIds.Crow:
+                    result = new[] { "RVcar1", "RVpat", "RVcar2", "RVwing1", "RVwing2", "RVfryed" };
+                    break;
+                case Re1EnemyIds.Hunter:
+                    result = new[] { "HU_walkA", "HU_walkB", "HU_jump", "HU_att", "HU_land", "HU_smash", "HU_dam", "HU_Nout" };
+                    break;
+                case Re1EnemyIds.Bee:
+                    result = new[] { "bee4_ed", "hatinage", "bee_fumu" };
+                    break;
+                case Re1EnemyIds.Plant42:
+                    break;
+                case Re1EnemyIds.Chimera:
+                    result = new[] { "FL_walk", "FL_jump", "steam_b", "FL_ceil", "FL_fall", "FL_slash", "FL_att", "FL_dam", "FL_out" };
+                    break;
+                case Re1EnemyIds.Snake:
+                    result = new[] { "PY_mena", "PY_hit2", "PY_fall" };
+                    break;
+                case Re1EnemyIds.Neptune:
+                    result = new[] { "nep_attB", "nep_attA", "nep_nomu", "nep_tura", "nep_twis", "nep_jump" };
+                    break;
+                case Re1EnemyIds.Tyrant1:
+                    result = new[] { "TY_foot", "TY_kaze", "TY_slice", "TY_HIT", "TY_trust", "</", "TY_taore", "TY_nage" };
+                    break;
+                case Re1EnemyIds.Yawn1:
+                    break;
+                case Re1EnemyIds.Plant42Roots:
+                    break;
+                case Re1EnemyIds.Plant42Vines:
+                    break;
+                case Re1EnemyIds.Tyrant2:
+                    break;
+                case Re1EnemyIds.ZombieResearcher:
+                    result = new[] { "z_taore", "z_ftL", "z_ftR", "z_kamu", "z_mika02", "z_mika01", "z_head", "z_Hkick", "z_Ugoron", "z_mika03" };
+                    break;
+                case Re1EnemyIds.Yawn2:
+                    break;
+
+    }
+            Array.Resize(ref result, 16);
+            return result;
+        }
     }
 }

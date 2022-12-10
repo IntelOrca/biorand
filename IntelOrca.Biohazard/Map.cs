@@ -28,6 +28,7 @@ namespace IntelOrca.Biohazard
 
     public class MapRoom
     {
+        public string? LinkedRoom { get; set; }
         public ushort[]? Requires { get; set; }
         public MapRoomDoor[]? Doors { get; set; }
         public MapRoomItem[]? Items { get; set; }
@@ -88,6 +89,8 @@ namespace IntelOrca.Biohazard
         public int[]? ExcludeTypes { get; set; }
         public int? Player { get; set; }
         public int? Scenario { get; set; }
+        public int Cutscene { get; set; }
+        public string? PlayerActor { get; set; }
     }
 
     public class DoorRandoSpec

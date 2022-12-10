@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace IntelOrca.Biohazard
 {
-    internal class Rng
+    public class Rng
     {
         private readonly Random _random;
 
@@ -65,6 +64,8 @@ namespace IntelOrca.Biohazard
             private readonly Rng _rng;
             private readonly List<(T, double)> _table = new List<(T, double)>();
             private double _total;
+
+            public bool IsEmpty => _table.Count == 0;
 
             public Table(Rng rng)
             {

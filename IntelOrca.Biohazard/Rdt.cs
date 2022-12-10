@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
-using IntelOrca.Biohazard.Opcodes;
+using IntelOrca.Biohazard.Script;
+using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard
 {
@@ -11,6 +12,7 @@ namespace IntelOrca.Biohazard
     {
         private RdtFile _rdtFile;
 
+        public BioVersion Version => _rdtFile.Version;
         public RdtId RdtId { get; }
         public string? OriginalPath { get; set; }
         public string? ModifiedPath { get; set; }
@@ -140,7 +142,7 @@ namespace IntelOrca.Biohazard
             {
                 if (enemy.Id == id)
                 {
-                    enemy.Type = type;
+                    enemy.Type = (byte)type;
                     enemy.State = state;
                     enemy.Ai = ai;
                     enemy.SoundBank = soundBank;
@@ -162,7 +164,7 @@ namespace IntelOrca.Biohazard
                     }
                     else
                     {
-                        unk = new UnknownOpcode(offset, new byte[opcode.Length]);
+                        unk = new UnknownOpcode(offset, 0, new byte[opcode.Length - 1]);
                         Opcodes[i] = unk;
                         unk.NopOut();
                     }
@@ -202,7 +204,7 @@ namespace IntelOrca.Biohazard
             var nextOpcode = opcodes.FirstOrDefault(x => x.Offset >= endOffset);
             if (nextOpcode.Offset > endOffset)
             {
-                var nopOpcode = new UnknownOpcode(endOffset, new byte[nextOpcode.Offset - endOffset]);
+                var nopOpcode = new UnknownOpcode(endOffset, 0, new byte[nextOpcode.Offset - endOffset - 1]);
                 opcodes.Insert(opcodeIndex + 1, nopOpcode);
             }
             opcodes[opcodeIndex] = door;

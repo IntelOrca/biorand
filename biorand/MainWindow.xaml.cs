@@ -11,7 +11,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Microsoft.Win32;
+using IntelOrca.Biohazard.RE1;
+using IntelOrca.Biohazard.RE2;
 
 namespace IntelOrca.Biohazard.BioRand
 {
@@ -41,6 +42,7 @@ namespace IntelOrca.Biohazard.BioRand
 
             var version = CurrentVersion;
             Title += $" - v{version.Major}.{version.Minor}.{version.Build}";
+            SelectedGame = _settings.LastSelectedGame;
         }
 
         private void LoadSettings()
@@ -51,12 +53,34 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 RandomizeSeed();
             }
-            txtGameDataLocation.Text = _settings.GamePath;
+
+            try
+            {
+                _suspendEvents = true;
+                gameLocation1.Location = _settings.GamePath1;
+                gameLocation2.Location = _settings.GamePath2;
+                gameLocation3.Location = _settings.GamePath3;
+
+                gameLocation1.IsChecked = _settings.GameEnabled1;
+                gameLocation2.IsChecked = _settings.GameEnabled2;
+                gameLocation3.IsChecked = _settings.GameEnabled3;
+            }
+            finally
+            {
+                _suspendEvents = false;
+            }
         }
 
         private void SaveSettings()
         {
-            _settings.GamePath = txtGameDataLocation.Text;
+            _settings.GamePath1 = gameLocation1.Location;
+            _settings.GamePath2 = gameLocation2.Location;
+            _settings.GamePath3 = gameLocation3.Location;
+
+            _settings.GameEnabled1 = gameLocation1.IsChecked == true;
+            _settings.GameEnabled2 = gameLocation2.IsChecked == true;
+            _settings.GameEnabled3 = gameLocation3.IsChecked == true;
+
             _settings.Seed = _config.ToString();
             _settings.Save();
         }
@@ -429,11 +453,29 @@ namespace IntelOrca.Biohazard.BioRand
             txtSeed.CaretIndex = Math.Min(caretIndex, txtSeed.Text.Length);
         }
 
+        private BaseRandomiser GetRandomiser()
+        {
+            return new Re1Randomiser();
+        }
+
+        private ReInstallConfig GetInstallConfig()
+        {
+            var config = new ReInstallConfig();
+            config.SetEnabled(0, _settings.GameEnabled1);
+            config.SetEnabled(1, _settings.GameEnabled2);
+            config.SetEnabled(2, _settings.GameEnabled3);
+            config.SetInstallPath(0, _settings.GamePath1);
+            config.SetInstallPath(1, _settings.GamePath2);
+            config.SetInstallPath(2, _settings.GamePath3);
+            return config;
+        }
+
         private async void btnGenerate_Click(object sender, RoutedEventArgs e)
         {
             SaveSettings();
 
-            var gamePath = txtGameDataLocation.Text;
+            var randomiser = GetRandomizer();
+            var gamePath = GetGameLocation();
             if (!Path.IsPathRooted(gamePath) || !Directory.Exists(gamePath))
             {
                 var msg = "You have not specified an RE2 game directory that exists.";
@@ -441,7 +483,7 @@ namespace IntelOrca.Biohazard.BioRand
                 return;
             }
 
-            if (!ValidateGamePath(gamePath))
+            if (!randomiser.ValidateGamePath(gamePath))
             {
                 if (!ShowGamePathWarning())
                 {
@@ -451,7 +493,7 @@ namespace IntelOrca.Biohazard.BioRand
 
             try
             {
-                var err = Program.DoIntegrityCheck(gamePath);
+                var err = randomiser.DoIntegrityCheck(gamePath);
                 if (err == 2)
                 {
                     ShowFailedMessage("Integrity Check Failed", "One or more of your room files are missing.\n" +
@@ -473,7 +515,7 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 btn.Content = "Generating...";
                 IsEnabled = false;
-                await Task.Run(() => Program.Generate(_config, gamePath));
+                await Task.Run(() => randomiser.Generate(_config, GetInstallConfig()));
                 RandoAppSettings.LogGeneration(_config.ToString(), gamePath);
                 ShowGenerateCompleteMessage();
             }
@@ -527,49 +569,6 @@ namespace IntelOrca.Biohazard.BioRand
         private void ShowFailedMessage(string title, string message)
         {
             MessageBox.Show(this, message, title, MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-
-        private void btnBrowse_Click(object sender, RoutedEventArgs e)
-        {
-            var dialog = new OpenFileDialog();
-            dialog.Title = "Select Resident Evil 2 / Biohazard Game Location";
-            if (Directory.Exists(txtGameDataLocation.Text))
-                dialog.InitialDirectory = txtGameDataLocation.Text;
-            dialog.Filter = "Executable Files (*.exe)|*.exe";
-            dialog.CheckFileExists = false;
-            dialog.CheckPathExists = false;
-            dialog.FileOk += (s, e2) =>
-            {
-                if (!NormaliseGamePath(dialog.FileName, out _))
-                {
-                    if (!ShowGamePathWarning())
-                    {
-                        e2.Cancel = true;
-                    }
-                }
-            };
-            if (dialog.ShowDialog(this) == true)
-            {
-                NormaliseGamePath(dialog.FileName, out var normalised);
-                txtGameDataLocation.Text = normalised;
-                SaveSettings();
-            }
-        }
-
-        private static bool NormaliseGamePath(string path, out string normalised)
-        {
-            normalised = path;
-            if (!Directory.Exists(normalised))
-            {
-                normalised = Path.GetDirectoryName(path);
-            }
-            return ValidateGamePath(normalised);
-        }
-
-        private static bool ValidateGamePath(string path)
-        {
-            return Directory.Exists(Path.Combine(path, "data", "pl0")) ||
-                Directory.Exists(Path.Combine(path, "pl0"));
         }
 
         private bool ShowGamePathWarning()
@@ -636,6 +635,116 @@ namespace IntelOrca.Biohazard.BioRand
             Process.Start($"https://github.com/IntelOrca/biorand#readme");
         }
 
+        private void gameListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var index = gameListView.SelectedIndex;
+            if (index == 3)
+            {
+                panelConfig.Visibility = Visibility.Visible;
+                panelRando.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                panelConfig.Visibility = Visibility.Hidden;
+                panelRando.Visibility = Visibility.Visible;
+                dropdownVariant.Visibility = index == 1 ?
+                    Visibility.Visible :
+                    Visibility.Hidden;
+            }
+
+            _settings.LastSelectedGame = index;
+            _settings.Save();
+        }
+
+        private BaseRandomiser GetRandomizer()
+        {
+            return GetRandomizer(SelectedGame.Value);
+        }
+
+        private BaseRandomiser GetRandomizer(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    return new Re1Randomiser();
+                case 1:
+                    return new Re2Randomiser();
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        private string GetGameLocation()
+        {
+            switch (SelectedGame)
+            {
+                case 0:
+                    return _settings.GamePath1;
+                case 1:
+                    return _settings.GamePath2;
+                case 2:
+                    return _settings.GamePath3;
+                default:
+                    return null;
+            }
+        }
+
+        private void gameLocation_Validate(object sender, PathValidateEventArgs e)
+        {
+            if (!Directory.Exists(e.Path))
+            {
+                e.Message = "Directory does not exist!";
+                e.IsValid = false;
+                return;
+            }
+
+            var index = int.Parse((string)((GameLocationBox)sender).Tag);
+            var randomizer = GetRandomizer(index);
+            if (!randomizer.ValidateGamePath(e.Path))
+            {
+                e.Message = "Directory not valid for this game!";
+                e.IsValid = false;
+                return;
+            }
+
+            var integrityError = randomizer.DoIntegrityCheck(e.Path);
+            if (integrityError == 2)
+            {
+                e.Message = "One or more of your room files are missing.";
+                e.IsValid = false;
+                return;
+            }
+            else if (integrityError == 1)
+            {
+                e.Message = "One or more of your room files did not match the original version.";
+                e.IsValid = false;
+                return;
+            }
+
+            e.IsValid = true;
+            e.Message = "Directory looks good!";
+        }
+
+        private void gameLocation_Changed(object sender, EventArgs e)
+        {
+            SaveSettings();
+        }
+
+        private int? SelectedGame
+        {
+            get
+            {
+                var index = gameListView.SelectedIndex;
+                if (index > 2)
+                    return null;
+                return index;
+            }
+            set
+            {
+                gameListView.SelectedIndex = value ?? 3;
+            }
+        }
+
         private void btnLeonLog_Click(object sender, RoutedEventArgs e)
         {
             ViewLog(0);
@@ -672,7 +781,11 @@ namespace IntelOrca.Biohazard.BioRand
 
         private string GetLogPath(int player)
         {
-            var path = Path.Combine(txtGameDataLocation.Text, "mod_biorand", $"log_pl{player}.txt");
+            var location = GetGameLocation();
+            if (location == null)
+                return null;
+
+            var path = Path.Combine(location, "mod_biorand", $"log_pl{player}.txt");
             return path;
         }
     }
@@ -680,5 +793,10 @@ namespace IntelOrca.Biohazard.BioRand
     public class VersionCheckBody
     {
         public string tag_name { get; set; }
+    }
+
+    public class GameMenuItem
+    {
+        public ImageSource Image { get; set; }
     }
 }

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Globalization;
-using System.Numerics;
 
 namespace IntelOrca.Biohazard
 {
-    internal struct RdtId : IEquatable<RdtId>
+    public struct RdtId : IEquatable<RdtId>
     {
         public int Stage { get; }
         public int Room { get; }

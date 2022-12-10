@@ -1,0 +1,1343 @@
+{
+  "voice/V001_00.wav": { "rdt": "106", "player": 0, "actor": "jill" },
+  "voice/V001_01.wav": {
+    "rdt": "106",
+    "player": 0,
+    "actors": [
+      {
+        "actor": "chris",
+        "split": 2.5
+      },
+      {
+        "actor": "wesker"
+      }
+    ]
+  },
+  "voice/V001_02.wav": { "rdt": "106", "player": 0, "actor": "jill" },
+  "voice/V001_03.wav": {
+    "rdt": "106",
+    "player": 0,
+    "actors": [
+      {
+        "actor": "jill",
+        "split": 1
+      },
+      {
+        "actor": "chris",
+        "split": 2.5
+      },
+      {
+        "actor": "wesker"
+      }
+    ]
+  },
+  "voice/V001_04.wav": { "rdt": "106", "player": 0, "actor": "jill" },
+  "voice/V001_05.wav": { "rdt": "106", "player": 0, "actor": "jill" },
+  "voice/V001_06.wav": { "rdt": "106", "player": 0, "actor": "wesker" },
+  "voice/V003_00.wav": { "rdt": "106", "player": 0, "actor": "chris" },
+  "voice/V003_01.wav": { "rdt": "106", "player": 0, "actor": "chris" },
+  "voice/V004_00.wav": { "rdt": "100", "player": 0, "actor": "chris" },
+  "voice/V004_01.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V004_02.wav": {
+    "rdt": "100",
+    "player": 0,
+    "actors": [
+      {
+        "actor": "rebecca",
+        "split": 2.6
+      },
+      {
+        "actor": "chris"
+      }
+    ]
+  },
+  "voice/V004_03.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V004_04.wav": { "rdt": "100", "player": 0, "actor": "chris" },
+  "voice/V004_05.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V004_06.wav": { "rdt": "100", "player": 0, "actor": "chris" },
+  "voice/V004_07.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V004_08.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V004_09.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V004_0A.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V004_0B.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V004_0C.wav": {
+    "rdt": "100",
+    "player": 0,
+    "actors": [
+      {
+        "actor": "chris",
+        "split": 2
+      },
+      {
+        "actor": "rebecca"
+      }
+    ]
+  },
+  "voice/V004_0D.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V004_0E.wav": {
+    "rdt": "100",
+    "player": 0,
+    "actors": [
+      {
+        "actor": "chris",
+        "split": 3.5
+      },
+      {
+        "actor": "rebecca"
+      }
+    ]
+  },
+  "voice/V004_0F.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+
+  "voice/V005_00.wav": { "rdt": "20D", "player": 0, "actor": "rebecca" },
+  "voice/V005_01.wav": { "rdt": "20D", "player": 0, "actor": "chris" },
+  "voice/V005_02.wav": { "rdt": "20D", "player": 0, "actor": "richard" },
+  "voice/V005_03.wav": { "rdt": "20D", "player": 0, "actor": "rebecca" },
+  "voice/V005_04.wav": { "rdt": "20D", "player": 0, "actor": "rebecca" },
+  "voice/V005_05.wav": { "rdt": "20D", "player": 0, "actor": "richard" },
+  "voice/V005_06.wav": { "rdt": "20D", "player": 0, "actor": "rebecca" },
+  "voice/V005_06L.wav": { "rdt": "20D", "player": 0, "actor": "rebecca" },
+  "voice/V005_07.wav": { "rdt": "20D", "player": 0, "actor": "chris" },
+  "voice/V005_08.wav": { "rdt": "20D", "player": 0, "actor": "rebecca" },
+  "voice/V005_09.wav": { "rdt": "20D", "player": 0, "actor": "chris" },
+  "voice/V005_0A.wav": { "rdt": "20D", "player": 0, "actor": "chris" },
+  "voice/V005_0B.wav": { "rdt": "20D", "player": 0, "actor": "rebecca" },
+  "voice/V005_0C.wav": { "rdt": "20D", "player": 0, "actor": "richard" },
+  "voice/V005_0D.wav": {
+    "rdt": "20D",
+    "player": 0,
+    "actors": [
+      {
+        "actor": "chris",
+        "split": 2.5
+      },
+      {
+        "actor": "rebecca"
+      }
+    ]
+  },
+  "voice/V005_0E.wav": { "rdt": "20D", "player": 0, "actor": "richard" },
+  "voice/V005_0F.wav": {
+    "rdt": "20D",
+    "player": 0,
+    "actors": [
+      {
+        "actor": "rebecca",
+        "split": 3
+      },
+      {
+        "actor": "chris"
+      }
+    ]
+  },
+  "voice/V005_10.wav": { "rdt": "20D", "player": 0, "actor": "rebecca" },
+  "voice/V005_11.wav": { "rdt": "20D", "player": 0, "actor": "chris" },
+  "voice/V005_12.wav": { "rdt": "20D", "player": 0, "actor": "rebecca" },
+  "voice/V005_13.wav": { "rdt": "20D", "player": 0, "actor": "richard" },
+  "voice/V005_14.wav": { "rdt": "20D", "player": 0, "actor": "rebecca" },
+  "voice/V006_00.wav": { "rdt": "10F", "player": 0, "actor": "rebecca" },
+  "voice/V006_01.wav": { "rdt": "10F", "player": 0, "actor": "chris" },
+  "voice/V006_02.wav": { "rdt": "10F", "player": 0, "actor": "chris" },
+  "voice/V006_03.wav": { "rdt": "10F", "player": 0, "actor": "rebecca" },
+  "voice/V006_04.wav": { "rdt": "10F", "player": 0, "actor": "rebecca" },
+  "voice/V006_05.wav": { "rdt": "10F", "player": 0, "actor": "chris" },
+  "voice/V006_06.wav": { "rdt": "10F", "player": 0, "actor": "chris" },
+  "voice/V006_07.wav": { "rdt": "10F", "player": 0, "actor": "rebecca" },
+  "voice/V006_08.wav": { "rdt": "10F", "player": 0, "actor": "rebecca" },
+  "voice/V006_09.wav": { "rdt": "10F", "player": 0, "actor": "chris" },
+  "voice/V006_0A.wav": { "rdt": "10F", "player": 0, "actor": "rebecca" },
+  "voice/V006_0B.wav": { "rdt": "10F", "player": 0, "actor": "chris" },
+  "voice/V006_0C.wav": { "rdt": "10F", "player": 0, "actor": "rebecca" },
+  "voice/V006_0D.wav": { "rdt": "10F", "player": 0, "actor": "chris" },
+  "voice/V006_0E.wav": { "rdt": "10F", "player": 0, "actor": "rebecca" },
+  "voice/V006_0F.wav": { "rdt": "10F", "player": 0, "actor": "rebecca" },
+  "voice/V006_10.wav": { "rdt": "10F", "player": 0, "actor": "rebecca" },
+  "voice/V006_11.wav": { "rdt": "10F", "player": 0, "actor": "chris" },
+  "voice/V006_12.wav": { "rdt": "10F", "player": 0, "actor": "rebecca" },
+  "voice/V007_00.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V007_01.wav": { "rdt": "100", "player": 0, "actor": "chris" },
+  "voice/V007_02.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V007_03.wav": { "rdt": "100", "player": 0, "actor": "chris" },
+  "voice/V007_04.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V007_05.wav": { "rdt": "100", "player": 0, "actor": "chris" },
+  "voice/V007_06.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V007_07.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V007_08.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V007_09.wav": { "rdt": "100", "player": 0, "actor": "chris" },
+  "voice/V007_0A.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V007_0B.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V007_0C.wav": { "rdt": "100", "player": 0, "actor": "chris" },
+  "voice/V007_0D.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V007_0E.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V007_0F.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V008_00.wav": { "rdt": "100", "player": 0, "actor": "chris" },
+  "voice/V008_01.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V008_02.wav": { "rdt": "100", "player": 0, "actor": "chris" },
+  "voice/V008_03.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V008_04.wav": { "rdt": "100", "player": 0, "actor": "chris" },
+  "voice/V008_05.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V008_06.wav": { "rdt": "100", "player": 0, "actor": "chris" },
+  "voice/V008_10.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V008_11.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V008_12.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V008_13.wav": { "rdt": "100", "player": 0, "actor": "chris" },
+  "voice/V008_14.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V008_15.wav": { "rdt": "100", "player": 0, "actor": "chris" },
+  "voice/V008_16.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V008_17.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V008_18.wav": { "rdt": "100", "player": 0, "actor": "chris" },
+  "voice/V008_19.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
+  "voice/V009_00.wav": { "rdt": "304", "player": 0, "actor": "brad", "kind": "radio" },
+  "voice/V009_01.wav": { "rdt": "304", "player": 0, "actor": "chris" },
+  "voice/V009_02.wav": { "rdt": "304", "player": 0, "actor": "brad", "kind": "radio" },
+  "voice/V009_03.wav": { "rdt": "304", "player": 0, "actor": "chris" },
+  "voice/V009_04.wav": { "rdt": "304", "player": 0, "actor": "brad", "kind": "radio" },
+  "voice/V009_05.wav": { "rdt": "304", "player": 0, "actor": "chris" },
+  "voice/V00A_00.wav": { "rdt": "40C", "player": 0, "actor": "chris" },
+  "voice/V00A_01.wav": { "rdt": "40C", "player": 0, "actor": "rebecca" },
+  "voice/V00A_10.wav": { "rdt": "40C", "player": 0, "actor": "rebecca" },
+  "voice/V00A_11.wav": { "rdt": "40C", "player": 0, "actor": "chris" },
+  "voice/V00A_12.wav": { "rdt": "40C", "player": 0, "actor": "rebecca" },
+  "voice/V00A_13.wav": { "rdt": "40C", "player": 0, "actor": "chris" },
+  "voice/V00A_14.wav": { "rdt": "40C", "player": 0, "actor": "rebecca" },
+  "voice/V00A_20.wav": { "rdt": "408", "player": 0, "actor": "rebecca" },
+  "voice/V00A_21.wav": { "rdt": "408", "player": 0, "actor": "chris" },
+  "voice/V00A_22.wav": { "rdt": "408", "player": 0, "actor": "rebecca" },
+  "voice/V00A_23.wav": { "rdt": "408", "player": 0, "actor": "chris" },
+  "voice/V00A_24.wav": { "rdt": "408", "player": 0, "actor": "rebecca" },
+  "voice/V00A_25.wav": { "rdt": "408", "player": 0, "actor": "chris" },
+  "voice/V00A_26.wav": { "rdt": "408", "player": 0, "actor": "rebecca" },
+  "voice/V00A_27.wav": { "rdt": "408", "player": 0, "actor": "rebecca" },
+  "voice/V00A_28.wav": { "rdt": "408", "player": 0, "actor": "rebecca" },
+  "voice/V00A_29.wav": { "rdt": "408", "player": 0, "actor": "rebecca" },
+  "voice/V00A_2A.wav": { "rdt": "408", "player": 0, "actor": "rebecca" },
+  "voice/V00A_2B.wav": { "rdt": "408", "player": 0, "actor": "chris" },
+  "voice/V00A_2C.wav": { "rdt": "408", "player": 0, "actor": "rebecca" },
+  "voice/V00B_00.wav": { "rdt": "61A", "player": 0, "actor": "chris" },
+  "voice/V00B_01.wav": { "rdt": "61A", "player": 0, "actor": "chris" },
+  "voice/V00C_00.wav": { "rdt": "601", "player": 0, "actor": "chris" },
+  "voice/V00C_01.wav": { "rdt": "601", "player": 0, "actor": "chris" },
+  "voice/V00C_10.wav": { "rdt": "601", "player": 0, "actor": "chris" },
+  "voice/V00C_11.wav": { "rdt": "601", "player": 0, "actor": "chris" },
+  "voice/V00C_12.wav": { "rdt": "601", "player": 0, "actor": "chris" },
+  "voice/V00C_13.wav": { "rdt": "601", "player": 0, "actor": "rebecca" },
+  "voice/V00C_1A.wav": { "rdt": "601", "player": 0, "actor": "chris" },
+  "voice/V00C_1B.wav": { "rdt": "601", "player": 0, "actor": "rebecca" },
+  "voice/V00C_1C.wav": { "rdt": "601", "player": 0, "actor": "chris" },
+  "voice/V00C_14.wav": { "rdt": "601", "player": 0, "actor": "chris" },
+  "voice/V00C_15.wav": {
+    "rdt": "601",
+    "player": 0,
+    "actors": [
+      {
+        "actor": "rebecca",
+        "split": 2
+      },
+      {
+        "actor": "chris"
+      }
+    ]
+  },
+  "voice/V00C_16.wav": { "rdt": "601", "player": 0, "actor": "chris" },
+  "voice/V00C_17.wav": { "rdt": "601", "player": 0, "actor": "rebecca" },
+  "voice/V00C_18.wav": { "rdt": "601", "player": 0, "actor": "chris" },
+  "voice/V00C_19.wav": { "rdt": "601", "player": 0, "actor": "rebecca" },
+  "voice/V00C_20.wav": { "rdt": "601", "player": 0, "actor": "chris" },
+  "voice/V00C_21.wav": { "rdt": "601", "player": 0, "actor": "rebecca" },
+  "voice/V00C_22.wav": { "rdt": "601", "player": 0, "actor": "chris" },
+  "voice/V00C_30.wav": { "rdt": "601", "player": 0, "actor": "chris" },
+  "voice/V00C_31.wav": { "rdt": "601", "player": 0, "actor": "chris" },
+  "voice/V00D_00.wav": { "rdt": "30A", "player": 0, "actor": "chris" },
+  "voice/V00D_0.wav": { "rdt": "30A", "player": 0, "actor": "chris" },
+  "voice/V00D_01.wav": {
+    "rdt": "30A",
+    "player": 0,
+    "actors": [
+      {
+        "actor": "enrico",
+        "split": 2
+      },
+      {
+        "actor": "chris",
+        "split": 4
+      },
+      {
+        "actor": "enrico"
+      }
+    ]
+  },
+  "voice/V00D_02.wav": { "rdt": "30A", "player": 0, "actor": "chris" },
+  "voice/V00D_03.wav": { "rdt": "30A", "player": 0, "actor": "chris" },
+  "voice/V00D_04.wav": { "rdt": "30A", "player": 0, "actor": "enrico" },
+  "voice/V00D_05.wav": { "rdt": "30A", "player": 0, "actor": "chris" },
+  "voice/V00E_00.wav": { "rdt": "50C", "player": 0, "actor": "chris" },
+  "voice/V00E_01.wav": { "rdt": "50C", "player": 0, "actor": "rebecca" },
+  "voice/V00E_02.wav": { "rdt": "50C", "player": 0, "actor": "chris" },
+  "voice/V00E_03.wav": { "rdt": "50C", "player": 0, "actor": "rebecca" },
+  "voice/V00E_04.wav": { "rdt": "50C", "player": 0, "actor": "chris" },
+  "voice/V00E_05.wav": { "rdt": "50C", "player": 0, "actor": "rebecca" },
+  "voice/V00E_06.wav": { "rdt": "50C", "player": 0, "actor": "chris" },
+  "voice/V00E_10.wav": { "rdt": "50C", "player": 0, "actor": "chris" },
+  "voice/V00E_11.wav": {
+    "rdt": "50C",
+    "player": 0,
+    "actors": [
+      {
+        "actor": "rebecca",
+        "split": 3.5
+      },
+      {
+        "actor": "chris"
+      }
+    ]
+  },
+  "voice/V00E_12.wav": { "rdt": "50C", "player": 0, "actor": "rebecca" },
+  "voice/V00E_13.wav": { "rdt": "50C", "player": 0, "actor": "chris" },
+  "voice/V00E_14.wav": { "rdt": "50C", "player": 0, "actor": "chris" },
+  "voice/V00F_00.wav": { "rdt": "50B", "player": 0, "actor": "rebecca" },
+  "voice/V00F_01.wav": { "rdt": "50B", "player": 0, "actor": "rebecca" },
+  "voice/V00F_02.wav": { "rdt": "50B", "player": 0, "actor": "rebecca" },
+  "voice/V00F_10.wav": { "rdt": "50B", "player": 0, "actor": "jill" },
+  "voice/V00F_11.wav": { "rdt": "50B", "player": 0, "actor": "chris" },
+  "voice/V00F_12.wav": {
+    "rdt": "50B",
+    "player": 0,
+    "actors": [
+      {
+        "actor": "jill",
+        "split": 1.5
+      },
+      {
+        "actor": "chris",
+        "split": 8.4
+      },
+      {
+        "actor": "jill"
+      }
+    ]
+  },
+  "voice/V011_00.wav": { "rdt": "511", "player": 0, "actor": "rebecca" },
+  "voice/V011_0A.wav": { "rdt": "511", "player": 0, "actor": "chris" },
+  "voice/V011_01.wav": { "rdt": "511", "player": 0, "actor": "chris" },
+  "voice/V011_02.wav": { "rdt": "511", "player": 0, "actor": "rebecca" },
+  "voice/V011_03.wav": {
+    "rdt": "511",
+    "player": 0,
+    "actors": [
+      {
+        "actor": "chris",
+        "split": 4.2
+      },
+      {
+        "actor": "rebecca"
+      }
+    ]
+  },
+  "voice/V011_04.wav": { "rdt": "511", "player": 0, "actor": "chris" },
+  "voice/V011_05.wav": { "rdt": "511", "player": 0, "actor": "rebecca" },
+  "voice/V011_06.wav": { "rdt": "511", "player": 0, "actor": "chris" },
+  "voice/V011_07.wav": { "rdt": "511", "player": 0, "actor": "rebecca" },
+  "voice/V011_08.wav": { "rdt": "511", "player": 0, "actor": "chris" },
+  "voice/V011_09.wav": { "rdt": "511", "player": 0, "actor": "rebecca" },
+  "voice/V012_00.wav": { "rdt": "514", "player": 0, "actor": "wesker" },
+  "voice/V012_01.wav": { "rdt": "514", "player": 0, "actor": "chris" },
+  "voice/V012_02.wav": { "rdt": "514", "player": 0, "actor": "wesker" },
+  "voice/V012_03.wav": { "rdt": "514", "player": 0, "actor": "chris" },
+  "voice/V012_04.wav": { "rdt": "514", "player": 0, "actor": "wesker" },
+  "voice/V012_05.wav": { "rdt": "514", "player": 0, "actor": "chris" },
+  "voice/V012_06.wav": { "rdt": "514", "player": 0, "actor": "wesker" },
+  "voice/V012_07.wav": { "rdt": "514", "player": 0, "actor": "chris" },
+  "voice/V012_08.wav": { "rdt": "514", "player": 0, "actor": "rebecca" },
+  "voice/V012_09.wav": { "rdt": "514", "player": 0, "actor": "wesker" },
+  "voice/V012_0A.wav": { "rdt": "514", "player": 0, "actor": "chris" },
+  "voice/V012_0B.wav": { "rdt": "514", "player": 0, "actor": "wesker" },
+  "voice/V012_0C.wav": { "rdt": "514", "player": 0, "actor": "wesker" },
+  "voice/V012_0D.wav": { "rdt": "514", "player": 0, "actor": "wesker" },
+  "voice/V012_0E.wav": { "rdt": "514", "player": 0, "actor": "wesker" },
+  "voice/V012_0F.wav": { "rdt": "514", "player": 0, "actor": "chris" },
+  "voice/V012_10.wav": { "rdt": "514", "player": 0, "actor": "wesker" },
+  "voice/V012_11.wav": { "rdt": "514", "player": 0, "actor": "wesker" },
+  "voice/V012_12.wav": { "rdt": "514", "player": 0, "actor": "wesker" },
+  "voice/V013_00.wav": { "rdt": "513", "player": 0, "actor": "chris" },
+  "voice/V013_01.wav": { "rdt": "513", "player": 0, "actor": "wesker" },
+  "voice/V013_02.wav": { "rdt": "513", "player": 0, "actor": "chris", "condition": "@wesker" }, // Chris' laugh overlaps wesker's speaking
+  "voice/V013_03.wav": { "rdt": "513", "player": 0, "actor": "chris" },
+  "voice/V013_04.wav": { "rdt": "513", "player": 0, "actor": "chris" },
+  "voice/V013_05.wav": { "rdt": "513", "player": 0, "actor": "wesker" },
+  "voice/V013_06.wav": { "rdt": "513", "player": 0, "actor": "wesker" },
+  "voice/V013_07.wav": { "rdt": "513", "player": 0, "actor": "chris" },
+  "voice/V013_08.wav": { "rdt": "513", "player": 0, "actor": "wesker" },
+  "voice/V013_09.wav": { "rdt": "513", "player": 0, "actor": "chris" },
+  "voice/V013_0A.wav": { "rdt": "513", "player": 0, "actor": "wesker" },
+  "voice/V013_02A.wav": { "rdt": "513", "player": 0, "actor": "wesker" },
+  "voice/V013_02B.wav": { "rdt": "513", "player": 0, "actor": "wesker" },
+  "voice/V014_00.wav": { "rdt": "514", "player": 0, "actor": "chris" },
+  "voice/V014_01.wav": { "rdt": "514", "player": 0, "actor": "rebecca" },
+  "voice/V014_02.wav": { "rdt": "514", "player": 0, "actor": "chris" },
+  "voice/V014_03.wav": { "rdt": "514", "player": 0, "actor": "rebecca" },
+  "voice/V014_04.wav": { "rdt": "514", "player": 0, "actor": "chris" },
+  "voice/V014_05.wav": { "rdt": "514", "player": 0, "actor": "rebecca" },
+  "voice/V014_06.wav": { "rdt": "514", "player": 0, "actor": "chris" },
+  "voice/V014_07.wav": { "rdt": "514", "player": 0, "actor": "rebecca" },
+  "voice/V014_08.wav": { "rdt": "514", "player": 0, "actor": "chris" },
+  "voice/V014_09.wav": { "rdt": "514", "player": 0, "actor": "rebecca" },
+  "voice/V014_0A.wav": { "rdt": "514", "player": 0, "actor": "chris" },
+  "voice/V014_0B.wav": { "rdt": "0FF", "player": 0, "actor": "rebecca" },
+  "voice/V014_0C.wav": { "rdt": "0FF", "player": 1, "actor": "barry" },
+  "voice/V015_00.wav": {
+    "rdt": "512",
+    "player": 0,
+    "actors": [
+      {
+        "actor": "chris",
+        "split": 2.6
+      },
+      {
+        "actor": "jill"
+      }
+    ]
+  },
+  "voice/V015_01.wav": { "rdt": "512", "player": 0, "actor": "jill" },
+  "voice/V015_02.wav": { "rdt": "512", "player": 0, "actor": "chris" },
+  "voice/V015_03.wav": { "rdt": "512", "player": 0, "actor": "chris" },
+  "voice/V015_04.wav": { "rdt": "512", "player": 0, "actor": "jill" },
+  "voice/V015_05.wav": { "rdt": "512", "player": 0, "actor": "chris" },
+  "voice/V015_06.wav": { "rdt": "512", "player": 0, "actor": "jill" },
+  "voice/V015_07.wav": { "rdt": "512", "player": 0, "actor": "chris" },
+
+  "voice/V016_00.wav": { "rdt": "501", "player": 0, "actor": "brad", "kind": "radio" },
+  "voice/V016_01.wav": {
+    "rdt": "501",
+    "player": 0,
+    "actors": [
+      {
+        "actor": "rebecca",
+        "split": 4
+      },
+      {
+        "actor": "chris"
+      }
+    ]
+  },
+  "voice/V016_02.wav": {
+    "rdt": "501",
+    "player": 0,
+    "actors": [
+      {
+        "actor": "rebecca",
+        "split": 3.5
+      },
+      {
+        "actor": "jill",
+        "split": 5.5
+      },
+      {
+        "actor": "chris",
+        "split": 6.4
+      },
+      {
+        "actor": "jill",
+        "split": 9.5
+      },
+      {
+        "actor": "chris"
+      }
+    ]
+  },
+  "voice/V016_03.wav": {
+    "rdt": "501",
+    "player": 0,
+    "actors": [
+      {
+        "actor": "jill",
+        "split": 1.8
+      },
+      {
+        "actor": "chris",
+        "split": 2.8
+      },
+      {
+        "actor": "jill",
+        "split": 5.9
+      },
+      {
+        "actor": "chris"
+      }
+    ]
+  },
+  "voice/V016_04.wav": {
+    "rdt": "501",
+    "player": 0,
+    "actors": [
+      {
+        "actor": "chris",
+        "split": 2.5
+      },
+      {
+        "actor": "rebecca",
+        "split": 8.2
+      },
+      {
+        "actor": "chris",
+        "split": 9.7
+      },
+      {
+        "actor": "rebecca",
+        "split": 12.6
+      },
+      {
+        "actor": "chris",
+        "split": 14.8
+      },
+      {
+        "actor": "rebecca"
+      }
+    ]
+  },
+  "voice/V016_05.wav": { "rdt": "501", "player": 0, "actor": "brad", "kind": "radio" },
+
+  "voice/V101_00.wav": {
+    "rdt": "106",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "barry",
+        "split": 1.5
+      },
+      {
+        "actor": "wesker"
+      }
+    ]
+  },
+  "voice/V101_01.wav": { "rdt": "106", "player": 1, "actor": "jill" },
+  "voice/V101_02.wav": {
+    "rdt": "106",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "wesker",
+        "split": 3.1
+      },
+      {
+        "actor": "jill"
+      }
+    ]
+  },
+  "voice/V101_03.wav": {
+    "rdt": "106",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "barry",
+        "split": 1.5
+      },
+      {
+        "actor": "wesker",
+        "split": 6.6
+      },
+      {
+        "actor": "barry",
+        "split": 11
+      },
+      {
+        "actor": "wesker"
+      }
+    ]
+  },
+  "voice/V101_04.wav": { "rdt": "106", "player": 1, "actor": "wesker" },
+
+
+  "voice/V102_00.wav": { "rdt": "105", "player": 1, "actor": "barry" },
+  "voice/V102_01.wav": { "rdt": "105", "player": 1, "actor": "barry" },
+  "voice/V102_02.wav": {
+    "rdt": "105",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "jill",
+        "split": 1.7
+      },
+      {
+        "actor": "barry"
+      }
+    ]
+  },
+  "voice/V102_03.wav": { "rdt": "105", "player": 1, "actor": "barry" },
+  "voice/V102_04.wav": { "rdt": "105", "player": 1, "actor": "barry" },
+  "voice/V102_05.wav": { "rdt": "105", "player": 1, "actor": "barry" },
+  "voice/V102_06.wav": { "rdt": "105", "player": 1, "actor": "jill" },
+  "voice/V102_07.wav": { "rdt": "105", "player": 1, "actor": "barry" },
+  "voice/V102_08.wav": { "rdt": "105", "player": 1, "actor": "barry" },
+  "voice/V102_09.wav": {
+    "rdt": "105",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "barry",
+        "split": 1.7
+      },
+      {
+        "actor": "jill"
+      }
+    ]
+  },
+  "voice/V102_0A.wav": { "rdt": "105", "player": 1, "actor": "jill" },
+  "voice/V102_0B.wav": {
+    "rdt": "105",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "barry",
+        "split": 1.3
+      },
+      {
+        "actor": "jill",
+        "split": 3.7
+      },
+      {
+        "actor": "barry"
+      }
+    ]
+  },
+  "voice/V102_0C.wav": { "rdt": "105", "player": 1, "actor": "barry" },
+  "voice/V102_0D.wav": { "rdt": "105", "player": 1, "actor": "jill" },
+  "voice/V102_0E.wav": { "rdt": "105", "player": 1, "actor": "jill" },
+  "voice/V102_10.wav": { "rdt": "105", "player": 1, "actor": "jill" },
+
+  "voice/V103_00.wav": { "rdt": "106", "player": 1, "actor": "jill" },
+  "voice/V103_01.wav": {
+    "rdt": "106",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "barry",
+        "split": 1.9
+      },
+      {
+        "actor": "jill",
+        "split": 8.3
+      },
+      {
+        "actor": "barry",
+        "split": 10.2
+      },
+      {
+        "actor": "jill",
+        "split": 14.6
+      },
+      {
+        "actor": "barry",
+        "split": 21.2
+      },
+      {
+        "actor": "barry"
+      }
+    ]
+  },
+  "voice/V103_0A.wav": { "rdt": "106", "player": 1, "actor": "jill" },
+  "voice/V103_0B.wav": { "rdt": "106", "player": 1, "actor": "barry" },
+  "voice/V103_0C.wav": { "rdt": "106", "player": 1, "actor": "barry" },
+  "voice/V103_0D.wav": { "rdt": "106", "player": 1, "actor": "barry" },
+
+  "voice/V104_00.wav": { "rdt": "212", "player": 1, "actor": "barry" },
+  "voice/V104_01.wav": { "rdt": "212", "player": 1, "actor": "barry" },
+  "voice/V104_02.wav": { "rdt": "212", "player": 1, "actor": "jill" },
+  "voice/V104_03.wav": { "rdt": "212", "player": 1, "actor": "barry" },
+  "voice/V104_04.wav": { "rdt": "212", "player": 1, "actor": "barry" },
+  "voice/V104_05.wav": { "rdt": "212", "player": 1, "actor": "jill" },
+  "voice/V104_06.wav": { "rdt": "212", "player": 1, "actor": "barry" },
+  "voice/V104_07.wav": { "rdt": "212", "player": 1, "actor": "barry" },
+  "voice/V104_08.wav": { "rdt": "212", "player": 1, "actor": "jill" },
+  "voice/V104_09.wav": { "rdt": "212", "player": 1, "actor": "barry" },
+  "voice/V104_0A.wav": { "rdt": "212", "player": 1, "actor": "barry" },
+
+  "voice/V105_00.wav": { "rdt": "115", "player": 1, "actor": "jill" },
+  "voice/V105_01.wav": { "rdt": "115", "player": 1, "actor": "barry" },
+  "voice/V105_02.wav": { "rdt": "115", "player": 1, "actor": "jill" },
+  "voice/V105_03.wav": { "rdt": "115", "player": 1, "actor": "barry" },
+  "voice/V105_04.wav": { "rdt": "115", "player": 1, "actor": "barry" },
+  "voice/V105_05.wav": { "rdt": "109", "player": 1, "actor": "jill" },
+  "voice/V105_06.wav": {
+    "rdt": "109",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "barry",
+        "split": 4.2
+      },
+      {
+        "actor": "jill"
+      }
+    ]
+  },
+  "voice/V105_07.wav": { "rdt": "109", "player": 1, "actor": "jill" },
+  "voice/V105_08.wav": { "rdt": "109", "player": 1, "actor": "barry" },
+  "voice/V105_09.wav": {
+    "rdt": "109",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "jill",
+        "split": 1.1
+      },
+      {
+        "actor": "barry"
+      }
+    ]
+  },
+
+  "voice/V106_00.wav": { "rdt": "203", "player": 1, "actor": "jill" },
+  "voice/V106_01.wav": {
+    "rdt": "203",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "barry",
+        "split": 3.7
+      },
+      {
+        "actor": "jill",
+        "split": 8.1
+      },
+      {
+        "actor": "barry"
+      }
+    ]
+  },
+  "voice/V106_02.wav": {
+    "rdt": "203",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "jill",
+        "split": 2.7
+      },
+      {
+        "actor": "barry",
+        "split": 6.1
+      },
+      {
+        "actor": "jill",
+        "split": 7.7
+      },
+      {
+        "actor": "barry",
+        "split": 15.6
+      },
+      {
+        "actor": "jill",
+        "split": 17.9
+      },
+      {
+        "actor": "barry",
+        "split": 20.2
+      },
+      {
+        "actor": "jill"
+      }
+    ]
+  },
+  "voice/V107_00.wav": { "rdt": "100", "player": 1, "actor": "jill" },
+  "voice/V108_00.wav": { "rdt": "20A", "player": 1, "actor": "barry" },
+  "voice/V108_01.wav": { "rdt": "20A", "player": 1, "actor": "jill" },
+  "voice/V108_02.wav": { "rdt": "20A", "player": 1, "actor": "barry" },
+  "voice/V108_03.wav": { "rdt": "20A", "player": 1, "actor": "barry" },
+  "voice/V108_04.wav": { "rdt": "20A", "player": 1, "actor": "jill" },
+  "voice/V108_05.wav": { "rdt": "20A", "player": 1, "actor": "barry" },
+  "voice/V108_06.wav": { "rdt": "20A", "player": 1, "actor": "jill" },
+  "voice/V108_07.wav": { "rdt": "20A", "player": 1, "actor": "barry" },
+  "voice/V108_08.wav": { "rdt": "20A", "player": 1, "actor": "barry" },
+  // "voice/V109_00.wav": { "rdt": "405", "player": 1, "actor": "barry/wesker" },
+  "voice/V109_10.wav": { "rdt": "406", "player": 1, "actor": "barry" },
+  "voice/V109_11.wav": { "rdt": "406", "player": 1, "actor": "jill" },
+  "voice/V109_12.wav": { "rdt": "406", "player": 1, "actor": "barry" },
+  "voice/V109_13.wav": { "rdt": "406", "player": 1, "actor": "jill" },
+  "voice/V109_14.wav": { "rdt": "406", "player": 1, "actor": "barry" },
+  "voice/V109_15.wav": { "rdt": "406", "player": 1, "actor": "barry" },
+  "voice/V10A_00.wav": { "rdt": "405", "player": 1, "actor": "jill" },
+  "voice/V10A_01.wav": { "rdt": "405", "player": 1, "actor": "wesker" },
+  "voice/V10A_02.wav": { "rdt": "405", "player": 1, "actor": "jill" },
+  "voice/V10A_03.wav": { "rdt": "405", "player": 1, "actor": "jill" },
+  "voice/V10A_04.wav": { "rdt": "405", "player": 1, "actor": "wesker" },
+  "voice/V10A_05.wav": { "rdt": "405", "player": 1, "actor": "wesker" },
+  "voice/V10A_06.wav": { "rdt": "405", "player": 1, "actor": "jill" },
+  "voice/V10A_07.wav": { "rdt": "405", "player": 1, "actor": "wesker" },
+  "voice/V10A_08.wav": { "rdt": "405", "player": 1, "actor": "wesker" },
+  "voice/V10A_09.wav": { "rdt": "405", "player": 1, "actor": "jill" },
+  "voice/V10A_0A.wav": { "rdt": "405", "player": 1, "actor": "wesker" },
+  "voice/V10A_0B.wav": { "rdt": "405", "player": 1, "actor": "jill" },
+  "voice/V10A_0C.wav": { "rdt": "405", "player": 1, "actor": "wesker" },
+  "voice/V10C_00.wav": { "rdt": "40C", "player": 1, "actor": "jill" },
+  "voice/V10C_01.wav": {
+    "rdt": "40C",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "barry",
+        "split": 2
+      },
+      {
+        "actor": "jill",
+        "split": 2.9
+      },
+      {
+        "actor": "barry"
+      }
+    ]
+  },
+  "voice/V10C_02.wav": { "rdt": "40C", "player": 1, "actor": "jill" },
+  "voice/V10C_03.wav": { "rdt": "40C", "player": 1, "actor": "barry" },
+  "voice/V10C_04.wav": { "rdt": "40C", "player": 1, "actor": "jill" },
+  "voice/V10C_05.wav": { "rdt": "40C", "player": 1, "actor": "barry" },
+  "voice/V10C_06.wav": { "rdt": "40C", "player": 1, "actor": "barry" },
+  "voice/V10C_07.wav": { "rdt": "40C", "player": 1, "actor": "jill" },
+  "voice/V10C_08.wav": { "rdt": "40C", "player": 1, "actor": "barry" },
+  "voice/V10D_00.wav": { "rdt": "70C", "player": 1, "actor": "barry" },
+  "voice/V10D_01.wav": { "rdt": "70C", "player": 1, "actor": "jill" },
+  "voice/V10D_02.wav": { "rdt": "70C", "player": 1, "actor": "barry" },
+  "voice/V10D_03.wav": { "rdt": "70C", "player": 1, "actor": "jill" },
+  "voice/V10D_04.wav": { "rdt": "70C", "player": 1, "actor": "barry" },
+  "voice/V10D_05.wav": { "rdt": "70C", "player": 1, "actor": "barry" },
+  "voice/V10D_06.wav": { "rdt": "70C", "player": 1, "actor": "jill" },
+  "voice/V10D_07.wav": { "rdt": "70C", "player": 1, "actor": "barry" },
+  "voice/V10D_10.wav": { "rdt": "70C", "player": 1, "actor": "jill" },
+  "voice/V10D_11.wav": { "rdt": "70C", "player": 1, "actor": "barry" },
+  "voice/V10D_12.wav": { "rdt": "70C", "player": 1, "actor": "jill" },
+  "voice/V10D_13.wav": { "rdt": "70C", "player": 1, "actor": "barry" },
+  "voice/V10D_14.wav": { "rdt": "70C", "player": 1, "actor": "barry" },
+  "voice/V10D_15.wav": {
+    "rdt": "70C",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "jill",
+        "split": 2.7
+      },
+      {
+        "actor": "barry"
+      }
+    ]
+  },
+  "voice/V10D_16.wav": { "rdt": "70C", "player": 1, "actor": "jill" },
+  "voice/V10D_17.wav": { "rdt": "70C", "player": 1, "actor": "barry" },
+  "voice/V10D_18.wav": { "rdt": "70C", "player": 1, "actor": "barry" },
+  "voice/V10D_19.wav": { "rdt": "70C", "player": 1, "actor": "jill" },
+  "voice/V10E_00.wav": { "rdt": "308", "player": 1, "actor": "barry" },
+  "voice/V10E_01.wav": {
+    "rdt": "308",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "jill",
+        "split": 1.8
+      },
+      {
+        "actor": "barry"
+      }
+    ]
+  },
+  "voice/V10E_02.wav": { "rdt": "308", "player": 1, "actor": "barry" },
+  "voice/V10E_03.wav": {
+    "rdt": "308",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "jill",
+        "split": 2.7
+      },
+      {
+        "actor": "barry"
+      }
+    ]
+  },
+  "voice/V10E_04.wav": { "rdt": "308", "player": 1, "actor": "jill" },
+  "voice/V10E_05.wav": {
+    "rdt": "308",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "jill",
+        "split": 2.2
+      },
+      {
+        "actor": "barry"
+      }
+    ]
+  },
+  "voice/V10E_06.wav": {
+    "rdt": "308",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "jill",
+        "split": 1.3
+      },
+      {
+        "actor": "barry"
+      }
+    ]
+  },
+  "voice/V10E_07.wav": {
+    "rdt": "308",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "jill",
+        "split": 4
+      },
+      {
+        "actor": "barry"
+      }
+    ]
+  },
+  "voice/V10E_08.wav": { "rdt": "308", "player": 1, "actor": "jill" },
+  "voice/V10E_09.wav": { "rdt": "308", "player": 1, "actor": "barry" },
+  "voice/V10F_00.wav": {
+    "rdt": "30A",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "enrico",
+        "split": 1.7
+      },
+      {
+        "actor": "jill"
+      }
+    ]
+  },
+  "voice/V10F_02.wav": {
+    "rdt": "30A",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "enrico",
+        "split": 0.7
+      },
+      {
+        "actor": "jill",
+        "split": 1.7
+      },
+      {
+        "actor": "enrico"
+      }
+    ]
+  },
+  "voice/V10F_04.wav": { "rdt": "30A", "player": 1, "actor": "jill" },
+  "voice/V10F_05.wav": { "rdt": "30A", "player": 1, "actor": "enrico" },
+  "voice/V10F_06.wav": { "rdt": "30A", "player": 1, "actor": "enrico" },
+  "voice/V10F_07.wav": { "rdt": "30A", "player": 1, "actor": "jill" },
+  "voice/V10F_08.wav": { "rdt": "30A", "player": 1, "actor": "jill" },
+  "voice/V10F_10.wav": {
+    "rdt": "30A",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "enrico",
+        "split": 1.2
+      },
+      {
+        "actor": "jill"
+      }
+    ]
+  },
+  "voice/V10F_12.wav": {
+    "rdt": "30A",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "enrico",
+        "split": 0.7
+      },
+      {
+        "actor": "jill",
+        "split": 1.8
+      },
+      {
+        "actor": "enrico"
+      }
+    ]
+  },
+  "voice/V10F_15.wav": { "rdt": "30A", "player": 1, "actor": "jill" },
+  "voice/V10F_16.wav": { "rdt": "30A", "player": 1, "actor": "barry" },
+  "voice/V10F_17.wav": { "rdt": "30A", "player": 1, "actor": "enrico" },
+  "voice/V10F_18.wav": { "rdt": "30A", "player": 1, "actor": "barry" },
+  "voice/V10F_19.wav": { "rdt": "30A", "player": 1, "actor": "enrico" },
+  "voice/V10F_1A.wav": { "rdt": "30A", "player": 1, "actor": "enrico" },
+  "voice/V10F_1B.wav": { "rdt": "30A", "player": 1, "actor": "jill" },
+  "voice/V110_00.wav": {
+    "rdt": "307",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "jill",
+        "split": 2
+      },
+      {
+        "actor": "barry",
+        "split": 9.5
+      },
+      {
+        "actor": "jill",
+        "split": 14.1
+      },
+      {
+        "actor": "barry",
+        "split": 45
+      },
+      {
+        "actor": "jill",
+        "split": 49.1
+      },
+      {
+        "actor": "barry"
+      }
+    ]
+  },
+  "voice/V110_01.wav": { "rdt": "307", "player": 1, "actor": "jill" },
+  "voice/V111_00.wav": { "rdt": "50C", "player": 1, "actor": "barry" },
+  "voice/V111_01.wav": { "rdt": "50C", "player": 1, "actor": "jill" },
+  "voice/V111_02.wav": { "rdt": "50C", "player": 1, "actor": "barry" },
+  "voice/V111_03.wav": { "rdt": "50C", "player": 1, "actor": "jill" },
+  "voice/V111_04.wav": { "rdt": "50C", "player": 1, "actor": "barry" },
+  "voice/V111_05.wav": { "rdt": "50C", "player": 1, "actor": "jill" },
+  "voice/V111_06.wav": { "rdt": "50C", "player": 1, "actor": "barry" },
+  "voice/V111_07.wav": { "rdt": "50C", "player": 1, "actor": "barry" },
+  "voice/V111_08.wav": { "rdt": "50C", "player": 1, "actor": "jill" },
+  "voice/V111_09.wav": { "rdt": "50C", "player": 1, "actor": "barry" },
+  "voice/V111_0A.wav": { "rdt": "50C", "player": 1, "actor": "jill" },
+  "voice/V111_0B.wav": { "rdt": "50C", "player": 1, "actor": "barry" },
+  "voice/V111_0C.wav": { "rdt": "50C", "player": 1, "actor": "jill" },
+  "voice/V111_0D.wav": { "rdt": "50C", "player": 1, "actor": "jill" },
+  "voice/V111_0E.wav": { "rdt": "50C", "player": 1, "actor": "barry" },
+  "voice/V112_10.wav": { "rdt": "50B", "player": 1, "actor": "jill" },
+  "voice/V112_11.wav": { "rdt": "50B", "player": 1, "actor": "chris" },
+  "voice/V112_12.wav": { "rdt": "50B", "player": 1, "actor": "jill" },
+  "voice/V112_13.wav": { "rdt": "50B", "player": 1, "actor": "chris" },
+  "voice/V112_14.wav": { "rdt": "50B", "player": 1, "actor": "jill" },
+  "voice/V112_15.wav": { "rdt": "50B", "player": 1, "actor": "jill" },
+  "voice/V112_16.wav": { "rdt": "50B", "player": 1, "actor": "chris" },
+  "voice/V115_00.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/V115_01.wav": { "rdt": "514", "player": 1, "actor": "wesker" },
+  "voice/V115_02.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/V115_03.wav": { "rdt": "514", "player": 1, "actor": "wesker" },
+  "voice/V115_04.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/V115_05.wav": { "rdt": "514", "player": 1, "actor": "wesker" },
+  "voice/V115_06.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/V115_07.wav": { "rdt": "514", "player": 1, "actor": "wesker" },
+  "voice/V115_08.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/V115_09.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/V115_0A.wav": { "rdt": "514", "player": 1, "actor": "wesker" },
+  "voice/V115_0B.wav": { "rdt": "514", "player": 1, "actor": "wesker" },
+  "voice/V115_0C.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/V115_0D.wav": { "rdt": "514", "player": 1, "actor": "wesker" },
+  "voice/V115_0E.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/V115_0F.wav": { "rdt": "514", "player": 1, "actor": "wesker" },
+  "voice/V115_10.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/V115_11.wav": { "rdt": "514", "player": 1, "actor": "wesker" },
+  "voice/V115_12.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/V115_13.wav": { "rdt": "514", "player": 1, "actor": "wesker" },
+  "voice/V115_14.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/V115_15.wav": { "rdt": "514", "player": 1, "actor": "wesker" },
+  "voice/V115_16.wav": { "rdt": "514", "player": 1, "actor": "wesker" },
+  "voice/V115_17.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/V115_18.wav": { "rdt": "514", "player": 1, "actor": "barry" },
+  "voice/V115_19.wav": {
+    "rdt": "514",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "jill",
+        "split": 1.3
+      },
+      {
+        "actor": "barry"
+      }
+    ]
+  },
+  "voice/V115_1A.wav": { "rdt": "514", "player": 1, "actor": "barry" },
+  "voice/V115_1B.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/V115_1C.wav": { "rdt": "514", "player": 1, "actor": "barry" },
+  "voice/V115_1D.wav": {
+    "rdt": "514",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "jill",
+        "split": 1
+      },
+      {
+        "actor": "barry"
+      }
+    ]
+  },
+  "voice/V115_1E.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/V115_1F.wav": { "rdt": "514", "player": 1, "actor": "barry" },
+  "voice/V115_20.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/V115_21.wav": { "rdt": "514", "player": 1, "actor": "barry" },
+  "voice/V115_22.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/V116_00.wav": { "rdt": "513", "player": 1, "actor": "wesker" },
+  "voice/V116_01.wav": { "rdt": "513", "player": 1, "actor": "jill" },
+  "voice/V116_02.wav": { "rdt": "513", "player": 1, "actor": "wesker" },
+  "voice/V116_03.wav": { "rdt": "513", "player": 1, "actor": "jill" },
+  "voice/V116_04.wav": { "rdt": "513", "player": 1, "actor": "wesker" },
+  "voice/V116_05.wav": { "rdt": "513", "player": 1, "actor": "jill" },
+  "voice/V116_06.wav": { "rdt": "513", "player": 1, "actor": "barry" },
+  "voice/V116_10.wav": { "rdt": "513", "player": 1, "actor": "wesker" },
+  "voice/V117_00.wav": { "rdt": "513", "player": 1, "actor": "jill" },
+  "voice/V117_01.wav": { "rdt": "513", "player": 1, "actor": "barry" },
+  "voice/V117_02.wav": { "rdt": "513", "player": 1, "actor": "jill" },
+  "voice/V117_03.wav": { "rdt": "513", "player": 1, "actor": "barry" },
+  "voice/V117_04.wav": { "rdt": "513", "player": 1, "actor": "barry" },
+  "voice/V117_05.wav": { "rdt": "513", "player": 1, "actor": "barry" },
+  "voice/V117_10.wav": { "rdt": "513", "player": 1, "actor": "jill" },
+  "voice/V117_11.wav": { "rdt": "513", "player": 1, "actor": "jill" },
+  "voice/V117_12.wav": { "rdt": "513", "player": 1, "actor": "barry" },
+  "voice/V117_13.wav": { "rdt": "513", "player": 1, "actor": "barry" },
+  "voice/V118_00.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/V118_01.wav": { "rdt": "514", "player": 1, "actor": "barry" },
+  "voice/V119_00.wav": {
+    "rdt": "512",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "chris",
+        "split": 1.7
+      },
+      {
+        "actor": "jill",
+        "split": 4
+      },
+      {
+        "actor": "chris",
+        "split": 6
+      },
+      {
+        "actor": "jill"
+      }
+    ]
+  },
+  "voice/V119_01.wav": {
+    "rdt": "512",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "chris",
+        "split": 1.3
+      },
+      {
+        "actor": "jill",
+        "split": 3.6
+      },
+      {
+        "actor": "chris",
+        "split": 8.3
+      },
+      {
+        "actor": "jill"
+      }
+    ]
+  },
+  "voice/V11A_00.wav": { "rdt": "502", "player": 1, "actor": "chris" },
+  "voice/V11A_01.wav": { "rdt": "502", "player": 1, "actor": "barry" },
+  "voice/V11A_02.wav": {
+    "rdt": "502",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "jill",
+        "split": 1.6
+      },
+      {
+        "actor": "barry",
+        "split": 8.6
+      },
+      {
+        "actor": "jill"
+      }
+    ]
+  },
+  "voice/V11A_03.wav": {
+    "rdt": "502",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "barry",
+        "split": 18.4
+      },
+      {
+        "actor": "jill",
+        "split": 21
+      },
+      {
+        "actor": "barry"
+      }
+    ]
+  },
+  "voice/V11A_04.wav": { "rdt": "502", "player": 1, "actor": "chris" },
+  "voice/V11A_05.wav": { "rdt": "502", "player": 1, "actor": "jill" },
+  "voice/V11A_06.wav": { "rdt": "502", "player": 1, "actor": "barry" },
+  "voice/V11B_00.wav": { "rdt": "501", "player": 1, "actor": "brad", "kind": "radio" },
+  "voice/V11B_01.wav": {
+    "rdt": "501",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "jill",
+        "split": 4.5
+      },
+      {
+        "actor": "chris",
+        "split": 7.2
+      },
+      {
+        "actor": "jill",
+        "split": 8.7
+      },
+      {
+        "actor": "chris",
+        "split": 11.8
+      },
+      {
+        "actor": "jill"
+      }
+    ]
+  },
+  "voice/V11B_02.wav": {
+    "rdt": "501",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "barry",
+        "split": 8.7
+      },
+      {
+        "actor": "jill"
+      }
+    ]
+  },
+  "voice/V11B_03.wav": { "rdt": "303", "player": 1, "actor": "brad", "kind": "radio" },
+  "voice/V11B_04.wav": { "rdt": "502", "player": 1, "actor": "barry" },
+  "voice/V11B_07.wav": { "rdt": "502", "player": 1, "actor": "chris" },
+  "voice/V11B_08.wav": { "rdt": "502", "player": 1, "actor": "jill" },
+  "voice/VA00_00.wav": { "rdt": "000", "player": 1, "actor": "rebecca" },
+  "voice/VA00_01.wav": {
+    "rdt": "000",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "barry",
+        "split": 4.5
+      },
+      {
+        "actor": "jill",
+        "split": 6.3
+      },
+      {
+        "actor": "barry"
+      }
+    ]
+  },
+  "voice/VA00_02.wav": { "rdt": "000", "player": 1, "actor": "rebecca" },
+  "voice/VA00_03.wav": { "rdt": "000", "player": 1, "actor": "barry" },
+  "voice/VA00_04.wav": { "rdt": "000", "player": 1, "actor": "chris" },
+  "voice/VA00_05.wav": { "rdt": "000", "player": 1, "actor": "jill" },
+  "voice/VA01_00.wav": { "rdt": "20D", "player": 1, "actor": "jill" },
+  "voice/VA01_01.wav": { "rdt": "20D", "player": 1, "actor": "richard" },
+  "voice/VA01_02.wav": { "rdt": "20D", "player": 1, "actor": "jill" },
+  "voice/VA01_03.wav": { "rdt": "20D", "player": 1, "actor": "richard" },
+  "voice/VA01_04.wav": { "rdt": "20D", "player": 1, "actor": "jill" },
+  "voice/VA01_05.wav": { "rdt": "20D", "player": 1, "actor": "richard" },
+  "voice/VA01_06.wav": { "rdt": "20D", "player": 1, "actor": "richard" },
+  "voice/VA01_07.wav": { "rdt": "20D", "player": 1, "actor": "jill" },
+  "voice/VA01_08.wav": { "rdt": "20D", "player": 1, "actor": "richard" },
+  "voice/VA01_09.wav": { "rdt": "20D", "player": 1, "actor": "jill" },
+  "voice/VA01_0A.wav": { "rdt": "20D", "player": 1, "actor": "richard" },
+  "voice/VA01_0B.wav": { "rdt": "20D", "player": 1, "actor": "jill" },
+  "voice/VA01_0C.wav": { "rdt": "20D", "player": 1, "actor": "richard" },
+  "voice/VA01_0D.wav": { "rdt": "20D", "player": 1, "actor": "richard" },
+  "voice/VA02_00.wav": { "rdt": "405", "player": 0, "actor": "chris" },
+  "voice/VA02_01.wav": { "rdt": "405", "player": 0, "actor": "wesker" },
+  "voice/VA02_02.wav": { "rdt": "405", "player": 0, "actor": "chris" },
+  "voice/VA02_03.wav": { "rdt": "405", "player": 0, "actor": "chris" },
+  "voice/VA02_04.wav": { "rdt": "405", "player": 0, "actor": "wesker" },
+  "voice/VA02_05.wav": { "rdt": "405", "player": 0, "actor": "chris" },
+  "voice/VA02_06.wav": { "rdt": "405", "player": 0, "actor": "wesker" },
+  "voice/VA02_07.wav": { "rdt": "405", "player": 0, "actor": "wesker" },
+  "voice/VA02_08.wav": { "rdt": "405", "player": 0, "actor": "chris" },
+  "voice/VA02_09.wav": { "rdt": "405", "player": 0, "actor": "wesker" },
+  "voice/VA03_00.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/VA03_0A.wav": { "rdt": "514", "player": 1, "actor": "wesker" },
+  "voice/VA03_0B.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/VA03_0C.wav": { "rdt": "514", "player": 1, "actor": "wesker" },
+  "voice/VA03_0D.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/VA03_0E.wav": { "rdt": "514", "player": 1, "actor": "wesker" },
+  "voice/VA03_01.wav": { "rdt": "514", "player": 1, "actor": "wesker" },
+  "voice/VA03_02.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/VA03_03.wav": { "rdt": "514", "player": 1, "actor": "wesker" },
+  "voice/VA03_04.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/VA03_05.wav": { "rdt": "514", "player": 1, "actor": "wesker" },
+  "voice/VA03_06.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/VA03_07.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/VA03_08.wav": { "rdt": "514", "player": 1, "actor": "wesker" },
+  "voice/VA03_09.wav": { "rdt": "514", "player": 1, "actor": "jill" },
+  "voice/VA06_00.wav": { "rdt": "20E", "player": 0, "actor": "chris" },
+  "voice/VA09_01.wav": {
+    "rdt": "000",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "chris",
+        "split": 2.6
+      },
+      {
+        "actor": "rebecca"
+      }
+    ]
+  },
+  "voice/VA09_02.wav": {
+    "rdt": "000",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "chris",
+        "split": 2.5
+      },
+      {
+        "actor": "rebecca"
+      }
+    ]
+  },
+  "voice/VA09_03.wav": {
+    "rdt": "000",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "chris",
+        "split": 4.3
+      },
+      {
+        "actor": "rebecca"
+      }
+    ]
+  },
+  "voice/VA09_04.wav": { "rdt": "000", "player": 1, "actor": "barry" },
+  "voice/VA09_05.wav": { "rdt": "000", "player": 1, "actor": "barry" },
+  "voice/VA09_06.wav": { "rdt": "000", "player": 1, "actor": "jill" },
+  "voice/VA09_07.wav": { "rdt": "000", "player": 1, "actor": "barry" },
+  "voice/VA09_08.wav": { "rdt": "000", "player": 1, "actor": "jill" },
+  "voice/VA09_09.wav": {
+    "rdt": "000",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "barry",
+        "split": 2.3
+      },
+      {
+        "actor": "jill"
+      }
+    ]
+  },
+  "voice/VA09_0A.wav": { "rdt": "000", "player": 1, "actor": "barry" },
+  "voice/VA09_0B.wav": { "rdt": "508", "player": 0, "actor": "jill" }
+}

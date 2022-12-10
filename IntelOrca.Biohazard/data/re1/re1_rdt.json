@@ -1,0 +1,1770 @@
+{
+  "beginEndRooms": [
+    {
+      "start": "106",
+      "end": "501"
+    }
+  ],
+  "rooms": {
+    "100": {
+      "linkedRoom": "600",
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "target": "101"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "type": 0,
+          "player": 1
+        },
+        {
+          "id": 4,
+          "type": 0,
+          "player": 1
+        },
+        {
+          "id": 6,
+          "type": 0,
+          "player": 0
+        },
+        {
+          "id": 7,
+          "type": 0,
+          "player": 0
+        }
+      ]
+    },
+    "101": {
+      "linkedRoom": "601",
+      "doors": [
+        {
+          "target": "100"
+        },
+        {
+          "target": "102",
+          "requires": [ 52 ]
+        },
+        {
+          "target": "103"
+        },
+        {
+          "target": "201"
+        }
+      ]
+    },
+    "102": {
+      "linkedRoom": "602",
+      "doors": [
+        {
+          "target": "101"
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "priority": "low"
+        },
+        {
+          "id": 2,
+          "requires": [ 61 ],
+          "player": 0
+        }
+      ]
+    },
+    "103": {
+      "linkedRoom": "603",
+      "doors": [
+        {
+          "target": "101"
+        },
+        {
+          "target": "104"
+        },
+        {
+          "target": "10C"
+        },
+        {
+          "target": "10D"
+        },
+        {
+          "target": "10E",
+          "requires": [ 51 ]
+        }
+      ]
+    },
+    "104": {
+      "linkedRoom": "604",
+      "doors": [
+        {
+          "target": "103",
+          "lock": "side"
+        },
+        {
+          "target": "105",
+          "randomize": false
+        },
+        {
+          "target": "10F",
+          "requires": [ 51 ]
+        },
+        {
+          "target": "610",
+          "lock": "side"
+        }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 10 ]
+        }
+      ],
+      "npcs": []
+    },
+    "105": {
+      "linkedRoom": "605",
+      "doors": [
+        {
+          "target": "104",
+          "randomize": false
+        },
+        {
+          "target": "106",
+          "randomize": false
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "requires": [ 32 ],
+          "requiresRoom": [ "10F" ]
+        },
+        {
+          "id": 4,
+          "type": 31,
+          "priority": "fixed",
+          "player": 0
+        },
+        {
+          "id": 5,
+          "type": 0,
+          "player": 0
+        },
+        {
+          "id": 7,
+          "type": 31,
+          "priority": "fixed",
+          "player": 1
+        },
+        {
+          "id": 8,
+          "type": 0,
+          "player": 1
+        },
+        {
+          "id": 23,
+          "priority": "low",
+          "doorRando": true
+        }
+      ],
+      "enemies": [],
+      "npcs": [
+        {
+          "excludeTypes": [ 39, 40 ]
+        }
+      ]
+    },
+    "106": {
+      "linkedRoom": "606",
+      "doors": [
+        {
+          "target": "105",
+          "randomize": false
+        },
+        {
+          "target": "107"
+        },
+        {
+          "target": "111",
+          "requires": [ 52 ]
+        },
+        {
+          "target": "203",
+          "randomize": false
+        }
+      ],
+      "items": [
+        {
+          "id": 6,
+          "priority": "low",
+          "player": 1
+        }
+      ],
+      "npcs": [
+        {
+          "excludeTypes": [ 39 ],
+          "player": 1
+        }
+      ]
+    },
+    "107": {
+      "linkedRoom": "607",
+      "doors": [
+        {
+          "target": "106"
+        },
+        {
+          "target": "108",
+          "requires": [ 51 ]
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "type": 0
+        }
+      ]
+    },
+    "108": {
+      "linkedRoom": "608",
+      "doors": [
+        {
+          "target": "107"
+        },
+        {
+          "target": "109"
+        }
+      ],
+      "enemies": []
+    },
+    "109": {
+      "linkedRoom": "609",
+      "doors": [
+        {
+          "target": "108"
+        },
+        {
+          "target": "10A"
+        },
+        {
+          "target": "114",
+          "requires": [ 52 ]
+        },
+        {
+          "target": "113"
+        },
+        {
+          "target": "115"
+        }
+      ]
+    },
+    "10A": {
+      "linkedRoom": "60A",
+      "doors": [
+        {
+          "target": "109"
+        },
+        {
+          "target": "10B",
+          "lock": "side"
+        },
+        {
+          "target": "117"
+        },
+        {
+          "target": "619",
+          "requires": [ 54 ]
+        },
+        {
+          "target": "11A"
+        }
+      ]
+    },
+    "10B": {
+      "linkedRoom": "60B",
+      "doors": [
+        {
+          "target": "10A",
+          "lock": "side"
+        },
+        {
+          "target": "118"
+        },
+        {
+          "target": "207"
+        }
+      ]
+    },
+    "10C": {
+      "linkedRoom": "60C",
+      "doors": [
+        {
+          "target": "103"
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "requires": [ 38 ]
+        },
+        {
+          "id": 5,
+          "requires": [ 38 ]
+        },
+        {
+          "id": 6,
+          "requires": [ 38 ]
+        },
+        {
+          "id": 7,
+          "requires": [ 38 ]
+        },
+        {
+          "id": 8,
+          "requires": [ 38 ]
+        },
+        {
+          "id": 9,
+          "requires": [ 38 ]
+        },
+        {
+          "id": 10,
+          "requires": [ 38 ]
+        }
+      ],
+      "enemies": []
+    },
+    "10D": {
+      "linkedRoom": "60D",
+      "doors": [
+        {
+          "target": "103"
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "requires": [ 34 ]
+        },
+        {
+          "id": 131,
+          "requires": [ 33 ]
+        }
+      ]
+    },
+    "10E": {
+      "linkedRoom": "60E",
+      "doors": [
+        {
+          "target": "103"
+        }
+      ]
+    },
+    "10F": {
+      "linkedRoom": "60F",
+      "doors": [
+        {
+          "target": "104"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "type": 0
+        },
+        {
+          "id": 4,
+          "type": 32,
+          "priority": "fixed",
+          "requires": [ 31, 35 ]
+        }
+      ]
+    },
+    "111": {
+      "linkedRoom": "611",
+      "doors": [
+        {
+          "target": "106"
+        },
+        {
+          "target": "112"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "requires": [ 61 ],
+          "player": 0
+        }
+      ]
+    },
+    "112": {
+      "linkedRoom": "612",
+      "doors": [
+        {
+          "target": "111"
+        }
+      ]
+    },
+    "113": {
+      "linkedRoom": "613",
+      "doors": [
+        {
+          "target": "109"
+        }
+      ]
+    },
+    "114": {
+      "linkedRoom": "614",
+      "doors": [
+        {
+          "target": "109"
+        }
+      ],
+      "enemies": []
+    },
+    "115": {
+      "linkedRoom": "615",
+      "doors": [
+        {
+          "target": "109"
+        },
+        {
+          "target": "116"
+        }
+      ]
+    },
+    "116": {
+      "linkedRoom": "616",
+      "doors": [
+        {
+          "target": "115"
+        }
+      ],
+      "items": [
+        {
+          "id": 1,
+          "requires": [ 28 ]
+        },
+        {
+          "id": 2,
+          "type": 0
+        }
+      ]
+    },
+    "117": {
+      "linkedRoom": "617",
+      "doors": [
+        {
+          "target": "10A"
+        }
+      ],
+      "enemies": []
+    },
+    "118": {
+      "linkedRoom": "618",
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "target": "10B"
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "priority": "low"
+        },
+        {
+          "id": 4,
+          "priority": "low"
+        },
+        {
+          "id": 5,
+          "priority": "low"
+        }
+      ]
+    },
+    "11A": {
+      "doorRando": [
+        {
+          "category": "bridge"
+        }
+      ],
+      "linkedRoom": "61A",
+      "doors": [
+        {
+          "target": "10A"
+        },
+        {
+          "target": "11B",
+          "requires": [ 41, 44, 45, 46 ],
+          "noUnlock": true
+        }
+      ]
+    },
+    "11B": {
+      "linkedRoom": "61B",
+      "doors": [
+        {
+          "target": "11A"
+        },
+        {
+          "target": "300"
+        }
+      ]
+    },
+    "11C": {
+      "linkedRoom": "61C",
+      "doors": [
+        {
+          "target": "112"
+        }
+      ]
+    },
+    "201": {
+      "linkedRoom": "701",
+      "doors": [
+        {
+          "target": "101"
+        },
+        {
+          "target": "202"
+        },
+        {
+          "target": "714",
+          "lock": "always"
+        },
+        {
+          "target": "715",
+          "requires": [ 54 ]
+        }
+      ]
+    },
+    "202": {
+      "linkedRoom": "702",
+      "doors": [
+        {
+          "target": "201"
+        },
+        {
+          "target": "203"
+        }
+      ]
+    },
+    "203": {
+      "linkedRoom": "703",
+      "doors": [
+        {
+          "target": "106",
+          "randomize": false
+        },
+        {
+          "target": "202"
+        },
+        {
+          "target": "204"
+        },
+        {
+          "target": "211"
+        }
+      ]
+    },
+    "204": {
+      "linkedRoom": "704",
+      "doors": [
+        {
+          "target": "203"
+        },
+        {
+          "target": "205",
+          "requires": [ 52 ]
+        },
+        {
+          "target": "206"
+        },
+        {
+          "target": "207",
+          "lock": "side"
+        },
+        {
+          "target": "20D",
+          "requires": [ 52 ]
+        }
+      ]
+    },
+    "205": {
+      "linkedRoom": "705",
+      "doors": [
+        {
+          "target": "204"
+        }
+      ]
+    },
+    "206": {
+      "linkedRoom": "706",
+      "doors": [
+        {
+          "target": "204"
+        },
+        {
+          "target": "207",
+          "doorRando": false
+        },
+        {
+          "target": "207",
+          "lock": "always",
+          "doorRando": true
+        }
+      ]
+    },
+    "207": {
+      "linkedRoom": "707",
+      "doors": [
+        {
+          "target": "10B"
+        },
+        {
+          "target": "204"
+        },
+        {
+          "target": "208",
+          "requires": [ 52 ]
+        },
+        {
+          "target": "20B"
+        }
+      ]
+    },
+    "208": {
+      "linkedRoom": "708",
+      "doors": [
+        {
+          "target": "207"
+        },
+        {
+          "target": "209"
+        },
+        {
+          "target": "20A"
+        }
+      ]
+    },
+    "209": {
+      "linkedRoom": "709",
+      "doors": [
+        {
+          "target": "208"
+        }
+      ]
+    },
+    "20A": {
+      "linkedRoom": "70A",
+      "doors": [
+        {
+          "target": "208"
+        }
+      ]
+    },
+    "20B": {
+      "linkedRoom": "70B",
+      "doors": [
+        {
+          "target": "207"
+        },
+        {
+          "target": "70C",
+          "requires": [ 54 ]
+        }
+      ]
+    },
+    "20D": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "linkedRoom": "70D",
+      "doors": [
+        {
+          "target": "204"
+        },
+        {
+          "target": "20E"
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 168024, 168170, 168194 ],
+          "includeTypes": [ 40, 42 ]
+        }
+      ]
+    },
+    "20E": {
+      "linkedRoom": "70E",
+      "doors": [
+        {
+          "target": "20D"
+        },
+        {
+          "target": "20F"
+        },
+        {
+          "target": "210",
+          "requires": [ 53 ]
+        }
+      ]
+    },
+    "20F": {
+      "linkedRoom": "70F",
+      "doors": [
+        {
+          "target": "20E"
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "requires": [ 48 ]
+        }
+      ]
+    },
+    "210": {
+      "linkedRoom": "710",
+      "doors": [
+        {
+          "target": "20E"
+        }
+      ],
+      "enemies": [
+        {
+          "keepState": true,
+          "includeTypes": [ 12, 13 ]
+        }
+      ]
+    },
+    "211": {
+      "linkedRoom": "711",
+      "doors": [
+        {
+          "target": "203"
+        },
+        {
+          "target": "212"
+        }
+      ]
+    },
+    "212": {
+      "linkedRoom": "712",
+      "doors": [
+        {
+          "target": "211"
+        }
+      ],
+      "enemies": [],
+      "npcs": [
+        {
+          "includeTypes": [ 42 ]
+        }
+      ]
+    },
+    "300": {
+      "doors": [
+        {
+          "target": "11B"
+        },
+        {
+          "target": "301"
+        },
+        {
+          "target": "302",
+          "randomize": false,
+          "lock": "gate"
+        }
+      ]
+    },
+    "301": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "target": "300"
+        },
+        {
+          "target": "302",
+          "requires": [ 29 ],
+          "randomize": false
+        }
+      ]
+    },
+    "302": {
+      "doors": [
+        {
+          "target": "300",
+          "randomize": false,
+          "requires": [ 39 ],
+          "lock": "unblock",
+          "noUnlock": true
+        },
+        {
+          "target": "301",
+          "randomize": false
+        },
+        {
+          "target": "304"
+        },
+        {
+          "target": "307",
+          "randomize": false,
+          "noReturn": true
+        }
+      ]
+    },
+    "303": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "target": "500",
+          "lock": "always"
+        }
+      ],
+      "items": [
+        {
+          "id": 1,
+          "type": 0
+        },
+        {
+          "id": 2,
+          "type": 0
+        }
+      ],
+      "enemies": []
+    },
+    "304": {
+      "doors": [
+        {
+          "target": "302"
+        },
+        {
+          "target": "400"
+        }
+      ]
+    },
+    "305": {
+      "doorRando": [
+        {
+          "category": "bridge"
+        }
+      ],
+      "doors": [
+        {
+          "target": "30F"
+        },
+        {
+          "target": "310",
+          "requires": [ 63, 64 ],
+          "noUnlock": true,
+          "noReturn": true
+        }
+      ]
+    },
+    "306": {
+      "doors": [
+        {
+          "target": "30F"
+        }
+      ],
+      "items": [
+        {
+          "id": 6,
+          "requires": [ 30 ]
+        }
+      ]
+    },
+    "307": {
+      "doors": [
+        {
+          "target": "302",
+          "randomize": false
+        },
+        {
+          "target": "308"
+        },
+        {
+          "target": "30B",
+          "requires": [ 30 ]
+        }
+      ]
+    },
+    "308": {
+      "doors": [
+        {
+          "target": "307"
+        },
+        {
+          "id": 1,
+          "target": "309:0"
+        },
+        {
+          "id": 2,
+          "target": "309:1"
+        }
+      ]
+    },
+    "309": {
+      "doors": [
+        {
+          "id": 0,
+          "target": "308:1"
+        },
+        {
+          "id": 1,
+          "target": "308:2"
+        },
+        {
+          "id": 2,
+          "target": "30A"
+        }
+      ]
+    },
+    "30A": {
+      "doors": [
+        {
+          "target": "309"
+        }
+      ],
+      "npcs": [
+        {
+          "includeTypes": [ 42 ]
+        }
+      ]
+    },
+    "30B": {
+      "doors": [
+        {
+          "target": "307"
+        },
+        {
+          "target": "30C"
+        }
+      ]
+    },
+    "30C": {
+      "doors": [
+        {
+          "target": "30B"
+        },
+        {
+          "target": "30D",
+          "lock": "unblock"
+        }
+      ]
+    },
+    "30D": {
+      "doors": [
+        {
+          "target": "30C"
+        },
+        {
+          "target": "30E"
+        },
+        {
+          "target": "30F",
+          "requires": [ 6 ],
+          "player": 0
+        },
+        {
+          "target": "30F",
+          "player": 1
+        }
+      ]
+    },
+    "30E": {
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "target": "30D"
+        }
+      ]
+    },
+    "30F": {
+      "doors": [
+        {
+          "target": "305"
+        },
+        {
+          "target": "306",
+          "requires": [ 30 ]
+        },
+        {
+          "target": "30D"
+        }
+      ]
+    },
+    "310": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "target": "305"
+        },
+        {
+          "target": "500"
+        }
+      ]
+    },
+    "400": {
+      "doors": [
+        {
+          "target": "304"
+        },
+        {
+          "target": "401"
+        },
+        {
+          "target": "403"
+        },
+        {
+          "target": "404"
+        },
+        {
+          "target": "405"
+        }
+      ]
+    },
+    "401": {
+      "doors": [
+        {
+          "target": "400"
+        },
+        {
+          "target": "402"
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "requires": [ 61 ],
+          "player": 0
+        }
+      ]
+    },
+    "402": {
+      "doors": [
+        {
+          "target": "401"
+        }
+      ]
+    },
+    "403": {
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "target": "400"
+        }
+      ]
+    },
+    "404": {
+      "doors": [
+        {
+          "target": "400"
+        }
+      ],
+      "enemies": []
+    },
+    "405": {
+      "doors": [
+        {
+          "target": "400"
+        },
+        {
+          "target": "406",
+          "requires": [ 57 ]
+        },
+        {
+          "target": "408"
+        }
+      ]
+    },
+    "406": {
+      "doors": [
+        {
+          "target": "405"
+        },
+        {
+          "target": "407"
+        },
+        {
+          "target": "40D",
+          "lock": "unblock",
+          "randomize": false
+        }
+      ],
+      "items": [
+        {
+          "id": 6,
+          "requires": [ 61 ],
+          "player": 0
+        }
+      ]
+    },
+    "407": {
+      "doors": [
+        {
+          "target": "406"
+        }
+      ]
+    },
+    "408": {
+      "doors": [
+        {
+          "target": "405"
+        },
+        {
+          "target": "409"
+        },
+        {
+          "target": "40A",
+          "requires": [ 58 ]
+        }
+      ]
+    },
+    "409": {
+      "doors": [
+        {
+          "target": "408"
+        }
+      ],
+      "items": [
+        {
+          "id": 1,
+          "type": 0
+        },
+        {
+          "id": 2,
+          "type": 0
+        },
+        {
+          "id": 3,
+          "type": 0
+        },
+        {
+          "id": 4,
+          "type": 0
+        },
+        {
+          "id": 5,
+          "type": 0
+        },
+        {
+          "id": 6,
+          "type": 0
+        },
+        {
+          "id": 7,
+          "type": 0
+        }
+      ]
+    },
+    "40A": {
+      "doors": [
+        {
+          "target": "408"
+        },
+        {
+          "target": "40B"
+        },
+        {
+          "target": "40C",
+          "requires": [ 62 ],
+          "randomize": false
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "type": 0
+        }
+      ]
+    },
+    "40B": {
+      "doors": [
+        {
+          "target": "40A"
+        }
+      ]
+    },
+    "40C": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "player": 0
+        }
+      ],
+      "doors": [
+        {
+          "target": "40A",
+          "lock": "always"
+        },
+        {
+          "target": "408"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "priority": "fixed",
+          "doorRando": false
+        }
+      ]
+    },
+    "40D": {
+      "doors": [
+        {
+          "target": "406",
+          "randomize": false
+        },
+        {
+          "target": "40E",
+          "lock": "unblock"
+        }
+      ]
+    },
+    "40E": {
+      "doors": [
+        {
+          "target": "40D"
+        },
+        {
+          "target": "40F"
+        },
+        {
+          "target": "410",
+          "requiresRoom": [ "411" ]
+        },
+        {
+          "target": "411",
+          "requires": [ 59 ]
+        }
+      ]
+    },
+    "40F": {
+      "doors": [
+        {
+          "target": "40E"
+        }
+      ]
+    },
+    "410": {
+      "doors": [
+        {
+          "target": "40E"
+        }
+      ]
+    },
+    "411": {
+      "doors": [
+        {
+          "target": "40E"
+        }
+      ]
+    },
+    "500": {
+      "doors": [
+        {
+          "target": "310"
+        },
+        {
+          "target": "501",
+          "requires": [ 55 ],
+          "requiresRoom": [ "505", "513" ]
+        },
+        {
+          "target": "502"
+        }
+      ]
+    },
+    "501": {
+      "doors": [
+        {
+          "target": "500"
+        },
+        {
+          "target": "50D",
+          "requires": [ 39 ],
+          "randomize": false
+        }
+      ]
+    },
+    "502": {
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "target": "500"
+        },
+        {
+          "target": "503"
+        }
+      ]
+    },
+    "503": {
+      "doors": [
+        {
+          "target": "502"
+        },
+        {
+          "target": "504"
+        },
+        {
+          "target": "505"
+        }
+      ]
+    },
+    "504": {
+      "doors": [
+        {
+          "target": "503"
+        }
+      ]
+    },
+    "505": {
+      "doors": [
+        {
+          "target": "503"
+        },
+        {
+          "target": "506"
+        },
+        {
+          "target": "507",
+          "lock": "side"
+        },
+        {
+          "target": "508"
+        },
+        {
+          "target": "50C",
+          "requires": [ 60 ]
+        }
+      ]
+    },
+    "506": {
+      "doors": [
+        {
+          "target": "505"
+        }
+      ]
+    },
+    "507": {
+      "doors": [
+        {
+          "target": "505",
+          "doorRando": true
+        },
+        {
+          "target": "50C",
+          "doorRando": false
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "type": 0,
+          "doorRando": true
+        },
+        {
+          "id": 15,
+          "type": 0,
+          "doorRando": true
+        }
+      ],
+      "requires": [ 40 ]
+    },
+    "508": {
+      "doors": [
+        {
+          "target": "505"
+        },
+        {
+          "target": "509",
+          "requiresRoom": [ "506" ]
+        },
+        {
+          "target": "50A"
+        },
+        {
+          "target": "50B",
+          "requiresRoom": [ "507", "509", "510" ]
+        }
+      ]
+    },
+    "509": {
+      "doors": [
+        {
+          "target": "508"
+        }
+      ],
+      "requires": [ 40 ]
+    },
+    "50A": {
+      "doors": [
+        {
+          "target": "508"
+        }
+      ]
+    },
+    "50B": {
+      "doors": [
+        {
+          "target": "508"
+        },
+        {
+          "target": "512",
+          "requiresRoom": [ "513" ]
+        }
+      ]
+    },
+    "50C": {
+      "doors": [
+        {
+          "target": "505"
+        },
+        {
+          "target": "507"
+        },
+        {
+          "target": "50E"
+        },
+        {
+          "target": "50F"
+        },
+        {
+          "target": "515",
+          "requiresRoom": [ "50F", "511" ],
+          "noUnlock": true,
+          "randomize": false
+        }
+      ]
+    },
+    "50D": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "target": "501",
+          "randomize": false
+        },
+        {
+          "target": "303",
+          "randomize": false,
+          "noReturn": true
+        }
+      ]
+    },
+    "50E": {
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "target": "50C"
+        }
+      ]
+    },
+    "50F": {
+      "doors": [
+        {
+          "target": "50C"
+        },
+        {
+          "target": "510"
+        }
+      ]
+    },
+    "510": {
+      "doors": [
+        {
+          "target": "50F"
+        },
+        {
+          "target": "511"
+        }
+      ],
+      "requires": [ 40 ]
+    },
+    "511": {
+      "doors": [
+        {
+          "target": "510"
+        }
+      ]
+    },
+    "512": {
+      "doors": [
+        {
+          "target": "50B"
+        }
+      ]
+    },
+    "513": {
+      "doors": [
+        {
+          "target": "514",
+          "randomize": false
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "priority": "low"
+        }
+      ],
+      "enemies": []
+    },
+    "514": {
+      "doors": [
+        {
+          "target": "513",
+          "randomize": false
+        },
+        {
+          "target": "515",
+          "randomize": false
+        }
+      ]
+    },
+    "515": {
+      "doors": [
+        {
+          "target": "50C",
+          "randomize": false
+        },
+        {
+          "target": "514",
+          "randomize": false
+        }
+      ]
+    },
+    "601": {
+      "enemies": []
+    },
+    "60C": {
+      "enemies": []
+    },
+    "610": {
+      "doors": [
+        {
+          "target": "104"
+        },
+        {
+          "target": "71C"
+        }
+      ]
+    },
+    "614": {
+      "enemies": []
+    },
+    "617": {
+      "enemies": []
+    },
+    "619": {
+      "doors": [
+        {
+          "target": "10A"
+        }
+      ]
+    },
+    "700": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "target": "713"
+        },
+        {
+          "target": "71C"
+        }
+      ]
+    },
+    "70C": {
+      "doorRando": [
+        {
+          "category": "bridge"
+        }
+      ],
+      "doors": [
+        {
+          "target": "20B"
+        },
+        {
+          "target": "71A",
+          "lock": "unblock",
+          "noUnlock": true
+        }
+      ],
+      "enemies": [
+        {
+          "keepState": true,
+          "includeTypes": [ 12, 18 ]
+        }
+      ]
+    },
+    "710": {
+      "enemies": [
+        {
+          "keepState": true,
+          "includeTypes": [ 12, 13 ]
+        }
+      ]
+    },
+    "712": {
+      "enemies": []
+    },
+    "713": {
+      "doors": [
+        {
+          "target": "700"
+        },
+        {
+          "target": "714"
+        },
+        {
+          "target": "716"
+        },
+        {
+          "target": "719"
+        }
+      ]
+    },
+    "714": {
+      "doors": [
+        // {
+        //   "target": "201"
+        // },
+        {
+          "target": "713"
+        }
+      ]
+    },
+    "715": {
+      "doors": [
+        {
+          "target": "201"
+        }
+      ]
+    },
+    "716": {
+      "doors": [
+        {
+          "target": "713"
+        },
+        {
+          "target": "717"
+        },
+        {
+          "target": "718"
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "requires": [ 61 ],
+          "player": 0
+        }
+      ]
+    },
+    "717": {
+      "doors": [
+        {
+          "target": "716"
+        }
+      ]
+    },
+    "718": {
+      "doors": [
+        {
+          "target": "716"
+        }
+      ]
+    },
+    "719": {
+      "doors": [
+        {
+          "target": "713"
+        }
+      ]
+    },
+    "71A": {
+      "doors": [
+        {
+          "target": "70C"
+        },
+        {
+          "target": "71B"
+        }
+      ]
+    },
+    "71B": {
+      "doors": [
+        {
+          "target": "71A"
+        },
+        {
+          "target": "71C"
+        }
+      ]
+    },
+    "71C": {
+      "doors": [
+        {
+          "target": "700"
+        },
+        {
+          "target": "610"
+        },
+        {
+          "target": "71B",
+          "lock": "side"
+        }
+      ]
+    }
+  }
+}

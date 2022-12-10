@@ -1,4 +1,6 @@
-﻿namespace IntelOrca.Biohazard
+﻿using IntelOrca.Biohazard.Script.Opcodes;
+
+namespace IntelOrca.Biohazard
 {
     internal struct DoorEntrance
     {

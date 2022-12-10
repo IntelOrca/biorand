@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 using OpenSoftware.DgmlTools;
 using OpenSoftware.DgmlTools.Builders;
 using OpenSoftware.DgmlTools.Model;
@@ -13,17 +12,17 @@ namespace IntelOrca.Biohazard
         public PlayNode? Start { get; set; }
         public PlayNode? End { get; set; }
 
-        public void GenerateDgml(string path)
+        public void GenerateDgml(string path, IItemHelper itemHelper)
         {
             var builder = new DgmlBuilder()
             {
                 NodeBuilders = new[]
                 {
-                    new NodeBuilder<PlayNode>(GetNode)
+                    new NodeBuilder<PlayNode>(n => GetNode(n, itemHelper))
                 },
                 LinkBuilders = new LinkBuilder[]
                 {
-                    new LinksBuilder<PlayNode>(GetLinksForNode)
+                    new LinksBuilder<PlayNode>(n => GetLinksForNode(n, itemHelper))
                 },
                 CategoryBuilders = new CategoryBuilder[0],
                 StyleBuilders = new StyleBuilder[0]
@@ -32,12 +31,12 @@ namespace IntelOrca.Biohazard
             dgmlGraph.WriteToFile(path);
         }
 
-        private Node GetNode(PlayNode node)
+        private Node GetNode(PlayNode node, IItemHelper itemHelper)
         {
             var label = node.RdtId.ToString();
             foreach (var keyItem in node.PlacedKeyItems)
             {
-                label += "\n" + Items.GetItemName(keyItem.Type) + " x" + keyItem.Amount;
+                label += "\n" + itemHelper.GetItemName((byte)keyItem.Type) + " x" + keyItem.Amount;
             }
             var itemsLeft = node.Items.Length - node.PlacedKeyItems.Count;
             if (itemsLeft > 0)
@@ -61,7 +60,7 @@ namespace IntelOrca.Biohazard
             return result;
         }
 
-        private List<Link> GetLinksForNode(PlayNode node)
+        private List<Link> GetLinksForNode(PlayNode node, IItemHelper itemHelper)
         {
             var links = new List<Link>();
             foreach (var edge in node.Edges)
@@ -91,7 +90,7 @@ namespace IntelOrca.Biohazard
                 }
                 foreach (var key in edge.Requires)
                 {
-                    label += $"\n[{Items.GetItemName(key)}]";
+                    label += $"\n[{itemHelper.GetItemName((byte)key)}]";
                 }
 
                 links.Add(new Link()
@@ -206,33 +205,37 @@ namespace IntelOrca.Biohazard
             Entrance = entrance;
         }
 
-        public string RequiresString
+        public string GetRequiresString(IItemHelper? itemHelper)
         {
-            get
+            var s = "";
+            if (Lock == LockKind.Side)
             {
-                var s = "";
-                if (Lock == LockKind.Side)
-                {
-                    s += $"(locked #{LockId}) ";
-                }
-                else if (Lock != LockKind.None)
-                {
-                    s += $"({Lock.ToString().ToLowerInvariant()}) ";
-                }
-                if (Requires != null && Requires.Length != 0)
-                {
-                    s += "[" + string.Join(", ", Requires.Select(x => Items.GetItemName(x))) + "] ";
-                }
-                return s.Trim();
+                s += $"(locked #{LockId}) ";
             }
+            else if (Lock != LockKind.None)
+            {
+                s += $"({Lock.ToString().ToLowerInvariant()}) ";
+            }
+            if (Requires != null && Requires.Length != 0)
+            {
+                s += "[" + string.Join(", ", Requires.Select(x => GetItemName(itemHelper, (byte)x) ?? x.ToString())) + "] ";
+            }
+            return s.Trim();
+        }
+
+        private string GetItemName(IItemHelper? itemHelper, byte item)
+        {
+            if (itemHelper == null)
+                return item.ToString();
+            return itemHelper.GetItemName(item);
         }
 
         public override string ToString()
         {
             if (Node == null)
-                return "(unconnected)";
+                return $"{Parent} -> (unconnected)";
 
-            return string.Join(" ", Node.RdtId, RequiresString);
+            return $"{Parent} -> {Node.RdtId} {GetRequiresString(null)}";
         }
     }
 }

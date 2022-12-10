@@ -40,7 +40,7 @@ namespace IntelOrca.Biohazard.BioRand
         {
             if (d is CheckGroupBox instance)
             {
-                var newValue = (bool)e.NewValue;
+                var newValue = (bool?)e.NewValue;
                 instance.IsChildrenEnabled = newValue == true;
                 if (newValue == true)
                     instance.Checked?.Invoke(instance, new RoutedEventArgs());

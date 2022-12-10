@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard
 {
     internal class DoorRandomiser
     {
+        private static bool g_debugLogging = false;
+
         private readonly RandoLogger _logger;
         private RandoConfig _config;
         private GameData _gameData;
@@ -13,7 +16,7 @@ namespace IntelOrca.Biohazard
         private Dictionary<RdtId, PlayNode> _nodeMap = new Dictionary<RdtId, PlayNode>();
         private List<PlayNode> _allNodes = new List<PlayNode>();
         private Rng _rng;
-        private bool _debugLogging = false;
+        private IItemHelper _itemHelper;
 
         private int _keyItemSpotsLeft;
         private readonly HashSet<ushort> _keyItemRequiredSet = new HashSet<ushort>();
@@ -51,13 +54,14 @@ namespace IntelOrca.Biohazard
             new FixedLinkConstraint()
         };
 
-        public DoorRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng random)
+        public DoorRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng random, IItemHelper itemHelper)
         {
             _logger = logger;
             _config = config;
             _gameData = gameData;
             _map = map;
             _rng = random;
+            _itemHelper = itemHelper;
         }
 
         public PlayGraph CreateOriginalGraph()
@@ -121,6 +125,7 @@ namespace IntelOrca.Biohazard
             var beginNode = graph.Start;
             beginNode.Visited = true;
             var pool = new List<PlayNode>() { beginNode };
+            AddStickyNodeGroup(beginNode, pool);
             for (int i = 0; i < numAreas; i++)
             {
                 pool.AddRange(areaSuperNodes[i]);
@@ -137,6 +142,7 @@ namespace IntelOrca.Biohazard
             FinishOffEndNodes(graph.End);
 
             FinalChecks(graph);
+            UnfixRE1Doors();
             return graph;
         }
 
@@ -158,6 +164,8 @@ namespace IntelOrca.Biohazard
 
         private List<PlayNode> CreateNodes()
         {
+            FixRE1Doors();
+
             var nodes = new List<PlayNode>();
             foreach (var kvp in _map.Rooms!)
             {
@@ -175,6 +183,92 @@ namespace IntelOrca.Biohazard
             return nodes;
         }
 
+        // TODO is this still needed?
+        private void FixRE1Doors()
+        {
+            // For RE 1 doors that have 0 as target stage, that means keep the stage
+            // the same. This replaces every door with an explicit stage to simplify things
+            foreach (var rdt in _gameData.Rdts)
+            {
+                if (rdt.Version == BioVersion.Biohazard1)
+                {
+                    if (!ShouldFixRE1Rdt(rdt.RdtId))
+                        continue;
+
+                    foreach (var door in rdt.Doors)
+                    {
+                        var target = door.Target;
+                        if (target.Stage == 255)
+                            target = new RdtId(rdt.RdtId.Stage, target.Room);
+                        door.Target = GetRE1FixedId(target);
+                    }
+                }
+            }
+        }
+
+        private void UnfixRE1Doors()
+        {
+            foreach (var rdt in _gameData.Rdts)
+            {
+                if (rdt.Version == BioVersion.Biohazard1)
+                {
+                    if (!ShouldFixRE1Rdt(rdt.RdtId))
+                        continue;
+
+                    foreach (var door in rdt.Doors)
+                    {
+                        var target = door.Target;
+                        if (target.Stage == rdt.RdtId.Stage)
+                        {
+                            target = new RdtId(255, target.Room);
+                            door.Target = target;
+                        }
+                    }
+                }
+            }
+        }
+
+        private bool ShouldFixRE1Rdt(RdtId rdtId)
+        {
+            var room = _map.GetRoom(rdtId);
+            if (room == null || room.DoorRando == null)
+                return true;
+
+            foreach (var spec in room.DoorRando)
+            {
+                if (spec.Player != null && spec.Player != _config.Player)
+                    continue;
+                if (spec.Scenario != null && spec.Scenario != _config.Scenario)
+                    continue;
+
+                if (spec.Category != null)
+                {
+                    var category = (DoorRandoCategory)Enum.Parse(typeof(DoorRandoCategory), spec.Category, true);
+                    if (category == DoorRandoCategory.Exclude)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        private RdtId GetRE1FixedId(RdtId rdtId)
+        {
+            var rooms = _map.Rooms!;
+            if (rdtId.Stage == 0 || rdtId.Stage == 1)
+            {
+                if (!rooms.ContainsKey(rdtId.ToString()))
+                    return new RdtId(rdtId.Stage + 5, rdtId.Room);
+            }
+            else if (rdtId.Stage == 5 || rdtId.Stage == 6)
+            {
+                if (!rooms.ContainsKey(rdtId.ToString()))
+                    return new RdtId(rdtId.Stage - 5, rdtId.Room);
+            }
+            return rdtId;
+        }
+
         private void CreateArea(PlayNode begin, PlayNode end, List<PlayNode> pool)
         {
             _boxRoomReached = false;
@@ -187,7 +281,7 @@ namespace IntelOrca.Biohazard
                 CalculateEdgeCounts(pool);
                 unfinishedEdges = GetUnfinishedEdges(pool);
 
-                if (_debugLogging)
+                if (g_debugLogging)
                     _logger.WriteLine($"        Edges left: {_numUnconnectedEdges} (key = {_numKeyEdges}, unlocked = {_numUnlockedEdges})");
             } while (ConnectUpRandomNode(unfinishedEdges, pool));
             if (!ConnectUpNode(end, unfinishedEdges))
@@ -230,10 +324,7 @@ namespace IntelOrca.Biohazard
                         _logger.WriteLine($"{node.RdtId}:{edge.DoorId} -> null");
 
                         // Connect door back to itself
-                        if (edge.DoorId != null && edge.Entrance != null)
-                        {
-                            ConnectDoor(edge, edge);
-                        }
+                        LockDoor(edge);
 
                         // Remove requirement of keys
                         edge.Requires = new ushort[0];
@@ -486,6 +577,10 @@ namespace IntelOrca.Biohazard
             {
                 isLocked = false;
             }
+            else if (!aEdge.Randomize || !bEdge.Randomize)
+            {
+                isLocked = false;
+            }
             else if (aEdge == bEdge)
             {
                 isLocked = true;
@@ -552,9 +647,25 @@ namespace IntelOrca.Biohazard
             _logger.WriteLine($"    Connected {GetEdgeString(a, aEdge)} to {GetEdgeString(b, bEdge)}");
         }
 
-        private static string GetEdgeString(PlayNode node, PlayEdge edge)
+        private void LockDoor(PlayEdge edge)
         {
-            var rs = edge.RequiresString;
+            if (edge.DoorId == null)
+                return;
+
+            if (edge.Entrance != null)
+            {
+                ConnectDoor(edge, edge);
+                return;
+            }
+
+            var doorId = edge.DoorId.Value;
+            var rdt = _gameData.GetRdt(edge.Parent.RdtId)!;
+            rdt.SetDoorLock(doorId, _lockId++);
+        }
+
+        private string GetEdgeString(PlayNode node, PlayEdge edge)
+        {
+            var rs = edge.GetRequiresString(_itemHelper);
             var s = $"{node.RdtId}:{edge.DoorId}";
             if (string.IsNullOrEmpty(rs))
                 return s;
@@ -675,16 +786,39 @@ namespace IntelOrca.Biohazard
             }
         }
 
+        private Rdt GetIdealRdt(RdtId rtdId)
+        {
+            var rdt = _gameData.GetRdt(rtdId)!;
+            if (rdt.Version == BioVersion.Biohazard1)
+            {
+                // The mansion 2 RDTs are better for door positions
+                if (rtdId.Stage <= 1)
+                {
+                    return _gameData.GetRdt(new RdtId(rtdId.Stage + 5, rtdId.Room))!;
+                }
+            }
+            return rdt;
+        }
+
+        private static bool IsSameRdtId(Rdt rdt, RdtId id, RdtId other)
+        {
+            if (rdt.Version == BioVersion.Biohazard1 && id.Stage == 255)
+            {
+                return new RdtId(rdt.RdtId.Stage, id.Room) == other;
+            }
+            return id == other;
+        }
+
         private PlayNode GetOrCreateNode(RdtId rdtId)
         {
             var node = FindNode(rdtId);
             if (node != null)
                 return node;
 
-            var rdt = _gameData.GetRdt(rdtId);
-            var items = rdt!.EnumerateOpcodes<IItemAotSetOpcode>(_config)
+            var rdt = _gameData.GetRdt(rdtId)!;
+            var items = rdt.EnumerateOpcodes<IItemAotSetOpcode>(_config)
                 .DistinctBy(x => x.Id)
-                .Where(x => _config.IncludeDocuments || x.Type <= (ushort)ItemType.PlatformKey)
+                .Where(x => _config.IncludeDocuments || !_itemHelper.IsItemDocument((byte)x.Type))
                 .Select(x => new ItemPoolEntry()
                 {
                     RdtId = rdt.RdtId,
@@ -693,6 +827,13 @@ namespace IntelOrca.Biohazard
                     Amount = x.Amount
                 })
                 .ToArray();
+
+            // RE1 Jill does not have ink ribbons
+            if (rdt.Version == BioVersion.Biohazard1 && _config.Player == 1)
+            {
+                var inkRibbonType = _itemHelper.GetItemId(CommonItemKind.InkRibbon);
+                items = items.Where(x => x.Type != inkRibbonType).ToArray();
+            }
 
             node = new PlayNode(rdtId);
             node.Items = items;
@@ -728,15 +869,15 @@ namespace IntelOrca.Biohazard
                     var target = RdtDoorTarget.Parse(door.Target!);
                     if (target.Id != null)
                     {
-                        targetRdt = _gameData.GetRdt(target.Rdt)!;
+                        targetRdt = GetIdealRdt(target.Rdt);
                         targetExit = targetRdt.Doors.First(x => x.Id == target.Id);
                     }
                     else
                     {
-                        targetRdt = _gameData.GetRdt(target.Rdt)!;
-                        targetExit = targetRdt.Doors.FirstOrDefault(x => x.Target == rdtId);
+                        targetRdt = GetIdealRdt(target.Rdt);
+                        targetExit = targetRdt.Doors.FirstOrDefault(x => IsSameRdtId(targetRdt, x.Target, rdtId));
                     }
-                    var doorId = door.Id ?? rdt.Doors.FirstOrDefault(x => x.Target == targetRdt.RdtId)?.Id;
+                    var doorId = door.Id ?? rdt.Doors.FirstOrDefault(x => x.Target == target.Rdt)?.Id;
                     if (targetExit != null)
                     {
                         entrance = DoorEntrance.FromOpcode(targetExit);
@@ -753,7 +894,7 @@ namespace IntelOrca.Biohazard
                         }
                     }
 
-                    var edgeNode = GetOrCreateNode(targetRdt.RdtId);
+                    var edgeNode = GetOrCreateNode(target.Rdt);
                     var edge = new PlayEdge(node, edgeNode, door.NoReturn, door.Requires, doorId, entrance);
                     edge.Randomize = door.Randomize ?? true;
                     edge.NoUnlock = door.NoUnlock;
@@ -841,6 +982,17 @@ namespace IntelOrca.Biohazard
                 }
             }
 
+            if (mapRoom.LinkedRoom != null)
+            {
+                var linkedRdtId = RdtId.Parse(mapRoom.LinkedRoom);
+                var linkedRdt = _gameData.GetRdt(linkedRdtId)!;
+                foreach (var item in linkedRdt.Items)
+                {
+                    if (!node.LinkedItems.ContainsKey(item.Id))
+                        node.LinkedItems.Add(item.Id, new RdtItemId(linkedRdtId, item.Id));
+                }
+            }
+
             return node;
         }
 
@@ -907,13 +1059,13 @@ namespace IntelOrca.Biohazard
                 if (entrance.Lock == LockKind.Gate)
                     return false;
 
-                // Ignore rest of checks if this is a fixed edge
-                if (!entrance.Randomize || !exit.Randomize)
-                    return true;
-
                 // Do not connect this node up yet until we have visited all required rooms (e.g. armory)
                 if (!entrance.RequiresRoom.All(x => x.Visited))
                     return false;
+
+                // Ignore rest of checks if this is a fixed edge
+                if (!entrance.Randomize || !exit.Randomize)
+                    return true;
 
                 // Exit node must have an entrance
                 if (exit.Entrance == null)

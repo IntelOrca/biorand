@@ -1,208 +1,232 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.Json;
 using NVorbis;
 
 namespace IntelOrca.Biohazard
 {
-    internal class BgmRandomiser
+    public class BgmRandomiser
     {
-#if !DEBUG
-        private static BgmList? g_bgmList;
-#endif
+        public const string TagAlarm = "alarm";
+        public const string TagAmbient = "ambient";
+        public const string TagBasement = "basement";
+        public const string TagCalm = "calm";
+        public const string TagCreepy = "creepy";
+        public const string TagDanger = "danger";
+        public const string TagInstrument = "instrument";
+        public const string TagOutside = "outside";
+        public const string TagResults = "results";
+        public const string TagSafe = "safe";
+        public const string TagInstrumentBad = "instrument_bad";
+        public const string TagInstrumentProgress = "instrument_progress";
+        public const string TagInstrumentGood = "instrument_good";
+
         private readonly RandoLogger _logger;
+        private readonly BgmList _srcBgmList = new BgmList();
+        private readonly string _bgmJson;
+        private readonly string _bgmDirectory;
+        private readonly bool _isWav;
+        private readonly Rng _rng;
 
-        public string GamePath { get; }
-        public string RngPath { get; }
-
-        public BgmRandomiser(RandoLogger logger, string gamePath, string rngPath)
+        public BgmRandomiser(RandoLogger logger, string bgmDirectory, string bgmJson, bool isWav, Rng rng)
         {
             _logger = logger;
-            GamePath = gamePath;
-            RngPath = rngPath;
+            _bgmJson = bgmJson;
+            _bgmDirectory = bgmDirectory;
+            _isWav = isWav;
+            _rng = rng;
         }
 
-        public void Randomise(Rng random)
+        public void AddToSelection(string bgmJson, string bgmSubDirectory, string extension)
+        {
+            var bgmList = GetBtmList(bgmJson);
+            bgmList.MakeFullPath(bgmSubDirectory, extension);
+            _srcBgmList.Union(bgmList);
+        }
+
+        public void Randomise()
         {
             _logger.WriteHeading("Shuffling BGM:");
-            var bgmList = GetBtmList();
-            Swap(bgmList.Creepy!, bgmList.Creepy!.Shuffle(random));
-            Swap(bgmList.Calm!, bgmList.Calm!.Shuffle(random));
-            Swap(bgmList.Danger!, bgmList.Danger!.Shuffle(random));
-            Swap(bgmList.Ambient!, bgmList.Creepy!.Shuffle(random));
-            Swap(bgmList.Alarm!, bgmList.Creepy!.Shuffle(random));
+            var bgmList = GetBtmList(_bgmJson);
 
-            RandomizeBasementTheme(random);
-            RandomizeSaveTheme(random);
-            RandomizeCreepyTheme(random, bgmList);
-            RandomizeDangerTheme(random, bgmList);
-            RandomizeResultsTheme(random, bgmList);
+            var tags = new[] { TagCreepy, TagCalm, TagDanger, TagInstrumentBad, TagInstrumentProgress, TagInstrumentGood };
+            foreach (var tag in tags)
+            {
+                Shuffle(bgmList, tag, tag);
+            }
+            Shuffle(bgmList, TagAmbient, TagCreepy);
+            Shuffle(bgmList, TagAlarm, TagCreepy);
+
+            RandomizeCreepyTheme(bgmList);
+            RandomizeDangerTheme(bgmList);
+            RandomizeResultsTheme(bgmList);
+            RandomizePianoTheme(bgmList);
+            RandomizeSaveTheme(bgmList);
+            RandomizeBasementTheme(bgmList);
         }
 
-        private void Swap(string[] dstList, string[] srcList)
+        private void Shuffle(BgmList bgmList, string dstTag, string srcTag)
         {
-            var srcDir = Path.Combine(GamePath, @"Common\Sound\BGM");
-            var dstDir = Path.Combine(RngPath, @"Common\Sound\BGM");
+            var dstList = bgmList.GetList(dstTag);
+            var srcList = _srcBgmList
+                .GetList(srcTag)
+                .Shuffle(_rng);
+            var extension = _isWav ? ".wav" : ".sap";
+            var dstDir = _bgmDirectory;
             Directory.CreateDirectory(dstDir);
-            for (int i = 0; i < dstList.Length; i++)
+            for (int i = 0; i < dstList.Count; i++)
             {
-                var src = Path.Combine(srcDir, srcList[i] + ".sap");
-                var dst = Path.Combine(dstDir, dstList[i] + ".sap");
+                var dstName = dstList[i];
+                if (dstName.StartsWith("!"))
+                    continue;
+                if (dstName.StartsWith("*"))
+                    dstName = dstName.Substring(1);
+
+                var src = srcList[i];
+                var dst = Path.Combine(dstDir, dstName + extension);
+                CopyMusicTrack(src, dst);
+
+                _logger.WriteLine($"Setting {dstName} to {srcList[i]}");
+            }
+        }
+
+        private void CopyMusicTrack(string src, string dst)
+        {
+            var srcExtension = Path.GetExtension(src);
+            var dstExtension = Path.GetExtension(dst);
+            if (string.Equals(srcExtension, dstExtension, StringComparison.OrdinalIgnoreCase))
+            {
                 File.Copy(src, dst, true);
-
-                _logger.WriteLine($"Setting {dstList[i]} to {srcList[i]}");
             }
-        }
-
-        private static string FixSubFilename(string s)
-        {
-            if (s.StartsWith("SUB", StringComparison.OrdinalIgnoreCase))
-                return "SUB_" + s.Substring(3);
-            return s;
-        }
-
-        private static BgmList GetBtmList()
-        {
-#if !DEBUG
-            if (g_bgmList != null)
-                return g_bgmList;
-#endif
-
-            var json = GetBgmJson();
-            var bgmList = JsonSerializer.Deserialize<BgmList>(json, new JsonSerializerOptions()
+            else if (srcExtension.Equals(".wav", StringComparison.OrdinalIgnoreCase))
             {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            });
-            if (bgmList == null)
-                throw new Exception();
-#if !DEBUG
-            g_bgmList = bgmList;
-#endif
-            return bgmList;
-        }
-
-        private static string GetBgmJson()
-        {
-#if DEBUG
-            var jsonPath = Path.Combine(
-                Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
-                @"..\..\..\..\IntelOrca.BioHazard\data\bgm.json");
-            return File.ReadAllText(jsonPath);
-#else
-            return Resources.bgm;
-#endif
-        }
-
-        public void RandomizeSaveTheme(Rng rng)
-        {
-            try
-            {
-                var names = new[] { "SAVE_RE0", "SAVE_RE1", "SAVE_RE3", "SAVE_RE4A", "SAVE_RE4B", "SAVE_CODE" };
-                var resources = new[]
-                {
-                    Resources.bgm_re0,
-                    Resources.bgm_re1,
-                    Resources.bgm_re3,
-                    Resources.bgm_re4a,
-                    Resources.bgm_re4b,
-                    Resources.bgm_code
-                };
-                var index = rng.Next(0, resources.Length);
-                RandomizeFromOwnMusic("main0C", names[index], resources[index]);
-            }
-            catch (Exception ex)
-            {
-                _logger.WriteException(ex);
-            }
-        }
-
-        public void RandomizeBasementTheme(Rng rng)
-        {
-            try
-            {
-                if (rng.Next(0, 4) == 0)
-                {
-                    RandomizeFromOwnMusic("main03", "clown", Resources.bgm_clown);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.WriteException(ex);
-            }
-        }
-
-        public void RandomizeCreepyTheme(Rng rng, BgmList bgmList)
-        {
-            try
-            {
-                var resources = new[]
-                {
-                    Resources.bgm_re4_creepy_0,
-                    Resources.bgm_re4_creepy_1,
-                    Resources.bgm_re4_creepy_2,
-                    Resources.bgm_re4_creepy_3
-                };
-                var creepy = bgmList.Creepy!
-                    .Where(x => x.StartsWith("main", StringComparison.OrdinalIgnoreCase))
-                    .Shuffle(rng)
-                    .ToArray();
-                for (int i = 0; i < resources.Length; i++)
-                {
-                    RandomizeFromOwnMusic(creepy[i], $"re4_creepy_{i}", resources[i]);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.WriteException(ex);
-            }
-        }
-
-        public void RandomizeDangerTheme(Rng rng, BgmList bgmList)
-        {
-            try
-            {
-                var resources = new[]
-                {
-                    Resources.bgm_re4_danger_0,
-                    Resources.bgm_re4_danger_1,
-                    Resources.bgm_re4_danger_2
-                };
-                var danger = bgmList.Danger!.Shuffle(rng).ToArray();
-                for (int i = 0; i < resources.Length; i++)
-                {
-                    RandomizeFromOwnMusic(danger[i], $"re4_danger_{i}", resources[i]);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.WriteException(ex);
-            }
-        }
-
-        public void RandomizeResultsTheme(Rng rng, BgmList bgmList)
-        {
-            try
-            {
-                RandomizeFromOwnMusic("main2a", "re4_results", Resources.bgm_re4_results);
-            }
-            catch (Exception ex)
-            {
-                _logger.WriteException(ex);
-            }
-        }
-
-        public void RandomizeFromOwnMusic(string fileName, string name, byte[] resource)
-        {
-            var ms = new MemoryStream(resource);
-            using (var vorbis = new VorbisReader(ms))
-            {
-                var dst = Path.Combine(RngPath, @"Common\Sound\BGM", fileName + ".sap");
+                var srcBytes = File.ReadAllBytes(src);
                 using (var fs = new FileStream(dst, FileMode.Create))
                 {
                     var bw = new BinaryWriter(fs);
                     bw.Write((ulong)1);
+                    bw.Write(srcBytes);
+                }
+            }
+            else if (srcExtension.Equals(".sap", StringComparison.OrdinalIgnoreCase))
+            {
+                var decoder = new ADPCMDecoder();
+                decoder.Convert(src, dst);
+            }
+        }
+
+        private BgmList GetBtmList(string bgmJson)
+        {
+            var dict = JsonSerializer.Deserialize<Dictionary<string, string[]>>(bgmJson, new JsonSerializerOptions()
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                ReadCommentHandling = JsonCommentHandling.Skip
+            });
+            if (dict == null)
+                throw new Exception();
+            return new BgmList(dict);
+        }
+
+        private void RandomizeSaveTheme(BgmList bgmList)
+        {
+            RandomizeTheme(bgmList, TagSafe, new[]
+            {
+                nameof(Resources.bgm_re0),
+                nameof(Resources.bgm_re1),
+                nameof(Resources.bgm_re3),
+                nameof(Resources.bgm_re4a),
+                nameof(Resources.bgm_re4b),
+                nameof(Resources.bgm_code)
+            });
+        }
+
+        private void RandomizePianoTheme(BgmList bgmList)
+        {
+            if (_rng.Next(0, 2) == 0)
+            {
+                RandomizeTheme(bgmList, TagInstrumentBad, nameof(Resources.bgm_clown));
+            }
+        }
+
+        private void RandomizeBasementTheme(BgmList bgmList)
+        {
+            if (_rng.Next(0, 4) == 0)
+            {
+                RandomizeTheme(bgmList, TagBasement, nameof(Resources.bgm_clown));
+            }
+        }
+
+        private void RandomizeCreepyTheme(BgmList bgmList)
+        {
+            RandomizeTheme(bgmList, TagCreepy, new[]
+            {
+                nameof(Resources.bgm_re4_creepy_0),
+                nameof(Resources.bgm_re4_creepy_1),
+                nameof(Resources.bgm_re4_creepy_2),
+                nameof(Resources.bgm_re4_creepy_3)
+            });
+        }
+
+        private void RandomizeDangerTheme(BgmList bgmList)
+        {
+            RandomizeTheme(bgmList, TagDanger, new[]
+            {
+                nameof(Resources.bgm_re4_danger_0),
+                nameof(Resources.bgm_re4_danger_1),
+                nameof(Resources.bgm_re4_danger_2)
+            });
+        }
+
+        private void RandomizeResultsTheme(BgmList bgmList)
+        {
+            RandomizeTheme(bgmList, TagResults, new[]
+            {
+                nameof(Resources.bgm_re4_results)
+            });
+        }
+
+        private void RandomizeTheme(BgmList bgmList, string tag, params string[] resourceNames)
+        {
+            try
+            {
+                resourceNames = resourceNames.Shuffle(_rng);
+                var samples = bgmList.GetList(tag);
+                var shuffledSamples = samples
+                    .Where(x => !x.StartsWith("!"))
+                    .Shuffle(_rng)
+                    .ToArray();
+                var min = Math.Min(shuffledSamples.Length, resourceNames.Length);
+                for (int i = 0; i < min; i++)
+                {
+                    var resource = (byte[])Resources.ResourceManager.GetObject(resourceNames[i]);
+                    var dst = shuffledSamples[i];
+                    if (dst.StartsWith("*"))
+                        dst = dst.Substring(1);
+                    RandomizeFromOwnMusic(dst, resourceNames[i], resource);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.WriteException(ex);
+            }
+        }
+
+        private void RandomizeFromOwnMusic(string fileName, string name, byte[] resource)
+        {
+            var ms = new MemoryStream(resource);
+            using (var vorbis = new VorbisReader(ms))
+            {
+                var extension = _isWav ? ".wav" : ".sap";
+                var dst = Path.Combine(_bgmDirectory, fileName + extension);
+                using (var fs = new FileStream(dst, FileMode.Create))
+                {
+                    var bw = new BinaryWriter(fs);
+                    if (!_isWav)
+                    {
+                        bw.Write((ulong)1);
+                    }
 
                     // Write WAV header
                     var headerOffset = fs.Position;
@@ -245,14 +269,71 @@ namespace IntelOrca.Biohazard
             _logger.WriteLine($"Setting {fileName} to {name}");
         }
 
-        public class BgmList
+        private class BgmList
         {
-            public string[]? Outside { get; set; }
-            public string[]? Creepy { get; set; }
-            public string[]? Calm { get; set; }
-            public string[]? Danger { get; set; }
-            public string[]? Ambient { get; set; }
-            public string[]? Alarm { get; set; }
+            private Dictionary<string, List<string>> _samples = new Dictionary<string, List<string>>();
+
+            public BgmList()
+            {
+            }
+
+            public BgmList(Dictionary<string, string[]> samples)
+            {
+                _samples = samples
+                    .ToDictionary(x => x.Key, x => x.Value.ToList());
+            }
+
+            public void Union(BgmList other)
+            {
+                foreach (var kvp in other._samples)
+                {
+                    var list = GetList(kvp.Key);
+                    foreach (var item in kvp.Value)
+                    {
+                        if (!string.IsNullOrEmpty(item))
+                        {
+                            list.Add(item);
+                        }
+                    }
+                }
+            }
+
+            public List<string> GetList(string tag)
+            {
+                if (_samples.TryGetValue(tag, out var list))
+                {
+                    return list;
+                }
+
+                list = new List<string>();
+                _samples.Add(tag, list);
+                return list;
+            }
+
+            public void MakeFullPath(string bgmSubDirectory, string extension)
+            {
+                foreach (var kvp in _samples)
+                {
+                    var list = kvp.Value;
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        var name = list[i];
+                        if (name.Length > 0)
+                        {
+                            if (name[0] == '*')
+                            {
+                                list[i] = "";
+                            }
+                            else
+                            {
+                                if (name[0] == '!')
+                                    name = name.Substring(1);
+                                list[i] = Path.Combine(bgmSubDirectory, name) + extension;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

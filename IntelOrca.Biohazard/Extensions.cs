@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace IntelOrca.Biohazard
 {
@@ -12,7 +13,7 @@ namespace IntelOrca.Biohazard
             var array = items.ToArray();
             for (int i = 0; i < array.Length - 1; i++)
             {
-                var ri = rng.Next(i + 1, array.Length);
+                var ri = rng.Next(i, array.Length);
                 var tmp = array[ri];
                 array[ri] = array[i];
                 array[i] = tmp;
@@ -54,12 +55,59 @@ namespace IntelOrca.Biohazard
             return hash;
         }
 
+        public static byte PeekByte(this BinaryReader br)
+        {
+            var pos = br.BaseStream.Position;
+            var b = br.ReadByte();
+            br.BaseStream.Position = pos;
+            return b;
+        }
+
         public static void WriteASCII(this BinaryWriter bw, string s)
         {
             foreach (var c in s)
             {
                 bw.Write((byte)c);
             }
+        }
+
+        public static unsafe T ReadStruct<T>(this BinaryReader br) where T : struct
+        {
+            var bytes = br.ReadBytes(Marshal.SizeOf<T>());
+            fixed (byte* b = bytes)
+            {
+                return Marshal.PtrToStructure<T>((IntPtr)b);
+            }
+        }
+
+        public static unsafe T Write<T>(this BinaryWriter bw, T structure) where T : struct
+        {
+            var result = default(T);
+            var bytes = new byte[Marshal.SizeOf<T>()];
+            fixed (byte* b = bytes)
+            {
+                Marshal.StructureToPtr(structure, (IntPtr)b, false);
+            }
+            bw.Write(bytes);
+            return result;
+        }
+
+        public static void CopyAmountTo(this Stream source, Stream destination, long length)
+        {
+            var buffer = new byte[4096];
+            long count = 0;
+            while (count < length)
+            {
+                var readLen = (int)Math.Min(buffer.Length, length - count);
+                var read = source.Read(buffer, 0, readLen);
+                if (read == 0)
+                    break;
+
+                destination.Write(buffer, 0, read);
+                count += read;
+            }
+            if (count != length)
+                throw new IOException($"Unable to copy {length} bytes to new stream.");
         }
     }
 }

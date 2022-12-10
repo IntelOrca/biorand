@@ -1,0 +1,3181 @@
+﻿{
+  "beginEndRooms": [
+    {
+      "start": "100",
+      "end": "617",
+      "scenario": 0
+    },
+    {
+      "start": "104",
+      "end": "702",
+      "scenario": 1,
+      "doorRando": false
+    },
+    {
+      "start": "104",
+      "end": "700",
+      "scenario": 1,
+      "doorRando": true
+    }
+  ],
+  "rooms": {
+    "100": {
+      "doors": [
+        {
+          "target": "101",
+          "noReturn": true
+        }
+      ],
+      "enemies": [
+        {
+          "nop": [ 4888 ]
+        }
+      ]
+    },
+    "101": {
+      "doorRando": [
+        {
+          "cutscene": true
+        }
+      ],
+      "doors": [
+        {
+          "target": "100",
+          "lock": "always"
+        },
+        {
+          "target": "102"
+        }
+      ],
+      "npcs": [
+        {
+          "includeTypes": [ 66, 67, 68, 71, 74, 79, 80, 85 ]
+        }
+      ]
+    },
+    "102": {
+      "doors": [
+        {
+          "target": "101"
+        },
+        {
+          "target": "118",
+          "lock": "unblock"
+        }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 34, 36, 42, 46, 57, 58 ],
+          "keepAi": true
+        }
+      ]
+    },
+    "103": {
+      "doors": [
+        {
+          "target": "11B",
+          "lock": "always"
+        },
+        {
+          "target": "200"
+        }
+      ],
+      "items": [
+        {
+          "id": 31,
+          "type": 0
+        }
+      ],
+      "enemies": [ {} ]
+    },
+    "104": {
+      "doors": [
+        {
+          "target": "105"
+        }
+      ],
+      "enemies": [
+        {
+          "includeTypes": [ 16, 22, 23, 31, 32, 33 ]
+        }
+      ]
+    },
+    "105": {
+      "doors": [
+        {
+          "target": "104"
+        },
+        {
+          "target": "106",
+          "noReturn": true,
+          "requires": [
+            88
+          ]
+        }
+      ],
+      "enemies": [
+        {
+          "includeTypes": [ 16, 18, 19, 21, 22, 23, 24, 30, 31 ],
+          "keepState": true,
+          "keepAi": true
+        }
+      ]
+    },
+    "106": {
+      "doors": [
+        {
+          "target": "105",
+          "lock": "always"
+        },
+        {
+          "target": "107"
+        }
+      ],
+      "enemies": [
+        {
+          "includeTypes": [ 16, 22, 23, 31, 33, 37, 58 ],
+          "keepAi": true
+        }
+      ]
+    },
+    "107": {
+      "doors": [
+        {
+          "target": "106"
+        },
+        {
+          "target": "108"
+        }
+      ],
+      "enemies": [ {} ]
+    },
+    "108": {
+      "doors": [
+        {
+          "target": "107"
+        },
+        {
+          "target": "109"
+        }
+      ]
+    },
+    "109": {
+      "doorRando": [
+        {
+          "nop": [ 8736, 8750, 8752, 8756, 8784, 8806, 8816, 8826, 8848, 8858, 8878, 8880, 8890, 8892, 8896 ],
+          "scenario": 1,
+          "player": 0
+        },
+        {
+          "nop": [ 8732, 8746, 8748, 8752, 8780, 8802, 8812, 8822, 8844, 8854, 8874, 8876, 8886, 8888, 8892 ],
+          "scenario": 1,
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "108"
+        },
+        {
+          "target": "10A"
+        },
+        {
+          "target": "116"
+        }
+      ],
+      "items": [
+        {
+          "id": 5,
+          "priority": "low"
+        }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 34, 36, 42, 45, 46, 57, 58 ],
+          "keepAi": true,
+          "y": 0
+        }
+      ]
+    },
+    "10A": {
+      "doors": [
+        {
+          "target": "109"
+        },
+        {
+          "target": "10F"
+        },
+        {
+          "target": "10B",
+          "requires": [ 50 ],
+          "requiresRoom": [ "108" ],
+          "lock": "unblock"
+        },
+        {
+          "target": "21B",
+          "requires": [ 50 ],
+          "requiresRoom": [ "108", "30B" ],
+          "lock": "unblock",
+          "player": 0,
+          "scenario": 1
+        },
+        {
+          "target": "21B",
+          "requires": [ 50, 64, 65 ],
+          "requiresRoom": [ "108" ],
+          "lock": "unblock",
+          "player": 1
+        }
+      ],
+      "enemies": [
+        {
+          "y": 0
+        }
+      ]
+    },
+    "10B": {
+      "doors": [
+        {
+          "target": "10A"
+        }
+      ],
+      "items": [
+        {
+          "id": 16,
+          "requires": [ 51 ]
+        }
+      ]
+    },
+    "10C": {
+      "doors": [
+        {
+          "target": "207"
+        },
+        {
+          "target": "114"
+        }
+      ]
+    },
+    "10D": {
+      "doors": [
+        {
+          "target": "10E"
+        },
+        {
+          "target": "21B"
+        }
+      ],
+      "items": [
+        {
+          "id": 10,
+          "type": 21,
+          "amount": 7,
+          "player": 0,
+          "priority": "low"
+        },
+        {
+          "id": 10,
+          "type": 0,
+          "player": 1
+        }
+      ]
+    },
+    "10E": {
+      "doorRando": [
+        {
+          "cutscene": true,
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "10D"
+        }
+      ],
+      "npcs": [
+        {
+          "excludeTypes": [ 64, 66 ]
+        }
+      ]
+    },
+    "10F": {
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "target": "10A"
+        },
+        {
+          "target": "110"
+        }
+      ]
+      // ,
+      // "enemies": {
+      //   "nop": [ 1762, 1766, 1772, 1774, 1922, 1954, 1986 ]
+      // }
+    },
+    "110": {
+      "doors": [
+        {
+          "target": "200",
+          "lock": "unblock",
+          "randomize": false
+        },
+        {
+          "target": "10F"
+        },
+        {
+          "target": "112",
+          "requires": [ 53 ]
+        }
+      ],
+      "enemies": [ {} ]
+    },
+    "111": {
+      "doorRando": [
+        {
+          "category": "bridge",
+          "player": 0
+        }
+      ],
+      "doors": [
+        {
+          "target": "117"
+        },
+        {
+          "target": "219",
+          "requires": [ 67, 74 ],
+          "player": 0
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "type": 61,
+          "requires": [ 67, 74 ],
+          "doorRando": false,
+          "player": 0
+        },
+        {
+          "id": 2,
+          "type": 57,
+          "priority": "fixed",
+          "requires": [ 67, 74 ],
+          "doorRando": false,
+          "player": 1
+        },
+        {
+          "id": 2,
+          "requires": [ 67, 74 ],
+          "doorRando": true
+        }
+      ]
+    },
+    "112": {
+      "doors": [
+        {
+          "target": "110"
+        },
+        {
+          "target": "113"
+        },
+        {
+          "target": "117"
+        }
+      ]
+    },
+    "113": {
+      "doorRando": [
+        {
+          "cutscene": true,
+          "player": 0,
+          "scenario": 1
+        },
+        {
+          "cutscene": true,
+          "player": 1,
+          "scenario": 0
+        }
+      ],
+      "doors": [
+        {
+          "target": "114"
+        },
+        {
+          "target": "112"
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "requires": [ 31 ],
+          "player": 0
+        }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 42, 58 ],
+          "difficulty": "hard"
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 4040, 4074 ],
+          "includeTypes": [ 64, 67, 68, 69, 71, 72, 74 ],
+          "player": 0,
+          "scenario": 1
+        },
+        {
+          "includeOffsets": [ 4004 ],
+          "player": 0,
+          "scenario": 1
+        },
+        {
+          "player": 1
+        }
+      ]
+    },
+    "114": {
+      "doorRando": [
+        {
+          "cutscene": true,
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "10C"
+        },
+        {
+          "target": "113",
+          "requires": [
+            89
+          ],
+          "scenario": 0
+        },
+        {
+          "target": "113",
+          "scenario": 1
+        },
+        {
+          "target": "115"
+        }
+      ],
+      "enemies": [
+        {
+          "player": 0
+        }
+      ],
+      "npcs": [ {} ]
+    },
+    "115": {
+      "doorRando": [
+        {
+          "cutscene": true,
+          "player": 0,
+          "scenario": 0
+        },
+        {
+          "cutscene": true,
+          "player": 1,
+          "scenario": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "114"
+        }
+      ],
+      "items": [
+        {
+          "id": 7,
+          "priority": "low"
+        },
+        {
+          "id": 19,
+          "priority": "low",
+          "player": 1
+        }
+      ],
+      "npcs": [
+        {
+          "scenario": 0,
+          "player": 0
+        },
+        {
+          "scenario": 1,
+          "player": 1
+        }
+      ]
+    },
+    "116": {
+      "doors": [
+        {
+          "target": "20B"
+        },
+        {
+          "target": "109",
+          "lock": "side"
+        }
+      ]
+    },
+    "117": {
+      "doorRando": [
+        {
+          "nop": [ 3362 ],
+          "scenario": 1,
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "111"
+        },
+        {
+          "target": "112"
+        }
+      ],
+      "items": [
+        {
+          "id": 0,
+          "priority": "low"
+        }
+      ],
+      "enemies": [ {} ]
+    },
+    "118": {
+      "doors": [
+        {
+          "target": "102"
+        },
+        {
+          "target": "119"
+        }
+      ],
+      "enemies": [ {} ]
+    },
+    "119": {
+      "doors": [
+        {
+          "target": "118"
+        },
+        {
+          "target": "11A"
+        }
+      ],
+      "enemies": [
+        {
+          "includeTypes": [ 23, 31 ],
+          "keepState": true,
+          "keepAi": true
+        }
+      ]
+    },
+    "11A": {
+      "doors": [
+        {
+          "target": "119"
+        },
+        {
+          "target": "11B"
+        }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 42, 46, 57, 58 ]
+        }
+      ]
+    },
+    "11B": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "target": "11A"
+        },
+        {
+          "target": "103",
+          "noReturn": true
+        }
+      ],
+      "enemies": [ {} ]
+    },
+    "200": {
+      "doors": [
+        {
+          "target": "103"
+        },
+        {
+          "target": "110",
+          "lock": "gate",
+          "randomize": false
+        },
+        {
+          "target": "202",
+          "lock": "side"
+        },
+        {
+          "target": "201",
+          "requires": [ 53 ]
+        },
+        {
+          "target": "20A",
+          "requires": [ 53 ]
+        }
+      ],
+      "items": [
+        {
+          "id": 9,
+          "requires": [ 71 ]
+        }
+      ]
+    },
+    "201": {
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "target": "200"
+        },
+        {
+          "target": "204"
+        }
+      ],
+      "items": [
+        {
+          "id": 9,
+          "requires": [ 31 ],
+          "player": 0
+        }
+      ],
+      "enemies": [
+        {
+          "excludeOffsets": [ 3552 ],
+          "player": 0
+        },
+        {
+          "excludeOffsets": [ 3470 ],
+          "player": 1
+        }
+      ]
+    },
+    "202": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "scenario": 0
+        }
+      ],
+      "doors": [
+        {
+          "target": "200"
+        },
+        {
+          "target": "209",
+          "lock": "side"
+        }
+      ],
+      "items": [
+        {
+          "id": 255,
+          "type": 53,
+          "amount": 1,
+          "priority": "low",
+          "scenario": 0
+        }
+      ],
+      "enemies": [
+        {
+          "nop": [ 7854, 7858, 7862, 7868, 8166, 8170, 8174, 8180, 8184 ],
+          "difficulty": "medium",
+          "player": 0,
+          "scenario": 1
+        },
+        {
+          "nop": [ 7816, 7820, 7824, 7830, 8128, 8132, 8136, 8142, 8146 ],
+          "difficulty": "medium",
+          "player": 1,
+          "scenario": 1
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 7708, 7670 ],
+          "includeTypes": [ 66, 67, 68, 72, 79, 90 ]
+        }
+      ]
+    },
+    "203": {
+      "doors": [
+        {
+          "target": "204"
+        }
+      ]
+    },
+    "204": {
+      "requires": [
+        86
+      ],
+      "doors": [
+        {
+          "target": "201"
+        },
+        {
+          "target": "205"
+        },
+        {
+          "target": "203",
+          "requires": [
+            89
+          ]
+        }
+      ],
+      "enemies": [
+        {
+          "excludeOffsets": [ 6836, 7422, 7490 ],
+          "excludeTypes": [ 34, 36, 42, 47, 57, 58 ],
+          "scenario": 0
+        },
+        {
+          "excludeOffsets": [ 6836, 7422, 7490 ],
+          "scenario": 1
+        }
+      ]
+    },
+    "205": {
+      "doors": [
+        {
+          "target": "204"
+        },
+        {
+          "target": "206"
+        },
+        {
+          "target": "207"
+        }
+      ]
+    },
+    "206": {
+      "doors": [
+        {
+          "target": "205"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "requires": [ 47 ]
+        }
+      ]
+    },
+    "207": {
+      "doors": [
+        {
+          "target": "205"
+        },
+        {
+          "target": "208"
+        },
+        {
+          "target": "10C"
+        },
+        {
+          "target": "209",
+          "requires": [ 90 ]
+        }
+      ],
+      "enemies": [
+        {
+          "difficulty": "medium"
+        }
+      ]
+    },
+    "208": {
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "target": "207"
+        }
+      ],
+      "items": [
+        {
+          "id": 6,
+          "requires": [ 68 ],
+          "priority": "low",
+          "scenario": 0
+        },
+        {
+          "id": 0,
+          "type": 0,
+          "scenario": 1
+        },
+        {
+          "id": 7,
+          "requires": [ 69 ],
+          "priority": "low"
+        },
+        {
+          "id": 8,
+          "type": 0,
+          "player": 0,
+          "scenario": 0
+        },
+        {
+          "id": 8,
+          "requires": [ 70 ],
+          "priority": "low",
+          "player": 0,
+          "scenario": 1
+        },
+        {
+          "id": 8,
+          "requires": [ 70 ],
+          "priority": "low",
+          "player": 1
+        },
+        {
+          "id": 12,
+          "type": 0
+        },
+        {
+          "id": 14,
+          "type": 0
+        },
+        {
+          "id": 16,
+          "requires": [ 80 ],
+          "priority": "low"
+        }
+      ]
+    },
+    "209": {
+      "doors": [
+        {
+          "target": "207"
+        },
+        {
+          "target": "202"
+        }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 34, 36, 42, 46, 57, 58 ]
+        }
+      ]
+    },
+    "20A": {
+      "doors": [
+        {
+          "target": "200"
+        },
+        {
+          "target": "20B"
+        },
+        {
+          "target": "20C"
+        }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 58 ],
+          "difficulty": "hard"
+        }
+      ]
+    },
+    "20B": {
+      "doors": [
+        {
+          "target": "20A"
+        },
+        {
+          "target": "20F",
+          "requires": [ 91 ]
+        },
+        {
+          "target": "116"
+        }
+      ],
+      "enemies": [
+        {
+          "excludeOffsets": [ 12368 ],
+          "excludeTypes": [ 58 ],
+          "difficulty": "medium"
+        }
+      ]
+    },
+    "20C": {
+      "doorRando": [
+        {
+          "nop": [ 7682 ],
+          "scenario": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "20A"
+        },
+        {
+          "target": "20D",
+          "requires": [ 92 ]
+        },
+        {
+          "id": 2,
+          "target": "20E:0",
+          "requires": [ 90 ]
+        },
+        {
+          "id": 3,
+          "target": "20E:1",
+          "doorRando": true
+        },
+        {
+          "id": 3,
+          "target": "20E:1",
+          "requires": [ 90 ],
+          "doorRando": false
+        }
+      ],
+      "items": [
+        {
+          "id": 10,
+          "priority": "low"
+        }
+      ],
+      "enemies": [
+        {
+          "difficulty": "medium"
+        }
+      ]
+    },
+    "20D": {
+      "doors": [
+        {
+          "target": "20C"
+        }
+      ],
+      "items": [
+        {
+          "id": 1,
+          "requires": [ 47 ]
+        },
+        {
+          "id": 20,
+          "priority": "low"
+        }
+      ],
+      "enemies": [ {} ]
+    },
+    "20E": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "id": 0,
+          "target": "20C:2"
+        },
+        {
+          "id": 1,
+          "target": "20C:3"
+        }
+      ],
+      "enemies": [
+        {
+          "excludeOffsets": [ 6070, 6116, 6146 ],
+          "y": 0
+        }
+      ]
+    },
+    "20F": {
+      "requires": [ 86 ],
+      "doors": [
+        {
+          "target": "20B"
+        },
+        {
+          "target": "211"
+        },
+        {
+          "target": "210",
+          "requires": [ 92 ]
+        }
+      ],
+      "enemies": [ {} ]
+    },
+    "210": {
+      "doors": [
+        {
+          "target": "20F"
+        }
+      ],
+      "enemies": [ {} ]
+    },
+    "211": {
+      "doors": [
+        {
+          "target": "212"
+        },
+        {
+          "target": "213"
+        },
+        {
+          "target": "214",
+          "requires": [ 52 ],
+          "requiresRoom": [ "213" ]
+        },
+        {
+          "target": "216"
+        },
+        {
+          "target": "20F"
+        },
+        {
+          "target": "215",
+          "requires": [ 92 ]
+        }
+      ],
+      "enemies": [ {} ]
+    },
+    "212": {
+      "doors": [
+        {
+          "target": "211"
+        },
+        {
+          "target": "307"
+        }
+      ],
+      "enemies": []
+    },
+    "213": {
+      "doors": [
+        {
+          "target": "211"
+        }
+      ]
+    },
+    "214": {
+      "doors": [
+        {
+          "target": "211"
+        }
+      ]
+    },
+    "215": {
+      "doors": [
+        {
+          "target": "211"
+        }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 34, 36, 42, 46, 57, 58 ],
+          "y": 0,
+          "scenario": 0
+        },
+        {
+          "y": 0,
+          "scenario": 1
+        }
+      ]
+    },
+    "216": {
+      "doorRando": [
+        {
+          "cutscene": true,
+          "player": 0
+        }
+      ],
+      "doors": [
+        {
+          "target": "211"
+        },
+        {
+          "target": "219",
+          "player": 0,
+          "lock": "unblock"
+        },
+        {
+          "target": "219",
+          "lock": "unblock",
+          "doorRando": false,
+          "player": 1,
+          "scenario": 1
+        },
+        {
+          "target": "219",
+          "lock": "always",
+          "doorRando": true,
+          "player": 1
+        }
+      ],
+      "enemies": [ {} ],
+      "npcs": [
+        {
+          "includeTypes": [ 68, 69, 81 ]
+        }
+      ]
+    },
+    "219": {
+      "doorRando": [
+        {
+          "nop": [ 2922, 3776 ],
+          "cutscene": true,
+          "player": 0
+        }
+      ],
+      "doors": [
+        {
+          "target": "216"
+        },
+        {
+          "target": "21A"
+        },
+        {
+          "target": "301"
+        }
+      ],
+      "enemies": [ {} ],
+      "npcs": [ {} ]
+    },
+    "21A": {
+      "doors": [
+        {
+          "target": "219"
+        },
+        {
+          "target": "302",
+          "requires": [ 75 ],
+          "player": 0
+        }
+      ],
+      "items": [
+        {
+          "id": 13,
+          "priority": "low"
+        }
+      ],
+      "enemies": [
+        {
+          "includeTypes": [ 32, 33, 42, 46, 57 ],
+          "player": 0
+        },
+        {
+          "player": 1
+        }
+      ]
+    },
+    "21B": {
+      "doorRando": [
+        {
+          "nop": [ 10092, 10276, 15284 ],
+          "cutscene": true,
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "10A"
+        },
+        {
+          "target": "10D"
+        },
+        {
+          "target": "308",
+          "noReturn": true,
+          "requires": [ 54, 56, 57, 58 ],
+          "requiresRoom": [ "10E" ],
+          "noUnlock": true,
+          "player": 1
+        }
+      ],
+      "items": [
+        {
+          "id": 6,
+          "priority": "low",
+          "doorRando": true,
+          "player": 1
+        },
+        {
+          "id": 7,
+          "priority": "low",
+          "doorRando": true,
+          "player": 1
+        },
+        {
+          "id": 8,
+          "priority": "low"
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 11176 ],
+          "cutscene": 0,
+          "player": 1
+        },
+        {
+          "includeOffsets": [],
+          "cutscene": 1,
+          "player": 1
+        },
+        {
+          "includeOffsets": [ 15292, 15334 ],
+          "cutscene": 2,
+          "player": 1
+        },
+        {
+          "includeOffsets": [],
+          "cutscene": 3,
+          "player": 1
+        }
+      ]
+    },
+    "300": {
+      "doorRando": [
+        {
+          "category": "bridge",
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "308"
+        },
+        {
+          "target": "309"
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 5392, 5444 ],
+          "includeTypes": [ 64, 68 ]
+        },
+        {
+          "includeOffsets": [ 5492, 5598 ],
+          "includeTypes": [ 66, 68 ]
+        }
+      ]
+    },
+    "301": {
+      "doorRando": [
+        {
+          "cutscene": true,
+          "player": 0
+        }
+      ],
+      "doors": [
+        {
+          "target": "219"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "priority": "low"
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 6876, 7204, 7508 ],
+          "cutscene": 0 // Leon,[Ben]
+        },
+        {
+          "includeOffsets": [ 6876, 7204, 7508 ],
+          "cutscene": 1 // Leon,[Ben],Ada
+        },
+        {
+          "includeOffsets": [ 6854 ],
+          "includeTypes": [ 65, 67, 69, 79 ],
+          "cutscene": 1 // Leon,Ben,[Ada]
+        },
+        {
+          "includeOffsets": [ 7012, 7250, 7338, 7554 ],
+          "includeTypes": [ 68 ],
+          "cutscene": 2 // Leon,[Ben]
+        },
+        {
+          "includeOffsets": [ 6990, 7316 ],
+          "includeTypes": [ 65, 67, 69, 79 ],
+          "cutscene": 3 // Leon,[Ada]
+        },
+        {
+          "includeOffsets": [],
+          "cutscene": 4 // Leon,Claire
+        }
+      ]
+    },
+    "302": {
+      "doors": [
+        {
+          "target": "21A"
+        },
+        {
+          "target": "30B"
+        }
+      ],
+      "enemies": [
+        {
+          "y": 0
+        }
+      ]
+    },
+    "303": {
+      "doorRando": [
+        {
+          "category": "bridge",
+          "player": 0,
+          "nop": [
+            5518,
+            5522,
+            5558,
+
+            5526,
+            5530,
+            5534,
+            5538,
+            5542,
+            5546,
+            5550,
+
+            6184
+          ]
+        },
+        {
+          "category": "exclude",
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "304",
+          "requires": [ 59, 60, 61, 62 ],
+          "player": 0
+        },
+        {
+          "target": "304",
+          "player": 1
+        },
+        {
+          "target": "30B"
+        }
+      ]
+    },
+    "304": {
+      "doors": [
+        {
+          "target": "303"
+        },
+        {
+          "target": "402",
+          "noReturn": true
+        }
+      ],
+      "npcs": [ {} ]
+    },
+    "305": {
+      "doors": [
+        {
+          "target": "306"
+        },
+        {
+          "target": "307"
+        },
+        {
+          "target": "30B"
+        }
+      ],
+      "enemies": [ {} ]
+    },
+    "306": {
+      "doors": [
+        {
+          "target": "305"
+        }
+      ]
+    },
+    "307": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "30D"
+        },
+        {
+          "target": "212"
+        },
+        {
+          "target": "305",
+          "player": 1
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "priority": "low",
+          "player": 0
+        },
+        {
+          "id": 3,
+          "link": "306:2",
+          "player": 1
+        },
+        {
+          "id": 5,
+          "link": "30B:5",
+          "player": 1
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 4342 ],
+          "playerActor": "sherry",
+          "cutscene": 0,
+          "player": 1
+        },
+        {
+          "includeOffsets": [ 4396, 4422 ],
+          "excludeTypes": [ 64, 66 ],
+          "cutscene": 1,
+          "player": 1
+        },
+        {
+          "includeOffsets": [],
+          "cutscene": 2,
+          "player": 1
+        }
+      ]
+    },
+    "308": {
+      "doors": [
+        {
+          "target": "21B"
+        },
+        {
+          "target": "300"
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 2568 ],
+          "player": 1
+        }
+      ]
+    },
+    "309": {
+      "doorRando": [
+        {
+          "category": "bridge",
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "300"
+        },
+        {
+          "target": "30A",
+          "lock": "unblock"
+        }
+      ],
+      "npcs": []
+    },
+    "30A": {
+      "doorRando": [
+        {
+          "nop": [ 5998 ],
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "309"
+        },
+        {
+          "target": "400",
+          "noReturn": true
+        }
+      ],
+      "npcs": []
+    },
+    "30B": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "player": 0
+        }
+      ],
+      "doors": [
+        {
+          "target": "302",
+          "doorRando": false,
+          "player": 0
+        },
+        {
+          "target": "303",
+          "doorRando": false,
+          "player": 0
+        },
+        {
+          "target": "305",
+          "doorRando": false,
+          "player": 0
+        },
+        {
+          "target": "30C",
+          "doorRando": false,
+          "player": 0
+        },
+        {
+          "target": "302",
+          "doorRando": false,
+          "player": 1,
+          "scenario": 1
+        },
+        {
+          "target": "303",
+          "doorRando": false,
+          "player": 1,
+          "scenario": 1
+        },
+        {
+          "target": "30C",
+          "doorRando": false,
+          "player": 1,
+          "scenario": 1
+        },
+        {
+          "target": "302",
+          "doorRando": true
+        },
+        {
+          "target": "303",
+          "doorRando": true
+        },
+        {
+          "target": "30C",
+          "doorRando": true
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "link": "306:2",
+          "player": 0
+        },
+        {
+          "id": 5,
+          "link": "307:3",
+          "player": 0
+        },
+        {
+          "id": 5,
+          "priority": "low",
+          "player": 1
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 3136 ],
+          "playerActor": "ada",
+          "cutscene": 0 // Ada, [Leon]
+        },
+        {
+          "includeOffsets": [ 3166 ],
+          "playerActor": "ada",
+          "cutscene": 1 // Ada, [Sherry]
+        },
+        {
+          "includeOffsets": [ 3566 ],
+          "excludeTypes": [ 64, 65, 66, 67 ],
+          "cutscene": 2 // Leon, [Ada]
+        },
+        {
+          "includeOffsets": [],
+          "cutscene": 3 // Leon, Claire
+        }
+      ]
+    },
+    "30C": {
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "target": "30B"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "priority": "low",
+          "doorRando": false
+        }
+      ]
+    },
+    "30D": {
+      "doorRando": [
+        {
+          "category": "box",
+          "player": 0
+        },
+        {
+          "category": "box",
+          "nop": [ 786 ],
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "307"
+        }
+      ]
+    },
+    "400": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "target": "30A"
+        },
+        {
+          "target": "401"
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 5730 ],
+          "playerActor": "sherry",
+          "player": 1
+        }
+      ]
+    },
+    "401": {
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "id": 1,
+          "target": "400:2",
+          "requires": [ 31 ],
+          "lock": "unblock",
+          "player": 0
+        },
+        {
+          "id": 1,
+          "target": "400:2",
+          "lock": "unblock",
+          "player": 1
+        },
+        {
+          "id": 2,
+          "target": "400:1"
+        },
+        {
+          "target": "404"
+        },
+        {
+          "target": "40F",
+          "doorRando": false,
+          "player": 1,
+          "scenario": 0
+        }
+      ],
+      "items": [
+        {
+          "id": 9,
+          "priority": "low",
+          "doorRando": false,
+          "player": 0
+        },
+        {
+          "id": 12,
+          "priority": "low",
+          "doorRando": false,
+          "player": 0
+        },
+        {
+          "id": 13,
+          "requires": [ 31 ],
+          "priority": "low",
+          "doorRando": false,
+          "player": 0
+        },
+        {
+          "id": 14,
+          "requires": [ 31 ],
+          "priority": "low",
+          "doorRando": false,
+          "player": 0
+        },
+        {
+          "id": 15,
+          "priority": "low",
+          "doorRando": false,
+          "player": 0
+        },
+        {
+          "id": 16,
+          "priority": "low",
+          "doorRando": false,
+          "player": 0
+        },
+        {
+          "id": 17,
+          "priority": "low",
+          "doorRando": false,
+          "player": 0
+        },
+        {
+          "id": 13,
+          "doorRando": true,
+          "priority": "low", // HACK to avoid small key requirement
+          "player": 0
+        },
+        {
+          "id": 14,
+          "doorRando": true,
+          "priority": "low", // HACK to avoid small key requirement
+          "player": 0
+        }
+      ],
+      "enemies": [ {} ],
+      "npcs": []
+    },
+    "402": {
+      "doors": [
+        {
+          "target": "304"
+        },
+        {
+          "target": "403"
+        }
+      ],
+      "enemies": [ {} ],
+      "npcs": [
+        {
+          "player": 0
+        }
+      ]
+    },
+    "403": {
+      "doorRando": [
+        {
+          "category": "box",
+          "nop": [ 9050, 9160 ],
+          "player": 0
+        },
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "target": "402"
+        },
+        {
+          "target": "404"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "priorty": "low",
+          "doorRando": false,
+          "player": 1
+        },
+        {
+          "id": 14,
+          "priorty": "low",
+          "doorRando": false,
+          "player": 1
+        },
+        {
+          "id": 15,
+          "priorty": "low",
+          "doorRando": false,
+          "player": 1
+        },
+        {
+          "id": 20,
+          "priorty": "low",
+          "doorRando": false,
+          "player": 1
+        },
+        {
+          "id": 16,
+          "priorty": "low",
+          "requires": [ 47 ],
+          "doorRando": false,
+          "player": 1
+        },
+        {
+          "id": 19,
+          "priorty": "low",
+          "requires": [ 47 ],
+          "doorRando": false,
+          "player": 1
+        },
+        {
+          "id": 16,
+          "requires": [ 47 ],
+          "doorRando": true
+        },
+        {
+          "id": 19,
+          "requires": [ 47 ],
+          "doorRando": true
+        }
+      ],
+      "npcs": [ {} ]
+    },
+    "404": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "target": "401",
+          "player": 0,
+          "scenario": 1
+        },
+        {
+          "target": "401",
+          "player": 1
+        },
+        {
+          "target": "403",
+          "player": 0
+        },
+        {
+          "target": "403",
+          "player": 1,
+          "scenario": 1
+        },
+        {
+          "target": "405"
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 3678, 3700, 3806 ],
+          "excludeTypes": [ 65, 67 ],
+          "playerActor": "ada",
+          "player": 0,
+          "cutscene": 0
+        },
+        {
+          "includeOffsets": [],
+          "player": 0,
+          "cutscene": 1
+        }
+      ]
+    },
+    "405": {
+      "doors": [
+        {
+          "target": "407"
+        },
+        {
+          "target": "404"
+        },
+        {
+          "target": "40B",
+          "lock": "always"
+        }
+      ],
+      "enemies": [
+        {
+          "y": 0
+        }
+      ],
+      "npcs": [
+        {
+          "excludeTypes": [ 65, 67 ],
+          "player": 0
+        }
+      ]
+    },
+    "407": {
+      "doors": [
+        {
+          "target": "40D",
+          "requires": [ 72, 73 ]
+        },
+        {
+          "target": "408"
+        },
+        {
+          "target": "405"
+        }
+      ],
+      "enemies": [
+        {
+          "y": 0
+        }
+      ],
+      "npcs": [
+        {
+          "player": 0
+        }
+      ]
+    },
+    "408": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "407",
+          "doorRando": false
+        },
+        {
+          "target": "40A",
+          "requires": [ 50 ],
+          "doorRando": false
+        },
+        // Force reversal, so items can be picked up before
+        // needing to use the valve handle
+        {
+          "target": "407",
+          "requires": [ 50 ],
+          "doorRando": true
+        },
+        {
+          "target": "40A",
+          "doorRando": true
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 10784, 10810, 10870 ]
+        }
+      ]
+    },
+    "409": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "player": 0
+        }
+      ],
+      "doors": [
+        {
+          "target": "410"
+        },
+        {
+          "target": "40B",
+          "requires": [ 50 ]
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 9180 ],
+          "excludeTypes": [ 65, 66, 67, 73, 80, 81 ],
+          "playerActor": "ada",
+          "cutscene": 0,
+          "player": 0
+        },
+        {
+          "includeOffsets": [ 9260, 9286 ],
+          "cutscene": 1,
+          "player": 0
+        }
+      ]
+    },
+    "40A": {
+      "doorRando": [
+        {
+          "nop": [ 9746, 9772 ],
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "410",
+          "lock": "unblock"
+        },
+        {
+          "target": "408"
+        }
+      ],
+      "npcs": [
+        {
+          "player": 0
+        }
+      ]
+    },
+    "40B": {
+      "doors": [
+        {
+          "target": "405"
+        },
+        {
+          "target": "409"
+        }
+      ],
+      "npcs": [
+        {
+          "player": 0
+        }
+      ]
+    },
+    "40C": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "target": "40F"
+        }
+      ]
+    },
+    "40D": {
+      "doors": [
+        {
+          "target": "407"
+        },
+        {
+          "target": "40E"
+        }
+      ],
+      "npcs": [
+        {
+          "player": 0
+        }
+      ]
+    },
+    "40E": {
+      "doorRando": [
+        {
+          "nop": [ 14330, 14578 ],
+          "player": 0
+        },
+        {
+          "category": "exclude",
+          "player": 1,
+          "scenario": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "500",
+          "noReturn": true,
+          "randomize": false
+        },
+        {
+          "target": "40D"
+        }
+      ],
+      "items": [
+        {
+          "id": 7,
+          "priority": "low"
+        },
+        {
+          "id": 8,
+          "priority": "low"
+        }
+      ],
+      "npcs": [
+        {
+          "player": 0
+        }
+      ]
+    },
+    "40F": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "target": "401"
+        },
+        {
+          "target": "40C"
+        }
+      ]
+    },
+    "410": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "target": "409"
+        },
+        {
+          "target": "40A"
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "priority": "low"
+        },
+        {
+          "id": 6,
+          "priority": "low"
+        },
+        {
+          "id": 7,
+          "priority": "low"
+        },
+        {
+          "id": 8,
+          "link": "40C:3",
+          "player": 1
+        }
+      ],
+      "npcs": [
+        {
+          "excludeTypes": [ 89, 90 ],
+          "player": 0
+        }
+      ]
+    },
+    "500": {
+      "doorRando": [
+        {
+          "category": "static"
+        },
+        {
+          "category": "exclude",
+          "player": 1,
+          "scenario": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "40E",
+          "lock": "always",
+          "randomize": false
+        },
+        {
+          "target": "501",
+          "randomize": false
+        }
+      ],
+      "npcs": [
+        {
+          "excludeTypes": [ 64, 66 ],
+          "player": 0
+        }
+      ]
+    },
+    "501": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "player": 1,
+          "scenario": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "500",
+          "lock": "always",
+          "randomize": false
+        },
+        {
+          "target": "502",
+          "lock": "unblock"
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "requires": [ 47 ]
+        }
+      ],
+      "npcs": [
+        {
+          "player": 0
+        }
+      ]
+    },
+    "502": {
+      "doorRando": [
+        {
+          "nop": [
+            5486,
+            5489,
+            5492
+          ],
+          "player": 0
+        },
+        {
+          "nop": [
+            5494,
+            5497,
+            5500
+          ],
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "501"
+        },
+        {
+          "target": "508"
+        }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 34, 36, 42, 46, 57, 58 ]
+        }
+      ],
+      "npcs": [
+        {
+          "player": 0,
+          "includeTypes": [ 65, 79 ]
+        }
+      ]
+    },
+    "503": {
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "target": "508"
+        },
+        {
+          "target": "504",
+          "scenario": 0
+        },
+        {
+          "target": "504",
+          "noReturn": true,
+          "requires": [ 94 ],
+          "doorRando": false,
+          "scenario": 1
+        },
+        {
+          "target": "506",
+          "scenario": 1
+        }
+      ],
+      "npcs": [
+        {
+          "player": 0
+        }
+      ]
+    },
+    "504": {
+      "doorRando": [
+        {
+          "category": "bridge"
+        }
+      ],
+      "doors": [
+        {
+          "target": "503"
+        },
+        {
+          "target": "505",
+          "randomize": false
+        }
+      ],
+      "npcs": [
+        {
+          "player": 0
+        }
+      ]
+    },
+    "505": {
+      "doorRando": [
+        {
+          "category": "static"
+        }
+      ],
+      "doors": [
+        {
+          "target": "504",
+          "randomize": false
+        },
+        {
+          "target": "606",
+          "noReturn": true,
+          "requires": [ 93 ],
+          "randomize": false,
+          "scenario": 0
+        },
+        {
+          "target": "600",
+          "noReturn": true,
+          "randomize": false,
+          "scenario": 1
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 4342, 7408 ],
+          "cutscene": 0,
+          "player": 0
+        },
+        {
+          "includeOffsets": [ 4510, 4622 ],
+          "cutscene": 1,
+          "player": 0
+        },
+        {
+          "scenario": 0,
+          "player": 1
+        }
+      ]
+    },
+    "506": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "target": "503"
+        },
+        {
+          "target": "507"
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "link": "504:2"
+        }
+      ]
+    },
+    "507": {
+      "doors": [
+        {
+          "target": "506"
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "priority": "low"
+        }
+      ]
+    },
+    "508": {
+      "doors": [
+        {
+          "target": "502"
+        },
+        {
+          "target": "503"
+        }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 34, 36, 42, 46, 57, 58 ]
+        }
+      ],
+      "npcs": [
+        {
+          "player": 0,
+          "includeTypes": [ 65, 79 ]
+        }
+      ]
+    },
+    "600": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "scenario": 0
+        }
+      ],
+      "doors": [
+        {
+          "target": "505",
+          "lock": "always",
+          "randomize": false
+        },
+        {
+          "target": "602"
+        }
+      ]
+    },
+    "601": {
+      "doors": [
+        {
+          "target": "602"
+        },
+        {
+          "target": "606"
+        },
+        {
+          "target": "700",
+          "lock": "always",
+          "doorRando": true
+        },
+        {
+          "target": "700",
+          "noReturn": true,
+          "requires": [ 98 ],
+          "doorRando": false
+        }
+      ],
+      "npcs": [
+        {
+          "player": 0
+        }
+      ]
+    },
+    "602": {
+      "doors": [
+        {
+          "target": "600",
+          "lock": "always"
+        },
+        {
+          "target": "601",
+          "requiresRoom": [ "605" ],
+          "lock": "unblock"
+        },
+        {
+          "target": "603"
+        }
+      ],
+      "npcs": [
+        {
+          "scenario": 1
+        }
+      ]
+    },
+    "603": {
+      "doorRando": [
+        {
+          "category": "box",
+          "nop": [ 10856 ]
+        }
+      ],
+      "doors": [
+        {
+          "target": "602"
+        },
+        {
+          "target": "604",
+          "requires": [ 95 ]
+        },
+        {
+          "target": "605"
+        }
+      ],
+      "enemies": []
+    },
+    "604": {
+      "doorRando": [
+        {
+          "cutscene": true,
+          "scenario": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "603"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "priority": "fixed",
+          "doorRando": false,
+          "player": 0
+        },
+        {
+          "id": 3,
+          "priority": "low",
+          "doorRando": true,
+          "player": 0
+        }
+      ],
+      "npcs": [ {} ]
+    },
+    "605": {
+      "doors": [
+        {
+          "target": "603"
+        }
+      ],
+      "enemies": [ {} ]
+    },
+    "606": {
+      "doorRando": [
+        {
+          "nop": [ 3850, 3878 ],
+          "player": 0
+        },
+        {
+          "nop": [ 3892, 3962 ],
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "505",
+          "lock": "always",
+          "randomize": false,
+          "scenario": 0
+        },
+        {
+          "target": "505",
+          "scenario": 1
+        },
+        {
+          "target": "601",
+          "scenario": 1,
+          "doorRando": false
+        },
+        {
+          "target": "601",
+          "doorRando": true
+        },
+        {
+          "target": "607",
+          "randomize": false,
+          "scenario": 0
+        },
+        {
+          "target": "607",
+          "requires": [ 98 ],
+          "scenario": 1
+        },
+        {
+          "target": "608"
+        }
+      ],
+      "enemies": [ {} ],
+      "npcs": []
+    },
+    "607": {
+      "doorRando": [
+        {
+          "category": "box",
+          "scenario": 0
+        },
+        {
+          "category": "exclude",
+          "scenario": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "606",
+          "randomize": false
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 3296 ],
+          "cutscene": 0,
+          "player": 0
+        },
+        {
+          "includeOffsets": [],
+          "cutscene": 1,
+          "player": 0
+        },
+        {
+          "includeOffsets": [ 3322 ],
+          "cutscene": 2,
+          "player": 0
+        },
+        {
+          "player": 1
+        }
+      ]
+    },
+    "608": {
+      "doorRando": [
+        {
+          "nop": [ 10210, 10220 ],
+          "cutscene": true,
+          "scenario": 1,
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "606"
+        },
+        {
+          "target": "60B"
+        },
+        {
+          "target": "60C"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "priority": "fixed",
+          "doorRando": false,
+          "player": 1
+        },
+        {
+          "id": 3,
+          "priority": "low",
+          "doorRando": true,
+          "player": 1
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 11140, 11288 ]
+        }
+      ]
+    },
+    "609": {
+      "doors": [
+        {
+          "target": "60B"
+        }
+      ],
+      "items": [
+        {
+          "id": 7,
+          "priority": "low"
+        },
+        {
+          "id": 8,
+          "priority": "low"
+        },
+        {
+          "id": 9,
+          "priority": "low"
+        }
+      ],
+      "enemies": [ {} ]
+    },
+    "60A": {
+      "doorRando": [
+        {
+          "category": "bridge"
+        }
+      ],
+      "doors": [
+        {
+          "target": "60B"
+        },
+        {
+          "target": "609",
+          "lock": "unblock",
+          "noUnlock": true
+        }
+      ],
+      "requires": [ 47 ],
+      "enemies": [ {} ]
+    },
+    "60B": {
+      "doors": [
+        {
+          "target": "608"
+        },
+        {
+          "target": "609",
+          "lock": "side"
+        },
+        {
+          "target": "60A"
+        },
+        {
+          "target": "60E",
+          "requires": [ 76 ],
+          "requiresRoom": [ "608" ]
+        }
+      ],
+      "enemies": [ {} ]
+    },
+    "60C": {
+      "doorRando": [
+        {
+          "nop": [ 4042, 4154 ],
+          "player": 0
+        },
+        {
+          "nop": [ 4010 ],
+          "cutscene": true,
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "608"
+        },
+        {
+          "target": "60D"
+        },
+        {
+          "target": "60F",
+          "requires": [ 76 ],
+          "requiresRoom": [ "608" ],
+          "doorRando": true
+        },
+        {
+          "target": "60F",
+          "requires": [ 76 ],
+          "requiresRoom": [ "608" ],
+          "scenario": 1,
+          "doorRando": false
+        },
+        {
+          "target": "610",
+          "requires": [ 97 ],
+          "cut": 6
+        }
+      ],
+      "items": [
+        {
+          "id": 7,
+          "priority": "fixed"
+        }
+      ],
+      "npcs": [
+        {
+          "scenario": 0
+        }
+      ]
+    },
+    "60D": {
+      "doors": [
+        {
+          "target": "60C"
+        }
+      ],
+      "items": [
+        {
+          "id": 1,
+          "requires": [ 77 ]
+        }
+      ]
+    },
+    "60E": {
+      "doors": [
+        {
+          "target": "60B"
+        },
+        {
+          "target": "616"
+        }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 34, 36 ]
+        }
+      ]
+    },
+    "60F": {
+      "doors": [
+        {
+          "target": "60C"
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "type": 27,
+          "amount": 100,
+          "priority": "low",
+          "doorRando": false
+        }
+      ],
+      "enemies": [ {} ]
+    },
+    "610": {
+      "doors": [
+        {
+          "target": "60C"
+        }
+      ],
+      "items": [
+        {
+          "id": 5,
+          "requires": [ 79 ],
+          "player": 1,
+          "scenario": 0
+        }
+      ],
+      "enemies": [ {} ]
+    },
+    "611": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 13608 ],
+          "cutscene": 0,
+          "player": 0
+        },
+        {
+          "includeOffsets": [ 13608, 13630, 13786 ],
+          "cutscene": 1,
+          "player": 0
+        },
+        {
+          "includeOffsets": [],
+          "cutscene": 2,
+          "player": 0
+        }
+      ]
+    },
+    "612": {
+      "doorRando": [
+        {
+          "category": "box",
+          "player": 0
+        },
+        {
+          "category": "box",
+          "cutscene": true,
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "614"
+        },
+        {
+          "target": "616"
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 5016 ],
+          "excludeTypes": [ 88, 89, 90 ],
+          "cutscene": 0,
+          "player": 1
+        },
+        {
+          "includeOffsets": [ 4870, 4892 ],
+          "excludeTypes": [ 88, 89, 90 ],
+          "cutscene": 1,
+          "player": 1
+        }
+      ]
+    },
+    "613": {
+      "doors": [
+        {
+          "target": "614"
+        }
+      ],
+      "enemies": [
+        {
+          "y": 0
+        }
+      ]
+    },
+    "614": {
+      "doorRando": [
+        {
+          "cutscene": true,
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "613",
+          "requires": [ 97 ]
+        },
+        {
+          "target": "615"
+        },
+        {
+          "target": "612"
+        }
+      ],
+      "items": [
+        {
+          "id": 5,
+          "priority": "low",
+          "player": 1
+        }
+      ],
+      "npcs": [ {} ]
+    },
+    "615": {
+      "doorRando": [
+        {
+          "cutscene": true,   // Item pickup in room needed for cutscene trigger in 614
+          "player": 1,
+          "scenario": 0
+        }
+      ],
+      "doors": [
+        {
+          "target": "614"
+        }
+      ],
+      "items": [
+        {
+          "id": 7,
+          "requires": [ 63 ]
+        },
+        {
+          "id": 8,
+          "requires": [ 63 ]
+        },
+        {
+          "id": 6,
+          "priority": "fixed",
+          "requires": [ 81 ],
+          "doorRando": false,
+          "player": 1,
+          "scenario": 0
+        },
+        {
+          "id": 6,
+          "requires": [ 81 ],
+          "doorRando": true,
+          "player": 1,
+          "scenario": 0
+        }
+      ],
+      "enemies": [ {} ]
+    },
+    "616": {
+      "doors": [
+        {
+          "target": "60E"
+        },
+        {
+          "target": "612"
+        },
+        {
+          "target": "617",
+          "requires": [ 96 ],
+          "player": 0,
+          "scenario": 0
+        },
+        {
+          "target": "617",
+          "requires": [ 79, 96 ],
+          "doorRando": false,
+          "player": 1,
+          "scenario": 0
+        }
+      ],
+      "enemies": [
+        {
+          "excludeOffsets": [ 8072, 8128, 8208, 8264, 8312, 8334 ]
+        }
+      ]
+    },
+    "617": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "scenario": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "616"
+        },
+        {
+          "target": "700"
+        }
+      ]
+    },
+    "700": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "scenario": 0
+        },
+        {
+          "player": 0,
+          "scenario": 1
+        },
+        {
+          "player": 1,
+          "scenario": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "601",
+          "lock": "always",
+          "doorRando": false
+        },
+        {
+          "readOffset": 5394,
+          "writeOffset": 5374,
+          "id": 5,
+          "target": "601",
+          "doorRando": true,
+          "scenario": 1,
+          "player": 0
+        },
+        {
+          "readOffset": 5392,
+          "writeOffset": 5372,
+          "id": 5,
+          "target": "601",
+          "doorRando": true,
+          "scenario": 1,
+          "player": 1
+        },
+        {
+          "target": "701",
+          "requires": [ 99 ],
+          "randomize": false,
+          "scenario": 1
+        },
+        {
+          "target": "703",
+          "randomize": false,
+          "scenario": 1
+        }
+      ],
+      "enemies": [ {} ],
+      "npcs": [ {} ]
+    },
+    "701": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "target": "700",
+          "randomize": false
+        },
+        {
+          "target": "702",
+          "requires": [ 84, 85 ],
+          "randomize": false
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "priority": "low"
+        },
+        {
+          "id": 5,
+          "priority": "low"
+        }
+      ]
+    },
+    "702": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "target": "701",
+          "randomize": false
+        }
+      ],
+      "items": [
+        {
+          "id": 5,
+          "type": 0
+        }
+      ],
+      "npcs": [ {} ]
+    },
+    "703": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "scenario": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "700",
+          "scenario": 0
+        },
+        {
+          "target": "704",
+          "scenario": 0
+        },
+        {
+          "target": "700",
+          "randomize": false,
+          "scenario": 1
+        },
+        {
+          "target": "704",
+          "randomize": false,
+          "scenario": 1
+        }
+      ],
+      "npcs": [ {} ]
+    },
+    "704": {
+      "doorRando": [
+        {
+          "category": "box",
+          "scenario": 0
+        },
+        {
+          "category": "exclude",
+          "scenario": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "703",
+          "scenario": 0
+        },
+        {
+          "target": "703",
+          "randomize": false,
+          "scenario": 1
+        }
+      ]
+    }
+  }
+}

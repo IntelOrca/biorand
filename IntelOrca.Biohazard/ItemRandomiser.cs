@@ -6,9 +6,14 @@ namespace IntelOrca.Biohazard
 {
     internal class ItemRandomiser
     {
+        private static bool g_debugLogging = false;
+
         private readonly RandoLogger _logger;
         private RandoConfig _config;
         private GameData _gameData;
+        private Rng _rng;
+        private IItemHelper _itemHelper;
+
         private PlayNode[] _nodes = new PlayNode[0];
         private List<ItemPoolEntry> _currentPool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _shufflePool = new List<ItemPoolEntry>();
@@ -18,15 +23,14 @@ namespace IntelOrca.Biohazard
         private HashSet<ushort> _haveItems = new HashSet<ushort>();
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
         private HashSet<RdtItemId> _visitedItems = new HashSet<RdtItemId>();
-        private Rng _rng;
-        private bool _debugLogging = false;
 
-        public ItemRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng random)
+        public ItemRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Rng random, IItemHelper itemHelper)
         {
             _logger = logger;
             _config = config;
             _gameData = gameData;
             _rng = random;
+            _itemHelper = itemHelper;
         }
 
         public void RandomiseItems(PlayGraph graph)
@@ -42,7 +46,7 @@ namespace IntelOrca.Biohazard
             var checkpoint = graph.Start;
             ClearItems();
             _visitedRooms.Clear();
-            while (!_visitedRooms.Contains(graph.End) || _requiredItems.Count != 0)
+            while (!_visitedRooms.Contains(graph.End) || !JustOptionalItemsLeft())
             {
                 PlaceKeyItem(_config.RandomDoors || _config.AlternativeRoutes);
                 var newCheckpoint = Search(checkpoint);
@@ -83,13 +87,21 @@ namespace IntelOrca.Biohazard
             PatchDesk();
         }
 
+        private bool JustOptionalItemsLeft()
+        {
+            if (_requiredItems.Count == 0)
+                return true;
+
+            return _requiredItems.All(x => x.Item == null || _itemHelper.IsOptionalItem(_config, (byte)x.Item.Value.Type));
+        }
+
         private void ClearItems()
         {
             // Leon starts with a lighter
             _haveItems.Clear();
-            if (_config.Player == 0)
+            foreach (var item in _itemHelper.GetInitialItems(_config))
             {
-                _haveItems.Add((ushort)ItemType.Lighter);
+                _haveItems.Add(item);
             }
         }
 
@@ -130,7 +142,7 @@ namespace IntelOrca.Biohazard
                         _linkedItems.Add((new RdtItemId(node.RdtId, linkedItem.Key), linkedItem.Value));
                     }
 
-                    if (_debugLogging && node.Items.Length != 0)
+                    if (g_debugLogging && node.Items.Length != 0)
                     {
                         _logger.WriteLine($"    Room {node.RdtId} contains:");
                         foreach (var item in node.Items)
@@ -150,7 +162,8 @@ namespace IntelOrca.Biohazard
                         continue;
 
                     var requiredItems = edge.Requires == null ? new ushort[0] : edge.Requires.Except(_haveItems).ToArray()!;
-                    if (requiredItems.Length == 0)
+                    var justOptionalLeft = requiredItems.All(x => _itemHelper.IsOptionalItem(_config, (byte)x));
+                    if (requiredItems.Length == 0 || justOptionalLeft)
                     {
                         if (seen.Contains(edge.Node.RdtId))
                             continue;
@@ -160,7 +173,7 @@ namespace IntelOrca.Biohazard
                             if (!_visitedRooms.Contains(edge.Node))
                             {
                                 checkpoint = edge.Node;
-                                if (_debugLogging)
+                                if (g_debugLogging)
                                 {
                                     _logger.WriteLine($"        {node} -> {edge.Node} (checkpoint)");
                                 }
@@ -168,7 +181,7 @@ namespace IntelOrca.Biohazard
                         }
                         else
                         {
-                            if (_debugLogging)
+                            if (g_debugLogging)
                             {
                                 _logger.WriteLine($"        {node} -> {edge.Node}");
                             }
@@ -223,6 +236,19 @@ namespace IntelOrca.Biohazard
             return bestI;
         }
 
+        private static string GetNth(int i)
+        {
+            while (i >= 20)
+                i /= 10;
+            if (i == 1)
+                return $"{i}st";
+            if (i == 2)
+                return $"{i}nd";
+            if (i == 3)
+                return $"{i}rd";
+            return $"{i}th";
+        }
+
         private void PlaceKeyItem(bool alternativeRoutes)
         {
             var keyItemPlaceOrder = GetKeyItemPlaceOrder();
@@ -234,19 +260,12 @@ namespace IntelOrca.Biohazard
             {
                 if (PlaceKeyItem(req, alternativeRoutes))
                 {
-                    if (req == (ushort)ItemType.RedJewel ||
-                       (req == (ushort)ItemType.SmallKey && !_config.RandomDoors))
+                    var quantity = _itemHelper.GetItemQuantity(_config, (byte)req);
+                    for (int i = 1; i < quantity; i++)
                     {
                         if (!PlaceKeyItem(req, true))
                         {
-                            throw new Exception($"Unable to place 2nd {(ItemType)req}");
-                        }
-                        if (req == (ushort)ItemType.SmallKey && _config.Scenario == 1 && !_config.RandomDoors)
-                        {
-                            if (!PlaceKeyItem(req, true))
-                            {
-                                throw new Exception($"Unable to place 3rd {(ItemType)req}");
-                            }
+                            throw new Exception($"Unable to place {GetNth(i + 1)} {_itemHelper.GetItemName((byte)req)}");
                         }
                     }
                     UpdateRequiredItemList();
@@ -265,10 +284,10 @@ namespace IntelOrca.Biohazard
             _logger.WriteLine("    Unable to place the following key items:");
             foreach (var item in checkList)
             {
-                _logger.WriteLine($"        {Items.GetItemName(item)}");
+                _logger.WriteLine($"        {_itemHelper.GetItemName((byte)item)}");
             }
 
-            if (keyItemPlaceOrder.Any(x => !IsOptionalItem(x)))
+            if (keyItemPlaceOrder.Any(x => !_itemHelper.IsOptionalItem(_config, (byte)x)))
                 throw new Exception("Unable to find key item to swap");
 
             _requiredItems.Clear();
@@ -300,21 +319,6 @@ namespace IntelOrca.Biohazard
             _requiredItems.RemoveWhere(x => x.Keys.All(x => _haveItems.Contains(x)));
         }
 
-        private static bool IsOptionalItem(ushort item)
-        {
-            switch ((ItemType)item)
-            {
-                case ItemType.FilmA:
-                case ItemType.FilmB:
-                case ItemType.FilmC:
-                case ItemType.FilmD:
-                case ItemType.Cord:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         private bool PlaceKeyItem(ushort req, bool alternativeRoute)
         {
             // Get a new location for the key item
@@ -342,7 +346,7 @@ namespace IntelOrca.Biohazard
                     if (t != null)
                     {
                         var (futureNode, itemIndex) = t.Value;
-                        if (_debugLogging)
+                        if (g_debugLogging)
                         {
                             _logger.WriteLine($"        Found key as future item ({futureNode.Items[itemIndex]})");
                         }
@@ -402,7 +406,7 @@ namespace IntelOrca.Biohazard
             _definedPool.Add(itemEntry);
             itemParentNode.PlacedKeyItems.Add(itemEntry);
 
-            _logger.WriteLine($"    Placing key item ({Items.GetItemName(itemEntry.Type)} x{itemEntry.Amount}) in {itemEntry.RdtId}:{itemEntry.Id}");
+            _logger.WriteLine($"    Placing key item ({_itemHelper.GetItemName((byte)itemEntry.Type)} x{itemEntry.Amount}) in {itemEntry.RdtId}:{itemEntry.Id}");
             return true;
         }
 
@@ -427,7 +431,7 @@ namespace IntelOrca.Biohazard
             if (_visitedItems.Add(item.RdtItemId))
             {
                 _currentPool.Add(item);
-                if (_debugLogging)
+                if (g_debugLogging)
                     _logger.WriteLine($"    Add {item} to current pool");
             }
 
@@ -454,105 +458,85 @@ namespace IntelOrca.Biohazard
             _shufflePool.Clear();
 
             // Weapons first
-            var ammoTypes = new HashSet<ItemType>() { ItemType.HandgunAmmo };
-            var items = new List<ItemType>();
-            if (_config.Player == 0)
-            {
-                if (_rng.Next(0, 3) >= 1)
-                    items.Add(ItemType.HandgunParts);
-                if (_config.EnemyDifficulty >= 2 || _rng.Next(0, 2) >= 1)
-                {
-                    items.Add(ItemType.Shotgun);
-                    if (_rng.Next(0, 2) >= 1)
-                        items.Add(ItemType.ShotgunParts);
-                }
-                if (_config.EnemyDifficulty >= 3 || _rng.Next(0, 3) >= 1)
-                {
-                    items.Add(ItemType.Magnum);
-                    if (_rng.Next(0, 2) >= 1)
-                        items.Add(ItemType.MagnumParts);
-                }
-                if (_rng.Next(0, 2) == 0)
-                    items.Add(ItemType.SMG);
-                if (_rng.Next(0, 2) == 0)
-                    items.Add(ItemType.Flamethrower);
-            }
-            else
-            {
-                if (_config.EnemyDifficulty >= 2 || _rng.Next(0, 3) >= 1)
-                    items.Add(ItemType.Bowgun);
-                if (_config.EnemyDifficulty >= 3 || _rng.Next(0, 3) >= 1)
-                    items.Add(_rng.NextOf(ItemType.GrenadeLauncherExplosive, ItemType.GrenadeLauncherFlame, ItemType.GrenadeLauncherAcid));
-                if (_rng.Next(0, 2) == 0)
-                    items.Add(ItemType.SMG);
-                if (_rng.Next(0, 2) == 0)
-                    items.Add(ItemType.Sparkshot);
-                if (_rng.Next(0, 2) == 0)
-                    items.Add(ItemType.ColtSAA);
-            }
-            if (_rng.Next(0, 2) == 0)
-                items.Add(ItemType.RocketLauncher);
+            var ammoTypes = new HashSet<byte>() { _itemHelper.GetItemId(CommonItemKind.HandgunAmmo) };
+            var items = _itemHelper.GetWeapons(_rng, _config);
             foreach (var itemType in items)
             {
-                var ammoType = GetAmmoTypeForWeapon(itemType);
-                var amount = GetRandomAmount(ammoType);
+                // Spawn weapon
+                var amount = GetRandomAmount(itemType, true);
                 SpawnItem(shuffled, itemType, amount);
-                ammoTypes.Add(ammoType);
+
+                // Add supported ammo types
+                var weaponAmmoTypes = _itemHelper.GetAmmoTypeForWeapon(itemType);
+                foreach (var ammoType in weaponAmmoTypes)
+                {
+                    ammoTypes.Add(ammoType);
+                }
             }
 
             // Now everything else
-            double ammo = _config.RatioAmmo / 32.0;
-            double health = _config.RatioHealth / 32.0;
-            double ink = _config.RatioInkRibbons / 32.0;
-
-            var table = _rng.CreateProbabilityTable<ItemType>();
-            table.Add(ItemType.InkRibbon, ink);
-
-            table.Add(ItemType.HerbG, health * 0.5);
-            table.Add(ItemType.HerbR, health * 0.3);
-            table.Add(ItemType.HerbB, health * 0.1);
-            table.Add(ItemType.FAidSpray, health * 0.1);
-
-            if (ammoTypes.Contains(ItemType.HandgunAmmo))
-                table.Add(ItemType.HandgunAmmo, ammo * 0.3);
-            if (ammoTypes.Contains(ItemType.ShotgunAmmo))
-                table.Add(ItemType.ShotgunAmmo, ammo * 0.2);
-            if (ammoTypes.Contains(ItemType.BowgunAmmo))
-                table.Add(ItemType.BowgunAmmo, ammo * 0.2);
-            if (ammoTypes.Contains(ItemType.MagnumAmmo))
-                table.Add(ItemType.MagnumAmmo, ammo * 0.1);
-            if (ammoTypes.Contains(ItemType.ExplosiveRounds) ||
-                ammoTypes.Contains(ItemType.FlameRounds) ||
-                ammoTypes.Contains(ItemType.AcidRounds))
+            var ammoTable = _rng.CreateProbabilityTable<byte>();
+            foreach (var ammoType in ammoTypes)
             {
-                table.Add(ItemType.ExplosiveRounds, ammo * 0.1);
-                table.Add(ItemType.AcidRounds, ammo * 0.1);
-                table.Add(ItemType.FlameRounds, ammo * 0.1);
+                var probability = _itemHelper.GetItemProbability(ammoType);
+                ammoTable.Add(ammoType, probability);
             }
-            if (ammoTypes.Contains(ItemType.FuelTank))
-                table.Add(ItemType.FuelTank, ammo * 0.1);
-            if (ammoTypes.Contains(ItemType.SparkshotAmmo))
-                table.Add(ItemType.SparkshotAmmo, ammo * 0.1);
-            if (ammoTypes.Contains(ItemType.SMGAmmo))
-                table.Add(ItemType.SMGAmmo, ammo * 0.1);
 
-            bool successful;
-            do
+            var healthTable = _rng.CreateProbabilityTable<byte>();
+            healthTable.Add(_itemHelper.GetItemId(CommonItemKind.GreenHerb), 0.5);
+            healthTable.Add(_itemHelper.GetItemId(CommonItemKind.RedHerb), 0.3);
+            healthTable.Add(_itemHelper.GetItemId(CommonItemKind.BlueHerb), 0.1);
+            healthTable.Add(_itemHelper.GetItemId(CommonItemKind.FirstAid), 0.1);
+
+            var inkTable = _rng.CreateProbabilityTable<byte>();
+            inkTable.Add(_itemHelper.GetItemId(CommonItemKind.InkRibbon), 1);
+
+            var numAmmo = (int)((_config.RatioAmmo / 32.0) * shuffled.Count);
+            var numHealth = (int)((_config.RatioHealth / 32.0) * shuffled.Count);
+            var numInk = (int)((_config.RatioInkRibbons / 32.0) * shuffled.Count);
+
+            var proportions = new List<(int, Rng.Table<byte>)>();
+            proportions.Add((numAmmo, ammoTable));
+            proportions.Add((numHealth, healthTable));
+            if (_itemHelper.HasInkRibbons(_config))
             {
-                var itemType = table.Next();
-                successful = SpawnItem(shuffled, itemType, GetRandomAmount(itemType));
-            } while (successful);
+                proportions.Add((numInk, inkTable));
+            }
+            proportions = proportions
+                .Where(x => x.Item1 != 0)
+                .OrderBy(x => x.Item1)
+                .ToList();
+            var lastP = proportions[proportions.Count - 1];
+            lastP.Item1 = int.MaxValue;
+            proportions[proportions.Count - 1] = lastP;
+
+            foreach (var p in proportions)
+            {
+                SpawnItems(shuffled, p.Item1, p.Item2);
+            }
         }
 
-        private bool SpawnItem(Queue<ItemPoolEntry> pool, ItemType itemType, byte amount)
+        private void SpawnItems(Queue<ItemPoolEntry> pool, int count, Rng.Table<byte> probabilityTable)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                var itemType = probabilityTable.Next();
+                if (!SpawnItem(pool, itemType, GetRandomAmount(itemType, false)))
+                {
+                    break;
+                }
+            }
+        }
+
+        private bool SpawnItem(Queue<ItemPoolEntry> pool, byte itemType, byte amount)
         {
             if (pool.Count != 0)
             {
                 var oldEntry = pool.Dequeue();
                 var newEntry = oldEntry;
-                newEntry.Type = (byte)itemType;
+                newEntry.Type = itemType;
                 newEntry.Amount = amount;
-                _logger.WriteLine($"    Replaced {oldEntry} with {newEntry}");
+                _logger.WriteLine($"    Replaced {oldEntry.ToString(_itemHelper)} with {newEntry.ToString(_itemHelper)}");
                 if (_definedPool.Any(x => x.RdtItemId == newEntry.RdtItemId))
                     throw new Exception();
                 _definedPool.Add(newEntry);
@@ -564,68 +548,16 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private ItemType GetAmmoTypeForWeapon(ItemType type)
+        private byte GetRandomAmount(byte type, bool fullQuantity)
         {
-            switch (type)
+            if (type == _itemHelper.GetItemId(CommonItemKind.InkRibbon))
             {
-                case ItemType.HandgunLeon:
-                case ItemType.HandgunClaire:
-                case ItemType.CustomHandgun:
-                case ItemType.ColtSAA:
-                case ItemType.Beretta:
-                    return ItemType.HandgunAmmo;
-                case ItemType.Shotgun:
-                    return ItemType.ShotgunAmmo;
-                case ItemType.Magnum:
-                case ItemType.CustomMagnum:
-                    return ItemType.MagnumAmmo;
-                case ItemType.Bowgun:
-                    return ItemType.BowgunAmmo;
-                case ItemType.Sparkshot:
-                    return ItemType.SparkshotAmmo;
-                case ItemType.Flamethrower:
-                    return ItemType.FuelTank;
-                case ItemType.SMG:
-                    return ItemType.SMGAmmo;
-                case ItemType.GrenadeLauncherFlame:
-                    return ItemType.FlameRounds;
-                case ItemType.GrenadeLauncherExplosive:
-                    return ItemType.ExplosiveRounds;
-                case ItemType.GrenadeLauncherAcid:
-                    return ItemType.AcidRounds;
-                default:
-                    return type;
+                return (byte)_rng.Next(1, 3);
             }
-        }
 
-        private byte GetRandomAmount(ItemType type)
-        {
-            var multiplier = _config.AmmoQuantity / 8.0;
-            switch (type)
-            {
-                default:
-                    return 1;
-                case ItemType.InkRibbon:
-                    return (byte)_rng.Next(1, 3);
-                case ItemType.HandgunAmmo:
-                    return (byte)_rng.Next(1, (int)(60 * multiplier));
-                case ItemType.ShotgunAmmo:
-                    return (byte)_rng.Next(1, (int)(30 * multiplier));
-                case ItemType.BowgunAmmo:
-                    return (byte)_rng.Next(1, (int)(30 * multiplier));
-                case ItemType.MagnumAmmo:
-                    return (byte)_rng.Next(1, (int)(10 * multiplier));
-                case ItemType.ExplosiveRounds:
-                case ItemType.AcidRounds:
-                case ItemType.FlameRounds:
-                    return (byte)_rng.Next(1, (int)(10 * multiplier));
-                case ItemType.FuelTank:
-                case ItemType.SparkshotAmmo:
-                case ItemType.SMGAmmo:
-                    return (byte)_rng.Next(1, (int)(100 * multiplier));
-                case ItemType.RocketLauncher:
-                    return (byte)_rng.Next(1, (int)(5 * multiplier));
-            }
+            var multiplier = fullQuantity ? 1 : (_config.AmmoQuantity / 8.0);
+            var max = _itemHelper.GetMaxAmmoForAmmoType(type);
+            return (byte)_rng.Next(1, (int)(max * multiplier) + 1);
         }
 
         private void ShuffleRemainingPool()
@@ -649,13 +581,17 @@ namespace IntelOrca.Biohazard
         private void SetLinkedItems()
         {
             _logger.WriteLine("Setting up linked items:");
-            foreach (var (targetId, sourceId) in _linkedItems)
+            foreach (var (sourceId, targetId) in _linkedItems)
             {
-                var sourceItem = _definedPool.Find(x => x.RdtItemId == sourceId);
-                var targetItem = sourceItem;
-                targetItem.RdtItemId = targetId;
-                _definedPool.Add(targetItem);
-                _logger.WriteLine($"    {sourceItem} placed at {targetId}");
+                var sourceItemIndex = _definedPool.FindIndex(x => x.RdtItemId == sourceId);
+                if (sourceItemIndex != -1)
+                {
+                    var sourceItem = _definedPool[sourceItemIndex];
+                    var targetItem = sourceItem;
+                    targetItem.RdtItemId = targetId;
+                    _definedPool.Add(targetItem);
+                    _logger.WriteLine($"    {sourceItem.ToString(_itemHelper)} placed at {targetId}");
+                }
             }
         }
 
@@ -696,10 +632,11 @@ namespace IntelOrca.Biohazard
 
         private ushort GetTotalKeyRequirementCount(PlayNode node, ushort keyType)
         {
-            if (!IsItemTypeDiscardable((ItemType)keyType))
-            {
+            if (_itemHelper.IsItemInfinite((byte)keyType))
+                return 0;
+
+            if (!_itemHelper.IsItemTypeDiscardable((byte)keyType))
                 return 1;
-            }
 
             ushort total = 0;
             var visited = new HashSet<PlayNode>();
@@ -729,26 +666,6 @@ namespace IntelOrca.Biohazard
                 }
             }
             return total;
-        }
-
-        private static bool IsItemTypeDiscardable(ItemType itemType)
-        {
-            switch (itemType)
-            {
-                case ItemType.SmallKey: // Small keys can be stacked
-                case ItemType.CabinKey:
-                case ItemType.SpadeKey:
-                case ItemType.DiamondKey:
-                case ItemType.HeartKey:
-                case ItemType.ClubKey:
-                case ItemType.PowerRoomKey:
-                case ItemType.UmbrellaKeyCard:
-                case ItemType.MasterKey:
-                case ItemType.PlatformKey:
-                    return true;
-                default:
-                    return false;
-            }
         }
 
         private class KeyRequirement : IEquatable<KeyRequirement>

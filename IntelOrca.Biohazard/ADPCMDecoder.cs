@@ -80,6 +80,40 @@ namespace IntelOrca.Biohazard
             Finalise(bw);
         }
 
+        public double GetLength(string input)
+        {
+            using (var fs = new FileStream(input, FileMode.Open, FileAccess.Read))
+            {
+                if (input.EndsWith(".sap"))
+                {
+                    fs.Position += 8;
+                }
+                return GetLength(fs);
+            }
+        }
+
+        public double GetLength(Stream input)
+        {
+            var br = new BinaryReader(input);
+
+            ReadRiffHeader(br);
+            while (input.Position < _riffEnd)
+            {
+                ReadChunk(br);
+            }
+
+            if ((_fmtTag == g_tagADPCM && _bitsPerSample != 4) ||
+                (_fmtTag == g_tagPCM && _bitsPerSample != 16))
+            {
+                throw new Exception("Unsupported bit rate");
+            }
+
+            var numBlocks = _dataLength / _blockAlign;
+            var numSamples = _samplesPerBlock * numBlocks;
+            var length = numSamples / (double)_sampleRate;
+            return length;
+        }
+
         private void ReadRiffHeader(BinaryReader br)
         {
             var magic = br.ReadUInt32();

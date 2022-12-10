@@ -1,0 +1,100 @@
+{
+  "basement": [
+    "BGM_1A"
+  ],
+  "safe": [
+    "BGM_31"
+  ],
+  "outside": [],
+  "creepy": [
+    "BGM_00",
+    "BGM_0A",
+    "BGM_0E",
+    "BGM_1A",
+    "BGM_1B",
+    "BGM_1C",
+    "BGM_1D",
+    "BGM_1E",
+    "BGM_02",
+    "BGM_2D",
+    "BGM_2E",
+    "BGM_3A",
+    "BGM_3E",
+    "BGM_07",
+    "BGM_09",
+    "BGM_14",
+    "BGM_15",
+    "BGM_16",
+    "BGM_17",
+    "BGM_18",
+    "BGM_19",
+    "BGM_20",
+    "BGM_26",
+    "BGM_30",
+    "BGM_32",
+    "BGM_33",
+    "BGM_34",
+    "BGM_36",
+    "BGM_37",
+    "BGM_40",
+    "BGM_49",
+    "BGM_2B"
+  ],
+  "calm": [
+    "BGM_0C",
+    "BGM_3F",
+    "BGM_13",
+    "BGM_31",
+    "BGM_56"
+  ],
+  "danger": [
+    "BGM_0F",
+    "BGM_2C",
+    "BGM_3D",
+    "BGM_04",
+    "BGM_05",
+    "BGM_08",
+    "BGM_23",
+    "BGM_24",
+    "BGM_24A",
+    "BGM_24B",
+    "BGM_25",
+    "BGM_28",
+    "BGM_29",
+    "BGM_38",
+    "BGM_48",
+    "BGM_57"
+  ],
+  "ambient": [
+    "SE_03",
+    "SE_3C",
+    "SE_44",
+    "SE_46"
+  ],
+  "alarm": [
+    "SE_50"
+  ],
+  "instrument_bad": [
+    "*BGM_10",
+    "*BGM_12",
+    "!BGM_0F",
+    "!BGM_2C",
+    "!SELECT05",
+    "!SE_45",
+    "!ENDING06"
+  ],
+  "instrument_progress": [
+    "*BGM_1F",
+    "*BGM_11",
+    "!BGM_2D",
+    "!BGM_37",
+    "!BGM_2E",
+    "!BGM_3F"
+  ],
+  "instrument_good": [
+    "*BGM_2B",
+    "!BGM_3B",
+    "!BGM_0C",
+    "!BGM_2E"
+  ]
+}
