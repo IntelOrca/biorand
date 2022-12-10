@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:IntelOrca.Biohazard.BioRand"
         mc:Ignorable="d"
         Title="BioRand: A Resident Evil Randomizer"
-        Width="550"
+        Width="500"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         SizeToContent="Height">
@@ -20,164 +20,135 @@
         <Border x:Name="versionBox" Visibility="Collapsed" Background="#FFB" Padding="8,4">
             <TextBlock><Hyperlink Click="UpdateLink_Click">A new update is available!</Hyperlink></TextBlock>
         </Border>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <ListView x:Name="gameListView"
-                      Grid.Column="0"
-                      Padding="0"
-                      Margin="0"
-                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                      ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                      SelectionChanged="gameListView_SelectionChanged"
-                      Background="Black">
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="Padding" Value="0"/>
-                    </Style>
-                </ListView.ItemContainerStyle>
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <Image Margin="4"
-                               Width="64"
-                               RenderOptions.BitmapScalingMode="HighQuality"
-                               Source="{Binding Image}" />
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-                <local:GameMenuItem Image="/resources/re1.png" />
-                <local:GameMenuItem Image="/resources/re2.png" />
-                <local:GameMenuItem Image="/resources/re3.png" />
-                <local:GameMenuItem Image="/resources/settings.png" />
-            </ListView>
-            <Grid Grid.Column="1" Margin="4">
-                <StackPanel x:Name="panelConfig" Visibility="Hidden">
-                    <local:GameLocationBox x:Name="gameLocation1" Tag="0" Header="Resident Evil 1" Validate="gameLocation_Validate" Changed="gameLocation_Changed" />
-                    <local:GameLocationBox x:Name="gameLocation2" Tag="1" Header="Resident Evil 2" Validate="gameLocation_Validate" Changed="gameLocation_Changed" />
-                    <local:GameLocationBox x:Name="gameLocation3" Tag="2" Header="Resident Evil 3" Validate="gameLocation_Validate" Changed="gameLocation_Changed" />
+        <StackPanel Margin="4">
+            <GroupBox Header="Seed">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="50" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Button Grid.Column="0" Content="Seed" Click="RandomizeSeed_Click" />
+                    <TextBox x:Name="txtSeed"
+                             Grid.Column="1"
+                             FontFamily="Courier New"
+                             FontSize="24"
+                             TextAlignment="Center"
+                             TextChanged="txtSeed_TextChanged"
+                             Margin="4,0" />
+                    <Button Grid.Column="2" Content="Config" Click="RandomizeConfig_Click" />
+                    <Grid Grid.Row="1" Grid.ColumnSpan="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" TextAlignment="Left"><Hyperlink Click="ReportIssue_Click">Report an issue with this seed</Hyperlink></TextBlock>
+                        <TextBlock Grid.Column="1" TextAlignment="Right"><Hyperlink Click="ViewDocs_Click">View Documentation</Hyperlink></TextBlock>
+                    </Grid>
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="General">
+                <StackPanel>
+                    <CheckBox x:Name="chkRngChars">Randomize characters, voice</CheckBox>
+                    <CheckBox x:Name="chkRngBgm">Randomize background music</CheckBox>
                 </StackPanel>
-                <StackPanel x:Name="panelRando" Visibility="Visible">
-                    <GroupBox Header="Seed">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="50" />
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="50" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Button Grid.Column="0" Content="Seed" Click="RandomizeSeed_Click" />
-                            <TextBox x:Name="txtSeed"
-                                    Grid.Column="1"
-                                    FontFamily="Courier New"
-                                    FontSize="24"
-                                    TextAlignment="Center"
-                                    TextChanged="txtSeed_TextChanged"
-                                    Margin="4,0" />
-                            <Button Grid.Column="2" Content="Config" Click="RandomizeConfig_Click" />
-                            <Grid Grid.Row="1" Grid.ColumnSpan="3">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*" />
-                                    <ColumnDefinition Width="1*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" TextAlignment="Left"><Hyperlink Click="ReportIssue_Click">Report an issue with this seed</Hyperlink></TextBlock>
-                                <TextBlock Grid.Column="1" TextAlignment="Right"><Hyperlink Click="ViewDocs_Click">View Documentation</Hyperlink></TextBlock>
-                            </Grid>
-                        </Grid>
-                    </GroupBox>
-                    <GroupBox Header="General">
-                        <StackPanel>
-                            <CheckBox x:Name="chkRngChars">Randomize characters, voice</CheckBox>
-                            <CheckBox x:Name="chkRngBgm">Randomize background music</CheckBox>
-                        </StackPanel>
-                    </GroupBox>
-                    <local:CheckGroupBox x:Name="chkRngEnemies" Header="Randomize Enemies">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="25" />
-                            </Grid.RowDefinitions>
-                            <local:RandoSlider Grid.Row="0" x:Name="sliderEnemyDifficulty" Heading="Difficulty" LowText="Ez" HighText="Hard" Maximum="3"
-                                               ToolTip="Adjust likelyhood of more easier / slower enemies (crows, ivies, spiders, zombies), or more difficult / faster enemies (ceberus', lickers, tyrants) being placed."/>
-                            <local:PieChart Grid.Row="1" x:Name="pieEnemies" Kind="Bar" Margin="3" />
-                        </Grid>
-                    </local:CheckGroupBox>
-                    <local:CheckGroupBox x:Name="chkRngDoors" Header="Randomize Doors">
-                        <StackPanel>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*" />
-                                    <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="2*" />
-                                </Grid.ColumnDefinitions>
-                                <local:RandoSlider Grid.Column="0"
-                                                x:Name="sliderAreaCount"
-                                                Heading="Number of Segments"
-                                                LowText="1"
-                                                HighText="4"
-                                                Maximum="3"
-                                                ToolTip="The number of rooms per area." />
-                                <local:RandoSlider Grid.Column="2"
-                                                x:Name="sliderAreaSize"
-                                                Heading="Segment Size"
-                                                LowText="Low"
-                                                HighText="High"
-                                                Maximum="7"
-                                                ToolTip="The number of rooms per area."/>
-                            </Grid>
-                            <TextBlock x:Name="lblEstimateCompletionTime" Foreground="Brown" Text="Estimate completion time: 10 - 30 minutes" />
-                        </StackPanel>
-                    </local:CheckGroupBox>
-                    <local:CheckGroupBox x:Name="chkRngItems" Header="Randomize Items">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*" />
-                                <ColumnDefinition Width="16" />
-                                <ColumnDefinition Width="2*" />
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0">
-                                <CheckBox x:Name="chkIncludeDocuments" ToolTip="When checked, documents will become potential key items or anything else. This includes photos developed in the dark room.">Include documents</CheckBox>
-                                <CheckBox x:Name="chkAlternativeRoute" ToolTip="When checked, key items will be placed in any order. For example the spade key may be placed in the basement and the heart key in the main hall.">Allow alternative routes</CheckBox>
-                                <CheckBox x:Name="chkProtectSoftLock" ToolTip="When checked, prevents lab keys from spawning in the police station.">Protect from soft lock</CheckBox>
-                                <CheckBox x:Name="chkShuffleItems" ToolTip="When checked, keeps original items and quantities, but shuffles them.">Shuffle default items</CheckBox>
-                                <local:PieChart x:Name="pieItemRatios" Padding="8,8,8,0" Width="120" />
-                                <TextBlock TextAlignment="Center">Item Pickup Distribution</TextBlock>
-                            </StackPanel>
-                            <StackPanel Grid.Column="2"
-                                    x:Name="panelItemSliders">
-                                <local:RandoSlider x:Name="sliderAmmo" Heading="Ammo probability" LowText="None" HighText="High"
-                                                ToolTip="Probability of non-key items being ammunition." />
-                                <local:RandoSlider x:Name="sliderHealth" Heading="Health probability" LowText="None" HighText="High"
-                                                ToolTip="Probability of non-key items being health." />
-                                <local:RandoSlider x:Name="sliderInkRibbons" Heading="Ink Ribbon probability" LowText="None" HighText="High"
-                                                ToolTip="Probability of non-key items being ink ribbons." />
-                                <local:RandoSlider x:Name="sliderAmmoQuantity" Heading="Ammo average quantity" LowText="None" HighText="High" Maximum="7"
-                                                ToolTip="Average quantity of ammunition per ammunition pick up.&#xa;Highest setting will allow a maximum of 60 handgun bullets in a pickup, or 30 shotgun shells." />
-                            </StackPanel>
-                        </Grid>
-                    </local:CheckGroupBox>
-                    <GroupBox Header="Generate">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="150" />
-                                <ColumnDefinition Width="80" />
-                                <ColumnDefinition Width="80" />
-                            </Grid.ColumnDefinitions>
-                            <ComboBox x:Name="dropdownVariant" Grid.Column="0" Margin="4" SelectedIndex="0">
-                                <ComboBoxItem Content="Leon A / Claire B" />
-                                <ComboBoxItem Content="Claire A / Leon B" />
-                            </ComboBox>
-                            <Button Grid.Column="1" Margin="4" Click="btnGenerate_Click">Generate</Button>
-                            <Button Grid.Column="2" x:Name="btnLog0" Margin="4" IsEnabled="False" Click="btnLeonLog_Click">Leon Log...</Button>
-                            <Button Grid.Column="3" x:Name="btnLog1" Margin="4" IsEnabled="False" Click="btnClaireLog_Click">Claire Log...</Button>
-                        </Grid>
-                    </GroupBox>
+            </GroupBox>
+            <local:CheckGroupBox x:Name="chkRngEnemies" Header="Randomize Enemies">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="25" />
+                    </Grid.RowDefinitions>
+                    <local:RandoSlider Grid.Row="0" x:Name="sliderEnemyDifficulty" Heading="Difficulty" LowText="Ez" HighText="Hard" Maximum="3"
+                                       ToolTip="Adjust likelyhood of more easier / slower enemies (crows, ivies, spiders, zombies), or more difficult / faster enemies (ceberus', lickers, tyrants) being placed."/>
+                    <local:PieChart Grid.Row="1" x:Name="pieEnemies" Kind="Bar" Margin="3" />
+                </Grid>
+            </local:CheckGroupBox>
+            <local:CheckGroupBox x:Name="chkRngDoors" Header="Randomize Doors">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="2*" />
+                        </Grid.ColumnDefinitions>
+                        <local:RandoSlider Grid.Column="0"
+                                           x:Name="sliderAreaCount"
+                                           Heading="Number of Segments"
+                                           LowText="1"
+                                           HighText="4"
+                                           Maximum="3"
+                                           ToolTip="The number of rooms per area." />
+                        <local:RandoSlider Grid.Column="2"
+                                           x:Name="sliderAreaSize"
+                                           Heading="Segment Size"
+                                           LowText="Low"
+                                           HighText="High"
+                                           Maximum="7"
+                                           ToolTip="The number of rooms per area."/>
+                    </Grid>
+                    <TextBlock x:Name="lblEstimateCompletionTime" Foreground="Brown" Text="Estimate completion time: 10 - 30 minutes" />
                 </StackPanel>
-            </Grid>
-        </Grid>
+            </local:CheckGroupBox>
+            <local:CheckGroupBox x:Name="chkRngItems" Header="Randomize Items">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="16" />
+                        <ColumnDefinition Width="2*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <CheckBox x:Name="chkIncludeDocuments" ToolTip="When checked, documents will become potential key items or anything else. This includes photos developed in the dark room.">Include documents</CheckBox>
+                        <CheckBox x:Name="chkAlternativeRoute" ToolTip="When checked, key items will be placed in any order. For example the spade key may be placed in the basement and the heart key in the main hall.">Allow alternative routes</CheckBox>
+                        <CheckBox x:Name="chkProtectSoftLock" ToolTip="When checked, prevents lab keys from spawning in the police station.">Safe key placement</CheckBox>
+                        <CheckBox x:Name="chkShuffleItems" ToolTip="When checked, keeps original items and quantities, but shuffles them.">Shuffle default items</CheckBox>
+                        <local:PieChart x:Name="pieItemRatios" Padding="8,8,8,0" Width="120" />
+                        <TextBlock TextAlignment="Center">Item Pickup Distribution</TextBlock>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2"
+                                x:Name="panelItemSliders">
+                        <local:RandoSlider x:Name="sliderAmmo" Heading="Ammo probability" LowText="None" HighText="High"
+                                           ToolTip="Probability of non-key items being ammunition." />
+                        <local:RandoSlider x:Name="sliderHealth" Heading="Health probability" LowText="None" HighText="High"
+                                           ToolTip="Probability of non-key items being health." />
+                        <local:RandoSlider x:Name="sliderInkRibbons" Heading="Ink Ribbon probability" LowText="None" HighText="High"
+                                           ToolTip="Probability of non-key items being ink ribbons." />
+                        <local:RandoSlider x:Name="sliderAmmoQuantity" Heading="Ammo average quantity" LowText="None" HighText="High" Maximum="7"
+                                           ToolTip="Average quantity of ammunition per ammunition pick up.&#xa;Highest setting will allow a maximum of 60 handgun bullets in a pickup, or 30 shotgun shells." />
+                    </StackPanel>
+                </Grid>
+            </local:CheckGroupBox>
+            <GroupBox Header="Generate">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="30" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="txtGameDataLocation" Margin="4,4,2,4" Text="F:\games\re2" />
+                        <Button Grid.Column="1" Margin="2,4,4,4" Click="btnBrowse_Click">...</Button>
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="80" />
+                        </Grid.ColumnDefinitions>
+                        <ComboBox x:Name="dropdownVariant" Grid.Column="0" Margin="4" SelectedIndex="0">
+                            <ComboBoxItem Content="Leon A / Claire B" />
+                            <ComboBoxItem Content="Claire A / Leon B" />
+                        </ComboBox>
+                        <Button Grid.Column="1" Margin="4" Click="btnGenerate_Click">Generate</Button>
+                        <Button Grid.Column="2" x:Name="btnLog0" Margin="4" IsEnabled="False" Click="btnLeonLog_Click">Leon Log...</Button>
+                        <Button Grid.Column="3" x:Name="btnLog1" Margin="4" IsEnabled="False" Click="btnClaireLog_Click">Claire Log...</Button>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
     </StackPanel>
 </Window>
