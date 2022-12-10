@@ -2662,7 +2662,11 @@
           "target": "616"
         }
       ],
-      "enemies": [ {} ]
+      "enemies": [
+        {
+          "excludeTypes": [ 34, 36 ]
+        }
+      ]
     },
     "60F": {
       "doors": [
