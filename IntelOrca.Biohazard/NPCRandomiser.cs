@@ -23,8 +23,8 @@ namespace IntelOrca.Biohazard
         private readonly HashSet<VoiceSample> _randomized = new HashSet<VoiceSample>();
         private readonly INpcHelper _npcHelper;
 
-        private VoiceSample[] voiceInfo = new VoiceSample[0];
-        private VoiceSample[] available = new VoiceSample[0];
+        private VoiceSample[] _voiceSamples = new VoiceSample[0];
+        private VoiceSample[] _uniqueSamples = new VoiceSample[0];
 
         public NPCRandomiser(RandoLogger logger, RandoConfig config, string originalDataPath, string modPath, GameData gameData, Map map, Rng random, INpcHelper npcHelper)
         {
@@ -42,7 +42,7 @@ namespace IntelOrca.Biohazard
         public void Randomise()
         {
             _logger.WriteHeading("Randomizing Characters, Voices:");
-            _pool.AddRange(available.Shuffle(_random));
+            _pool.AddRange(_uniqueSamples.Shuffle(_random));
             foreach (var rdt in _gameData.Rdts)
             {
                 RandomizeRoom(_random.NextFork(), rdt);
@@ -154,7 +154,7 @@ namespace IntelOrca.Biohazard
         private void RandomizeVoices(Rdt rdt, Rng rng, string playerActor, int cutscene, Dictionary<string, string> actorToNewActorMap)
         {
             var actors = actorToNewActorMap.Values.Append(playerActor).ToArray();
-            foreach (var sample in available)
+            foreach (var sample in _voiceSamples)
             {
                 if (sample.Player == _config.Player &&
                     sample.Cutscene == cutscene &&
@@ -201,18 +201,17 @@ namespace IntelOrca.Biohazard
 
         private VoiceSample? GetRandomVoice(Rng rng, string actor, string? kind, string[] actors, double maxLength)
         {
-            var index = _pool.FindIndex(x => x.Actor == actor && ((kind == null && x.Kind != "radio") || x.Kind == kind) && x.CheckConditions(actors) && (maxLength == 0 || x.Length <= maxLength));
+            var index = _pool.FindIndex(x => CheckSample(x, actor, kind, actors, maxLength));
             if (index == -1)
             {
-                var newItems = voiceInfo
+                var newItems = _uniqueSamples
                     .Where(x => x.Actor == actor)
-                    .Shuffle(rng)
-                    .ToArray();
-                if (newItems.Length == 0)
-                    return null;
-
+                    .Shuffle(rng);
                 _pool.AddRange(newItems);
-                index = _pool.Count - 1;
+
+                index = _pool.FindIndex(x => CheckSample(x, actor, kind, actors, maxLength));
+                if (index == -1)
+                    return null;
             }
 
             var sample = _pool[index];
@@ -220,9 +219,22 @@ namespace IntelOrca.Biohazard
             return sample;
         }
 
+        private bool CheckSample(VoiceSample sample, string actor, string? kind, string[] actors, double maxLength)
+        {
+            if (maxLength != 0 && sample.Length <= maxLength)
+                return false;
+            if (sample.Actor != actor)
+                return false;
+            if (sample.Kind != kind && (kind == "radio" || sample.Kind == "radio"))
+                return false;
+            if (!sample.CheckConditions(actors))
+                return false;
+            return true;
+        }
+
         private void SetVoices()
         {
-            var groups = available.GroupBy(x => x.Path);
+            var groups = _voiceSamples.GroupBy(x => x.Path);
             foreach (var group in groups)
             {
                 var sampleOrder = group.OrderBy(x => x.Start).ToArray();
@@ -267,12 +279,9 @@ namespace IntelOrca.Biohazard
 
         private void LoadVoiceInfo(string originalDataPath)
         {
-            if (voiceInfo.Length == 0 || available.Length == 0)
-            {
-                voiceInfo = LoadVoiceInfoFromJson();
-                available = voiceInfo;
-                // available = RemoveDuplicateVoices(voiceInfo, originalDataPath);
-            }
+            _voiceSamples = LoadVoiceInfoFromJson();
+            _uniqueSamples = _voiceSamples;
+            // _uniqueSamples = RemoveDuplicateVoices(_voiceSamples, originalDataPath);
         }
 
         private VoiceSample[] LoadVoiceInfoFromJson()
@@ -327,15 +336,16 @@ namespace IntelOrca.Biohazard
 
         private static VoiceSample[] RemoveDuplicateVoices(VoiceSample[] samples, string originalDataPath)
         {
-            var distinct = samples.ToList();
+            var distinct = new List<VoiceSample>();
             foreach (var group in samples.GroupBy(x => GetVoiceSize(originalDataPath, x)))
             {
-                if (group.Count() <= 1)
-                    continue;
-
-                foreach (var item in group.Skip(1))
+                var pathToKeep = group.First().Path;
+                foreach (var item in group)
                 {
-                    distinct.RemoveAll(x => x.Start == 0 && x.End == 0 && x.Path == item.Path);
+                    if (item.Path == pathToKeep)
+                    {
+                        distinct.Add(item);
+                    }
                 }
             }
             return distinct.ToArray();
