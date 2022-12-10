@@ -9,22 +9,23 @@ namespace IntelOrca.Biohazard
         private MemoryStream _stream = new MemoryStream();
         private WaveHeader _header;
         private bool _headerWritten;
+        private double _initialSilence;
 
         public WaveformBuilder()
         {
         }
 
-        public WaveformBuilder(string templatePath)
-        {
-            Append(templatePath, 0, 0);
-        }
-
         private void WriteHeader(in WaveHeader header)
         {
+            if (_headerWritten)
+                throw new InvalidOperationException();
+
             var bw = new BinaryWriter(_stream);
             bw.Write(header);
             _header = header;
             _headerWritten = true;
+
+            AppendSilence(_initialSilence);
         }
 
         private void Finish()
@@ -40,9 +41,17 @@ namespace IntelOrca.Biohazard
 
         public void Save(string path)
         {
+            if (!_headerWritten)
+                throw new InvalidOperationException();
+
             Finish();
             using (var fs = new FileStream(path, FileMode.Create))
             {
+                if (path.EndsWith(".sap", StringComparison.OrdinalIgnoreCase))
+                {
+                    var bw = new BinaryWriter(fs);
+                    bw.Write((ulong)1);
+                }
                 _stream.Position = 0;
                 _stream.CopyTo(fs);
                 _stream.Position = _stream.Length;
@@ -55,7 +64,10 @@ namespace IntelOrca.Biohazard
                 return;
 
             if (!_headerWritten)
-                throw new InvalidOperationException("No previous waveform appended yet.");
+            {
+                _initialSilence += length;
+                return;
+            }
 
             var numBytes = AlignTime(in _header, length);
             if (numBytes <= 0)
@@ -72,27 +84,43 @@ namespace IntelOrca.Biohazard
 
         public void Append(string path, double start, double end)
         {
-            if (path.EndsWith(".sap", StringComparison.OrdinalIgnoreCase))
-                throw new NotImplementedException();
-
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
-                var br = new BinaryReader(fs);
-                var header = br.ReadStruct<WaveHeader>();
-
-                if (!_headerWritten)
+                if (path.EndsWith(".sap", StringComparison.OrdinalIgnoreCase))
                 {
-                    WriteHeader(in header);
-                }
+                    fs.Position += 8;
 
-                var startOffset = AlignTime(in header, start);
-                var endOffset = AlignTime(in header, end);
-                var length = endOffset - startOffset;
-                if (length > 0)
-                {
-                    fs.Position += startOffset;
-                    fs.CopyAmountTo(_stream, length);
+                    var ms = new MemoryStream();
+                    var decoder = new ADPCMDecoder();
+                    decoder.Convert(fs, ms);
+
+                    ms.Position = 0;
+                    Append(ms, start, end);
                 }
+                else
+                {
+                    Append(fs, start, end);
+                }
+            }
+        }
+
+        public void Append(Stream input, double start, double end)
+        {
+            var br = new BinaryReader(input);
+            var header = br.ReadStruct<WaveHeader>();
+
+            if (!_headerWritten)
+            {
+                WriteHeader(in header);
+            }
+
+            var startOffset = AlignTime(in header, start);
+            var endOffset = AlignTime(in header, end);
+            var length = endOffset - startOffset;
+            if (length > 0)
+            {
+                input.Position += startOffset;
+                input.CopyAmountTo(_stream, length);
             }
         }
 

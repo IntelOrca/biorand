@@ -315,7 +315,7 @@
     "pl1/voice/stage1/v047.sap": { "rdt": "115", "player": 1, "actor": "claire" },
     "pl1/voice/stage1/v048.sap": { "rdt": "115", "player": 1, "actor": "leon" },
     "pl1/voice/stage1/v049.sap": { "rdt": "115", "player": 1, "actor": "leon" },
-	"pl1/voice/stage1/v050.sap": { "rdt": "115", "player": 1, "actor": "claire" },
+    "pl1/voice/stage1/v050.sap": { "rdt": "115", "player": 1, "actor": "claire" },
 
     "pl1/voice/stage2/v000.sap": { "rdt": "202", "player": 1, "actor": "marvin" },
     "pl1/voice/stage2/v001.sap": { "rdt": "202", "player": 1, "actor": "claire" },
@@ -379,10 +379,10 @@
     "pl1/voice/stage3/v012.sap": { "rdt": "300", "player": 1, "actor": "irons" },
     "pl1/voice/stage3/v013.sap": { "rdt": "300", "player": 1, "actor": "irons" },
     "pl1/voice/stage3/v014.sap": { "rdt": "300", "player": 1, "actor": "irons" },
-	"pl1/voice/stage3/v015.sap": { "rdt": "300", "player": 1, "actor": "claire" },
+    "pl1/voice/stage3/v015.sap": { "rdt": "300", "player": 1, "actor": "claire" },
     "pl1/voice/stage3/v016.sap": { "rdt": "300", "player": 1, "actor": "irons" },
     "pl1/voice/stage3/v017.sap": { "rdt": "300", "player": 1, "actor": "irons" },
-	"pl1/voice/stage3/v018.sap": { "rdt": "301", "player": 1, "actor": "ben" },
+    "pl1/voice/stage3/v018.sap": { "rdt": "301", "player": 1, "actor": "ben" },
 
     "pl1/voice/stage3/v021.sap": { "rdt": "307", "player": 1, "cutscene": 0, "actor": "claire", "kind": "npc", "condition": "@sherry" }, // could remove the name to work w/everyone
     "pl1/voice/stage3/v022.sap": { "rdt": "307", "player": 1, "cutscene": 0, "actor": "sherry", "kind": "pc" },
@@ -415,7 +415,7 @@
 
     "pl1/voice/stage4/v000.sap": { "rdt": "400", "player": 1, "actor": "claire", "condition": "@sherry" }, // could remove the name to work w/everyone
     "pl1/voice/stage4/v001.sap": { "rdt": "400", "player": 1, "actor": "sherry", "condition": "@claire" }, // could remove the name to work w/everyone
-	"pl1/voice/stage4/v002.sap": { "rdt": "400", "player": 1, "actor": "claire" },
+    "pl1/voice/stage4/v002.sap": { "rdt": "400", "player": 1, "actor": "claire" },
     "pl1/voice/stage4/v003.sap": { "rdt": "400", "player": 1, "actor": "sherry" },
     "pl1/voice/stage4/v004.sap": { "rdt": "400", "player": 1, "actor": "claire", "condition": "@sherry" }, // could remove the name to work w/everyone
     "pl1/voice/stage4/v005.sap": { "rdt": "404", "player": 1, "actor": "claire" },
@@ -448,7 +448,7 @@
     "pl1/voice/stage4/v032.sap": { "rdt": "408", "player": 1, "actor": "annette" },
     "pl1/voice/stage4/v033.sap": { "rdt": "408", "player": 1, "actor": "claire" }, // Same as v014, but it can work with males too
     "pl1/voice/stage4/v034.sap": { "rdt": "408", "player": 1, "actor": "annette" },
-    "pl1/voice/stage4/v035.sap": { "rdt": "408", "player": 1, "actor": "annette" },
+    "pl1/voice/stage4/v035.sap": { "rdt": "408", "player": 1, "actor": "claire" },
     "pl1/voice/stage4/v036.sap": { "rdt": "408", "player": 1, "actor": "claire", "condition": "!sherry" },
     "pl1/voice/stage4/v037.sap": { "rdt": "408", "player": 1, "actor": "annette" },
     "pl1/voice/stage4/v038.sap": { "rdt": "408", "player": 1, "actor": "annette" },
@@ -468,7 +468,7 @@
     "pl1/voice/stage4/v052.sap": { "rdt": "410", "player": 1, "actor": "claire" },
 
     "pl1/voice/stage5/v000.sap": { "rdt": "503", "player": 1, "actor": "claire" },
-	"pl1/voice/stage5/v001.sap": { "rdt": "503", "player": 1, "actor": "claire", "condition": "@sherry" }, // could remove the name to work w/everyone
+    "pl1/voice/stage5/v001.sap": { "rdt": "503", "player": 1, "actor": "claire", "condition": "@sherry" }, // could remove the name to work w/everyone
     "pl1/voice/stage5/v002.sap": { "rdt": "503", "player": 1, "actor": "sherry" },
     "pl1/voice/stage5/v003.sap": { "rdt": "503", "player": 1, "actor": "claire", "condition": "@sherry" }, // could remove the name to work w/everyone
     "pl1/voice/stage5/v004.sap": { "rdt": "505", "player": 1, "actor": "sherry", "condition": "@claire" }, // could remove the name to work w/everyone
@@ -477,7 +477,7 @@
     "pl1/voice/stage5/v008.sap": { "rdt": "505", "player": 1, "actor": "sherry", "condition": "@claire" }, // could remove the name to work w/everyone
     "pl1/voice/stage5/v009.sap": { "rdt": "505", "player": 1, "actor": "claire" },
     "pl1/voice/stage5/v010.sap": { "rdt": "505", "player": 1, "actor": "sherry" },
-	"pl1/voice/stage5/v011.sap": { "rdt": "505", "player": 1, "actor": "claire", "condition": "@sherry" }, // could remove the name to work w/everyone
+    "pl1/voice/stage5/v011.sap": { "rdt": "505", "player": 1, "actor": "claire", "condition": "@sherry" }, // could remove the name to work w/everyone
     "pl1/voice/stage5/v012.sap": { "rdt": "505", "player": 1, "actor": "claire" },
     "pl1/voice/stage5/v013.sap": { "rdt": "505", "player": 1, "actor": "sherry" },
     "pl1/voice/stage5/v014.sap": { "rdt": "505", "player": 1, "actor": "claire" },
@@ -529,14 +529,14 @@
 
     "pl1/voice/stage6/v042.sap": { "rdt": "614", "player": 1, "actor": "claire", "condition": "@annette" },
     "pl1/voice/stage6/v043.sap": { "rdt": "614", "player": 1, "actor": "annette" },
-    "pl1/voice/stage6/v044.sap": { "rdt": "614", "player": 1, "actor": "annette" },
+    "pl1/voice/stage6/v044.sap": { "rdt": "614", "player": 1, "actor": "claire" },
     "pl1/voice/stage6/v045.sap": { "rdt": "614", "player": 1, "actor": "annette" },
     "pl1/voice/stage6/v046.sap": { "rdt": "614", "player": 1, "actor": "claire", "condition": "!sherry" },
     "pl1/voice/stage6/v047.sap": { "rdt": "614", "player": 1, "actor": "annette" },
     "pl1/voice/stage6/v048.sap": { "rdt": "614", "player": 1, "actor": "annette" },
     "pl1/voice/stage6/v049.sap": { "rdt": "614", "player": 1, "actor": "annette" },
     "pl1/voice/stage6/v050.sap": { "rdt": "614", "player": 1, "actor": "annette" },
-	"pl1/voice/stage6/v051.sap": { "rdt": "614", "player": 1, "actor": "claire" },
+    "pl1/voice/stage6/v051.sap": { "rdt": "614", "player": 1, "actor": "claire" },
     "pl1/voice/stage6/v052.sap": { "rdt": "614", "player": 1, "actor": "annette" },
     "pl1/voice/stage6/v053.sap": { "rdt": "614", "player": 1, "actor": "claire" },
     "pl1/voice/stage6/v054.sap": { "rdt": "614", "player": 1, "actor": "annette" },
