@@ -47,6 +47,7 @@
           "target": "102"
         }
       ],
+      "enemies": [],
       "npcs": [
         {
           "includeTypes": [ 66, 67, 68, 71, 74, 79, 80, 85 ]
@@ -85,8 +86,7 @@
           "id": 31,
           "type": 0
         }
-      ],
-      "enemies": [ {} ]
+      ]
     },
     "104": {
       "doors": [
@@ -146,8 +146,7 @@
         {
           "target": "108"
         }
-      ],
-      "enemies": [ {} ]
+      ]
     },
     "108": {
       "doors": [
@@ -244,7 +243,8 @@
           "id": 16,
           "requires": [ 51 ]
         }
-      ]
+      ],
+      "enemies": []
     },
     "10C": {
       "doors": [
@@ -278,7 +278,8 @@
           "type": 0,
           "player": 1
         }
-      ]
+      ],
+      "enemies": []
     },
     "10E": {
       "doorRando": [
@@ -331,8 +332,7 @@
           "target": "112",
           "requires": [ 53 ]
         }
-      ],
-      "enemies": [ {} ]
+      ]
     },
     "111": {
       "doorRando": [
@@ -468,8 +468,7 @@
         {
           "player": 0
         }
-      ],
-      "npcs": [ {} ]
+      ]
     },
     "115": {
       "doorRando": [
@@ -543,8 +542,7 @@
           "id": 0,
           "priority": "low"
         }
-      ],
-      "enemies": [ {} ]
+      ]
     },
     "118": {
       "doors": [
@@ -554,8 +552,7 @@
         {
           "target": "119"
         }
-      ],
-      "enemies": [ {} ]
+      ]
     },
     "119": {
       "doors": [
@@ -603,8 +600,7 @@
           "target": "103",
           "noReturn": true
         }
-      ],
-      "enemies": [ {} ]
+      ]
     },
     "200": {
       "doors": [
@@ -975,8 +971,7 @@
           "id": 20,
           "priority": "low"
         }
-      ],
-      "enemies": [ {} ]
+      ]
     },
     "20E": {
       "doorRando": [
@@ -1014,16 +1009,14 @@
           "target": "210",
           "requires": [ 92 ]
         }
-      ],
-      "enemies": [ {} ]
+      ]
     },
     "210": {
       "doors": [
         {
           "target": "20F"
         }
-      ],
-      "enemies": [ {} ]
+      ]
     },
     "211": {
       "doors": [
@@ -1048,8 +1041,7 @@
           "target": "215",
           "requires": [ 92 ]
         }
-      ],
-      "enemies": [ {} ]
+      ]
     },
     "212": {
       "doors": [
@@ -1124,7 +1116,6 @@
           "player": 1
         }
       ],
-      "enemies": [ {} ],
       "npcs": [
         {
           "includeTypes": [ 68, 69, 81 ]
@@ -1149,9 +1140,7 @@
         {
           "target": "301"
         }
-      ],
-      "enemies": [ {} ],
-      "npcs": [ {} ]
+      ]
     },
     "21A": {
       "doors": [
@@ -1260,6 +1249,7 @@
           "target": "309"
         }
       ],
+      "enemies": [],
       "npcs": [
         {
           "includeOffsets": [ 5392, 5444 ],
@@ -1289,6 +1279,7 @@
           "priority": "low"
         }
       ],
+      "enemies": [],
       "npcs": [
         {
           "includeOffsets": [ 6876, 7204, 7508 ],
@@ -1373,7 +1364,8 @@
         {
           "target": "30B"
         }
-      ]
+      ],
+      "enemies": []
     },
     "304": {
       "doors": [
@@ -1496,6 +1488,7 @@
           "lock": "unblock"
         }
       ],
+      "enemies": [],
       "npcs": []
     },
     "30A": {
@@ -1765,7 +1758,6 @@
           "player": 0
         }
       ],
-      "enemies": [ {} ],
       "npcs": []
     },
     "402": {
@@ -1777,7 +1769,6 @@
           "target": "403"
         }
       ],
-      "enemies": [ {} ],
       "npcs": [
         {
           "player": 0
@@ -1852,8 +1843,7 @@
           "requires": [ 47 ],
           "doorRando": true
         }
-      ],
-      "npcs": [ {} ]
+      ]
     },
     "404": {
       "doorRando": [
@@ -2034,7 +2024,8 @@
         {
           "player": 0
         }
-      ]
+      ],
+      "enemies": []
     },
     "40B": {
       "doors": [
@@ -2397,7 +2388,8 @@
           "id": 4,
           "priority": "low"
         }
-      ]
+      ],
+      "enemies": []
     },
     "508": {
       "doors": [
@@ -2531,16 +2523,14 @@
           "doorRando": true,
           "player": 0
         }
-      ],
-      "npcs": [ {} ]
+      ]
     },
     "605": {
       "doors": [
         {
           "target": "603"
         }
-      ],
-      "enemies": [ {} ]
+      ]
     },
     "606": {
       "doorRando": [
@@ -2587,7 +2577,6 @@
           "target": "608"
         }
       ],
-      "enemies": [ {} ],
       "npcs": []
     },
     "607": {
@@ -2687,8 +2676,7 @@
           "id": 9,
           "priority": "low"
         }
-      ],
-      "enemies": [ {} ]
+      ]
     },
     "60A": {
       "doorRando": [
@@ -2706,8 +2694,7 @@
           "noUnlock": true
         }
       ],
-      "requires": [ 47 ],
-      "enemies": [ {} ]
+      "requires": [ 47 ]
     },
     "60B": {
       "doors": [
@@ -2726,8 +2713,7 @@
           "requires": [ 76 ],
           "requiresRoom": [ "608" ]
         }
-      ],
-      "enemies": [ {} ]
+      ]
     },
     "60C": {
       "doorRando": [
@@ -2821,8 +2807,7 @@
           "priority": "low",
           "doorRando": false
         }
-      ],
-      "enemies": [ {} ]
+      ]
     },
     "610": {
       "doors": [
@@ -2837,8 +2822,7 @@
           "player": 1,
           "scenario": 0
         }
-      ],
-      "enemies": [ {} ]
+      ]
     },
     "611": {
       "doorRando": [
@@ -2937,7 +2921,7 @@
           "player": 1
         }
       ],
-      "npcs": [ {} ]
+      "enemies": []
     },
     "615": {
       "doorRando": [
@@ -2976,8 +2960,7 @@
           "player": 1,
           "scenario": 0
         }
-      ],
-      "enemies": [ {} ]
+      ]
     },
     "616": {
       "doors": [
@@ -3021,7 +3004,8 @@
         {
           "target": "700"
         }
-      ]
+      ],
+      "enemies": []
     },
     "700": {
       "doorRando": [
@@ -3073,9 +3057,7 @@
           "randomize": false,
           "scenario": 1
         }
-      ],
-      "enemies": [ {} ],
-      "npcs": [ {} ]
+      ]
     },
     "701": {
       "doorRando": [
@@ -3123,7 +3105,7 @@
           "type": 0
         }
       ],
-      "npcs": [ {} ]
+      "enemies": []
     },
     "703": {
       "doorRando": [
@@ -3151,8 +3133,7 @@
           "randomize": false,
           "scenario": 1
         }
-      ],
-      "npcs": [ {} ]
+      ]
     },
     "704": {
       "doorRando": [
