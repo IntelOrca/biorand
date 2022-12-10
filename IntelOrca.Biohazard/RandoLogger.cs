@@ -32,6 +32,7 @@ namespace IntelOrca.Biohazard
         public void WriteException(Exception ex)
         {
             WriteLine($"Exception: {ex.Message}");
+            WriteLine(ex.StackTrace);
         }
     }
 }

@@ -194,7 +194,7 @@ namespace IntelOrca.Biohazard
             }
             catch (Exception ex)
             {
-                logger.WriteLine(ex.Message);
+                logger.WriteException(ex);
                 throw;
             }
         }
