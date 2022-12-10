@@ -1086,7 +1086,8 @@
         },
         {
           "target": "40D",
-          "lock": "unblock"
+          "lock": "unblock",
+          "randomize": false
         }
       ],
       "items": [
@@ -1184,6 +1185,12 @@
       ]
     },
     "40C": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "player": 0
+        }
+      ],
       "doors": [
         {
           "target": "40A",
@@ -1196,14 +1203,16 @@
       "items": [
         {
           "id": 3,
-          "priority": "fixed"
+          "priority": "fixed",
+          "doorRando": false
         }
       ]
     },
     "40D": {
       "doors": [
         {
-          "target": "406"
+          "target": "406",
+          "randomize": false
         },
         {
           "target": "40E",
