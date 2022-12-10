@@ -233,6 +233,7 @@ namespace IntelOrca.Biohazard
                 br.Read(buffer, 0, len);
                 bw.Write(buffer, 0, len);
                 _samplesWritten += len / 2;
+                offset += len;
             }
         }
 
