@@ -220,7 +220,7 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        protected abstract string GetPlayerName(int player);
+        public abstract string GetPlayerName(int player);
         private string GetScenarioName(int scenario) => scenario == 0 ? "A" : "B";
 
         private Map GetMapFromJson()

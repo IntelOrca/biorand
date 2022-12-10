@@ -15,7 +15,7 @@ namespace IntelOrca.Biohazard.RE2
         internal override IEnemyHelper EnemyHelper { get; } = new Re2EnemyHelper();
         internal override INpcHelper NpcHelper { get; } = new Re2NpcHelper();
 
-        protected override string GetPlayerName(int player) => player == 0 ? "Leon" : "Claire";
+        public override string GetPlayerName(int player) => player == 0 ? "Leon" : "Claire";
 
         public override bool ValidateGamePath(string path)
         {
