@@ -35,7 +35,6 @@ namespace IntelOrca.Biohazard.BioRand
             LoadSettings();
             UpdateUi();
             UpdateEnabledUi();
-            UpdateLogButtons();
 #if !DEBUG
             CheckForNewVersion();
 #endif
@@ -650,6 +649,7 @@ namespace IntelOrca.Biohazard.BioRand
                 dropdownVariant.Visibility = index == 1 ?
                     Visibility.Visible :
                     Visibility.Hidden;
+                UpdateLogButtons();
             }
 
             _settings.LastSelectedGame = index;
@@ -745,24 +745,26 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
-        private void btnLeonLog_Click(object sender, RoutedEventArgs e)
+        private void btnLog0_Click(object sender, RoutedEventArgs e)
         {
             ViewLog(0);
         }
 
-        private void btnClaireLog_Click(object sender, RoutedEventArgs e)
+        private void btnLog1_Click(object sender, RoutedEventArgs e)
         {
             ViewLog(1);
         }
 
         private void UpdateLogButtons()
         {
+            var randomizer = GetRandomizer();
             var buttons = new[] { btnLog0, btnLog1 };
             for (int i = 0; i < 2; i++)
             {
                 var btn = buttons[i];
                 var path = GetLogPath(i);
                 btn.IsEnabled = File.Exists(path);
+                btn.Content = randomizer.GetPlayerName(i) + " Log...";
             }
         }
 
