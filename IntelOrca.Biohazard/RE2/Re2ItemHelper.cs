@@ -27,6 +27,8 @@ namespace IntelOrca.Biohazard.RE2
                     return (byte)ItemType.HerbB;
                 case CommonItemKind.FirstAid:
                     return (byte)ItemType.FAidSpray;
+                case CommonItemKind.Knife:
+                    return (byte)ItemType.Knife;
             }
             throw new NotImplementedException();
         }
@@ -258,6 +260,11 @@ namespace IntelOrca.Biohazard.RE2
         public bool HasInkRibbons(RandoConfig config)
         {
             return true;
+        }
+
+        public int[] GetInventorySize(RandoConfig config)
+        {
+            return null;
         }
     }
 }

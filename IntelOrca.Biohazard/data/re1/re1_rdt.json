@@ -985,7 +985,7 @@
         {
           "id": 3,
           "type": 6,
-          "priority": "locked",
+          "priority": "fixed",
           "player": 0
         },
         {

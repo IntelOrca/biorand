@@ -86,6 +86,11 @@ namespace IntelOrca.Biohazard.RE1
             GenerateRdts(config.WithPlayerScenario(0, 0), installPath, modPath);
             GenerateRdts(config.WithPlayerScenario(1, 0), installPath, modPath);
 
+            if (config.RandomItems)
+            {
+                SerialiseInventory(modPath);
+            }
+
             if (config.RandomBgm)
             {
                 using var logger = new RandoLogger(Path.Combine(modPath, $"log_bgm.txt"));

@@ -124,6 +124,8 @@ namespace IntelOrca.Biohazard.RE1
                     return Re1ItemIds.BlueHerb;
                 case CommonItemKind.FirstAid:
                     return Re1ItemIds.FAidSpray;
+                case CommonItemKind.Knife:
+                    return Re1ItemIds.CombatKnife;
             }
             throw new NotImplementedException();
         }
@@ -193,8 +195,7 @@ namespace IntelOrca.Biohazard.RE1
             var enemyDifficulty = config.RandomEnemies ? 0 : config.EnemyDifficulty;
 
             var items = new List<byte>();
-            if (config.Player == 0)
-                items.Add(Re1ItemIds.Beretta);
+            items.Add(Re1ItemIds.Beretta);
             if (enemyDifficulty >= 2 || rng.Next(0, 2) >= 1)
                 items.Add(Re1ItemIds.Shotgun);
             if (enemyDifficulty >= 3 || rng.Next(0, 3) >= 1)
@@ -211,6 +212,14 @@ namespace IntelOrca.Biohazard.RE1
         public bool HasInkRibbons(RandoConfig config)
         {
             return config.Player == 0;
+        }
+
+        public int[] GetInventorySize(RandoConfig config)
+        {
+            if (config.Player == 0)
+                return new int[] { 6, 6 };
+            else
+                return new int[] { 8 };
         }
     }
 }

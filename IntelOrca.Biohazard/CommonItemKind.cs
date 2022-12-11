@@ -8,5 +8,6 @@
         RedHerb,
         BlueHerb,
         FirstAid,
+        Knife,
     }
 }

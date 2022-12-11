@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Xml;
 
 namespace IntelOrca.Biohazard
 {
     public abstract class BaseRandomiser
     {
+        private List<RandomInventory?> _inventories { get; } = new List<RandomInventory>();
+
         protected abstract BioVersion BiohazardVersion { get; }
         internal abstract IItemHelper ItemHelper { get; }
         internal abstract IEnemyHelper EnemyHelper { get; }
@@ -19,6 +24,21 @@ namespace IntelOrca.Biohazard
         protected abstract RdtId[] GetRdtIds(string dataPath);
         protected abstract string GetRdtPath(string dataPath, RdtId rdtId, int player);
         protected virtual Dictionary<RdtId, ulong>? GetRdtChecksums(int player) => null;
+
+        private void SetInventory(int player, RandomInventory? inventory)
+        {
+            if (inventory == null)
+                return;
+
+            lock (_inventories)
+            {
+                while (_inventories.Count <= player)
+                {
+                    _inventories.Add(null);
+                }
+                _inventories[player] = inventory;
+            }
+        }
 
         public int DoIntegrityCheck(string installPath)
         {
@@ -163,6 +183,7 @@ namespace IntelOrca.Biohazard
                     try
                     {
                         itemRando.RandomiseItems(graph);
+                        SetInventory(config.Player, itemRando.RandomizeStartInventory());
                     }
                     finally
                     {
@@ -273,6 +294,29 @@ namespace IntelOrca.Biohazard
             //         }
             //     }
             // }
+        }
+
+        protected void SerialiseInventory(string modPath)
+        {
+            var doc = new XmlDocument();
+            var root = doc.CreateElement("Init");
+            foreach (var inventory in _inventories.Reverse<RandomInventory?>())
+            {
+                var playerNode = doc.CreateElement("Player");
+                if (inventory != null)
+                {
+                    foreach (var entry in inventory.Entries)
+                    {
+                        var entryNode = doc.CreateElement("Entry");
+                        entryNode.SetAttribute("id", entry.Type.ToString());
+                        entryNode.SetAttribute("count", entry.Count.ToString());
+                        playerNode.AppendChild(entryNode);
+                    }
+                }
+                root.AppendChild(playerNode);
+            }
+            doc.AppendChild(root);
+            doc.Save(Path.Combine(modPath, "init.xml"));
         }
     }
 }

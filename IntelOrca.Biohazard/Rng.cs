@@ -27,6 +27,11 @@ namespace IntelOrca.Biohazard
             return _random.NextDouble();
         }
 
+        public bool NextProbability(int percent)
+        {
+            return Next(0, 100) >= (100 - percent);
+        }
+
         public int Next(int min, int max)
         {
             if (max <= min)

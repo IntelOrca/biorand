@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 
 namespace IntelOrca.Biohazard
 {
@@ -22,6 +23,8 @@ namespace IntelOrca.Biohazard
         private HashSet<ushort> _haveItems = new HashSet<ushort>();
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
         private HashSet<RdtItemId> _visitedItems = new HashSet<RdtItemId>();
+
+        private RandomInventory.Entry? _startingWeapon;
 
         public ItemRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Rng random, IItemHelper itemHelper)
         {
@@ -90,6 +93,65 @@ namespace IntelOrca.Biohazard
             SetLinkedItems();
             SetItems();
             PatchDesk();
+        }
+
+        public RandomInventory? RandomizeStartInventory()
+        {
+            var size = _itemHelper.GetInventorySize(_config);
+            if (size == null)
+                return null;
+
+            var entries = new List<RandomInventory.Entry>();
+            int remaining;
+            for (int i = 0; i < size.Length; i++)
+            {
+                _logger.WriteHeading($"Randomizing Inventory {i}:");
+                remaining = size[i];
+
+                // Always give the player a knife
+                AddToInventoryCommon(CommonItemKind.Knife, 0);
+
+                // Primary weapon
+                if (_startingWeapon != null)
+                    AddToInventory(_startingWeapon.Value.Type, _startingWeapon.Value.Count);
+
+                // Health items
+                if (_rng.NextProbability(50))
+                    AddToInventoryCommon(CommonItemKind.GreenHerb, 1);
+                if (_rng.NextProbability(50))
+                    AddToInventoryCommon(CommonItemKind.RedHerb, 1);
+                if (_rng.NextProbability(50))
+                    AddToInventoryCommon(CommonItemKind.BlueHerb, 1);
+                if (_rng.NextProbability(25))
+                    AddToInventoryCommon(CommonItemKind.FirstAid, 1);
+
+                // Maybe an ink ribbon or two
+                if (_itemHelper.HasInkRibbons(_config) && _rng.NextProbability(50))
+                    AddToInventoryCommon(CommonItemKind.InkRibbon, (byte)_rng.Next(1, 3));
+
+                while (remaining > 0)
+                {
+                    entries.Add(new RandomInventory.Entry());
+                    remaining--;
+                }
+            }
+            return new RandomInventory(entries.ToArray());
+
+            void AddToInventoryCommon(CommonItemKind commonType, byte count)
+            {
+                var type = _itemHelper.GetItemId(commonType);
+                AddToInventory(type, count);
+            }
+
+            void AddToInventory(byte type, byte count)
+            {
+                if (remaining > 0)
+                {
+                    entries.Add(new RandomInventory.Entry(type, count));
+                    _logger.WriteLine($"Adding {_itemHelper.GetItemName(type)} x{count}");
+                    remaining--;
+                }
+            }
         }
 
         private bool JustOptionalItemsLeft()
@@ -460,12 +522,20 @@ namespace IntelOrca.Biohazard
 
             // Weapons first
             var ammoTypes = new HashSet<byte>() { _itemHelper.GetItemId(CommonItemKind.HandgunAmmo) };
-            var items = _itemHelper.GetWeapons(_rng, _config);
+            var items = _itemHelper.GetWeapons(_rng, _config).Shuffle(_rng);
+            var firstWeapon = true;
             foreach (var itemType in items)
             {
                 // Spawn weapon
                 var amount = GetRandomAmount(itemType, true);
-                SpawnItem(shuffled, itemType, amount);
+                if (firstWeapon && _itemHelper.GetInventorySize(_config) != null)
+                {
+                    _startingWeapon = new RandomInventory.Entry(itemType, amount);
+                }
+                else
+                {
+                    SpawnItem(shuffled, itemType, amount);
+                }
 
                 // Add supported ammo types
                 var weaponAmmoTypes = _itemHelper.GetAmmoTypeForWeapon(itemType);
@@ -473,6 +543,8 @@ namespace IntelOrca.Biohazard
                 {
                     ammoTypes.Add(ammoType);
                 }
+
+                firstWeapon = false;
             }
 
             // Now everything else
