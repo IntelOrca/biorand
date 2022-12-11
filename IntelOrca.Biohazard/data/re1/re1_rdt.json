@@ -977,7 +977,21 @@
           "target": "307"
         },
         {
-          "target": "30C"
+          "target": "30C",
+          "lock": "unblock"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "type": 6,
+          "priority": "locked",
+          "player": 0
+        },
+        {
+          "id": 3,
+          "type": 0,
+          "player": 1
         }
       ]
     },
@@ -1008,6 +1022,13 @@
         {
           "target": "30F",
           "player": 1
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "type": 0,
+          "player": 0
         }
       ]
     },
@@ -1467,7 +1488,8 @@
         },
         {
           "target": "512",
-          "requiresRoom": [ "513" ]
+          "requiresRoom": [ "513" ],
+          "lock": "unblock"
         }
       ]
     },
