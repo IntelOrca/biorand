@@ -1282,7 +1282,7 @@
   "voice/VA03_09.wav": { "rdt": "514", "player": 1, "actor": "jill" },
   "voice/VA06_00.wav": { "rdt": "20E", "player": 0, "actor": "chris" },
   "voice/VA09_01.wav": {
-    "rdt": "000",
+    "rdt": "50C",
     "player": 1,
     "actors": [
       {
@@ -1295,7 +1295,7 @@
     ]
   },
   "voice/VA09_02.wav": {
-    "rdt": "000",
+    "rdt": "50C",
     "player": 1,
     "actors": [
       {
@@ -1308,7 +1308,7 @@
     ]
   },
   "voice/VA09_03.wav": {
-    "rdt": "000",
+    "rdt": "50C",
     "player": 1,
     "actors": [
       {
@@ -1320,13 +1320,13 @@
       }
     ]
   },
-  "voice/VA09_04.wav": { "rdt": "000", "player": 1, "actor": "barry" },
-  "voice/VA09_05.wav": { "rdt": "000", "player": 1, "actor": "barry" },
-  "voice/VA09_06.wav": { "rdt": "000", "player": 1, "actor": "jill" },
-  "voice/VA09_07.wav": { "rdt": "000", "player": 1, "actor": "barry" },
-  "voice/VA09_08.wav": { "rdt": "000", "player": 1, "actor": "jill" },
+  "voice/VA09_04.wav": { "rdt": "50C", "player": 1, "actor": "barry" },
+  "voice/VA09_05.wav": { "rdt": "50C", "player": 1, "actor": "barry" },
+  "voice/VA09_06.wav": { "rdt": "50C", "player": 1, "actor": "jill" },
+  "voice/VA09_07.wav": { "rdt": "50C", "player": 1, "actor": "barry" },
+  "voice/VA09_08.wav": { "rdt": "50C", "player": 1, "actor": "jill" },
   "voice/VA09_09.wav": {
-    "rdt": "000",
+    "rdt": "50C",
     "player": 1,
     "actors": [
       {
@@ -1338,6 +1338,6 @@
       }
     ]
   },
-  "voice/VA09_0A.wav": { "rdt": "000", "player": 1, "actor": "barry" },
+  "voice/VA09_0A.wav": { "rdt": "50C", "player": 1, "actor": "barry" },
   "voice/VA09_0B.wav": { "rdt": "508", "player": 0, "actor": "jill" }
 }
