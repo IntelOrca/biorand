@@ -45,8 +45,14 @@ namespace IntelOrca.Biohazard
             var checkpoint = graph.Start;
             ClearItems();
             _visitedRooms.Clear();
+
+            var loopLimit = 5000;
             while (!_visitedRooms.Contains(graph.End) || !JustOptionalItemsLeft())
             {
+                loopLimit--;
+                if (loopLimit <= 0)
+                    throw new Exception("Item randomization failed to terminate");
+
                 PlaceKeyItem(_config.RandomDoors || _config.AlternativeRoutes);
                 var newCheckpoint = Search(checkpoint);
                 if (newCheckpoint != checkpoint && _requiredItems.Count == 0)
