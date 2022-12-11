@@ -3134,6 +3134,28 @@
           "randomize": false,
           "scenario": 1
         }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 7936, 7988, 8046 ],
+          "cutscene": 0,
+          "player": 0
+        },
+        {
+          "includeOffsets": [ 7866, 7936, 7988, 8046 ],
+          "cutscene": 1,
+          "player": 0
+        },
+        {
+          "includeOffsets": [ 7928, 7972 ],
+          "cutscene": 0,
+          "player": 1
+        },
+        {
+          "includeOffsets": [ 7868, 7928, 7972 ],
+          "cutscene": 1,
+          "player": 1
+        }
       ]
     },
     "704": {

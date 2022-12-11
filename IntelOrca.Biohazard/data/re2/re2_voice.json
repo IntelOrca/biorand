@@ -262,10 +262,11 @@
     "pl0/voice/stage7/v000.sap": { "rdt": "702", "player": 0, "actor": "ada" },
     "pl0/voice/stage7/v001.sap": { "rdt": "702", "player": 0, "actor": "leon", "condition": "@ada" },
     "pl0/voice/stage7/v002.sap": { "rdt": "702", "player": 0, "actor": "leon" },
-    "pl0/voice/stage7/v006.sap": { "rdt": "703", "player": 0, "actor": "leon", "condition": "!claire" },
-    "pl0/voice/stage7/v007.sap": { "rdt": "703", "player": 0, "actor": "leon" },
-    "pl0/voice/stage7/v009.sap": { "rdt": "703", "player": 0, "actor": "leon" },
-    "pl0/voice/stage7/v010.sap": { "rdt": "703", "player": 0, "actor": "claire" },
+
+    "pl0/voice/stage7/v006.sap": { "rdt": "703", "player": 0, "actor": "leon", "cutscene": 0, "condition": "!claire" },
+    "pl0/voice/stage7/v007.sap": { "rdt": "703", "player": 0, "actor": "leon", "cutscene": 1 },
+    "pl0/voice/stage7/v009.sap": { "rdt": "703", "player": 0, "actor": "leon", "cutscene": 1 },
+    "pl0/voice/stage7/v010.sap": { "rdt": "703", "player": 0, "actor": "claire", "cutscene": 1 },
 
     "pl1/voice/stage1/v000.sap": { "rdt": "101", "player": 1, "actor": "kendo" },
     "pl1/voice/stage1/v001.sap": { "rdt": "101", "player": 1, "actor": "kendo" },
@@ -548,8 +549,9 @@
     "pl1/voice/stage7/v000.sap": { "rdt": "702", "player": 1, "actor": "ada" },
     "pl1/voice/stage7/v001.sap": { "rdt": "702", "player": 1, "actor": "claire" },
     "pl1/voice/stage7/v002.sap": { "rdt": "702", "player": 1, "actor": "claire" },
-    "pl1/voice/stage7/v006.sap": { "rdt": "703", "player": 1, "actor": "claire" },
-    "pl1/voice/stage7/v007.sap": { "rdt": "703", "player": 1, "actor": "claire" },
-    "pl1/voice/stage7/v009.sap": { "rdt": "703", "player": 1, "actor": "claire" },
-    "pl1/voice/stage7/v010.sap": { "rdt": "703", "player": 1, "actor": "leon" }
+
+    "pl1/voice/stage7/v006.sap": { "rdt": "703", "player": 1, "actor": "claire", "cutscene": 0 },
+    "pl1/voice/stage7/v007.sap": { "rdt": "703", "player": 1, "actor": "claire", "cutscene": 1 },
+    "pl1/voice/stage7/v009.sap": { "rdt": "703", "player": 1, "actor": "claire", "cutscene": 1 },
+    "pl1/voice/stage7/v010.sap": { "rdt": "703", "player": 1, "actor": "leon", "cutscene": 1 }
 }
