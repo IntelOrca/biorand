@@ -1185,7 +1185,8 @@
           "target": "405"
         },
         {
-          "target": "409"
+          "target": "409",
+          "lock": "unblock"
         },
         {
           "target": "40A",
@@ -1194,6 +1195,12 @@
       ]
     },
     "409": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "player": 0
+        }
+      ],
       "doors": [
         {
           "target": "408"
@@ -1279,6 +1286,11 @@
           "id": 3,
           "priority": "fixed",
           "doorRando": false
+        },
+        {
+          "id": 3,
+          "requiresRoom": [ "409", "40F" ],
+          "player": 1
         }
       ]
     },
