@@ -194,43 +194,52 @@ namespace IntelOrca.Biohazard
                 _randomized.Add(voice);
 
                 var logKindSource = kind == null ? "" : $",{kind}";
-                var logKindTarget = randomVoice.Kind == null ? "" : $",{randomVoice.Kind}";
-                _logger.WriteLine($"    {voice.Path} [{actor}{logKindSource}] becomes {randomVoice.Path} [{newActor}{logKindTarget}]");
+                var logKindTarget = randomVoice.Source.Kind == null ? "" : $",{randomVoice.Source.Kind}";
+                var logClip = randomVoice.IsClipped ? $" ({randomVoice.Start:0.00}-{randomVoice.End:0.00})" : "";
+                _logger.WriteLine($"    {voice.Path} [{actor}{logKindSource}] becomes {randomVoice.Path} [{newActor}{logKindTarget}]{logClip}");
             }
         }
 
-        private VoiceSample? GetRandomVoice(Rng rng, string actor, string? kind, string[] actors, double maxLength)
+        private VoiceSampleReplacement? GetRandomVoice(Rng rng, string actor, string? kind, string[] actors, double maxLength, bool refillPool = true)
         {
-            var index = _pool.FindIndex(x => CheckSample(x, actor, kind, actors, maxLength));
-            if (index == -1)
+            for (int i = 0; i < _pool.Count; i++)
             {
-                var newItems = _uniqueSamples
-                    .Where(x => x.Actor == actor)
-                    .Shuffle(rng);
-                _pool.AddRange(newItems);
+                var sample = _pool[i];
+                var result = CheckSample(sample, actor, kind, actors, maxLength);
+                if (result == SampleCheckResult.Bad)
+                    continue;
 
-                index = _pool.FindIndex(x => CheckSample(x, actor, kind, actors, maxLength));
-                if (index == -1)
-                    return null;
+                _pool.RemoveAt(i);
+                if (result == SampleCheckResult.Clip)
+                    return new VoiceSampleReplacement(sample, sample.NameClipped!.Start, sample.NameClipped!.End);
+                else
+                    return new VoiceSampleReplacement(sample, sample.Start, sample.End);
             }
 
-            var sample = _pool[index];
-            _pool.RemoveAt(index);
-            return sample;
+            if (!refillPool)
+                return null;
+
+            var newItems = _uniqueSamples
+                .Where(x => x.Actor == actor)
+                .Shuffle(rng);
+            _pool.AddRange(newItems);
+            return GetRandomVoice(rng, actor, kind, actors, maxLength, refillPool: false);
         }
 
-        private bool CheckSample(VoiceSample sample, string actor, string? kind, string[] actors, double maxLength)
+        private SampleCheckResult CheckSample(VoiceSample sample, string actor, string? kind, string[] actors, double maxLength)
         {
             if (maxLength != 0 && sample.Length <= maxLength)
-                return false;
+                return SampleCheckResult.Bad;
             if (sample.Actor != actor)
-                return false;
+                return SampleCheckResult.Bad;
             if (sample.Kind != kind && (kind == "radio" || sample.Kind == "radio"))
-                return false;
+                return SampleCheckResult.Bad;
             if (!sample.CheckConditions(actors))
-                return false;
-            return true;
+                return sample.NameClipped != null ? SampleCheckResult.Clip : SampleCheckResult.Bad;
+            return SampleCheckResult.Good;
         }
+
+        private enum SampleCheckResult { Bad, Good, Clip }
 
         private void SetVoices()
         {
@@ -245,9 +254,9 @@ namespace IntelOrca.Biohazard
                 var dstPath = GetVoicePath(_modPath, firstSample);
                 Directory.CreateDirectory(Path.GetDirectoryName(dstPath)!);
 
-                if (sampleOrder.Length == 1 && firstSample.Replacement?.Vanilla == true)
+                if (sampleOrder.Length == 1 && firstSample.Replacement?.IsClipped == false)
                 {
-                    var srcPath = GetVoicePath(_originalDataPath, firstSample.Replacement);
+                    var srcPath = GetVoicePath(_originalDataPath, firstSample.Replacement.Source);
                     File.Copy(srcPath, dstPath, true);
                 }
                 else
@@ -258,7 +267,7 @@ namespace IntelOrca.Biohazard
                         var replacement = sample.Replacement;
                         if (replacement != null)
                         {
-                            var sliceSrcPath = GetVoicePath(_originalDataPath, replacement);
+                            var sliceSrcPath = GetVoicePath(_originalDataPath, replacement.Source);
                             builder.Append(sliceSrcPath, replacement.Start, replacement.End);
                             builder.AppendSilence(sample.Length - replacement.Length);
                         }
@@ -411,8 +420,9 @@ namespace IntelOrca.Biohazard
         public bool Vanilla { get; set; }
         public bool Limited { get; set; }
         public VoiceSampleSplit[]? Actors { get; set; }
+        public VoiceSampleNameClip? NameClipped { get; set; }
 
-        public VoiceSample? Replacement { get; set; }
+        public VoiceSampleReplacement? Replacement { get; set; }
 
         public VoiceSample CreateSlice(string actor, double start, double end)
         {
@@ -463,6 +473,32 @@ namespace IntelOrca.Biohazard
     {
         public string? Actor { get; set; }
         public double Split { get; set; }
+    }
+
+    public class VoiceSampleNameClip
+    {
+        public double Start { get; set; }
+        public double End { get; set; }
+    }
+
+    public class VoiceSampleReplacement
+    {
+        public VoiceSample Source { get; }
+        public double Start { get; }
+        public double End { get; }
+
+        public string Path => Source.Path!;
+        public double Length => End - Start;
+        public bool IsClipped => Start != Source.Start || End != Source.End || !Source.Vanilla;
+
+        public VoiceSampleReplacement(VoiceSample source, double start, double end)
+        {
+            Source = source;
+            Start = start;
+            End = end;
+            if (end == 0)
+                End = Source.End;
+        }
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
