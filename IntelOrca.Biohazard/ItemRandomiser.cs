@@ -97,7 +97,7 @@ namespace IntelOrca.Biohazard
             if (_requiredItems.Count == 0)
                 return true;
 
-            return _requiredItems.All(x => x.Item == null || _itemHelper.IsOptionalItem(_config, (byte)x.Item.Value.Type));
+            return _requiredItems.All(x => !x.IsDoor && (x.Item == null || _itemHelper.IsOptionalItem(_config, (byte)x.Item.Value.Type)));
         }
 
         private void ClearItems()
