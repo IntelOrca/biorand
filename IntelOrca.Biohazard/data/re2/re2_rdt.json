@@ -3002,7 +3002,8 @@
           "target": "616"
         },
         {
-          "target": "700"
+          "target": "700",
+          "randomize": false
         }
       ],
       "enemies": []
