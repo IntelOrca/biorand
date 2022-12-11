@@ -18,7 +18,6 @@ namespace IntelOrca.Biohazard
         private List<ItemPoolEntry> _currentPool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _shufflePool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _definedPool = new List<ItemPoolEntry>();
-        private List<(RdtItemId, RdtItemId)> _linkedItems = new List<(RdtItemId, RdtItemId)>();
         private HashSet<KeyRequirement> _requiredItems = new HashSet<KeyRequirement>();
         private HashSet<ushort> _haveItems = new HashSet<ushort>();
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
@@ -136,10 +135,6 @@ namespace IntelOrca.Biohazard
                         {
                             AddItemToPool(item);
                         }
-                    }
-                    foreach (var linkedItem in node.LinkedItems)
-                    {
-                        _linkedItems.Add((new RdtItemId(node.RdtId, linkedItem.Key), linkedItem.Value));
                     }
 
                     if (g_debugLogging && node.Items.Length != 0)
@@ -581,17 +576,35 @@ namespace IntelOrca.Biohazard
         private void SetLinkedItems()
         {
             _logger.WriteLine("Setting up linked items:");
-            foreach (var (sourceId, targetId) in _linkedItems)
+            foreach (var node in _nodes)
             {
-                var sourceItemIndex = _definedPool.FindIndex(x => x.RdtItemId == sourceId);
-                if (sourceItemIndex != -1)
+                foreach (var linkedItem in node.LinkedItems)
                 {
-                    var sourceItem = _definedPool[sourceItemIndex];
-                    var targetItem = sourceItem;
-                    targetItem.RdtItemId = targetId;
-                    _definedPool.Add(targetItem);
-                    _logger.WriteLine($"    {sourceItem.ToString(_itemHelper)} placed at {targetId}");
+                    LinkItem(linkedItem.Value, new RdtItemId(node.RdtId, linkedItem.Key));
                 }
+                if (node.LinkedRdtId != null)
+                {
+                    var linkedRdtId = node.LinkedRdtId.Value;
+                    var linkedRdt = _gameData.GetRdt(linkedRdtId)!;
+                    var ids = linkedRdt.Items.Select(x => x.Id).Distinct().ToArray();
+                    foreach (var id in ids)
+                    {
+                        LinkItem(new RdtItemId(node.RdtId, id), new RdtItemId(linkedRdtId, id));
+                    }
+                }
+            }
+        }
+
+        private void LinkItem(RdtItemId source, RdtItemId target)
+        {
+            var sourceItemIndex = _definedPool.FindIndex(x => x.RdtItemId == source);
+            if (sourceItemIndex != -1)
+            {
+                var sourceItem = _definedPool[sourceItemIndex];
+                var targetItem = sourceItem;
+                targetItem.RdtItemId = target;
+                _definedPool.Add(targetItem);
+                _logger.WriteLine($"    {sourceItem.ToString(_itemHelper)} placed at {target}");
             }
         }
 

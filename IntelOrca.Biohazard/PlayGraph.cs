@@ -140,6 +140,7 @@ namespace IntelOrca.Biohazard
     internal class PlayNode
     {
         public RdtId RdtId { get; set; }
+        public RdtId? LinkedRdtId { get; set; }
         public ItemPoolEntry[] Items { get; set; } = Array.Empty<ItemPoolEntry>();
         public Dictionary<byte, RdtItemId> LinkedItems { get; set; } = new Dictionary<byte, RdtItemId>();
         public ushort[] Requires { get; set; } = Array.Empty<ushort>();

@@ -1011,13 +1011,7 @@ namespace IntelOrca.Biohazard
 
             if (mapRoom.LinkedRoom != null)
             {
-                var linkedRdtId = RdtId.Parse(mapRoom.LinkedRoom);
-                var linkedRdt = _gameData.GetRdt(linkedRdtId)!;
-                foreach (var item in linkedRdt.Items)
-                {
-                    if (!node.LinkedItems.ContainsKey(item.Id))
-                        node.LinkedItems.Add(item.Id, new RdtItemId(linkedRdtId, item.Id));
-                }
+                node.LinkedRdtId = RdtId.Parse(mapRoom.LinkedRoom);
             }
 
             return node;
