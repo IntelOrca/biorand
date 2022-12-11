@@ -42,6 +42,12 @@
       ]
     },
     "101": {
+      "doorRando": [
+        {
+          "cutscene": true,
+          "player": 0
+        }
+      ],
       "linkedRoom": "601",
       "doors": [
         {
@@ -685,6 +691,12 @@
     },
     "20A": {
       "linkedRoom": "70A",
+      "doorRando": [
+        {
+          "cutscene": true,
+          "player": 1
+        }
+      ],
       "doors": [
         {
           "target": "208"
@@ -781,6 +793,12 @@
     },
     "212": {
       "linkedRoom": "712",
+      "doorRando": [
+        {
+          "cutscene": true,
+          "player": 1
+        }
+      ],
       "doors": [
         {
           "target": "211"
@@ -1129,6 +1147,12 @@
       ]
     },
     "404": {
+      "doorRando": [
+        {
+          "cutscene": true,
+          "player": 0
+        }
+      ],
       "doors": [
         {
           "target": "400"
@@ -1494,6 +1518,11 @@
       ]
     },
     "50B": {
+      "doorRando": [
+        {
+          "cutscene": true
+        }
+      ],
       "doors": [
         {
           "target": "508"
@@ -1506,6 +1535,11 @@
       ]
     },
     "50C": {
+      "doorRando": [
+        {
+          "cutscene": true
+        }
+      ],
       "doors": [
         {
           "target": "505"
@@ -1586,6 +1620,11 @@
       ]
     },
     "512": {
+      "doorRando": [
+        {
+          "cutscene": true
+        }
+      ],
       "doors": [
         {
           "target": "50B"
