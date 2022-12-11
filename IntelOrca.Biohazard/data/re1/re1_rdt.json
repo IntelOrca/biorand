@@ -215,6 +215,9 @@
       ],
       "npcs": [
         {
+          "player": 0
+        },
+        {
           "excludeTypes": [ 39 ],
           "player": 1
         }
