@@ -7,7 +7,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Copyright>Copyright (C) Ted John 2022</Copyright>
     <Product>Resident Evil Randomizer</Product>
-    <Version>1.3.2</Version>
+    <Version>1.3.3</Version>
     <RootNamespace>IntelOrca.Biohazard.BioRand</RootNamespace>
     <ApplicationIcon>biorand.ico</ApplicationIcon>
   </PropertyGroup>
