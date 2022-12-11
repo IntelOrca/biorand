@@ -108,10 +108,22 @@ namespace IntelOrca.Biohazard
                 throw new Exception("Unsupported bit rate");
             }
 
-            var numBlocks = _dataLength / _blockAlign;
-            var numSamples = _samplesPerBlock * numBlocks;
-            var length = numSamples / (double)_sampleRate;
-            return length;
+            if (_fmtTag == g_tagPCM)
+            {
+                var length = _dataLength / (double)_byteRate;
+                return length;
+            }
+            else if (_fmtTag == g_tagADPCM)
+            {
+                var numBlocks = _dataLength / _blockAlign;
+                var numSamples = _samplesPerBlock * numBlocks;
+                var length = numSamples / (double)_sampleRate;
+                return length;
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         private void ReadRiffHeader(BinaryReader br)
