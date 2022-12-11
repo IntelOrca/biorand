@@ -153,6 +153,9 @@ namespace IntelOrca.Biohazard
                 case g_dataMagic:
                     ReadDataChunk(br);
                     break;
+                default:
+                    ReadOtherChunk(br);
+                    break;
             }
         }
 
@@ -197,6 +200,13 @@ namespace IntelOrca.Biohazard
             _dataLength = br.ReadUInt32();
             _dataPosition = br.BaseStream.Position;
             br.BaseStream.Position += _dataLength;
+        }
+
+        private void ReadOtherChunk(BinaryReader br)
+        {
+            br.ReadUInt32();
+            var len = br.ReadUInt32();
+            br.BaseStream.Position += len;
         }
 
         private void WriteRIFF(BinaryWriter bw)
