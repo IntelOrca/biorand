@@ -876,7 +876,8 @@
           "requires": [ 29 ],
           "randomize": false
         }
-      ]
+      ],
+      "enemies": []
     },
     "302": {
       "doors": [
