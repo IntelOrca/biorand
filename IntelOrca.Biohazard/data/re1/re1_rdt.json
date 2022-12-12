@@ -440,6 +440,13 @@
         {
           "target": "109"
         }
+      ],
+      "items": [
+        {
+          "id": 1,
+          "type": 0,
+          "player": 1
+        }
       ]
     },
     "114": {
@@ -542,6 +549,13 @@
         },
         {
           "target": "300"
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "type": 0,
+          "player": 1
         }
       ]
     },
@@ -788,6 +802,13 @@
         },
         {
           "target": "212"
+        }
+      ],
+      "items": [
+        {
+          "id": 5,
+          "type": 0,
+          "player": 1
         }
       ]
     },
@@ -1353,6 +1374,13 @@
         {
           "target": "40E"
         }
+      ],
+      "items": [
+        {
+          "id": 1,
+          "type": 0,
+          "player": 1
+        }
       ]
     },
     "410": {
@@ -1498,7 +1526,7 @@
         },
         {
           "target": "50B",
-          "requiresRoom": [ "507", "509", "510" ]
+          "requiresRoom": [ "507", "509", "510" ],
           "lock": "unblock"
         }
       ]
@@ -1530,8 +1558,7 @@
         },
         {
           "target": "512",
-          "requiresRoom": [ "513" ],
-          "lock": "unblock"
+          "lock": "always"
         }
       ]
     },
