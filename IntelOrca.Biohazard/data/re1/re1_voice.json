@@ -1,7 +1,8 @@
 {
-  "voice/V001_00.wav": { "rdt": "106", "player": 0, "actor": "jill" },
+  "voice/V001_00.wav": { "rdt": "106", "cutscene": 0, "player": 0, "actor": "jill" },
   "voice/V001_01.wav": {
     "rdt": "106",
+    "cutscene": 0,
     "player": 0,
     "actors": [
       {
@@ -18,6 +19,7 @@
   "voice/V001_02.wav": { "rdt": "106", "player": 0, "actor": "jill" },
   "voice/V001_03.wav": {
     "rdt": "106",
+    "cutscene": 0,
     "player": 0,
     "actors": [
       {
@@ -35,11 +37,11 @@
       }
     ]
   },
-  "voice/V001_04.wav": { "rdt": "106", "player": 0, "actor": "jill", "condition": "@chris" },
-  "voice/V001_05.wav": { "rdt": "106", "player": 0, "actor": "jill" },
-  "voice/V001_06.wav": { "rdt": "106", "player": 0, "actor": "wesker" },
-  "voice/V003_00.wav": { "rdt": "106", "player": 0, "actor": "chris", "condition": "@Wesker && @Jill" },
-  "voice/V003_01.wav": { "rdt": "106", "player": 0, "actor": "chris", "condition": "!Wesker && !Jill" },
+  "voice/V001_04.wav": { "rdt": "106", "player": 0, "cutscene": 0, "actor": "jill", "condition": "@chris" },
+  "voice/V001_05.wav": { "rdt": "106", "player": 0, "cutscene": 0, "actor": "jill" },
+  "voice/V001_06.wav": { "rdt": "106", "player": 0, "cutscene": 0, "actor": "wesker" },
+  "voice/V003_00.wav": { "rdt": "106", "player": 0, "cutscene": 1, "actor": "chris", "condition": "@Wesker && @Jill" },
+  "voice/V003_01.wav": { "rdt": "106", "player": 0, "cutscene": 1, "actor": "chris", "condition": "!Wesker && !Jill" },
   "voice/V004_00.wav": { "rdt": "100", "player": 0, "actor": "chris" },
   "voice/V004_01.wav": { "rdt": "100", "player": 0, "actor": "rebecca" },
   "voice/V004_02.wav": {
@@ -519,6 +521,7 @@
 
   "voice/V101_00.wav": {
     "rdt": "106",
+    "cutscene": 0,
     "player": 1,
     "actors": [
       {
@@ -530,9 +533,10 @@
       }
     ]
   },
-  "voice/V101_01.wav": { "rdt": "106", "player": 1, "actor": "jill", "condition": "@wesker && !chris" },
+  "voice/V101_01.wav": { "rdt": "106", "cutscene": 0, "player": 1, "actor": "jill", "condition": "@wesker && !chris" },
   "voice/V101_02.wav": {
     "rdt": "106",
+    "cutscene": 0,
     "player": 1,
     "actors": [
       {
@@ -547,6 +551,7 @@
   },
   "voice/V101_03.wav": {
     "rdt": "106",
+    "cutscene": 0,
     "player": 1,
     "actors": [
       {
@@ -567,8 +572,7 @@
       }
     ]
   },
-  "voice/V101_04.wav": { "rdt": "106", "player": 1, "actor": "wesker" },
-
+  "voice/V101_04.wav": { "rdt": "106", "cutscene": 0, "player": 1, "actor": "wesker" },
 
   "voice/V102_00.wav": { "rdt": "105", "player": 1, "actor": "barry" },
   "voice/V102_01.wav": { "rdt": "105", "player": 1, "actor": "barry" },
@@ -628,9 +632,10 @@
   "voice/V102_0E.wav": { "rdt": "000", "player": 1, "actor": "jill", "condition": "!wesker" },
   "voice/V102_10.wav": { "rdt": "105", "player": 1, "actor": "jill" },
 
-  "voice/V103_00.wav": { "rdt": "106", "player": 1, "actor": "barry", "condition": "@jill && !wesker", "nameClipped": { "start": 4.84 } },
+  "voice/V103_00.wav": { "rdt": "106", "cutscene": 2, "player": 1, "actor": "barry", "condition": "@jill && !wesker", "nameClipped": { "start": 4.84 } },
   "voice/V103_01.wav": {
     "rdt": "106",
+    "cutscene": 2,
     "player": 1,
     "actors": [
       {
@@ -666,10 +671,10 @@
       }
     ] // end: 34.5 for alternate
   },
-  "voice/V103_0A.wav": { "rdt": "106", "player": 1, "actor": "jill" },
-  "voice/V103_0B.wav": { "rdt": "106", "player": 1, "actor": "barry", "condition": "@jill", "nameClipped": { "end": 2.75 } },
-  "voice/V103_0C.wav": { "rdt": "106", "player": 1, "actor": "barry" },
-  "voice/V103_0D.wav": { "rdt": "106", "player": 1, "actor": "barry" },
+  "voice/V103_0A.wav": { "rdt": "106", "cutscene": 2, "player": 1, "actor": "jill" },
+  "voice/V103_0B.wav": { "rdt": "106", "cutscene": 2, "player": 1, "actor": "barry", "condition": "@jill", "nameClipped": { "end": 2.75 } },
+  "voice/V103_0C.wav": { "rdt": "106", "cutscene": 2, "player": 1, "actor": "barry" },
+  "voice/V103_0D.wav": { "rdt": "106", "cutscene": 2, "player": 1, "actor": "barry" },
 
   "voice/V104_00.wav": { "rdt": "212", "player": 1, "actor": "barry", "condition": "@jill" },
   "voice/V104_01.wav": { "rdt": "212", "player": 1, "actor": "barry" },

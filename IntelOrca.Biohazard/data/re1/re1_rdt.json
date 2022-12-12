@@ -224,7 +224,21 @@
           "player": 0
         },
         {
+          "includeOffsets": [ 195950, 196006, 195696, 195772, 195858, 196028 ],
           "excludeTypes": [ 39, 40 ],
+          "cutscene": 0,
+          "player": 1
+        },
+        {
+          "includeOffsets": [ 195950, 196006 ],
+          "excludeTypes": [ 39, 40 ],
+          "cutscene": 1,
+          "player": 1
+        },
+        {
+          "includeOffsets": [ 195696, 195772, 195858, 196028 ],
+          "excludeTypes": [ 39, 40 ],
+          "cutscene": 2,
           "player": 1
         }
       ]

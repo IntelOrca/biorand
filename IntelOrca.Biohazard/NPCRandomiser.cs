@@ -321,6 +321,7 @@ namespace IntelOrca.Biohazard
                             limited = false;
                         }
                         var slice = sample.CreateSlice(sub, start, end);
+                        slice.Cutscene = sample.Cutscene;
                         slice.Limited = limited;
                         start = sub.Split;
                         samples.Add(slice);
