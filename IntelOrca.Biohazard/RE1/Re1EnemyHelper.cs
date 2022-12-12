@@ -167,7 +167,6 @@ namespace IntelOrca.Biohazard.RE1
                 case Re1EnemyIds.ZombieResearcher:
                 case Re1EnemyIds.Cerberus:
                 case Re1EnemyIds.SpiderBrown:
-                case Re1EnemyIds.SpiderBlack:
                 case Re1EnemyIds.Crow:
                 case Re1EnemyIds.Hunter:
                 case Re1EnemyIds.Bee:
