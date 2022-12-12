@@ -605,9 +605,9 @@
       }
     ]
   },
-  "voice/V102_0A.wav": { "rdt": "105", "player": 1, "actor": "jill", "condition": "@barry" },
+  "voice/V102_0A.wav": { "rdt": "000", "player": 1, "actor": "jill", "condition": "@barry" },
   "voice/V102_0B.wav": {
-    "rdt": "105",
+    "rdt": "000",
     "player": 1,
     "actors": [
       {
@@ -623,9 +623,9 @@
       }
     ]
   },
-  "voice/V102_0C.wav": { "rdt": "105", "player": 1, "actor": "barry" },
-  "voice/V102_0D.wav": { "rdt": "105", "player": 1, "actor": "jill" },
-  "voice/V102_0E.wav": { "rdt": "105", "player": 1, "actor": "jill", "condition": "!wesker" },
+  "voice/V102_0C.wav": { "rdt": "000", "player": 1, "actor": "barry" },
+  "voice/V102_0D.wav": { "rdt": "000", "player": 1, "actor": "jill" },
+  "voice/V102_0E.wav": { "rdt": "000", "player": 1, "actor": "jill", "condition": "!wesker" },
   "voice/V102_10.wav": { "rdt": "105", "player": 1, "actor": "jill" },
 
   "voice/V103_00.wav": { "rdt": "106", "player": 1, "actor": "barry", "condition": "@jill && !wesker", "nameClipped": { "start": 4.84 } },

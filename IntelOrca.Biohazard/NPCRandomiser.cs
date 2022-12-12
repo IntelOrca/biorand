@@ -228,7 +228,7 @@ namespace IntelOrca.Biohazard
 
         private SampleCheckResult CheckSample(VoiceSample sample, string actor, string? kind, string[] actors, double maxLength)
         {
-            if (maxLength != 0 && sample.Length <= maxLength)
+            if (maxLength != 0 && sample.Length > maxLength)
                 return SampleCheckResult.Bad;
             if (sample.Actor != actor)
                 return SampleCheckResult.Bad;
