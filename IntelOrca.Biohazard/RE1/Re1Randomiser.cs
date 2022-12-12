@@ -108,6 +108,7 @@ namespace IntelOrca.Biohazard.RE1
                     re2r.AddMusicSelection(bgmRandomiser, reConfig);
                 }
 
+                bgmRandomiser.ImportVolume = 0.25f;
                 bgmRandomiser.Randomise();
             }
 

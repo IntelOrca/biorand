@@ -30,6 +30,8 @@ namespace IntelOrca.Biohazard
         private readonly bool _isWav;
         private readonly Rng _rng;
 
+        public float ImportVolume { get; set; } = 1.0f;
+
         public BgmRandomiser(RandoLogger logger, string bgmDirectory, string bgmJson, bool isWav, Rng rng)
         {
             _logger = logger;
@@ -113,6 +115,7 @@ namespace IntelOrca.Biohazard
             else if (srcExtension.Equals(".sap", StringComparison.OrdinalIgnoreCase))
             {
                 var decoder = new ADPCMDecoder();
+                decoder.Volume = ImportVolume;
                 decoder.Convert(src, dst);
             }
         }
@@ -251,10 +254,21 @@ namespace IntelOrca.Biohazard
                     var readBuffer = new float[vorbis.Channels * vorbis.SampleRate / 8];
                     while ((readSamples = vorbis.ReadSamples(readBuffer, 0, readBuffer.Length)) > 0)
                     {
-                        for (int i = 0; i < readSamples; i++)
+                        if (ImportVolume == 1)
                         {
-                            var value = (short)(readBuffer[i] * short.MaxValue);
-                            bw.Write(value);
+                            for (int i = 0; i < readSamples; i++)
+                            {
+                                var value = (short)(readBuffer[i] * short.MaxValue);
+                                bw.Write(value);
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < readSamples; i++)
+                            {
+                                var value = (short)(readBuffer[i] * short.MaxValue * ImportVolume);
+                                bw.Write(value);
+                            }
                         }
                     }
 

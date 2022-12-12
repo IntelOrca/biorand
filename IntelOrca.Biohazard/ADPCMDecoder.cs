@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -37,6 +38,8 @@ namespace IntelOrca.Biohazard
         private int _samplesWritten;
         private long _writeRiffLengthPosition;
         private long _writeDataLengthPosition;
+
+        public float Volume { get; set; } = 1.0f;
 
         public void Convert(string input, string output)
         {
@@ -253,7 +256,15 @@ namespace IntelOrca.Biohazard
             {
                 var len = (int)Math.Min(_dataLength - offset, buffer.Length);
                 br.Read(buffer, 0, len);
-                bw.Write(buffer, 0, len);
+                if (Volume == 1)
+                {
+                    bw.Write(buffer, 0, len);
+                }
+                else
+                {
+                    var samples = MemoryMarshal.Cast<byte, short>(new ReadOnlySpan<byte>(buffer, 0, len));
+                    WriteSamples(bw, samples);
+                }
                 _samplesWritten += len / 2;
                 offset += len;
             }
@@ -289,9 +300,9 @@ namespace IntelOrca.Biohazard
                     sample2[i] = br.ReadInt16();
 
                 for (int i = 0; i < channels; i++)
-                    bw.Write(sample2[i]);
+                    WriteSample(bw, sample2[i]);
                 for (int i = 0; i < channels; i++)
-                    bw.Write(sample1[i]);
+                    WriteSample(bw, sample1[i]);
 
                 // Decode
                 var channel = 0;
@@ -301,11 +312,11 @@ namespace IntelOrca.Biohazard
                     var b = br.ReadByte();
 
                     var sample = ExpandNibble((byte)(b >> 4), channel);
-                    bw.Write(sample);
+                    WriteSample(bw, sample);
                     channel = (channel + 1) % channels;
 
                     sample = ExpandNibble((byte)(b & 0x0F), channel);
-                    bw.Write(sample);
+                    WriteSample(bw, sample);
                     channel = (channel + 1) % channels;
 
                     offset++;
@@ -328,6 +339,21 @@ namespace IntelOrca.Biohazard
                 if (delta[channel] < 16) delta[channel] = 16;
 
                 return predictorTruncated;
+            }
+        }
+
+        private void WriteSample(BinaryWriter bw, short sample)
+        {
+            if (Volume != 1)
+                sample = (short)(sample * Volume);
+            bw.Write(sample);
+        }
+
+        private void WriteSamples(BinaryWriter bw, ReadOnlySpan<short> span)
+        {
+            for (int i = 0; i < span.Length; i++)
+            {
+                bw.Write((short)(span[i] * Volume));
             }
         }
 
