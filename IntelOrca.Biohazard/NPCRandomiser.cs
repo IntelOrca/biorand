@@ -427,6 +427,15 @@ namespace IntelOrca.Biohazard
 
         public VoiceSample CreateSlice(VoiceSampleSplit sub, double start, double end)
         {
+            var nameClip = sub.NameClipped;
+            if (nameClip != null)
+            {
+                if (nameClip.End == 0)
+                    nameClip.End = end;
+                if (nameClip.Start == 0)
+                    nameClip.Start = start;
+            }
+
             return new VoiceSample()
             {
                 Path = Path,
@@ -437,7 +446,7 @@ namespace IntelOrca.Biohazard
                 End = end,
                 MaxLength = end - start,
                 Condition = sub.Condition,
-                NameClipped = sub.NameClipped
+                NameClipped = nameClip
             };
         }
 
