@@ -1378,7 +1378,8 @@
         },
         {
           "target": "410",
-          "requiresRoom": [ "411" ]
+          "requiresRoom": [ "411" ],
+          "lock": "unblock"
         },
         {
           "target": "411",
@@ -1835,7 +1836,8 @@
           "target": "717"
         },
         {
-          "target": "718"
+          "target": "718",
+          "lock": "unblock"
         }
       ],
       "items": [

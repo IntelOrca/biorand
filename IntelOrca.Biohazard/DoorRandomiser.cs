@@ -851,9 +851,20 @@ namespace IntelOrca.Biohazard
 
         private static bool IsSameRdtId(Rdt rdt, RdtId id, RdtId other)
         {
-            if (rdt.Version == BioVersion.Biohazard1 && id.Stage == 255)
+            if (rdt.Version == BioVersion.Biohazard1)
             {
-                return new RdtId(rdt.RdtId.Stage, id.Room) == other;
+                if (id.Stage == 255)
+                {
+                    return new RdtId(rdt.RdtId.Stage, id.Room) == other;
+                }
+                else if (id.Room == other.Room)
+                {
+                    var stageA = id.Stage;
+                    var stageB = other.Stage;
+                    if (stageA >= 5) stageA -= 5;
+                    if (stageB >= 5) stageB -= 5;
+                    return stageA == stageB;
+                }
             }
             return id == other;
         }
