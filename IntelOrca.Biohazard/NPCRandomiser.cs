@@ -320,7 +320,7 @@ namespace IntelOrca.Biohazard
                             end = totalLength;
                             limited = false;
                         }
-                        var slice = sample.CreateSlice(sub.Actor!, start, end);
+                        var slice = sample.CreateSlice(sub, start, end);
                         slice.Limited = limited;
                         start = sub.Split;
                         samples.Add(slice);
@@ -424,17 +424,19 @@ namespace IntelOrca.Biohazard
 
         public VoiceSampleReplacement? Replacement { get; set; }
 
-        public VoiceSample CreateSlice(string actor, double start, double end)
+        public VoiceSample CreateSlice(VoiceSampleSplit sub, double start, double end)
         {
             return new VoiceSample()
             {
                 Path = Path,
-                Actor = actor,
+                Actor = sub.Actor,
                 Rdt = Rdt,
                 Player = Player,
                 Start = start,
                 End = end,
-                MaxLength = end - start
+                MaxLength = end - start,
+                Condition = sub.Condition,
+                NameClipped = sub.NameClipped
             };
         }
 
@@ -473,6 +475,8 @@ namespace IntelOrca.Biohazard
     {
         public string? Actor { get; set; }
         public double Split { get; set; }
+        public string? Condition { get; set; }
+        public VoiceSampleNameClip? NameClipped { get; set; }
     }
 
     public class VoiceSampleNameClip
