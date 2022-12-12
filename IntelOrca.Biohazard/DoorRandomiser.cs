@@ -1259,6 +1259,9 @@ namespace IntelOrca.Biohazard
                 if (dr._boxRoomReached)
                     return true;
 
+                if (!entrance.Randomize || !exit.Randomize)
+                    return true;
+
                 // Do not extend graph via required key edges until a box room is accessible
                 if (entrance.Parent.Category != DoorRandoCategory.Bridge && entrance.Requires.Length != 0)
                     return false;
