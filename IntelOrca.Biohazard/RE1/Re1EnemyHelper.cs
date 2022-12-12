@@ -151,7 +151,6 @@ namespace IntelOrca.Biohazard.RE1
                     exclude(Re1EnemyIds.SpiderBlack);
                     exclude(Re1EnemyIds.Crow);
                     exclude(Re1EnemyIds.Hunter);
-                    exclude(Re1EnemyIds.Chimera);
                     break;
 
                 case Re1EnemyIds.SpiderBlack:
