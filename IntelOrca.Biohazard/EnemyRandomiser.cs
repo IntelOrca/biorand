@@ -280,8 +280,7 @@ namespace IntelOrca.Biohazard
                     break;
                 case Re1EnemyIds.Yawn2:
                     break;
-
-    }
+            }
             Array.Resize(ref result, 16);
             return result;
         }
