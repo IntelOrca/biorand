@@ -143,6 +143,7 @@ namespace IntelOrca.Biohazard
 
             FinalChecks(graph);
             UnfixRE1Doors();
+            UpdateLinkedRooms();
             return graph;
         }
 
@@ -267,6 +268,34 @@ namespace IntelOrca.Biohazard
                     return new RdtId(rdtId.Stage - 5, rdtId.Room);
             }
             return rdtId;
+        }
+
+        private void UpdateLinkedRooms()
+        {
+            foreach (var node in _allNodes)
+            {
+                if (node.LinkedRdtId == null)
+                    continue;
+
+                var rdt = _gameData.GetRdt(node.RdtId)!;
+                var linkedRdt = _gameData.GetRdt(node.LinkedRdtId.Value)!;
+
+                var rdtDoors = rdt.Doors.ToArray();
+                var linkedRdtDoors = linkedRdt.Doors.ToArray();
+                for (int i = 0; i < rdtDoors.Length; i++)
+                {
+                    var src = rdtDoors[i];
+                    var dst = linkedRdtDoors[i];
+                    dst.Target = src.Target;
+                    dst.NextX = src.NextX;
+                    dst.NextY = src.NextY;
+                    dst.NextZ = src.NextZ;
+                    dst.NextD = src.NextD;
+                    dst.LockId = src.LockId;
+                    dst.LockType = src.LockType;
+                }
+                _logger.WriteLine($"Synchronising doors from {node.RdtId} to {node.LinkedRdtId}");
+            }
         }
 
         private void CreateArea(PlayNode begin, PlayNode end, List<PlayNode> pool)

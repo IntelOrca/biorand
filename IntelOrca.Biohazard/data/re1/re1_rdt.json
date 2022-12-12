@@ -1499,6 +1499,7 @@
         {
           "target": "50B",
           "requiresRoom": [ "507", "509", "510" ]
+          "lock": "unblock"
         }
       ]
     },

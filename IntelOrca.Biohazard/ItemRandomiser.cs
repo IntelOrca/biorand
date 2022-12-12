@@ -711,7 +711,7 @@ namespace IntelOrca.Biohazard
         private void PatchDesk()
         {
             var rdt = _gameData.GetRdt(new RdtId(0, 0x15));
-            if (rdt == null)
+            if (rdt == null || rdt.Version != BioVersion.Biohazard2)
                 return;
 
             // Only take 5 inspections for the item rather than 50
