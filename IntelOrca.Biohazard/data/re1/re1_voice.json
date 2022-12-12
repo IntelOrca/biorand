@@ -8,7 +8,7 @@
       {
         "actor": "chris",
         "split": 2.5,
-        "conditions": "!barry",
+        "condition": "!barry",
         "nameClipped": { "start": 2.5 }
       },
       {
@@ -32,7 +32,7 @@
       },
       {
         "actor": "wesker",
-        "conditions": "!jill",
+        "condition": "!jill",
         "nameClipped": { "end": 3.5 }
       }
     ]
@@ -129,12 +129,12 @@
     "actors": [
       {
         "actor": "rebecca",
-        "conditions": "@richard",
+        "condition": "@richard",
         "split": 3
       },
       {
         "actor": "chris",
-        "conditions": "!rebecca",
+        "condition": "!rebecca",
         "nameClipped": { "start": 4.0 }
       }
     ]
@@ -317,12 +317,12 @@
       {
         "actor": "jill",
         "split": 1.5,
-        "conditions": "@chris"
+        "condition": "@chris"
       },
       {
         "actor": "chris",
         "split": 8.4,
-        "conditions": "@jill",
+        "condition": "@jill",
         "nameClipped": { "start": 6.0 }
       },
       {
