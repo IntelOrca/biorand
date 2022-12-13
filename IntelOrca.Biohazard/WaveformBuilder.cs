@@ -82,6 +82,11 @@ namespace IntelOrca.Biohazard
             }
         }
 
+        public void Append(string path)
+        {
+            Append(path, 0, double.NaN);
+        }
+
         public void Append(string path, double start, double end)
         {
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -126,8 +131,16 @@ namespace IntelOrca.Biohazard
 
         private static int AlignTime(in WaveHeader header, double t)
         {
+            if (double.IsNaN(t))
+                return (int)header.nDataLength;
+
             var precise = header.nAvgBytesPerSec * t;
-            return ((int)precise / header.nBlockAlign) * header.nBlockAlign;
+            var result = ((int)precise / header.nBlockAlign) * header.nBlockAlign;
+            if (result > header.nDataLength)
+            {
+                result = (int)header.nDataLength;
+            }
+            return result;
         }
     }
 }

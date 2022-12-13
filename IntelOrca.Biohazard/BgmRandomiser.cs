@@ -7,12 +7,13 @@ using NVorbis;
 
 namespace IntelOrca.Biohazard
 {
-    public class BgmRandomiser
+    internal class BgmRandomiser
     {
         public const string TagAlarm = "alarm";
         public const string TagAmbient = "ambient";
         public const string TagBasement = "basement";
         public const string TagCalm = "calm";
+        public const string TagClown = "clown";
         public const string TagCreepy = "creepy";
         public const string TagDanger = "danger";
         public const string TagInstrument = "instrument";
@@ -29,16 +30,18 @@ namespace IntelOrca.Biohazard
         private readonly string _bgmDirectory;
         private readonly bool _isWav;
         private readonly Rng _rng;
+        private readonly DataManager _dataManager;
 
         public float ImportVolume { get; set; } = 1.0f;
 
-        public BgmRandomiser(RandoLogger logger, string bgmDirectory, string bgmJson, bool isWav, Rng rng)
+        public BgmRandomiser(RandoLogger logger, string bgmDirectory, string bgmJson, bool isWav, Rng rng, DataManager dataManager)
         {
             _logger = logger;
             _bgmJson = bgmJson;
             _bgmDirectory = bgmDirectory;
             _isWav = isWav;
             _rng = rng;
+            _dataManager = dataManager;
         }
 
         public void AddToSelection(string bgmJson, string bgmSubDirectory, string extension)
@@ -61,12 +64,13 @@ namespace IntelOrca.Biohazard
             Shuffle(bgmList, TagAmbient, TagCreepy);
             Shuffle(bgmList, TagAlarm, TagCreepy);
 
-            RandomizeCreepyTheme(bgmList);
-            RandomizeDangerTheme(bgmList);
-            RandomizeResultsTheme(bgmList);
-            RandomizePianoTheme(bgmList);
-            RandomizeSaveTheme(bgmList);
-            RandomizeBasementTheme(bgmList);
+            RandomizeTheme(bgmList, TagCreepy);
+            RandomizeTheme(bgmList, TagDanger);
+            RandomizeTheme(bgmList, TagResults);
+            RandomizeTheme(bgmList, TagInstrumentBad, TagClown);
+            RandomizeTheme(bgmList, TagSafe);
+            if (_rng.Next(0, 4) == 0)
+                RandomizeTheme(bgmList, TagBasement, TagClown);
         }
 
         private void Shuffle(BgmList bgmList, string dstTag, string srcTag)
@@ -132,82 +136,26 @@ namespace IntelOrca.Biohazard
             return new BgmList(dict);
         }
 
-        private void RandomizeSaveTheme(BgmList bgmList)
-        {
-            RandomizeTheme(bgmList, TagSafe, new[]
-            {
-                nameof(Resources.bgm_re0),
-                nameof(Resources.bgm_re1),
-                nameof(Resources.bgm_re3),
-                nameof(Resources.bgm_re4a),
-                nameof(Resources.bgm_re4b),
-                nameof(Resources.bgm_code)
-            });
-        }
+        private void RandomizeTheme(BgmList bgmList, string tag) => RandomizeTheme(bgmList, tag, tag);
 
-        private void RandomizePianoTheme(BgmList bgmList)
-        {
-            if (_rng.Next(0, 2) == 0)
-            {
-                RandomizeTheme(bgmList, TagInstrumentBad, nameof(Resources.bgm_clown));
-            }
-        }
-
-        private void RandomizeBasementTheme(BgmList bgmList)
-        {
-            if (_rng.Next(0, 4) == 0)
-            {
-                RandomizeTheme(bgmList, TagBasement, nameof(Resources.bgm_clown));
-            }
-        }
-
-        private void RandomizeCreepyTheme(BgmList bgmList)
-        {
-            RandomizeTheme(bgmList, TagCreepy, new[]
-            {
-                nameof(Resources.bgm_re4_creepy_0),
-                nameof(Resources.bgm_re4_creepy_1),
-                nameof(Resources.bgm_re4_creepy_2),
-                nameof(Resources.bgm_re4_creepy_3)
-            });
-        }
-
-        private void RandomizeDangerTheme(BgmList bgmList)
-        {
-            RandomizeTheme(bgmList, TagDanger, new[]
-            {
-                nameof(Resources.bgm_re4_danger_0),
-                nameof(Resources.bgm_re4_danger_1),
-                nameof(Resources.bgm_re4_danger_2)
-            });
-        }
-
-        private void RandomizeResultsTheme(BgmList bgmList)
-        {
-            RandomizeTheme(bgmList, TagResults, new[]
-            {
-                nameof(Resources.bgm_re4_results)
-            });
-        }
-
-        private void RandomizeTheme(BgmList bgmList, string tag, params string[] resourceNames)
+        private void RandomizeTheme(BgmList bgmList, string tag, string srcTag)
         {
             try
             {
-                resourceNames = resourceNames.Shuffle(_rng);
+                var files = _dataManager.GetBgmFiles(srcTag).Shuffle(_rng);
                 var samples = bgmList.GetList(tag);
                 var shuffledSamples = samples
                     .Where(x => !x.StartsWith("!"))
                     .Shuffle(_rng)
                     .ToArray();
-                var min = Math.Min(shuffledSamples.Length, resourceNames.Length);
+                var min = Math.Min(shuffledSamples.Length, files.Length);
                 for (int i = 0; i < min; i++)
                 {
-                    var resource = (byte[])Resources.ResourceManager.GetObject(resourceNames[i]);
+                    var resource = File.ReadAllBytes(files[i]);
                     var dst = shuffledSamples[i];
                     if (dst.StartsWith("*"))
                         dst = dst.Substring(1);
-                    RandomizeFromOwnMusic(dst, resourceNames[i], resource);
+                    RandomizeFromOwnMusic(dst, files[i], resource);
                 }
             }
             catch (Exception ex)

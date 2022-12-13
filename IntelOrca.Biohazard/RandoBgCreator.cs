@@ -5,20 +5,19 @@ namespace IntelOrca.Biohazard
 {
     internal static class RandoBgCreator
     {
-        public static void Save(RandoConfig config, string modPath, BioVersion version)
+        public static void Save(RandoConfig config, string modPath, BioVersion version, DataManager dataManager)
         {
             try
             {
+                var src = dataManager.GetData(version, "bg.png");
                 if (version == BioVersion.Biohazard1)
                 {
-                    var src = Resources.title_bg_1;
                     var dataPath = Path.Combine(modPath, "Data");
                     CreateRaw(config, dataPath, "title.pix", src);
                     CreateBitmap(config, modPath, "type.png", src);
                 }
                 else
                 {
-                    var src = Resources.title_bg_2;
                     var dataPath = Path.Combine(modPath, "Common", "Data");
                     CreateBitmap(config, dataPath, "title_bg.png", src);
                     CreateBitmap(config, dataPath, "type00.png", src);

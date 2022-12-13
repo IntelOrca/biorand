@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Xml;
@@ -11,7 +12,7 @@ namespace IntelOrca.Biohazard
 {
     public abstract class BaseRandomiser
     {
-        private List<RandomInventory?> _inventories { get; } = new List<RandomInventory>();
+        private List<RandomInventory?> _inventories { get; } = new List<RandomInventory?>();
 
         protected abstract BioVersion BiohazardVersion { get; }
         internal abstract IItemHelper ItemHelper { get; }
@@ -24,6 +25,19 @@ namespace IntelOrca.Biohazard
         protected abstract RdtId[] GetRdtIds(string dataPath);
         protected abstract string GetRdtPath(string dataPath, RdtId rdtId, int player);
         protected virtual Dictionary<RdtId, ulong>? GetRdtChecksums(int player) => null;
+
+        internal DataManager DataManager
+        {
+            get
+            {
+#if DEBUG
+                var basePath = Path.Combine(Assembly.GetExecutingAssembly().Location, "..\\..\\..\\..\\..\\IntelOrca.Biohazard\\data");
+                return new DataManager(basePath);
+#else
+                return new DataManager();
+#endif
+            }
+        }
 
         private void SetInventory(int player, RandomInventory? inventory)
         {
@@ -193,13 +207,14 @@ namespace IntelOrca.Biohazard
 
                 if (config.RandomEnemies)
                 {
-                    var enemyRandomiser = new EnemyRandomiser(logger, config, gameData, map, randomEnemies, EnemyHelper, modPath);
+                    var enemyRandomiser = new EnemyRandomiser(BiohazardVersion, logger, config, gameData, map, randomEnemies, EnemyHelper, modPath, DataManager);
                     enemyRandomiser.Randomise();
                 }
 
                 if (config.RandomNPCs)
                 {
-                    var npcRandomiser = new NPCRandomiser(logger, config, originalDataPath, modPath, gameData, map, randomNpcs, NpcHelper);
+                    var npcRandomiser = new NPCRandomiser(BiohazardVersion, logger, config, originalDataPath, modPath, gameData, map, randomNpcs, NpcHelper, DataManager);
+                    RandomizeNPCs(npcRandomiser);
                     npcRandomiser.Randomise();
                 }
 
@@ -220,6 +235,10 @@ namespace IntelOrca.Biohazard
             }
         }
 
+        internal virtual void RandomizeNPCs(NPCRandomiser npcRandomiser)
+        {
+        }
+
         public abstract string GetPlayerName(int player);
         private string GetScenarioName(int scenario) => scenario == 0 ? "A" : "B";
 
@@ -234,7 +253,17 @@ namespace IntelOrca.Biohazard
             return map;
         }
 
-        protected abstract string GetJsonMap();
+        private string GetJsonMap()
+        {
+            var path = DataManager.GetPath(BiohazardVersion, "rdt.json");
+            return File.ReadAllText(path);
+        }
+
+        protected string GetBgmJson()
+        {
+            var path = DataManager.GetPath(BiohazardVersion, "bgm.json");
+            return File.ReadAllText(path);
+        }
 
         private void DumpRdtList(GameData gameData, string path)
         {

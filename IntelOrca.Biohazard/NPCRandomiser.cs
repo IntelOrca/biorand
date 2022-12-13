@@ -12,6 +12,7 @@ namespace IntelOrca.Biohazard
 {
     internal class NPCRandomiser
     {
+        private readonly BioVersion _version;
         private readonly RandoLogger _logger;
         private readonly RandoConfig _config;
         private readonly string _originalDataPath;
@@ -22,12 +23,18 @@ namespace IntelOrca.Biohazard
         private readonly List<VoiceSample> _pool = new List<VoiceSample>();
         private readonly HashSet<VoiceSample> _randomized = new HashSet<VoiceSample>();
         private readonly INpcHelper _npcHelper;
+        private readonly DataManager _dataManager;
 
         private VoiceSample[] _voiceSamples = new VoiceSample[0];
-        private VoiceSample[] _uniqueSamples = new VoiceSample[0];
+        private List<VoiceSample> _uniqueSamples = new List<VoiceSample>();
+        private string? _playerActor;
+        private string? _originalPlayerActor;
+        private string? _plcPath;
+        private string? _facePath;
 
-        public NPCRandomiser(RandoLogger logger, RandoConfig config, string originalDataPath, string modPath, GameData gameData, Map map, Rng random, INpcHelper npcHelper)
+        public NPCRandomiser(BioVersion version, RandoLogger logger, RandoConfig config, string originalDataPath, string modPath, GameData gameData, Map map, Rng random, INpcHelper npcHelper, DataManager dataManager)
         {
+            _version = version;
             _logger = logger;
             _config = config;
             _originalDataPath = originalDataPath;
@@ -36,11 +43,32 @@ namespace IntelOrca.Biohazard
             _map = map;
             _random = random;
             _npcHelper = npcHelper;
-            LoadVoiceInfo(originalDataPath);
+            _dataManager = dataManager;
+            _voiceSamples = AddToSelection(version, originalDataPath);
+            _originalPlayerActor = _npcHelper.GetPlayerActor(config.Player);
+            _playerActor = _originalPlayerActor;
+        }
+
+        public VoiceSample[] AddToSelection(BioVersion version, string originalDataPath)
+        {
+            var voiceJsonPath = _dataManager.GetPath(version, "voice.json");
+            var voiceJson = File.ReadAllText(voiceJsonPath);
+            var extraSamples = LoadVoiceInfoFromJson(originalDataPath, voiceJson);
+            _uniqueSamples.AddRange(extraSamples);
+            return extraSamples;
+        }
+
+        public void SetPLC(string actor, string plcPath, string facePath)
+        {
+            _playerActor = actor;
+            _plcPath = plcPath;
+            _facePath = facePath;
         }
 
         public void Randomise()
         {
+            RandomizePlayer();
+
             _logger.WriteHeading("Randomizing Characters, Voices:");
             _pool.AddRange(_uniqueSamples.Shuffle(_random));
             foreach (var rdt in _gameData.Rdts)
@@ -51,18 +79,34 @@ namespace IntelOrca.Biohazard
             SetVoices();
         }
 
+        private void RandomizePlayer()
+        {
+            if (_playerActor != _originalPlayerActor)
+            {
+                _logger.WriteHeading("Randomizing Player:");
+                _logger.WriteLine($"{_originalPlayerActor} becomes {_playerActor}");
+
+                var plcPath = Path.Combine(_modPath, $"pl{_config.Player}", "pld", "pl00.pld");
+                Directory.CreateDirectory(Path.GetDirectoryName(plcPath));
+                File.Copy(_plcPath, plcPath, true);
+
+                var facePath = Path.Combine(_modPath, $"common", "data", "st0_jp.tim");
+                Directory.CreateDirectory(Path.GetDirectoryName(facePath));
+                File.Copy(_facePath, facePath, true);
+            }
+        }
+
         private void RandomizeRoom(Rng rng, Rdt rdt)
         {
             var npcRng = rng.NextFork();
             var voiceRng = rng.NextFork();
 
-            var playerActor = _npcHelper.GetPlayerActor(_config.Player);
             var defaultIncludeTypes = _npcHelper.GetDefaultIncludeTypes(rdt);
             if (rng.Next(0, 8) != 0)
             {
                 // Make it rare for player to also be an NPC
                 defaultIncludeTypes = defaultIncludeTypes
-                    .Where(x => _npcHelper.GetActor(x) != playerActor)
+                    .Where(x => _npcHelper.GetActor(x) != _playerActor)
                     .ToArray();
             }
 
@@ -74,12 +118,21 @@ namespace IntelOrca.Biohazard
             var offsetToTypeMap = new Dictionary<int, byte>();
             foreach (var cutscene in npcs.GroupBy(x => x.Cutscene))
             {
-                var pc = cutscene.First().PlayerActor ?? playerActor;
                 var actorToNewActorMap  = RandomizeCharacters(rdt, npcRng, defaultIncludeTypes, cutscene.ToArray(), offsetToTypeMap);
-                RandomizeVoices(rdt, voiceRng, pc, cutscene.Key, actorToNewActorMap);
-                if (actorToNewActorMap.Count != 0)
+                var pc = cutscene.First().PlayerActor ?? _originalPlayerActor!;
+                if (pc == _originalPlayerActor)
                 {
-                    _logger.WriteLine($"  cutscene #{cutscene.Key} contains {pc}, {string.Join(", ", actorToNewActorMap.Values)}");
+                    actorToNewActorMap[pc] = _playerActor!;
+                    pc = _playerActor;
+                }
+                else
+                {
+                    actorToNewActorMap[pc] = pc;
+                }
+                RandomizeVoices(rdt, voiceRng, cutscene.Key, actorToNewActorMap);
+                if (actorToNewActorMap.Count != 1)
+                {
+                    _logger.WriteLine($"  cutscene #{cutscene.Key} contains {string.Join(", ", actorToNewActorMap.Values)}");
                 }
             }
 
@@ -151,9 +204,9 @@ namespace IntelOrca.Biohazard
             return actorToNewActorMap;
         }
 
-        private void RandomizeVoices(Rdt rdt, Rng rng, string playerActor, int cutscene, Dictionary<string, string> actorToNewActorMap)
+        private void RandomizeVoices(Rdt rdt, Rng rng, int cutscene, Dictionary<string, string> actorToNewActorMap)
         {
-            var actors = actorToNewActorMap.Values.Append(playerActor).ToArray();
+            var actors = actorToNewActorMap.Values.ToArray();
             foreach (var sample in _voiceSamples)
             {
                 if (sample.Player == _config.Player &&
@@ -165,10 +218,6 @@ namespace IntelOrca.Biohazard
                     if (kind == "radio")
                     {
                         RandomizeVoice(rng, sample, actor, actor, sample.Kind, actors);
-                    }
-                    if ((actor == playerActor && kind != "npc") || kind == "pc")
-                    {
-                        RandomizeVoice(rng, sample, actor, actor, null, actors);
                     }
                     else if (actorToNewActorMap.TryGetValue(actor, out var newActor))
                     {
@@ -256,8 +305,8 @@ namespace IntelOrca.Biohazard
 
                 if (sampleOrder.Length == 1 && firstSample.Replacement?.IsClipped == false)
                 {
-                    var srcPath = GetVoicePath(_originalDataPath, firstSample.Replacement.Source);
-                    File.Copy(srcPath, dstPath, true);
+                    var srcPath = GetVoicePath(firstSample.Replacement.Source);
+                    CopySample(srcPath, dstPath);
                 }
                 else
                 {
@@ -267,7 +316,7 @@ namespace IntelOrca.Biohazard
                         var replacement = sample.Replacement;
                         if (replacement != null)
                         {
-                            var sliceSrcPath = GetVoicePath(_originalDataPath, replacement.Source);
+                            var sliceSrcPath = GetVoicePath(replacement.Source);
                             builder.Append(sliceSrcPath, replacement.Start, replacement.End);
                             builder.AppendSilence(sample.Length - replacement.Length);
                         }
@@ -281,21 +330,34 @@ namespace IntelOrca.Biohazard
             }
         }
 
+        private static void CopySample(string srcPath, string dstPath)
+        {
+            var srcExtension = Path.GetExtension(srcPath);
+            var dstExtension = Path.GetExtension(dstPath);
+            if (srcExtension.Equals(dstExtension, StringComparison.OrdinalIgnoreCase))
+            {
+                File.Copy(srcPath, dstPath, true);
+            }
+            else
+            {
+                var builder = new WaveformBuilder();
+                builder.Append(srcPath);
+                builder.Save(dstPath);
+            }
+        }
+
+        private static string GetVoicePath(VoiceSample sample)
+        {
+            return Path.Combine(sample.BasePath, sample.Path);
+        }
+
         private static string GetVoicePath(string basePath, VoiceSample sample)
         {
             return Path.Combine(basePath, sample.Path);
         }
 
-        private void LoadVoiceInfo(string originalDataPath)
+        private static VoiceSample[] LoadVoiceInfoFromJson(string originalDataPath, string json)
         {
-            _voiceSamples = LoadVoiceInfoFromJson();
-            _uniqueSamples = _voiceSamples;
-            // _uniqueSamples = RemoveDuplicateVoices(_voiceSamples, originalDataPath);
-        }
-
-        private VoiceSample[] LoadVoiceInfoFromJson()
-        {
-            var json = _npcHelper.GetVoiceJson();
             var voiceList = JsonSerializer.Deserialize<Dictionary<string, VoiceSample>>(json, new JsonSerializerOptions()
             {
                 ReadCommentHandling = JsonCommentHandling.Skip,
@@ -306,8 +368,9 @@ namespace IntelOrca.Biohazard
             foreach (var kvp in voiceList!)
             {
                 var sample = kvp.Value;
+                sample.BasePath = originalDataPath;
                 sample.Path = kvp.Key;
-                var totalLength = GetVoiceLength(Path.Combine(_originalDataPath, sample.Path));
+                var totalLength = GetVoiceLength(Path.Combine(originalDataPath, sample.Path));
                 if (sample.Actors != null)
                 {
                     var start = 0.0;
@@ -404,6 +467,7 @@ namespace IntelOrca.Biohazard
     [DebuggerDisplay("Actor = {Actor} RdtId = {Rdt} Path = {Path}")]
     public class VoiceSample
     {
+        public string? BasePath { get; set; }
         public string? Path { get; set; }
         public string? Actor { get; set; }
         public string? Kind { get; set; }
@@ -438,6 +502,7 @@ namespace IntelOrca.Biohazard
 
             return new VoiceSample()
             {
+                BasePath = BasePath,
                 Path = Path,
                 Actor = sub.Actor,
                 Rdt = Rdt,

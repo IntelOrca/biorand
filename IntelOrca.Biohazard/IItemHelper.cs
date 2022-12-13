@@ -15,6 +15,6 @@
         double GetItemProbability(byte type);
         byte[] GetWeapons(Rng rng, RandoConfig config);
         bool HasInkRibbons(RandoConfig config);
-        int[] GetInventorySize(RandoConfig config);
+        int[]? GetInventorySize(RandoConfig config);
     }
 }
