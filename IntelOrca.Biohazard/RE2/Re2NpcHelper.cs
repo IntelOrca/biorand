@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 namespace IntelOrca.Biohazard.RE2
 {
@@ -73,11 +69,6 @@ namespace IntelOrca.Biohazard.RE2
                 default:
                     return null;
             }
-        }
-
-        public string GetVoiceJson()
-        {
-            return Resources.re2_voice;
         }
     }
 }

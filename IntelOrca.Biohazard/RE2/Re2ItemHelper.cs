@@ -262,7 +262,7 @@ namespace IntelOrca.Biohazard.RE2
             return true;
         }
 
-        public int[] GetInventorySize(RandoConfig config)
+        public int[]? GetInventorySize(RandoConfig config)
         {
             return null;
         }

@@ -10,6 +10,7 @@ namespace IntelOrca.Biohazard
 {
     internal class EnemyRandomiser
     {
+        private BioVersion _version;
         private readonly RandoLogger _logger;
         private readonly RandoConfig _config;
         private readonly GameData _gameData;
@@ -17,10 +18,12 @@ namespace IntelOrca.Biohazard
         private readonly Rng _rng;
         private readonly IEnemyHelper _enemyHelper;
         private readonly string _modPath;
+        private readonly DataManager _dataManager;
         private XmlDocument? _re1sounds;
 
-        public EnemyRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng rng, IEnemyHelper enemyHelper, string modPath)
+        public EnemyRandomiser(BioVersion version, RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng rng, IEnemyHelper enemyHelper, string modPath, DataManager dataManager)
         {
+            _version = version;
             _logger = logger;
             _config = config;
             _gameData = gameData;
@@ -28,6 +31,7 @@ namespace IntelOrca.Biohazard
             _rng = rng;
             _enemyHelper = enemyHelper;
             _modPath = modPath;
+            _dataManager = dataManager;
         }
 
         public void Randomise()
@@ -199,7 +203,7 @@ namespace IntelOrca.Biohazard
             var doc = _re1sounds;
             if (doc == null)
             {
-                var xml = Resources.re1_sounds;
+                var xml = _dataManager.GetPath(_version, "sounds.xml");
                 doc = new XmlDocument();
                 doc.LoadXml(xml);
                 _re1sounds = doc;

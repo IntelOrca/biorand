@@ -99,7 +99,7 @@ namespace IntelOrca.Biohazard.RE1
 
                 var srcBgmDirectory = Path.Combine(installPath, "sound");
                 var dstBgmDirectory = Path.Combine(modPath, "sound");
-                var bgmRandomiser = new BgmRandomiser(logger, dstBgmDirectory, GetBgmJson(), true, new Rng(config.Seed));
+                var bgmRandomiser = new BgmRandomiser(logger, dstBgmDirectory, GetBgmJson(), true, new Rng(config.Seed), DataManager);
                 AddMusicSelection(bgmRandomiser, reConfig);
 
                 if (reConfig.IsEnabled(BioVersion.Biohazard2))
@@ -112,39 +112,14 @@ namespace IntelOrca.Biohazard.RE1
                 bgmRandomiser.Randomise();
             }
 
-            RandoBgCreator.Save(config, modPath, BiohazardVersion);
+            RandoBgCreator.Save(config, modPath, BiohazardVersion, DataManager);
         }
 
-        public void AddMusicSelection(BgmRandomiser bgmRandomizer, ReInstallConfig reConfig)
+        internal void AddMusicSelection(BgmRandomiser bgmRandomizer, ReInstallConfig reConfig)
         {
             var dataPath = GetDataPath(reConfig.GetInstallPath(BioVersion.Biohazard1));
             var srcBgmDirectory = Path.Combine(dataPath, "sound");
             bgmRandomizer.AddToSelection(GetBgmJson(), srcBgmDirectory, ".wav");
-        }
-
-        protected override string GetJsonMap()
-        {
-#if DEBUG
-            var jsonPath = Path.Combine(
-                Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
-                @"..\..\..\..\IntelOrca.BioHazard\data\re1\re1_rdt.json");
-            var jsonMap = File.ReadAllText(jsonPath);
-#else
-            var jsonMap = Resources.re1_rdt;
-#endif
-            return jsonMap;
-        }
-
-        private static string GetBgmJson()
-        {
-#if DEBUG
-            var jsonPath = Path.Combine(
-                Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
-                @"..\..\..\..\IntelOrca.BioHazard\data\re1\re1_bgm.json");
-            return File.ReadAllText(jsonPath);
-#else
-            return Resources.re1_bgm;
-#endif
         }
     }
 }

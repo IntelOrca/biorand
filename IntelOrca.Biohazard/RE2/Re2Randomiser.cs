@@ -10,6 +10,8 @@ namespace IntelOrca.Biohazard.RE2
 {
     public class Re2Randomiser : BaseRandomiser
     {
+        private ReInstallConfig? _reInstallConfig;
+
         protected override BioVersion BiohazardVersion => BioVersion.Biohazard2;
         internal override IItemHelper ItemHelper { get; } = new Re2ItemHelper();
         internal override IEnemyHelper EnemyHelper { get; } = new Re2EnemyHelper();
@@ -73,13 +75,16 @@ namespace IntelOrca.Biohazard.RE2
 
         protected override Dictionary<RdtId, ulong> GetRdtChecksums(int player)
         {
-            var checksumsForEachPlayer = JsonSerializer.Deserialize<Dictionary<string, ulong>[]>(Resources.re2_checksum)!;
+            var checksumJson = DataManager.GetData(BiohazardVersion, "checksum.json");
+            var checksumsForEachPlayer = JsonSerializer.Deserialize<Dictionary<string, ulong>[]>(checksumJson)!;
             var checksums = checksumsForEachPlayer[player];
             return checksums.ToDictionary(x => RdtId.Parse(x.Key), x => x.Value);
         }
 
         protected override void Generate(RandoConfig config, ReInstallConfig reConfig, string installPath, string modPath)
         {
+            _reInstallConfig = reConfig;
+
             var po = new ParallelOptions();
 #if DEBUG
             po.MaxDegreeOfParallelism = 1;
@@ -106,7 +111,7 @@ namespace IntelOrca.Biohazard.RE2
                 logger.WriteLine($"Seed: {config}");
 
                 var bgmDirectory = Path.Combine(modPath, @"Common\Sound\BGM");
-                var bgmRandomiser = new BgmRandomiser(logger, bgmDirectory, GetBgmJson(), false, new Rng(config.Seed));
+                var bgmRandomiser = new BgmRandomiser(logger, bgmDirectory, GetBgmJson(), false, new Rng(config.Seed), DataManager);
                 AddMusicSelection(bgmRandomiser, reConfig);
                 if (reConfig.IsEnabled(BioVersion.Biohazard1))
                 {
@@ -116,39 +121,28 @@ namespace IntelOrca.Biohazard.RE2
                 bgmRandomiser.Randomise();
             }
 
-            RandoBgCreator.Save(config, modPath, BiohazardVersion);
+            RandoBgCreator.Save(config, modPath, BiohazardVersion, DataManager);
         }
 
-        public void AddMusicSelection(BgmRandomiser bgmRandomizer, ReInstallConfig reConfig)
+        internal override void RandomizeNPCs(NPCRandomiser npcRandomiser)
+        {
+            if (_reInstallConfig?.IsEnabled(BioVersion.Biohazard1) == true)
+            {
+                var dataPath = GetDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard1));
+                dataPath = Path.Combine(dataPath, "JPN");
+                npcRandomiser.AddToSelection(BioVersion.Biohazard1, dataPath);
+                var plcFiles = DataManager.GetFiles(BiohazardVersion, "pld");
+                var plcName = Path.GetFileNameWithoutExtension(plcFiles[0]);
+                var plcFace = DataManager.GetPath(BiohazardVersion, "face\\" + plcName + ".tim");
+                npcRandomiser.SetPLC(plcName, plcFiles[0], plcFace);
+            }
+        }
+
+        internal void AddMusicSelection(BgmRandomiser bgmRandomizer, ReInstallConfig reConfig)
         {
             var dataPath = GetDataPath(reConfig.GetInstallPath(BioVersion.Biohazard2));
             var srcBgmDirectory = Path.Combine(dataPath, @"Common\Sound\BGM");
             bgmRandomizer.AddToSelection(GetBgmJson(), srcBgmDirectory, ".sap");
-        }
-
-        protected override string GetJsonMap()
-        {
-#if DEBUG
-            var jsonPath = Path.Combine(
-                Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
-                @"..\..\..\..\IntelOrca.BioHazard\data\re2\re2_rdt.json");
-            var jsonMap = File.ReadAllText(jsonPath);
-#else
-            var jsonMap = Resources.re2_rdt;
-#endif
-            return jsonMap;
-        }
-
-        private static string GetBgmJson()
-        {
-#if DEBUG
-            var jsonPath = Path.Combine(
-                Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
-                @"..\..\..\..\IntelOrca.BioHazard\data\re2\re2_bgm.json");
-            return File.ReadAllText(jsonPath);
-#else
-            return Resources.re2_bgm;
-#endif
         }
     }
 }
