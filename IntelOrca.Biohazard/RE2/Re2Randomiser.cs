@@ -131,10 +131,24 @@ namespace IntelOrca.Biohazard.RE2
                 var dataPath = GetDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard1));
                 dataPath = Path.Combine(dataPath, "JPN");
                 npcRandomiser.AddToSelection(BioVersion.Biohazard1, dataPath);
-                var plcFiles = DataManager.GetFiles(BiohazardVersion, "pld");
-                var plcName = Path.GetFileNameWithoutExtension(plcFiles[0]);
-                var plcFace = DataManager.GetPath(BiohazardVersion, "face\\" + plcName + ".tim");
-                npcRandomiser.SetPLC(plcName, plcFiles[0], plcFace);
+                var pldFiles = DataManager.GetFiles(BiohazardVersion, "pld");
+                foreach (var pldPath in pldFiles)
+                {
+                    var actor = Path.GetFileNameWithoutExtension(pldPath);
+                    var facePath = DataManager.GetPath(BiohazardVersion, "face\\" + actor + ".tim");
+                    npcRandomiser.AddPC(actor, pldPath, facePath);
+                }
+
+                var emdFiles = DataManager.GetFiles(BiohazardVersion, "emd");
+                foreach (var emdPath in emdFiles)
+                {
+                    if (emdPath.EndsWith(".emd", System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        var actor = Path.GetFileNameWithoutExtension(emdPath);
+                        var timPath = Path.ChangeExtension(emdPath, ".tim");
+                        npcRandomiser.AddNPC(actor, emdPath, timPath);
+                    }
+                }
             }
         }
 
