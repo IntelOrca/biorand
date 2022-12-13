@@ -19,7 +19,7 @@ namespace IntelOrca.Biohazard
         private readonly string _modPath;
         private readonly GameData _gameData;
         private readonly Map _map;
-        private readonly Rng _random;
+        private readonly Rng _rng;
         private readonly List<VoiceSample> _pool = new List<VoiceSample>();
         private readonly HashSet<VoiceSample> _randomized = new HashSet<VoiceSample>();
         private readonly INpcHelper _npcHelper;
@@ -29,8 +29,11 @@ namespace IntelOrca.Biohazard
         private List<VoiceSample> _uniqueSamples = new List<VoiceSample>();
         private string? _playerActor;
         private string? _originalPlayerActor;
-        private string? _plcPath;
-        private string? _facePath;
+        private byte[] _extraNpcs = new byte[0];
+        private Dictionary<byte, string> _extraNpcMap = new Dictionary<byte, string>();
+
+        private List<ExternalCharacter> _plds = new List<ExternalCharacter>();
+        private List<ExternalCharacter> _emds = new List<ExternalCharacter>();
 
         public NPCRandomiser(BioVersion version, RandoLogger logger, RandoConfig config, string originalDataPath, string modPath, GameData gameData, Map map, Rng random, INpcHelper npcHelper, DataManager dataManager)
         {
@@ -41,7 +44,7 @@ namespace IntelOrca.Biohazard
             _modPath = modPath;
             _gameData = gameData;
             _map = map;
-            _random = random;
+            _rng = random;
             _npcHelper = npcHelper;
             _dataManager = dataManager;
             _voiceSamples = AddToSelection(version, originalDataPath);
@@ -58,41 +61,81 @@ namespace IntelOrca.Biohazard
             return extraSamples;
         }
 
-        public void SetPLC(string actor, string plcPath, string facePath)
+        public void AddPC(string actor, string pldPath, string facePath)
         {
-            _playerActor = actor;
-            _plcPath = plcPath;
-            _facePath = facePath;
+            _plds.Add(new ExternalCharacter(actor, pldPath, facePath));
+        }
+
+        public void AddNPC(string actor, string emdPath, string timPath)
+        {
+            _emds.Add(new ExternalCharacter(actor, emdPath, timPath));
         }
 
         public void Randomise()
         {
-            RandomizePlayer();
-
-            _logger.WriteHeading("Randomizing Characters, Voices:");
-            _pool.AddRange(_uniqueSamples.Shuffle(_random));
-            foreach (var rdt in _gameData.Rdts)
-            {
-                RandomizeRoom(_random.NextFork(), rdt);
-            }
-
+            RandomizePlayer(_rng.NextFork());
+            RandomizeExternalNPCs(_rng.NextFork());
+            RandomizeRooms(_rng.NextFork());
             SetVoices();
         }
 
-        private void RandomizePlayer()
+        private void RandomizePlayer(Rng rng)
         {
-            if (_playerActor != _originalPlayerActor)
+            if (_plds.Count == 0)
+                return;
+
+            var pld = _plds.Where(x => x.Actor != _originalPlayerActor).Shuffle(rng).First();
+            _playerActor = pld.Actor;
+
+            _logger.WriteHeading("Randomizing Player:");
+            _logger.WriteLine($"{_originalPlayerActor} becomes {_playerActor}");
+
+            var plcPath = Path.Combine(_modPath, $"pl{_config.Player}", "pld", $"pl{_config.Player:X2}.pld");
+            Directory.CreateDirectory(Path.GetDirectoryName(plcPath));
+            File.Copy(pld.ModelPath, plcPath, true);
+
+            var facePath = Path.Combine(_modPath, $"common", "data", $"st{_config.Player}_jp.tim");
+            Directory.CreateDirectory(Path.GetDirectoryName(facePath));
+            File.Copy(pld.TexturePath, facePath, true);
+        }
+
+        private void RandomizeExternalNPCs(Rng rng)
+        {
+            if (_emds.Count == 0)
+                return;
+
+            _logger.WriteHeading("Adding additional NPCs:");
+            var availableSlots = new byte[] { 76, 77, 78, 82, 83, 86, 87, 91, 85, 88, 89, 90 };
+
+            _extraNpcs = new byte[_emds.Count];
+            var emds = _emds.Shuffle(rng).ToArray();
+            var maxEmds = Math.Min(availableSlots.Length, emds.Length);
+            for (int i = 0; i < maxEmds; i++)
             {
-                _logger.WriteHeading("Randomizing Player:");
-                _logger.WriteLine($"{_originalPlayerActor} becomes {_playerActor}");
+                var emd = emds[i];
 
-                var plcPath = Path.Combine(_modPath, $"pl{_config.Player}", "pld", "pl00.pld");
-                Directory.CreateDirectory(Path.GetDirectoryName(plcPath));
-                File.Copy(_plcPath, plcPath, true);
+                var enemyType = availableSlots[i];
+                _extraNpcs[i] = enemyType;
+                _extraNpcMap[enemyType] = emd.Actor;
 
-                var facePath = Path.Combine(_modPath, $"common", "data", "st0_jp.tim");
-                Directory.CreateDirectory(Path.GetDirectoryName(facePath));
-                File.Copy(_facePath, facePath, true);
+                var emd0Path = Path.Combine(_modPath, $"pl{_config.Player}", $"emd{_config.Player}");
+                var emdPath = Path.Combine(emd0Path, $"em{_config.Player}{enemyType:X2}.emd");
+                var timPath = Path.ChangeExtension(emdPath, ".tim");
+                Directory.CreateDirectory(Path.GetDirectoryName(emdPath));
+                File.Copy(emd.ModelPath, emdPath, true);
+                File.Copy(emd.TexturePath, timPath, true);
+
+                _logger.WriteLine($"Enemy 0x{enemyType:X2} becomes {emd.Actor}");
+            }
+        }
+
+        private void RandomizeRooms(Rng rng)
+        {
+            _logger.WriteHeading("Randomizing Characters, Voices:");
+            _pool.AddRange(_uniqueSamples.Shuffle(rng.NextFork()));
+            foreach (var rdt in _gameData.Rdts)
+            {
+                RandomizeRoom(rng.NextFork(), rdt);
             }
         }
 
@@ -106,8 +149,12 @@ namespace IntelOrca.Biohazard
             {
                 // Make it rare for player to also be an NPC
                 defaultIncludeTypes = defaultIncludeTypes
-                    .Where(x => _npcHelper.GetActor(x) != _playerActor)
+                    .Where(x => GetActor(x) != _playerActor)
                     .ToArray();
+            }
+            if (_extraNpcs.Length != 0)
+            {
+                defaultIncludeTypes = defaultIncludeTypes.Concat(_extraNpcs).ToArray();
             }
 
             var room = _map.GetRoom(rdt.RdtId);
@@ -173,7 +220,7 @@ namespace IntelOrca.Biohazard
                     {
                         // Avoid using the same actor again, unless we run out
                         var noDuplicatesSupportedNpcs = supportedNpcs
-                            .Where(x => !actorToNewActorMap.Values.Contains(_npcHelper.GetActor(x)))
+                            .Where(x => !actorToNewActorMap.Values.Contains(GetActor(x)))
                             .ToArray();
                         if (noDuplicatesSupportedNpcs.Length != 0)
                         {
@@ -185,11 +232,11 @@ namespace IntelOrca.Biohazard
                         if (npc.IncludeOffsets != null && !npc.IncludeOffsets.Contains(enemy.Offset))
                             continue;
 
-                        var oldActor = _npcHelper.GetActor(enemy.Type)!;
+                        var oldActor = GetActor(enemy.Type)!;
                         if (!offsetToTypeMap.TryGetValue(enemy.Offset, out var newEnemyType))
                         {
 #if ALWAYS_SWAP_NPC
-                            var newEnemyTypeIndex = Array.FindIndex(supportedNpcs, x => _npcHelper.GetActor(x) != _npcHelper.GetActor(enemy.Type));
+                            var newEnemyTypeIndex = Array.FindIndex(supportedNpcs, x => GetActor(x) != GetActor(enemy.Type));
                             newEnemyType = newEnemyTypeIndex == -1 ? supportedNpcs[0] : supportedNpcs[newEnemyTypeIndex];
 #else
                             newEnemyType = supportedNpcs[0];
@@ -197,7 +244,7 @@ namespace IntelOrca.Biohazard
                             _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) [{_npcHelper.GetNpcName(enemy.Type)}] becomes [{_npcHelper.GetNpcName(newEnemyType)}]");
                             offsetToTypeMap[enemy.Offset] = newEnemyType;
                         }
-                        actorToNewActorMap[oldActor] = _npcHelper.GetActor(newEnemyType)!;
+                        actorToNewActorMap[oldActor] = GetActor(newEnemyType)!;
                     }
                 }
             }
@@ -247,6 +294,13 @@ namespace IntelOrca.Biohazard
                 var logClip = randomVoice.IsClipped ? $" ({randomVoice.Start:0.00}-{randomVoice.End:0.00})" : "";
                 _logger.WriteLine($"    {voice.Path} [{actor}{logKindSource}] becomes {randomVoice.Path} [{newActor}{logKindTarget}]{logClip}");
             }
+        }
+
+        private string? GetActor(byte enemyType)
+        {
+            if (_extraNpcMap.TryGetValue(enemyType, out var actor))
+                return actor;
+            return _npcHelper.GetActor(enemyType);
         }
 
         private VoiceSampleReplacement? GetRandomVoice(Rng rng, string actor, string? kind, string[] actors, double maxLength, bool refillPool = true)
@@ -596,5 +650,20 @@ namespace IntelOrca.Biohazard
         public ushort wBitsPerSample;
         public uint wDataMagic;
         public uint nDataLength;
+    }
+
+    [DebuggerDisplay("{Actor}")]
+    public struct ExternalCharacter
+    {
+        public string Actor { get; }
+        public string ModelPath { get; }
+        public string TexturePath { get; }
+
+        public ExternalCharacter(string actor, string modelPath, string texturePath)
+        {
+            Actor = actor;
+            ModelPath = modelPath;
+            TexturePath = texturePath;
+        }
     }
 }

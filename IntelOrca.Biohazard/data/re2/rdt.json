@@ -50,7 +50,7 @@
       "enemies": [],
       "npcs": [
         {
-          "includeTypes": [ 66, 67, 68, 71, 74, 79, 80, 85 ]
+          "excludeTypes": [ 69 ]
         }
       ]
     },
@@ -1376,8 +1376,7 @@
           "target": "402",
           "noReturn": true
         }
-      ],
-      "npcs": [ {} ]
+      ]
     },
     "305": {
       "doors": [
