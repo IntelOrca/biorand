@@ -91,8 +91,9 @@ namespace IntelOrca.Biohazard.RE1
                 case Re1ItemIds.Shotgun:
                     return new byte[] { Re1ItemIds.Shells };
                 case Re1ItemIds.ColtPython:
+                    return new byte[] { Re1ItemIds.MagnumRounds };
                 case Re1ItemIds.DumDumColt:
-                    return new byte[] { Re1ItemIds.MagnumRounds, Re1ItemIds.DumDumRounds };
+                    return new byte[] { Re1ItemIds.DumDumRounds };
                 case Re1ItemIds.FlameThrower:
                     return new byte[] { Re1ItemIds.FlameThrowerFuel };
                 case Re1ItemIds.BazookaAcid:
