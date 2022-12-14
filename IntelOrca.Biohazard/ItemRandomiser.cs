@@ -579,13 +579,16 @@ namespace IntelOrca.Biohazard
                 .Where(x => x.Item1 != 0)
                 .OrderBy(x => x.Item1)
                 .ToList();
-            var lastP = proportions[proportions.Count - 1];
-            lastP.Item1 = int.MaxValue;
-            proportions[proportions.Count - 1] = lastP;
-
-            foreach (var p in proportions)
+            if (proportions.Count > 0)
             {
-                SpawnItems(shuffled, p.Item1, p.Item2);
+                var lastP = proportions[proportions.Count - 1];
+                lastP.Item1 = int.MaxValue;
+                proportions[proportions.Count - 1] = lastP;
+
+                foreach (var p in proportions)
+                {
+                    SpawnItems(shuffled, p.Item1, p.Item2);
+                }
             }
         }
 
