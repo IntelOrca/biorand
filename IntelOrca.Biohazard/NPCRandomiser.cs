@@ -120,9 +120,11 @@ namespace IntelOrca.Biohazard
             _logger.WriteHeading("Randomizing Player:");
             _logger.WriteLine($"{_originalPlayerActor} becomes {_playerActor}");
 
-            var plcPath = Path.Combine(_modPath, $"pl{_config.Player}", "pld", $"pl{_config.Player:X2}.pld");
-            Directory.CreateDirectory(Path.GetDirectoryName(plcPath));
-            File.Copy(pld.ModelPath, plcPath, true);
+            var plcPathA = Path.Combine(_modPath, $"pl{_config.Player}", "pld", $"pl{_config.Player:X2}.pld");
+            var plcPathB = Path.Combine(_modPath, $"pl{_config.Player}", "pld", $"pl{_config.Player + 4:X2}.pld"); // Alt. character (in later half of the game)
+            Directory.CreateDirectory(Path.GetDirectoryName(plcPathA));
+            File.Copy(pld.ModelPath, plcPathA, true);
+            File.Copy(pld.ModelPath, plcPathB, true);
 
             var facePath = Path.Combine(_modPath, $"common", "data", $"st{_config.Player}_jp.tim");
             Directory.CreateDirectory(Path.GetDirectoryName(facePath));
@@ -135,7 +137,7 @@ namespace IntelOrca.Biohazard
                 return;
 
             _logger.WriteHeading("Adding additional NPCs:");
-            var availableSlots = new byte[] { /* 76, 77, 78 */ 82, 83, 86, 87, 91, 85, 88, 89, 90 };
+            var availableSlots = new byte[] { 82, 83, 84, 85, 86, 87, 88, 89, 90, 91 };
 
             _extraNpcs = new byte[_emds.Count];
             var emds = _emds.Shuffle(rng).ToArray();
