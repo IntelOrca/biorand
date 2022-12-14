@@ -128,6 +128,35 @@ namespace IntelOrca.Biohazard
             var facePath = Path.Combine(_modPath, $"common", "data", $"st{_config.Player}_jp.tim");
             Directory.CreateDirectory(Path.GetDirectoryName(facePath));
             File.Copy(pld.TexturePath, facePath, true);
+
+            var allHurtFiles = _dataManager.GetHurtFiles(pld.Actor)
+                .Where(x => x.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) || x.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
+                .ToArray();
+            var hurtFiles = new string[4];
+            foreach (var hurtFile in allHurtFiles)
+            {
+                if (int.TryParse(Path.GetFileNameWithoutExtension(hurtFile), out var i))
+                {
+                    if (i < hurtFiles.Length)
+                    {
+                        hurtFiles[i] = hurtFile;
+                    }
+                }
+            }
+            if (hurtFiles.All(x => x != null))
+            {
+                var corePath = Path.Combine(_modPath, "common", "sound", "core", $"core{_config.Player:X2}.sap");
+                Directory.CreateDirectory(Path.GetDirectoryName(corePath));
+                for (int i = 0; i < hurtFiles.Length; i++)
+                {
+                    var waveformBuilder = new WaveformBuilder();
+                    waveformBuilder.Append(hurtFiles[i]);
+                    if (i == 0)
+                        waveformBuilder.Save(corePath, 0x0F);
+                    else
+                        waveformBuilder.SaveAppend(corePath);
+                }
+            }
         }
 
         private void RandomizeExternalNPCs(Rng rng)

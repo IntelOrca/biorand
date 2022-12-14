@@ -45,7 +45,7 @@ namespace IntelOrca.Biohazard
             stream.Position = stream.Length;
         }
 
-        public void Save(string path)
+        public void Save(string path, ulong sapHeader = 1)
         {
             if (!_headerWritten)
                 throw new InvalidOperationException();
@@ -58,8 +58,24 @@ namespace IntelOrca.Biohazard
                 if (path.EndsWith(".sap", StringComparison.OrdinalIgnoreCase))
                 {
                     var bw = new BinaryWriter(fs);
-                    bw.Write((ulong)1);
+                    bw.Write(sapHeader);
                 }
+                _stream.Position = 0;
+                _stream.CopyTo(fs);
+                _stream.Position = _stream.Length;
+            }
+        }
+
+        public void SaveAppend(string path)
+        {
+            if (!_headerWritten)
+                throw new InvalidOperationException();
+
+            if (!_finished)
+                Finish();
+
+            using (var fs = new FileStream(path, FileMode.Append))
+            {
                 _stream.Position = 0;
                 _stream.CopyTo(fs);
                 _stream.Position = _stream.Length;
@@ -154,7 +170,7 @@ namespace IntelOrca.Biohazard
                     vorbis.SeekTo(TimeSpan.FromSeconds(start));
 
                 // Stream samples from ogg
-                var maxSamplesToRead = (int)(vorbis.Channels * vorbis.SampleRate * end);
+                var maxSamplesToRead = double.IsNaN(end) ? int.MaxValue : (int)(vorbis.Channels * vorbis.SampleRate * end);
 
                 var bw = new BinaryWriter(_stream);
                 int readSamples;
