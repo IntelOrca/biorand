@@ -139,8 +139,8 @@ namespace IntelOrca.Biohazard
             var availableSlotsLeon = new byte[] { 0x52, 0x54, 0x56, 0x58, 0x5A };
             var availableSlotsClaire = new byte[] { 0x53, 0x55, 0x57, 0x59, 0x5B };
 
-            RandomizeExternalNPCs(_emds.Where(x => !x.IsFemale).Shuffle(rng), availableSlotsLeon);
-            RandomizeExternalNPCs(_emds.Where(x => x.IsFemale).Shuffle(rng), availableSlotsClaire);
+            RandomizeExternalNPCs(_emds.Where(x => !x.IsFemale && x.Actor != _playerActor).Shuffle(rng), availableSlotsLeon);
+            RandomizeExternalNPCs(_emds.Where(x => x.IsFemale && x.Actor != _playerActor).Shuffle(rng), availableSlotsClaire);
         }
 
         private void RandomizeExternalNPCs(ExternalCharacter[] emds, byte[] availableSlots)
