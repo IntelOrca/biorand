@@ -34,7 +34,8 @@ namespace IntelOrca.Biohazard
                 var basePath = Path.Combine(Assembly.GetExecutingAssembly().Location, "..\\..\\..\\..\\..\\IntelOrca.Biohazard\\data");
                 return new DataManager(basePath);
 #else
-                return new DataManager();
+                var basePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "data");
+                return new DataManager(basePath);
 #endif
             }
         }
