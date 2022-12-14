@@ -131,25 +131,26 @@ namespace IntelOrca.Biohazard.RE2
                 var dataPath = GetDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard1));
                 dataPath = Path.Combine(dataPath, "JPN");
                 npcRandomiser.AddToSelection(BioVersion.Biohazard1, dataPath);
-                var pldFiles = DataManager.GetFiles(BiohazardVersion, $"pld{config.Player}");
-                foreach (var pldPath in pldFiles)
-                {
-                    var actor = Path.GetFileNameWithoutExtension(pldPath);
-                    var facePath = DataManager.GetPath(BiohazardVersion, "face\\" + actor + ".tim");
-                    npcRandomiser.AddPC(config.Player == 1, actor, pldPath, facePath);
-                }
+            }
 
-                for (int i = 0;i < 2; i++)
+            var pldFiles = DataManager.GetFiles(BiohazardVersion, $"pld{config.Player}");
+            foreach (var pldPath in pldFiles)
+            {
+                var actor = Path.GetFileNameWithoutExtension(pldPath);
+                var facePath = DataManager.GetPath(BiohazardVersion, "face\\" + actor + ".tim");
+                npcRandomiser.AddPC(config.Player == 1, actor, pldPath, facePath);
+            }
+
+            for (int i = 0; i < 2; i++)
+            {
+                var emdFiles = DataManager.GetFiles(BiohazardVersion, $"emd{i}");
+                foreach (var emdPath in emdFiles)
                 {
-                    var emdFiles = DataManager.GetFiles(BiohazardVersion, $"emd{i}");
-                    foreach (var emdPath in emdFiles)
+                    if (emdPath.EndsWith(".emd", System.StringComparison.OrdinalIgnoreCase))
                     {
-                        if (emdPath.EndsWith(".emd", System.StringComparison.OrdinalIgnoreCase))
-                        {
-                            var actor = Path.GetFileNameWithoutExtension(emdPath);
-                            var timPath = Path.ChangeExtension(emdPath, ".tim");
-                            npcRandomiser.AddNPC(i == 1, actor, emdPath, timPath);
-                        }
+                        var actor = Path.GetFileNameWithoutExtension(emdPath);
+                        var timPath = Path.ChangeExtension(emdPath, ".tim");
+                        npcRandomiser.AddNPC(i == 1, actor, emdPath, timPath);
                     }
                 }
             }
