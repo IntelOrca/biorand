@@ -48,6 +48,11 @@ namespace IntelOrca.Biohazard
             return Directory.GetFiles(basePath);
         }
 
+        public string[] GetFiles(string a, string b)
+        {
+            return GetFiles(Path.Combine(BasePath, a, b));
+        }
+
         public string[] GetDirectoriesIn(string baseName)
         {
             var basePath = GetPath(baseName);
@@ -55,7 +60,8 @@ namespace IntelOrca.Biohazard
         }
 
         public string[] GetBgmFiles(string tag) => GetTaggedFiles("bgm", tag);
-        public string[] GetVoiceFiles(string actor) => GetTaggedFiles("voice", actor);
+        public string[] GetHurtFiles(string actor) => GetFiles("hurt", actor);
+        public string[] GetVoiceFiles(string actor) => GetFiles("voice", actor);
 
         public string[] GetTaggedFiles(string baseName, string tag)
         {
