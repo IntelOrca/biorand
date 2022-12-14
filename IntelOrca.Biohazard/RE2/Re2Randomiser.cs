@@ -124,14 +124,14 @@ namespace IntelOrca.Biohazard.RE2
             RandoBgCreator.Save(config, modPath, BiohazardVersion, DataManager);
         }
 
-        internal override void RandomizeNPCs(NPCRandomiser npcRandomiser)
+        internal override void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser)
         {
             if (_reInstallConfig?.IsEnabled(BioVersion.Biohazard1) == true)
             {
                 var dataPath = GetDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard1));
                 dataPath = Path.Combine(dataPath, "JPN");
                 npcRandomiser.AddToSelection(BioVersion.Biohazard1, dataPath);
-                var pldFiles = DataManager.GetFiles(BiohazardVersion, "pld");
+                var pldFiles = DataManager.GetFiles(BiohazardVersion, $"pld{config.Player}");
                 foreach (var pldPath in pldFiles)
                 {
                     var actor = Path.GetFileNameWithoutExtension(pldPath);
