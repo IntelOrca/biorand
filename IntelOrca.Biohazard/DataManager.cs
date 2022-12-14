@@ -13,6 +13,11 @@ namespace IntelOrca.Biohazard
             BasePath = basePath;
         }
 
+        public string GetPath(string baseName)
+        {
+            return Path.Combine(BasePath, baseName);
+        }
+
         public string GetPath(string baseName, string path)
         {
             return Path.Combine(BasePath, baseName, path);
@@ -43,24 +48,45 @@ namespace IntelOrca.Biohazard
             return Directory.GetFiles(basePath);
         }
 
-        public string[] GetBgmFiles(string tag)
+        public string[] GetDirectoriesIn(string baseName)
+        {
+            var basePath = GetPath(baseName);
+            return Directory.GetDirectories(basePath);
+        }
+
+        public string[] GetBgmFiles(string tag) => GetTaggedFiles("bgm", tag);
+        public string[] GetVoiceFiles(string actor) => GetTaggedFiles("voice", actor);
+
+        public string[] GetTaggedFiles(string baseName, string tag)
         {
             var files = new List<string>();
-            var top = Path.Combine(BasePath, "bgm");
-            if (Directory.Exists(top))
+            var top = Path.Combine(BasePath, baseName);
+            var directories = GetDirectories(top);
+            foreach (var directory in directories)
             {
-                var directories = Directory.GetDirectories(top);
-                foreach (var directory in directories)
-                {
-                    var dir = Path.Combine(directory, tag);
-                    if (Directory.Exists(dir))
-                    {
-                        var subFiles = Directory.GetFiles(dir);
-                        files.AddRange(subFiles);
-                    }
-                }
+                var dir = Path.Combine(directory, tag);
+                var subFiles = GetFiles(dir);
+                files.AddRange(subFiles);
             }
             return files.ToArray();
+        }
+
+        private static string[] GetFiles(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                return Directory.GetFiles(path);
+            }
+            return new string[0];
+        }
+
+        private static string[] GetDirectories(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                return Directory.GetDirectories(path);
+            }
+            return new string[0];
         }
     }
 }

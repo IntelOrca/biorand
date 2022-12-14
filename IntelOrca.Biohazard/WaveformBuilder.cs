@@ -1,14 +1,20 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices.ComTypes;
+using NVorbis;
 
 namespace IntelOrca.Biohazard
 {
     internal class WaveformBuilder
     {
+        private const uint g_riffMagic = 0x46464952;
+        private const uint g_waveMagic = 0x45564157;
+        private const uint g_fmtMagic = 0x20746D66;
+        private const uint g_dataMagic = 0x61746164;
+
         private MemoryStream _stream = new MemoryStream();
         private WaveHeader _header;
         private bool _headerWritten;
+        private bool _finished;
         private double _initialSilence;
 
         public WaveformBuilder()
@@ -44,7 +50,9 @@ namespace IntelOrca.Biohazard
             if (!_headerWritten)
                 throw new InvalidOperationException();
 
-            Finish();
+            if (!_finished)
+                Finish();
+
             using (var fs = new FileStream(path, FileMode.Create))
             {
                 if (path.EndsWith(".sap", StringComparison.OrdinalIgnoreCase))
@@ -102,6 +110,10 @@ namespace IntelOrca.Biohazard
                     ms.Position = 0;
                     Append(ms, start, end);
                 }
+                else if (path.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase))
+                {
+                    AppendOgg(fs, start, end);
+                }
                 else
                 {
                     Append(fs, start, end);
@@ -127,6 +139,58 @@ namespace IntelOrca.Biohazard
                 input.Position += startOffset;
                 input.CopyAmountTo(_stream, length);
             }
+        }
+
+        public void AppendOgg(Stream input, double start, double end)
+        {
+            using (var vorbis = new VorbisReader(input))
+            {
+                if (!_headerWritten)
+                {
+                    AppendCustomHeader(vorbis);
+                }
+
+                if (start != 0)
+                    vorbis.SeekTo(TimeSpan.FromSeconds(start));
+
+                // Stream samples from ogg
+                var maxSamplesToRead = (int)(vorbis.Channels * vorbis.SampleRate * end);
+
+                var bw = new BinaryWriter(_stream);
+                int readSamples;
+                var readBuffer = new float[vorbis.Channels * vorbis.SampleRate / 8];
+                while ((readSamples = vorbis.ReadSamples(readBuffer, 0, readBuffer.Length)) > 0)
+                {
+                    var leftToRead = Math.Min(readSamples, maxSamplesToRead);
+                    for (int i = 0; i < leftToRead; i++)
+                    {
+                        var value = (short)(readBuffer[i] * short.MaxValue);
+                        bw.Write(value);
+                    }
+                    maxSamplesToRead -= leftToRead;
+                }
+            }
+        }
+
+        private void AppendCustomHeader(VorbisReader vorbis)
+        {
+            _header.nRiffMagic = g_riffMagic;
+            _header.nRiffLength = 0;
+            _header.nWaveMagic = g_waveMagic;
+            _header.nFormatMagic = g_fmtMagic;
+            _header.nFormatLength = 16;
+            _header.wFormatTag = 1;
+            _header.nChannels = (ushort)vorbis.Channels;
+            _header.nSamplesPerSec = (uint)vorbis.SampleRate;
+            _header.nAvgBytesPerSec = (uint)(vorbis.SampleRate * 16 * vorbis.Channels) / 8;
+            _header.nBlockAlign = (ushort)((16 * vorbis.Channels) / 8);
+            _header.wBitsPerSample = 16;
+            _header.wDataMagic = g_dataMagic;
+            _header.nDataLength = 0;
+
+            var bw = new BinaryWriter(_stream);
+            bw.Write(_header);
+            _headerWritten = true;
         }
 
         private static int AlignTime(in WaveHeader header, double t)

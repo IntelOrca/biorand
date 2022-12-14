@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using NVorbis;
 
 namespace IntelOrca.Biohazard
 {
@@ -50,6 +51,9 @@ namespace IntelOrca.Biohazard
             _voiceSamples = AddToSelection(version, originalDataPath);
             _originalPlayerActor = _npcHelper.GetPlayerActor(config.Player);
             _playerActor = _originalPlayerActor;
+
+            var customSamples = AddCustom();
+            _uniqueSamples.AddRange(customSamples);
         }
 
         public VoiceSample[] AddToSelection(BioVersion version, string originalDataPath)
@@ -59,6 +63,32 @@ namespace IntelOrca.Biohazard
             var extraSamples = LoadVoiceInfoFromJson(originalDataPath, voiceJson);
             _uniqueSamples.AddRange(extraSamples);
             return extraSamples;
+        }
+
+        public VoiceSample[] AddCustom()
+        {
+            var samples = new List<VoiceSample>();
+            foreach (var actorPath in _dataManager.GetDirectoriesIn("voice"))
+            {
+                var actor = Path.GetFileName(actorPath);
+                var sampleFiles = Directory.GetFiles(actorPath);
+                foreach (var sampleFile in sampleFiles)
+                {
+                    if (!sampleFile.EndsWith(".wav", StringComparison.OrdinalIgnoreCase) &&
+                        !sampleFile.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    var sample = new VoiceSample();
+                    sample.BasePath = Path.GetDirectoryName(sampleFile);
+                    sample.Path = Path.GetFileName(sampleFile);
+                    sample.Actor = actor;
+                    sample.End = GetVoiceLength(sampleFile);
+                    samples.Add(sample);
+                }
+            }
+            return samples.ToArray();
         }
 
         public void AddPC(string actor, string pldPath, string facePath)
@@ -105,7 +135,7 @@ namespace IntelOrca.Biohazard
                 return;
 
             _logger.WriteHeading("Adding additional NPCs:");
-            var availableSlots = new byte[] { 76, 77, 78, 82, 83, 86, 87, 91, 85, 88, 89, 90 };
+            var availableSlots = new byte[] { /* 76, 77, 78 */ 82, 83, 86, 87, 91, 85, 88, 89, 90 };
 
             _extraNpcs = new byte[_emds.Count];
             var emds = _emds.Shuffle(rng).ToArray();
@@ -380,6 +410,7 @@ namespace IntelOrca.Biohazard
                         }
                     }
                     builder.Save(dstPath);
+                    builder.Save(Path.ChangeExtension(dstPath, ".wav"));
                 }
             }
         }
@@ -490,6 +521,13 @@ namespace IntelOrca.Biohazard
             {
                 var decoder = new ADPCMDecoder();
                 return decoder.GetLength(path);
+            }
+            else if (path.EndsWith(".ogg"))
+            {
+                using (var vorbis = new VorbisReader(path))
+                {
+                    return vorbis.TotalTime.TotalSeconds;
+                }
             }
             else
             {
