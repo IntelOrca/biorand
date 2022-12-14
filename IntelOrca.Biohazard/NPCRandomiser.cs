@@ -30,7 +30,6 @@ namespace IntelOrca.Biohazard
         private List<VoiceSample> _uniqueSamples = new List<VoiceSample>();
         private string? _playerActor;
         private string? _originalPlayerActor;
-        private byte[] _extraNpcs = new byte[0];
         private Dictionary<byte, string> _extraNpcMap = new Dictionary<byte, string>();
 
         private List<ExternalCharacter> _plds = new List<ExternalCharacter>();
@@ -91,14 +90,14 @@ namespace IntelOrca.Biohazard
             return samples.ToArray();
         }
 
-        public void AddPC(string actor, string pldPath, string facePath)
+        public void AddPC(bool isFemale, string actor, string pldPath, string facePath)
         {
-            _plds.Add(new ExternalCharacter(actor, pldPath, facePath));
+            _plds.Add(new ExternalCharacter(isFemale, actor, pldPath, facePath));
         }
 
-        public void AddNPC(string actor, string emdPath, string timPath)
+        public void AddNPC(bool isFemale, string actor, string emdPath, string timPath)
         {
-            _emds.Add(new ExternalCharacter(actor, emdPath, timPath));
+            _emds.Add(new ExternalCharacter(isFemale, actor, emdPath, timPath));
         }
 
         public void Randomise()
@@ -137,17 +136,20 @@ namespace IntelOrca.Biohazard
                 return;
 
             _logger.WriteHeading("Adding additional NPCs:");
-            var availableSlots = new byte[] { 82, 83, 84, 85, 86, 87, 88, 89, 90, 91 };
+            var availableSlotsLeon = new byte[] { 0x52, 0x54, 0x56, 0x58, 0x5A };
+            var availableSlotsClaire = new byte[] { 0x53, 0x55, 0x57, 0x59, 0x5B };
 
-            _extraNpcs = new byte[_emds.Count];
-            var emds = _emds.Shuffle(rng).ToArray();
+            RandomizeExternalNPCs(_emds.Where(x => !x.IsFemale).Shuffle(rng), availableSlotsLeon);
+            RandomizeExternalNPCs(_emds.Where(x => x.IsFemale).Shuffle(rng), availableSlotsClaire);
+        }
+
+        private void RandomizeExternalNPCs(ExternalCharacter[] emds, byte[] availableSlots)
+        {
             var maxEmds = Math.Min(availableSlots.Length, emds.Length);
             for (int i = 0; i < maxEmds; i++)
             {
                 var emd = emds[i];
-
                 var enemyType = availableSlots[i];
-                _extraNpcs[i] = enemyType;
                 _extraNpcMap[enemyType] = emd.Actor;
 
                 var emd0Path = Path.Combine(_modPath, $"pl{_config.Player}", $"emd{_config.Player}");
@@ -184,9 +186,9 @@ namespace IntelOrca.Biohazard
                     .Where(x => GetActor(x) != _playerActor)
                     .ToArray();
             }
-            if (_extraNpcs.Length != 0)
+            if (_extraNpcMap.Count != 0)
             {
-                defaultIncludeTypes = defaultIncludeTypes.Concat(_extraNpcs).ToArray();
+                defaultIncludeTypes = defaultIncludeTypes.Concat(_extraNpcMap.Keys).ToArray();
             }
 
             var room = _map.GetRoom(rdt.RdtId);
@@ -694,12 +696,14 @@ namespace IntelOrca.Biohazard
     [DebuggerDisplay("{Actor}")]
     public struct ExternalCharacter
     {
+        public bool IsFemale { get; }
         public string Actor { get; }
         public string ModelPath { get; }
         public string TexturePath { get; }
 
-        public ExternalCharacter(string actor, string modelPath, string texturePath)
+        public ExternalCharacter(bool isFemale, string actor, string modelPath, string texturePath)
         {
+            IsFemale = isFemale;
             Actor = actor;
             ModelPath = modelPath;
             TexturePath = texturePath;

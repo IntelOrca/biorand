@@ -136,17 +136,20 @@ namespace IntelOrca.Biohazard.RE2
                 {
                     var actor = Path.GetFileNameWithoutExtension(pldPath);
                     var facePath = DataManager.GetPath(BiohazardVersion, "face\\" + actor + ".tim");
-                    npcRandomiser.AddPC(actor, pldPath, facePath);
+                    npcRandomiser.AddPC(config.Player == 1, actor, pldPath, facePath);
                 }
 
-                var emdFiles = DataManager.GetFiles(BiohazardVersion, "emd");
-                foreach (var emdPath in emdFiles)
+                for (int i = 0;i < 2; i++)
                 {
-                    if (emdPath.EndsWith(".emd", System.StringComparison.OrdinalIgnoreCase))
+                    var emdFiles = DataManager.GetFiles(BiohazardVersion, $"emd{i}");
+                    foreach (var emdPath in emdFiles)
                     {
-                        var actor = Path.GetFileNameWithoutExtension(emdPath);
-                        var timPath = Path.ChangeExtension(emdPath, ".tim");
-                        npcRandomiser.AddNPC(actor, emdPath, timPath);
+                        if (emdPath.EndsWith(".emd", System.StringComparison.OrdinalIgnoreCase))
+                        {
+                            var actor = Path.GetFileNameWithoutExtension(emdPath);
+                            var timPath = Path.ChangeExtension(emdPath, ".tim");
+                            npcRandomiser.AddNPC(i == 1, actor, emdPath, timPath);
+                        }
                     }
                 }
             }
