@@ -410,7 +410,6 @@ namespace IntelOrca.Biohazard
                         }
                     }
                     builder.Save(dstPath);
-                    builder.Save(Path.ChangeExtension(dstPath, ".wav"));
                 }
             }
         }

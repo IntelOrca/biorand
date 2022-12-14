@@ -215,7 +215,7 @@ namespace IntelOrca.Biohazard
                 if (config.RandomNPCs)
                 {
                     var npcRandomiser = new NPCRandomiser(BiohazardVersion, logger, config, originalDataPath, modPath, gameData, map, randomNpcs, NpcHelper, DataManager);
-                    RandomizeNPCs(npcRandomiser);
+                    RandomizeNPCs(config, npcRandomiser);
                     npcRandomiser.Randomise();
                 }
 
@@ -236,7 +236,7 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        internal virtual void RandomizeNPCs(NPCRandomiser npcRandomiser)
+        internal virtual void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser)
         {
         }
 

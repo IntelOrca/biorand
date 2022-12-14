@@ -23,9 +23,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="data" />
-  </ItemGroup>
   <ItemGroup Condition="'$(Configuration)'=='Release'">
     <None Update="data\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
