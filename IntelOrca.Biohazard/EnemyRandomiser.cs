@@ -203,7 +203,7 @@ namespace IntelOrca.Biohazard
             var doc = _re1sounds;
             if (doc == null)
             {
-                var xml = _dataManager.GetPath(_version, "sounds.xml");
+                var xml = _dataManager.GetText(_version, "sounds.xml");
                 doc = new XmlDocument();
                 doc.LoadXml(xml);
                 _re1sounds = doc;
