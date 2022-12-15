@@ -32,13 +32,13 @@ namespace IntelOrca.Biohazard
         {
             get
             {
+                var assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var basePath = assemblyDir;
 #if DEBUG
-                var basePath = Path.Combine(Assembly.GetExecutingAssembly().Location, "..\\..\\..\\..\\..\\IntelOrca.Biohazard\\data");
-                return new DataManager(basePath);
-#else
-                var basePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "data");
-                return new DataManager(basePath);
+                basePath = Path.GetFullPath(Path.Combine(assemblyDir, "..\\..\\..\\..\\IntelOrca.Biohazard"));
 #endif
+                var dataPath = Path.Combine(basePath, "data");
+                return new DataManager(dataPath);
             }
         }
 
@@ -179,6 +179,7 @@ namespace IntelOrca.Biohazard
                     var r = new Re2Randomiser();
                     r.AddMusicSelection(bgmRandomizer, reConfig);
                 }
+                bgmRandomizer.AddCutomMusicToSelection(config);
 
                 if (BiohazardVersion == BioVersion.Biohazard1)
                 {

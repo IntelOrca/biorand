@@ -17,6 +17,14 @@ namespace IntelOrca.Biohazard
         private bool _finished;
         private double _initialSilence;
 
+        public float Volume { get; set; } = 1;
+
+        public static bool IsSupportedExtension(string path)
+        {
+            return path.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) ||
+                path.EndsWith(".wav", StringComparison.OrdinalIgnoreCase);
+        }
+
         public WaveformBuilder()
         {
         }
@@ -154,7 +162,19 @@ namespace IntelOrca.Biohazard
             if (length > 0)
             {
                 input.Position += startOffset;
-                input.CopyAmountTo(_stream, length);
+                if (Volume == 1)
+                {
+                    input.CopyAmountTo(_stream, length);
+                }
+                else
+                {
+                    var bw = new BinaryWriter(_stream);
+                    for (int i = 0; i < length; i += 2)
+                    {
+                        var sample = br.ReadInt16();
+                        bw.Write((short)(sample * Volume));
+                    }
+                }
             }
         }
 
@@ -179,10 +199,21 @@ namespace IntelOrca.Biohazard
                 while ((readSamples = vorbis.ReadSamples(readBuffer, 0, readBuffer.Length)) > 0)
                 {
                     var leftToRead = Math.Min(readSamples, maxSamplesToRead);
-                    for (int i = 0; i < leftToRead; i++)
+                    if (Volume == 1)
                     {
-                        var value = (short)(readBuffer[i] * short.MaxValue);
-                        bw.Write(value);
+                        for (int i = 0; i < leftToRead; i++)
+                        {
+                            var value = (short)(readBuffer[i] * short.MaxValue);
+                            bw.Write(value);
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < leftToRead; i++)
+                        {
+                            var value = (short)(readBuffer[i] * short.MaxValue * Volume);
+                            bw.Write(value);
+                        }
                     }
                     maxSamplesToRead -= leftToRead;
                 }

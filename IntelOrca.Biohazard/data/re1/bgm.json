@@ -5,12 +5,11 @@
   "safe": [
     "BGM_31"
   ],
-  "outside": [],
   "creepy": [
+    "!BGM_1A",
     "BGM_00",
     "BGM_0A",
     "BGM_0E",
-    "BGM_1A",
     "BGM_1B",
     "BGM_1C",
     "BGM_1D",
@@ -38,13 +37,22 @@
     "BGM_37",
     "BGM_40",
     "BGM_49",
-    "BGM_2B"
+    "BGM_2B",
+
+    // Ambient
+    "SE_03",
+    "SE_3C",
+    "SE_44",
+    "SE_46",
+
+    // Alarm
+    "SE_50"
   ],
   "calm": [
+    "!BGM_31",
     "BGM_0C",
     "BGM_3F",
     "BGM_13",
-    "BGM_31",
     "BGM_56"
   ],
   "danger": [
@@ -64,15 +72,6 @@
     "BGM_38",
     "BGM_48",
     "BGM_57"
-  ],
-  "ambient": [
-    "SE_03",
-    "SE_3C",
-    "SE_44",
-    "SE_46"
-  ],
-  "alarm": [
-    "SE_50"
   ],
   "instrument_bad": [
     "*BGM_10",

@@ -8,17 +8,10 @@
   "results": [
     "main2a"
   ],
-  "outside": [
-    "main00",
-    "main00_2",
-    "main2d",
-    "main2e",
-    "main2f"
-  ],
   "creepy": [
+    "!main03",
     "main01",
     "main02",
-    "main03",
     "main05",
     "main06",
     "main07",
@@ -48,13 +41,33 @@
     "sub35",
     "sub36",
     "sub42",
-    "sub44"
+    "sub44",
+
+    // Alarm
+    "*main11",
+    "*main23",
+    "*main34",
+    "*sub33",
+    "*sub34",
+
+    // Ambient
+    "*main04",
+    "*main0f",
+    "*main14",
+    "*main16",
+    "*main19",
+    "*main1b",
+    "*sub0f",
+    "*sub1a",
+    "*sub1e",
+    "*sub29",
+    "*sub39"
   ],
   "calm": [
+    "!main2a",
     "main0a",
     "main0c",
     "main0d",
-    "main2a",
     "sub0c",
     "sub1b",
     "sub24",
@@ -90,25 +103,5 @@
     "sub37",
     "sub3b",
     "sub40"
-  ],
-  "ambient": [
-    "main04",
-    "main0f",
-    "main14",
-    "main16",
-    "main19",
-    "main1b",
-    "sub0f",
-    "sub1a",
-    "sub1e",
-    "sub29",
-    "sub39"
-  ],
-  "alarm": [
-    "main11",
-    "main23",
-    "main34",
-    "sub33",
-    "sub34"
   ]
 }

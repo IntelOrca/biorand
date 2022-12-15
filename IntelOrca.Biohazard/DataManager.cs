@@ -62,7 +62,7 @@ namespace IntelOrca.Biohazard
         public string[] GetDirectoriesIn(string baseName)
         {
             var basePath = GetPath(baseName);
-            return Directory.GetDirectories(basePath);
+            return GetDirectories(basePath);
         }
 
         public string[] GetBgmFiles(string tag) => GetTaggedFiles("bgm", tag);

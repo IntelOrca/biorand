@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using NVorbis;
 
 namespace IntelOrca.Biohazard
 {
     internal class BgmRandomiser
     {
-        public const string TagAlarm = "alarm";
-        public const string TagAmbient = "ambient";
         public const string TagBasement = "basement";
         public const string TagCalm = "calm";
         public const string TagClown = "clown";
@@ -46,36 +43,81 @@ namespace IntelOrca.Biohazard
 
         public void AddToSelection(string bgmJson, string bgmSubDirectory, string extension)
         {
-            var bgmList = GetBtmList(bgmJson);
+            var bgmList = GetBgmList(bgmJson);
             bgmList.MakeFullPath(bgmSubDirectory, extension);
             _srcBgmList.Union(bgmList);
+        }
+
+        public void AddCutomMusicToSelection(RandoConfig config)
+        {
+            var bgmList = new BgmList();
+            var directories = _dataManager.GetDirectoriesIn("bgm");
+            foreach (var dir in directories)
+            {
+                bool good = config.IncludeBGMOther;
+                if (!good)
+                {
+                    var d = Path.GetFileName(dir);
+                    if (d == "re1" && config.IncludeBGMRE1)
+                        good = true;
+                    if (d == "re2" && config.IncludeBGMRE2)
+                        good = true;
+                    if (d == "re3" && config.IncludeBGMRE3)
+                        good = true;
+                    if (d == "re4" && config.IncludeBGMRE4)
+                        good = true;
+                }
+                if (good)
+                    AddCustomMusicToSelection(bgmList, dir);
+            }
+            _srcBgmList.Union(bgmList);
+        }
+
+        private void AddCustomMusicToSelection(BgmList bgmList, string directory)
+        {
+            var tags = _dataManager.GetDirectoriesIn(directory);
+            foreach (var tagPath in tags)
+            {
+                var tag = Path.GetFileName(tagPath);
+                var files = Directory.GetFiles(tagPath)
+                    .Where(x => WaveformBuilder.IsSupportedExtension(x))
+                    .ToArray();
+                foreach (var file in files)
+                {
+                    bgmList.Add(tag, file);
+                }
+            }
         }
 
         public void Randomise()
         {
             _logger.WriteHeading("Shuffling BGM:");
-            var bgmList = GetBtmList(_bgmJson);
+            var bgmList = GetBgmList(_bgmJson);
 
-            var tags = new[] { TagCreepy, TagCalm, TagDanger, TagInstrumentBad, TagInstrumentProgress, TagInstrumentGood };
-            foreach (var tag in tags)
+            // Ensure these are randomized, but otherwise give custom priority
+            Shuffle(bgmList, TagBasement, TagCreepy);
+            Shuffle(bgmList, TagSafe, TagCalm);
+            Shuffle(bgmList, TagResults, TagCalm);
+
+            // Shuffle tracks in each tag
+            foreach (var tag in bgmList.Tags)
             {
                 Shuffle(bgmList, tag, tag);
             }
-            Shuffle(bgmList, TagAmbient, TagCreepy);
-            Shuffle(bgmList, TagAlarm, TagCreepy);
 
-            RandomizeTheme(bgmList, TagCreepy);
-            RandomizeTheme(bgmList, TagDanger);
-            RandomizeTheme(bgmList, TagResults);
-            RandomizeTheme(bgmList, TagInstrumentBad, TagClown);
-            RandomizeTheme(bgmList, TagSafe);
+            // Clown music
+            Shuffle(bgmList, TagInstrumentBad, TagClown, true);
             if (_rng.Next(0, 4) == 0)
-                RandomizeTheme(bgmList, TagBasement, TagClown);
+            {
+                Shuffle(bgmList, TagBasement, TagClown, true);
+            }
         }
 
-        private void Shuffle(BgmList bgmList, string dstTag, string srcTag)
+        private void Shuffle(BgmList bgmList, string dstTag, string srcTag, bool overlay = false)
         {
-            var dstList = bgmList.GetList(dstTag);
+            var dstList = bgmList
+                .GetList(dstTag)
+                .ToArray();
             var srcList = _srcBgmList
                 .GetList(srcTag)
                 .ToEndlessBag(_rng);
@@ -83,10 +125,18 @@ namespace IntelOrca.Biohazard
             if (srcList.Count == 0)
                 return;
 
+            if (overlay)
+            {
+                dstList = dstList
+                    .Shuffle(_rng)
+                    .Take(srcList.Count)
+                    .ToArray();
+            }
+
             var extension = _isWav ? ".wav" : ".sap";
             var dstDir = _bgmDirectory;
             Directory.CreateDirectory(dstDir);
-            for (int i = 0; i < dstList.Count; i++)
+            for (int i = 0; i < dstList.Length; i++)
             {
                 var dstName = dstList[i];
                 if (dstName.StartsWith("!"))
@@ -95,14 +145,23 @@ namespace IntelOrca.Biohazard
                     dstName = dstName.Substring(1);
 
                 var src = srcList.Next();
+                if (Path.GetFileNameWithoutExtension(src) == dstName)
+                {
+                    src = srcList.Next();
+                    if (Path.GetFileNameWithoutExtension(src) == dstName)
+                    {
+                        continue;
+                    }
+                }
+
                 var dst = Path.Combine(dstDir, dstName + extension);
-                CopyMusicTrack(src, dst);
+                SetMusicTrack(src, dst);
 
                 _logger.WriteLine($"Setting {dstName} to {src}");
             }
         }
 
-        private void CopyMusicTrack(string src, string dst)
+        private void SetMusicTrack(string src, string dst)
         {
             var srcExtension = Path.GetExtension(src);
             var dstExtension = Path.GetExtension(dst);
@@ -110,25 +169,16 @@ namespace IntelOrca.Biohazard
             {
                 File.Copy(src, dst, true);
             }
-            else if (srcExtension.Equals(".wav", StringComparison.OrdinalIgnoreCase))
+            else
             {
-                var srcBytes = File.ReadAllBytes(src);
-                using (var fs = new FileStream(dst, FileMode.Create))
-                {
-                    var bw = new BinaryWriter(fs);
-                    bw.Write((ulong)1);
-                    bw.Write(srcBytes);
-                }
-            }
-            else if (srcExtension.Equals(".sap", StringComparison.OrdinalIgnoreCase))
-            {
-                var decoder = new ADPCMDecoder();
-                decoder.Volume = ImportVolume;
-                decoder.Convert(src, dst);
+                var builder = new WaveformBuilder();
+                builder.Volume = ImportVolume;
+                builder.Append(src);
+                builder.Save(dst);
             }
         }
 
-        private BgmList GetBtmList(string bgmJson)
+        private BgmList GetBgmList(string bgmJson)
         {
             var dict = JsonSerializer.Deserialize<Dictionary<string, string[]>>(bgmJson, new JsonSerializerOptions()
             {
@@ -140,105 +190,11 @@ namespace IntelOrca.Biohazard
             return new BgmList(dict);
         }
 
-        private void RandomizeTheme(BgmList bgmList, string tag) => RandomizeTheme(bgmList, tag, tag);
-
-        private void RandomizeTheme(BgmList bgmList, string tag, string srcTag)
-        {
-            try
-            {
-                var files = _dataManager.GetBgmFiles(srcTag).Shuffle(_rng);
-                var samples = bgmList.GetList(tag);
-                var shuffledSamples = samples
-                    .Where(x => !x.StartsWith("!"))
-                    .Shuffle(_rng)
-                    .ToArray();
-                var min = Math.Min(shuffledSamples.Length, files.Length);
-                for (int i = 0; i < min; i++)
-                {
-                    var resource = File.ReadAllBytes(files[i]);
-                    var dst = shuffledSamples[i];
-                    if (dst.StartsWith("*"))
-                        dst = dst.Substring(1);
-                    RandomizeFromOwnMusic(dst, files[i], resource);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.WriteException(ex);
-            }
-        }
-
-        private void RandomizeFromOwnMusic(string fileName, string name, byte[] resource)
-        {
-            var ms = new MemoryStream(resource);
-            using (var vorbis = new VorbisReader(ms))
-            {
-                var extension = _isWav ? ".wav" : ".sap";
-                var dst = Path.Combine(_bgmDirectory, fileName + extension);
-                Directory.CreateDirectory(Path.GetDirectoryName(dst));
-                using (var fs = new FileStream(dst, FileMode.Create))
-                {
-                    var bw = new BinaryWriter(fs);
-                    if (!_isWav)
-                    {
-                        bw.Write((ulong)1);
-                    }
-
-                    // Write WAV header
-                    var headerOffset = fs.Position;
-                    bw.WriteASCII("RIFF");
-                    bw.Write((uint)0);
-                    bw.WriteASCII("WAVE");
-                    bw.WriteASCII("fmt ");
-                    bw.Write((uint)16);
-                    bw.Write((ushort)1);
-                    bw.Write((ushort)vorbis.Channels);
-                    bw.Write((uint)vorbis.SampleRate);
-                    bw.Write((uint)(vorbis.SampleRate * 16 * vorbis.Channels) / 8);
-                    bw.Write((ushort)((16 * vorbis.Channels) / 8));
-                    bw.Write((ushort)16);
-                    bw.WriteASCII("data");
-                    bw.Write((uint)0);
-
-                    var dataOffset = fs.Position;
-
-                    // Stream samples from ogg
-                    int readSamples;
-                    var readBuffer = new float[vorbis.Channels * vorbis.SampleRate / 8];
-                    while ((readSamples = vorbis.ReadSamples(readBuffer, 0, readBuffer.Length)) > 0)
-                    {
-                        if (ImportVolume == 1)
-                        {
-                            for (int i = 0; i < readSamples; i++)
-                            {
-                                var value = (short)(readBuffer[i] * short.MaxValue);
-                                bw.Write(value);
-                            }
-                        }
-                        else
-                        {
-                            for (int i = 0; i < readSamples; i++)
-                            {
-                                var value = (short)(readBuffer[i] * short.MaxValue * ImportVolume);
-                                bw.Write(value);
-                            }
-                        }
-                    }
-
-                    // Fill in chunk lengths
-                    var dataLength = fs.Length - dataOffset;
-                    fs.Position = dataOffset - 4;
-                    bw.Write((uint)dataLength);
-                    fs.Position = headerOffset + 4;
-                    bw.Write((uint)(fs.Length - 8));
-                }
-            }
-            _logger.WriteLine($"Setting {fileName} to {name}");
-        }
-
         private class BgmList
         {
             private Dictionary<string, List<string>> _samples = new Dictionary<string, List<string>>();
+
+            public string[] Tags => _samples.Keys.ToArray();
 
             public BgmList()
             {
@@ -248,6 +204,12 @@ namespace IntelOrca.Biohazard
             {
                 _samples = samples
                     .ToDictionary(x => x.Key, x => x.Value.ToList());
+            }
+
+            public void Add(string tag, string path)
+            {
+                var list = GetList(tag);
+                list.Add(path);
             }
 
             public void Union(BgmList other)
