@@ -147,9 +147,17 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 _suspendEvents = true;
 
-                chkRngDoors.IsChecked = _config.RandomDoors;
                 chkRngChars.IsChecked = _config.RandomNPCs;
+                chkNPCsRE1.IsChecked = _config.IncludeNPCRE1;
+                chkNPCsRE2.IsChecked = _config.IncludeNPCRE2;
+                chkNPCsOther.IsChecked = _config.IncludeNPCOther;
+
                 chkRngBgm.IsChecked = _config.RandomBgm;
+                chkBGMRE1.IsChecked = _config.IncludeBGMRE1;
+                chkBGMRE2.IsChecked = _config.IncludeBGMRE2;
+                chkBGMOther.IsChecked = _config.IncludeBGMOther;
+
+                chkRngDoors.IsChecked = _config.RandomDoors;
                 chkProtectSoftLock.IsChecked = _config.ProtectFromSoftLock || _config.RandomDoors;
                 chkRngEnemies.IsChecked = _config.RandomEnemies;
                 chkRngItems.IsChecked = _config.RandomItems || _config.RandomDoors;
@@ -334,9 +342,17 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void UpdateConfig()
         {
-            _config.RandomDoors = chkRngDoors.IsChecked == true;
             _config.RandomNPCs = chkRngChars.IsChecked == true;
+            _config.IncludeNPCRE1 = chkNPCsRE1.IsChecked == true;
+            _config.IncludeNPCRE2 = chkNPCsRE2.IsChecked == true;
+            _config.IncludeNPCOther = chkNPCsOther.IsChecked == true;
+
             _config.RandomBgm = chkRngBgm.IsChecked == true;
+            _config.IncludeBGMRE1 = chkBGMRE1.IsChecked == true;
+            _config.IncludeBGMRE2 = chkBGMRE2.IsChecked == true;
+            _config.IncludeBGMOther = chkBGMOther.IsChecked == true;
+
+            _config.RandomDoors = chkRngDoors.IsChecked == true;
             _config.ProtectFromSoftLock = chkProtectSoftLock.IsChecked == true || _config.RandomDoors;
             _config.RandomEnemies = chkRngEnemies.IsChecked == true;
             _config.RandomItems = chkRngItems.IsChecked == true || _config.RandomDoors;

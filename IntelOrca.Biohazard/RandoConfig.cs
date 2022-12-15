@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 
 namespace IntelOrca.Biohazard
@@ -30,6 +31,18 @@ namespace IntelOrca.Biohazard
         public bool AlternativeRoutes { get; set; } = true;
         public bool IncludeDocuments { get; set; }
 
+        public bool IncludeBGMRE1 { get; set; }
+        public bool IncludeBGMRE2 { get; set; }
+        public bool IncludeBGMRE3 { get; set; }
+        public bool IncludeBGMRE4 { get; set; }
+        public bool IncludeBGMOther { get; set; }
+
+        public bool IncludeNPCRE1 { get; set; }
+        public bool IncludeNPCRE2 { get; set; }
+        public bool IncludeNPCRE3 { get; set; }
+        public bool IncludeNPCOther { get; set; }
+
+
         // Numbers
         public byte RatioAmmo { get; set; } = 16;
         public byte RatioHealth { get; set; } = 16;
@@ -41,24 +54,48 @@ namespace IntelOrca.Biohazard
 
         public static RandoConfig FromString(string code)
         {
-            var chars = code?.ToCharArray() ?? new char[0];
-            Array.Resize(ref chars, 17);
-
             var result = new RandoConfig();
-            result.Version = ParseSingle(chars[1]);
-            // result.Game = ParseSingle(chars[2]);
-            result.GameVariant = Math.Min(ParseSingle(chars[3]), (byte)1);
+            var reader = new Reader(code);
+            reader.ReadDigit();
+            result.Version = reader.ReadDigit();
+            result.Game = reader.ReadDigit();
+            result.GameVariant = Math.Min(reader.ReadDigit(), (byte)1);
 
-            result.Seed = ParseMany(chars, 5, 4);
+            result.Seed = reader.ReadInt32(20);
 
-            result.SetFlags0(ParseSingle(chars[10]));
-            result.SetFlags1(ParseSingle(chars[11]));
-            result.RatioAmmo = ParseSingle(chars[12]);
-            result.RatioHealth = ParseSingle(chars[13]);
-            result.RatioInkRibbons = ParseSingle(chars[14]);
-            result.SetD4(ParseSingle(chars[15]));
-            result.SetD5(ParseSingle(chars[16]));
+            result.ProtectFromSoftLock = reader.ReadFlag();
+            result.RandomDoors = reader.ReadFlag();
+            result.RandomNPCs = reader.ReadFlag();
+            result.RandomEnemies = reader.ReadFlag();
+            result.RandomItems = reader.ReadFlag();
 
+            result.RandomBgm = reader.ReadFlag();
+            result.ShuffleItems = reader.ReadFlag();
+            result.AlternativeRoutes = reader.ReadFlag();
+            result.IncludeDocuments = reader.ReadFlag();
+            reader.ReadFlag();
+
+            result.RatioAmmo = reader.ReadDigit();
+            result.RatioHealth = reader.ReadDigit();
+            result.RatioInkRibbons = reader.ReadDigit();
+
+            result.AmmoQuantity = reader.ReadByte(3);
+            result.EnemyDifficulty = reader.ReadByte(2);
+
+            result.AreaCount = reader.ReadByte(2);
+            result.AreaSize = reader.ReadByte(3);
+
+            result.IncludeBGMRE1 = reader.ReadFlag();
+            result.IncludeBGMRE2 = reader.ReadFlag();
+            reader.ReadFlag();
+            reader.ReadFlag();
+            result.IncludeBGMOther = reader.ReadFlag();
+
+            result.IncludeNPCRE1 = reader.ReadFlag();
+            result.IncludeNPCRE2 = reader.ReadFlag();
+            reader.ReadFlag();
+            reader.ReadFlag();
+            result.IncludeNPCOther = reader.ReadFlag();
             return result;
         }
 
@@ -74,131 +111,49 @@ namespace IntelOrca.Biohazard
 
         public override string ToString()
         {
-            var sb = new StringBuilder();
-            sb.Append('R');
-            AppendSingle(sb, Version);
-            AppendSingle(sb, Game);
-            AppendSingle(sb, GameVariant);
-            sb.Append('-');
-            AppendMany(sb, Seed, 20);
-            sb.Append('-');
-            AppendSingle(sb, GetFlags0());
-            AppendSingle(sb, GetFlags1());
-            AppendSingle(sb, RatioAmmo);
-            AppendSingle(sb, RatioHealth);
-            AppendSingle(sb, RatioInkRibbons);
-            AppendSingle(sb, GetD4());
-            AppendSingle(sb, GetD5());
-            return sb.ToString();
-        }
+            var writer = new Writer();
+            writer.Write('R');
+            writer.WriteDigit(Version);
+            writer.WriteDigit(Game);
+            writer.WriteDigit(GameVariant);
+            writer.Write('-');
+            writer.Write(20, Seed);
+            writer.Write('-');
 
-        private void SetFlags0(byte value)
-        {
-            ProtectFromSoftLock = (value & (1 << 0)) != 0;
-            RandomDoors = (value & (1 << 1)) != 0;
-            RandomNPCs = (value & (1 << 2)) != 0;
-            RandomEnemies = (value & (1 << 3)) != 0;
-            RandomItems = (value & (1 << 4)) != 0;
-        }
+            writer.Write(ProtectFromSoftLock);
+            writer.Write(RandomDoors);
+            writer.Write(RandomNPCs);
+            writer.Write(RandomEnemies);
+            writer.Write(RandomItems);
 
-        private byte GetFlags0()
-        {
-            var result = 0;
-            if (ProtectFromSoftLock)
-                result |= 1 << 0;
-            if (RandomDoors)
-                result |= 1 << 1;
-            if (RandomNPCs)
-                result |= 1 << 2;
-            if (RandomEnemies)
-                result |= 1 << 3;
-            if (RandomItems)
-                result |= 1 << 4;
-            return (byte)result;
-        }
+            writer.Write(RandomBgm);
+            writer.Write(ShuffleItems);
+            writer.Write(AlternativeRoutes);
+            writer.Write(IncludeDocuments);
+            writer.Write(false);
 
-        private void SetFlags1(byte value)
-        {
-            RandomBgm = (value & (1 << 0)) != 0;
-            ShuffleItems = (value & (1 << 1)) != 0;
-            AlternativeRoutes = (value & (1 << 2)) != 0;
-            IncludeDocuments = (value & (1 << 3)) != 0;
-        }
+            writer.WriteDigit(RatioAmmo);
+            writer.WriteDigit(RatioHealth);
+            writer.WriteDigit(RatioInkRibbons);
 
-        private byte GetFlags1()
-        {
-            var result = 0;
-            if (RandomBgm)
-                result |= 1 << 0;
-            if (ShuffleItems)
-                result |= 1 << 1;
-            if (AlternativeRoutes)
-                result |= 1 << 2;
-            if (IncludeDocuments)
-                result |= 1 << 3;
-            return (byte)result;
-        }
+            writer.Write(3, AmmoQuantity);
+            writer.Write(2, EnemyDifficulty);
 
-        private void SetD4(byte value)
-        {
-            AmmoQuantity = (byte)(value & 0b111);
-            EnemyDifficulty = (byte)((value & 0b11000) >> 3);
-        }
+            writer.Write(2, AreaCount);
+            writer.Write(3, AreaSize);
 
-        private byte GetD4()
-        {
-            var result = 0;
-            result |= AmmoQuantity & 0b111;
-            result |= (EnemyDifficulty & 0b11) << 3;
-            return (byte)result;
-        }
+            writer.Write(IncludeBGMRE1);
+            writer.Write(IncludeBGMRE2);
+            writer.Write(false);
+            writer.Write(false);
+            writer.Write(IncludeBGMOther);
 
-        private void SetD5(byte value)
-        {
-            AreaCount = (byte)(value & 0b11);
-            AreaSize = (byte)((value & 0b11100) >> 2);
-        }
-
-        private byte GetD5()
-        {
-            var result = 0;
-            result |= AreaCount & 0b11;
-            result |= (AreaSize & 0b111) << 2;
-            return (byte)result;
-        }
-
-        private static byte ParseSingle(char c)
-        {
-            var index = Array.IndexOf(_pwdChars, char.ToUpper(c));
-            return index == -1 ? (byte)0 : (byte)index;
-        }
-
-        private static int ParseMany(char[] chars, int offset, int length)
-        {
-            var result = 0;
-            for (int i = offset + length - 1; i >= offset; i--)
-            {
-                var c = chars[i];
-                result <<= 5;
-                result |= ParseSingle(c);
-            }
-            return result;
-        }
-
-        private static void AppendSingle(StringBuilder sb, int value)
-        {
-            AppendMany(sb, value, 5);
-        }
-
-        private static void AppendMany(StringBuilder sb, int value, int numBits)
-        {
-            var n = value & ((1 << numBits) - 1);
-            for (int i = 0; i < numBits; i += 5)
-            {
-                var chr = ToPwdChar((byte)(n & 0b11111));
-                sb.Append(chr);
-                n >>= 5;
-            }
+            writer.Write(IncludeNPCRE1);
+            writer.Write(IncludeNPCRE2);
+            writer.Write(false);
+            writer.Write(false);
+            writer.Write(IncludeNPCOther);
+            return writer.ToString();
         }
 
         private static char ToPwdChar(byte c)
@@ -216,6 +171,98 @@ namespace IntelOrca.Biohazard
         {
             get => (GameVariant >> 1) & 1;
             set => GameVariant = (byte)((GameVariant & ~2) | ((value & 1) << 1));
+        }
+
+        private class Reader
+        {
+            private string _s;
+            private int _index;
+            private int _current;
+            private int _bitsRemaining;
+
+            public Reader(string s)
+            {
+                _s = s;
+            }
+
+            private byte PeekByte()
+            {
+                if (_index < _s.Length)
+                {
+                    var c = _s[_index++];
+                    if (c == '-')
+                        return PeekByte();
+
+                    var v = Array.IndexOf(_pwdChars, char.ToUpper(c));
+                    var result = v == -1 ? (byte)0 : (byte)v;
+                    return result;
+                }
+                return 0;
+            }
+
+            private void EnsureBits(int count)
+            {
+                while (_bitsRemaining < count)
+                {
+                    var next = PeekByte();
+                    _current |= next << _bitsRemaining;
+                    _bitsRemaining += 5;
+                }
+            }
+
+            public bool ReadFlag() => ReadInt32(1) == 1;
+
+            public byte ReadDigit() => (byte)ReadInt32(5);
+
+            public byte ReadByte(int numBits) => (byte)ReadInt32(numBits);
+
+            public int ReadInt32(int numBits)
+            {
+                EnsureBits(numBits);
+                var result = _current & ((1 << numBits) - 1);
+                _current >>= numBits;
+                _bitsRemaining -= numBits;
+                return result;
+            }
+        }
+
+        private class Writer
+        {
+            private StringBuilder _sb = new StringBuilder();
+            private int _current;
+            private int _currentBitCount;
+
+            public void Write(bool value) => Write(1, value ? 1 : 0);
+
+            public void WriteDigit(byte value) => Write(5, value);
+
+            public void Write(int numBits, int value)
+            {
+                var mask = (1 << numBits) - 1;
+                value &= mask;
+                _current |= value << _currentBitCount;
+                _currentBitCount += numBits;
+                Flush();
+            }
+
+            public void Write(char c)
+            {
+                _sb.Append(c);
+            }
+
+            private void Flush()
+            {
+                while (_currentBitCount >= 5)
+                {
+                    var value = (byte)(_current & 0b11111);
+                    var c = ToPwdChar(value);
+                    _sb.Append(c);
+                    _current >>= 5;
+                    _currentBitCount -= 5;
+                }
+            }
+
+            public override string ToString() => _sb.ToString();
         }
     }
 }

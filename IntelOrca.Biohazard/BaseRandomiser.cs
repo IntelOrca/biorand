@@ -7,6 +7,8 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Xml;
+using IntelOrca.Biohazard.RE1;
+using IntelOrca.Biohazard.RE2;
 
 namespace IntelOrca.Biohazard
 {
@@ -157,7 +159,37 @@ namespace IntelOrca.Biohazard
             File.WriteAllText(Path.Combine(modPath, "manifest.txt"), "[MOD]\nName = BioRand: A Resident Evil Randomizer\n");
         }
 
-        protected abstract void Generate(RandoConfig config, ReInstallConfig reConfig, string installPath, string modPath);
+        public virtual void Generate(RandoConfig config, ReInstallConfig reConfig, string installPath, string modPath)
+        {
+            if (config.RandomBgm)
+            {
+                using var logger = new RandoLogger(Path.Combine(modPath, $"log_bgm.txt"));
+                logger.WriteHeading("Resident Evil Randomizer");
+                logger.WriteLine($"Seed: {config}");
+
+                var bgmDirectory = Path.Combine(modPath, BGMPath);
+                var bgmRandomizer = new BgmRandomiser(logger, bgmDirectory, GetBgmJson(), false, new Rng(config.Seed), DataManager);
+                if (config.IncludeBGMRE1)
+                {
+                    var r = new Re1Randomiser();
+                    r.AddMusicSelection(bgmRandomizer, reConfig);
+                }
+                if (config.IncludeBGMRE2)
+                {
+                    var r = new Re2Randomiser();
+                    r.AddMusicSelection(bgmRandomizer, reConfig);
+                }
+
+                if (BiohazardVersion == BioVersion.Biohazard1)
+                {
+                    bgmRandomizer.ImportVolume = 0.25f;
+                }
+
+                bgmRandomizer.Randomise();
+            }
+
+            RandoBgCreator.Save(config, modPath, BiohazardVersion, DataManager);
+        }
 
         public void GenerateRdts(RandoConfig config, string originalDataPath, string modPath)
         {
@@ -260,11 +292,9 @@ namespace IntelOrca.Biohazard
             return File.ReadAllText(path);
         }
 
-        protected string GetBgmJson()
-        {
-            var path = DataManager.GetPath(BiohazardVersion, "bgm.json");
-            return File.ReadAllText(path);
-        }
+        internal string GetBgmJson() => DataManager.GetText(BiohazardVersion, "bgm.json");
+
+        internal abstract string BGMPath { get; }
 
         private void DumpRdtList(GameData gameData, string path)
         {

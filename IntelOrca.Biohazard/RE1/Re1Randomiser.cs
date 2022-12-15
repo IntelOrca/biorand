@@ -81,7 +81,7 @@ namespace IntelOrca.Biohazard.RE1
             return path;
         }
 
-        protected override void Generate(RandoConfig config, ReInstallConfig reConfig, string installPath, string modPath)
+        public override void Generate(RandoConfig config, ReInstallConfig reConfig, string installPath, string modPath)
         {
             GenerateRdts(config.WithPlayerScenario(0, 0), installPath, modPath);
             GenerateRdts(config.WithPlayerScenario(1, 0), installPath, modPath);
@@ -91,35 +91,16 @@ namespace IntelOrca.Biohazard.RE1
                 SerialiseInventory(modPath);
             }
 
-            if (config.RandomBgm)
-            {
-                using var logger = new RandoLogger(Path.Combine(modPath, $"log_bgm.txt"));
-                logger.WriteHeading("Resident Evil Randomizer");
-                logger.WriteLine($"Seed: {config}");
-
-                var srcBgmDirectory = Path.Combine(installPath, "sound");
-                var dstBgmDirectory = Path.Combine(modPath, "sound");
-                var bgmRandomiser = new BgmRandomiser(logger, dstBgmDirectory, GetBgmJson(), true, new Rng(config.Seed), DataManager);
-                AddMusicSelection(bgmRandomiser, reConfig);
-
-                if (reConfig.IsEnabled(BioVersion.Biohazard2))
-                {
-                    var re2r = new Re2Randomiser();
-                    re2r.AddMusicSelection(bgmRandomiser, reConfig);
-                }
-
-                bgmRandomiser.ImportVolume = 0.25f;
-                bgmRandomiser.Randomise();
-            }
-
-            RandoBgCreator.Save(config, modPath, BiohazardVersion, DataManager);
+            base.Generate(config, reConfig, installPath, modPath);
         }
 
         internal void AddMusicSelection(BgmRandomiser bgmRandomizer, ReInstallConfig reConfig)
         {
-            var dataPath = GetDataPath(reConfig.GetInstallPath(BioVersion.Biohazard1));
-            var srcBgmDirectory = Path.Combine(dataPath, "sound");
+            var dataPath = GetDataPath(reConfig.GetInstallPath(BiohazardVersion));
+            var srcBgmDirectory = Path.Combine(dataPath, BGMPath);
             bgmRandomizer.AddToSelection(GetBgmJson(), srcBgmDirectory, ".wav");
         }
+
+        internal override string BGMPath => "sound";
     }
 }

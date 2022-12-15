@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:IntelOrca.Biohazard.BioRand"
         mc:Ignorable="d"
         Title="BioRand: A Resident Evil Randomizer"
-        Width="550"
+        Width="600"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         SizeToContent="Height">
@@ -88,12 +88,26 @@
                             </Grid>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Header="General">
-                        <StackPanel>
-                            <CheckBox x:Name="chkRngChars">Randomize characters, voice</CheckBox>
-                            <CheckBox x:Name="chkRngBgm">Randomize background music</CheckBox>
-                        </StackPanel>
-                    </GroupBox>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <local:CheckGroupBox x:Name="chkRngChars" Grid.Column="0" Header="Randomize Characters">
+                            <StackPanel>
+                                <CheckBox x:Name="chkNPCsRE1" ToolTip="Requires Resident Evil 1 game data.">Include Resident Evil 1</CheckBox>
+                                <CheckBox x:Name="chkNPCsRE2" ToolTip="Requires Resident Evil 2 game data.">Include Resident Evil 2</CheckBox>
+                                <CheckBox x:Name="chkNPCsOther" ToolTip="Includes custom PLD and OGG/WAV files from BioRand's data directory.">Include Custom</CheckBox>
+                            </StackPanel>
+                        </local:CheckGroupBox>
+                        <local:CheckGroupBox x:Name="chkRngBgm" Grid.Column="1" Header="Randomize Background Music">
+                            <StackPanel>
+                                <CheckBox x:Name="chkBGMRE1" ToolTip="Requires Resident Evil 1 game data.">Include Resident Evil 1</CheckBox>
+                                <CheckBox x:Name="chkBGMRE2" ToolTip="Requires Resident Evil 2 game data.">Include Resident Evil 2</CheckBox>
+                                <CheckBox x:Name="chkBGMOther" ToolTip="Includes custom OGG/WAV files from BioRand's data directory.">Include RE 3 / RE:CV / RE 4 / Custom</CheckBox>
+                            </StackPanel>
+                        </local:CheckGroupBox>
+                    </Grid>
                     <local:CheckGroupBox x:Name="chkRngEnemies" Header="Randomize Enemies">
                         <Grid>
                             <Grid.RowDefinitions>

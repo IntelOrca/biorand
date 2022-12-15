@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -81,7 +82,7 @@ namespace IntelOrca.Biohazard.RE2
             return checksums.ToDictionary(x => RdtId.Parse(x.Key), x => x.Value);
         }
 
-        protected override void Generate(RandoConfig config, ReInstallConfig reConfig, string installPath, string modPath)
+        public override void Generate(RandoConfig config, ReInstallConfig reConfig, string installPath, string modPath)
         {
             _reInstallConfig = reConfig;
 
@@ -104,31 +105,19 @@ namespace IntelOrca.Biohazard.RE2
                     () => GenerateRdts(config.WithPlayerScenario(1, 0), installPath, modPath));
             }
 
-            if (config.RandomBgm)
-            {
-                using var logger = new RandoLogger(Path.Combine(modPath, $"log_bgm.txt"));
-                logger.WriteHeading("Resident Evil Randomizer");
-                logger.WriteLine($"Seed: {config}");
-
-                var bgmDirectory = Path.Combine(modPath, @"Common\Sound\BGM");
-                var bgmRandomiser = new BgmRandomiser(logger, bgmDirectory, GetBgmJson(), false, new Rng(config.Seed), DataManager);
-                AddMusicSelection(bgmRandomiser, reConfig);
-                if (reConfig.IsEnabled(BioVersion.Biohazard1))
-                {
-                    var re1r = new Re1Randomiser();
-                    re1r.AddMusicSelection(bgmRandomiser, reConfig);
-                }
-                bgmRandomiser.Randomise();
-            }
-
-            RandoBgCreator.Save(config, modPath, BiohazardVersion, DataManager);
+            base.Generate(config, reConfig, installPath, modPath);
         }
 
         internal override void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser)
         {
-            if (_reInstallConfig?.IsEnabled(BioVersion.Biohazard1) == true)
+            var actors = new HashSet<string>();
+            actors.AddRange(new[] { "brad", "hunk" });
+
+            if (config.IncludeNPCRE1)
             {
-                var dataPath = GetDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard1));
+                actors.AddRange(new[] { "chris", "enrico", "jill", "rebecca", "richard", "wesker" });
+
+                var dataPath = GetDataPath(_reInstallConfig!.GetInstallPath(BioVersion.Biohazard1));
                 dataPath = Path.Combine(dataPath, "JPN");
                 npcRandomiser.AddToSelection(BioVersion.Biohazard1, dataPath);
             }
@@ -137,8 +126,11 @@ namespace IntelOrca.Biohazard.RE2
             foreach (var pldPath in pldFiles)
             {
                 var actor = Path.GetFileNameWithoutExtension(pldPath);
-                var facePath = DataManager.GetPath(BiohazardVersion, "face\\" + actor + ".tim");
-                npcRandomiser.AddPC(config.Player == 1, actor, pldPath, facePath);
+                if (config.IncludeNPCOther || actors.Contains(actor))
+                {
+                    var facePath = DataManager.GetPath(BiohazardVersion, "face\\" + actor + ".tim");
+                    npcRandomiser.AddPC(config.Player == 1, actor, pldPath, facePath);
+                }
             }
 
             for (int i = 0; i < 2; i++)
@@ -146,11 +138,14 @@ namespace IntelOrca.Biohazard.RE2
                 var emdFiles = DataManager.GetFiles(BiohazardVersion, $"emd{i}");
                 foreach (var emdPath in emdFiles)
                 {
-                    if (emdPath.EndsWith(".emd", System.StringComparison.OrdinalIgnoreCase))
+                    var actor = Path.GetFileNameWithoutExtension(emdPath);
+                    if (config.IncludeNPCOther || actors.Contains(actor))
                     {
-                        var actor = Path.GetFileNameWithoutExtension(emdPath);
-                        var timPath = Path.ChangeExtension(emdPath, ".tim");
-                        npcRandomiser.AddNPC(i == 1, actor, emdPath, timPath);
+                        if (emdPath.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var timPath = Path.ChangeExtension(emdPath, ".tim");
+                            npcRandomiser.AddNPC(i == 1, actor, emdPath, timPath);
+                        }
                     }
                 }
             }
@@ -158,9 +153,11 @@ namespace IntelOrca.Biohazard.RE2
 
         internal void AddMusicSelection(BgmRandomiser bgmRandomizer, ReInstallConfig reConfig)
         {
-            var dataPath = GetDataPath(reConfig.GetInstallPath(BioVersion.Biohazard2));
-            var srcBgmDirectory = Path.Combine(dataPath, @"Common\Sound\BGM");
+            var dataPath = GetDataPath(reConfig.GetInstallPath(BiohazardVersion));
+            var srcBgmDirectory = Path.Combine(dataPath, BGMPath);
             bgmRandomizer.AddToSelection(GetBgmJson(), srcBgmDirectory, ".sap");
         }
+
+        internal override string BGMPath => @"Common\Sound\BGM";
     }
 }

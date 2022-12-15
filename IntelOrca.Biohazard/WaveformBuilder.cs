@@ -43,6 +43,7 @@ namespace IntelOrca.Biohazard
             stream.Position = 40;
             bw.Write((uint)(stream.Length - 44));
             stream.Position = stream.Length;
+            _finished = true;
         }
 
         public void Save(string path, ulong sapHeader = 1)

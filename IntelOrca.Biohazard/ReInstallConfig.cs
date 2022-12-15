@@ -7,7 +7,15 @@ namespace IntelOrca.Biohazard
         private string[] _installPath = new string[3];
         private bool[] _enabled = new bool[3];
 
-        public string GetInstallPath(int index) => _installPath[index];
+        public string GetInstallPath(int index)
+        {
+            var result = _installPath[index];
+            if (result == null)
+            {
+                throw new Exception($"RE {index + 1} path not set up.");
+            }
+            return result;
+        }
         public bool IsEnabled(int index) => _enabled[index];
 
         public void SetInstallPath(int index, string path)

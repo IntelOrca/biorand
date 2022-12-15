@@ -36,6 +36,17 @@ namespace IntelOrca.Biohazard
             return new Queue<T>(items);
         }
 
+        public static EndlessBag<T> ToEndlessBag<T>(this IEnumerable<T> items, Rng rng)
+        {
+            return new EndlessBag<T>(rng, items);
+        }
+
+        public static void AddRange<T>(this HashSet<T> set, IEnumerable<T> items)
+        {
+            foreach (var item in items)
+                set.Add(item);
+        }
+
         public static void RemoveMany<T>(this List<T> items, IEnumerable<T> removeList)
         {
             foreach (var item in removeList)

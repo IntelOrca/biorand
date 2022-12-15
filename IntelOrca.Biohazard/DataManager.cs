@@ -42,6 +42,12 @@ namespace IntelOrca.Biohazard
             return File.ReadAllBytes(fullPath);
         }
 
+        public string GetText(BioVersion version, string path)
+        {
+            var fullPath = GetPath(version, path);
+            return File.ReadAllText(fullPath);
+        }
+
         public string[] GetFiles(BioVersion version, string baseName)
         {
             var basePath = GetPath(version, baseName);

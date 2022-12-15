@@ -78,7 +78,11 @@ namespace IntelOrca.Biohazard
             var dstList = bgmList.GetList(dstTag);
             var srcList = _srcBgmList
                 .GetList(srcTag)
-                .Shuffle(_rng);
+                .ToEndlessBag(_rng);
+
+            if (srcList.Count == 0)
+                return;
+
             var extension = _isWav ? ".wav" : ".sap";
             var dstDir = _bgmDirectory;
             Directory.CreateDirectory(dstDir);
@@ -90,11 +94,11 @@ namespace IntelOrca.Biohazard
                 if (dstName.StartsWith("*"))
                     dstName = dstName.Substring(1);
 
-                var src = srcList[i];
+                var src = srcList.Next();
                 var dst = Path.Combine(dstDir, dstName + extension);
                 CopyMusicTrack(src, dst);
 
-                _logger.WriteLine($"Setting {dstName} to {srcList[i]}");
+                _logger.WriteLine($"Setting {dstName} to {src}");
             }
         }
 
@@ -171,6 +175,7 @@ namespace IntelOrca.Biohazard
             {
                 var extension = _isWav ? ".wav" : ".sap";
                 var dst = Path.Combine(_bgmDirectory, fileName + extension);
+                Directory.CreateDirectory(Path.GetDirectoryName(dst));
                 using (var fs = new FileStream(dst, FileMode.Create))
                 {
                     var bw = new BinaryWriter(fs);
