@@ -379,5 +379,10 @@ namespace IntelOrca.Biohazard
             doc.AppendChild(root);
             doc.Save(Path.Combine(modPath, "init.xml"));
         }
+
+        public virtual string[] GetPlayerCharacters(int index)
+        {
+            return new string[0];
+        }
     }
 }

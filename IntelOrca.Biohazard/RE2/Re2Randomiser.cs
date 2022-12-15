@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
-using IntelOrca.Biohazard.RE1;
 
 namespace IntelOrca.Biohazard.RE2
 {
@@ -113,24 +111,28 @@ namespace IntelOrca.Biohazard.RE2
             var actors = new HashSet<string>();
             actors.AddRange(new[] { "brad", "hunk" });
 
-            if (config.IncludeNPCRE1)
+            if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard1))
             {
-                actors.AddRange(new[] { "chris", "enrico", "jill", "rebecca", "richard", "wesker" });
-
-                var dataPath = GetDataPath(_reInstallConfig!.GetInstallPath(BioVersion.Biohazard1));
+                var dataPath = GetDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard1));
                 dataPath = Path.Combine(dataPath, "JPN");
                 npcRandomiser.AddToSelection(BioVersion.Biohazard1, dataPath);
             }
 
-            var pldFiles = DataManager.GetFiles(BiohazardVersion, $"pld{config.Player}");
-            foreach (var pldPath in pldFiles)
+            if (config.IncludeNPCRE1)
             {
+                actors.AddRange(new[] { "chris", "enrico", "jill", "rebecca", "richard", "wesker" });
+            }
+
+            if (config.ChangePlayer)
+            {
+                var pldIndex = config.Player == 0 ? config.Player0 : config.Player1;
+                var pldPath = DataManager.GetFiles(BiohazardVersion, $"pld{config.Player}")
+                    .Where(x => x.EndsWith("pld", StringComparison.OrdinalIgnoreCase))
+                    .Skip(pldIndex)
+                    .FirstOrDefault();
                 var actor = Path.GetFileNameWithoutExtension(pldPath);
-                if (config.IncludeNPCOther || actors.Contains(actor))
-                {
-                    var facePath = DataManager.GetPath(BiohazardVersion, "face\\" + actor + ".tim");
-                    npcRandomiser.AddPC(config.Player == 1, actor, pldPath, facePath);
-                }
+                var facePath = DataManager.GetPath(BiohazardVersion, "face\\" + actor + ".tim");
+                npcRandomiser.AddPC(config.Player == 1, actor, pldPath, facePath);
             }
 
             for (int i = 0; i < 2; i++)
@@ -159,5 +161,21 @@ namespace IntelOrca.Biohazard.RE2
         }
 
         internal override string BGMPath => @"Common\Sound\BGM";
+
+        public override string[] GetPlayerCharacters(int index)
+        {
+            var result = new List<string>();
+            var pldFiles = DataManager
+                .GetFiles(BiohazardVersion, $"pld{index}")
+                .Where(x => x.EndsWith("pld", StringComparison.OrdinalIgnoreCase))
+                .ToArray();
+            foreach (var pldPath in pldFiles)
+            {
+                var actor = Path.GetFileNameWithoutExtension(pldPath);
+                actor = char.ToUpper(actor[0]) + actor.Substring(1);
+                result.Add(actor);
+            }
+            return result.ToArray();
+        }
     }
 }

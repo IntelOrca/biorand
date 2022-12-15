@@ -147,6 +147,10 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 _suspendEvents = true;
 
+                chkPlayer.IsChecked = _config.ChangePlayer;
+                dropdownPlayer0.SelectedIndex = _config.Player0;
+                dropdownPlayer1.SelectedIndex = _config.Player1;
+
                 chkRngChars.IsChecked = _config.RandomNPCs;
                 chkNPCsRE1.IsChecked = _config.IncludeNPCRE1;
                 chkNPCsRE2.IsChecked = _config.IncludeNPCRE2;
@@ -342,6 +346,10 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void UpdateConfig()
         {
+            _config.ChangePlayer = chkPlayer.IsChecked == true;
+            _config.Player0 = (byte)dropdownPlayer0.SelectedIndex;
+            _config.Player1 = (byte)dropdownPlayer1.SelectedIndex;
+
             _config.RandomNPCs = chkRngChars.IsChecked == true;
             _config.IncludeNPCRE1 = chkNPCsRE1.IsChecked == true;
             _config.IncludeNPCRE2 = chkNPCsRE2.IsChecked == true;
@@ -466,11 +474,6 @@ namespace IntelOrca.Biohazard.BioRand
             UpdateUi();
             txtSeed.Text = _config.ToString();
             txtSeed.CaretIndex = Math.Min(caretIndex, txtSeed.Text.Length);
-        }
-
-        private BaseRandomiser GetRandomiser()
-        {
-            return new Re1Randomiser();
         }
 
         private ReInstallConfig GetInstallConfig()
@@ -653,19 +656,46 @@ namespace IntelOrca.Biohazard.BioRand
         private void gameListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var index = gameListView.SelectedIndex;
-            if (index == 3)
+            try
             {
-                panelConfig.Visibility = Visibility.Visible;
-                panelRando.Visibility = Visibility.Hidden;
+                _suspendEvents = true;
+                if (index == 3)
+                {
+                    panelConfig.Visibility = Visibility.Visible;
+                    panelRando.Visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    panelConfig.Visibility = Visibility.Hidden;
+                    panelRando.Visibility = Visibility.Visible;
+                    if (index == 0)
+                    {
+                        chkIncludeDocuments.IsEnabled = false;
+                        chkIncludeDocuments.IsChecked = false;
+                        chkNPCsRE1.IsChecked = true;
+                        chkNPCsRE1.IsEnabled = false;
+                        chkNPCsRE2.IsChecked = false;
+                        chkNPCsRE2.IsEnabled = false;
+                        chkNPCsOther.IsChecked = false;
+                        chkNPCsOther.IsEnabled = false;
+                    }
+                    else
+                    {
+                        chkIncludeDocuments.IsEnabled = true;
+                        chkNPCsRE1.IsEnabled = true;
+                        chkNPCsRE2.IsEnabled = true;
+                        chkNPCsOther.IsEnabled = true;
+                    }
+                    dropdownVariant.Visibility = index == 1 ?
+                        Visibility.Visible :
+                        Visibility.Hidden;
+                    UpdatePlayerDropdowns();
+                    UpdateLogButtons();
+                }
             }
-            else
+            finally
             {
-                panelConfig.Visibility = Visibility.Hidden;
-                panelRando.Visibility = Visibility.Visible;
-                dropdownVariant.Visibility = index == 1 ?
-                    Visibility.Visible :
-                    Visibility.Hidden;
-                UpdateLogButtons();
+                _suspendEvents = false;
             }
 
             _settings.LastSelectedGame = index;
@@ -769,6 +799,30 @@ namespace IntelOrca.Biohazard.BioRand
         private void btnLog1_Click(object sender, RoutedEventArgs e)
         {
             ViewLog(1);
+        }
+
+        private void UpdatePlayerDropdowns()
+        {
+            if (SelectedGame != 1)
+            {
+                chkPlayer.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            var randomizer = GetRandomizer();
+            chkPlayer.Visibility = Visibility.Visible;
+
+            var dropdownLabels = new[] { lblPlayer0, lblPlayer1 };
+            var dropdowns = new[] { dropdownPlayer0, dropdownPlayer1 };
+            for (int i = 0; i < 2; i++)
+            {
+                var label = dropdownLabels[i];
+                var dropdown = dropdowns[i];
+                label.Text = $"{randomizer.GetPlayerName(i)} becomes:";
+                dropdown.ItemsSource = randomizer.GetPlayerCharacters(i);
+                if (dropdown.SelectedIndex == -1)
+                    dropdown.SelectedIndex = 0;
+            }
         }
 
         private void UpdateLogButtons()

@@ -22,6 +22,7 @@ namespace IntelOrca.Biohazard
 
         // Flags
         public bool ProtectFromSoftLock { get; set; } = true;
+        public bool ChangePlayer { get; set; }
         public bool RandomDoors { get; set; }
         public bool RandomNPCs { get; set; } = true;
         public bool RandomEnemies { get; set; } = true;
@@ -44,6 +45,8 @@ namespace IntelOrca.Biohazard
 
 
         // Numbers
+        public byte Player0 { get; set; }
+        public byte Player1 { get; set; }
         public byte RatioAmmo { get; set; } = 16;
         public byte RatioHealth { get; set; } = 16;
         public byte RatioInkRibbons { get; set; } = 16;
@@ -73,7 +76,7 @@ namespace IntelOrca.Biohazard
             result.ShuffleItems = reader.ReadFlag();
             result.AlternativeRoutes = reader.ReadFlag();
             result.IncludeDocuments = reader.ReadFlag();
-            reader.ReadFlag();
+            result.ChangePlayer = reader.ReadFlag();
 
             result.RatioAmmo = reader.ReadDigit();
             result.RatioHealth = reader.ReadDigit();
@@ -96,6 +99,9 @@ namespace IntelOrca.Biohazard
             reader.ReadFlag();
             reader.ReadFlag();
             result.IncludeNPCOther = reader.ReadFlag();
+
+            result.Player0 = reader.ReadDigit();
+            result.Player1 = reader.ReadDigit();
             return result;
         }
 
@@ -130,7 +136,7 @@ namespace IntelOrca.Biohazard
             writer.Write(ShuffleItems);
             writer.Write(AlternativeRoutes);
             writer.Write(IncludeDocuments);
-            writer.Write(false);
+            writer.Write(ChangePlayer);
 
             writer.WriteDigit(RatioAmmo);
             writer.WriteDigit(RatioHealth);
@@ -153,6 +159,9 @@ namespace IntelOrca.Biohazard
             writer.Write(false);
             writer.Write(false);
             writer.Write(IncludeNPCOther);
+
+            writer.WriteDigit(Player0);
+            writer.WriteDigit(Player1);
             return writer.ToString();
         }
 

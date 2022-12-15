@@ -88,12 +88,29 @@
                             </Grid>
                         </Grid>
                     </GroupBox>
+                    <local:CheckGroupBox x:Name="chkPlayer" Header="Change Player Character">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="9" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" x:Name="lblPlayer0" Text="Leon becomes:" />
+                            <TextBlock Grid.Row="0" Grid.Column="2" x:Name="lblPlayer1" Text="Claire becomes:" />
+                            <ComboBox x:Name="dropdownPlayer0" Grid.Row="1" Grid.Column="0" Text="A" />
+                            <ComboBox x:Name="dropdownPlayer1" Grid.Row="1" Grid.Column="2" Text="B" />
+                        </Grid>
+                    </local:CheckGroupBox>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <local:CheckGroupBox x:Name="chkRngChars" Grid.Column="0" Header="Randomize Characters">
+                        <local:CheckGroupBox x:Name="chkRngChars" Grid.Column="0" Header="Randomize Non-Playable Characters">
                             <StackPanel>
                                 <CheckBox x:Name="chkNPCsRE1" ToolTip="Requires Resident Evil 1 game data.">Include Resident Evil 1</CheckBox>
                                 <CheckBox x:Name="chkNPCsRE2" ToolTip="Requires Resident Evil 2 game data.">Include Resident Evil 2</CheckBox>
