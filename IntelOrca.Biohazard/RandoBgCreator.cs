@@ -79,7 +79,7 @@ namespace IntelOrca.Biohazard
                 var srcImage = new Bitmap(new MemoryStream(src));
                 g.DrawImage(srcImage, 0, 0, titleBg.Width, titleBg.Height);
 
-                var font = new Font("Courier New", 16, GraphicsUnit.Pixel);
+                var font = new Font("Courier New", 14, GraphicsUnit.Pixel);
 
                 var versionInfo = Program.CurrentVersionInfo;
                 var versionSize = g.MeasureString(versionInfo, font);
@@ -87,7 +87,7 @@ namespace IntelOrca.Biohazard
 
                 var seed = config.ToString();
                 var seedSize = g.MeasureString(seed, font);
-                g.DrawString(seed, font, Brushes.White, titleBg.Width - seedSize.Width + 5, 0);
+                g.DrawString(seed, font, Brushes.White, titleBg.Width - seedSize.Width + 1, 0);
             }
             return titleBg;
         }
