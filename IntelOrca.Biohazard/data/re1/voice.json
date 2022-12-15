@@ -115,10 +115,12 @@
     "actors": [
       {
         "actor": "chris",
-        "split": 2.5
+        "split": 2.5,
+        "condition": "@richard"
       },
       {
-        "actor": "rebecca"
+        "actor": "rebecca",
+        "condition": "@richard"
       }
     ]
   },
@@ -134,14 +136,14 @@
       },
       {
         "actor": "chris",
-        "condition": "!rebecca",
+        "condition": "@rebecca",
         "nameClipped": { "start": 4.0 }
       }
     ]
   },
   "voice/V005_10.wav": { "rdt": "20D", "player": 0, "actor": "rebecca" },
   "voice/V005_11.wav": { "rdt": "20D", "player": 0, "actor": "chris", "condition": "@rebecca", "nameClipped": { "start": 1.5 } },
-  "voice/V005_12.wav": { "rdt": "20D", "player": 0, "actor": "rebecca" },
+  "voice/V005_12.wav": { "rdt": "20D", "player": 0, "actor": "rebecca", "condition": "@chris" },
   "voice/V005_13.wav": { "rdt": "20D", "player": 0, "actor": "richard" },
   "voice/V005_14.wav": { "rdt": "20D", "player": 0, "actor": "rebecca" },
   "voice/V006_00.wav": { "rdt": "10F", "player": 0, "actor": "rebecca", "condition": "@chris", "nameClipped": { "end": 0.51 } },
