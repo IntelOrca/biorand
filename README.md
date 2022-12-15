@@ -4,16 +4,16 @@
 </a>
 A new randomizer for the classic Resident Evil games for PC. Supports sophisticated key item placement, randomized non-key items, randomized enemies, randomized NPCs with matching random voices and random background music. All highly configurable and easy to share seeds and configurations.
 
-The randomizer currently only supports the Sourcenext port of Resident Evil 2 with the Classic REbirth patch.
+The randomizer currently only supports the Sourcenext port of Resident Evil 1 and Resident Evil 2 with the Classic REbirth patch.
 <br clear="right"/>
 
 ## How to use
 
 1. Download the latest release from https://github.com/IntelOrca/biorand/releases.
 2. Extract all the files to a directory of your choice.
-3. Run `biorand.exe` and type or browse for your RE2 game directory under the generate box. If browsing, select your `bio2 1.10.exe` or `bio2.exe` file.
+3. Run `biorand.exe`, press the settings icon on the left and set your RE1 and RE2 game directory. If browsing, select `bio.exe`, `bio2 1.10.exe` or `bio2.exe` file.
 4. Configure your settings, click `seed` for a random seed and then click generate.
-5. Run RE2 and select the mod: "BioRand: A Resident Evil Randomizer" from the list.
+5. Run RE1 or RE2 and select the mod: "BioRand: A Resident Evil Randomizer" from the list.
 6. If you want to play a new seed or configuration, simply update the settings and click generate again.
 
 It is recommended that you enable the in-game debug menu in case you need to reset the room if there is a soft lock (such as a cutscene getting stuck). To enable the debug menu, press F1 while on the REbirth launcher, and then press F5 in the game to access it. This will also allow you to, in desperate circumstances, give yourself a key you need, or cheat for ammo and health.
@@ -24,7 +24,6 @@ A `.dgml` file for both Leon and Claire is also generated which is a directed gr
 
 ## Known issues
 * The game can occasionally crash at the end of playing the sourcenext logo. You can work around this issue by skipping the logo, or disabling movies from the REbirth launcher.
-* Some NPCs have the wrong voice, usually rooms where there are multiple cutscenes with the same NPC.
 
 ## Reporting issues
 Please report any bugs, crashes or suggestions by raising an issue on https://github.com/IntelOrca/biorand/issues.
@@ -85,6 +84,10 @@ Enemies can be randomized with a difficulty value. An easy difficulty will more 
 A higher difficulty will more likely spawn faster, and more lethal enemies such as cerebrus', lickers, and tyrants.
 Some enemies are not randomized to prevent crashes.
 
+### Player Character
+
+Swap the character you play with any supported character that comes with **BioRand**. Characters from RE1, will need an RE1 game installation in order to use their voice lines.
+
 ### Character, voice randomization
 
 Randomizes all NPCs in the game and their voice lines. Voice lines are picked based on the character that is swapped in. Some characters can not be swapped or are only swapped with a limited range of other characters to prevent crashes or cutscene soft locks.
@@ -93,6 +96,7 @@ Randomizes all NPCs in the game and their voice lines. Voice lines are picked ba
 
 All background music tracks are shuffled. Music is shuffled by genre, so danger tracks are swapped with other danger tracks, calm tracks are swapped with other calm tracks.
 Some rooms contining only ambient sound effects, such as the power room in the basement are replaced with music tracks.
+Custom music can be included, just drop a .wav or .ogg file under `data/bgm/custom/{tag}` directory next to **BioRand**. The tag folders can be `safe`, `creepy`, or `danger`.
 
 ## License
 BioRand is licensed under the MIT License.
