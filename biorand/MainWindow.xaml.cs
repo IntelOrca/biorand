@@ -197,7 +197,10 @@ namespace IntelOrca.Biohazard.BioRand
         {
             UpdateEstimateCompletion();
             UpdateItemPie();
-            UpdateEnemyPie();
+            if (SelectedGame == 0)
+                UpdateEnemyPie1();
+            else
+                UpdateEnemyPie2();
         }
 
         private void UpdateEstimateCompletion()
@@ -275,7 +278,72 @@ namespace IntelOrca.Biohazard.BioRand
             pieItemRatios.Update();
         }
 
-        private void UpdateEnemyPie()
+        private void UpdateEnemyPie1()
+        {
+            pieEnemies.Records.Clear();
+
+            switch (_config.EnemyDifficulty)
+            {
+                case 0:
+                    AddRatio("Crow", Colors.Black, 20);
+                    AddRatio("Snake", Colors.DarkOliveGreen, 20);
+                    AddRatio("Bee", Colors.Yellow, 10);
+                    AddRatio("Spider", Colors.YellowGreen, 5);
+                    AddRatio("Chimera", Colors.Gray, 5);
+                    AddRatio("Tyrant / Yawn", Colors.DarkGray, 4);
+                    AddRatio("Zombie", Colors.LightGray, 20);
+                    AddRatio("Hunter", Colors.IndianRed, 5);
+                    AddRatio("Cerebrus", Colors.Black, 10);
+                    break;
+                case 1:
+                    AddRatio("Crow", Colors.Black, 10);
+                    AddRatio("Snake", Colors.DarkOliveGreen, 10);
+                    AddRatio("Bee", Colors.Yellow, 5);
+                    AddRatio("Spider", Colors.YellowGreen, 10);
+                    AddRatio("Chimera", Colors.Gray, 10);
+                    AddRatio("Tyrant / Yawn", Colors.DarkGray, 8);
+                    AddRatio("Zombie", Colors.LightGray, 25);
+                    AddRatio("Hunter", Colors.IndianRed, 10);
+                    AddRatio("Cerebrus", Colors.Black, 15);
+                    break;
+                case 2:
+                    AddRatio("Crow", Colors.Black, 1);
+                    AddRatio("Snake", Colors.DarkOliveGreen, 1);
+                    AddRatio("Bee", Colors.Yellow, 1);
+                    AddRatio("Spider", Colors.YellowGreen, 10);
+                    AddRatio("Chimera", Colors.Gray, 15);
+                    AddRatio("Tyrant / Yawn", Colors.DarkGray, 20);
+                    AddRatio("Zombie", Colors.LightGray, 30);
+                    AddRatio("Hunter", Colors.IndianRed, 15);
+                    AddRatio("Cerebrus", Colors.Black, 20);
+                    break;
+                case 3:
+                default:
+                    AddRatio("Crow", Colors.Black, 1);
+                    AddRatio("Snake", Colors.DarkOliveGreen, 1);
+                    AddRatio("Bee", Colors.Yellow, 1);
+                    AddRatio("Spider", Colors.YellowGreen, 12);
+                    AddRatio("Chimera", Colors.Gray, 25);
+                    AddRatio("Tyrant / Yawn", Colors.DarkGray, 40);
+                    AddRatio("Zombie", Colors.LightGray, 20);
+                    AddRatio("Hunter", Colors.IndianRed, 25);
+                    AddRatio("Cerebrus", Colors.Black, 40);
+                    break;
+            }
+            pieEnemies.Update();
+
+            void AddRatio(string enemyName, Color color, double value)
+            {
+                pieEnemies.Records.Add(new PieChart.Record()
+                {
+                    Name = enemyName,
+                    Value = value,
+                    Color = color
+                });
+            }
+        }
+
+        private void UpdateEnemyPie2()
         {
             pieEnemies.Records.Clear();
 
@@ -731,6 +799,8 @@ namespace IntelOrca.Biohazard.BioRand
 
             _settings.LastSelectedGame = index;
             _settings.Save();
+
+            UpdateUi();
         }
 
         private BaseRandomiser GetRandomizer()

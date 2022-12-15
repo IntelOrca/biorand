@@ -64,6 +64,7 @@ namespace IntelOrca.Biohazard.RE1
                     addIfSupported(Re1EnemyIds.Crow, 1);
                     addIfSupported(Re1EnemyIds.Hunter, 15);
                     addIfSupported(Re1EnemyIds.Bee, 1);
+                    addIfSupported(Re1EnemyIds.Snake, 1);
                     addIfSupported(Re1EnemyIds.Chimera, 15);
                     addIfSupported(Re1EnemyIds.Tyrant1, 5);
                     addIfSupported(Re1EnemyIds.Tyrant2, 5);
@@ -79,6 +80,7 @@ namespace IntelOrca.Biohazard.RE1
                     addIfSupported(Re1EnemyIds.Crow, 1);
                     addIfSupported(Re1EnemyIds.Hunter, 25);
                     addIfSupported(Re1EnemyIds.Bee, 1);
+                    addIfSupported(Re1EnemyIds.Snake, 1);
                     addIfSupported(Re1EnemyIds.Chimera, 25);
                     addIfSupported(Re1EnemyIds.Tyrant1, 10);
                     addIfSupported(Re1EnemyIds.Tyrant2, 10);
