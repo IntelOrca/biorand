@@ -425,7 +425,6 @@
       "npcs": [
         {
           "includeOffsets": [ 4040, 4074 ],
-          "includeTypes": [ 64, 67, 68, 69, 71, 72, 74 ],
           "player": 0,
           "scenario": 1
         },
@@ -452,9 +451,7 @@
         },
         {
           "target": "113",
-          "requires": [
-            89
-          ],
+          "requires": [ 89 ],
           "scenario": 0
         },
         {
@@ -732,8 +729,7 @@
       ],
       "npcs": [
         {
-          "includeOffsets": [ 7708, 7670 ],
-          "includeTypes": [ 66, 67, 68, 72, 79, 90 ]
+          "includeOffsets": [ 7708, 7670 ]
         }
       ]
     },
@@ -1145,7 +1141,7 @@
       ],
       "npcs": [
         {
-          "includeTypes": [ 68, 69, 81 ]
+          "includeTypes": [ 65, 67, 69, 79 ]
         }
       ]
     },
@@ -1280,11 +1276,13 @@
       "npcs": [
         {
           "includeOffsets": [ 5392, 5444 ],
-          "includeTypes": [ 64, 68 ]
+          "includeTypes": [ 64, 68 ],
+          "scenario": 0
         },
         {
           "includeOffsets": [ 5492, 5598 ],
-          "includeTypes": [ 66, 68 ]
+          "includeTypes": [ 66, 68 ],
+          "scenario": 1
         }
       ]
     },
