@@ -682,7 +682,8 @@ namespace IntelOrca.Biohazard
                     }
                     else if (b.Category != DoorRandoCategory.Static)
                     {
-                        bEdge.Lock = LockKind.None;
+                        if (bEdge.Lock == LockKind.Side)
+                            bEdge.Lock = LockKind.None;
                         bRdt.RemoveDoorLock(bDoorId);
                     }
                 }
