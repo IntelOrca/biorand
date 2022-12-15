@@ -347,6 +347,7 @@
         },
         {
           "target": "219",
+          "noUnlock": true,
           "requires": [ 67, 74 ],
           "player": 0
         }
