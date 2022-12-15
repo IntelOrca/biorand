@@ -760,13 +760,21 @@ namespace IntelOrca.Biohazard.BioRand
             try
             {
                 _suspendEvents = true;
-                if (index == 2)
+                if (index == 3)
                 {
+                    panelInfo.Visibility = Visibility.Visible;
+                    panelConfig.Visibility = Visibility.Hidden;
+                    panelRando.Visibility = Visibility.Hidden;
+                }
+                else if (index == 2)
+                {
+                    panelInfo.Visibility = Visibility.Hidden;
                     panelConfig.Visibility = Visibility.Visible;
                     panelRando.Visibility = Visibility.Hidden;
                 }
                 else
                 {
+                    panelInfo.Visibility = Visibility.Hidden;
                     panelConfig.Visibility = Visibility.Hidden;
                     panelRando.Visibility = Visibility.Visible;
                     if (index == 0)
