@@ -615,7 +615,21 @@
         },
         {
           "target": "202",
-          "lock": "side"
+          "lock": "side",
+          "doorRando": false
+        },
+        {
+          "target": "202",
+          "lock": "side",
+          "randomize": false,
+          "scenario": 0,
+          "doorRando": true
+        },
+        {
+          "target": "202",
+          "lock": "side",
+          "scenario": 1,
+          "doorRando": true
         },
         {
           "target": "201",
@@ -668,13 +682,25 @@
     "202": {
       "doorRando": [
         {
-          "category": "exclude",
+          "cutscene": true,
           "scenario": 0
         }
       ],
       "doors": [
         {
-          "target": "200"
+          "target": "200",
+          "doorRando": false
+        },
+        {
+          "target": "200",
+          "randomize": false,
+          "scenario": 0,
+          "doorRando": true
+        },
+        {
+          "target": "200",
+          "scenario": 1,
+          "doorRando": true
         },
         {
           "target": "209",
