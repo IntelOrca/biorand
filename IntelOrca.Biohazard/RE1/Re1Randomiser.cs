@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using IntelOrca.Biohazard.RE2;
 
 namespace IntelOrca.Biohazard.RE1
@@ -83,8 +84,26 @@ namespace IntelOrca.Biohazard.RE1
 
         public override void Generate(RandoConfig config, ReInstallConfig reConfig, string installPath, string modPath)
         {
-            GenerateRdts(config.WithPlayerScenario(0, 0), installPath, modPath);
-            GenerateRdts(config.WithPlayerScenario(1, 0), installPath, modPath);
+            if (config.IncludeBGMRE2)
+            {
+                if (!reConfig.IsEnabled(BioVersion.Biohazard2))
+                {
+                    throw new BioRandUserException("RE2 installation must be enabled to use RE2 assets.");
+                }
+            }
+            if (!reConfig.IsEnabled(BioVersion.Biohazard1))
+            {
+                throw new BioRandUserException("RE1 installation must be enabled to randomize RE1.");
+            }
+
+            var po = new ParallelOptions();
+#if DEBUG
+            po.MaxDegreeOfParallelism = 1;
+#endif
+            // Chris / Jill
+            Parallel.Invoke(po,
+                () => GenerateRdts(config.WithPlayerScenario(0, 0), installPath, modPath),
+                () => GenerateRdts(config.WithPlayerScenario(1, 0), installPath, modPath));
 
             if (config.RandomItems)
             {

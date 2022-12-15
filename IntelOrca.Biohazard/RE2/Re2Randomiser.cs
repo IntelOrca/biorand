@@ -84,6 +84,18 @@ namespace IntelOrca.Biohazard.RE2
         {
             _reInstallConfig = reConfig;
 
+            if (config.IncludeBGMRE1 || config.IncludeNPCRE1)
+            {
+                if (!reConfig.IsEnabled(BioVersion.Biohazard1))
+                {
+                    throw new BioRandUserException("RE1 installation must be enabled to use RE1 assets.");
+                }
+            }
+            if (!reConfig.IsEnabled(BioVersion.Biohazard2))
+            {
+                throw new BioRandUserException("RE2 installation must be enabled to randomize RE2.");
+            }
+
             var po = new ParallelOptions();
 #if DEBUG
             po.MaxDegreeOfParallelism = 1;

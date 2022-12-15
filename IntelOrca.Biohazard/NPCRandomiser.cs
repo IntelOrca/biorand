@@ -115,13 +115,14 @@ namespace IntelOrca.Biohazard
 
         private void RandomizePlayer(Rng rng)
         {
-            if (_plds.Count == 0)
-                return;
-
             var plds = _plds
                 .Where(x => x.Actor != _originalPlayerActor)
                 .Where(x => ActorHasVoiceSamples(x.Actor))
                 .ToArray();
+
+            if (plds.Length == 0)
+                return;
+
             var pld = plds.Shuffle(rng).First();
             _playerActor = pld.Actor;
 

@@ -488,34 +488,30 @@ namespace IntelOrca.Biohazard.BioRand
             return config;
         }
 
-        private async void btnGenerate_Click(object sender, RoutedEventArgs e)
+        private bool ValidateGameData(BaseRandomiser randomizer, string gamePath, string game)
         {
-            SaveSettings();
-
-            var randomiser = GetRandomizer();
-            var gamePath = GetGameLocation();
             if (!Path.IsPathRooted(gamePath) || !Directory.Exists(gamePath))
             {
-                var msg = "You have not specified an RE2 game directory that exists.";
+                var msg = $"You have not specified an {game} game directory that exists.";
                 ShowGenerateFailedMessage(msg);
-                return;
+                return false;
             }
 
-            if (!randomiser.ValidateGamePath(gamePath))
+            if (!randomizer.ValidateGamePath(gamePath))
             {
-                if (!ShowGamePathWarning())
+                if (!ShowGamePathWarning(gamePath))
                 {
-                    return;
+                    return false;
                 }
             }
 
             try
             {
-                var err = randomiser.DoIntegrityCheck(gamePath);
+                var err = randomizer.DoIntegrityCheck(gamePath);
                 if (err == 2)
                 {
                     ShowFailedMessage("Integrity Check Failed", "One or more of your room files are missing.\n" +
-                        "Check that your RE2 installation is integral.");
+                        $"Check that your {game} installation is integral.");
                 }
                 else if (err == 1)
                 {
@@ -527,14 +523,47 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 ShowFailedMessage("Failed to do integrity check!", ex.Message);
             }
+            return true;
+        }
+
+        private bool ValidateGamePaths()
+        {
+            if (_settings.GameEnabled1)
+            {
+                var r = GetRandomizer(0);
+                if (!ValidateGameData(r, _settings.GamePath1, "RE1"))
+                {
+                    return false;
+                }
+            }
+            if (_settings.GameEnabled2)
+            {
+                var r = GetRandomizer(1);
+                if (!ValidateGameData(r, _settings.GamePath2, "RE2"))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private async void btnGenerate_Click(object sender, RoutedEventArgs e)
+        {
+            SaveSettings();
+
+            if (!ValidateGamePaths())
+            {
+                return;
+            }
 
             var btn = (Button)sender;
             try
             {
                 btn.Content = "Generating...";
                 IsEnabled = false;
+                var randomiser = GetRandomizer();
                 await Task.Run(() => randomiser.Generate(_config, GetInstallConfig()));
-                RandoAppSettings.LogGeneration(_config.ToString(), gamePath);
+                RandoAppSettings.LogGeneration(_config.ToString(), GetGameLocation());
                 ShowGenerateCompleteMessage();
             }
             catch (Exception ex)
@@ -560,6 +589,8 @@ namespace IntelOrca.Biohazard.BioRand
 
             if (ex is BioRandVersionException)
                 ShowGenerateFailedMessage(ex.Message + "\n" + "Click the seed button to pick a new seed.");
+            if (ex is BioRandUserException)
+                ShowGenerateFailedMessage(ex.Message);
             else if (ex is UnauthorizedAccessException)
                 ShowGenerateFailedMessage(accessDeniedMessage);
             else if (IsTypicalException(ex))
@@ -589,10 +620,10 @@ namespace IntelOrca.Biohazard.BioRand
             MessageBox.Show(this, message, title, MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        private bool ShowGamePathWarning()
+        private bool ShowGamePathWarning(string game)
         {
-            var title = "Incorrect RE2 location";
-            var msg = "This directory was not dectected as a valid RE2 game directory. Do you want to continue anyway?";
+            var title = $"Incorrect {game} location";
+            var msg = $"This directory was not dectected as a valid {game} game directory. Do you want to continue anyway?";
             return MessageBox.Show(this, msg, title, MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
         }
 
@@ -659,7 +690,7 @@ namespace IntelOrca.Biohazard.BioRand
             try
             {
                 _suspendEvents = true;
-                if (index == 3)
+                if (index == 2)
                 {
                     panelConfig.Visibility = Visibility.Visible;
                     panelRando.Visibility = Visibility.Hidden;
@@ -781,13 +812,13 @@ namespace IntelOrca.Biohazard.BioRand
             get
             {
                 var index = gameListView.SelectedIndex;
-                if (index > 2)
+                if (index > 1)
                     return null;
                 return index;
             }
             set
             {
-                gameListView.SelectedIndex = value ?? 3;
+                gameListView.SelectedIndex = value ?? 2;
             }
         }
 
