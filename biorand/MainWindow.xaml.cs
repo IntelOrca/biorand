@@ -502,6 +502,8 @@ namespace IntelOrca.Biohazard.BioRand
         {
             _config.Version = RandoConfig.LatestVersion;
             _config.Seed = _random.Next(0, RandoConfig.MaxSeed);
+            _config.Player0 = (byte)_random.Next(0, dropdownPlayer0.Items.Count);
+            _config.Player1 = (byte)_random.Next(0, dropdownPlayer1.Items.Count);
             _config.EnemyDifficulty = (byte)_random.Next(0, 4);
             _config.AmmoQuantity = (byte)_random.Next(0, 8);
             _config.RatioAmmo = (byte)_random.Next(0, 32);
@@ -797,6 +799,8 @@ namespace IntelOrca.Biohazard.BioRand
                 _suspendEvents = false;
             }
 
+            if (index >= 0 && index <= 1)
+                _config.Game = (byte)(index + 1);
             _settings.LastSelectedGame = index;
             _settings.Save();
 
