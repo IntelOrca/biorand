@@ -147,7 +147,13 @@
       "items": [
         {
           "id": 3,
-          "requires": [ 32 ]
+          "requires": [ 32 ],
+          "player": 0
+        },
+        {
+          "id": 6,
+          "requires": [ 32 ],
+          "player": 1
         },
         {
           "id": 4,
