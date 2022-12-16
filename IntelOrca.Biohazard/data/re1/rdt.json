@@ -956,7 +956,8 @@
           "target": "310",
           "requires": [ 63, 64 ],
           "noUnlock": true,
-          "noReturn": true
+          "noReturn": true,
+          "randomize": false
         }
       ]
     },
@@ -1121,14 +1122,10 @@
       ]
     },
     "310": {
-      "doorRando": [
-        {
-          "category": "exclude"
-        }
-      ],
       "doors": [
         {
-          "target": "305"
+          "target": "305",
+          "randomize": false
         },
         {
           "target": "500"
