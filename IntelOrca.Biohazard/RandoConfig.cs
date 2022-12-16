@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.Remoting.Messaging;
 using System.Text;
 
 namespace IntelOrca.Biohazard
@@ -32,16 +31,16 @@ namespace IntelOrca.Biohazard
         public bool AlternativeRoutes { get; set; } = true;
         public bool IncludeDocuments { get; set; }
 
-        public bool IncludeBGMRE1 { get; set; }
-        public bool IncludeBGMRE2 { get; set; }
-        public bool IncludeBGMRE3 { get; set; }
-        public bool IncludeBGMRE4 { get; set; }
-        public bool IncludeBGMOther { get; set; }
+        public bool IncludeBGMRE1 { get; set; } = true;
+        public bool IncludeBGMRE2 { get; set; } = true;
+        public bool IncludeBGMRE3 { get; set; } = true;
+        public bool IncludeBGMRE4 { get; set; } = true;
+        public bool IncludeBGMOther { get; set; } = true;
 
-        public bool IncludeNPCRE1 { get; set; }
-        public bool IncludeNPCRE2 { get; set; }
-        public bool IncludeNPCRE3 { get; set; }
-        public bool IncludeNPCOther { get; set; }
+        public bool IncludeNPCRE1 { get; set; } = true;
+        public bool IncludeNPCRE2 { get; set; } = true;
+        public bool IncludeNPCRE3 { get; set; } = true;
+        public bool IncludeNPCOther { get; set; } = true;
 
 
         // Numbers
@@ -58,6 +57,9 @@ namespace IntelOrca.Biohazard
         public static RandoConfig FromString(string code)
         {
             var result = new RandoConfig();
+            if (string.IsNullOrEmpty(code))
+                return result;
+
             var reader = new Reader(code);
             reader.ReadDigit();
             result.Version = reader.ReadDigit();

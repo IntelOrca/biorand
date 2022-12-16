@@ -52,7 +52,7 @@
                 <local:GameMenuItem Image="/resources/info.png" />
             </ListView>
             <Grid Grid.Column="1" Margin="4">
-                <StackPanel x:Name="panelInfo" Visibility="Visible">
+                <StackPanel x:Name="panelInfo" Visibility="Hidden">
                     <TextBlock FontSize="24">Contributors</TextBlock>
                     <StackPanel Margin="12,0,0,0">
                         <TextBlock FontSize="16">IntelOrca - programmer</TextBlock>
@@ -75,7 +75,7 @@
                     <local:GameLocationBox x:Name="gameLocation2" Tag="1" Header="Resident Evil 2" Validate="gameLocation_Validate" Changed="gameLocation_Changed" />
                     <local:GameLocationBox x:Name="gameLocation3" Tag="2" Header="Resident Evil 3" Validate="gameLocation_Validate" Changed="gameLocation_Changed" Visibility="Collapsed" />
                 </StackPanel>
-                <StackPanel x:Name="panelRando" Visibility="Hidden">
+                <StackPanel x:Name="panelRando" Visibility="Visible">
                     <GroupBox Header="Seed">
                         <Grid>
                             <Grid.ColumnDefinitions>

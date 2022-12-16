@@ -47,8 +47,8 @@ namespace IntelOrca.Biohazard.BioRand
         private void LoadSettings()
         {
             _settings = RandoAppSettings.Load();
-            _config = _settings.Seed == null ? new RandoConfig() : RandoConfig.FromString(_settings.Seed);
-            if (_settings.Seed == null)
+            _config = _settings.Seed1 == null ? new RandoConfig() : RandoConfig.FromString(_settings.Seed1);
+            if (_settings.Seed1 == null)
             {
                 RandomizeSeed();
             }
@@ -80,7 +80,10 @@ namespace IntelOrca.Biohazard.BioRand
             _settings.GameEnabled2 = gameLocation2.IsChecked == true;
             _settings.GameEnabled3 = gameLocation3.IsChecked == true;
 
-            _settings.Seed = _config.ToString();
+            if (SelectedGame == 0)
+                _settings.Seed1 = _config.ToString();
+            else
+                _settings.Seed2 = _config.ToString();
             _settings.Save();
         }
 
@@ -757,6 +760,11 @@ namespace IntelOrca.Biohazard.BioRand
         private void gameListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var index = gameListView.SelectedIndex;
+            if (index == 0)
+                _config = RandoConfig.FromString(_settings.Seed1);
+            else if (index == 1)
+                _config = RandoConfig.FromString(_settings.Seed2);
+
             try
             {
                 _suspendEvents = true;
@@ -780,13 +788,16 @@ namespace IntelOrca.Biohazard.BioRand
                     if (index == 0)
                     {
                         chkIncludeDocuments.IsEnabled = false;
-                        chkIncludeDocuments.IsChecked = false;
-                        chkNPCsRE1.IsChecked = true;
-                        chkNPCsRE1.IsEnabled = false;
-                        chkNPCsRE2.IsChecked = false;
+                        chkNPCsRE1.IsEnabled = true;
                         chkNPCsRE2.IsEnabled = false;
-                        chkNPCsOther.IsChecked = false;
                         chkNPCsOther.IsEnabled = false;
+
+                        _config.IncludeNPCRE1 = true;
+                        _config.IncludeNPCRE2 = false;
+                        _config.IncludeNPCRE3 = false;
+                        _config.IncludeNPCOther = false;
+
+                        _config.IncludeDocuments = false;
                     }
                     else
                     {

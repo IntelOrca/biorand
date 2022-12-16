@@ -6,9 +6,11 @@ namespace IntelOrca.Biohazard.BioRand
 {
     public class RandoAppSettings
     {
-        public string Seed { get; set; }
+        public string Seed1 { get; set; }
+        public string Seed2 { get; set; }
+        public string Seed3 { get; set; }
 
-        public int LastSelectedGame { get; set; }
+        public int? LastSelectedGame { get; set; }
 
         public string GamePath1 { get; set; }
         public string GamePath2 { get; set; }
