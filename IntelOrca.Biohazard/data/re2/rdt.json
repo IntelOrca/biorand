@@ -499,12 +499,8 @@
       ],
       "npcs": [
         {
-          "scenario": 0,
+          "excludeTypes": [ 64, 66 ],
           "player": 0
-        },
-        {
-          "scenario": 1,
-          "player": 1
         }
       ]
     },
@@ -2983,6 +2979,11 @@
           "doorRando": true,
           "player": 1,
           "scenario": 0
+        }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 58 ]
         }
       ]
     },
