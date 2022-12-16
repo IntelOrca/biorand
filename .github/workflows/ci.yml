@@ -19,6 +19,7 @@ jobs:
         cp ${{ github.workspace }}/README.md .
         cp ${{ github.workspace }}/LICENSE .
         mkdir ${{ github.workspace }}/artefacts
+        rm *.pdb
         7z -r a ${{ github.workspace }}/artefacts/biorand.zip data *.exe *.dll *.config README.md LICENSE
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
