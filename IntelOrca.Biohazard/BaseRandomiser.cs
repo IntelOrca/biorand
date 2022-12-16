@@ -168,7 +168,7 @@ namespace IntelOrca.Biohazard
                 logger.WriteLine($"Seed: {config}");
 
                 var bgmDirectory = Path.Combine(modPath, BGMPath);
-                var bgmRandomizer = new BgmRandomiser(logger, bgmDirectory, GetBgmJson(), false, new Rng(config.Seed), DataManager);
+                var bgmRandomizer = new BgmRandomiser(logger, bgmDirectory, GetBgmJson(), BiohazardVersion == BioVersion.Biohazard1, new Rng(config.Seed), DataManager);
                 if (config.IncludeBGMRE1)
                 {
                     var r = new Re1Randomiser();
