@@ -92,6 +92,7 @@ namespace IntelOrca.Biohazard
 
             SetLinkedItems();
             SetItems();
+            PatchRE1Stuff();
             PatchDesk();
         }
 
@@ -708,6 +709,22 @@ namespace IntelOrca.Biohazard
                 {
                     rdt.SetItem(entry.Id, entry.Type, entry.Amount);
                 }
+            }
+        }
+
+        private void PatchRE1Stuff()
+        {
+            foreach (var stage in new[] { 0, 5 })
+            {
+                var rdt = _gameData.GetRdt(new RdtId(stage, 0x0D));
+                if (rdt == null || rdt.Version != BioVersion.Biohazard1)
+                    return;
+
+                var type = (byte)rdt.Items.First(x => x.Id == 4).Type;
+                rdt.Patches.Add(new KeyValuePair<int, byte>(0x26E7, type));
+
+                type = (byte)rdt.Items.First(x => x.Id == 131).Type;
+                rdt.Patches.Add(new KeyValuePair<int, byte>(0x270F, type));
             }
         }
 
