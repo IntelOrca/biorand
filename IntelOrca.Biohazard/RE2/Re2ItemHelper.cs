@@ -154,6 +154,8 @@ namespace IntelOrca.Biohazard.RE2
                     return 18;
                 case ItemType.HandgunClaire:
                     return 13;
+                case ItemType.Beretta:
+                    return 15;
                 case ItemType.ColtSAA:
                     return 6;
                 case ItemType.Bowgun:
@@ -254,6 +256,8 @@ namespace IntelOrca.Biohazard.RE2
             }
             if (rng.Next(0, 2) == 0)
                 items.Add(ItemType.RocketLauncher);
+            if (rng.Next(0, 2) == 0)
+                items.Add(ItemType.Beretta);
             return items.Select(x => (byte)x).ToArray();
         }
 

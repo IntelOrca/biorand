@@ -114,6 +114,27 @@ namespace IntelOrca.Biohazard.RE2
             base.Generate(config, reConfig, installPath, modPath);
         }
 
+        internal override string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, string modPath)
+        {
+            if (config.ChangePlayer)
+            {
+                var pldIndex = config.Player == 0 ? config.Player0 : config.Player1;
+                var pldPath = DataManager.GetDirectories(BiohazardVersion, $"pld{config.Player}")
+                    .Skip(pldIndex)
+                    .FirstOrDefault();
+                var actor = Path.GetFileName(pldPath);
+                SwapPlayerCharacter(config, logger, actor, modPath);
+                return actor;
+            }
+            else
+            {
+                // We still need to replace Leon / Claire so they can use more weapons
+                var actor = config.Player == 0 ? "leon" : "claire";
+                SwapPlayerCharacter(config, logger, actor, modPath);
+                return actor;
+            }
+        }
+
         internal override void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser)
         {
             var actors = new HashSet<string>();
@@ -129,18 +150,6 @@ namespace IntelOrca.Biohazard.RE2
             if (config.IncludeNPCRE1)
             {
                 actors.AddRange(new[] { "chris", "enrico", "jill", "rebecca", "richard", "wesker" });
-            }
-
-            if (config.ChangePlayer)
-            {
-                var pldIndex = config.Player == 0 ? config.Player0 : config.Player1;
-                var pldPath = DataManager.GetFiles(BiohazardVersion, $"pld{config.Player}")
-                    .Where(x => x.EndsWith("pld", StringComparison.OrdinalIgnoreCase))
-                    .Skip(pldIndex)
-                    .FirstOrDefault();
-                var actor = Path.GetFileNameWithoutExtension(pldPath);
-                var facePath = DataManager.GetPath(BiohazardVersion, "face\\" + actor + ".tim");
-                npcRandomiser.AddPC(config.Player == 1, actor, pldPath, facePath);
             }
 
             for (int i = 0; i < 2; i++)
@@ -174,16 +183,82 @@ namespace IntelOrca.Biohazard.RE2
         {
             var result = new List<string>();
             var pldFiles = DataManager
-                .GetFiles(BiohazardVersion, $"pld{index}")
-                .Where(x => x.EndsWith("pld", StringComparison.OrdinalIgnoreCase))
+                .GetDirectories(BiohazardVersion, $"pld{index}")
                 .ToArray();
             foreach (var pldPath in pldFiles)
             {
-                var actor = Path.GetFileNameWithoutExtension(pldPath);
+                var actor = Path.GetFileName(pldPath);
                 actor = char.ToUpper(actor[0]) + actor.Substring(1);
                 result.Add(actor);
             }
             return result.ToArray();
+        }
+
+        private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, string actor, string modPath)
+        {
+            var originalPlayerActor = config.Player == 0 ? "leon" : "claire";
+            var srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld{config.Player}\\{actor}");
+            var srcFacePath = DataManager.GetPath(BiohazardVersion, $"face\\{actor}.tim");
+
+            if (originalPlayerActor != actor)
+            {
+                logger.WriteHeading("Randomizing Player:");
+                logger.WriteLine($"{originalPlayerActor} becomes {actor}");
+            }
+
+            var targetPldDir = Path.Combine(modPath, $"pl{config.Player}", "pld");
+            Directory.CreateDirectory(targetPldDir);
+            var pldFiles = Directory.GetFiles(srcPldDir);
+            foreach (var pldPath in pldFiles)
+            {
+                var pldFile = Path.GetFileName(pldPath);
+                File.Copy(pldPath, Path.Combine(targetPldDir, pldFile), true);
+            }
+
+            // Replace other PLDs
+            if (actor != originalPlayerActor)
+            {
+                var numbers = new[] { 2, 4, 6 };
+                var src = Path.Combine(targetPldDir, $"pl{config.Player:X2}.pld");
+                foreach (var n in numbers)
+                {
+                    var dst = Path.Combine(targetPldDir, $"pl{config.Player + n:X2}.pld");
+                    File.Copy(src, dst, true);
+                }
+
+                var dstFacePath = Path.Combine(modPath, $"common", "data", $"st{config.Player}_jp.tim");
+                Directory.CreateDirectory(Path.GetDirectoryName(dstFacePath));
+                File.Copy(srcFacePath, dstFacePath, true);
+
+                var allHurtFiles = DataManager.GetHurtFiles(actor)
+                    .Where(x => x.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) || x.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
+                    .ToArray();
+                var hurtFiles = new string[4];
+                foreach (var hurtFile in allHurtFiles)
+                {
+                    if (int.TryParse(Path.GetFileNameWithoutExtension(hurtFile), out var i))
+                    {
+                        if (i < hurtFiles.Length)
+                        {
+                            hurtFiles[i] = hurtFile;
+                        }
+                    }
+                }
+                if (hurtFiles.All(x => x != null))
+                {
+                    var corePath = Path.Combine(modPath, "common", "sound", "core", $"core{config.Player:X2}.sap");
+                    Directory.CreateDirectory(Path.GetDirectoryName(corePath));
+                    for (int i = 0; i < hurtFiles.Length; i++)
+                    {
+                        var waveformBuilder = new WaveformBuilder();
+                        waveformBuilder.Append(hurtFiles[i]);
+                        if (i == 0)
+                            waveformBuilder.Save(corePath, 0x0F);
+                        else
+                            waveformBuilder.SaveAppend(corePath);
+                    }
+                }
+            }
         }
     }
 }

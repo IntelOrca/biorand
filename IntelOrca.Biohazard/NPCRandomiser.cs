@@ -31,11 +31,20 @@ namespace IntelOrca.Biohazard
         private string? _playerActor;
         private string? _originalPlayerActor;
         private Dictionary<byte, string> _extraNpcMap = new Dictionary<byte, string>();
-
-        private List<ExternalCharacter> _plds = new List<ExternalCharacter>();
         private List<ExternalCharacter> _emds = new List<ExternalCharacter>();
 
-        public NPCRandomiser(BioVersion version, RandoLogger logger, RandoConfig config, string originalDataPath, string modPath, GameData gameData, Map map, Rng random, INpcHelper npcHelper, DataManager dataManager)
+        public NPCRandomiser(
+            BioVersion version,
+            RandoLogger logger,
+            RandoConfig config,
+            string originalDataPath,
+            string modPath,
+            GameData gameData,
+            Map map,
+            Rng random,
+            INpcHelper npcHelper,
+            DataManager dataManager,
+            string? playerActor)
         {
             _version = version;
             _logger = logger;
@@ -49,7 +58,7 @@ namespace IntelOrca.Biohazard
             _dataManager = dataManager;
             _voiceSamples = AddToSelection(version, originalDataPath);
             _originalPlayerActor = _npcHelper.GetPlayerActor(config.Player);
-            _playerActor = _originalPlayerActor;
+            _playerActor = playerActor ?? _originalPlayerActor;
 
             var customSamples = AddCustom();
             _uniqueSamples.AddRange(customSamples);
@@ -90,11 +99,6 @@ namespace IntelOrca.Biohazard
             return samples.ToArray();
         }
 
-        public void AddPC(bool isFemale, string actor, string pldPath, string facePath)
-        {
-            _plds.Add(new ExternalCharacter(isFemale, actor, pldPath, facePath));
-        }
-
         public void AddNPC(bool isFemale, string actor, string emdPath, string timPath)
         {
             _emds.Add(new ExternalCharacter(isFemale, actor, emdPath, timPath));
@@ -107,66 +111,9 @@ namespace IntelOrca.Biohazard
 
         public void Randomise()
         {
-            RandomizePlayer(_rng.NextFork());
             RandomizeExternalNPCs(_rng.NextFork());
             RandomizeRooms(_rng.NextFork());
             SetVoices();
-        }
-
-        private void RandomizePlayer(Rng rng)
-        {
-            var plds = _plds
-                .Where(x => x.Actor != _originalPlayerActor)
-                .Where(x => ActorHasVoiceSamples(x.Actor))
-                .ToArray();
-
-            if (plds.Length == 0)
-                return;
-
-            var pld = plds.Shuffle(rng).First();
-            _playerActor = pld.Actor;
-
-            _logger.WriteHeading("Randomizing Player:");
-            _logger.WriteLine($"{_originalPlayerActor} becomes {_playerActor}");
-
-            var plcPathA = Path.Combine(_modPath, $"pl{_config.Player}", "pld", $"pl{_config.Player:X2}.pld");
-            var plcPathB = Path.Combine(_modPath, $"pl{_config.Player}", "pld", $"pl{_config.Player + 4:X2}.pld"); // Alt. character (in later half of the game)
-            Directory.CreateDirectory(Path.GetDirectoryName(plcPathA));
-            File.Copy(pld.ModelPath, plcPathA, true);
-            File.Copy(pld.ModelPath, plcPathB, true);
-
-            var facePath = Path.Combine(_modPath, $"common", "data", $"st{_config.Player}_jp.tim");
-            Directory.CreateDirectory(Path.GetDirectoryName(facePath));
-            File.Copy(pld.TexturePath, facePath, true);
-
-            var allHurtFiles = _dataManager.GetHurtFiles(pld.Actor)
-                .Where(x => x.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) || x.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
-                .ToArray();
-            var hurtFiles = new string[4];
-            foreach (var hurtFile in allHurtFiles)
-            {
-                if (int.TryParse(Path.GetFileNameWithoutExtension(hurtFile), out var i))
-                {
-                    if (i < hurtFiles.Length)
-                    {
-                        hurtFiles[i] = hurtFile;
-                    }
-                }
-            }
-            if (hurtFiles.All(x => x != null))
-            {
-                var corePath = Path.Combine(_modPath, "common", "sound", "core", $"core{_config.Player:X2}.sap");
-                Directory.CreateDirectory(Path.GetDirectoryName(corePath));
-                for (int i = 0; i < hurtFiles.Length; i++)
-                {
-                    var waveformBuilder = new WaveformBuilder();
-                    waveformBuilder.Append(hurtFiles[i]);
-                    if (i == 0)
-                        waveformBuilder.Save(corePath, 0x0F);
-                    else
-                        waveformBuilder.SaveAppend(corePath);
-                }
-            }
         }
 
         private void RandomizeExternalNPCs(Rng rng)

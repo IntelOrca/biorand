@@ -48,6 +48,12 @@ namespace IntelOrca.Biohazard
             return File.ReadAllText(fullPath);
         }
 
+        public string[] GetDirectories(BioVersion version, string baseName)
+        {
+            var fullPath = GetPath(version, baseName);
+            return GetDirectoriesSafe(fullPath);
+        }
+
         public string[] GetFiles(BioVersion version, string baseName)
         {
             var basePath = GetPath(version, baseName);
@@ -56,13 +62,13 @@ namespace IntelOrca.Biohazard
 
         public string[] GetFiles(string a, string b)
         {
-            return GetFiles(Path.Combine(BasePath, a, b));
+            return GetFilesSafe(Path.Combine(BasePath, a, b));
         }
 
         public string[] GetDirectoriesIn(string baseName)
         {
             var basePath = GetPath(baseName);
-            return GetDirectories(basePath);
+            return GetDirectoriesSafe(basePath);
         }
 
         public string[] GetBgmFiles(string tag) => GetTaggedFiles("bgm", tag);
@@ -73,17 +79,17 @@ namespace IntelOrca.Biohazard
         {
             var files = new List<string>();
             var top = Path.Combine(BasePath, baseName);
-            var directories = GetDirectories(top);
+            var directories = GetDirectoriesSafe(top);
             foreach (var directory in directories)
             {
                 var dir = Path.Combine(directory, tag);
-                var subFiles = GetFiles(dir);
+                var subFiles = GetFilesSafe(dir);
                 files.AddRange(subFiles);
             }
             return files.ToArray();
         }
 
-        private static string[] GetFiles(string path)
+        private static string[] GetFilesSafe(string path)
         {
             if (Directory.Exists(path))
             {
@@ -92,7 +98,7 @@ namespace IntelOrca.Biohazard
             return new string[0];
         }
 
-        private static string[] GetDirectories(string path)
+        private static string[] GetDirectoriesSafe(string path)
         {
             if (Directory.Exists(path))
             {

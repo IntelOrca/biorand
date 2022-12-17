@@ -257,9 +257,10 @@ namespace IntelOrca.Biohazard
                     enemyRandomiser.Randomise();
                 }
 
+                var playerActor = ChangePlayerCharacters(config, logger, modPath);
                 if (config.RandomNPCs)
                 {
-                    var npcRandomiser = new NPCRandomiser(BiohazardVersion, logger, config, originalDataPath, modPath, gameData, map, randomNpcs, NpcHelper, DataManager);
+                    var npcRandomiser = new NPCRandomiser(BiohazardVersion, logger, config, originalDataPath, modPath, gameData, map, randomNpcs, NpcHelper, DataManager, playerActor);
                     RandomizeNPCs(config, npcRandomiser);
                     npcRandomiser.Randomise();
                 }
@@ -279,6 +280,11 @@ namespace IntelOrca.Biohazard
                 logger.WriteException(ex);
                 throw;
             }
+        }
+
+        internal virtual string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, string modPath)
+        {
+            return null;
         }
 
         internal virtual void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser)
