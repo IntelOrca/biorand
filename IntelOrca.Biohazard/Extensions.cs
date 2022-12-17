@@ -74,6 +74,13 @@ namespace IntelOrca.Biohazard
             return b;
         }
 
+        public static int ReadUInt24(this BinaryReader br)
+        {
+            var a = br.ReadUInt16();
+            var b = br.ReadByte();
+            return a | (b << 16);
+        }
+
         public static void WriteASCII(this BinaryWriter bw, string s)
         {
             foreach (var c in s)
