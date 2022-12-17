@@ -251,11 +251,11 @@ namespace IntelOrca.Biohazard.RE2
                     items.Add(ItemType.SMG);
                 if (rng.Next(0, 2) == 0)
                     items.Add(ItemType.Sparkshot);
-                if (rng.Next(0, 2) == 0)
-                    items.Add(ItemType.ColtSAA);
             }
             if (rng.Next(0, 2) == 0)
                 items.Add(ItemType.RocketLauncher);
+            if (rng.Next(0, 2) == 0)
+                items.Add(ItemType.ColtSAA);
             if (rng.Next(0, 2) == 0)
                 items.Add(ItemType.Beretta);
             return items.Select(x => (byte)x).ToArray();
