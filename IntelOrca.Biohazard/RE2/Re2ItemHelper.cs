@@ -218,46 +218,67 @@ namespace IntelOrca.Biohazard.RE2
         public byte[] GetWeapons(Rng rng, RandoConfig config)
         {
             var enemyDifficulty = config.RandomEnemies ? config.EnemyDifficulty : 0;
+            var glWeapon = rng.NextOf(ItemType.GrenadeLauncherExplosive, ItemType.GrenadeLauncherFlame, ItemType.GrenadeLauncherAcid);
 
             var items = new List<ItemType>();
+            ItemType[] allWeapons;
             if (config.Player == 0)
             {
-                if (rng.Next(0, 3) >= 1)
-                    items.Add(ItemType.HandgunParts);
-                if (enemyDifficulty >= 2 || rng.Next(0, 2) >= 1)
-                {
-                    items.Add(ItemType.Shotgun);
-                    if (rng.Next(0, 2) >= 1)
-                        items.Add(ItemType.ShotgunParts);
-                }
-                if (enemyDifficulty >= 3 || rng.Next(0, 3) >= 1)
-                {
-                    items.Add(ItemType.Magnum);
-                    if (rng.Next(0, 2) >= 1)
-                        items.Add(ItemType.MagnumParts);
-                }
-                if (rng.Next(0, 2) == 0)
-                    items.Add(ItemType.SMG);
-                if (rng.Next(0, 2) == 0)
-                    items.Add(ItemType.Flamethrower);
+                allWeapons = new[] {
+                    ItemType.SMG,
+                    ItemType.Flamethrower,
+                    ItemType.ColtSAA,
+                    ItemType.Beretta,
+                    ItemType.Sparkshot,
+                    ItemType.Bowgun,
+                    ItemType.Shotgun,
+                    ItemType.Magnum,
+                    ItemType.RocketLauncher,
+                    glWeapon
+                };
+
+                // Guarantee good weapons for higher enemy difficulty
+                if (enemyDifficulty >= 2)
+                    items.Add(rng.NextOf(ItemType.Shotgun, ItemType.Bowgun));
+                if (enemyDifficulty >= 3)
+                    items.Add(rng.NextOf(ItemType.Magnum, glWeapon));
             }
             else
             {
-                if (enemyDifficulty >= 2 || rng.Next(0, 3) >= 1)
+                allWeapons = new[] {
+                    ItemType.SMG,
+                    ItemType.ColtSAA,
+                    ItemType.Beretta,
+                    ItemType.Sparkshot,
+                    ItemType.Bowgun,
+                    ItemType.RocketLauncher,
+                    glWeapon
+                };
+
+                // Guarantee good weapons for higher enemy difficulty
+                if (enemyDifficulty >= 2)
                     items.Add(ItemType.Bowgun);
-                if (enemyDifficulty >= 3 || rng.Next(0, 3) >= 1)
-                    items.Add(rng.NextOf(ItemType.GrenadeLauncherExplosive, ItemType.GrenadeLauncherFlame, ItemType.GrenadeLauncherAcid));
-                if (rng.Next(0, 2) == 0)
-                    items.Add(ItemType.SMG);
-                if (rng.Next(0, 2) == 0)
-                    items.Add(ItemType.Sparkshot);
+                if (enemyDifficulty >= 3)
+                    items.Add(glWeapon);
             }
-            if (rng.Next(0, 2) == 0)
-                items.Add(ItemType.RocketLauncher);
-            if (rng.Next(0, 2) == 0)
-                items.Add(ItemType.ColtSAA);
-            if (rng.Next(0, 2) == 0)
-                items.Add(ItemType.Beretta);
+
+            // Remaining weapons
+            foreach (var weapon in allWeapons)
+            {
+                if (rng.NextProbability(50) && !items.Contains(weapon))
+                {
+                    items.Add(weapon);
+                }
+            }
+
+            // Weapon upgrades
+            if (rng.NextProbability(33) && config.Player == 0)
+                items.Add(ItemType.HandgunParts);
+            if (rng.NextProbability(50) && items.Contains(ItemType.Shotgun))
+                items.Add(ItemType.ShotgunParts);
+            if (rng.NextProbability(50) && items.Contains(ItemType.Magnum))
+                items.Add(ItemType.MagnumParts);
+
             return items.Select(x => (byte)x).ToArray();
         }
 

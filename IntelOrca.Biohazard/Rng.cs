@@ -29,7 +29,7 @@ namespace IntelOrca.Biohazard
 
         public bool NextProbability(int percent)
         {
-            return Next(0, 100) >= (100 - percent);
+            return Next(0, 100) < percent;
         }
 
         public int Next(int min, int max)
