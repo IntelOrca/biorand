@@ -92,6 +92,9 @@ namespace IntelOrca.Biohazard
                 {
                     var instructionPosition = (int)stream.Position;
                     var opcode = br.ReadByte();
+                    if (opcode > _instructionSizes1.Length)
+                        break;
+
                     var instructionSize = _instructionSizes1[opcode];
 
                     var bytes = new byte[instructionSize];

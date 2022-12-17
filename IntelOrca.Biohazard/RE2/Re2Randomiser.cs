@@ -61,6 +61,10 @@ namespace IntelOrca.Biohazard.RE2
                 }
             }
             return rdtPaths
+                .Except(new[] {
+                    new RdtId(6, 0x05),
+                    new RdtId(6, 0x07)
+                })
                 .OrderBy(x => x.Stage)
                 .ThenBy(x => x.Room)
                 .ToArray();
@@ -70,14 +74,6 @@ namespace IntelOrca.Biohazard.RE2
         {
             var path = Path.Combine(dataPath, @$"Pl{player}\Rdt\ROOM{rdtId}{player}.RDT");
             return path;
-        }
-
-        protected override Dictionary<RdtId, ulong> GetRdtChecksums(int player)
-        {
-            var checksumJson = DataManager.GetData(BiohazardVersion, "checksum.json");
-            var checksumsForEachPlayer = JsonSerializer.Deserialize<Dictionary<string, ulong>[]>(checksumJson)!;
-            var checksums = checksumsForEachPlayer[player];
-            return checksums.ToDictionary(x => RdtId.Parse(x.Key), x => x.Value);
         }
 
         public override void Generate(RandoConfig config, ReInstallConfig reConfig, string installPath, string modPath)

@@ -26,7 +26,6 @@ namespace IntelOrca.Biohazard
         protected abstract string GetDataPath(string installPath);
         protected abstract RdtId[] GetRdtIds(string dataPath);
         protected abstract string GetRdtPath(string dataPath, RdtId rdtId, int player);
-        protected virtual Dictionary<RdtId, ulong>? GetRdtChecksums(int player) => null;
 
         internal DataManager DataManager
         {
@@ -85,6 +84,19 @@ namespace IntelOrca.Biohazard
                 }
             }
             return result;
+        }
+
+        private Dictionary<RdtId, ulong>? GetRdtChecksums(int player)
+        {
+            var path = DataManager.GetPath(BiohazardVersion, "checksum.json");
+            if (File.Exists(path))
+            {
+                var checksumJson = File.ReadAllBytes(path);
+                var checksumsForEachPlayer = JsonSerializer.Deserialize<Dictionary<string, ulong>[]>(checksumJson)!;
+                var checksums = checksumsForEachPlayer[player];
+                return checksums.ToDictionary(x => RdtId.Parse(x.Key), x => x.Value);
+            }
+            return null;
         }
 
         private Dictionary<RdtId, ulong> GetRdtChecksums(string dataPath, int player, RdtId[] rdtIds)
