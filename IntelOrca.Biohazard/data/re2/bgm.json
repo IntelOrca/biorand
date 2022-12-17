@@ -75,10 +75,6 @@
     "main38"
   ],
   "danger": [
-    "main10",
-    "main12",
-    "main15",
-    "main15",
     "main1a",
     "main1d",
     "main1e",
@@ -99,9 +95,14 @@
     "sub18",
     "sub26",
     "sub2a",
-    "sub2d",
     "sub37",
     "sub3b",
     "sub40"
+  ],
+  "boss": [
+    "main10",
+    "main12",
+    "main15",
+    "sub2d"
   ]
 }

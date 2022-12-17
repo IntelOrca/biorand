@@ -61,17 +61,19 @@
     "BGM_3D",
     "BGM_04",
     "BGM_05",
-    "BGM_08",
     "BGM_23",
+    "BGM_29",
+    "BGM_38",
+    "BGM_48"
+  ],
+  "boss": [
+    "BGM_28",
+    "BGM_57",
+    "BGM_08",
     "BGM_24",
     "BGM_24A",
     "BGM_24B",
-    "BGM_25",
-    "BGM_28",
-    "BGM_29",
-    "BGM_38",
-    "BGM_48",
-    "BGM_57"
+    "BGM_25"
   ],
   "instrument_bad": [
     "*BGM_10",
