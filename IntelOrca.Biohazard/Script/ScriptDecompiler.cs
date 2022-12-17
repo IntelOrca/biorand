@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using IntelOrca.Biohazard.Script.Opcodes;
@@ -1039,6 +1040,14 @@ namespace IntelOrca.Biohazard.Script
                             else
                                 sb.WriteLine(" (INVALID);");
                         }
+                        break;
+                    }
+                case OpcodeV2.Save:
+                    {
+                        var a = br.ReadByte();
+                        var b = br.ReadByte();
+                        var c = br.ReadByte();
+                        sb.WriteStandardOpcode("save", a, b, c);
                         break;
                     }
                 case OpcodeV2.Calc:
