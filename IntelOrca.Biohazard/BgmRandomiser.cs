@@ -62,10 +62,10 @@ namespace IntelOrca.Biohazard
                         good = true;
                     if (d == "re2" && config.IncludeBGMRE2)
                         good = true;
-                    if (d == "re3" && config.IncludeBGMRE3)
-                        good = true;
-                    if (d == "re4" && config.IncludeBGMRE4)
-                        good = true;
+                    // if (d == "re3" && config.IncludeBGMRE3)
+                    //     good = true;
+                    // if (d == "re4" && config.IncludeBGMRE4)
+                    //     good = true;
                 }
                 if (good)
                     AddCustomMusicToSelection(bgmList, dir);

@@ -80,7 +80,7 @@ namespace IntelOrca.Biohazard.RE2
         {
             _reInstallConfig = reConfig;
 
-            if (config.IncludeBGMRE1 || config.IncludeNPCRE1)
+            if ((config.RandomBgm && config.IncludeBGMRE1) || (config.RandomNPCs && config.IncludeNPCRE1))
             {
                 if (!reConfig.IsEnabled(BioVersion.Biohazard1))
                 {
