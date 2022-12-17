@@ -187,6 +187,8 @@ namespace IntelOrca.Biohazard
 
             var door = new DoorAotSeOpcode();
             door.Offset = writeOffset;
+            door.Length = 32;
+            door.Opcode = (byte)OpcodeV2.DoorAotSe;
             door.Id = setOpcode.Id;
             door.SCE = 1;
             door.SAT = setOpcode.SAT;
