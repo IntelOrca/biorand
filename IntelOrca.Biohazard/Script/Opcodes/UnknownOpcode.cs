@@ -34,6 +34,7 @@ namespace IntelOrca.Biohazard.Script.Opcodes
         {
             for (int i = 0; i < _data.Length; i++)
             {
+                Opcode = (byte)OpcodeV2.Nop;
                 _data[i] = 0;
             }
         }
