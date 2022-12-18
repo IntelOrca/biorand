@@ -138,7 +138,6 @@ namespace IntelOrca.Biohazard.RE1
                 case Re1EnemyIds.Cerberus:
                 case Re1EnemyIds.Crow:
                 case Re1EnemyIds.Bee:
-                case Re1EnemyIds.Chimera:
                 case Re1EnemyIds.Snake:
                 case Re1EnemyIds.Neptune:
                 case Re1EnemyIds.Tyrant1:
@@ -153,8 +152,18 @@ namespace IntelOrca.Biohazard.RE1
                     exclude(Re1EnemyIds.SpiderBlack);
                     exclude(Re1EnemyIds.Crow);
                     exclude(Re1EnemyIds.Hunter);
+                    exclude(Re1EnemyIds.Chimera);
                     break;
-
+                case Re1EnemyIds.Chimera:
+                    exclude(Re1EnemyIds.Zombie);
+                    exclude(Re1EnemyIds.ZombieNaked);
+                    exclude(Re1EnemyIds.ZombieResearcher);
+                    exclude(Re1EnemyIds.Cerberus);
+                    exclude(Re1EnemyIds.SpiderBrown);
+                    exclude(Re1EnemyIds.SpiderBlack);
+                    exclude(Re1EnemyIds.Crow);
+                    exclude(Re1EnemyIds.Hunter);
+                    break;
                 case Re1EnemyIds.SpiderBlack:
                     break;
             }
