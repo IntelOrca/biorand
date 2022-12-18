@@ -633,6 +633,13 @@
         {
           "target": "211"
         }
+      ],
+      "items": [
+        {
+          "id": 8,
+          "priority": "low",
+          "player": 1
+        }
       ]
     },
     "204": {
