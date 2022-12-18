@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 
 namespace IntelOrca.Biohazard
 {
@@ -416,11 +415,28 @@ namespace IntelOrca.Biohazard
                         }
 
                         // Change room item to the item we are going to replace
+                        var id = futureNode.Items[itemIndex].Id;
                         var kc = futureNode.Items[itemIndex].Amount;
                         futureNode.Items[itemIndex].Type = itemEntry.Type;
                         futureNode.Items[itemIndex].Amount = itemEntry.Amount;
                         itemEntry.Amount = kc;
                         futureItem = true;
+
+                        // Change if in required items pool
+                        foreach (var ri in _requiredItems.ToArray())
+                        {
+                            if (ri.Item.HasValue)
+                            {
+                                var reqItem = ri.Item.Value;
+                                if (reqItem.RdtId == futureNode.RdtId && reqItem.Id == id)
+                                {
+                                    reqItem.Type = itemEntry.Type;
+                                    reqItem.Amount = itemEntry.Amount;
+                                    _requiredItems.Remove(ri);
+                                    _requiredItems.Add(ri.WithItem(reqItem));
+                                }
+                            }
+                        }
                     }
                 }
                 if (!futureItem)
@@ -825,6 +841,11 @@ namespace IntelOrca.Biohazard
             public override string ToString()
             {
                 return $"{string.Join(",", Keys.Select(x => Items.GetItemName(x)))}";
+            }
+
+            public KeyRequirement WithItem(ItemPoolEntry? item)
+            {
+                return new KeyRequirement(Keys, item, IsDoor);
             }
         }
     }
