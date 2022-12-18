@@ -173,7 +173,15 @@ namespace IntelOrca.Biohazard
             {
                 var builder = new WaveformBuilder();
                 builder.Volume = ImportVolume;
-                builder.Append(src);
+                if (_isWav)
+                {
+                    // RE1 can't handle very large .wav files, limit tracks to 3 minutes
+                    builder.Append(src, 0, 2.5 * 60);
+                }
+                else
+                {
+                    builder.Append(src);
+                }
                 builder.Save(dst);
             }
         }
