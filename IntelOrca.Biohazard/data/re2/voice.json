@@ -196,16 +196,16 @@
     "pl0/voice/stage5/v016.sap": { "rdt": "505", "player": 0, "cutscene": 1, "actor": "leon", "condition": "@ada", "nameClipped": { "start": 1.5 } }, // could remove the name to work w/every girl
     "pl0/voice/stage5/v017.sap": { "rdt": "505", "player": 0, "cutscene": 1, "actor": "ada" },
 
-    "pl0/voice/stage6/v001.sap": { "rdt": "602", "player": 0, "actor": "annette" },
-    "pl0/voice/stage6/v002.sap": { "rdt": "602", "player": 0, "actor": "annette" },
-    "pl0/voice/stage6/v003.sap": { "rdt": "602", "player": 0, "actor": "annette" },
-    "pl0/voice/stage6/v004.sap": { "rdt": "602", "player": 0, "actor": "leon" },
-    "pl0/voice/stage6/v005.sap": { "rdt": "602", "player": 0, "actor": "annette" },
-    "pl0/voice/stage6/v006.sap": { "rdt": "602", "player": 0, "actor": "leon" },
-    "pl0/voice/stage6/v007.sap": { "rdt": "602", "player": 0, "actor": "annette" },
-    "pl0/voice/stage6/v008.sap": { "rdt": "602", "player": 0, "actor": "leon", "condition": "!ada", "nameClipped": { "end": 3.0 } }, // could remove the name to work w/every girl
-    "pl0/voice/stage6/v009.sap": { "rdt": "602", "player": 0, "actor": "annette" },
-    "pl0/voice/stage6/v010.sap": { "rdt": "602", "player": 0, "actor": "annette" },
+    "pl0/voice/stage6/v001.sap": { "rdts": [ "602", "60C" ], "player": 0, "actor": "annette" },
+    "pl0/voice/stage6/v002.sap": { "rdts": [ "602", "60C" ], "player": 0, "actor": "annette" },
+    "pl0/voice/stage6/v003.sap": { "rdts": [ "602", "60C" ], "player": 0, "actor": "annette" },
+    "pl0/voice/stage6/v004.sap": { "rdts": [ "602", "60C" ], "player": 0, "actor": "leon" },
+    "pl0/voice/stage6/v005.sap": { "rdts": [ "602", "60C" ], "player": 0, "actor": "annette" },
+    "pl0/voice/stage6/v006.sap": { "rdts": [ "602", "60C" ], "player": 0, "actor": "leon" },
+    "pl0/voice/stage6/v007.sap": { "rdts": [ "602", "60C" ], "player": 0, "actor": "annette" },
+    "pl0/voice/stage6/v008.sap": { "rdts": [ "602", "60C" ], "player": 0, "actor": "leon", "condition": "!ada", "nameClipped": { "end": 3.0 } }, // could remove the name to work w/every girl
+    "pl0/voice/stage6/v009.sap": { "rdts": [ "602", "60C" ], "player": 0, "actor": "annette" },
+    "pl0/voice/stage6/v010.sap": { "rdts": [ "602", "60C" ], "player": 0, "actor": "annette" },
     "pl0/voice/stage6/v011.sap": { "rdt": "603", "player": 0, "actor": "claire", "kind": "radio", "condition": "@leon", "nameClipped": { "start": 0.8 } },
     "pl0/voice/stage6/v012.sap": { "rdt": "603", "player": 0, "actor": "leon", "condition": "@claire", "nameClipped": { "start": 0.7 } },
     "pl0/voice/stage6/v013.sap": { "rdt": "603", "player": 0, "actor": "claire", "kind": "radio", "condition": "@leon && !sherry", "nameClipped": { "start": 4.5 } }, // end : 4.0 for alternate

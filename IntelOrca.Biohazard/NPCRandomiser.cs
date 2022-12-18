@@ -186,6 +186,9 @@ namespace IntelOrca.Biohazard
             var npcs = room?.Npcs;
             if (npcs == null)
                 npcs = new[] { new MapRoomNpcs() };
+            npcs = npcs
+                .Where(x => (x.Player == null || x.Player == _config.Player) && (x.Scenario == null || x.Scenario == _config.Scenario))
+                .ToArray();
 
             var offsetToTypeMap = new Dictionary<int, byte>();
             foreach (var cutscene in npcs.GroupBy(x => x.Cutscene))
@@ -258,7 +261,12 @@ namespace IntelOrca.Biohazard
                             continue;
 
                         var oldActor = GetActor(enemy.Type)!;
-                        if (!offsetToTypeMap.TryGetValue(enemy.Offset, out var newEnemyType))
+                        string newActor;
+                        if (offsetToTypeMap.TryGetValue(enemy.Offset, out var newEnemyType))
+                        {
+                            newActor = GetActor(newEnemyType)!;
+                        }
+                        else
                         {
 #if ALWAYS_SWAP_NPC
                             var newEnemyTypeIndex = Array.FindIndex(supportedNpcs, x => GetActor(x) != GetActor(enemy.Type));
@@ -266,10 +274,11 @@ namespace IntelOrca.Biohazard
 #else
                             newEnemyType = supportedNpcs[0];
 #endif
-                            _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) [{_npcHelper.GetNpcName(enemy.Type)}] becomes [{_npcHelper.GetNpcName(newEnemyType)}]");
+                            newActor = GetActor(newEnemyType)!;
+                            _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) [{_npcHelper.GetNpcName(enemy.Type)}] becomes [{_npcHelper.GetNpcName(newEnemyType)} ({newActor})]");
                             offsetToTypeMap[enemy.Offset] = newEnemyType;
                         }
-                        actorToNewActorMap[oldActor] = GetActor(newEnemyType)!;
+                        actorToNewActorMap[oldActor] = newActor;
                     }
                 }
             }
@@ -283,7 +292,7 @@ namespace IntelOrca.Biohazard
             {
                 if (sample.Player == _config.Player &&
                     sample.Cutscene == cutscene &&
-                    rdt.RdtId.ToString() == sample.Rdt)
+                    sample.IsPlayedIn(rdt.RdtId))
                 {
                     var actor = sample.Actor!;
                     var kind = sample.Kind;
@@ -553,11 +562,14 @@ namespace IntelOrca.Biohazard
     [DebuggerDisplay("Actor = {Actor} RdtId = {Rdt} Path = {Path}")]
     public class VoiceSample
     {
+        private RdtId[]? _cachedRdtIds;
+
         public string? BasePath { get; set; }
         public string? Path { get; set; }
         public string? Actor { get; set; }
         public string? Kind { get; set; }
         public string? Rdt { get; set; }
+        public string[]? Rdts { get; set; }
         public int? Player { get; set; }
         public int Cutscene { get; set; }
 
@@ -592,6 +604,7 @@ namespace IntelOrca.Biohazard
                 Path = Path,
                 Actor = sub.Actor,
                 Rdt = Rdt,
+                Rdts = Rdts,
                 Player = Player,
                 Start = start,
                 End = end,
@@ -629,6 +642,26 @@ namespace IntelOrca.Biohazard
             }
 
             return true;
+        }
+
+        public bool IsPlayedIn(RdtId rdtId)
+        {
+            if (_cachedRdtIds == null)
+            {
+                if (Rdts != null)
+                {
+                    _cachedRdtIds = Rdts.Select(RdtId.Parse).ToArray();
+                }
+                else if (Rdt != null)
+                {
+                    _cachedRdtIds = new[] { RdtId.Parse(Rdt) };
+                }
+                else
+                {
+                    _cachedRdtIds = new RdtId[0];
+                }
+            }
+            return _cachedRdtIds.Contains(rdtId);
         }
     }
 
