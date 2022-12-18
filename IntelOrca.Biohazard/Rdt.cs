@@ -166,7 +166,6 @@ namespace IntelOrca.Biohazard
                     {
                         unk = new UnknownOpcode(offset, 0, new byte[opcode.Length - 1]);
                         Opcodes[i] = unk;
-                        unk.NopOut();
                     }
                     break;
                 }

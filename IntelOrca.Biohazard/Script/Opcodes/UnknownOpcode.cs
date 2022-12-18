@@ -32,9 +32,9 @@ namespace IntelOrca.Biohazard.Script.Opcodes
 
         public void NopOut()
         {
+            Opcode = (byte)OpcodeV2.Nop;
             for (int i = 0; i < _data.Length; i++)
             {
-                Opcode = (byte)OpcodeV2.Nop;
                 _data[i] = 0;
             }
         }
