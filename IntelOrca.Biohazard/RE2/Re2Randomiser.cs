@@ -20,18 +20,17 @@ namespace IntelOrca.Biohazard.RE2
 
         public override bool ValidateGamePath(string path)
         {
-            return Directory.Exists(Path.Combine(path, "data", "pl0")) ||
-                Directory.Exists(Path.Combine(path, "pl0"));
+            return Directory.Exists(Path.Combine(path, "data", "pl0", "rdt")) ||
+                Directory.Exists(Path.Combine(path, "pl0", "rdt"));
         }
 
         protected override string GetDataPath(string installPath)
         {
-            var originalDataPath = Path.Combine(installPath, "data");
-            if (!Directory.Exists(originalDataPath))
+            if (Directory.Exists(Path.Combine(installPath, "data", "pl0", "rdt")))
             {
-                originalDataPath = installPath;
+                return Path.Combine(installPath, "data");
             }
-            return originalDataPath;
+            return installPath;
         }
 
         protected override RdtId[] GetRdtIds(string dataPath)

@@ -62,21 +62,29 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void ValidatePath(string path)
         {
-            if (File.Exists(path))
+            try
             {
-                path = Path.GetDirectoryName(path);
+                if (File.Exists(path))
+                {
+                    path = Path.GetDirectoryName(path);
+                }
+
+                var eventArgs = new PathValidateEventArgs();
+                eventArgs.Path = path;
+                Validate?.Invoke(this, eventArgs);
+
+                txtValidationMessage.Text = eventArgs.Message;
+                txtValidationMessage.Foreground = eventArgs.IsValid ?
+                    Brushes.Green :
+                    Brushes.Red;
+            }
+            catch (Exception ex)
+            {
+                txtValidationMessage.Text = ex.Message;
+                txtValidationMessage.Foreground = Brushes.Red;
             }
 
-            var eventArgs = new PathValidateEventArgs();
-            eventArgs.Path = path;
-            Validate?.Invoke(this, eventArgs);
-
             Location = path;
-            txtValidationMessage.Text = eventArgs.Message;
-            txtValidationMessage.Foreground = eventArgs.IsValid ?
-                Brushes.Green :
-                Brushes.Red;
-
             Changed?.Invoke(this, EventArgs.Empty);
         }
 
