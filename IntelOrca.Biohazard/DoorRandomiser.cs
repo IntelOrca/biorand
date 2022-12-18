@@ -319,12 +319,26 @@ namespace IntelOrca.Biohazard
                 throw new Exception("Unable to connect end node");
             }
 
+            // Lock other side of begin -> begin + 1 door
+            foreach (var edge in begin.Edges)
+            {
+                if (edge.NoReturn && edge.Node != null)
+                {
+                    foreach (var oppositeEdge in edge.Node.Edges)
+                    {
+                        if (oppositeEdge.Node == begin)
+                        {
+                            oppositeEdge.Lock = LockKind.Always;
+                        }
+                    }
+                }
+            }
+
+            // Set end -> end + 1 door to no return
             foreach (var edge in end.Edges)
             {
                 if (edge.Node == null)
                     edge.NoReturn = true;
-                else
-                    edge.Lock = LockKind.Always;
             }
 
             pool.RemoveAll(x => x.Visited);
