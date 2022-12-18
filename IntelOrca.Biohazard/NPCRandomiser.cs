@@ -169,7 +169,10 @@ namespace IntelOrca.Biohazard
             var npcRng = rng.NextFork();
             var voiceRng = rng.NextFork();
 
-            var defaultIncludeTypes = _npcHelper.GetDefaultIncludeTypes(rdt);
+            var defaultIncludeTypes = _npcHelper.GetDefaultIncludeTypes(rdt)
+                .Shuffle(rng)
+                .DistinctBy(x => _npcHelper.GetActor(x))
+                .ToArray();
             if (rng.Next(0, 8) != 0)
             {
                 // Make it rare for player to also be an NPC
