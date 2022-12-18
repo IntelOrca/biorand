@@ -544,6 +544,19 @@ namespace IntelOrca.Biohazard.BioRand
 
             _config = RandoConfig.FromString(txt);
             var caretIndex = txtSeed.CaretIndex;
+
+            if (_config.Game != (SelectedGame + 1))
+            {
+                if (_config.Game == 1 || _config.Game == 2)
+                    SelectedGame = _config.Game - 1;
+                else
+                    _config.Game = (byte)(SelectedGame + 1);
+            }
+            if (_config.Game == 1)
+            {
+                _config.Scenario = 0;
+            }
+
             UpdateUi();
             txtSeed.Text = _config.ToString();
             txtSeed.CaretIndex = Math.Min(caretIndex, txtSeed.Text.Length);
