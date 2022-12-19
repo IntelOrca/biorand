@@ -1583,6 +1583,17 @@
         {
           "target": "508"
         }
+      ],
+      "items": [
+        // Items are often missed, so make them low priority
+        {
+          "id": 6,
+          "priority": "low"
+        },
+        {
+          "id": 7,
+          "priority": "low"
+        }
       ]
     },
     "50B": {
