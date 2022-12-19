@@ -125,6 +125,18 @@
           "lock": "side"
         }
       ],
+      "items": [
+        {
+          "id": 8,
+          "priority": "low",
+          "player": 1
+        },
+        {
+          "id": 9,
+          "priority": "low",
+          "player": 1
+        }
+      ],
       "enemies": [
         {
           "excludeTypes": [ 10 ]
