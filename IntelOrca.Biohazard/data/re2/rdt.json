@@ -1172,6 +1172,11 @@
           "target": "302",
           "requires": [ 75 ],
           "player": 0
+        },
+        {
+          "target": "302",
+          "lock": "always",
+          "player": 1
         }
       ],
       "items": [
