@@ -10,6 +10,8 @@ namespace IntelOrca.Biohazard
 {
     internal class EnemyRandomiser
     {
+        private static object g_xmlSync = new object();
+
         private BioVersion _version;
         private readonly RandoLogger _logger;
         private readonly RandoConfig _config;
@@ -180,22 +182,32 @@ namespace IntelOrca.Biohazard
 
         private void FixRE1Sounds(RdtId rdtId, byte enemyType)
         {
-            var roomNode = GetRoomXml(rdtId);
-            if (roomNode == null)
-                return;
-
-            var template = GetTemplateXml(enemyType);
-            var entryNodes = roomNode.SelectNodes("Sound/Entry");
-            for (int i = 0; i < 16; i++)
+            // XML files are shared between players, so make sure it is thread safe
+            lock (g_xmlSync)
             {
-                entryNodes[i].InnerText = template[i] ?? "";
-            }
+                var xmlDir = Path.Combine(_modPath, "tables");
+                var xmlPath = Path.Combine(xmlDir, $"room_{rdtId}.xml");
+                if (File.Exists(xmlPath))
+                {
+                    // XML file already produced
+                    return;
+                }
 
-            var xmlDir = Path.Combine(_modPath, "tables");
-            var xmlPath = Path.Combine(xmlDir, $"room_{rdtId}.xml");
-            var xml = roomNode.InnerXml;
-            Directory.CreateDirectory(xmlDir);
-            File.WriteAllText(xmlPath, xml);
+                var roomNode = GetRoomXml(rdtId);
+                if (roomNode == null)
+                    return;
+
+                var template = GetTemplateXml(enemyType);
+                var entryNodes = roomNode.SelectNodes("Sound/Entry");
+                for (int i = 0; i < 16; i++)
+                {
+                    entryNodes[i].InnerText = template[i] ?? "";
+                }
+
+                var xml = roomNode.InnerXml;
+                Directory.CreateDirectory(xmlDir);
+                File.WriteAllText(xmlPath, xml);
+            }
         }
 
         private XmlNode? GetRoomXml(RdtId rdtId)
