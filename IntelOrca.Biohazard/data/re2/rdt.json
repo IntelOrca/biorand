@@ -1512,7 +1512,13 @@
         },
         {
           "target": "30A",
-          "lock": "unblock"
+          "player": 0
+        },
+        {
+          "target": "30A",
+          "lock": "unblock",
+          "noUnlock": true,
+          "player": 1
         }
       ],
       "enemies": [],
