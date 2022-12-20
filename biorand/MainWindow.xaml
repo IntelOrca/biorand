@@ -168,14 +168,14 @@
                                                 LowText="1"
                                                 HighText="4"
                                                 Maximum="3"
-                                                ToolTip="The number of rooms per area." />
+                                                ToolTip="Adjusts how many distinct groups of rooms appear before reaching the end." />
                                 <local:RandoSlider Grid.Column="2"
                                                 x:Name="sliderAreaSize"
                                                 Heading="Segment Size"
                                                 LowText="Low"
                                                 HighText="High"
                                                 Maximum="7"
-                                                ToolTip="The number of rooms per area."/>
+                                                ToolTip="Adjusts how many rooms are in a segment."/>
                             </Grid>
                             <TextBlock x:Name="lblEstimateCompletionTime" Foreground="Brown" Text="Estimate completion time: 10 - 30 minutes" />
                         </StackPanel>
