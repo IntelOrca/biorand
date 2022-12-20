@@ -1323,7 +1323,7 @@
         },
         {
           "includeOffsets": [ 6854 ],
-          // "includeTypes": [ 65, 67, 69, 79 ],
+          "includeTypes": [ 65, 67, 69, 79 ],
           "cutscene": 1 // Leon,Ben,[Ada]
         },
         {
@@ -1333,7 +1333,7 @@
         },
         {
           "includeOffsets": [ 6990, 7316 ],
-          // "includeTypes": [ 65, 67, 69, 79 ],
+          "includeTypes": [ 65, 67, 69, 79 ],
           "cutscene": 3 // Leon,[Ada]
         },
         {
