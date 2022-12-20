@@ -2984,6 +2984,12 @@
         },
         {
           "id": 6,
+          "type": 0,
+          "player": 1,
+          "scenario": 1
+        },
+        {
+          "id": 6,
           "priority": "fixed",
           "requires": [ 81 ],
           "doorRando": false,
