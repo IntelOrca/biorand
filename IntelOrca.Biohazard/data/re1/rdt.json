@@ -1391,7 +1391,8 @@
         {
           "id": 3,
           "requiresRoom": [ "409", "40F" ],
-          "player": 1
+          "player": 1,
+          "doorRando": true
         }
       ]
     },
