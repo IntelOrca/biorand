@@ -867,7 +867,11 @@
       "enemies": [],
       "npcs": [
         {
-          "includeTypes": [ 42 ]
+          "includeOffsets": [ 149302 ],
+          "includeTypes": [ 38, 40, 42 ]
+        },
+        {
+          "includeOffsets": [ 149348 ]
         }
       ]
     },
