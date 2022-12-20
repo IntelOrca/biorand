@@ -503,6 +503,9 @@
         {
           "excludeTypes": [ 64, 66 ],
           "player": 0
+        },
+        {
+          "player": 1
         }
       ]
     },
