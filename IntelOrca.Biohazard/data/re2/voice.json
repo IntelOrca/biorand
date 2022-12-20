@@ -510,10 +510,10 @@
     "pl1/voice/stage6/v020.sap": { "rdt": "607", "player": 1, "actor": "sherry" },
     "pl1/voice/stage6/v021.sap": { "rdt": "607", "player": 1, "actor": "sherry" },
     "pl1/voice/stage6/v022.sap": { "rdt": "607", "player": 1, "actor": "claire", "condition": "@sherry" },
-    "pl1/voice/stage6/v023.sap": { "rdt": "606", "player": 1, "actor": "sherry" },
-    "pl1/voice/stage6/v024.sap": { "rdt": "606", "player": 1, "actor": "claire" },
+    "pl1/voice/stage6/v023.sap": { "rdt": "608", "player": 1, "actor": "sherry" },
+    "pl1/voice/stage6/v024.sap": { "rdt": "608", "player": 1, "actor": "claire" },
     "pl1/voice/stage6/v025.sap": { "rdt": "608", "player": 1, "actor": "annette", "condition": "@sherry", "nameClipped": { "start": 1.0 } },
-    "pl1/voice/stage6/v026.sap": { "rdt": "606", "player": 1, "actor": "sherry" },
+    "pl1/voice/stage6/v026.sap": { "rdt": "608", "player": 1, "actor": "sherry" },
     "pl1/voice/stage6/v027.sap": { "rdt": "608", "player": 1, "actor": "claire", "condition": "@sherry", "nameClipped": { "start": 0.55 } },
 
     "pl1/voice/stage6/v029.sap": { "rdt": "612", "player": 1, "cutscene": 0, "actor": "claire", "condition": "@leon", "nameClipped": { "start": 0.55 } },

@@ -2691,6 +2691,10 @@
       "npcs": [
         {
           "includeOffsets": [ 11140, 11288 ]
+        },
+        {
+          "includeOffsets": [ 11100, 11246, 12056 ],
+          "includeTypes": [ 79 ]
         }
       ]
     },
