@@ -30,12 +30,13 @@ namespace IntelOrca.Biohazard.Script.Opcodes
             bw.Write(_data);
         }
 
-        public void NopOut()
+        public void NopOut(BioVersion version)
         {
-            Opcode = (byte)OpcodeV2.Nop;
+            var code = version == BioVersion.Biohazard1 ? (byte)OpcodeV1.Nop : (byte)OpcodeV2.Nop;
+            Opcode = code;
             for (int i = 0; i < _data.Length; i++)
             {
-                _data[i] = 0;
+                _data[i] = code;
             }
         }
     }

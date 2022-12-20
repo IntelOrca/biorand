@@ -2,7 +2,7 @@
 {
     internal enum OpcodeV1 : byte
     {
-        Nop,
+        End,
         IfelCk,
         ElseCk,
         EndIf,
@@ -15,6 +15,7 @@
         CutSetA,
         DoorAotSe = 0x0C,
         NonItemSet = 0x0D,
+        Nop,
         Item12 = 0x12,
         ItemAotSet = 0x18,
         SceEmSet = 0x1B,

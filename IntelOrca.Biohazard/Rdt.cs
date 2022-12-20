@@ -158,15 +158,12 @@ namespace IntelOrca.Biohazard
                 var opcode = Opcodes[i];
                 if (opcode.Offset == offset)
                 {
-                    if (opcode is UnknownOpcode unk)
-                    {
-                        unk.NopOut();
-                    }
-                    else
+                    if (!(opcode is UnknownOpcode unk))
                     {
                         unk = new UnknownOpcode(offset, 0, new byte[opcode.Length - 1]);
                         Opcodes[i] = unk;
                     }
+                    unk.NopOut(Version);
                     break;
                 }
             }
