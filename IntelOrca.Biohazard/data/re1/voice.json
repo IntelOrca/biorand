@@ -574,7 +574,7 @@
       }
     ]
   },
-  "voice/V101_04.wav": { "rdt": "106", "cutscene": 0, "player": 1, "actor": "wesker" },
+  "voice/V101_04.wav": { "rdt": "106", "cutscene": 0, "player": 1, "actor": "wesker", "strict": true },
 
   "voice/V102_00.wav": { "rdt": "105", "player": 1, "actor": "barry" },
   "voice/V102_01.wav": { "rdt": "105", "player": 1, "actor": "barry" },
@@ -1413,7 +1413,7 @@
       }
     ]
   },
-  "voice/VA09_04.wav": { "rdt": "50C", "player": 1, "actor": "barry", "condition": "@jill" },
+  "voice/VA09_04.wav": { "rdt": "50C", "player": 1, "actor": "barry", "condition": "@jill", "strict": true },
   "voice/VA09_05.wav": { "rdt": "50C", "player": 1, "actor": "barry" },
   "voice/VA09_06.wav": { "rdt": "50C", "player": 1, "actor": "jill", "condition": "@barry" },
   "voice/VA09_07.wav": { "rdt": "50C", "player": 1, "actor": "barry", "condition": "@jill", "nameClipped": { "start": 1.15 } },

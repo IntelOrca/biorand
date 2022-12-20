@@ -462,6 +462,8 @@ namespace IntelOrca.Biohazard
                 sample.BasePath = originalDataPath;
                 sample.Path = kvp.Key;
                 var totalLength = GetVoiceLength(Path.Combine(originalDataPath, sample.Path));
+                if (sample.Strict)
+                    sample.MaxLength = totalLength;
                 if (sample.Actors != null)
                 {
                     var start = 0.0;
@@ -575,6 +577,7 @@ namespace IntelOrca.Biohazard
         public string[]? Rdts { get; set; }
         public int? Player { get; set; }
         public int Cutscene { get; set; }
+        public bool Strict { get; set; }
 
         public double Start { get; set; }
         public double End { get; set; }
