@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "scd": {
+      "commandName": "Project",
+      // "commandLineArgs": "ROOM1000.RDT --init init.scd",
+      "commandLineArgs": "-d init.scd",
+      "workingDirectory": "M:\\temp\\scd"
+    }
+  }
+}
