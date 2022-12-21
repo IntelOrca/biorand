@@ -2390,6 +2390,17 @@
         {
           "scenario": 0,
           "player": 1
+        },
+        {
+          "includeTypes": [ 69, 79 ],
+          "scenario": 1,
+          "player": 1,
+          "doorRando": false
+        },
+        {
+          "scenario": 1,
+          "player": 1,
+          "doorRando": true
         }
       ]
     },
