@@ -6,6 +6,8 @@ namespace IntelOrca.Biohazard.Script
 {
     public class ScdReader
     {
+        public int BaseOffset { get; set; }
+
         public string Diassemble(ReadOnlyMemory<byte> data, BioVersion version)
         {
             var decompiler = new ScriptDecompiler(true);
@@ -49,7 +51,7 @@ namespace IntelOrca.Biohazard.Script
                     if (br.Read(bytes, 1, instructionSize - 1) != instructionSize - 1)
                         break;
 
-                    visitor.VisitOpcode(instructionPosition, new Span<byte>(bytes));
+                    visitor.VisitOpcode(BaseOffset + instructionPosition, new Span<byte>(bytes));
                 }
             }
             catch (Exception)
@@ -97,7 +99,7 @@ namespace IntelOrca.Biohazard.Script
                     if (br.Read(opcodeBytes, 1, instructionSize - 1) != instructionSize - 1)
                         throw new Exception("Unable to read opcode");
 
-                    visitor.VisitOpcode(instructionPosition, opcodeBytes);
+                    visitor.VisitOpcode(BaseOffset + instructionPosition, opcodeBytes);
 
                     if (i == numFunctions - 1)
                     {

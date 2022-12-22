@@ -173,11 +173,8 @@ namespace IntelOrca.Biohazard
                 return;
 
             var scriptLength = _lengths[chunkIndex];
-
-            var stream = new MemoryStream(Data);
-            stream.Position = scriptOffset;
-
             var scdReader = new ScdReader();
+            scdReader.BaseOffset = scriptOffset;
             scdReader.ReadScript(new ReadOnlyMemory<byte>(Data, scriptOffset, scriptLength), Version, kind, visitor);
         }
     }
