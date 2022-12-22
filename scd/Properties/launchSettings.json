@@ -3,7 +3,7 @@
     "scd": {
       "commandName": "Project",
       // "commandLineArgs": "ROOM1000.RDT --init init.scd",
-      "commandLineArgs": "-d init.scd",
+      "commandLineArgs": "101.s",
       "workingDirectory": "M:\\temp\\scd"
     }
   }

@@ -1268,8 +1268,7 @@ namespace IntelOrca.Biohazard.Script
                                 var temp = br.ReadByte();
                                 var bitArray = temp >> 5;
                                 var number = temp & 0b11111;
-                                parameters.Add(bitArray);
-                                parameters.Add(number);
+                                parameters.Add($"{bitArray << 5} | {number}");
                                 break;
                             }
                         case 'u':

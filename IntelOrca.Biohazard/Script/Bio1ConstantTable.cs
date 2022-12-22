@@ -57,6 +57,24 @@
             return _instructionSizes1[opcode];
         }
 
+        public byte? FindOpcode(string name)
+        {
+            for (int i = 0; i < _opcodes.Length; i++)
+            {
+                var signature = _opcodes[i];
+                var colonIndex = signature.IndexOf(':');
+                if (colonIndex == -1)
+                    continue;
+
+                var opcodeName = signature.Substring(0, colonIndex);
+                if (name == opcodeName)
+                {
+                    return (byte)i;
+                }
+            }
+            return null;
+        }
+
         private string[] g_enemyNames = new string[]
         {
             "Zombie (Groundskeeper)",

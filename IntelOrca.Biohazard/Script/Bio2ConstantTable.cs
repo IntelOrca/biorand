@@ -2,6 +2,11 @@
 {
     internal class Bio2ConstantTable : IConstantTable
     {
+        public byte? FindOpcode(string name)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public string? GetConstant(char kind, int value)
         {
             throw new System.NotImplementedException();

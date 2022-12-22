@@ -42,22 +42,43 @@ namespace IntelOrca.Scd
             }
             else
             {
-                var initScdPath = GetOption(args, "--init");
-                var mainScdPath = GetOption(args, "--main");
-
-                var rdtFile = new RdtFile(rdtPath, BioVersion.Biohazard1);
-                if (initScdPath != null)
+                if (rdtPath.EndsWith(".s", StringComparison.OrdinalIgnoreCase))
                 {
-                    var data = File.ReadAllBytes(initScdPath);
-                    rdtFile.SetScd(BioScriptKind.Init, data);
+                    var s = File.ReadAllText(rdtPath);
+                    var scdAssembler = new ScdAssembler();
+                    var result = scdAssembler.Assemble(rdtPath, s);
+                    if (result == 0)
+                    {
+                        var scdPath = Path.ChangeExtension(rdtPath, ".scd");
+                        File.WriteAllBytes(scdPath, scdAssembler.Output);
+                    }
+                    else
+                    {
+                        foreach (var error in scdAssembler.Errors.Errors)
+                        {
+                            Console.WriteLine($"{error.Path}({error.Line + 1},{error.Column + 1}): error {error.ErrorCodeString}: {error.Message}");
+                        }
+                    }
                 }
-                if (mainScdPath != null)
+                else
                 {
-                    var data = File.ReadAllBytes(mainScdPath);
-                    rdtFile.SetScd(BioScriptKind.Main, data);
-                }
+                    var initScdPath = GetOption(args, "--init");
+                    var mainScdPath = GetOption(args, "--main");
 
-                rdtFile.Save(rdtPath + ".patched");
+                    var rdtFile = new RdtFile(rdtPath, BioVersion.Biohazard1);
+                    if (initScdPath != null)
+                    {
+                        var data = File.ReadAllBytes(initScdPath);
+                        rdtFile.SetScd(BioScriptKind.Init, data);
+                    }
+                    if (mainScdPath != null)
+                    {
+                        var data = File.ReadAllBytes(mainScdPath);
+                        rdtFile.SetScd(BioScriptKind.Main, data);
+                    }
+
+                    rdtFile.Save(rdtPath + ".patched");
+                }
                 return 0;
             }
         }
