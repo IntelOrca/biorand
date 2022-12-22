@@ -16,6 +16,7 @@ namespace IntelOrca.Biohazard.Script
         private int _lineLength;
 
         public bool AssemblyFormat { get; set; }
+        public bool ListingFormat { get; set; }
         public int CurrentOffset { get; set; }
         public byte[] CurrentOpcodeBytes { get; set; } = new byte[0];
 
@@ -135,7 +136,7 @@ namespace IntelOrca.Biohazard.Script
         public void WriteStandardOpcode(string name, params object[] args)
         {
             var asmColumn = 96;
-            if (AssemblyFormat)
+            if (AssemblyFormat && ListingFormat)
             {
                 Write($"{CurrentOffset:X4}");
                 Write(":");
@@ -146,6 +147,11 @@ namespace IntelOrca.Biohazard.Script
                     Write($"{b:X2}");
                 }
 
+                MoveToColumn(asmColumn);
+            }
+            else if (AssemblyFormat)
+            {
+                asmColumn = 4;
                 MoveToColumn(asmColumn);
             }
 

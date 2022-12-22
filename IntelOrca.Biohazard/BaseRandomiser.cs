@@ -348,6 +348,7 @@ namespace IntelOrca.Biohazard
             {
                 File.WriteAllText(Path.Combine(scriptPath, $"{rdt.RdtId}.bio"), rdt.Script);
                 File.WriteAllText(Path.Combine(scriptPath, $"{rdt.RdtId}.s"), rdt.ScriptDisassembly);
+                File.WriteAllText(Path.Combine(scriptPath, $"{rdt.RdtId}.lst"), rdt.ScriptListing);
             }
 
             // var player = config.Player;

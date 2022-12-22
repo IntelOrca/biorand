@@ -24,6 +24,39 @@
                 .ToUpperInvariant();
         }
 
+        public string GetOpcodeSignature(byte opcode)
+        {
+            if (opcode < _opcodes.Length)
+                return _opcodes[opcode];
+            return "";
+        }
+
+        public string? GetConstant(char kind, int value)
+        {
+            switch (kind)
+            {
+                case 'e':
+                    return GetEnemyName((byte)value);
+                case 't':
+                    return GetItemName((byte)value);
+                case 'T':
+                    if (value == 255)
+                        return "LOCKED";
+                    else if (value == 254)
+                        return "UNLOCK";
+                    else if (value == 0)
+                        return "UNLOCKED";
+                    else
+                        return GetItemName((byte)value);
+            }
+            return null;
+        }
+
+        public int GetInstructionSize(byte opcode)
+        {
+            return _instructionSizes1[opcode];
+        }
+
         private string[] g_enemyNames = new string[]
         {
             "Zombie (Groundskeeper)",
@@ -157,6 +190,48 @@
             "Mixed (All)",
             "Mixed (Silver Color)",
             "Mixed (Bright Blue-Green)"
+        };
+
+        private string[] _opcodes = new string[]
+        {
+            "end:u",
+            "if:l",
+            "else:l",
+            "endif:u",
+            "ck:uau",
+            "set:uau",
+            "cmp.8:uuu",
+            "cmp.16:uuuI",
+            "set.8:uuu",
+            "",
+            "",
+            "",
+            "door:uIIIIuuuuurIIIITu",
+            "nitem:uIIIItuuuuuuu",
+            "nop:u",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "item:uIIIItuuuuuuuuuuuuuuu",
+            "",
+            "",
+            "enemy:euuuuuuIuuIIIuuuu",
+        };
+
+        private static int[] _instructionSizes1 = new int[]
+        {
+            2, 2, 2, 2, 4, 4, 4, 6, 4, 2, 2, 4, 26, 18, 2, 8,
+            2, 2, 10, 4, 4, 2, 2, 10, 26, 4, 2, 22, 6, 2, 4, 28,
+            14, 14, 4, 2, 4, 4, 0, 2, 4 + 0, 2, 12, 4, 2, 4, 0, 4,
+            12, 4, 4, 4 + 0, 8, 4, 4, 4, 4, 2, 4, 6, 6, 12, 2, 6,
+            16, 4, 4, 4, 2, 2, 44 + 0, 14, 2, 2, 2, 2, 4, 2, 4, 2,
+            2
         };
     }
 }

@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Text;
 using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.Script
@@ -46,9 +49,10 @@ namespace IntelOrca.Biohazard.Script
 
         public bool AssemblyFormat => _sb.AssemblyFormat;
 
-        public ScriptDecompiler(bool assemblyFormat)
+        public ScriptDecompiler(bool assemblyFormat, bool listingFormat)
         {
             _sb.AssemblyFormat = assemblyFormat;
+            _sb.ListingFormat = listingFormat;
         }
 
         public string GetScript()
@@ -176,17 +180,18 @@ namespace IntelOrca.Biohazard.Script
 
             if (Version == BioVersion.Biohazard1)
             {
-                switch ((OpcodeV1)opcode)
-                {
-                    case OpcodeV1.DoorAotSe:
-                    case OpcodeV1.ItemAotSet:
-                    case OpcodeV1.SceEmSet:
-                        base.VisitOpcode(offset, opcodeSpan);
-                        break;
-                    default:
-                        VisitOpcode(offset, (OpcodeV1)opcode, br);
-                        break;
-                }
+                VisitOpcode(offset, (OpcodeV1)opcode, br);
+                // switch ((OpcodeV1)opcode)
+                // {
+                //     case OpcodeV1.DoorAotSe:
+                //     case OpcodeV1.ItemAotSet:
+                //     case OpcodeV1.SceEmSet:
+                //         base.VisitOpcode(offset, opcodeSpan);
+                //         break;
+                //     default:
+                //         VisitOpcode(offset, (OpcodeV1)opcode, br);
+                //         break;
+                // }
             }
             else
             {
@@ -438,6 +443,12 @@ namespace IntelOrca.Biohazard.Script
 
         private void VisitOpcode(int offset, OpcodeV1 opcode, BinaryReader br)
         {
+            if (AssemblyFormat)
+            {
+                DiassembleGeneralOpcode(br, offset, (byte)opcode);
+                return;
+            }
+
             var sb = _sb;
             br.ReadByte();
             switch (opcode)
@@ -1214,6 +1225,85 @@ namespace IntelOrca.Biohazard.Script
                         break;
                     }
             }
+        }
+
+        private void DiassembleGeneralOpcode(BinaryReader br, int offset, byte opcode)
+        {
+            var parameters = new List<object>();
+            string opcodeName;
+
+            var originalStreamPosition = br.BaseStream.Position;
+
+            // Read opcode
+            var opcodeRaw = br.ReadByte();
+            Debug.Assert(opcodeRaw == opcode);
+
+            var length = _constantTable.GetInstructionSize(opcode);
+            var signature = _constantTable.GetOpcodeSignature(opcode);
+            var colonIndex = signature.IndexOf(':');
+            if (colonIndex == -1)
+            {
+                opcodeName = "unk";
+                parameters.Add(opcode);
+                foreach (var b in br.ReadBytes(length))
+                    parameters.Add(b);
+            }
+            else
+            {
+                opcodeName = signature.Substring(0, colonIndex);
+                for (int i = colonIndex + 1; i < signature.Length; i++)
+                {
+                    var c = signature[i];
+                    switch (c)
+                    {
+                        case 'l':
+                            {
+                                var blockLen = br.ReadByte();
+                                _sb.InsertLabel(offset + blockLen);
+                                parameters.Add(_sb.GetLabelName(offset + blockLen));
+                                break;
+                            }
+                        case 'a':
+                            {
+                                var temp = br.ReadByte();
+                                var bitArray = temp >> 5;
+                                var number = temp & 0b11111;
+                                parameters.Add(bitArray);
+                                parameters.Add(number);
+                                break;
+                            }
+                        case 'u':
+                            parameters.Add(br.ReadByte());
+                            break;
+                        case 'I':
+                            parameters.Add(br.ReadInt16());
+                            break;
+                        case 'r':
+                            {
+                                var target = br.ReadByte();
+                                var stage = (byte)(target >> 5);
+                                var room = (byte)(target & 0b11111);
+                                if (stage == 0)
+                                    parameters.Add($"RDT_?{room:X2}");
+                                else
+                                    parameters.Add($"RDT_{stage:X}{room:X2}");
+                                break;
+                            }
+                        default:
+                            {
+                                var v = br.ReadByte();
+                                var szv = _constantTable.GetConstant(c, v);
+                                parameters.Add(szv ?? (object)v);
+                                break;
+                            }
+                    }
+                }
+            }
+            _sb.WriteStandardOpcode(opcodeName, parameters.ToArray());
+
+            var streamPosition = br.BaseStream.Position;
+            if (streamPosition != originalStreamPosition + length)
+                throw new Exception();
         }
 
         private static string GetSCE(byte sce)

@@ -10,7 +10,7 @@ namespace IntelOrca.Biohazard.Script
 
         public string Diassemble(ReadOnlyMemory<byte> data, BioVersion version)
         {
-            var decompiler = new ScriptDecompiler(true);
+            var decompiler = new ScriptDecompiler(true, false);
             ReadScript(data, version, BioScriptKind.Init, decompiler);
             return decompiler.GetScript();
         }
