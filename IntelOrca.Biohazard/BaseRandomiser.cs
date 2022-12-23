@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -176,7 +175,7 @@ namespace IntelOrca.Biohazard
             if (config.RandomBgm)
             {
                 using var logger = new RandoLogger(Path.Combine(modPath, $"log_bgm.txt"));
-                logger.WriteHeading("Resident Evil Randomizer");
+                logger.WriteHeading(Program.CurrentVersionInfo);
                 logger.WriteLine($"Seed: {config}");
 
                 var bgmDirectory = Path.Combine(modPath, BGMPath);
@@ -217,7 +216,7 @@ namespace IntelOrca.Biohazard
                 randomEnemies = new Rng(config.Seed + 3);
 
             using var logger = new RandoLogger(Path.Combine(modPath, $"log_pl{config.Player}.txt"));
-            logger.WriteHeading("Resident Evil Randomizer");
+            logger.WriteHeading(Program.CurrentVersionInfo);
             logger.WriteLine($"Seed: {config}");
             logger.WriteLine($"Player: {config.Player} {GetPlayerName(config.Player)}");
             logger.WriteLine($"Scenario: {GetScenarioName(config.Scenario)}");
