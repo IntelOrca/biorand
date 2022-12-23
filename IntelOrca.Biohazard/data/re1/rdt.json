@@ -1356,7 +1356,7 @@
         {
           "target": "40C",
           "requires": [ 62 ],
-          "randomize": false
+          "doorRando": false
         }
       ],
       "items": [
@@ -1376,8 +1376,7 @@
     "40C": {
       "doorRando": [
         {
-          "category": "exclude",
-          "player": 0
+          "category": "exclude"
         }
       ],
       "doors": [
