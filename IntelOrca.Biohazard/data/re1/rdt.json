@@ -783,6 +783,12 @@
           "target": "20E"
         }
       ],
+      "items": [
+        {
+          "id": 2,
+          "priority": "low"
+        }
+      ],
       "npcs": [
         {
           "includeOffsets": [ 168024, 168170, 168194 ],
