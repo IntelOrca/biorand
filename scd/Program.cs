@@ -10,7 +10,8 @@ namespace IntelOrca.Scd
     {
         public static int Main(string[] args)
         {
-            var rdtPath = args.FirstOrDefault(x => !x.StartsWith("-"));
+            var paths = args.Where(x => !x.StartsWith("-")).ToArray();
+            var rdtPath = paths.FirstOrDefault();
             if (rdtPath == null)
             {
                 return PrintUsage();
@@ -52,8 +53,16 @@ namespace IntelOrca.Scd
                     var result = scdAssembler.Assemble(rdtPath, s);
                     if (result == 0)
                     {
-                        var scdPath = Path.ChangeExtension(rdtPath, ".scd");
-                        File.WriteAllBytes(scdPath, scdAssembler.Output);
+                        if (scdAssembler.OutputInit != null)
+                        {
+                            var scdPath = Path.ChangeExtension(rdtPath, "init.scd");
+                            File.WriteAllBytes(scdPath, scdAssembler.OutputInit);
+                        }
+                        if (scdAssembler.OutputMain != null)
+                        {
+                            var scdPath = Path.ChangeExtension(rdtPath, "main.scd");
+                            File.WriteAllBytes(scdPath, scdAssembler.OutputMain);
+                        }
                     }
                     else
                     {
@@ -65,22 +74,65 @@ namespace IntelOrca.Scd
                 }
                 else
                 {
-                    var initScdPath = GetOption(args, "--init");
-                    var mainScdPath = GetOption(args, "--main");
-
                     var rdtFile = new RdtFile(rdtPath, BioVersion.Biohazard1);
-                    if (initScdPath != null)
+                    if (paths.Length >= 2)
                     {
-                        var data = File.ReadAllBytes(initScdPath);
-                        rdtFile.SetScd(BioScriptKind.Init, data);
+                        var inPath = paths[1];
+                        if (inPath.EndsWith(".scd", StringComparison.OrdinalIgnoreCase))
+                        {
+
+                        }
+                        else if (inPath.EndsWith(".s", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var s = File.ReadAllText(inPath);
+                            var scdAssembler = new ScdAssembler();
+                            var result = scdAssembler.Assemble(rdtPath, s);
+                            if (result == 0)
+                            {
+                                if (scdAssembler.OutputInit != null)
+                                {
+                                    rdtFile.SetScd(BioScriptKind.Init, scdAssembler.OutputInit);
+                                }
+                                if (scdAssembler.OutputMain != null)
+                                {
+                                    rdtFile.SetScd(BioScriptKind.Main, scdAssembler.OutputMain);
+                                }
+                            }
+                            else
+                            {
+                                foreach (var error in scdAssembler.Errors.Errors)
+                                {
+                                    Console.WriteLine($"{error.Path}({error.Line + 1},{error.Column + 1}): error {error.ErrorCodeString}: {error.Message}");
+                                }
+                            }
+                        }
                     }
-                    if (mainScdPath != null)
+                    else
                     {
-                        var data = File.ReadAllBytes(mainScdPath);
-                        rdtFile.SetScd(BioScriptKind.Main, data);
+
+                        var initScdPath = GetOption(args, "--init");
+                        var mainScdPath = GetOption(args, "--main");
+                        if (initScdPath != null)
+                        {
+                            var data = File.ReadAllBytes(initScdPath);
+                            rdtFile.SetScd(BioScriptKind.Init, data);
+                        }
+                        if (mainScdPath != null)
+                        {
+                            var data = File.ReadAllBytes(mainScdPath);
+                            rdtFile.SetScd(BioScriptKind.Main, data);
+                        }
                     }
 
-                    rdtFile.Save(rdtPath + ".patched");
+                    var outPath = GetOption(args, "-o");
+                    if (outPath != null)
+                    {
+                        rdtFile.Save(outPath);
+                    }
+                    else
+                    {
+                        rdtFile.Save(rdtPath + ".patched");
+                    }
                 }
                 return 0;
             }
@@ -110,8 +162,8 @@ namespace IntelOrca.Scd
         {
             Console.WriteLine("Resident Evil SCD assembler / diassembler");
             Console.WriteLine("usage: scd -x <rdt>");
-            Console.WriteLine("usage: scd -d <rdt | scd>");
-            Console.WriteLine("usage: scd <rdt> [--init <scd | s>] [--main <scd | s>]");
+            Console.WriteLine("       scd -d <rdt | scd>");
+            Console.WriteLine("       scd [-o <rdt>] <rdt> [s] | [--init <.scd | .s>] [--main <scd | s>]");
             return 1;
         }
     }

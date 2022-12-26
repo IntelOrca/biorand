@@ -3,8 +3,10 @@
     "scd": {
       "commandName": "Project",
       // "commandLineArgs": "ROOM1000.RDT --init init.scd",
-      "commandLineArgs": "101.s",
+      // "commandLineArgs": "101.s",
       // "commandLineArgs": "-d init.scd",
+      // "commandLineArgs": "F:\\games\\re1\\JPN\\STAGE1\\ROOM1010.RDT 101.s -o F:\\games\\re1\\mod_test\\STAGE1\\ROOM1010.RDT",
+      "commandLineArgs": "F:\\games\\re1\\JPN\\STAGE1\\ROOM1010.RDT 101.s -o F:\\games\\re1\\mod_test\\STAGE1\\ROOM1010.RDT.bad",
       "workingDirectory": "M:\\temp\\scd"
     }
   }

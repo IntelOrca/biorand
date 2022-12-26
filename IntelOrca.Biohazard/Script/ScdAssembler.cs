@@ -1,33 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace IntelOrca.Biohazard.Script
 {
     public class ScdAssembler
     {
         private IConstantTable _constantTable = new Bio1ConstantTable();
+
         private ParserState _state;
         private ParserState _restoreState;
         private List<string> _procNames = new List<string>();
-        private List<int> _labelOffsets = new List<int>();
-        private List<string> _labelNames = new List<string>();
+        private List<(string, int)> _labels = new List<(string, int)>();
         private List<(int, Token)> _labelReferences = new List<(int, Token)>();
         private List<byte> _procData = new List<byte>();
         private byte _currentOpcode;
         private string _currentOpcodeSignature = "";
         private int _signatureIndex;
         private BioVersion? _version;
+        private BioScriptKind? _currScriptKind;
+        private BioScriptKind? _lastScriptKind;
 
         public ErrorList Errors { get; } = new ErrorList();
-        public byte[] Output { get; private set; } = new byte[0];
+        public byte[] OutputInit { get; private set; } = new byte[0];
+        public byte[] OutputMain { get; private set; } = new byte[0];
 
         public int Assemble(string path, string script)
         {
-            _procData.Clear();
-            _procData.Add(0);
-            _procData.Add(0);
-
             var lexer = new Lexer(Errors);
             var tokens = lexer.ParseAllTokens(path, script);
             if (Errors.Count != 0)
@@ -50,28 +50,13 @@ namespace IntelOrca.Biohazard.Script
                 }
                 ProcessToken(in token);
             }
-
-            FixLabelReferences();
+            EndScript();
 
             if (Errors.Count == 0 && _version == null)
             {
                 Errors.AddError(path, 0, 0, ErrorCodes.ExpectedScdVersionNumber, ErrorCodes.GetMessage(ErrorCodes.ExpectedScdVersionNumber));
             }
-
-            if (Errors.Count != 0)
-            {
-                return 1;
-            }
-
-            var procLength = _procData.Count - 2;
-            _procData[0] = (byte)(procLength & 0xFF);
-            _procData[1] = (byte)(procLength >> 8);
-            while ((_procData.Count & 3) != 0)
-            {
-                _procData.Add(0);
-            }
-            Output = _procData.ToArray();
-            return 0;
+            return Errors.Count == 0 ? 0 : 1;
         }
 
         private void ProcessToken(in Token token)
@@ -84,40 +69,7 @@ namespace IntelOrca.Biohazard.Script
                 case ParserState.Default:
                     if (token.Kind == TokenKind.Directive)
                     {
-                        if (token.Text == ".proc")
-                        {
-                            if (_version == null)
-                            {
-                                EmitError(in token, ErrorCodes.ScdVersionNotSpecified);
-                                _state = ParserState.Terminate;
-                            }
-                            else if (_version == BioVersion.Biohazard1)
-                            {
-                                EmitError(in token, ErrorCodes.ProcedureNotValid);
-                                _state = ParserState.SkipToNextLine;
-                                _restoreState = ParserState.Default;
-                            }
-                            else
-                            {
-                                _state = ParserState.ExpectProcName;
-                            }
-                        }
-                        else if (token.Text == ".version")
-                        {
-                            if (_version != null)
-                            {
-                                EmitError(in token, ErrorCodes.ScdVersionAlreadySpecified);
-                                _state = ParserState.SkipToNextLine;
-                                _restoreState = ParserState.Default;
-                            }
-                            _state = ParserState.ExpectVersion;
-                        }
-                    }
-                    else if (token.Kind == TokenKind.Opcode)
-                    {
-                        EmitError(in token, ErrorCodes.OpcodeNotInProcedure);
-                        _state = ParserState.SkipToNextLine;
-                        _restoreState = ParserState.Default;
+                        ProcessDirective(in token);
                     }
                     break;
                 case ParserState.ExpectVersion:
@@ -158,19 +110,7 @@ namespace IntelOrca.Biohazard.Script
                 case ParserState.ExpectOpcode:
                     if (token.Kind == TokenKind.Directive)
                     {
-                        if (token.Text == ".proc")
-                        {
-                            if (_version == BioVersion.Biohazard1)
-                            {
-                                EmitError(in token, ErrorCodes.ProcedureNotValid);
-                                _state = ParserState.SkipToNextLine;
-                                _restoreState = ParserState.ExpectOpcode;
-                            }
-                            else
-                            {
-                                _state = ParserState.ExpectProcName;
-                            }
-                        }
+                        ProcessDirective(in token);
                     }
                     else if (token.Kind == TokenKind.Label)
                     {
@@ -237,13 +177,119 @@ namespace IntelOrca.Biohazard.Script
             }
         }
 
+        private void ProcessDirective(in Token token)
+        {
+            switch (token.Text)
+            {
+                case ".version":
+                    if (_version != null)
+                    {
+                        EmitError(in token, ErrorCodes.ScdVersionAlreadySpecified);
+                        _state = ParserState.SkipToNextLine;
+                        _restoreState = ParserState.Default;
+                    }
+                    _state = ParserState.ExpectVersion;
+                    break;
+                case ".init":
+                    if (_currScriptKind == BioScriptKind.Init ||
+                        _lastScriptKind == BioScriptKind.Init)
+                    {
+                        EmitError(in token, ErrorCodes.ScdTypeAlreadySpecified);
+                    }
+                    else
+                    {
+                        ChangeScriptKind(BioScriptKind.Init);
+                    }
+                    break;
+                case ".main":
+                    if (_currScriptKind == BioScriptKind.Main ||
+                        _lastScriptKind == BioScriptKind.Main)
+                    {
+                        EmitError(in token, ErrorCodes.ScdTypeAlreadySpecified);
+                    }
+                    else
+                    {
+                        ChangeScriptKind(BioScriptKind.Main);
+                    }
+                    break;
+                case ".proc":
+                    if (_version == null)
+                    {
+                        EmitError(in token, ErrorCodes.ScdVersionNotSpecified);
+                        _state = ParserState.Terminate;
+                    }
+                    else if (_version == BioVersion.Biohazard1)
+                    {
+                        EmitError(in token, ErrorCodes.ProcedureNotValid);
+                        _state = ParserState.SkipToNextLine;
+                        _restoreState = ParserState.Default;
+                    }
+                    else
+                    {
+                        _state = ParserState.ExpectProcName;
+                    }
+                    break;
+                default:
+                    EmitError(in token, ErrorCodes.UnknownDirective);
+                    _restoreState = _state;
+                    _state = ParserState.SkipToNextLine;
+                    break;
+            }
+        }
+
+        private void BeginScript()
+        {
+            _procNames.Clear();
+            _labels.Clear();
+            _labelReferences.Clear();
+            _procData.Clear();
+            _procData.Add(0);
+            _procData.Add(0);
+        }
+
+        private void EndScript()
+        {
+            if (_currScriptKind == null)
+                return;
+
+            FixLabelReferences();
+            if (Errors.Count == 0)
+            {
+                var procLength = _procData.Count;
+                if (procLength <= 2)
+                {
+                    // Empty script
+                    procLength = 0;
+                }
+
+                _procData[0] = (byte)(procLength & 0xFF);
+                _procData[1] = (byte)(procLength >> 8);
+                while ((_procData.Count & 3) != 0)
+                {
+                    _procData.Add(0);
+                }
+                var output = _procData.ToArray();
+                if (_currScriptKind == BioScriptKind.Main)
+                    OutputMain = output;
+                else
+                    OutputInit = output;
+            }
+        }
+
+        private void ChangeScriptKind(BioScriptKind kind)
+        {
+            EndScript();
+            _lastScriptKind = _currScriptKind;
+            _currScriptKind = kind;
+            BeginScript();
+        }
+
         private bool AddLabel(string name)
         {
-            if (_labelNames.Contains(name))
+            if (_labels.Any(x => x.Item1 == name))
                 return false;
 
-            _labelNames.Add(name);
-            _labelOffsets.Add(_procData.Count);
+            _labels.Add((name, _procData.Count));
             return true;
         }
 
@@ -254,6 +300,9 @@ namespace IntelOrca.Biohazard.Script
 
         private bool BeginOpcode(string name)
         {
+            if (_currScriptKind == null)
+                _currScriptKind = BioScriptKind.Init;
+
             var opcode = _constantTable.FindOpcode(name);
             if (opcode == null)
             {
@@ -355,14 +404,14 @@ namespace IntelOrca.Biohazard.Script
         {
             foreach (var (offset, t) in _labelReferences)
             {
-                var labelIndex = _labelNames.IndexOf(t.Text);
+                var labelIndex = _labels.FindIndex(x => x.Item1 == t.Text);
                 if (labelIndex == -1)
                 {
                     EmitError(in t, ErrorCodes.UnknownLabel, t.Text);
                 }
                 else
                 {
-                    var labelAddress = _labelOffsets[labelIndex];
+                    var labelAddress = _labels[labelIndex].Item2;
                     // TODO Check range
                     _procData[offset] = (byte)(labelAddress - offset + 1);
                 }
@@ -371,7 +420,7 @@ namespace IntelOrca.Biohazard.Script
 
         private static bool TokenIsEndOfLine(in Token token)
         {
-            return token.Kind == TokenKind.EOF || token.Kind == TokenKind.Comma || token.Kind == TokenKind.NewLine;
+            return token.Kind == TokenKind.EOF || token.Kind == TokenKind.Comment || token.Kind == TokenKind.NewLine;
         }
 
         private void EmitError(in Token token, int code, params object[] args)
@@ -764,6 +813,8 @@ namespace IntelOrca.Biohazard.Script
             public const int InvalidScdVersionNumber = 14;
             public const int ScdVersionAlreadySpecified = 15;
             public const int ProcedureNotValid = 16;
+            public const int ScdTypeAlreadySpecified = 17;
+            public const int UnknownDirective = 18;
 
             public static string GetMessage(int code) => _messages[code];
 
@@ -785,7 +836,9 @@ namespace IntelOrca.Biohazard.Script
                 "Expected SCD version number.",
                 "Invalid SCD version number. Only version 1 and 2 are supported.",
                 "SCD version already specified.",
-                "Procedures are not valid in SCD version 1."
+                "Procedures are not valid in SCD version 1.",
+                "SCD type already specified.",
+                "'{0}' is not a valid directive.",
             };
         }
     }

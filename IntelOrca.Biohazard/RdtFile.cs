@@ -54,25 +54,54 @@ namespace IntelOrca.Biohazard
             }
             else
             {
-                _offsets[index] = Data.Length;
+                var start = _offsets[index];
+                var length = _lengths[index];
+                var end = _offsets[index] + length;
+                var lengthDelta = data.Length - length;
+                var sliceA = Data.Take(start).ToArray();
+                var sliceB = Data.Skip(end).ToArray();
+                for (int i = 0; i < _offsets.Length; i++)
+                {
+                    if (_offsets[i] > start)
+                        _offsets[i] += lengthDelta;
+                }
                 _lengths[index] = data.Length;
-                Data = Data.Concat(data).ToArray();
-                WriteOffsets();
+                Data = sliceA.Concat(data).Concat(sliceB).ToArray();
 
-                // var start = _offsets[index];
-                // var length = _lengths[index];
-                // var end = _offsets[index] + length;
-                // var sliceA = Data.Take(start).ToArray();
-                // var sliceB = Data.Skip(end).ToArray();
-                // for (int i = 0; i < _offsets.Length; i++)
-                // {
-                //     if (_offsets[i] > start)
-                //         _offsets[i] -= length;
-                // }
-                // _offsets[index] = Data.Length;
-                // _lengths[index] = data.Length;
-                // Data = sliceA.Concat(sliceB).Concat(data).ToArray();
-                // WriteOffsets();
+                // Re-write ESP offsets
+                var ms = new MemoryStream(Data);
+                var br = new BinaryReader(ms);
+                var bw = new BinaryWriter(ms);
+                ms.Position = _offsets[14];
+                for (int i = 0; i < 8; i++)
+                {
+                    var x = br.ReadInt32();
+                    bw.BaseStream.Position -= 4;
+                    if (x != -1)
+                    {
+                        var y = x + lengthDelta;
+                        bw.Write(y);
+                        bw.BaseStream.Position -= 4;
+                    }
+                    bw.BaseStream.Position -= 4;
+                }
+
+                // Re-write ESP offsets
+                ms.Position = Data.Length - 4;
+                for (int i = 0; i < 8; i++)
+                {
+                    var x = br.ReadInt32();
+                    bw.BaseStream.Position -= 4;
+                    if (x != -1)
+                    {
+                        var y = x + lengthDelta;
+                        bw.Write(y);
+                        bw.BaseStream.Position -= 4;
+                    }
+                    bw.BaseStream.Position -= 4;
+                }
+
+                WriteOffsets();
             }
         }
 
