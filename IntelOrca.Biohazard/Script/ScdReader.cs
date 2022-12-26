@@ -8,9 +8,9 @@ namespace IntelOrca.Biohazard.Script
     {
         public int BaseOffset { get; set; }
 
-        public string Diassemble(ReadOnlyMemory<byte> data, BioVersion version)
+        public string Diassemble(ReadOnlyMemory<byte> data, BioVersion version, bool listing = false)
         {
-            var decompiler = new ScriptDecompiler(true, false);
+            var decompiler = new ScriptDecompiler(true, listing);
             ReadScript(data, version, BioScriptKind.Init, decompiler);
             return decompiler.GetScript();
         }

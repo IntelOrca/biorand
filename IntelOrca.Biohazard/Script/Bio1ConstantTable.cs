@@ -1,4 +1,6 @@
-﻿namespace IntelOrca.Biohazard.Script
+﻿using System.Globalization;
+
+namespace IntelOrca.Biohazard.Script
 {
     internal class Bio1ConstantTable : IConstantTable
     {
@@ -48,6 +50,48 @@
                         return "UNLOCKED";
                     else
                         return GetItemName((byte)value);
+            }
+            return null;
+        }
+
+        public int? GetConstantValue(string symbol)
+        {
+            switch (symbol)
+            {
+                case "LOCKED":
+                    return 255;
+                case "UNLOCK":
+                    return 254;
+                case "UNLOCKED":
+                    return 0;
+            }
+            if (symbol.StartsWith("ENEMY_"))
+            {
+                for (int i = 0; i < 255; i++)
+                {
+                    if (symbol == GetEnemyName((byte)i))
+                    {
+                        return i;
+                    }
+                }
+            }
+            else if (symbol.StartsWith("ITEM_"))
+            {
+                for (int i = 0; i < 255; i++)
+                {
+                    if (symbol == GetItemName((byte)i))
+                    {
+                        return i;
+                    }
+                }
+            }
+            else if (symbol.StartsWith("RDT_"))
+            {
+                var number = symbol.Substring(4);
+                if (int.TryParse(number, NumberStyles.HexNumber, null, out var rdt))
+                {
+                    return rdt;
+                }
             }
             return null;
         }

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Text;
 using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.Script
@@ -16,7 +13,7 @@ namespace IntelOrca.Biohazard.Script
         private bool _endDoWhile;
         private bool _constructingBinaryExpression;
         private int _expressionCount;
-        private IConstantTable _constantTable = new Bio2ConstantTable();
+        private IConstantTable _constantTable = new Bio1ConstantTable();
 
         private static readonly string[] g_sceNames = new string[] {
             "SCE_AUTO",

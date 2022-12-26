@@ -12,6 +12,11 @@
             throw new System.NotImplementedException();
         }
 
+        public int? GetConstantValue(string symbol)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public string GetEnemyName(byte kind)
         {
             return $"ENEMY_{((EnemyType)kind).ToString().ToUpperInvariant()}";

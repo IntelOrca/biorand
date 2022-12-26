@@ -12,6 +12,7 @@ namespace IntelOrca.Biohazard.Script
         private List<string> _procNames = new List<string>();
         private List<int> _labelOffsets = new List<int>();
         private List<string> _labelNames = new List<string>();
+        private List<(int, Token)> _labelReferences = new List<(int, Token)>();
         private List<byte> _procData = new List<byte>();
         private byte _currentOpcode;
         private string _currentOpcodeSignature = "";
@@ -43,6 +44,8 @@ namespace IntelOrca.Biohazard.Script
                 }
                 ProcessToken(in token);
             }
+
+            FixLabelReferences();
 
             if (Errors.Count != 0)
             {
@@ -87,7 +90,7 @@ namespace IntelOrca.Biohazard.Script
                     }
                     else if (token.Kind == TokenKind.Label)
                     {
-                        if (!AddLabel(token.Text))
+                        if (!AddLabel(token.Text.Substring(0, token.Text.Length - 1)))
                         {
                             EmitError(in token, 7, $"'{token.Text}' has already been defined.");
                         }
@@ -169,6 +172,11 @@ namespace IntelOrca.Biohazard.Script
             return true;
         }
 
+        private void RecordLabelReference(in Token token)
+        {
+            _labelReferences.Add((_procData.Count, token));
+        }
+
         private bool BeginOpcode(string name)
         {
             var opcode = _constantTable.FindOpcode(name);
@@ -201,16 +209,19 @@ namespace IntelOrca.Biohazard.Script
 
         private void AddOperandNumber(in Token token, int num)
         {
-            if (_signatureIndex > _currentOpcodeSignature.Length)
-            {
-                EmitError(in token, 12, "Too many operands for this opcode.");
+            if (!CheckOperandLength(in token))
                 return;
-            }
 
             var arg = _currentOpcodeSignature[_signatureIndex];
             if (arg == 'I')
             {
                 WriteInt16((short)num);
+            }
+            else if (arg == 'r')
+            {
+                var room = num & 0xFF;
+                var stage = num >> 8;
+                WriteUInt8((byte)((stage << 5) | (room & 0b11111)));
             }
             else
             {
@@ -221,7 +232,38 @@ namespace IntelOrca.Biohazard.Script
 
         private void AddOperandSymbol(in Token token)
         {
-            AddOperandNumber(in token, 0);
+            if (!CheckOperandLength(in token))
+                return;
+
+            var arg = _currentOpcodeSignature[_signatureIndex];
+            if (arg == 'l')
+            {
+                RecordLabelReference(in token);
+                AddOperandNumber(in token, 0);
+            }
+            else
+            {
+                var value = _constantTable.GetConstantValue(token.Text);
+                if (value == null)
+                {
+                    EmitError(in token, 15, $"Unknown symbol or constant '{token.Text}'.");
+                    AddOperandNumber(in token, 0);
+                }
+                else
+                {
+                    AddOperandNumber(in token, value.Value);
+                }
+            }
+        }
+
+        private bool CheckOperandLength(in Token token)
+        {
+            if (_signatureIndex > _currentOpcodeSignature.Length)
+            {
+                EmitError(in token, 12, "Too many operands for this opcode.");
+                return false;
+            }
+            return true;
         }
 
         private bool EndCurrentOpcode(in Token token)
@@ -232,6 +274,24 @@ namespace IntelOrca.Biohazard.Script
                 return false;
             }
             return true;
+        }
+
+        private void FixLabelReferences()
+        {
+            foreach (var (offset, t) in _labelReferences)
+            {
+                var labelIndex = _labelNames.IndexOf(t.Text);
+                if (labelIndex == -1)
+                {
+                    EmitError(in t, 17, $"Unknown label '{t.Text}'");
+                }
+                else
+                {
+                    var labelAddress = _labelOffsets[labelIndex];
+                    // TODO Check range
+                    _procData[offset] = (byte)(labelAddress - offset + 1);
+                }
+            }
         }
 
         private static bool TokenIsEndOfLine(in Token token)

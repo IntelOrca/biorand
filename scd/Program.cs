@@ -37,6 +37,9 @@ namespace IntelOrca.Scd
                     var s = Diassemble(scd);
                     var sPath = Path.ChangeExtension(rdtPath, ".s");
                     File.WriteAllText(sPath, s);
+                    var lst = Diassemble(scd, listing: true);
+                    var lstPath = Path.ChangeExtension(rdtPath, ".lst");
+                    File.WriteAllText(lstPath, lst);
                 }
                 return 0;
             }
@@ -83,10 +86,10 @@ namespace IntelOrca.Scd
             }
         }
 
-        private static string Diassemble(byte[] scd)
+        private static string Diassemble(byte[] scd, bool listing = false)
         {
             var scdReader = new ScdReader();
-            return scdReader.Diassemble(scd, BioVersion.Biohazard1);
+            return scdReader.Diassemble(scd, BioVersion.Biohazard1, listing);
         }
 
         private static string GetOption(string[] args, string name)
