@@ -73,7 +73,7 @@ namespace IntelOrca.Biohazard.Script
                 case BioScriptKind.Init:
                     if (AssemblyFormat)
                     {
-                        _sb.WriteLine("init:");
+                        // _sb.WriteLine("init:");
                     }
                     else
                     {
@@ -85,7 +85,7 @@ namespace IntelOrca.Biohazard.Script
                     _sb.WriteLine();
                     if (AssemblyFormat)
                     {
-                        _sb.WriteLine("main:");
+                        // _sb.WriteLine("main:");
                     }
                     else
                     {
@@ -113,7 +113,8 @@ namespace IntelOrca.Biohazard.Script
             }
             if (AssemblyFormat)
             {
-                _sb.WriteLine($"sub_{index:X2}:");
+                if (Version != BioVersion.Biohazard1)
+                    _sb.WriteLine($"sub_{index:X2}:");
             }
             else
             {
@@ -1265,7 +1266,8 @@ namespace IntelOrca.Biohazard.Script
                                 var temp = br.ReadByte();
                                 var bitArray = temp >> 5;
                                 var number = temp & 0b11111;
-                                parameters.Add($"{bitArray << 5} | {number}");
+                                // parameters.Add($"{bitArray << 5} | {number}");
+                                parameters.Add(temp);
                                 break;
                             }
                         case 'u':
@@ -1279,10 +1281,7 @@ namespace IntelOrca.Biohazard.Script
                                 var target = br.ReadByte();
                                 var stage = (byte)(target >> 5);
                                 var room = (byte)(target & 0b11111);
-                                if (stage == 0)
-                                    parameters.Add($"RDT_?{room:X2}");
-                                else
-                                    parameters.Add($"RDT_{stage:X}{room:X2}");
+                                parameters.Add($"RDT_{stage:X}{room:X2}");
                                 break;
                             }
                         default:

@@ -50,6 +50,17 @@ namespace IntelOrca.Biohazard.Script
                         return "UNLOCKED";
                     else
                         return GetItemName((byte)value);
+                case 'v':
+                    switch (value)
+                    {
+                        case 0x02:
+                            return "NITEM_MESSAGE";
+                        case 0x08:
+                            return "NITEM_BOX";
+                        case 0x10:
+                            return "NITEM_TYPEWRITER";
+                    }
+                    break;
             }
             return null;
         }
@@ -80,6 +91,16 @@ namespace IntelOrca.Biohazard.Script
                 for (int i = 0; i < 255; i++)
                 {
                     if (symbol == GetItemName((byte)i))
+                    {
+                        return i;
+                    }
+                }
+            }
+            else if (symbol.StartsWith("NITEM_"))
+            {
+                for (int i = 0; i < 255; i++)
+                {
+                    if (symbol == GetConstant('v', (byte)i))
                     {
                         return i;
                     }
@@ -262,14 +283,14 @@ namespace IntelOrca.Biohazard.Script
             "endif:u",
             "ck:uau",
             "set:uau",
-            "cmp.8:uuu",
-            "cmp.16:uuuI",
-            "set.8:uuu",
+            "cmpb:uuu",
+            "cmpw:uuuI",
+            "setb:uuu",
             "",
             "",
             "",
             "door:uIIIIuuuuurIIIITu",
-            "nitem:uIIIItuuuuuuu",
+            "nitem:uIIIIvuuuuuuu",
             "nop:u",
             "",
             "",
@@ -284,6 +305,10 @@ namespace IntelOrca.Biohazard.Script
             "",
             "",
             "enemy:euuuuuuIuuIIIuuuu",
+            "",
+            "",
+            "",
+            "obj:uuuIIIIuuuuuuuuuuuuuuuu",
         };
 
         private static int[] _instructionSizes1 = new int[]

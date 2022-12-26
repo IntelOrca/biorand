@@ -29,8 +29,11 @@ namespace IntelOrca.Scd
                 if (rdtPath.EndsWith(".rdt", StringComparison.OrdinalIgnoreCase))
                 {
                     var rdtFile = new RdtFile(rdtPath, BioVersion.Biohazard1);
-                    File.WriteAllBytes("init.s", rdtFile.GetScd(BioScriptKind.Init));
-                    File.WriteAllBytes("main.s", rdtFile.GetScd(BioScriptKind.Main));
+
+                    var initS = Diassemble(rdtFile.GetScd(BioScriptKind.Init));
+                    var mainS = Diassemble(rdtFile.GetScd(BioScriptKind.Main));
+                    var s = ".version 1\n.init\n" + initS + "\n\n.main\n" + mainS;
+                    File.WriteAllText(Path.ChangeExtension(Path.GetFileName(rdtPath), ".s"), s);
                 }
                 else if (rdtPath.EndsWith(".scd", StringComparison.OrdinalIgnoreCase))
                 {

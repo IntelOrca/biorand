@@ -7,6 +7,8 @@ namespace IntelOrca.Biohazard.Script
 {
     public class ScdAssembler
     {
+        private const byte UnkOpcode = 255;
+
         private IConstantTable _constantTable = new Bio1ConstantTable();
 
         private ParserState _state;
@@ -264,6 +266,7 @@ namespace IntelOrca.Biohazard.Script
 
                 _procData[0] = (byte)(procLength & 0xFF);
                 _procData[1] = (byte)(procLength >> 8);
+                _procData.Add(0);
                 while ((_procData.Count & 3) != 0)
                 {
                     _procData.Add(0);
@@ -303,6 +306,12 @@ namespace IntelOrca.Biohazard.Script
             if (_currScriptKind == null)
                 _currScriptKind = BioScriptKind.Init;
 
+            if (name == "unk")
+            {
+                _currentOpcode = UnkOpcode;
+                return true;
+            }
+
             var opcode = _constantTable.FindOpcode(name);
             if (opcode == null)
             {
@@ -336,22 +345,29 @@ namespace IntelOrca.Biohazard.Script
             if (!CheckOperandLength(in token))
                 return;
 
-            var arg = _currentOpcodeSignature[_signatureIndex];
-            if (arg == 'I')
-            {
-                WriteInt16((short)num);
-            }
-            else if (arg == 'r')
-            {
-                var room = num & 0xFF;
-                var stage = num >> 8;
-                WriteUInt8((byte)((stage << 5) | (room & 0b11111)));
-            }
-            else
+            if (_currentOpcode == UnkOpcode)
             {
                 WriteUInt8((byte)num);
             }
-            _signatureIndex++;
+            else
+            {
+                var arg = _currentOpcodeSignature[_signatureIndex];
+                if (arg == 'I')
+                {
+                    WriteInt16((short)num);
+                }
+                else if (arg == 'r')
+                {
+                    var room = num & 0xFF;
+                    var stage = num >> 8;
+                    WriteUInt8((byte)((stage << 5) | (room & 0b11111)));
+                }
+                else
+                {
+                    WriteUInt8((byte)num);
+                }
+                _signatureIndex++;
+            }
         }
 
         private void AddOperandSymbol(in Token token)
@@ -382,7 +398,7 @@ namespace IntelOrca.Biohazard.Script
 
         private bool CheckOperandLength(in Token token)
         {
-            if (_signatureIndex > _currentOpcodeSignature.Length)
+            if (_currentOpcode != UnkOpcode && _signatureIndex > _currentOpcodeSignature.Length)
             {
                 EmitError(in token, ErrorCodes.TooManyOperands);
                 return false;
@@ -392,7 +408,7 @@ namespace IntelOrca.Biohazard.Script
 
         private bool EndCurrentOpcode(in Token token)
         {
-            if (_signatureIndex != _currentOpcodeSignature.Length)
+            if (_currentOpcode != UnkOpcode && _signatureIndex != _currentOpcodeSignature.Length)
             {
                 EmitError(in token, ErrorCodes.IncorrectNumberOfOperands);
                 return false;
@@ -506,7 +522,7 @@ namespace IntelOrca.Biohazard.Script
                 {
                     if (token.Text != ",")
                     {
-                        EmitError(in token, 0, ErrorCodes.InvalidOperator, token.Text);
+                        EmitError(in token, ErrorCodes.InvalidOperator, token.Text);
                         return false;
                     }
                 }
@@ -577,7 +593,7 @@ namespace IntelOrca.Biohazard.Script
             private bool ParseNewLine()
             {
                 var c = PeekChar();
-                if (c != '\r')
+                if (c != '\n' && c != '\r')
                     return false;
 
                 ReadChar();
