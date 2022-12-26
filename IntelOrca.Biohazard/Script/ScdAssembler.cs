@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 
 namespace IntelOrca.Biohazard.Script
 {
@@ -9,6 +8,7 @@ namespace IntelOrca.Biohazard.Script
     {
         private IConstantTable _constantTable = new Bio1ConstantTable();
         private ParserState _state;
+        private ParserState _restoreState;
         private List<string> _procNames = new List<string>();
         private List<int> _labelOffsets = new List<int>();
         private List<string> _labelNames = new List<string>();
@@ -17,6 +17,7 @@ namespace IntelOrca.Biohazard.Script
         private byte _currentOpcode;
         private string _currentOpcodeSignature = "";
         private int _signatureIndex;
+        private BioVersion? _version;
 
         public ErrorList Errors { get; } = new ErrorList();
         public byte[] Output { get; private set; } = new byte[0];
@@ -32,20 +33,30 @@ namespace IntelOrca.Biohazard.Script
             if (Errors.Count != 0)
                 return 1;
 
+            _state = ParserState.Default;
             foreach (var token in tokens)
             {
-                if (_state == ParserState.SkipToNextLine)
+                if (_state == ParserState.Terminate)
+                {
+                    break;
+                }
+                else if (_state == ParserState.SkipToNextLine)
                 {
                     if (token.Kind != TokenKind.NewLine)
                     {
                         continue;
                     }
-                    _state = ParserState.None;
+                    _state = _restoreState;
                 }
                 ProcessToken(in token);
             }
 
             FixLabelReferences();
+
+            if (Errors.Count == 0 && _version == null)
+            {
+                Errors.AddError(path, 0, 0, ErrorCodes.ExpectedScdVersionNumber, ErrorCodes.GetMessage(ErrorCodes.ExpectedScdVersionNumber));
+            }
 
             if (Errors.Count != 0)
             {
@@ -55,6 +66,10 @@ namespace IntelOrca.Biohazard.Script
             var procLength = _procData.Count - 2;
             _procData[0] = (byte)(procLength & 0xFF);
             _procData[1] = (byte)(procLength >> 8);
+            while ((_procData.Count & 3) != 0)
+            {
+                _procData.Add(0);
+            }
             Output = _procData.ToArray();
             return 0;
         }
@@ -66,18 +81,78 @@ namespace IntelOrca.Biohazard.Script
 
             switch (_state)
             {
-                case ParserState.None:
+                case ParserState.Default:
                     if (token.Kind == TokenKind.Directive)
                     {
                         if (token.Text == ".proc")
                         {
-                            _state = ParserState.ExpectProcName;
+                            if (_version == null)
+                            {
+                                EmitError(in token, ErrorCodes.ScdVersionNotSpecified);
+                                _state = ParserState.Terminate;
+                            }
+                            else if (_version == BioVersion.Biohazard1)
+                            {
+                                EmitError(in token, ErrorCodes.ProcedureNotValid);
+                                _state = ParserState.SkipToNextLine;
+                                _restoreState = ParserState.Default;
+                            }
+                            else
+                            {
+                                _state = ParserState.ExpectProcName;
+                            }
+                        }
+                        else if (token.Text == ".version")
+                        {
+                            if (_version != null)
+                            {
+                                EmitError(in token, ErrorCodes.ScdVersionAlreadySpecified);
+                                _state = ParserState.SkipToNextLine;
+                                _restoreState = ParserState.Default;
+                            }
+                            _state = ParserState.ExpectVersion;
                         }
                     }
                     else if (token.Kind == TokenKind.Opcode)
                     {
-                        EmitError(in token, 3, "Opcode can only appear within a procedure.");
+                        EmitError(in token, ErrorCodes.OpcodeNotInProcedure);
                         _state = ParserState.SkipToNextLine;
+                        _restoreState = ParserState.Default;
+                    }
+                    break;
+                case ParserState.ExpectVersion:
+                    if (token.Kind != TokenKind.Number)
+                    {
+                        EmitError(in token, ErrorCodes.ExpectedScdVersionNumber);
+                        _state = ParserState.SkipToNextLine;
+                        _restoreState = ParserState.Default;
+                    }
+                    else
+                    {
+                        if (!int.TryParse(token.Text, out var num) || (num != 1 && num != 2))
+                        {
+                            EmitError(in token, ErrorCodes.InvalidScdVersionNumber);
+                            _state = ParserState.SkipToNextLine;
+                            _restoreState = ParserState.Default;
+                        }
+                        else
+                        {
+                            _version = num == 1 ? BioVersion.Biohazard1 : BioVersion.Biohazard2;
+                            _state = num == 1 ? ParserState.ExpectOpcode : ParserState.Default;
+                        }
+                    }
+                    break;
+                case ParserState.ExpectProcName:
+                    if (token.Kind != TokenKind.Symbol)
+                    {
+                        EmitError(in token, ErrorCodes.ExpectedProcedureName);
+                        _state = ParserState.SkipToNextLine;
+                        _restoreState = ParserState.Default;
+                    }
+                    else
+                    {
+                        _procNames.Add(token.Text);
+                        _state = ParserState.ExpectOpcode;
                     }
                     break;
                 case ParserState.ExpectOpcode:
@@ -85,14 +160,23 @@ namespace IntelOrca.Biohazard.Script
                     {
                         if (token.Text == ".proc")
                         {
-                            _state = ParserState.ExpectProcName;
+                            if (_version == BioVersion.Biohazard1)
+                            {
+                                EmitError(in token, ErrorCodes.ProcedureNotValid);
+                                _state = ParserState.SkipToNextLine;
+                                _restoreState = ParserState.ExpectOpcode;
+                            }
+                            else
+                            {
+                                _state = ParserState.ExpectProcName;
+                            }
                         }
                     }
                     else if (token.Kind == TokenKind.Label)
                     {
                         if (!AddLabel(token.Text.Substring(0, token.Text.Length - 1)))
                         {
-                            EmitError(in token, 7, $"'{token.Text}' has already been defined.");
+                            EmitError(in token, ErrorCodes.LabelAlreadyDefined, token.Text);
                         }
                     }
                     else if (token.Kind == TokenKind.Opcode)
@@ -103,15 +187,17 @@ namespace IntelOrca.Biohazard.Script
                         }
                         else
                         {
-                            EmitError(in token, 1, "Unknown opcode");
+                            EmitError(in token, ErrorCodes.UnknownOpcode, token.Text);
                             _state = ParserState.SkipToNextLine;
+                            _restoreState = ParserState.ExpectOpcode;
                         }
                         break;
                     }
                     else if (!TokenIsEndOfLine(token))
                     {
-                        EmitError(in token, 4, "Expected opcode");
+                        EmitError(in token, ErrorCodes.ExpectedOpcode);
                         _state = ParserState.SkipToNextLine;
+                        _restoreState = ParserState.ExpectOpcode;
                     }
                     break;
                 case ParserState.ExpectOperand:
@@ -143,20 +229,9 @@ namespace IntelOrca.Biohazard.Script
                     }
                     else
                     {
-                        EmitError(in token, 5, "Expected comma after operand.");
+                        EmitError(in token, ErrorCodes.ExpectedComma);
                         _state = ParserState.SkipToNextLine;
-                    }
-                    break;
-                case ParserState.ExpectProcName:
-                    if (token.Kind != TokenKind.Symbol)
-                    {
-                        EmitError(in token, 2, "Expected procedure name.");
-                        _state = ParserState.SkipToNextLine;
-                    }
-                    else
-                    {
-                        _procNames.Add(token.Text);
-                        _state = ParserState.ExpectOpcode;
+                        _restoreState = ParserState.ExpectOpcode;
                     }
                     break;
             }
@@ -246,7 +321,7 @@ namespace IntelOrca.Biohazard.Script
                 var value = _constantTable.GetConstantValue(token.Text);
                 if (value == null)
                 {
-                    EmitError(in token, 15, $"Unknown symbol or constant '{token.Text}'.");
+                    EmitError(in token, ErrorCodes.UnknownSymbol, token.Text);
                     AddOperandNumber(in token, 0);
                 }
                 else
@@ -260,7 +335,7 @@ namespace IntelOrca.Biohazard.Script
         {
             if (_signatureIndex > _currentOpcodeSignature.Length)
             {
-                EmitError(in token, 12, "Too many operands for this opcode.");
+                EmitError(in token, ErrorCodes.TooManyOperands);
                 return false;
             }
             return true;
@@ -270,7 +345,7 @@ namespace IntelOrca.Biohazard.Script
         {
             if (_signatureIndex != _currentOpcodeSignature.Length)
             {
-                EmitError(in token, 10, "Incorrect number of operands for opcode.");
+                EmitError(in token, ErrorCodes.IncorrectNumberOfOperands);
                 return false;
             }
             return true;
@@ -283,7 +358,7 @@ namespace IntelOrca.Biohazard.Script
                 var labelIndex = _labelNames.IndexOf(t.Text);
                 if (labelIndex == -1)
                 {
-                    EmitError(in t, 17, $"Unknown label '{t.Text}'");
+                    EmitError(in t, ErrorCodes.UnknownLabel, t.Text);
                 }
                 else
                 {
@@ -299,14 +374,14 @@ namespace IntelOrca.Biohazard.Script
             return token.Kind == TokenKind.EOF || token.Kind == TokenKind.Comma || token.Kind == TokenKind.NewLine;
         }
 
-        private void EmitError(in Token token, int code, string message)
+        private void EmitError(in Token token, int code, params object[] args)
         {
-            Errors.AddError(token.Path, token.Line, token.Column, code, message);
+            Errors.AddError(token.Path, token.Line, token.Column, code, string.Format(ErrorCodes.GetMessage(code), args));
         }
 
-        private void EmitWarning(in Token token, int code, string message)
+        private void EmitWarning(in Token token, int code, params object[] args)
         {
-            Errors.AddWarning(token.Path, token.Line, token.Column, code, message);
+            Errors.AddWarning(token.Path, token.Line, token.Column, code, string.Format(ErrorCodes.GetMessage(code), args));
         }
 
         private void WriteUInt8(byte b)
@@ -322,18 +397,18 @@ namespace IntelOrca.Biohazard.Script
 
         private enum ParserState
         {
-            None,
+            Default,
+            Terminate,
             SkipToNextLine,
-            ExpectOpcode,
+            ExpectVersion,
             ExpectProcName,
+            ExpectOpcode,
             ExpectOperand,
             ExpectComma,
         }
 
         private class Lexer
         {
-            private readonly List<Error> _errors = new List<Error>();
-
             private string _path = "";
             private string _s = "";
             private int _sIndex;
@@ -368,9 +443,9 @@ namespace IntelOrca.Biohazard.Script
                 return tokens.ToArray();
             }
 
-            private void EmitError(in Token token, int code, string message)
+            private void EmitError(in Token token, int code, params object[] args)
             {
-                Errors.AddError(_path, token.Line, token.Column, code, message);
+                Errors.AddError(token.Path, token.Line, token.Column, code, string.Format(ErrorCodes.GetMessage(code), args));
             }
 
             private bool ValidateToken(in Token token)
@@ -382,7 +457,7 @@ namespace IntelOrca.Biohazard.Script
                 {
                     if (token.Text != ",")
                     {
-                        EmitError(in token, 0, "Invalid symbol");
+                        EmitError(in token, 0, ErrorCodes.InvalidOperator, token.Text);
                         return false;
                     }
                 }
@@ -669,6 +744,49 @@ namespace IntelOrca.Biohazard.Script
         {
             Error,
             Warning
+        }
+
+        public class ErrorCodes
+        {
+            public const int ScdVersionNotSpecified = 1;
+            public const int OpcodeNotInProcedure = 2;
+            public const int LabelAlreadyDefined = 3;
+            public const int UnknownOpcode = 4;
+            public const int ExpectedOpcode = 5;
+            public const int ExpectedComma = 6;
+            public const int UnknownSymbol = 7;
+            public const int TooManyOperands = 8;
+            public const int IncorrectNumberOfOperands = 9;
+            public const int UnknownLabel = 10;
+            public const int InvalidOperator = 11;
+            public const int ExpectedProcedureName = 12;
+            public const int ExpectedScdVersionNumber = 13;
+            public const int InvalidScdVersionNumber = 14;
+            public const int ScdVersionAlreadySpecified = 15;
+            public const int ProcedureNotValid = 16;
+
+            public static string GetMessage(int code) => _messages[code];
+
+            private static readonly string[] _messages = new string[]
+            {
+                "",
+                "SCD version must be specified before any procedure or opcode.",
+                "Opcode must be inside a procedure.",
+                "'{0}' has already been defined as a label.",
+                "'{0}' it not a valid opcode.",
+                "Expected opcode.",
+                "Expected , after opcode.",
+                "'{0}' has not been defined as a constant.",
+                "Too many operands for this opcode.",
+                "Incorrect number of operands for opcode.",
+                "'{0}' has not been defined as a label within the same procedure.",
+                "'{0}' is not a known or valid operator.",
+                "Expected procedure name.",
+                "Expected SCD version number.",
+                "Invalid SCD version number. Only version 1 and 2 are supported.",
+                "SCD version already specified.",
+                "Procedures are not valid in SCD version 1."
+            };
         }
     }
 }
