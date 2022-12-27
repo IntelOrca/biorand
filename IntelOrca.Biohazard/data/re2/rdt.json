@@ -1470,6 +1470,7 @@
       "npcs": [
         {
           "includeOffsets": [ 4342 ],
+          "excludeTypes": [ 64, 66 ],
           "playerActor": "sherry",
           "cutscene": 0,
           "player": 1
