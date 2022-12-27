@@ -732,6 +732,11 @@
         {
           "target": "20A"
         }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 2 ]
+        }
       ]
     },
     "209": {
@@ -1813,6 +1818,13 @@
         },
         {
           "target": "71C"
+        }
+      ]
+    },
+    "708": {
+      "enemies": [
+        {
+          "excludeTypes": [ 2 ]
         }
       ]
     },
