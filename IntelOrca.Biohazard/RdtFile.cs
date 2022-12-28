@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using IntelOrca.Biohazard.Script;
@@ -10,6 +11,7 @@ namespace IntelOrca.Biohazard
     {
         private readonly int[] _offsets;
         private readonly int[] _lengths;
+        private readonly List<Range> _eventScripts = new List<Range>();
 
         public BioVersion Version { get; }
         public byte[] Data { get; private set; }
@@ -21,6 +23,7 @@ namespace IntelOrca.Biohazard
             Data = File.ReadAllBytes(path);
             _offsets = ReadHeader();
             _lengths = GetChunkLengths();
+            GetNumEventScripts();
             Checksum = Data.CalculateFnv1a();
         }
 
@@ -34,14 +37,26 @@ namespace IntelOrca.Biohazard
             return new MemoryStream(Data);
         }
 
-        public byte[] GetScd(BioScriptKind kind)
+        public int EventScriptCount => _eventScripts.Count;
+
+        public byte[] GetScd(BioScriptKind kind, int scriptIndex = 0)
         {
             var index = GetScdChunkIndex(kind);
             var start = _offsets[index];
             var length = _lengths[index];
-            var data = new byte[length];
-            Array.Copy(Data, start, data, 0, length);
-            return data;
+            if (kind == BioScriptKind.Event)
+            {
+                var range = _eventScripts[scriptIndex];
+                var data = new byte[range.Length];
+                Array.Copy(Data, start + range.Start, data, 0, range.Length);
+                return data;
+            }
+            else
+            {
+                var data = new byte[length];
+                Array.Copy(Data, start, data, 0, length);
+                return data;
+            }
         }
 
         public void SetScd(BioScriptKind kind, byte[] data)
@@ -107,16 +122,24 @@ namespace IntelOrca.Biohazard
 
         private int GetScdChunkIndex(BioScriptKind kind)
         {
-            int index;
             if (Version == BioVersion.Biohazard1)
             {
-                index = kind == BioScriptKind.Init ? 6 : 7;
+                switch (kind)
+                {
+                    case BioScriptKind.Init:
+                        return 6;
+                    case BioScriptKind.Main:
+                        return 7;
+                    case BioScriptKind.Event:
+                        return 8;
+                    default:
+                        throw new ArgumentException("Invalid kind", nameof(kind));
+                }
             }
             else
             {
-                index = kind == BioScriptKind.Init ? 16 : 17;
+                return kind == BioScriptKind.Init ? 16 : 17;
             }
-            return index;
         }
 
         private int[] ReadHeader()
@@ -187,6 +210,40 @@ namespace IntelOrca.Biohazard
             return lengths;
         }
 
+        private int GetNumEventScripts()
+        {
+            if (Version != BioVersion.Biohazard1)
+                return 0;
+
+            var chunkIndex = GetScdChunkIndex(BioScriptKind.Event);
+            var chunkOffset = _offsets[chunkIndex];
+            var endOffset = chunkOffset + _lengths[chunkIndex];
+            var ms = new MemoryStream(Data);
+            ms.Position = chunkOffset;
+
+            var br = new BinaryReader(ms);
+            var offset = br.ReadInt32();
+            var numScripts = offset / 4;
+            _eventScripts.Clear();
+            for (int i = 0; i < numScripts; i++)
+            {
+                var nextOffset = i == numScripts - 1 ? endOffset : br.ReadInt32();
+                if (nextOffset == 0)
+                {
+                    var length = endOffset - chunkOffset - offset;
+                    _eventScripts.Add(new Range(offset, length));
+                    break;
+                }
+                else
+                {
+                    var length = nextOffset - offset;
+                    _eventScripts.Add(new Range(offset, length));
+                }
+                offset = nextOffset;
+            }
+            return numScripts;
+        }
+
         internal void ReadScript(BioScriptVisitor visitor)
         {
             visitor.VisitVersion(Version);
@@ -205,6 +262,51 @@ namespace IntelOrca.Biohazard
             var scdReader = new ScdReader();
             scdReader.BaseOffset = scriptOffset;
             scdReader.ReadScript(new ReadOnlyMemory<byte>(Data, scriptOffset, scriptLength), Version, kind, visitor);
+        }
+    }
+
+    [DebuggerDisplay("Start = {Start} Length = {Length}")]
+    internal struct Range : IEquatable<Range>
+    {
+        public int Start { get; }
+        public int Length { get; }
+        public int End => Start + Length;
+
+        public Range(int start, int length)
+        {
+            Start = start;
+            Length = length;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is Range range && Equals(range);
+        }
+
+        public bool Equals(Range other)
+        {
+            return Start == other.Start &&
+                   Length == other.Length &&
+                   End == other.End;
+        }
+
+        public override int GetHashCode()
+        {
+            int hashCode = -1042531914;
+            hashCode = hashCode * -1521134295 + Start.GetHashCode();
+            hashCode = hashCode * -1521134295 + Length.GetHashCode();
+            hashCode = hashCode * -1521134295 + End.GetHashCode();
+            return hashCode;
+        }
+
+        public static bool operator ==(Range left, Range right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Range left, Range right)
+        {
+            return !(left == right);
         }
     }
 }

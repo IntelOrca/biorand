@@ -1236,7 +1236,8 @@ namespace IntelOrca.Biohazard.Script
             var opcodeRaw = br.ReadByte();
             Debug.Assert(opcodeRaw == opcode);
 
-            var length = _constantTable.GetInstructionSize(opcode);
+            var length = _constantTable.GetInstructionSize(opcode, br);
+            br.BaseStream.Position = originalStreamPosition + 1;
             var signature = _constantTable.GetOpcodeSignature(opcode);
             var colonIndex = signature.IndexOf(':');
             if (colonIndex == -1)

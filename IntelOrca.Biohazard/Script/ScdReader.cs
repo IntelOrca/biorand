@@ -6,12 +6,14 @@ namespace IntelOrca.Biohazard.Script
 {
     public class ScdReader
     {
+        private IConstantTable _constantTable = new Bio1ConstantTable();
+
         public int BaseOffset { get; set; }
 
-        public string Diassemble(ReadOnlyMemory<byte> data, BioVersion version, bool listing = false)
+        public string Diassemble(ReadOnlyMemory<byte> data, BioVersion version, BioScriptKind kind, bool listing = false)
         {
             var decompiler = new ScriptDecompiler(true, listing);
-            ReadScript(data, version, BioScriptKind.Init, decompiler);
+            ReadScript(data, version, kind, decompiler);
             return decompiler.GetScript();
         }
 
@@ -31,7 +33,7 @@ namespace IntelOrca.Biohazard.Script
 
         private void ReadScript1(BinaryReader br, int length, BioScriptKind kind, BioScriptVisitor visitor)
         {
-            var scriptEnd = br.ReadUInt16();
+            var scriptEnd = kind == BioScriptKind.Event ? length : br.ReadUInt16();
 
             visitor.VisitBeginScript(kind);
             visitor.VisitBeginSubroutine(0);
@@ -41,11 +43,11 @@ namespace IntelOrca.Biohazard.Script
                 {
                     var instructionPosition = (int)br.BaseStream.Position;
                     var opcode = br.ReadByte();
-                    if (opcode > _instructionSizes1.Length)
+                    var instructionSize = _constantTable.GetInstructionSize(opcode, br);
+                    if (instructionSize == 0)
                         break;
 
-                    var instructionSize = _instructionSizes1[opcode];
-
+                    br.BaseStream.Position = instructionPosition + 1;
                     var bytes = new byte[instructionSize];
                     bytes[0] = opcode;
                     if (br.Read(bytes, 1, instructionSize - 1) != instructionSize - 1)

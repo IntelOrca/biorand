@@ -322,7 +322,7 @@ namespace IntelOrca.Biohazard.Script
             var colonIndex = _currentOpcodeSignature.IndexOf(':');
             if (colonIndex == -1)
             {
-                var length = _constantTable.GetInstructionSize(opcode.Value);
+                var length = _constantTable.GetInstructionSize(opcode.Value, null);
                 _currentOpcodeSignature = new string('u', length);
             }
             else

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using IntelOrca.Biohazard;
 using IntelOrca.Biohazard.Script;
 
@@ -22,6 +24,10 @@ namespace IntelOrca.Scd
                 var rdtFile = new RdtFile(rdtPath, BioVersion.Biohazard1);
                 File.WriteAllBytes("init.scd", rdtFile.GetScd(BioScriptKind.Init));
                 File.WriteAllBytes("main.scd", rdtFile.GetScd(BioScriptKind.Main));
+                for (int i = 0; i < rdtFile.EventScriptCount; i++)
+                {
+                    File.WriteAllBytes($"event_{i:X2}.scd", rdtFile.GetScd(BioScriptKind.Main));
+                }
                 return 0;
             }
             else if (args.Contains("-d"))
@@ -30,18 +36,26 @@ namespace IntelOrca.Scd
                 {
                     var rdtFile = new RdtFile(rdtPath, BioVersion.Biohazard1);
 
-                    var initS = Diassemble(rdtFile.GetScd(BioScriptKind.Init));
-                    var mainS = Diassemble(rdtFile.GetScd(BioScriptKind.Main));
-                    var s = ".version 1\n.init\n" + initS + "\n\n.main\n" + mainS;
-                    File.WriteAllText(Path.ChangeExtension(Path.GetFileName(rdtPath), ".s"), s);
+                    var sb = new StringBuilder();
+                    sb.AppendLine(".version 1");
+                    sb.AppendLine(".init");
+                    sb.AppendLine(Diassemble(BioScriptKind.Init, rdtFile.GetScd(BioScriptKind.Init)));
+                    sb.AppendLine(".main");
+                    sb.AppendLine(Diassemble(BioScriptKind.Main, rdtFile.GetScd(BioScriptKind.Main)));
+                    for (int i = 0; i < rdtFile.EventScriptCount; i++)
+                    {
+                        sb.AppendLine($".event {i}");
+                        sb.AppendLine(Diassemble(BioScriptKind.Event, rdtFile.GetScd(BioScriptKind.Event, i)));
+                    }
+                    File.WriteAllText(Path.ChangeExtension(Path.GetFileName(rdtPath), ".s"), sb.ToString());
                 }
                 else if (rdtPath.EndsWith(".scd", StringComparison.OrdinalIgnoreCase))
                 {
                     var scd = File.ReadAllBytes(rdtPath);
-                    var s = Diassemble(scd);
+                    var s = Diassemble(BioScriptKind.Init, scd);
                     var sPath = Path.ChangeExtension(rdtPath, ".s");
                     File.WriteAllText(sPath, s);
-                    var lst = Diassemble(scd, listing: true);
+                    var lst = Diassemble(BioScriptKind.Init, scd, listing: true);
                     var lstPath = Path.ChangeExtension(rdtPath, ".lst");
                     File.WriteAllText(lstPath, lst);
                 }
@@ -141,10 +155,10 @@ namespace IntelOrca.Scd
             }
         }
 
-        private static string Diassemble(byte[] scd, bool listing = false)
+        private static string Diassemble(BioScriptKind kind, byte[] scd, bool listing = false)
         {
             var scdReader = new ScdReader();
-            return scdReader.Diassemble(scd, BioVersion.Biohazard1, listing);
+            return scdReader.Diassemble(scd, BioVersion.Biohazard1, kind, listing);
         }
 
         private static string GetOption(string[] args, string name)

@@ -132,6 +132,7 @@ namespace IntelOrca.Biohazard.Script
     public enum BioScriptKind
     {
         Init,
-        Main
+        Main,
+        Event
     }
 }

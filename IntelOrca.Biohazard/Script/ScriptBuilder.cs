@@ -70,8 +70,11 @@ namespace IntelOrca.Biohazard.Script
 
         public void WriteLine()
         {
-            while (IsTrailingSpace(_sb[_sb.Length - 1]))
-                _sb.Remove(_sb.Length - 1, 1);
+            if (_sb.Length != 0)
+            {
+                while (IsTrailingSpace(_sb[_sb.Length - 1]))
+                    _sb.Remove(_sb.Length - 1, 1);
+            }
 
             _sb.AppendLine();
             _lineLength = 0;

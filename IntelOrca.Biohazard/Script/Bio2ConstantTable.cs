@@ -1,4 +1,6 @@
-﻿namespace IntelOrca.Biohazard.Script
+﻿using System.IO;
+
+namespace IntelOrca.Biohazard.Script
 {
     internal class Bio2ConstantTable : IConstantTable
     {
@@ -22,7 +24,7 @@
             return $"ENEMY_{((EnemyType)kind).ToString().ToUpperInvariant()}";
         }
 
-        public int GetInstructionSize(byte opcode)
+        public int GetInstructionSize(byte opcode, BinaryReader? br)
         {
             throw new System.NotImplementedException();
         }
