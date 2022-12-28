@@ -63,7 +63,7 @@ namespace IntelOrca.Biohazard.Script
             if (version == BioVersion.Biohazard1)
                 _constantTable = new Bio1ConstantTable();
 
-            _sb.WriteLine("#version " + (int)version);
+            _sb.WriteLine(".version " + (int)version);
         }
 
         public override void VisitBeginScript(BioScriptKind kind)
@@ -73,7 +73,7 @@ namespace IntelOrca.Biohazard.Script
                 case BioScriptKind.Init:
                     if (AssemblyFormat)
                     {
-                        // _sb.WriteLine("init:");
+                        _sb.WriteLine(".init");
                     }
                     else
                     {
@@ -85,11 +85,23 @@ namespace IntelOrca.Biohazard.Script
                     _sb.WriteLine();
                     if (AssemblyFormat)
                     {
-                        // _sb.WriteLine("main:");
+                        _sb.WriteLine(".main");
                     }
                     else
                     {
                         _sb.WriteLine("main");
+                        _sb.OpenBlock();
+                    }
+                    break;
+                case BioScriptKind.Event:
+                    _sb.WriteLine();
+                    if (AssemblyFormat)
+                    {
+                        _sb.WriteLine(".event");
+                    }
+                    else
+                    {
+                        _sb.WriteLine("event");
                         _sb.OpenBlock();
                     }
                     break;
@@ -452,14 +464,8 @@ namespace IntelOrca.Biohazard.Script
             switch (opcode)
             {
                 default:
-                    if (Enum.IsDefined(typeof(OpcodeV1), opcode))
-                    {
-                        sb.WriteStandardOpcode(opcode.ToString());
-                    }
-                    else
-                    {
-                        sb.WriteStandardOpcode($"op_{opcode:X}");
-                    }
+                    br.BaseStream.Position--;
+                    DiassembleGeneralOpcode(br, offset, (byte)opcode);
                     break;
                 case OpcodeV1.Nop:
                     if (AssemblyFormat)
@@ -599,39 +605,6 @@ namespace IntelOrca.Biohazard.Script
                         {
                             sb.WriteLine($"$${src} = {value};");
                         }
-                        break;
-                    }
-                case OpcodeV1.NonItemSet:
-                    {
-                        var id = br.ReadByte();
-                        var x = br.ReadInt16();
-                        var z = br.ReadInt16();
-                        var w = br.ReadInt16();
-                        var d = br.ReadInt16();
-                        var type = br.ReadByte();
-                        var szType = type.ToString();
-                        if (type == 7)
-                            szType = "NI_EVENT";
-                        if (type == 8)
-                            szType = "NI_BOX";
-                        if (type == 9)
-                            szType = "NI_TRIGGER";
-                        if (type == 10)
-                            szType = "NI_TYPEWRITER";
-                        sb.WriteStandardOpcode("non_item_set", id, x, z, w, d, szType);
-                        break;
-                    }
-                case OpcodeV1.Item12:
-                    {
-                        var id = br.ReadByte();
-                        sb.WriteStandardOpcode("item_12", id, "...");
-                        break;
-                    }
-                case OpcodeV1.OmSet:
-                    {
-                        var id = br.ReadByte();
-                        var type = br.ReadByte();
-                        sb.WriteStandardOpcode("om_set", id, type, "...");
                         break;
                     }
             }

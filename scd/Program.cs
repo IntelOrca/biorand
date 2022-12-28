@@ -38,13 +38,10 @@ namespace IntelOrca.Scd
 
                     var sb = new StringBuilder();
                     sb.AppendLine(".version 1");
-                    sb.AppendLine(".init");
                     sb.AppendLine(Diassemble(BioScriptKind.Init, rdtFile.GetScd(BioScriptKind.Init)));
-                    sb.AppendLine(".main");
                     sb.AppendLine(Diassemble(BioScriptKind.Main, rdtFile.GetScd(BioScriptKind.Main)));
                     for (int i = 0; i < rdtFile.EventScriptCount; i++)
                     {
-                        sb.AppendLine($".event {i}");
                         sb.AppendLine(Diassemble(BioScriptKind.Event, rdtFile.GetScd(BioScriptKind.Event, i)));
                     }
                     File.WriteAllText(Path.ChangeExtension(Path.GetFileName(rdtPath), ".s"), sb.ToString());

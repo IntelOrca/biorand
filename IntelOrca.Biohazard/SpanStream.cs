@@ -35,7 +35,7 @@ namespace IntelOrca.Biohazard
             if (read == 0)
                 return 0;
 
-            var src = _memory.Span.Slice((int)_position, count);
+            var src = _memory.Span.Slice((int)_position, read);
             var dst = new Span<byte>(buffer, offset, read);
             src.CopyTo(dst);
             _position += read;

@@ -249,6 +249,7 @@ namespace IntelOrca.Biohazard
             visitor.VisitVersion(Version);
             ReadScript(BioScriptKind.Init, visitor);
             ReadScript(BioScriptKind.Main, visitor);
+            ReadScript(BioScriptKind.Event, visitor);
         }
 
         private void ReadScript(BioScriptKind kind, BioScriptVisitor visitor)
@@ -258,10 +259,24 @@ namespace IntelOrca.Biohazard
             if (scriptOffset == 0)
                 return;
 
-            var scriptLength = _lengths[chunkIndex];
-            var scdReader = new ScdReader();
-            scdReader.BaseOffset = scriptOffset;
-            scdReader.ReadScript(new ReadOnlyMemory<byte>(Data, scriptOffset, scriptLength), Version, kind, visitor);
+            if (kind == BioScriptKind.Event)
+            {
+                foreach (var eventScript in _eventScripts)
+                {
+                    var eventScriptOffset = scriptOffset + eventScript.Start;
+                    var eventScriptLength = eventScript.Length;
+                    var scdReader = new ScdReader();
+                    scdReader.BaseOffset = scriptOffset + eventScript.Start;
+                    scdReader.ReadScript(new ReadOnlyMemory<byte>(Data, eventScriptOffset, eventScriptLength), Version, kind, visitor);
+                }
+            }
+            else
+            {
+                var scriptLength = _lengths[chunkIndex];
+                var scdReader = new ScdReader();
+                scdReader.BaseOffset = scriptOffset;
+                scdReader.ReadScript(new ReadOnlyMemory<byte>(Data, scriptOffset, scriptLength), Version, kind, visitor);
+            }
         }
     }
 
