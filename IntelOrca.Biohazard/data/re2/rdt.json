@@ -1886,7 +1886,13 @@
     "404": {
       "doorRando": [
         {
-          "category": "exclude"
+          "category": "exclude",
+          "player": 0
+        },
+        {
+          "nop": [ 3478, 3618, 3948 ],
+          "player": 1,
+          "scenario": 0
         }
       ],
       "doors": [
@@ -1906,10 +1912,18 @@
         {
           "target": "403",
           "player": 1,
-          "scenario": 1
+          "scenario": 1,
+          "doorRando": false
         },
         {
-          "target": "405"
+          "target": "403",
+          "player": 1,
+          "lock": "unblock",
+          "doorRando": true
+        },
+        {
+          "target": "405",
+          "lock": "unblock"
         }
       ],
       "npcs": [
@@ -1924,6 +1938,9 @@
           "includeOffsets": [],
           "player": 0,
           "cutscene": 1
+        },
+        {
+          "player": 1
         }
       ]
     },
