@@ -937,7 +937,6 @@
         },
         {
           "target": "307",
-          "randomize": false,
           "noReturn": true
         }
       ]
@@ -1011,8 +1010,7 @@
     "307": {
       "doors": [
         {
-          "target": "302",
-          "randomize": false
+          "target": "302"
         },
         {
           "target": "308"
@@ -1260,8 +1258,8 @@
         },
         {
           "target": "40D",
-          "lock": "unblock",
-          "randomize": false
+          "noUnlock": true,
+          "lock": "unblock"
         }
       ],
       "items": [
@@ -1410,8 +1408,7 @@
     "40D": {
       "doors": [
         {
-          "target": "406",
-          "randomize": false
+          "target": "406"
         },
         {
           "target": "40E",
