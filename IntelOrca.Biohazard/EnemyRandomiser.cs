@@ -281,7 +281,7 @@ namespace IntelOrca.Biohazard
                     result = new[] { "nep_attB", "nep_attA", "nep_nomu", "nep_tura", "nep_twis", "nep_jump" };
                     break;
                 case Re1EnemyIds.Tyrant1:
-                    result = new[] { "TY_foot", "TY_kaze", "TY_slice", "TY_HIT", "TY_trust", "</", "TY_taore", "TY_nage" };
+                    result = new[] { "TY_foot", "TY_kaze", "TY_slice", "TY_HIT", "TY_trust", "", "TY_taore", "TY_nage" };
                     break;
                 case Re1EnemyIds.Yawn1:
                     break;

@@ -37,7 +37,6 @@ namespace IntelOrca.Biohazard.RE1
                     addIfSupported(Re1EnemyIds.Chimera, 5);
                     addIfSupported(Re1EnemyIds.Snake, 20);
                     addIfSupported(Re1EnemyIds.Tyrant1, 1);
-                    addIfSupported(Re1EnemyIds.Tyrant2, 1);
                     addIfSupported(Re1EnemyIds.Yawn1, 1);
                     addIfSupported(Re1EnemyIds.Yawn2, 1);
                     break;
@@ -52,7 +51,6 @@ namespace IntelOrca.Biohazard.RE1
                     addIfSupported(Re1EnemyIds.Chimera, 10);
                     addIfSupported(Re1EnemyIds.Snake, 10);
                     addIfSupported(Re1EnemyIds.Tyrant1, 2);
-                    addIfSupported(Re1EnemyIds.Tyrant2, 2);
                     addIfSupported(Re1EnemyIds.Yawn1, 2);
                     addIfSupported(Re1EnemyIds.Yawn2, 2);
                     break;
@@ -67,7 +65,6 @@ namespace IntelOrca.Biohazard.RE1
                     addIfSupported(Re1EnemyIds.Snake, 1);
                     addIfSupported(Re1EnemyIds.Chimera, 15);
                     addIfSupported(Re1EnemyIds.Tyrant1, 5);
-                    addIfSupported(Re1EnemyIds.Tyrant2, 5);
                     addIfSupported(Re1EnemyIds.Yawn1, 5);
                     addIfSupported(Re1EnemyIds.Yawn2, 5);
                     break;
@@ -83,7 +80,6 @@ namespace IntelOrca.Biohazard.RE1
                     addIfSupported(Re1EnemyIds.Snake, 1);
                     addIfSupported(Re1EnemyIds.Chimera, 25);
                     addIfSupported(Re1EnemyIds.Tyrant1, 10);
-                    addIfSupported(Re1EnemyIds.Tyrant2, 10);
                     addIfSupported(Re1EnemyIds.Yawn1, 10);
                     addIfSupported(Re1EnemyIds.Yawn2, 10);
                     break;
@@ -187,7 +183,6 @@ namespace IntelOrca.Biohazard.RE1
                 case Re1EnemyIds.Tyrant1:
                 case Re1EnemyIds.Yawn1:
                 case Re1EnemyIds.Plant42Vines:
-                case Re1EnemyIds.Tyrant2:
                 case Re1EnemyIds.Yawn2:
                     return true;
                 default:
