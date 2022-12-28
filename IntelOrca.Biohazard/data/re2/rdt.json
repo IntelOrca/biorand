@@ -1886,7 +1886,7 @@
     "404": {
       "doorRando": [
         {
-          "category": "exclude",
+          "nop": [ 3390, 4224, 3742, 3760, 3866, 3884, 5214 ],
           "player": 0
         },
         {
@@ -1899,7 +1899,14 @@
         {
           "target": "401",
           "player": 0,
-          "scenario": 1
+          "scenario": 1,
+          "doorRando": false
+        },
+        {
+          "target": "401",
+          "player": 0,
+          "lock": "unblock",
+          "doorRando": true
         },
         {
           "target": "401",
