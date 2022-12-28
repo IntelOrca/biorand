@@ -2506,6 +2506,14 @@
       ]
     },
     "602": {
+      "doorRando": [
+        {
+          "nop": [ 2462, 2786 ], // scenario ck (2454, 2770)
+          "cutscene": true,
+          "player": 0,
+          "scenario": 1
+        }
+      ],
       "doors": [
         {
           "target": "600",
@@ -2550,8 +2558,14 @@
     "604": {
       "doorRando": [
         {
+          "nop": [ 8398, 8626 ],
           "cutscene": true,
-          "scenario": 1
+          "player": 0
+        },
+        {
+          "nop": [ 8290, 8462 ],
+          "cutscene": true,
+          "player": 1
         }
       ],
       "doors": [
@@ -2669,7 +2683,11 @@
     "608": {
       "doorRando": [
         {
-          "nop": [ 10210, 10220 ],
+          "category": "exclude",
+          "player": 0
+        },
+        {
+          "nop": [ 10210, 10220, 10290, 10298, 11534, 11544 ],
           "cutscene": true,
           "scenario": 1,
           "player": 1
@@ -2771,8 +2789,15 @@
     "60C": {
       "doorRando": [
         {
-          "nop": [ 4042, 4154 ],
-          "player": 0
+          "nop": [ 4042, 5894 ],
+          "cutscene": true,
+          "player": 0,
+          "scenario": 0
+        },
+        {
+          "nop": [ 4042, 5894 ],
+          "player": 0,
+          "scenario": 1
         },
         {
           "nop": [ 4010 ],
@@ -2809,7 +2834,13 @@
       "items": [
         {
           "id": 7,
-          "priority": "fixed"
+          "priority": "fixed",
+          "doorRando": false
+        },
+        {
+          "id": 7,
+          "priority": "low",
+          "doorRando": true
         }
       ],
       "npcs": [
@@ -2880,7 +2911,24 @@
     "611": {
       "doorRando": [
         {
-          "category": "exclude"
+          "nop": [ 12890, 12898 ],
+          "cutscene": true,
+          "player": 0
+        },
+        {
+          "category": "exclude",
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "606"
+        },
+        {
+          "target": "60B"
+        },
+        {
+          "target": "60C"
         }
       ],
       "npcs": [
@@ -2909,8 +2957,10 @@
         },
         {
           "category": "box",
+          "nop": [ 4834 ],
           "cutscene": true,
-          "player": 1
+          "player": 1,
+          "scenario": 1
         }
       ],
       "doors": [
@@ -2951,8 +3001,10 @@
     "614": {
       "doorRando": [
         {
+          "nop": [ 3168, 3590 ],
           "cutscene": true,
-          "player": 1
+          "player": 1,
+          "scenario": 0
         }
       ],
       "doors": [
