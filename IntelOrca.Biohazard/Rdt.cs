@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.AccessControl;
 using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
 
@@ -18,6 +17,7 @@ namespace IntelOrca.Biohazard
         public string? ModifiedPath { get; set; }
         public string? Script { get; set; }
         public string? ScriptDisassembly { get; set; }
+        public string? ScriptListing { get; set; }
         public OpcodeBase[] Opcodes { get; set; } = new OpcodeBase[0];
         public ScriptAst? Ast { get; set; }
         public List<KeyValuePair<int, byte>> Patches { get; } = new List<KeyValuePair<int, byte>>();

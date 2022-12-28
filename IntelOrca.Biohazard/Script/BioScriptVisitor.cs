@@ -129,9 +129,10 @@ namespace IntelOrca.Biohazard.Script
         protected virtual void VisitItemAotSet4p(ItemAotSet4pOpcode opcode) => VisitOpcode(opcode);
     }
 
-    internal enum BioScriptKind
+    public enum BioScriptKind
     {
         Init,
-        Main
+        Main,
+        Event
     }
 }

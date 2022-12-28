@@ -52,8 +52,9 @@ namespace IntelOrca.Biohazard
             rdt.OriginalPath = path;
             rdt.ModifiedPath = modPath;
 
-            rdt.Script = Decompile(rdtFile, false);
-            rdt.ScriptDisassembly = Decompile(rdtFile, true);
+            rdt.Script = Decompile(rdtFile, false, false);
+            rdt.ScriptDisassembly = Decompile(rdtFile, true, false);
+            rdt.ScriptListing = Decompile(rdtFile, true, true);
 
             var opcodeBuilder = new OpcodeBuilder();
             rdtFile.ReadScript(opcodeBuilder);
@@ -70,9 +71,9 @@ namespace IntelOrca.Biohazard
             return rdt;
         }
 
-        private static string Decompile(RdtFile rdtFile, bool assemblyFormat)
+        private static string Decompile(RdtFile rdtFile, bool assemblyFormat, bool listingFormat)
         {
-            var scriptDecompiler = new ScriptDecompiler(assemblyFormat);
+            var scriptDecompiler = new ScriptDecompiler(assemblyFormat, listingFormat);
             rdtFile.ReadScript(scriptDecompiler);
             return scriptDecompiler.GetScript();
         }

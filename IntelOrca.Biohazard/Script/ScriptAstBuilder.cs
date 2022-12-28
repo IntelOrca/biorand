@@ -104,6 +104,9 @@ namespace IntelOrca.Biohazard.Script
 
         private void VisitElseOpcode(OpcodeAstNode opcodeNode)
         {
+            if (_ifStack.Count == 0)
+                return;
+
             var ifNode = _ifStack.Peek();
             ifNode.IfBlock = PopBasicBlock();
             ifNode.Else = opcodeNode;
@@ -112,6 +115,9 @@ namespace IntelOrca.Biohazard.Script
 
         private void VisitEndIfOpcode(OpcodeAstNode opcodeNode)
         {
+            if (_ifStack.Count == 0)
+                return;
+
             var ifNode = _ifStack.Pop();
             if (ifNode.IfBlock == null)
             {
