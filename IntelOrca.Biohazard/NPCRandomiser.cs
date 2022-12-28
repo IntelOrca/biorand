@@ -198,7 +198,7 @@ namespace IntelOrca.Biohazard
             {
                 var actorToNewActorMap  = RandomizeCharacters(rdt, npcRng, defaultIncludeTypes, cutscene.ToArray(), offsetToTypeMap);
                 var pc = cutscene.First().PlayerActor ?? _originalPlayerActor!;
-                if (pc == _originalPlayerActor)
+                if (pc == _originalPlayerActor || _config.RandomDoors)
                 {
                     actorToNewActorMap[pc] = _playerActor!;
                     pc = _playerActor;
