@@ -24,7 +24,7 @@ namespace IntelOrca.Biohazard.Script.Opcodes
             return new AotSetOpcode()
             {
                 Offset = offset,
-                Length = 10,
+                Length = 20,
 
                 Opcode = br.ReadByte(),
                 Id = br.ReadByte(),
