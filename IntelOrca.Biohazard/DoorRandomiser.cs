@@ -346,10 +346,10 @@ namespace IntelOrca.Biohazard
 
         private void FinalChecks(PlayGraph graph)
         {
-            foreach (var node in _allNodes)
+            foreach (var node in _nodeMap.Values)
             {
-                if (!node.Visited)
-                    continue;
+                // if (!node.Visited)
+                //     continue;
 
                 // NOP out instructions
                 var rdt = _gameData.GetRdt(node.RdtId)!;

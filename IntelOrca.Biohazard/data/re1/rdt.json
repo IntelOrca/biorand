@@ -15,7 +15,7 @@
       ],
       "doors": [
         {
-          "target": "101"
+          "target": "601"
         }
       ],
       "items": [
@@ -41,35 +41,11 @@
         }
       ]
     },
-    "101": {
-      "doorRando": [
-        {
-          "cutscene": true,
-          "player": 0
-        }
-      ],
-      "linkedRoom": "601",
-      "doors": [
-        {
-          "target": "100"
-        },
-        {
-          "target": "102",
-          "requires": [ 52 ]
-        },
-        {
-          "target": "103"
-        },
-        {
-          "target": "201"
-        }
-      ]
-    },
     "102": {
       "linkedRoom": "602",
       "doors": [
         {
-          "target": "101"
+          "target": "601"
         }
       ],
       "items": [
@@ -88,7 +64,7 @@
       "linkedRoom": "603",
       "doors": [
         {
-          "target": "101"
+          "target": "601"
         },
         {
           "target": "104"
@@ -603,7 +579,7 @@
       "linkedRoom": "701",
       "doors": [
         {
-          "target": "101"
+          "target": "601"
         },
         {
           "target": "202"
@@ -944,12 +920,14 @@
     "303": {
       "doorRando": [
         {
-          "category": "exclude"
+          "category": "exclude",
+          "nop": [ 70466 ]
         }
       ],
       "doors": [
         {
-          "target": "500",
+          "target": "50D",
+          "randomize": false,
           "lock": "always"
         }
       ],
@@ -1775,7 +1753,29 @@
       ]
     },
     "601": {
-      "enemies": []
+      "doorRando": [
+        {
+          "nop": [ 150872 ],
+          "cutscene": true,
+          "player": 0
+        }
+      ],
+      "linkedRoom": "101",
+      "doors": [
+        {
+          "target": "100"
+        },
+        {
+          "target": "102",
+          "requires": [ 52 ]
+        },
+        {
+          "target": "103"
+        },
+        {
+          "target": "201"
+        }
+      ]
     },
     "60C": {
       "enemies": []
