@@ -232,7 +232,7 @@ namespace IntelOrca.Biohazard.Script
                     }
                     break;
                 default:
-                    EmitError(in token, ErrorCodes.UnknownDirective);
+                    EmitError(in token, ErrorCodes.UnknownDirective, token.Text);
                     _restoreState = _state;
                     _state = ParserState.SkipToNextLine;
                     break;
