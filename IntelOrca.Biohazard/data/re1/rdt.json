@@ -412,6 +412,12 @@
         {
           "target": "103"
         }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "type": 0
+        }
       ]
     },
     "10F": {
@@ -759,6 +765,12 @@
         {
           "target": "208"
         }
+      ],
+      "items": [
+        {
+          "id": 8,
+          "type": 0
+        }
       ]
     },
     "20B": {
@@ -898,6 +910,12 @@
           "target": "302",
           "randomize": false,
           "lock": "gate"
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "type": 0
         }
       ]
     },
@@ -1151,6 +1169,12 @@
         {
           "target": "30D"
         }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "type": 0
+        }
       ]
     },
     "310": {
@@ -1299,6 +1323,13 @@
           "target": "40C"
         }
       ],
+      "items": [
+        {
+          "id": 6,
+          "type": 0,
+          "player": 0
+        }
+      ],
       "enemies": [
         {
           "y": 0
@@ -1363,6 +1394,10 @@
         }
       ],
       "items": [
+        {
+          "id": 3,
+          "type": 0
+        },
         {
           "id": 4,
           "type": 0
@@ -1502,6 +1537,13 @@
         {
           "target": "503"
         }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "type": 0,
+          "player": 1
+        }
       ]
     },
     "503": {
@@ -1571,6 +1613,10 @@
           "doorRando": true
         },
         {
+          "id": 14,
+          "type": 0
+        },
+        {
           "id": 15,
           "type": 0,
           "doorRando": true
@@ -1600,6 +1646,12 @@
       "doors": [
         {
           "target": "508"
+        }
+      ],
+      "items": [
+        {
+          "id": 1,
+          "type": 0
         }
       ],
       "requires": [ 40 ]
@@ -1712,6 +1764,12 @@
         },
         {
           "target": "511"
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "type": 0
         }
       ],
       "requires": [ 40 ]
@@ -1841,6 +1899,16 @@
           "noUnlock": true
         }
       ],
+      "items": [
+        {
+          "id": 7,
+          "type": 0
+        },
+        {
+          "id": 8,
+          "type": 0
+        }
+      ],
       "enemies": [
         {
           "keepState": true,
@@ -1889,6 +1957,12 @@
       "doors": [
         {
           "target": "201"
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "type": 0
         }
       ]
     },

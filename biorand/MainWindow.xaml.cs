@@ -800,7 +800,6 @@ namespace IntelOrca.Biohazard.BioRand
                     panelRando.Visibility = Visibility.Visible;
                     if (index == 0)
                     {
-                        chkIncludeDocuments.IsEnabled = false;
                         chkNPCsRE1.IsEnabled = true;
                         chkNPCsRE2.IsEnabled = false;
                         chkNPCsOther.IsEnabled = false;
@@ -809,12 +808,9 @@ namespace IntelOrca.Biohazard.BioRand
                         _config.IncludeNPCRE2 = false;
                         _config.IncludeNPCRE3 = false;
                         _config.IncludeNPCOther = false;
-
-                        _config.IncludeDocuments = false;
                     }
                     else
                     {
-                        chkIncludeDocuments.IsEnabled = true;
                         chkNPCsRE1.IsEnabled = true;
                         chkNPCsRE2.IsEnabled = true;
                         chkNPCsOther.IsEnabled = true;
