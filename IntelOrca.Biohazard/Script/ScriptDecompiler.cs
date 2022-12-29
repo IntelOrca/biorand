@@ -62,8 +62,10 @@ namespace IntelOrca.Biohazard.Script
             base.VisitVersion(version);
             if (version == BioVersion.Biohazard1)
                 _constantTable = new Bio1ConstantTable();
+            else
+                _constantTable = new Bio2ConstantTable();
 
-            _sb.WriteLine(".version " + (int)version);
+            // _sb.WriteLine(".version " + (int)version);
         }
 
         public override void VisitBeginScript(BioScriptKind kind)
@@ -126,7 +128,7 @@ namespace IntelOrca.Biohazard.Script
             if (AssemblyFormat)
             {
                 if (Version != BioVersion.Biohazard1)
-                    _sb.WriteLine($"sub_{index:X2}:");
+                    _sb.WriteLine($".proc sub_{index:X2}");
             }
             else
             {
@@ -205,22 +207,23 @@ namespace IntelOrca.Biohazard.Script
             }
             else
             {
-                switch ((OpcodeV2)opcode)
-                {
-                    case OpcodeV2.AotSet:
-                    case OpcodeV2.DoorAotSe:
-                    case OpcodeV2.DoorAotSet4p:
-                    case OpcodeV2.SceEmSet:
-                    case OpcodeV2.AotReset:
-                    case OpcodeV2.ItemAotSet:
-                    case OpcodeV2.ItemAotSet4p:
-                    case OpcodeV2.XaOn:
-                        base.VisitOpcode(offset, opcodeSpan);
-                        break;
-                    default:
-                        VisitOpcode(offset, (OpcodeV2)opcode, br);
-                        break;
-                }
+                VisitOpcode(offset, (OpcodeV2)opcode, br);
+                // switch ((OpcodeV2)opcode)
+                // {
+                //     case OpcodeV2.AotSet:
+                //     case OpcodeV2.DoorAotSe:
+                //     case OpcodeV2.DoorAotSet4p:
+                //     case OpcodeV2.SceEmSet:
+                //     case OpcodeV2.AotReset:
+                //     case OpcodeV2.ItemAotSet:
+                //     case OpcodeV2.ItemAotSet4p:
+                //     case OpcodeV2.XaOn:
+                //         base.VisitOpcode(offset, opcodeSpan);
+                //         break;
+                //     default:
+                //         VisitOpcode(offset, (OpcodeV2)opcode, br);
+                //         break;
+                // }
             }
         }
 
@@ -612,6 +615,12 @@ namespace IntelOrca.Biohazard.Script
 
         private void VisitOpcode(int offset, OpcodeV2 opcode, BinaryReader br)
         {
+            if (AssemblyFormat)
+            {
+                DiassembleGeneralOpcode(br, offset, (byte)opcode);
+                return;
+            }
+
             var sb = _sb;
             br.ReadByte();
             switch (opcode)
@@ -1215,10 +1224,16 @@ namespace IntelOrca.Biohazard.Script
             var colonIndex = signature.IndexOf(':');
             if (colonIndex == -1)
             {
-                opcodeName = "unk";
-                parameters.Add(opcode);
+                opcodeName = signature;
+                if (opcodeName == "")
+                {
+                    opcodeName = "unk";
+                    parameters.Add(opcode);
+                }
                 foreach (var b in br.ReadBytes(length))
+                {
                     parameters.Add(b);
+                }
             }
             else
             {
@@ -1235,6 +1250,14 @@ namespace IntelOrca.Biohazard.Script
                                 parameters.Add(_sb.GetLabelName(offset + blockLen));
                                 break;
                             }
+                        case 'L':
+                        case '~':
+                            {
+                                var blockLen = c == '~' ? (int)br.ReadInt16() : (int)br.ReadUInt16();
+                                _sb.InsertLabel(offset + blockLen);
+                                parameters.Add(_sb.GetLabelName(offset + blockLen));
+                                break;
+                            }
                         case 'a':
                             {
                                 var temp = br.ReadByte();
@@ -1246,6 +1269,9 @@ namespace IntelOrca.Biohazard.Script
                             }
                         case 'u':
                             parameters.Add(br.ReadByte());
+                            break;
+                        case 'U':
+                            parameters.Add(br.ReadUInt16());
                             break;
                         case 'I':
                             parameters.Add(br.ReadInt16());

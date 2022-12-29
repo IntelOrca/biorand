@@ -15,14 +15,17 @@ namespace IntelOrca.Biohazard.Script
         private ParserState _restoreState;
         private List<string> _procNames = new List<string>();
         private List<(string, int)> _labels = new List<(string, int)>();
-        private List<(int, Token)> _labelReferences = new List<(int, Token)>();
+        private List<(int, int, Token)> _labelReferences = new List<(int, int, Token)>();
         private List<byte> _procData = new List<byte>();
+        private List<byte[]> _procedures = new List<byte[]>();
         private byte _currentOpcode;
         private string _currentOpcodeSignature = "";
         private int _signatureIndex;
         private BioVersion? _version;
         private BioScriptKind? _currScriptKind;
         private BioScriptKind? _lastScriptKind;
+        private int _operandState;
+        private int _operandValue;
 
         public ErrorList Errors { get; } = new ErrorList();
         public byte[] OutputInit { get; private set; } = new byte[0];
@@ -93,6 +96,10 @@ namespace IntelOrca.Biohazard.Script
                         {
                             _version = num == 1 ? BioVersion.Biohazard1 : BioVersion.Biohazard2;
                             _state = num == 1 ? ParserState.ExpectOpcode : ParserState.Default;
+                            if (_version == BioVersion.Biohazard1)
+                                _constantTable = new Bio1ConstantTable();
+                            else
+                                _constantTable = new Bio2ConstantTable();
                         }
                     }
                     break;
@@ -146,12 +153,12 @@ namespace IntelOrca.Biohazard.Script
                     if (token.Kind == TokenKind.Number)
                     {
                         AddOperandNumber(token);
-                        _state = ParserState.ExpectComma;
+                        _state = ParserState.ExpectCommaOrOperator;
                     }
                     else if (token.Kind == TokenKind.Symbol)
                     {
                         AddOperandSymbol(token);
-                        _state = ParserState.ExpectComma;
+                        _state = ParserState.ExpectCommaOrOperator;
                     }
                     else if (TokenIsEndOfLine(token))
                     {
@@ -159,9 +166,15 @@ namespace IntelOrca.Biohazard.Script
                         _state = ParserState.ExpectOpcode;
                     }
                     break;
-                case ParserState.ExpectComma:
-                    if (token.Kind == TokenKind.Comma)
+                case ParserState.ExpectCommaOrOperator:
+                    if (token.Kind == TokenKind.BitwiseOr)
                     {
+                        _operandState = 1;
+                        _state = ParserState.ExpectOperand;
+                    }
+                    else if (token.Kind == TokenKind.Comma)
+                    {
+                        EndOperand();
                         _state = ParserState.ExpectOperand;
                     }
                     else if (TokenIsEndOfLine(token))
@@ -228,6 +241,8 @@ namespace IntelOrca.Biohazard.Script
                     }
                     else
                     {
+                        if (_procedures.Count != 0 || _procData.Count != 0)
+                            EndProcedure();
                         _state = ParserState.ExpectProcName;
                     }
                     break;
@@ -241,12 +256,16 @@ namespace IntelOrca.Biohazard.Script
 
         private void BeginScript()
         {
+            _procedures.Clear();
             _procNames.Clear();
             _labels.Clear();
             _labelReferences.Clear();
             _procData.Clear();
-            _procData.Add(0);
-            _procData.Add(0);
+            if (_version == BioVersion.Biohazard1)
+            {
+                _procData.Add(0);
+                _procData.Add(0);
+            }
         }
 
         private void EndScript()
@@ -257,20 +276,39 @@ namespace IntelOrca.Biohazard.Script
             FixLabelReferences();
             if (Errors.Count == 0)
             {
-                var procLength = _procData.Count;
-                if (procLength <= 2)
+                if (_version == BioVersion.Biohazard1)
                 {
-                    // Empty script
-                    procLength = 0;
+                    var procLength = _procData.Count;
+                    if (procLength <= 2)
+                    {
+                        // Empty script
+                        procLength = 0;
+                    }
+
+                    _procData[0] = (byte)(procLength & 0xFF);
+                    _procData[1] = (byte)(procLength >> 8);
+                    _procData.Add(0);
+                    while ((_procData.Count & 3) != 0)
+                    {
+                        _procData.Add(0);
+                    }
+                }
+                else
+                {
+                    EndProcedure();
+
+                    var offset = _procedures.Count * 2;
+                    foreach (var p in _procedures)
+                    {
+                        WriteUint16((ushort)offset);
+                        offset += p.Length;
+                    }
+                    foreach (var p in _procedures)
+                    {
+                        _procData.AddRange(p);
+                    }
                 }
 
-                _procData[0] = (byte)(procLength & 0xFF);
-                _procData[1] = (byte)(procLength >> 8);
-                _procData.Add(0);
-                while ((_procData.Count & 3) != 0)
-                {
-                    _procData.Add(0);
-                }
                 var output = _procData.ToArray();
                 if (_currScriptKind == BioScriptKind.Main)
                     OutputMain = output;
@@ -287,6 +325,12 @@ namespace IntelOrca.Biohazard.Script
             BeginScript();
         }
 
+        private void EndProcedure()
+        {
+            _procedures.Add(_procData.ToArray());
+            _procData.Clear();
+        }
+
         private bool AddLabel(string name)
         {
             if (_labels.Any(x => x.Item1 == name))
@@ -296,9 +340,9 @@ namespace IntelOrca.Biohazard.Script
             return true;
         }
 
-        private void RecordLabelReference(in Token token)
+        private void RecordLabelReference(int size, in Token token)
         {
-            _labelReferences.Add((_procData.Count, token));
+            _labelReferences.Add((_procData.Count, size, token));
         }
 
         private bool BeginOpcode(string name)
@@ -323,6 +367,8 @@ namespace IntelOrca.Biohazard.Script
             if (colonIndex == -1)
             {
                 var length = _constantTable.GetInstructionSize(opcode.Value, null);
+                if (_currentOpcodeSignature != "")
+                    length--;
                 _currentOpcodeSignature = new string('u', length);
             }
             else
@@ -345,29 +391,58 @@ namespace IntelOrca.Biohazard.Script
             if (!CheckOperandLength(in token))
                 return;
 
+            if (_operandState == 0)
+            {
+                _operandState = 1;
+                _operandValue = num;
+            }
+            else if (_operandState == 1)
+            {
+                var arg = _currentOpcodeSignature[_signatureIndex];
+                if (arg == 'l' || arg == 'L')
+                {
+                    EmitError(in token, ErrorCodes.LabelOperationsNotAllowed);
+                }
+
+                _operandValue |= num;
+            }
+        }
+
+        private void EndOperand()
+        {
+            if (_operandState == 0)
+                return;
+
             if (_currentOpcode == UnkOpcode)
             {
-                WriteUInt8((byte)num);
+                WriteUInt8((byte)_operandValue);
             }
             else
             {
                 var arg = _currentOpcodeSignature[_signatureIndex];
                 if (arg == 'I')
                 {
-                    WriteInt16((short)num);
+                    WriteInt16((short)_operandValue);
+                }
+                else if (arg == 'L' || arg == 'U')
+                {
+                    WriteUint16((ushort)_operandValue);
                 }
                 else if (arg == 'r')
                 {
-                    var room = num & 0xFF;
-                    var stage = num >> 8;
+                    var room = _operandValue & 0xFF;
+                    var stage = (_operandValue >> 8) & 0xFF;
                     WriteUInt8((byte)((stage << 5) | (room & 0b11111)));
                 }
                 else
                 {
-                    WriteUInt8((byte)num);
+                    WriteUInt8((byte)_operandValue);
                 }
                 _signatureIndex++;
             }
+
+            _operandState = 0;
+            _operandValue = 0;
         }
 
         private void AddOperandSymbol(in Token token)
@@ -376,9 +451,9 @@ namespace IntelOrca.Biohazard.Script
                 return;
 
             var arg = _currentOpcodeSignature[_signatureIndex];
-            if (arg == 'l')
+            if (arg == 'l' || arg == 'L')
             {
-                RecordLabelReference(in token);
+                RecordLabelReference(arg == 'l' ? 1 : 2, in token);
                 AddOperandNumber(in token, 0);
             }
             else
@@ -408,6 +483,7 @@ namespace IntelOrca.Biohazard.Script
 
         private bool EndCurrentOpcode(in Token token)
         {
+            EndOperand();
             if (_currentOpcode != UnkOpcode && _signatureIndex != _currentOpcodeSignature.Length)
             {
                 EmitError(in token, ErrorCodes.IncorrectNumberOfOperands);
@@ -418,7 +494,7 @@ namespace IntelOrca.Biohazard.Script
 
         private void FixLabelReferences()
         {
-            foreach (var (offset, t) in _labelReferences)
+            foreach (var (offset, size, t) in _labelReferences)
             {
                 var labelIndex = _labels.FindIndex(x => x.Item1 == t.Text);
                 if (labelIndex == -1)
@@ -428,8 +504,17 @@ namespace IntelOrca.Biohazard.Script
                 else
                 {
                     var labelAddress = _labels[labelIndex].Item2;
+                    var value = labelAddress - offset + size;
                     // TODO Check range
-                    _procData[offset] = (byte)(labelAddress - offset + 1);
+                    if (size == 1)
+                    {
+                        _procData[offset] = (byte)value;
+                    }
+                    else
+                    {
+                        _procData[offset + 0] = (byte)(value & 0xFF);
+                        _procData[offset + 1] = (byte)((value >> 8) & 0xFF);
+                    }
                 }
             }
         }
@@ -460,6 +545,12 @@ namespace IntelOrca.Biohazard.Script
             _procData.Add((byte)(s >> 8));
         }
 
+        private void WriteUint16(ushort s)
+        {
+            _procData.Add((byte)(s & 0xFF));
+            _procData.Add((byte)(s >> 8));
+        }
+
         private enum ParserState
         {
             Default,
@@ -469,7 +560,7 @@ namespace IntelOrca.Biohazard.Script
             ExpectProcName,
             ExpectOpcode,
             ExpectOperand,
-            ExpectComma,
+            ExpectCommaOrOperator,
         }
 
         private class Lexer
@@ -568,8 +659,24 @@ namespace IntelOrca.Biohazard.Script
                     }
                 }
                 if (ParseOperator())
-                    return CreateToken(TokenKind.Comma);
+                {
+                    var length = _sIndex - _offset;
+                    if (length == 1)
+                    {
+                        var ch = GetLastReadChar();
+                        if (ch == ',')
+                            return CreateToken(TokenKind.Comma);
+                        else if (ch == '|')
+                            return CreateToken(TokenKind.BitwiseOr);
+                    }
+                    return CreateToken(TokenKind.Unknown);
+                }
                 throw new Exception();
+            }
+
+            private char GetLastReadChar()
+            {
+                return _s[_sIndex - 1];
             }
 
             private Token CreateToken(TokenKind kind)
@@ -753,6 +860,7 @@ namespace IntelOrca.Biohazard.Script
 
         private enum TokenKind : byte
         {
+            Unknown,
             Whitespace,
             NewLine,
             Comment,
@@ -760,6 +868,7 @@ namespace IntelOrca.Biohazard.Script
             Symbol,
             Label,
             Comma,
+            BitwiseOr,
             Opcode,
             Directive,
             EOF
@@ -831,6 +940,7 @@ namespace IntelOrca.Biohazard.Script
             public const int ProcedureNotValid = 16;
             public const int ScdTypeAlreadySpecified = 17;
             public const int UnknownDirective = 18;
+            public const int LabelOperationsNotAllowed = 19;
 
             public static string GetMessage(int code) => _messages[code];
 
@@ -855,6 +965,7 @@ namespace IntelOrca.Biohazard.Script
                 "Procedures are not valid in SCD version 1.",
                 "SCD type already specified.",
                 "'{0}' is not a valid directive.",
+                "Operators can not be used with labels.",
             };
         }
     }

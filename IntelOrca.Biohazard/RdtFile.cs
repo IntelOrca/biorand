@@ -17,14 +17,31 @@ namespace IntelOrca.Biohazard
         public byte[] Data { get; private set; }
         public ulong Checksum { get; }
 
-        public RdtFile(string path, BioVersion version)
+        public RdtFile(string path)
+            : this(null, path)
         {
-            Version = version;
+        }
+
+        public RdtFile(string path, BioVersion version)
+            : this(version, path)
+        {
+        }
+
+        private RdtFile(BioVersion? version, string path)
+        {
             Data = File.ReadAllBytes(path);
+            Version = version ?? DetectVersion(Data);
             _offsets = ReadHeader();
             _lengths = GetChunkLengths();
             GetNumEventScripts();
             Checksum = Data.CalculateFnv1a();
+        }
+
+        private static BioVersion DetectVersion(byte[] data)
+        {
+            return data[0x12] == 0xFF && data[0x13] == 0xFF ?
+                BioVersion.Biohazard1 :
+                BioVersion.Biohazard2;
         }
 
         public void Save(string path)

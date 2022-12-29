@@ -20,7 +20,7 @@ namespace IntelOrca.Biohazard.Script.Opcodes
         public short Z { get; set; }
         public short D { get; set; }
         public ushort Animation { get; set; }
-        public byte Unk15 { get; set; }
+        public ushort Unk15 { get; set; }
 
         public byte Re1Unk04 { get; set; }
         public byte Re1Unk05 { get; set; }
@@ -66,7 +66,7 @@ namespace IntelOrca.Biohazard.Script.Opcodes
                 return new SceEmSetOpcode()
                 {
                     Offset = offset,
-                    Length = 21,
+                    Length = 22,
 
                     Opcode = opcode,
                     Unk01 = br.ReadByte(),
@@ -83,7 +83,7 @@ namespace IntelOrca.Biohazard.Script.Opcodes
                     Z = br.ReadInt16(),
                     D = br.ReadInt16(),
                     Animation = br.ReadUInt16(),
-                    Unk15 = br.ReadByte(),
+                    Unk15 = br.ReadUInt16(),
                 };
             }
         }

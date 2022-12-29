@@ -160,7 +160,7 @@ namespace IntelOrca.Biohazard.Script
 
             Write(name);
             if (AssemblyFormat)
-                MoveToColumn(asmColumn + 16);
+                MoveToColumn(asmColumn + 24);
             else
                 Write("(");
             for (int i = 0; i < args.Length; i++)
