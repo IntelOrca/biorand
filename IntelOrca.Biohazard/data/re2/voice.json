@@ -1,4 +1,6 @@
 {
+    "common/sound/room/room404.sap#5": { "rdt": "404", "player": 0, "actor": "leon" },
+
     "pl0/voice/stage0/v001.sap": { "player": 0, "actor": "narrator" },
     "pl0/voice/stage0/v002.sap": { "player": 0, "actor": "narrator" },
     "pl0/voice/stage0/v003.sap": { "player": 0, "actor": "narrator" },

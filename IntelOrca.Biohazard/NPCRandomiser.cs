@@ -415,7 +415,7 @@ namespace IntelOrca.Biohazard
                 var dstPath = GetVoicePath(_modPath, firstSample);
                 Directory.CreateDirectory(Path.GetDirectoryName(dstPath)!);
 
-                if (sampleOrder.Length == 1 && firstSample.Replacement?.IsClipped == false)
+                if (sampleOrder.Length == 1 && firstSample.Replacement?.IsClipped == false && firstSample.SapIndex == null)
                 {
                     var srcPath = GetVoicePath(firstSample.Replacement.Source);
                     CopySample(srcPath, dstPath);
@@ -437,7 +437,20 @@ namespace IntelOrca.Biohazard
                             builder.AppendSilence(sample.Length);
                         }
                     }
-                    builder.Save(dstPath);
+
+                    if (firstSample.SapIndex != null)
+                    {
+                        // Copy existing sap file first, then modify the embedded .wavs
+                        if (!File.Exists(dstPath))
+                        {
+                            File.Copy(GetVoicePath(firstSample), dstPath, true);
+                        }
+                        builder.SaveAt(dstPath, firstSample.SapIndex.Value);
+                    }
+                    else
+                    {
+                        builder.Save(dstPath);
+                    }
                 }
             }
         }
@@ -482,6 +495,13 @@ namespace IntelOrca.Biohazard
                 var sample = kvp.Value;
                 sample.BasePath = originalDataPath;
                 sample.Path = kvp.Key;
+                if (sample.Path.Contains("#"))
+                {
+                    var parts = sample.Path.Split('#');
+                    sample.Path = parts[0];
+                    sample.SapIndex = int.Parse(parts[1]);
+                }
+
                 var totalLength = GetVoiceLength(Path.Combine(originalDataPath, sample.Path));
                 if (sample.Strict)
                     sample.MaxLength = totalLength;
@@ -592,6 +612,7 @@ namespace IntelOrca.Biohazard
 
         public string? BasePath { get; set; }
         public string? Path { get; set; }
+        public int? SapIndex { get; set; }
         public string? Actor { get; set; }
         public string? Kind { get; set; }
         public string? Rdt { get; set; }
