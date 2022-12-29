@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace IntelOrca.Biohazard.Script
 {
     internal class ScriptBuilder
     {
-        private readonly StringBuilder _sb = new StringBuilder();
-        private Dictionary<int, int> _offsetToPosition = new Dictionary<int, int>();
-        private List<int> _labelQueue = new List<int>();
-        private int _linePosition;
+        private readonly List<Line> _lines = new List<Line>();
+        private readonly StringBuilder _line = new StringBuilder();
+        private readonly SortedSet<int> _labelOffsets = new SortedSet<int>();
         private int _indent;
         private int _indentAdjust = 4;
-        private int _lineLength;
 
         public bool AssemblyFormat { get; set; }
         public bool ListingFormat { get; set; }
@@ -35,26 +32,15 @@ namespace IntelOrca.Biohazard.Script
             _indent += _indentAdjust;
         }
 
-        public void WriteLabel(int offset)
-        {
-            if (_lineLength != 0)
-                WriteLine();
-            var oldIndent = _indent;
-            _indent = 0;
-            WriteLine("// " + GetLabelName(offset) + ":");
-            _indent = oldIndent;
-        }
-
         public void Write(string s)
         {
             WriteIndent();
-            _sb.Append(s);
-            _lineLength += s.Length;
+            _line.Append(s);
         }
 
         public void MoveToColumn(int index)
         {
-            var spacesToAdd = index - _lineLength;
+            var spacesToAdd = index - _line.Length;
             if (spacesToAdd > 0)
             {
                 Write(new string(' ', spacesToAdd));
@@ -70,15 +56,19 @@ namespace IntelOrca.Biohazard.Script
 
         public void WriteLine()
         {
-            if (_sb.Length != 0)
+            if (_line.Length != 0)
             {
-                while (IsTrailingSpace(_sb[_sb.Length - 1]))
-                    _sb.Remove(_sb.Length - 1, 1);
+                while (IsTrailingSpace(_line[_line.Length - 1]))
+                {
+                    _line.Remove(_line.Length - 1, 1);
+                }
             }
 
-            _sb.AppendLine();
-            _lineLength = 0;
-            _linePosition = _sb.Length;
+            _lines.Add(new Line(CurrentOffset, CurrentOpcodeBytes.Length, _line.ToString()));
+            _line.Clear();
+
+            CurrentOffset = 0;
+            CurrentOpcodeBytes = Array.Empty<byte>();
         }
 
         public void WriteLine(string s)
@@ -89,10 +79,9 @@ namespace IntelOrca.Biohazard.Script
 
         private void WriteIndent()
         {
-            if (_lineLength == 0)
+            if (_line.Length == 0)
             {
-                _sb.Append(' ', _indent);
-                _lineLength += _indent;
+                _line.Append(' ', _indent);
             }
         }
 
@@ -100,28 +89,11 @@ namespace IntelOrca.Biohazard.Script
         {
             CurrentOffset = offset;
             CurrentOpcodeBytes = opcodeBytes.ToArray();
-
-            _offsetToPosition.Add(offset, _linePosition);
-
-            var idx = _labelQueue.IndexOf(offset);
-            if (idx != -1)
-            {
-                _labelQueue.RemoveAt(idx);
-                InsertLabel(offset);
-            }
         }
 
         public void InsertLabel(int offset)
         {
-            if (_offsetToPosition.TryGetValue(offset, out var sbPosition))
-            {
-                _sb.Insert(sbPosition, "\n" + GetLabelName(offset) + ":\n");
-                _offsetToPosition.Remove(offset);
-            }
-            else
-            {
-                _labelQueue.Add(offset);
-            }
+            _labelOffsets.Add(offset);
         }
 
         public void OpenBlock()
@@ -179,6 +151,66 @@ namespace IntelOrca.Biohazard.Script
             return $"off_{offset:X4}";
         }
 
-        public override string ToString() => _sb.ToString();
+        public override string ToString()
+        {
+            var offsetMap = new Dictionary<int, int>();
+            var sb = new StringBuilder();
+            foreach (var line in _lines)
+            {
+                if (line.Offset != 0)
+                {
+                    var labelRequired = false;
+                    var offsets = _labelOffsets.GetViewBetween(line.Offset, line.EndOffset - 1);
+                    foreach (var offset in offsets)
+                    {
+                        labelRequired = true;
+                        if (offset != line.Offset)
+                        {
+                            offsetMap[offset] = line.Offset;
+                        }
+                    }
+                    if (labelRequired)
+                    {
+                        sb.Append('\n');
+                        sb.Append(GetLabelName(line.Offset));
+                        sb.Append(':');
+                        sb.Append('\n');
+                    }
+                }
+
+                sb.Append(line.Text);
+                sb.Append('\n');
+            }
+            foreach (var kvp in offsetMap)
+            {
+                var oldName = GetLabelName(kvp.Key);
+                var newName = GetLabelName(kvp.Value);
+                var delta = kvp.Key - kvp.Value;
+                if (delta > 0)
+                    newName += " + " + delta;
+                else
+                    newName += " - " + -delta;
+                sb.Replace(oldName, newName);
+            }
+            return sb.ToString();
+        }
+
+        private struct Line
+        {
+            public int Offset { get; }
+            public int Length { get; }
+            public string Text { get; }
+
+            public int EndOffset => Offset + Length;
+
+            public Line(int offset, int length, string text)
+            {
+                Offset = offset;
+                Length = length;
+                Text = text;
+            }
+
+            public override string ToString() => Text;
+        }
     }
 }

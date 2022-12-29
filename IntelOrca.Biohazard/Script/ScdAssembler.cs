@@ -9,6 +9,12 @@ namespace IntelOrca.Biohazard.Script
     {
         private const byte UnkOpcode = 255;
 
+        private const int OperandStateNone = 0;
+        private const int OperandStateValue = 1;
+        private const int OperandStateOr = 2;
+        private const int OperandStateAdd = 3;
+        private const int OperandStateSubtract = 4;
+
         private IConstantTable _constantTable = new Bio1ConstantTable();
 
         private ParserState _state;
@@ -167,9 +173,19 @@ namespace IntelOrca.Biohazard.Script
                     }
                     break;
                 case ParserState.ExpectCommaOrOperator:
-                    if (token.Kind == TokenKind.BitwiseOr)
+                    if (token.Kind == TokenKind.Add)
                     {
-                        _operandState = 1;
+                        _operandState = OperandStateAdd;
+                        _state = ParserState.ExpectOperand;
+                    }
+                    else if (token.Kind == TokenKind.Subtract)
+                    {
+                        _operandState = OperandStateSubtract;
+                        _state = ParserState.ExpectOperand;
+                    }
+                    else if (token.Kind == TokenKind.BitwiseOr)
+                    {
+                        _operandState = OperandStateOr;
                         _state = ParserState.ExpectOperand;
                     }
                     else if (token.Kind == TokenKind.Comma)
@@ -273,7 +289,10 @@ namespace IntelOrca.Biohazard.Script
             if (_currScriptKind == null)
                 return;
 
-            FixLabelReferences();
+            if (_version == BioVersion.Biohazard1)
+            {
+                FixLabelReferences();
+            }
             if (Errors.Count == 0)
             {
                 if (_version == BioVersion.Biohazard1)
@@ -327,7 +346,10 @@ namespace IntelOrca.Biohazard.Script
 
         private void EndProcedure()
         {
+            FixLabelReferences();
             _procedures.Add(_procData.ToArray());
+            _labels.Clear();
+            _labelReferences.Clear();
             _procData.Clear();
         }
 
@@ -391,21 +413,25 @@ namespace IntelOrca.Biohazard.Script
             if (!CheckOperandLength(in token))
                 return;
 
-            if (_operandState == 0)
+            switch (_operandState)
             {
-                _operandState = 1;
-                _operandValue = num;
+                case OperandStateNone:
+                    _operandValue = num;
+                    break;
+                case OperandStateValue:
+                    EmitError(in token, ErrorCodes.ExpectedOperator);
+                    break;
+                case OperandStateOr:
+                    _operandValue |= num;
+                    break;
+                case OperandStateAdd:
+                    _operandValue += num;
+                    break;
+                case OperandStateSubtract:
+                    _operandValue -= num;
+                    break;
             }
-            else if (_operandState == 1)
-            {
-                var arg = _currentOpcodeSignature[_signatureIndex];
-                if (arg == 'l' || arg == 'L')
-                {
-                    EmitError(in token, ErrorCodes.LabelOperationsNotAllowed);
-                }
-
-                _operandValue |= num;
-            }
+            _operandState = OperandStateValue;
         }
 
         private void EndOperand()
@@ -508,12 +534,14 @@ namespace IntelOrca.Biohazard.Script
                     // TODO Check range
                     if (size == 1)
                     {
-                        _procData[offset] = (byte)value;
+                        _procData[offset] = (byte)(_procData[offset] + value);
                     }
                     else
                     {
-                        _procData[offset + 0] = (byte)(value & 0xFF);
-                        _procData[offset + 1] = (byte)((value >> 8) & 0xFF);
+                        var customOffset = (short)(_procData[offset + 0] | (_procData[offset + 1] << 8));
+                        var updatedValue = value + customOffset;
+                        _procData[offset + 0] = (byte)(updatedValue & 0xFF);
+                        _procData[offset + 1] = (byte)((updatedValue >> 8) & 0xFF);
                     }
                 }
             }
@@ -666,6 +694,10 @@ namespace IntelOrca.Biohazard.Script
                         var ch = GetLastReadChar();
                         if (ch == ',')
                             return CreateToken(TokenKind.Comma);
+                        else if (ch == '+')
+                            return CreateToken(TokenKind.Add);
+                        else if (ch == '-')
+                            return CreateToken(TokenKind.Subtract);
                         else if (ch == '|')
                             return CreateToken(TokenKind.BitwiseOr);
                     }
@@ -868,6 +900,8 @@ namespace IntelOrca.Biohazard.Script
             Symbol,
             Label,
             Comma,
+            Add,
+            Subtract,
             BitwiseOr,
             Opcode,
             Directive,
@@ -940,7 +974,7 @@ namespace IntelOrca.Biohazard.Script
             public const int ProcedureNotValid = 16;
             public const int ScdTypeAlreadySpecified = 17;
             public const int UnknownDirective = 18;
-            public const int LabelOperationsNotAllowed = 19;
+            public const int ExpectedOperator = 19;
 
             public static string GetMessage(int code) => _messages[code];
 
@@ -965,7 +999,7 @@ namespace IntelOrca.Biohazard.Script
                 "Procedures are not valid in SCD version 1.",
                 "SCD type already specified.",
                 "'{0}' is not a valid directive.",
-                "Operators can not be used with labels.",
+                "Expected operator.",
             };
         }
     }
