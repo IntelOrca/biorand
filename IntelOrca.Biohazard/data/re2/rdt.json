@@ -1140,6 +1140,11 @@
           "doorRando": true,
           "player": 1
         }
+      ],
+      "npcs": [
+        {
+          "excludeTypes": [ 64, 66, 74 ]
+        }
       ]
     },
     "219": {

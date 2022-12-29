@@ -21,6 +21,7 @@ namespace IntelOrca.Biohazard
         public OpcodeBase[] Opcodes { get; set; } = new OpcodeBase[0];
         public ScriptAst? Ast { get; set; }
         public List<KeyValuePair<int, byte>> Patches { get; } = new List<KeyValuePair<int, byte>>();
+        public List<byte> AdditionalInitSCD { get; } = new List<byte>();
 
         public IEnumerable<IDoorAotSetOpcode> Doors => Opcodes.OfType<IDoorAotSetOpcode>();
         public IEnumerable<SceEmSetOpcode> Enemies => Opcodes.OfType<SceEmSetOpcode>();
@@ -228,8 +229,31 @@ namespace IntelOrca.Biohazard
                 }
             }
 
+            PrependOpcodes();
+
             Directory.CreateDirectory(Path.GetDirectoryName(ModifiedPath!)!);
             File.WriteAllBytes(ModifiedPath!, _rdtFile.Data);
+        }
+
+        private void PrependOpcodes()
+        {
+            if (AdditionalInitSCD.Count == 0)
+                return;
+
+            var initScd = _rdtFile.GetScd(BioScriptKind.Init);
+            var ms = new MemoryStream(initScd);
+            var br = new BinaryReader(ms);
+            var firstSub = br.ReadUInt16();
+            var numSubs = firstSub / 2;
+            if (numSubs != 1)
+                throw new NotImplementedException();
+
+            var newMs = new MemoryStream();
+            var bw = new BinaryWriter(newMs);
+            bw.Write((ushort)2);
+            bw.Write(AdditionalInitSCD.ToArray());
+            bw.Write(initScd.Skip(2).ToArray());
+            _rdtFile.SetScd(BioScriptKind.Init, newMs.ToArray());
         }
 
         public void Print()

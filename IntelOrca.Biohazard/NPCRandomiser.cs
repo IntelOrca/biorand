@@ -62,6 +62,27 @@ namespace IntelOrca.Biohazard
 
             var customSamples = AddCustom();
             _uniqueSamples.AddRange(customSamples);
+
+            FixRooms();
+        }
+
+        private void FixRooms()
+        {
+            // For RE 2, room 216 and 301 need the partner removed to prevent cutscene softlock
+            DetachPartner(new RdtId(1, 0x16));
+            DetachPartner(new RdtId(2, 0x01));
+        }
+
+        private void DetachPartner(RdtId rdtId)
+        {
+            var rdt = _gameData.GetRdt(rdtId);
+            if (rdt != null && rdt.Version == BioVersion.Biohazard2)
+            {
+                rdt.AdditionalInitSCD.Add(0x22);
+                rdt.AdditionalInitSCD.Add(0x01);
+                rdt.AdditionalInitSCD.Add(0x03);
+                rdt.AdditionalInitSCD.Add(0x00);
+            }
         }
 
         public VoiceSample[] AddToSelection(BioVersion version, string originalDataPath)
