@@ -104,41 +104,13 @@ namespace IntelOrca.Biohazard
                 throw new InvalidOperationException();
             }
 
-            var ms = new MemoryStream();
-            var bw = new BinaryWriter(ms);
-            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
-            {
-                var br = new BinaryReader(fs);
-                bw.Write(br.ReadUInt64());
+            _stream.Position = 0;
+            var newSample = _stream.ToArray();
+            _stream.Position = _stream.Length;
 
-                var currentIndex = 0;
-                while (fs.Position != fs.Length)
-                {
-                    var riffMagic = br.ReadUInt32();
-                    if (riffMagic != g_riffMagic)
-                    {
-                        throw new InvalidOperationException($"Failed to process '{path}'.");
-                    }
-
-                    var wavLength = br.ReadUInt32() + 8;
-                    fs.Position -= 8;
-                    if (currentIndex == sapIndex)
-                    {
-                        fs.Position += wavLength;
-
-                        _stream.Position = 0;
-                        _stream.CopyTo(ms);
-                        _stream.Position = _stream.Length;
-                    }
-                    else
-                    {
-                        fs.CopyAmountTo(ms, wavLength);
-                    }
-                    currentIndex++;
-                }
-            }
-
-            File.WriteAllBytes(path, ms.ToArray());
+            var sapFile = new SapFile(path);
+            sapFile.WavFiles[sapIndex] = newSample;
+            sapFile.Save(path);
         }
 
         public void AppendSilence(double length)

@@ -125,7 +125,7 @@ namespace IntelOrca.Biohazard.Script
                 case 0x80:
                     return 1;
                 case 0xFC:
-                    var blockLen = br.ReadByte();
+                    var blockLen = br!.ReadByte();
                     return 2 + blockLen;
                 case 0xFF:
                     return 2;

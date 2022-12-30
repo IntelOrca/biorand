@@ -97,6 +97,27 @@ namespace IntelOrca.Biohazard
         public VoiceSample[] AddCustom()
         {
             var samples = new List<VoiceSample>();
+            foreach (var actorPath in _dataManager.GetDirectoriesIn("hurt"))
+            {
+                var actor = Path.GetFileName(actorPath);
+                var sampleFiles = Directory.GetFiles(actorPath);
+                foreach (var sampleFile in sampleFiles)
+                {
+                    if (!sampleFile.EndsWith(".wav", StringComparison.OrdinalIgnoreCase) &&
+                        !sampleFile.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    var sample = new VoiceSample();
+                    sample.BasePath = Path.GetDirectoryName(sampleFile);
+                    sample.Path = Path.GetFileName(sampleFile);
+                    sample.Actor = actor;
+                    sample.End = GetVoiceLength(sampleFile);
+                    sample.Kind = "hurt";
+                    samples.Add(sample);
+                }
+            }
             foreach (var actorPath in _dataManager.GetDirectoriesIn("voice"))
             {
                 var actor = Path.GetFileName(actorPath);
@@ -228,7 +249,7 @@ namespace IntelOrca.Biohazard
                 {
                     actorToNewActorMap[pc] = pc;
                 }
-                RandomizeVoices(rdt, voiceRng, cutscene.Key, actorToNewActorMap);
+                RandomizeVoices(rdt, voiceRng, cutscene.Key, pc!, actorToNewActorMap);
                 if (actorToNewActorMap.Count != 1)
                 {
                     _logger.WriteLine($"  cutscene #{cutscene.Key} contains {string.Join(", ", actorToNewActorMap.Values)}");
@@ -309,8 +330,9 @@ namespace IntelOrca.Biohazard
             return actorToNewActorMap;
         }
 
-        private void RandomizeVoices(Rdt rdt, Rng rng, int cutscene, Dictionary<string, string> actorToNewActorMap)
+        private void RandomizeVoices(Rdt rdt, Rng rng, int cutscene, string pc, Dictionary<string, string> actorToNewActorMap)
         {
+            string? radioActor = null;
             var actors = actorToNewActorMap.Values.ToArray();
             foreach (var sample in _voiceSamples)
             {
@@ -322,18 +344,32 @@ namespace IntelOrca.Biohazard
                     var kind = sample.Kind;
                     if (kind == "radio")
                     {
-                        RandomizeVoice(rng, sample, actor, actor, sample.Kind, actors);
+                        if (radioActor == null)
+                        {
+                            radioActor = GetRandomRadioActor(_rng, pc) ?? actor;
+                        }
+                        RandomizeVoice(rng, sample, actor, radioActor, sample.Kind, actors);
                     }
                     else if (actorToNewActorMap.TryGetValue(actor, out var newActor))
                     {
-                        RandomizeVoice(rng, sample, actor, newActor, null, actors);
+                        RandomizeVoice(rng, sample, actor, newActor, kind, actors);
                     }
                     else
                     {
-                        RandomizeVoice(rng, sample, actor, actor, null, actors);
+                        RandomizeVoice(rng, sample, actor, actor, kind, actors);
                     }
                 }
             }
+        }
+
+        private string? GetRandomRadioActor(Rng rng, string pc)
+        {
+            var actors = _uniqueSamples
+                .Where(x => x.Kind == "radio" && x.Actor != pc)
+                .Select(x => x.Actor)
+                .Distinct()
+                .Shuffle(rng);
+            return actors.FirstOrDefault();
         }
 
         private void RandomizeVoice(Rng rng, VoiceSample voice, string actor, string newActor, string? kind, string[] actors)
@@ -350,7 +386,7 @@ namespace IntelOrca.Biohazard
                 var logKindSource = kind == null ? "" : $",{kind}";
                 var logKindTarget = randomVoice.Source.Kind == null ? "" : $",{randomVoice.Source.Kind}";
                 var logClip = randomVoice.IsClipped ? $" ({randomVoice.Start:0.00}-{randomVoice.End:0.00})" : "";
-                _logger.WriteLine($"    {voice.Path} [{actor}{logKindSource}] becomes {randomVoice.Path} [{newActor}{logKindTarget}]{logClip}");
+                _logger.WriteLine($"    {voice.PathWithSapIndex} [{actor}{logKindSource}] becomes {randomVoice.PathWithSapIndex} [{newActor}{logKindTarget}]{logClip}");
             }
         }
 
@@ -393,7 +429,7 @@ namespace IntelOrca.Biohazard
                 return SampleCheckResult.Bad;
             if (sample.Actor != actor)
                 return SampleCheckResult.Bad;
-            if (sample.Kind != kind && (kind == "radio" || sample.Kind == "radio"))
+            if (sample.Kind != kind)
                 return SampleCheckResult.Bad;
             if (!sample.CheckConditions(actors))
                 return sample.NameClipped != null ? SampleCheckResult.Clip : SampleCheckResult.Bad;
@@ -404,7 +440,7 @@ namespace IntelOrca.Biohazard
 
         private void SetVoices()
         {
-            var groups = _voiceSamples.GroupBy(x => x.Path);
+            var groups = _voiceSamples.GroupBy(x => (x.Path, x.SapIndex));
             foreach (var group in groups)
             {
                 var sampleOrder = group.OrderBy(x => x.Start).ToArray();
@@ -635,6 +671,8 @@ namespace IntelOrca.Biohazard
 
         public VoiceSampleReplacement? Replacement { get; set; }
 
+        public string? PathWithSapIndex => SapIndex == null ? Path : $"{Path}#{SapIndex}";
+
         public VoiceSample CreateSlice(VoiceSampleSplit sub, double start, double end)
         {
             var nameClip = sub.NameClipped;
@@ -733,7 +771,7 @@ namespace IntelOrca.Biohazard
         public double Start { get; }
         public double End { get; }
 
-        public string Path => Source.Path!;
+        public string PathWithSapIndex => Source.PathWithSapIndex!;
         public double Length => End - Start;
         public bool IsClipped => Start != Source.Start || End != Source.End || !Source.Vanilla;
 
