@@ -58,6 +58,21 @@ namespace IntelOrca.Scd
                 }
                 return 0;
             }
+            else if (args.Contains("--decompile"))
+            {
+                if (rdtPath.EndsWith(".rdt", StringComparison.OrdinalIgnoreCase))
+                {
+                    var rdtFile = new RdtFile(rdtPath);
+                    var script = rdtFile.DecompileScd();
+                    File.WriteAllText(Path.ChangeExtension(Path.GetFileName(rdtPath), ".bio"), script);
+                    return 0;
+                }
+                else
+                {
+                    Console.Error.WriteLine("Only RDT files can be decompiled.");
+                    return 1;
+                }
+            }
             else
             {
                 if (rdtPath.EndsWith(".s", StringComparison.OrdinalIgnoreCase))

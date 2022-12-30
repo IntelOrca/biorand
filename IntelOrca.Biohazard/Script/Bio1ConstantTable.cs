@@ -34,6 +34,11 @@ namespace IntelOrca.Biohazard.Script
             return "";
         }
 
+        public string? GetConstant(byte opcode, int pIndex, BinaryReader br)
+        {
+            return null;
+        }
+
         public string? GetConstant(char kind, int value)
         {
             switch (kind)
@@ -41,8 +46,6 @@ namespace IntelOrca.Biohazard.Script
                 case 'e':
                     return GetEnemyName((byte)value);
                 case 't':
-                    return GetItemName((byte)value);
-                case 'T':
                     if (value == 255)
                         return "LOCKED";
                     else if (value == 254)
@@ -66,6 +69,17 @@ namespace IntelOrca.Biohazard.Script
             return null;
         }
 
+        private int? FindConstantValue(string symbol, char kind)
+        {
+            for (int i = 0; i < 256; i++)
+            {
+                var name = GetConstant(kind, i);
+                if (name == symbol)
+                    return i;
+            }
+            return null;
+        }
+
         public int? GetConstantValue(string symbol)
         {
             switch (symbol)
@@ -78,35 +92,11 @@ namespace IntelOrca.Biohazard.Script
                     return 0;
             }
             if (symbol.StartsWith("ENEMY_"))
-            {
-                for (int i = 0; i < 255; i++)
-                {
-                    if (symbol == GetEnemyName((byte)i))
-                    {
-                        return i;
-                    }
-                }
-            }
+                return FindConstantValue(symbol, 'e');
             else if (symbol.StartsWith("ITEM_"))
-            {
-                for (int i = 0; i < 255; i++)
-                {
-                    if (symbol == GetItemName((byte)i))
-                    {
-                        return i;
-                    }
-                }
-            }
+                return FindConstantValue(symbol, 'i');
             else if (symbol.StartsWith("NITEM_"))
-            {
-                for (int i = 0; i < 255; i++)
-                {
-                    if (symbol == GetConstant('v', (byte)i))
-                    {
-                        return i;
-                    }
-                }
-            }
+                return FindConstantValue(symbol, 'v');
             else if (symbol.StartsWith("RDT_"))
             {
                 var number = symbol.Substring(4);
@@ -289,27 +279,21 @@ namespace IntelOrca.Biohazard.Script
             "Mixed (Bright Blue-Green)"
         };
 
-
-
-
-
-
-
         private string[] _opcodes = new string[]
         {
             "end:u",
             "if:l",
             "else:l",
             "endif:u",
-            "ck:uau",
-            "set:uau",
+            "ck:ubu",
+            "set:ubu",
             "cmpb:uuu",
             "cmpw:uuuI",
             "setb:uuu",
             "cutnext:u",
             "cutcurr:u",
             "",
-            "door:uIIIIuuuuurIIIITu",
+            "door:uIIIIuuuuurIIIItu",
             "nitem:uIIIIvuuuuuuu",
             "nop:u",
             "",

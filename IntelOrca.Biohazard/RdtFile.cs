@@ -405,6 +405,13 @@ namespace IntelOrca.Biohazard
                 }
             }
         }
+
+        public string DecompileScd()
+        {
+            var scriptDecompiler = new ScriptDecompiler(false, false);
+            ReadScript(scriptDecompiler);
+            return scriptDecompiler.GetScript();
+        }
     }
 
     [DebuggerDisplay("Start = {Start} Length = {Length}")]

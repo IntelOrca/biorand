@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.Script
 {
@@ -14,35 +13,6 @@ namespace IntelOrca.Biohazard.Script
         private bool _constructingBinaryExpression;
         private int _expressionCount;
         private IConstantTable _constantTable = new Bio1ConstantTable();
-
-        private static readonly string[] g_sceNames = new string[] {
-            "SCE_AUTO",
-            "SCE_DOOR",
-            "SCE_ITEM",
-            "SCE_NORMAL",
-            "SCE_MESSAGE",
-            "SCE_EVENT",
-            "SCE_FLAG_CHG",
-            "SCE_WATER",
-            "SCE_MOVE",
-            "SCE_SAVE",
-            "SCE_ITEMBOX",
-            "SCE_DAMAGE",
-            "SCE_STATUS",
-            "SCE_HIKIDASHI",
-            "SCE_WINDOWS"
-        };
-
-        private static readonly string[] g_workKinds = new string[]
-        {
-            "WK_NONE",
-            "WK_PLAYER",
-            "WK_SPLAYER",
-            "WK_ENEMY",
-            "WK_OBJECT",
-            "WK_DOOR",
-            "WK_ALL"
-        };
 
         public bool AssemblyFormat => _sb.AssemblyFormat;
 
@@ -190,40 +160,18 @@ namespace IntelOrca.Biohazard.Script
                 CloseCurrentBlock();
             }
 
-            if (Version == BioVersion.Biohazard1)
+            if (AssemblyFormat)
+            {
+                DiassembleGeneralOpcode(br, offset, (byte)opcode);
+                return;
+            }
+            else if (Version == BioVersion.Biohazard1)
             {
                 VisitOpcode(offset, (OpcodeV1)opcode, br);
-                // switch ((OpcodeV1)opcode)
-                // {
-                //     case OpcodeV1.DoorAotSe:
-                //     case OpcodeV1.ItemAotSet:
-                //     case OpcodeV1.SceEmSet:
-                //         base.VisitOpcode(offset, opcodeSpan);
-                //         break;
-                //     default:
-                //         VisitOpcode(offset, (OpcodeV1)opcode, br);
-                //         break;
-                // }
             }
             else
             {
                 VisitOpcode(offset, (OpcodeV2)opcode, br);
-                // switch ((OpcodeV2)opcode)
-                // {
-                //     case OpcodeV2.AotSet:
-                //     case OpcodeV2.DoorAotSe:
-                //     case OpcodeV2.DoorAotSet4p:
-                //     case OpcodeV2.SceEmSet:
-                //     case OpcodeV2.AotReset:
-                //     case OpcodeV2.ItemAotSet:
-                //     case OpcodeV2.ItemAotSet4p:
-                //     case OpcodeV2.XaOn:
-                //         base.VisitOpcode(offset, opcodeSpan);
-                //         break;
-                //     default:
-                //         VisitOpcode(offset, (OpcodeV2)opcode, br);
-                //         break;
-                // }
             }
         }
 
@@ -257,211 +205,8 @@ namespace IntelOrca.Biohazard.Script
             }
         }
 
-        protected override void VisitAotSet(AotSetOpcode set)
-        {
-            _sb.WriteStandardOpcode("aot_set",
-                set.Id,
-                GetSCE(set.SCE),
-                GetSAT(set.SAT),
-                set.Floor,
-                set.Super,
-                set.X,
-                set.Z,
-                set.W,
-                set.D,
-                set.Data0,
-                set.Data1,
-                set.Data2);
-        }
-
-        protected override void VisitDoorAotSe(DoorAotSeOpcode door)
-        {
-            if ((OpcodeV1)door.Opcode == OpcodeV1.DoorAotSe)
-            {
-                _sb.WriteStandardOpcode("door_aot_se",
-                    door.Id,
-                    door.X,
-                    door.Z,
-                    door.W,
-                    door.D,
-                    door.Re1UnkA,
-                    door.Re1UnkB,
-                    door.Animation,
-                    door.Re1UnkC,
-                    door.LockId,
-                    $"{door.NextStage:X}",
-                    $"0x{door.NextRoom:X2}",
-                    door.NextX,
-                    door.NextY,
-                    door.NextZ,
-                    door.NextD,
-                    GetLockConstant(door.LockType),
-                    door.Free);
-            }
-            else
-            {
-                _sb.WriteStandardOpcode("door_aot_se",
-                    door.Id,
-                    GetSCE(door.SCE),
-                    GetSAT(door.SAT),
-                    door.Floor,
-                    door.Super,
-                    door.X,
-                    door.Z,
-                    door.W,
-                    door.D,
-                    door.NextX,
-                    door.NextY,
-                    door.NextZ,
-                    door.NextD,
-                    $"{door.NextStage:X}",
-                    $"0x{door.NextRoom:X2}",
-                    door.NextCamera,
-                    door.NextFloor,
-                    door.Texture,
-                    door.Animation,
-                    door.Sound,
-                    door.LockId,
-                    GetLockConstant(door.LockType),
-                    door.Free);
-            }
-        }
-
-        protected override void VisitDoorAotSet4p(DoorAotSet4pOpcode door)
-        {
-            _sb.WriteStandardOpcode("door_aot_set_4p",
-                door.Id,
-                GetSCE(door.SCE),
-                GetSAT(door.SAT),
-                door.Floor,
-                door.Super,
-                door.X0,
-                door.Z0,
-                door.X1,
-                door.Z1,
-                door.X2,
-                door.Z2,
-                door.X3,
-                door.Z3,
-                door.NextX,
-                door.NextY,
-                door.NextZ,
-                door.NextD,
-                $"{door.NextStage:X}",
-                $"0x{door.NextRoom:X2}",
-                door.NextCamera,
-                door.NextFloor,
-                door.Texture,
-                door.Animation,
-                door.Sound,
-                door.LockId,
-                door.LockType,
-                door.Free);
-        }
-
-        protected override void VisitAotReset(AotResetOpcode reset)
-        {
-            _sb.WriteStandardOpcode("aot_reset",
-                reset.Id,
-                GetSCE(reset.SCE),
-                GetSAT(reset.SAT),
-                reset.SCE == 2 ? GetItemConstant(reset.Data0) : reset.Data0.ToString(),
-                reset.Data1,
-                reset.Data2);
-        }
-
-        protected override void VisitSceEmSet(SceEmSetOpcode enemy)
-        {
-            if ((OpcodeV1)enemy.Opcode == OpcodeV1.SceEmSet)
-            {
-                _sb.WriteStandardOpcode("sce_em_set",
-                    enemy.Id,
-                    GetEnemyConstant(enemy.Type),
-                    enemy.State,
-                    enemy.KillId,
-                    enemy.X, enemy.Y, enemy.Z, enemy.D);
-            }
-            else
-            {
-                _sb.WriteStandardOpcode("sce_em_set", enemy.Id, GetEnemyConstant(enemy.Type),
-                    enemy.State, enemy.Ai, enemy.Floor, enemy.SoundBank, enemy.Texture, enemy.KillId, enemy.X, enemy.Y, enemy.Z, enemy.D, enemy.Animation);
-            }
-        }
-
-        protected override void VisitItemAotSet(ItemAotSetOpcode item)
-        {
-            if ((OpcodeV1)item.Opcode == OpcodeV1.ItemAotSet)
-            {
-                _sb.WriteStandardOpcode("item_aot_set",
-                    item.Id,
-                    item.X,
-                    item.Y,
-                    item.W,
-                    item.H,
-                    GetItemConstant(item.Type),
-                    item.Amount);
-            }
-            else
-            {
-                _sb.WriteStandardOpcode("item_aot_set",
-                    item.Id,
-                    GetSCE(item.SCE),
-                    GetSAT(item.SAT),
-                    item.Floor,
-                    item.Super,
-                    item.X,
-                    item.Y,
-                    item.W,
-                    item.H,
-                    GetItemConstant(item.Type),
-                    item.Amount,
-                    item.Array8Idx,
-                    item.MD1,
-                    item.Action);
-            }
-        }
-
-        protected override void VisitItemAotSet4p(ItemAotSet4pOpcode item)
-        {
-            _sb.WriteStandardOpcode("item_aot_set_4p",
-                item.Id,
-                GetSCE(item.SCE),
-                GetSAT(item.SAT),
-                item.Floor,
-                item.Super,
-                item.X0,
-                item.Z0,
-                item.X1,
-                item.Z1,
-                item.X2,
-                item.Z2,
-                item.X3,
-                item.Z3,
-                GetItemConstant(item.Type),
-                item.Amount,
-                item.Array8Idx,
-                item.MD1,
-                item.Action);
-        }
-
-        protected override void VisitXaOn(XaOnOpcode sound)
-        {
-            _sb.WriteStandardOpcode("xa_on", sound.Channel, sound.Id);
-        }
-
-        protected override void VisitSceItemGet(SceItemGetOpcode itemGet)
-        {
-            _sb.WriteStandardOpcode("sce_item_get", GetItemConstant(itemGet.Type), itemGet.Amount);
-        }
-
         private void VisitOpcode(int offset, OpcodeV1 opcode, BinaryReader br)
         {
-            if (AssemblyFormat)
-            {
-                DiassembleGeneralOpcode(br, offset, (byte)opcode);
-                return;
-            }
-
             var sb = _sb;
             br.ReadByte();
             switch (opcode)
@@ -471,47 +216,25 @@ namespace IntelOrca.Biohazard.Script
                     DiassembleGeneralOpcode(br, offset, (byte)opcode);
                     break;
                 case OpcodeV1.Nop:
-                    if (AssemblyFormat)
-                        sb.WriteStandardOpcode("nop");
                     break;
                 case OpcodeV1.IfelCk:
                     {
-                        var blockLen = br.ReadByte();
-                        if (AssemblyFormat)
-                        {
-                            _sb.InsertLabel(offset + blockLen);
-                            _sb.WriteStandardOpcode("if", sb.GetLabelName(offset + blockLen));
-                        }
-                        else
-                        {
-                            sb.Write("if (");
-                            _constructingBinaryExpression = true;
-                            _expressionCount = 0;
-                        }
+                        sb.Write("if (");
+                        _constructingBinaryExpression = true;
+                        _expressionCount = 0;
                         break;
                     }
                 case OpcodeV1.ElseCk:
                     {
                         var blockLen = br.ReadByte();
-                        if (AssemblyFormat)
-                        {
-                            _sb.InsertLabel(offset + blockLen);
-                            _sb.WriteStandardOpcode("else", sb.GetLabelName(offset + blockLen));
-                        }
-                        else
-                        {
-                            _sb.CloseBlock();
-                            _blockEnds.Push(((byte)opcode, offset + blockLen));
-                            sb.WriteLine("else");
-                            _sb.OpenBlock();
-                        }
+                        _sb.CloseBlock();
+                        _blockEnds.Push(((byte)opcode, offset + blockLen));
+                        sb.WriteLine("else");
+                        _sb.OpenBlock();
                     }
                     break;
                 case OpcodeV1.EndIf:
-                    if (AssemblyFormat)
-                        sb.WriteStandardOpcode("endif");
-                    else
-                        _sb.CloseBlock();
+                    _sb.CloseBlock();
                     break;
                 case OpcodeV1.Ck:
                     {
@@ -520,26 +243,14 @@ namespace IntelOrca.Biohazard.Script
                         var bitArray = temp >> 5;
                         var number = temp & 0b11111;
                         var value = br.ReadByte();
-                        var bitString = GetBitsString(bitArray, number);
-
-                        if (AssemblyFormat)
+                        if (_constructingBinaryExpression)
                         {
-                            if (bitString.StartsWith("bits"))
-                                sb.WriteStandardOpcode("ck", obj, bitArray, number, value);
-                            else
-                                sb.WriteStandardOpcode("ck", obj, bitString);
-                        }
-                        else
-                        {
-                            if (_constructingBinaryExpression)
+                            if (_expressionCount != 0)
                             {
-                                if (_expressionCount != 0)
-                                {
-                                    sb.Write(" && ");
-                                }
-                                sb.Write($"{GetBitsString(obj, bitArray, number)} == {value}");
-                                _expressionCount++;
+                                sb.Write(" && ");
                             }
+                            sb.Write($"{GetBitsString(obj, bitArray, number)} == {value}");
+                            _expressionCount++;
                         }
                         break;
                     }
@@ -550,22 +261,15 @@ namespace IntelOrca.Biohazard.Script
                         var bitArray = temp >> 5;
                         var number = temp & 0b11111;
                         var opChg = br.ReadByte();
-                        if (AssemblyFormat)
-                        {
-                            sb.WriteStandardOpcode("set", obj, bitArray, number, opChg);
-                        }
+                        sb.Write(GetBitsString(obj, bitArray, number));
+                        if (opChg == 0)
+                            sb.WriteLine(" = 0;");
+                        else if (opChg == 1)
+                            sb.WriteLine(" = 1;");
+                        else if (opChg == 7)
+                            sb.WriteLine(" ^= 1;");
                         else
-                        {
-                            sb.Write(GetBitsString(obj, bitArray, number));
-                            if (opChg == 0)
-                                sb.WriteLine(" = 0;");
-                            else if (opChg == 1)
-                                sb.WriteLine(" = 1;");
-                            else if (opChg == 7)
-                                sb.WriteLine(" ^= 1;");
-                            else
-                                sb.WriteLine(" (INVALID);");
-                        }
+                            sb.WriteLine(" (INVALID);");
                         break;
                     }
                 case OpcodeV1.Cmp6:
@@ -574,25 +278,17 @@ namespace IntelOrca.Biohazard.Script
                         var index = br.ReadByte();
                         var op = br.ReadByte();
                         var value = opcode == OpcodeV1.Cmp6 ? br.ReadByte() : br.ReadInt16();
-
-                        if (AssemblyFormat)
+                        if (_constructingBinaryExpression)
                         {
-                            sb.WriteStandardOpcode("cmp", index, op, value);
-                        }
-                        else
-                        {
-                            if (_constructingBinaryExpression)
+                            if (_expressionCount != 0)
                             {
-                                if (_expressionCount != 0)
-                                {
-                                    sb.Write(" && ");
-                                }
-
-                                var ops = new[] { "==", "<", "<=", ">", ">=", "!=" };
-                                var opS = ops.Length > op ? ops[op] : "?";
-                                sb.Write($"arr[{index}] {opS} {value}");
-                                _expressionCount++;
+                                sb.Write(" && ");
                             }
+
+                            var ops = new[] { "==", "<", "<=", ">", ">=", "!=" };
+                            var opS = ops.Length > op ? ops[op] : "?";
+                            sb.Write($"arr[{index}] {opS} {value}");
+                            _expressionCount++;
                         }
                         break;
                     }
@@ -600,14 +296,7 @@ namespace IntelOrca.Biohazard.Script
                     {
                         var src = br.ReadByte();
                         var value = br.ReadByte();
-                        if (AssemblyFormat)
-                        {
-                            sb.WriteStandardOpcode("set", src, value);
-                        }
-                        else
-                        {
-                            sb.WriteLine($"$${src} = {value};");
-                        }
+                        sb.WriteLine($"$${src} = {value};");
                         break;
                     }
             }
@@ -615,133 +304,43 @@ namespace IntelOrca.Biohazard.Script
 
         private void VisitOpcode(int offset, OpcodeV2 opcode, BinaryReader br)
         {
-            if (AssemblyFormat)
-            {
-                DiassembleGeneralOpcode(br, offset, (byte)opcode);
-                return;
-            }
-
             var sb = _sb;
             br.ReadByte();
             switch (opcode)
             {
                 default:
-                    if (Enum.IsDefined(typeof(OpcodeV2), opcode))
-                    {
-                        sb.WriteStandardOpcode(opcode.ToString());
-                    }
-                    else
-                    {
-                        sb.WriteStandardOpcode($"op_{opcode:X}");
-                    }
+                    br.BaseStream.Position--;
+                    DiassembleGeneralOpcode(br, offset, (byte)opcode);
                     break;
                 case OpcodeV2.Nop:
                 case OpcodeV2.Nop20:
-                    if (AssemblyFormat)
-                        sb.WriteStandardOpcode("nop");
                     break;
                 case OpcodeV2.EvtEnd:
                     {
                         var ret = br.ReadByte();
-                        if (AssemblyFormat)
-                            sb.WriteStandardOpcode("return", ret);
-                        else
-                            sb.WriteLine($"return {ret};");
-                        break;
-                    }
-                case OpcodeV2.EvtNext:
-                    sb.WriteStandardOpcode("evt_next");
-                    break;
-                case OpcodeV2.EvtExec:
-                    {
-                        var cond = br.ReadByte();
-                        var exOpcode = br.ReadByte();
-                        var evnt = br.ReadByte();
-                        var exOpcodeS = $"OP_{((OpcodeV2)exOpcode).ToString().ToUpperInvariant()}";
-                        if (cond == 255)
-                            sb.WriteStandardOpcode("evt_exec", "CAMERA", exOpcodeS, $"sub_{evnt:X2}");
-                        else
-                            sb.WriteStandardOpcode("evt_exec", cond, exOpcodeS, $"sub_{evnt:X2}");
+                        sb.WriteLine($"return {ret};");
                         break;
                     }
                 case OpcodeV2.IfelCk:
                     {
-                        br.ReadByte();
-                        var blockLen = br.ReadUInt16();
-                        if (AssemblyFormat)
-                        {
-                            _sb.InsertLabel(offset + blockLen);
-                            _sb.WriteStandardOpcode("if", sb.GetLabelName(offset + blockLen));
-                        }
-                        else
-                        {
-                            // _blockEnds.Push((opcode, offset + blockLen));
-                            sb.Write("if (");
-                            _constructingBinaryExpression = true;
-                            _expressionCount = 0;
-                        }
+                        sb.Write("if (");
+                        _constructingBinaryExpression = true;
+                        _expressionCount = 0;
                         break;
                     }
                 case OpcodeV2.ElseCk:
                     {
                         br.ReadByte();
                         var blockLen = br.ReadUInt16();
-                        if (AssemblyFormat)
-                        {
-                            _sb.InsertLabel(offset + blockLen);
-                            _sb.WriteStandardOpcode("else", sb.GetLabelName(offset + blockLen));
-                        }
-                        else
-                        {
-                            _sb.CloseBlock();
-
-                            // CloseCurrentBlock();
-
-                            // while (_blockEnds.Count != 0 && _blockEnds.Peek().Item1 != Opcode.IfelCk)
-                            // {
-                            //     CloseCurrentBlock();
-                            // }
-                            // if (_blockEnds.Count != 0 && _blockEnds.Peek().Item1 == Opcode.IfelCk)
-                            // {
-                            //     CloseCurrentBlock();
-                            // }
-
-                            _blockEnds.Push(((byte)opcode, offset + blockLen));
-
-                            sb.WriteLine("else");
-                            _sb.OpenBlock();
-                        }
+                        _sb.CloseBlock();
+                        _blockEnds.Push(((byte)opcode, offset + blockLen));
+                        sb.WriteLine("else");
+                        _sb.OpenBlock();
                     }
                     break;
                 case OpcodeV2.EndIf:
-                    if (AssemblyFormat)
-                    {
-                        sb.WriteStandardOpcode("endif");
-                    }
-                    else
-                    {
-                        _sb.CloseBlock();
-                        // CloseCurrentBlock();
-                    }
+                    _sb.CloseBlock();
                     break;
-                case OpcodeV2.Sleep:
-                    {
-                        br.ReadByte();
-                        var count = br.ReadUInt16();
-                        sb.WriteStandardOpcode("sleep", count);
-                        break;
-                    }
-                case OpcodeV2.Sleeping:
-                    {
-                        var count = br.ReadUInt16();
-                        sb.WriteStandardOpcode("sleeping", count);
-                        break;
-                    }
-                case OpcodeV2.Wsleep:
-                    {
-                        sb.WriteStandardOpcode("wsleep");
-                        break;
-                    }
                 case OpcodeV2.Wsleeping:
                     {
                         sb.WriteStandardOpcode("wsleeping");
@@ -752,100 +351,47 @@ namespace IntelOrca.Biohazard.Script
                         br.ReadByte();
                         var blockLen = br.ReadUInt16();
                         var count = br.ReadUInt16();
-                        if (AssemblyFormat)
-                        {
-                            _sb.InsertLabel(offset + blockLen);
-                            _sb.WriteStandardOpcode("for", sb.GetLabelName(offset + blockLen), count);
-                        }
-                        else
-                        {
-                            sb.WriteLine($"for {count} times");
-                            _sb.OpenBlock();
-                        }
+                        sb.WriteLine($"for {count} times");
+                        _sb.OpenBlock();
                         break;
                     }
                 case OpcodeV2.Next:
-                    if (AssemblyFormat)
-                    {
-                        _sb.WriteStandardOpcode("next");
-                    }
-                    else
-                    {
-                        sb.CloseBlock();
-                    }
+                    sb.CloseBlock();
                     break;
                 case OpcodeV2.While:
                     {
                         br.ReadByte();
                         var blockLen = br.ReadUInt16();
-                        if (AssemblyFormat)
-                        {
-                            _sb.InsertLabel(offset + blockLen);
-                            _sb.WriteStandardOpcode("while", sb.GetLabelName(offset + blockLen));
-                        }
-                        else
-                        {
-                            sb.WriteLine($"while (");
-                            _sb.OpenBlock();
-                        }
+                        sb.WriteLine($"while (");
+                        _sb.OpenBlock();
                         break;
                     }
                 case OpcodeV2.Ewhile:
-                    if (AssemblyFormat)
-                    {
-                        _sb.WriteStandardOpcode("ewhile");
-                    }
-                    else
-                    {
-                        sb.CloseBlock();
-                    }
+                    sb.CloseBlock();
                     break;
                 case OpcodeV2.Do:
                     {
                         br.ReadByte();
                         var blockLen = br.ReadUInt16();
-
-                        if (AssemblyFormat)
-                        {
-                            _sb.WriteStandardOpcode("do", sb.GetLabelName(offset + blockLen));
-                        }
-                        else
-                        {
-                            _blockEnds.Push(((byte)opcode, offset + blockLen));
-
-                            sb.WriteLine($"do");
-                            _sb.OpenBlock();
-                        }
+                        _blockEnds.Push(((byte)opcode, offset + blockLen));
+                        sb.WriteLine($"do");
+                        _sb.OpenBlock();
                         break;
                     }
                 case OpcodeV2.Edwhile:
                     {
-                        if (AssemblyFormat)
-                        {
-                            _sb.WriteStandardOpcode("edwhile");
-                        }
-                        else
-                        {
-                            sb.Unindent();
-                            sb.Write("} while (");
-                            _constructingBinaryExpression = true;
-                            _expressionCount = 0;
-                            _endDoWhile = true;
-                        }
+                        sb.Unindent();
+                        sb.Write("} while (");
+                        _constructingBinaryExpression = true;
+                        _expressionCount = 0;
+                        _endDoWhile = true;
                         break;
                     }
                 case OpcodeV2.Switch:
                     {
                         var varw = br.ReadByte();
-                        if (AssemblyFormat)
-                        {
-                            _sb.WriteStandardOpcode("switch", varw);
-                        }
-                        else
-                        {
-                            sb.WriteLine($"switch ({GetVariableName(varw)})");
-                            _sb.OpenBlock();
-                        }
+                        sb.WriteLine($"switch ({GetVariableName(varw)})");
+                        _sb.OpenBlock();
                         break;
                     }
                 case OpcodeV2.Case:
@@ -853,119 +399,58 @@ namespace IntelOrca.Biohazard.Script
                         br.ReadByte();
                         br.ReadUInt16();
                         var value = br.ReadUInt16();
-                        if (AssemblyFormat)
-                        {
-                            _sb.WriteStandardOpcode("case", value);
-                        }
-                        else
-                        {
-                            sb.Unindent();
-                            sb.WriteLine($"case {value}:");
-                            sb.Indent();
-                        }
+                        sb.Unindent();
+                        sb.WriteLine($"case {value}:");
+                        sb.Indent();
                         break;
                     }
                 case OpcodeV2.Default:
-                    {
-                        if (AssemblyFormat)
-                        {
-                            _sb.WriteStandardOpcode("default");
-                        }
-                        else
-                        {
-                            sb.Unindent();
-                            sb.WriteLine($"default:");
-                            sb.Indent();
-                        }
-                        break;
-                    }
+                    sb.Unindent();
+                    sb.WriteLine($"default:");
+                    sb.Indent();
+                    break;
                 case OpcodeV2.Eswitch:
-                    if (AssemblyFormat)
-                    {
-                        _sb.WriteStandardOpcode("eswitch");
-                    }
-                    else
-                    {
-                        sb.CloseBlock();
-                    }
+                    sb.CloseBlock();
                     break;
                 case OpcodeV2.Goto:
-                    {
-                        var a = br.ReadByte();
-                        var b = br.ReadByte();
-                        var c = br.ReadByte();
-                        var rel = br.ReadInt16();
-                        var io = offset + rel;
-                        if (AssemblyFormat)
-                        {
-                            _sb.WriteStandardOpcode("goto", sb.GetLabelName(io));
-                        }
-                        else
-                        {
-                            sb.WriteLine($"goto {sb.GetLabelName(io)};");
-                            sb.InsertLabel(io);
-                        }
-                        break;
-                    }
+                    var a = br.ReadByte();
+                    var b = br.ReadByte();
+                    var c = br.ReadByte();
+                    var rel = br.ReadInt16();
+                    var io = offset + rel;
+                    sb.WriteLine($"goto {sb.GetLabelName(io)};");
+                    sb.InsertLabel(io);
+                    break;
                 case OpcodeV2.Gosub:
-                    {
-                        var num = br.ReadByte();
-                        if (AssemblyFormat)
-                            sb.WriteStandardOpcode("gosub", $"0x{num:X2}");
-                        else
-                            sb.WriteLine($"sub_{num:X2}();");
-                        break;
-                    }
+                    var num = br.ReadByte();
+                    sb.WriteLine($"sub_{num:X2}();");
+                    break;
                 case OpcodeV2.Return:
-                    if (AssemblyFormat)
-                        sb.WriteStandardOpcode("return");
-                    else
-                        sb.WriteLine("return;");
+                    sb.WriteLine("return;");
                     break;
                 case OpcodeV2.Break:
-                    {
-                        if (AssemblyFormat)
-                            sb.WriteStandardOpcode("break");
-                        else
-                            sb.WriteLine("break;");
-                        break;
-                    }
-                case OpcodeV2.WorkCopy:
-                    {
-                        var varw = br.ReadByte();
-                        var dst = br.ReadByte();
-                        var size = br.ReadByte();
-                        sb.WriteStandardOpcode("work_copy", varw, dst, size);
-                        break;
-                    }
+                    sb.WriteLine("break;");
+                    break;
                 case OpcodeV2.Cmp:
                     {
                         br.ReadByte();
                         var index = br.ReadByte();
                         var op = br.ReadByte();
                         var value = br.ReadInt16();
-
-                        if (AssemblyFormat)
+                        if (_constructingBinaryExpression)
                         {
-                            sb.WriteStandardOpcode("cmp", index, op, value);
-                        }
-                        else
-                        {
-                            if (_constructingBinaryExpression)
+                            if (_expressionCount != 0)
                             {
-                                if (_expressionCount != 0)
-                                {
-                                    sb.Write(" && ");
-                                }
-
-                                var ops = new[] { "==", ">", ">=", "<", "<=", "!=" };
-                                var opS = ops.Length > op ? ops[op] : "?";
-                                if (index == 27)
-                                    sb.Write($"game.last_room {opS} 0x{value:X3}");
-                                else
-                                    sb.Write($"arr[{index}] {opS} {value}");
-                                _expressionCount++;
+                                sb.Write(" && ");
                             }
+
+                            var ops = new[] { "==", ">", ">=", "<", "<=", "!=" };
+                            var opS = ops.Length > op ? ops[op] : "?";
+                            if (index == 27)
+                                sb.Write($"game.last_room {opS} 0x{value:X3}");
+                            else
+                                sb.Write($"arr[{index}] {opS} {value}");
+                            _expressionCount++;
                         }
                         break;
                     }
@@ -975,39 +460,15 @@ namespace IntelOrca.Biohazard.Script
                         var number = br.ReadByte();
                         var value = br.ReadByte();
                         var bitString = GetBitsString(bitArray, number);
-
-                        if (AssemblyFormat)
+                        if (_constructingBinaryExpression)
                         {
-                            if (bitString.StartsWith("bits"))
-                                sb.WriteStandardOpcode("ck", bitArray, number, value);
-                            else
-                                sb.WriteStandardOpcode("ck", bitString);
-                        }
-                        else
-                        {
-                            if (_constructingBinaryExpression)
+                            if (_expressionCount != 0)
                             {
-                                if (_expressionCount != 0)
-                                {
-                                    sb.Write(" && ");
-                                }
-                                sb.Write($"{GetBitsString(bitArray, number)} == {value}");
-                                _expressionCount++;
+                                sb.Write(" && ");
                             }
+                            sb.Write($"{GetBitsString(bitArray, number)} == {value}");
+                            _expressionCount++;
                         }
-                        break;
-                    }
-                case OpcodeV2.ObjModelSet:
-                    {
-                        var id = br.ReadByte();
-                        sb.WriteStandardOpcode("obj_model_set", id, "...");
-                        break;
-                    }
-                case OpcodeV2.WorkSet:
-                    {
-                        var kind = br.ReadByte();
-                        var id = br.ReadByte();
-                        sb.WriteStandardOpcode("work_set", GetWorkKind(kind), id);
                         break;
                     }
                 case OpcodeV2.Set:
@@ -1015,30 +476,15 @@ namespace IntelOrca.Biohazard.Script
                         var bitArray = br.ReadByte();
                         var number = br.ReadByte();
                         var opChg = br.ReadByte();
-                        if (AssemblyFormat)
-                        {
-                            sb.WriteStandardOpcode("set", bitArray, number, opChg);
-                        }
+                        sb.Write(GetBitsString(bitArray, number));
+                        if (opChg == 0)
+                            sb.WriteLine(" = 0;");
+                        else if (opChg == 1)
+                            sb.WriteLine(" = 1;");
+                        else if (opChg == 7)
+                            sb.WriteLine(" ^= 1;");
                         else
-                        {
-                            sb.Write(GetBitsString(bitArray, number));
-                            if (opChg == 0)
-                                sb.WriteLine(" = 0;");
-                            else if (opChg == 1)
-                                sb.WriteLine(" = 1;");
-                            else if (opChg == 7)
-                                sb.WriteLine(" ^= 1;");
-                            else
-                                sb.WriteLine(" (INVALID);");
-                        }
-                        break;
-                    }
-                case OpcodeV2.Save:
-                    {
-                        var a = br.ReadByte();
-                        var b = br.ReadByte();
-                        var c = br.ReadByte();
-                        sb.WriteStandardOpcode("save", a, b, c);
+                            sb.WriteLine(" (INVALID);");
                         break;
                     }
                 case OpcodeV2.Calc:
@@ -1047,49 +493,9 @@ namespace IntelOrca.Biohazard.Script
                         var op = br.ReadByte();
                         var var = br.ReadByte();
                         var src = br.ReadInt16();
-
-                        if (AssemblyFormat)
-                        {
-                            sb.WriteStandardOpcode("calc", op, var, src);
-                        }
-                        else
-                        {
-                            var ops = new string[] { "+", "-", "*", "/", "%", "|", "&", "^", "~", "<<", ">>", ">>>" };
-                            var opS = ops.Length > op ? ops[op] : "?";
-                            sb.WriteLine($"{GetVariableName(var)} {opS}= {src:X2};");
-                        }
-                        break;
-                    }
-                case OpcodeV2.PosSet:
-                    {
-                        var x = br.ReadInt16();
-                        var y = br.ReadInt16();
-                        var z = br.ReadInt16();
-                        sb.WriteStandardOpcode("pos_set", x, y, z);
-                        break;
-                    }
-                case OpcodeV2.ScaIdSet:
-                    {
-                        var entry = br.ReadByte();
-                        var id = br.ReadUInt16();
-                        sb.WriteStandardOpcode("sca_id_set", entry, id);
-                        break;
-                    }
-                case OpcodeV2.MemberSet:
-                    {
-                        var dst = br.ReadByte();
-                        var src = br.ReadInt16();
-                        sb.WriteStandardOpcode("member_set", dst, src);
-                        break;
-                    }
-                case OpcodeV2.MemberSet2:
-                    {
-                        var dst = br.ReadByte();
-                        var src = br.ReadByte();
-                        if (AssemblyFormat)
-                            sb.WriteStandardOpcode("member_set2", dst, src);
-                        else
-                            sb.WriteStandardOpcode("member_set", dst, GetVariableName(src));
+                        var ops = new string[] { "+", "-", "*", "/", "%", "|", "&", "^", "~", "<<", ">>", ">>>" };
+                        var opS = ops.Length > op ? ops[op] : "?";
+                        sb.WriteLine($"{GetVariableName(var)} {opS}= {src:X2};");
                         break;
                     }
                 case OpcodeV2.DirCk:
@@ -1098,34 +504,16 @@ namespace IntelOrca.Biohazard.Script
                         var x = br.ReadInt16();
                         var y = br.ReadInt16();
                         var add = br.ReadInt16();
-
-                        if (AssemblyFormat)
+                        if (_constructingBinaryExpression)
                         {
-                            sb.WriteStandardOpcode("dir_ck", x, y, add);
-                        }
-                        else
-                        {
-                            if (_constructingBinaryExpression)
+                            if (_expressionCount != 0)
                             {
-                                if (_expressionCount != 0)
-                                {
-                                    sb.Write(" && ");
-                                }
-
-                                sb.Write($"dir_ck({x}, {y}, {add})");
-                                _expressionCount++;
+                                sb.Write(" && ");
                             }
+
+                            sb.Write($"dir_ck({x}, {y}, {add})");
+                            _expressionCount++;
                         }
-                        break;
-                    }
-                case OpcodeV2.MemberCopy:
-                    {
-                        var dst = br.ReadByte();
-                        var src = br.ReadByte();
-                        if (AssemblyFormat)
-                            sb.WriteStandardOpcode("member_copy", dst, src);
-                        else
-                            sb.WriteStandardOpcode("member_copy", GetVariableName(dst), src);
                         break;
                     }
                 case OpcodeV2.MemberCmp:
@@ -1134,74 +522,18 @@ namespace IntelOrca.Biohazard.Script
                         var flag = br.ReadByte();
                         var op = br.ReadByte();
                         var value = br.ReadInt16();
-
-                        if (AssemblyFormat)
+                        if (_constructingBinaryExpression)
                         {
-                            sb.WriteStandardOpcode("member_cmp", flag, op, value);
-                        }
-                        else
-                        {
-                            if (_constructingBinaryExpression)
+                            if (_expressionCount != 0)
                             {
-                                if (_expressionCount != 0)
-                                {
-                                    sb.Write(" && ");
-                                }
-
-                                var ops = new[] { "==", ">", ">=", "<", "<=", "!=" };
-                                var opS = ops.Length > op ? ops[op] : "?";
-                                sb.Write($"&{flag} {opS} {value}");
-                                _expressionCount++;
+                                sb.Write(" && ");
                             }
+
+                            var ops = new[] { "==", ">", ">=", "<", "<=", "!=" };
+                            var opS = ops.Length > op ? ops[op] : "?";
+                            sb.Write($"&{flag} {opS} {value}");
+                            _expressionCount++;
                         }
-                        break;
-                    }
-                case OpcodeV2.AotOn:
-                    {
-                        var id = br.ReadByte();
-                        sb.WriteStandardOpcode("aot_on", id);
-                        break;
-                    }
-                case OpcodeV2.CutReplace:
-                    {
-                        var id = br.ReadByte();
-                        var value = br.ReadByte();
-                        sb.WriteStandardOpcode("cut_replace", id, value);
-                        break;
-                    }
-                case OpcodeV2.SceBgmControl:
-                    {
-                        var bgm = br.ReadByte();
-                        var action = br.ReadByte();
-                        var dummy = br.ReadByte();
-                        var volume = br.ReadByte();
-                        var channel = br.ReadByte();
-                        sb.WriteStandardOpcode("sce_bgm_control", bgm, action, volume, channel);
-                        break;
-                    }
-                case OpcodeV2.SceBgmtblSet:
-                    {
-                        var dummy = br.ReadByte();
-                        var roomId = br.ReadByte();
-                        var stage = br.ReadByte();
-                        var main = br.ReadByte();
-                        var sub = br.ReadByte();
-                        var dummy1 = br.ReadByte();
-                        var dummy2 = br.ReadByte();
-                        sb.WriteStandardOpcode("sce_bgmtbl_set", stage, $"0x{roomId:X2}", $"0x{main:X2}", $"0x{sub:X2}");
-                        break;
-                    }
-                case OpcodeV2.XaOn:
-                    {
-                        var channel = br.ReadByte();
-                        var id = br.ReadInt16();
-                        sb.WriteStandardOpcode("xa_on", channel, id);
-                        break;
-                    }
-                case OpcodeV2.SceItemLost:
-                    {
-                        var item = br.ReadByte();
-                        sb.WriteStandardOpcode("sce_item_lost", GetItemConstant(item));
                         break;
                     }
             }
@@ -1238,136 +570,82 @@ namespace IntelOrca.Biohazard.Script
             else
             {
                 opcodeName = signature.Substring(0, colonIndex);
+                var pIndex = 0;
                 for (int i = colonIndex + 1; i < signature.Length; i++)
                 {
                     var c = signature[i];
-                    switch (c)
+                    var backup = br.BaseStream.Position;
+                    br.BaseStream.Position = originalStreamPosition + 1;
+                    var szv = _constantTable.GetConstant(opcode, pIndex, br);
+                    br.BaseStream.Position = backup;
+                    if (szv != null)
                     {
-                        case 'l':
-                            {
-                                var blockLen = br.ReadByte();
-                                _sb.InsertLabel(offset + blockLen);
-                                parameters.Add(_sb.GetLabelName(offset + blockLen));
-                                break;
-                            }
-                        case 'L':
-                        case '~':
-                            {
-                                var blockLen = c == '~' ? (int)br.ReadInt16() : (int)br.ReadUInt16();
-                                _sb.InsertLabel(offset + blockLen);
-                                parameters.Add(_sb.GetLabelName(offset + blockLen));
-                                break;
-                            }
-                        case 'a':
-                            {
-                                var temp = br.ReadByte();
-                                var bitArray = temp >> 5;
-                                var number = temp & 0b11111;
-                                // parameters.Add($"{bitArray << 5} | {number}");
-                                parameters.Add(temp);
-                                break;
-                            }
-                        case 'u':
-                            parameters.Add(br.ReadByte());
-                            break;
-                        case 'U':
-                            parameters.Add(br.ReadUInt16());
-                            break;
-                        case 'I':
-                            parameters.Add(br.ReadInt16());
-                            break;
-                        case 'r':
-                            {
-                                var target = br.ReadByte();
-                                var stage = (byte)(target >> 5);
-                                var room = (byte)(target & 0b11111);
-                                parameters.Add($"RDT_{stage:X}{room:X2}");
-                                break;
-                            }
-                        default:
-                            {
-                                var v = br.ReadByte();
-                                var szv = _constantTable.GetConstant(c, v);
-                                parameters.Add(szv ?? (object)v);
-                                break;
-                            }
+                        br.BaseStream.Position++;
+                        if (c == 'L' || c == '~' || c == 'U' || c == 'I')
+                            br.BaseStream.Position++;
+                        parameters.Add(szv);
                     }
+                    else
+                    {
+                        switch (c)
+                        {
+                            case 'l':
+                                {
+                                    var blockLen = br.ReadByte();
+                                    _sb.InsertLabel(offset + blockLen);
+                                    parameters.Add(_sb.GetLabelName(offset + blockLen));
+                                    break;
+                                }
+                            case 'L':
+                            case '~':
+                                {
+                                    var blockLen = c == '~' ? (int)br.ReadInt16() : (int)br.ReadUInt16();
+                                    _sb.InsertLabel(offset + blockLen);
+                                    parameters.Add(_sb.GetLabelName(offset + blockLen));
+                                    break;
+                                }
+                            case 'b':
+                                {
+                                    var temp = br.ReadByte();
+                                    var bitArray = temp >> 5;
+                                    var number = temp & 0b11111;
+                                    parameters.Add($"{bitArray << 5} | {number}");
+                                    break;
+                                }
+                            case 'u':
+                                parameters.Add(br.ReadByte());
+                                break;
+                            case 'U':
+                                parameters.Add(br.ReadUInt16());
+                                break;
+                            case 'I':
+                                parameters.Add(br.ReadInt16());
+                                break;
+                            case 'r':
+                                {
+                                    var target = br.ReadByte();
+                                    var stage = (byte)(target >> 5);
+                                    var room = (byte)(target & 0b11111);
+                                    parameters.Add($"RDT_{stage:X}{room:X2}");
+                                    break;
+                                }
+                            default:
+                                {
+                                    var v = char.IsUpper(c) ? br.ReadUInt16() : br.ReadByte();
+                                    szv = _constantTable.GetConstant(c, v);
+                                    parameters.Add(szv ?? (object)v);
+                                    break;
+                                }
+                        }
+                    }
+                    pIndex++;
                 }
             }
             _sb.WriteStandardOpcode(opcodeName, parameters.ToArray());
 
             var streamPosition = br.BaseStream.Position;
             if (streamPosition != originalStreamPosition + length)
-                throw new Exception();
-        }
-
-        private static string GetSCE(byte sce)
-        {
-            if (sce >= g_sceNames.Length)
-                return "SCE_NULL";
-            return g_sceNames[sce];
-        }
-
-        private static string GetSAT(byte sat)
-        {
-            if (sat == 0)
-                return "SAT_AUTO";
-
-            var s = "";
-            if ((sat & 1 << 0) != 0)
-                s += "SAT_PL | ";
-            if ((sat & 1 << 1) != 0)
-                s += "SAT_EM | ";
-            if ((sat & 1 << 2) != 0)
-                s += "SAT_SPL | ";
-            if ((sat & 1 << 3) != 0)
-                s += "SAT_OB | ";
-            if ((sat & 1 << 4) != 0)
-                s += "SAT_MANUAL | ";
-            if ((sat & 1 << 5) != 0)
-                s += "SAT_FRONT | ";
-            if ((sat & 1 << 6) != 0)
-                s += "SAT_UNDER | ";
-            if ((sat & 1 << 7) != 0)
-                s += "0x80 | ";
-            return s.TrimEnd(' ', '|');
-        }
-
-        private static string GetWorkKind(byte kind)
-        {
-            if (kind < g_workKinds.Length)
-                return g_workKinds[kind];
-            else if (kind == 0x80)
-                return "WK_PL_PARTS";
-            else if (kind == 0xA0)
-                return "WK_SPL_PARTS";
-            else if (kind == 0xC0)
-                return "WK_EM_PARTS";
-            else if (kind == 0xE0)
-                return "WK_OM_PARTS";
-            else
-                return "WK_NULL";
-        }
-
-        private string GetEnemyConstant(byte type)
-        {
-            return _constantTable.GetEnemyName(type);
-        }
-
-        private string GetItemConstant(ushort item)
-        {
-            return _constantTable.GetItemName((byte)item);
-        }
-
-        private string GetLockConstant(byte item)
-        {
-            if (item == 255)
-                return "LOCKED";
-            else if (item == 254)
-                return "UNLOCK";
-            else if (item == 0)
-                return "UNLOCKED";
-            return GetItemConstant(item);
+                throw new Exception($"Opcode {opcode} not diassembled correctly.");
         }
 
         private static string GetVariableName(int id)

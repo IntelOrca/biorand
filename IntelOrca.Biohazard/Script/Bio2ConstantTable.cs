@@ -24,6 +24,37 @@ namespace IntelOrca.Biohazard.Script
             return null;
         }
 
+        public string? GetConstant(byte opcode, int pIndex, BinaryReader br)
+        {
+            if (opcode == (byte)OpcodeV2.AotSet)
+            {
+                if (pIndex == 11)
+                {
+                    br.BaseStream.Position++;
+                    var sce = br.ReadByte();
+                    if (sce == 5)
+                    {
+                        br.BaseStream.Position += 13;
+                        return GetConstant('g', br.ReadByte());
+                    }
+                }
+                else if (pIndex == 12)
+                {
+                    br.BaseStream.Position++;
+                    var sce = br.ReadByte();
+                    if (sce == 5)
+                    {
+                        br.BaseStream.Position += 13;
+                        if (br.ReadByte() == (byte)OpcodeV2.Gosub)
+                        {
+                            return GetConstant('p', br.ReadByte());
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
         public string? GetConstant(char kind, int value)
         {
             switch (kind)
@@ -31,7 +62,6 @@ namespace IntelOrca.Biohazard.Script
                 case 'e':
                     return GetEnemyName((byte)value);
                 case 't':
-                    return GetItemName((byte)value);
                 case 'T':
                     if (value == 255)
                         return "LOCKED";
@@ -41,19 +71,19 @@ namespace IntelOrca.Biohazard.Script
                         return "UNLOCKED";
                     else
                         return GetItemName((byte)value);
-                case 'C':
+                case 'c':
                     if (value < g_comparators.Length)
                         return g_comparators[value];
                     break;
-                case 'O':
+                case 'o':
                     if (value < g_operators.Length)
                         return g_operators[value];
                     break;
-                case 'S':
+                case 's':
                     if (value < g_sceNames.Length)
                         return g_sceNames[value];
                     break;
-                case 'A':
+                case 'a':
                     if (value == 0)
                         return "SAT_AUTO";
                     var sb = new StringBuilder();
@@ -72,10 +102,16 @@ namespace IntelOrca.Biohazard.Script
                     }
                     sb.Remove(sb.Length - 3, 3);
                     return sb.ToString();
-                case 'W':
+                case 'w':
                     if (value < g_workKinds.Length)
                         return g_workKinds[value];
                     break;
+                case 'g':
+                    if (value == (byte)OpcodeV2.Gosub)
+                        return "I_GOSUB";
+                    break;
+                case 'p':
+                    return $"sub_{value:X2}";
             }
             return null;
         }
@@ -101,6 +137,8 @@ namespace IntelOrca.Biohazard.Script
                     return 254;
                 case "UNLOCKED":
                     return 0;
+                case "I_GOSUB":
+                    return (byte)OpcodeV2.Gosub;
             }
 
             if (symbol.StartsWith("ENEMY_"))
@@ -108,15 +146,15 @@ namespace IntelOrca.Biohazard.Script
             else if (symbol.StartsWith("ITEM_"))
                 return FindConstantValue(symbol, 't');
             else if (symbol.StartsWith("CMP_"))
-                return FindConstantValue(symbol, 'C');
+                return FindConstantValue(symbol, 'c');
             else if (symbol.StartsWith("OP_"))
-                return FindConstantValue(symbol, 'O');
+                return FindConstantValue(symbol, 'o');
             else if (symbol.StartsWith("SCE_"))
-                return FindConstantValue(symbol, 'S');
+                return FindConstantValue(symbol, 's');
             else if (symbol.StartsWith("SAT_"))
-                return FindConstantValue(symbol, 'A');
+                return FindConstantValue(symbol, 'a');
             else if (symbol.StartsWith("WK_"))
-                return FindConstantValue(symbol, 'W');
+                return FindConstantValue(symbol, 'w');
 
             return null;
         }
@@ -164,7 +202,7 @@ namespace IntelOrca.Biohazard.Script
             "evt_end",
             "evt_next",
             "evt_chain",
-            "evt_exec",
+            "evt_exec:ugp",
             "evt_kill",
             "if:uL",
             "else:uL",
@@ -197,64 +235,64 @@ namespace IntelOrca.Biohazard.Script
             "nop_20",
             "ck",
             "set",
-            "cmp:uuCI",
+            "cmp:uucI",
             "save:uI",
             "copy",
-            "calc:uOuI",
-            "calc2:Ouu",
+            "calc:uouI",
+            "calc2:ouu",
             "sce_rnd",
             "cut_chg",
             "cut_old",
             "message_on",
-            "aot_set:uSAuuIIIIUUU",
-            "obj_model_set",
-            "work_set",
+            "aot_set:usauuIIIIuuuuuu",
+            "obj_model_set:uuuuuUUIIIIIIIIIIIIuuuu",
+            "work_set:wu",
             "speed_set:uI",
 
             "add_speed",
             "add_aspeed",
-            "pos_set",
-            "dir_set",
+            "pos_set:uIII",
+            "dir_set:uIII",
             "member_set",
             "member_set2",
-            "se_on",
+            "se_on:uIIIII",
             "sca_id_set",
             "flr_set",
             "dir_ck",
-            "sce_espr_on",
-            "door_aot_se:uSAuuIIIIIIIIuuuuuuuuTu",
+            "sce_espr_on:uUUUIIII",
+            "door_aot_se:usauuIIIIIIIIuuuuuuuutu",
             "cut_auto",
             "member_copy",
             "member_cmp",
             "plc_motion",
 
-            "plc_dest",
-            "plc_neck",
+            "plc_dest:uuuII",
+            "plc_neck:uIIIuu",
             "plc_ret",
-            "plc_flg",
+            "plc_flg:uU",
             "sce_em_set:uueuuuuuuIIIIUU",
             "col_chg_set",
-            "aot_reset",
+            "aot_reset:usauuuuuu",
             "aot_on",
-            "super_set",
-            "super_reset",
+            "super_set:uuuIIIIII",
+            "super_reset:uIII",
             "plc_gun",
             "cut_replace",
             "sce_espr_kill",
             "",
-            "item_aot_set",
-            "sce_key_ck",
+            "item_aot_set:usauuIIUUTUUuu",
+            "sce_key_ck:uU",
 
-            "sce_trg_ck",
+            "sce_trg_ck:uU",
             "sce_bgm_control",
             "sce_espr_control",
             "sce_fade_set",
-            "sce_espr3d_on",
-            "member_calc",
-            "member_calc2",
-            "sce_bgmtbl_set",
-            "plc_rot",
-            "xa_on",
+            "sce_espr3d_on:uUUUIIIIIII",
+            "member_calc:oUI",
+            "member_calc2:ouu",
+            "sce_bgmtbl_set:uuuUU",
+            "plc_rot:uU",
+            "xa_on:uU",
             "weapon_chg",
             "plc_cnt",
             "sce_shake_on",
@@ -269,14 +307,14 @@ namespace IntelOrca.Biohazard.Script
             "sce_espr_on2",
             "sce_espr_kill2",
             "plc_stop",
-            "aot_set_4p",
-            "door_aot_set_4p:uSAuuIIIIIIIIIIIIuuuuuuuuTu",
-            "item_aot_set_4p",
-            "light_pos_set",
-            "light_kido_set",
+            "aot_set_4p:usauuIIIIIIIIuuuuuu",
+            "door_aot_set_4p:usauuIIIIIIIIIIIIuuuuuuuutu",
+            "item_aot_set_4p:usauuIIIIIIIITUUuu",
+            "light_pos_set:uuuI",
+            "light_kido_set:uI",
             "rbj_reset",
-            "sce_scr_move",
-            "parts_set",
+            "sce_scr_move:uI",
+            "parts_set:uuuI",
             "movie_on",
 
             "splc_ret",
@@ -292,8 +330,8 @@ namespace IntelOrca.Biohazard.Script
             "sce_parts_bomb",
             "sce_parts_down",
             "light_color_set",
-            "light_pos_set2",
-            "light_kido_set2",
+            "light_pos_set2:uuuI",
+            "light_kido_set2:uuuU",
             "light_color_set2",
 
             "se_vol",
