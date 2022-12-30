@@ -12,6 +12,8 @@ namespace IntelOrca.Biohazard
         private readonly int[] _offsets;
         private readonly int[] _lengths;
         private readonly List<Range> _eventScripts = new List<Range>();
+        private readonly List<Range> _emrs = new List<Range>();
+        private readonly List<Range> _edds = new List<Range>();
 
         public BioVersion Version { get; }
         public byte[] Data { get; private set; }
@@ -35,6 +37,12 @@ namespace IntelOrca.Biohazard
             _lengths = GetChunkLengths();
             GetNumEventScripts();
             Checksum = Data.CalculateFnv1a();
+            if (version == BioVersion.Biohazard2)
+            {
+                ReadEMRs();
+                // UpdateEMRs(1, 0.735911602209945);
+                // UpdateEMRs(2, 1 / 0.735911602209945);
+            }
         }
 
         private static BioVersion DetectVersion(byte[] data)
@@ -322,6 +330,79 @@ namespace IntelOrca.Biohazard
                 var scdReader = new ScdReader();
                 scdReader.BaseOffset = scriptOffset;
                 scdReader.ReadScript(new ReadOnlyMemory<byte>(Data, scriptOffset, scriptLength), Version, kind, visitor);
+            }
+        }
+
+        private void ReadEMRs()
+        {
+            var rbj = _offsets[22];
+            if (rbj == 0)
+                return;
+
+            var ms = new MemoryStream(Data);
+            var br = new BinaryReader(ms);
+            var bw = new BinaryWriter(ms);
+
+            ms.Position = rbj;
+            var chunkLen = br.ReadInt32();
+            var emrCount = br.ReadInt32();
+
+            ms.Position = rbj + chunkLen;
+
+            var offsets = new List<int>();
+            for (int i = 0; i < emrCount * 2; i++)
+            {
+                offsets.Add(rbj + br.ReadInt32());
+            }
+            offsets.Add(rbj + chunkLen);
+
+            for (int i = 0; i < emrCount; i++)
+            {
+                _emrs.Add(new Range(offsets[i * 2 + 0], offsets[i * 2 + 1] - offsets[i * 2 + 0]));
+                _edds.Add(new Range(offsets[i * 2 + 1], offsets[i * 2 + 2] - offsets[i * 2 + 1]));
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="flagMask">1 = player, 2 = entity 255 (partner), 4 = entity 1, 8 = entity 2</param>
+        /// <param name="yRatio"></param>
+        private void UpdateEMRs(int flagMask, double yRatio)
+        {
+            var ms = new MemoryStream(Data);
+            var br = new BinaryReader(ms);
+            var bw = new BinaryWriter(ms);
+            foreach (var emr in _emrs)
+            {
+                ms.Position = emr.Start;
+                var flags = br.ReadUInt32();
+                if ((flags & flagMask) == 0)
+                    continue;
+
+                var pArmature = br.ReadUInt16();
+                var pFrames = br.ReadUInt16();
+                var nArmature = br.ReadUInt16();
+                var frameLen = br.ReadUInt16();
+
+                var totalFrames = (emr.Length - 12) / 80;
+                for (int i = 0; i < totalFrames; i++)
+                {
+                    var xOffset = br.ReadInt16();
+                    var yOffset = br.ReadInt16();
+                    if (yOffset != 0)
+                    {
+                        ms.Position -= 2;
+                        bw.Write((short)(yOffset * yRatio));
+                    }
+                    var zOffset = br.ReadInt16();
+                    var xSpeed = br.ReadInt16();
+                    var ySpeed = br.ReadInt16();
+                    var zSpeed = br.ReadInt16();
+
+                    // Rotations
+                    ms.Position += 68;
+                }
             }
         }
     }
