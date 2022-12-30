@@ -168,6 +168,18 @@ namespace IntelOrca.Biohazard
             }
         }
 
+        public void Append(string path, int sapIndex, double start, double end)
+        {
+            var sapFile = new SapFile(path);
+            var wavFile = sapFile.WavFiles[sapIndex];
+            var sapStream = new MemoryStream(wavFile);
+            var wavStream = new MemoryStream();
+            var decoder = new ADPCMDecoder();
+            decoder.Convert(sapStream, wavStream);
+            wavStream.Position = 0;
+            Append(wavStream, start, end);
+        }
+
         public void Append(Stream input, double start, double end)
         {
             var br = new BinaryReader(input);

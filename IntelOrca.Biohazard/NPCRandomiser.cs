@@ -114,7 +114,7 @@ namespace IntelOrca.Biohazard
                     sample.Path = Path.GetFileName(sampleFile);
                     sample.Actor = actor;
                     sample.End = GetVoiceLength(sampleFile);
-                    sample.Kind = "hurt";
+                    sample.Kind = Path.GetFileNameWithoutExtension(sampleFile) == "3" ? "death" : "hurt";
                     samples.Add(sample);
                 }
             }
@@ -451,7 +451,7 @@ namespace IntelOrca.Biohazard
                 var dstPath = GetVoicePath(_modPath, firstSample);
                 Directory.CreateDirectory(Path.GetDirectoryName(dstPath)!);
 
-                if (sampleOrder.Length == 1 && firstSample.Replacement?.IsClipped == false && firstSample.SapIndex == null)
+                if (sampleOrder.Length == 1 && firstSample.Replacement?.IsClipped == false && firstSample.SapIndex == null && firstSample.Replacement.Source.SapIndex == null)
                 {
                     var srcPath = GetVoicePath(firstSample.Replacement.Source);
                     CopySample(srcPath, dstPath);
@@ -465,7 +465,14 @@ namespace IntelOrca.Biohazard
                         if (replacement != null)
                         {
                             var sliceSrcPath = GetVoicePath(replacement.Source);
-                            builder.Append(sliceSrcPath, replacement.Start, replacement.End);
+                            if (replacement.Source.SapIndex != null)
+                            {
+                                builder.Append(sliceSrcPath, replacement.Source.SapIndex.Value, replacement.Start, replacement.End);
+                            }
+                            else
+                            {
+                                builder.Append(sliceSrcPath, replacement.Start, replacement.End);
+                            }
                             builder.AppendSilence(sample.Length - replacement.Length);
                         }
                         else

@@ -209,7 +209,7 @@
   "voice/V00A_10.wav": { "rdt": "40C", "player": 0, "actor": "rebecca", "condition": "@chris" },
   "voice/V00A_11.wav": { "rdt": "40C", "player": 0, "actor": "chris", "condition": "@rebecca", "nameClipped": { "start": 1.5 } },
   "voice/V00A_12.wav": { "rdt": "40C", "player": 0, "actor": "rebecca", "condition": "@chris" },
-  "voice/V00A_13.wav": { "rdt": "40C", "player": 0, "actor": "chris" },
+  "voice/V00A_13.wav": { "rdt": "40C", "player": 0, "actor": "chris", "condition": "@rebecca", "nameClipped": { "end": 8.5 } },
   "voice/V00A_14.wav": { "rdt": "40C", "player": 0, "actor": "rebecca", "condition": "@chris", "nameClipped": { "start": 1.0 } },
   "voice/V00A_20.wav": { "rdt": "408", "player": 0, "actor": "rebecca" },
   "voice/V00A_21.wav": { "rdt": "408", "player": 0, "actor": "chris" },

@@ -1327,7 +1327,7 @@
         },
         {
           "includeOffsets": [ 7012, 7250, 7338, 7554 ],
-          "includeTypes": [ 64, 68 ],
+          "includeTypes": [ 68 ],
           "cutscene": 2 // Leon,[Ben]
         },
         {
