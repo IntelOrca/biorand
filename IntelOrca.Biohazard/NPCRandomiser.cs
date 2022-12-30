@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using IntelOrca.Biohazard.RE2;
 using NVorbis;
 
 namespace IntelOrca.Biohazard
@@ -260,8 +261,42 @@ namespace IntelOrca.Biohazard
             {
                 if (offsetToTypeMap.TryGetValue(enemy.Offset, out var newType))
                 {
+                    var oldActor = GetActor(enemy.Type);
+                    var newActor = GetActor(newType);
+                    if (oldActor != newActor)
+                    {
+                        if (oldActor == "sherry")
+                        {
+                            ScaleEMRs(rdt, enemy.Id, true);
+                        }
+                        else if (newActor == "sherry")
+                        {
+                            ScaleEMRs(rdt, enemy.Id, false);
+                        }
+                    }
                     enemy.Type = newType;
                 }
+            }
+        }
+
+        private void ScaleEMRs(Rdt rdt, byte id, bool inverse)
+        {
+            EmrFlags flags = 0;
+            switch (id)
+            {
+                case 1:
+                    flags = EmrFlags.Entity1;
+                    break;
+                case 2:
+                    flags = EmrFlags.Entity2;
+                    break;
+                case 255:
+                    flags = EmrFlags.Partner;
+                    break;
+            }
+            if (flags != 0)
+            {
+                Re2Randomiser.ScaleEmrY(_logger, rdt, flags, inverse);
             }
         }
 

@@ -18,6 +18,7 @@ namespace IntelOrca.Biohazard
         public BioVersion Version { get; }
         public byte[] Data { get; private set; }
         public ulong Checksum { get; }
+        internal Emr[] Emrs { get; private set; } = new Emr[0];
 
         public RdtFile(string path)
             : this(null, path)
@@ -40,8 +41,6 @@ namespace IntelOrca.Biohazard
             if (version == BioVersion.Biohazard2)
             {
                 ReadEMRs();
-                // UpdateEMRs(1, 0.735911602209945);
-                // UpdateEMRs(2, 1 / 0.735911602209945);
             }
         }
 
@@ -341,7 +340,6 @@ namespace IntelOrca.Biohazard
 
             var ms = new MemoryStream(Data);
             var br = new BinaryReader(ms);
-            var bw = new BinaryWriter(ms);
 
             ms.Position = rbj;
             var chunkLen = br.ReadInt32();
@@ -361,14 +359,19 @@ namespace IntelOrca.Biohazard
                 _emrs.Add(new Range(offsets[i * 2 + 0], offsets[i * 2 + 1] - offsets[i * 2 + 0]));
                 _edds.Add(new Range(offsets[i * 2 + 1], offsets[i * 2 + 2] - offsets[i * 2 + 1]));
             }
+
+            Emrs = new Emr[_emrs.Count];
+            var emrIndex = 0;
+            foreach (var emr in _emrs)
+            {
+                ms.Position = emr.Start;
+                var flags = (EmrFlags)br.ReadUInt32();
+                Emrs[emrIndex] = new Emr(flags);
+                emrIndex++;
+            }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="flagMask">1 = player, 2 = entity 255 (partner), 4 = entity 1, 8 = entity 2</param>
-        /// <param name="yRatio"></param>
-        private void UpdateEMRs(int flagMask, double yRatio)
+        internal void ScaleEmrYs(EmrFlags mask, double yRatio)
         {
             var ms = new MemoryStream(Data);
             var br = new BinaryReader(ms);
@@ -376,8 +379,8 @@ namespace IntelOrca.Biohazard
             foreach (var emr in _emrs)
             {
                 ms.Position = emr.Start;
-                var flags = br.ReadUInt32();
-                if ((flags & flagMask) == 0)
+                var flags = (EmrFlags)br.ReadUInt32();
+                if ((flags & mask) == 0)
                     continue;
 
                 var pArmature = br.ReadUInt16();
@@ -411,6 +414,16 @@ namespace IntelOrca.Biohazard
             var scriptDecompiler = new ScriptDecompiler(false, false);
             ReadScript(scriptDecompiler);
             return scriptDecompiler.GetScript();
+        }
+    }
+
+    internal class Emr
+    {
+        public EmrFlags Flags { get; }
+
+        public Emr(EmrFlags flags)
+        {
+            Flags = flags;
         }
     }
 

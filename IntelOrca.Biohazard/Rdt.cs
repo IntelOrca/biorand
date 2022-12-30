@@ -10,6 +10,7 @@ namespace IntelOrca.Biohazard
     internal class Rdt
     {
         private RdtFile _rdtFile;
+        private List<(EmrFlags, double)> _emrScales = new List<(EmrFlags, double)>();
 
         public BioVersion Version => _rdtFile.Version;
         public RdtId RdtId { get; }
@@ -212,6 +213,21 @@ namespace IntelOrca.Biohazard
             return door;
         }
 
+        public int? ScaleEmrY(EmrFlags flags, double scale)
+        {
+            var index = 0;
+            foreach (var emr in _rdtFile.Emrs)
+            {
+                if ((emr.Flags & flags) != 0)
+                {
+                    _emrScales.Add((flags, scale));
+                    return index;
+                }
+                index++;
+            }
+            return null;
+        }
+
         public void Save()
         {
             using (var ms = _rdtFile.GetStream())
@@ -227,6 +243,11 @@ namespace IntelOrca.Biohazard
                     ms.Position = patch.Key;
                     bw.Write(patch.Value);
                 }
+            }
+
+            foreach (var (flags, scale) in _emrScales)
+            {
+                _rdtFile.ScaleEmrYs(flags, scale);
             }
 
             PrependOpcodes();

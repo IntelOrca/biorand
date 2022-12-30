@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace IntelOrca.Biohazard.RE2
 {
     public class Re2Randomiser : BaseRandomiser
     {
+        private const double SherryScaleY = 0.735911602209945;
+
         private ReInstallConfig? _reInstallConfig;
 
         protected override BioVersion BiohazardVersion => BioVersion.Biohazard2;
@@ -113,7 +114,7 @@ namespace IntelOrca.Biohazard.RE2
             base.Generate(config, reConfig, installPath, modPath);
         }
 
-        internal override string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, string modPath)
+        internal override string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, string modPath)
         {
             if (config.ChangePlayer)
             {
@@ -123,6 +124,13 @@ namespace IntelOrca.Biohazard.RE2
                     .FirstOrDefault();
                 var actor = Path.GetFileName(pldPath);
                 SwapPlayerCharacter(config, logger, actor, modPath);
+                if (actor == "sherry")
+                {
+                    foreach (var rdt in gameData.Rdts)
+                    {
+                        ScaleEmrY(logger, rdt, EmrFlags.Player, false);
+                    }
+                }
                 return actor;
             }
             else
@@ -131,6 +139,16 @@ namespace IntelOrca.Biohazard.RE2
                 var actor = config.Player == 0 ? "leon" : "claire";
                 SwapPlayerCharacter(config, logger, actor, modPath);
                 return actor;
+            }
+        }
+
+        internal static void ScaleEmrY(RandoLogger logger, Rdt rdt, EmrFlags flags, bool inverse)
+        {
+            var scale = inverse ? 1 / SherryScaleY : SherryScaleY;
+            var emrIndex = rdt.ScaleEmrY(flags, scale);
+            if (emrIndex != null)
+            {
+                logger.WriteLine($"  {rdt}: EMR {emrIndex.Value} Y offsets scaled by {scale}");
             }
         }
 
