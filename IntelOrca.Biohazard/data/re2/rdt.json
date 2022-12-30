@@ -1294,12 +1294,19 @@
         {
           "includeOffsets": [ 5392, 5444 ],
           "includeTypes": [ 64, 68 ],
-          "scenario": 0
+          "scenario": 0,
+          "player": 1
         },
         {
           "includeOffsets": [ 5492, 5598 ],
           "includeTypes": [ 66, 68 ],
-          "scenario": 1
+          "scenario": 1,
+          "player": 1
+        },
+        {
+          "includeOffsets": [ 5732 ],
+          "includeTypes": [ 69, 79 ],
+          "player": 1
         }
       ]
     },
@@ -1509,6 +1516,11 @@
         {
           "includeOffsets": [ 2568 ],
           "player": 1
+        },
+        {
+          "includeOffsets": [ 2698 ],
+          "includeTypes": [ 69, 79 ],
+          "player": 1
         }
       ]
     },
@@ -1535,7 +1547,12 @@
         }
       ],
       "enemies": [],
-      "npcs": []
+      "npcs": [
+        {
+          "includeTypes": [ 69, 79 ],
+          "player": 1
+        }
+      ]
     },
     "30A": {
       "doorRando": [
@@ -1553,7 +1570,12 @@
           "noReturn": true
         }
       ],
-      "npcs": []
+      "npcs": [
+        {
+          "includeTypes": [ 69, 79 ],
+          "player": 1
+        }
+      ]
     },
     "30B": {
       "doorRando": [
@@ -1710,6 +1732,12 @@
         {
           "includeOffsets": [ 5730 ],
           "playerActor": "sherry",
+          "scenario": 0,
+          "player": 1
+        },
+        {
+          "includeOffsets": [ 5764 ],
+          "scenario": 1,
           "player": 1
         }
       ]
@@ -1806,7 +1834,12 @@
           "player": 0
         }
       ],
-      "npcs": []
+      "npcs": [
+        {
+          "includeTypes": [ 69, 79 ],
+          "player": 1
+        }
+      ]
     },
     "402": {
       "doors": [
@@ -2177,6 +2210,10 @@
       "npcs": [
         {
           "player": 0
+        },
+        {
+          "includeTypes": [ 69, 79 ],
+          "player": 1
         }
       ]
     },
@@ -2292,6 +2329,10 @@
       "npcs": [
         {
           "player": 0
+        },
+        {
+          "includeTypes": [ 69, 79 ],
+          "player": 1
         }
       ]
     },
@@ -2331,6 +2372,10 @@
         {
           "player": 0,
           "includeTypes": [ 65, 79 ]
+        },
+        {
+          "includeTypes": [ 69, 79 ],
+          "player": 1
         }
       ]
     },
@@ -2363,6 +2408,10 @@
       "npcs": [
         {
           "player": 0
+        },
+        {
+          "includeTypes": [ 69, 79 ],
+          "player": 1
         }
       ]
     },
@@ -2385,6 +2434,10 @@
         {
           "includeOffsets": [ 7280 ],
           "player": 0
+        },
+        {
+          "includeTypes": [ 69, 79 ],
+          "player": 1
         }
       ]
     },
@@ -2494,6 +2547,10 @@
         {
           "player": 0,
           "includeTypes": [ 65, 79 ]
+        },
+        {
+          "includeTypes": [ 69, 79 ],
+          "player": 1
         }
       ]
     },
@@ -2539,6 +2596,10 @@
         {
           "emrScale": false,
           "player": 0
+        },
+        {
+          "includeTypes": [ 69, 79 ],
+          "player": 1
         }
       ]
     },
@@ -2677,7 +2738,12 @@
           "target": "608"
         }
       ],
-      "npcs": []
+      "npcs": [
+        {
+          "includeTypes": [ 69, 79 ],
+          "player": 1
+        }
+      ]
     },
     "607": {
       "doorRando": [
