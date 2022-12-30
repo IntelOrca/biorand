@@ -755,21 +755,18 @@
       ]
     },
     "204": {
-      "requires": [
-        86
-      ],
+      "requires": [ 86 ],
       "doors": [
         {
           "target": "201"
         },
         {
-          "target": "205"
+          "target": "205",
+          "lock": "unblock"
         },
         {
           "target": "203",
-          "requires": [
-            89
-          ]
+          "requires": [ 89 ]
         }
       ],
       "enemies": [
