@@ -35,16 +35,24 @@
     "101": {
       "doorRando": [
         {
-          "cutscene": true
+          "nop": [ 6618, 6702, 7612, 8742, 9366, 10188 ],
+          "cutscene": true,
+          "player": 0
+        },
+        {
+          "nop": [ 6896, 6980, 7890, 9020, 9642 ],
+          "cutscene": true,
+          "player": 1
         }
       ],
       "doors": [
         {
           "target": "100",
-          "lock": "always"
+          "cut": 7
         },
         {
-          "target": "102"
+          "target": "102",
+          "lock": "unblock"
         }
       ],
       "enemies": [],
