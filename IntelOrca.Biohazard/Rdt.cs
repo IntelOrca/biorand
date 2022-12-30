@@ -215,6 +215,9 @@ namespace IntelOrca.Biohazard
 
         public int? ScaleEmrY(EmrFlags flags, double scale)
         {
+            if (_emrScales.Any(x => x.Item1 == flags))
+                return null;
+
             var index = 0;
             foreach (var emr in _rdtFile.Emrs)
             {

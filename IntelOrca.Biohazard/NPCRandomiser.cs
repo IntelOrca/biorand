@@ -261,17 +261,21 @@ namespace IntelOrca.Biohazard
             {
                 if (offsetToTypeMap.TryGetValue(enemy.Offset, out var newType))
                 {
-                    var oldActor = GetActor(enemy.Type);
-                    var newActor = GetActor(newType);
-                    if (oldActor != newActor)
+                    var npc = npcs.FirstOrDefault(x => x.IncludeOffsets == null || x.IncludeOffsets.Contains(enemy.Offset));
+                    if (npc == null || npc.EmrScale != false)
                     {
-                        if (oldActor == "sherry")
+                        var oldActor = GetActor(enemy.Type);
+                        var newActor = GetActor(newType);
+                        if (oldActor != newActor)
                         {
-                            ScaleEMRs(rdt, enemy.Id, true);
-                        }
-                        else if (newActor == "sherry")
-                        {
-                            ScaleEMRs(rdt, enemy.Id, false);
+                            if (oldActor == "sherry")
+                            {
+                                ScaleEMRs(rdt, enemy.Id, true);
+                            }
+                            else if (newActor == "sherry")
+                            {
+                                ScaleEMRs(rdt, enemy.Id, false);
+                            }
                         }
                     }
                     enemy.Type = newType;

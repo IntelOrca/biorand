@@ -1634,11 +1634,13 @@
       "npcs": [
         {
           "includeOffsets": [ 3136 ],
+          "excludeTypes": [ 65, 67 ],
           "playerActor": "ada",
           "cutscene": 0 // Ada, [Leon]
         },
         {
           "includeOffsets": [ 3166 ],
+          "excludeTypes": [ 65, 67 ],
           "playerActor": "ada",
           "cutscene": 1 // Ada, [Sherry]
         },
@@ -2092,6 +2094,7 @@
       ],
       "npcs": [
         {
+          "includeOffsets": [ 9572, 9746, 9772 ],
           "player": 0
         }
       ],
@@ -2380,6 +2383,7 @@
       ],
       "npcs": [
         {
+          "includeOffsets": [ 7280 ],
           "player": 0
         }
       ]
@@ -2533,6 +2537,7 @@
       ],
       "npcs": [
         {
+          "emrScale": false,
           "player": 0
         }
       ]
@@ -2694,20 +2699,24 @@
       "npcs": [
         {
           "includeOffsets": [ 3296 ],
+          "emrScale": false,
           "cutscene": 0,
           "player": 0
         },
         {
           "includeOffsets": [],
+          "emrScale": false,
           "cutscene": 1,
           "player": 0
         },
         {
           "includeOffsets": [ 3322 ],
+          "emrScale": false,
           "cutscene": 2,
           "player": 0
         },
         {
+          "emrScale": false,
           "player": 1
         }
       ]
@@ -3205,6 +3214,11 @@
           "target": "703",
           "randomize": false,
           "scenario": 1
+        }
+      ],
+      "npcs": [
+        {
+          "emrScale": false
         }
       ]
     },
