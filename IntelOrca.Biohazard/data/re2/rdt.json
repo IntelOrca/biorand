@@ -332,6 +332,11 @@
           "target": "112",
           "requires": [ 53 ]
         }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 58 ]
+        }
       ]
     },
     "111": {
