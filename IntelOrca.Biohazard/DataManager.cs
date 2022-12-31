@@ -56,8 +56,7 @@ namespace IntelOrca.Biohazard
 
         public string[] GetFiles(BioVersion version, string baseName)
         {
-            var basePath = GetPath(version, baseName);
-            return Directory.GetFiles(basePath);
+            return GetFilesSafe(GetPath(version, baseName));
         }
 
         public string[] GetFiles(string a, string b)

@@ -116,13 +116,14 @@ namespace IntelOrca.Biohazard.RE2
 
         internal override string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, string modPath)
         {
+            string actor;
             if (config.ChangePlayer)
             {
                 var pldIndex = config.Player == 0 ? config.Player0 : config.Player1;
                 var pldPath = DataManager.GetDirectories(BiohazardVersion, $"pld{config.Player}")
                     .Skip(pldIndex)
                     .FirstOrDefault();
-                var actor = Path.GetFileName(pldPath);
+                actor = Path.GetFileName(pldPath);
                 SwapPlayerCharacter(config, logger, actor, modPath);
                 if (actor == "sherry")
                 {
@@ -136,15 +137,23 @@ namespace IntelOrca.Biohazard.RE2
                         ScaleEmrY(logger, rdt, EmrFlags.Player, false);
                     }
                 }
-                return actor;
             }
             else
             {
                 // We still need to replace Leon / Claire so they can use more weapons
-                var actor = config.Player == 0 ? "leon" : "claire";
+                actor = config.Player == 0 ? "leon" : "claire";
                 SwapPlayerCharacter(config, logger, actor, modPath);
-                return actor;
             }
+
+            var emdFiles = DataManager.GetFiles(BiohazardVersion, $"pld{config.Player}/{actor}/emd{config.Player}");
+            var emdFolder = Path.Combine(modPath, $"pl{config.Player}", $"emd{config.Player}");
+            Directory.CreateDirectory(emdFolder);
+            foreach (var src in emdFiles)
+            {
+                var dst = Path.Combine(emdFolder, Path.GetFileName(src));
+                File.Copy(src, dst, true);
+            }
+            return actor;
         }
 
         internal static void ScaleEmrY(RandoLogger logger, Rdt rdt, EmrFlags flags, bool inverse)
