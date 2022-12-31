@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using IntelOrca.Biohazard.RE2;
+using IntelOrca.Biohazard.Script.Opcodes;
 using NVorbis;
 
 namespace IntelOrca.Biohazard
@@ -79,10 +80,7 @@ namespace IntelOrca.Biohazard
             var rdt = _gameData.GetRdt(rdtId);
             if (rdt != null && rdt.Version == BioVersion.Biohazard2)
             {
-                rdt.AdditionalInitSCD.Add(0x22);
-                rdt.AdditionalInitSCD.Add(0x01);
-                rdt.AdditionalInitSCD.Add(0x03);
-                rdt.AdditionalInitSCD.Add(0x00);
+                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x22, new byte[] { 0x01, 0x03, 0x00 }));
             }
         }
 

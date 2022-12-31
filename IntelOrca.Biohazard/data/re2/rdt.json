@@ -82,11 +82,14 @@
     "103": {
       "doors": [
         {
+          "create": true,
+          "texture": 10,
           "target": "11B",
-          "lock": "always"
+          "id": 1
         },
         {
-          "target": "200"
+          "target": "200",
+          "lock": "unblock"
         }
       ],
       "items": [
@@ -3297,37 +3300,22 @@
           "scenario": 0
         },
         {
+          "nop": [ 5394 ],
           "player": 0,
           "scenario": 1
         },
         {
+          "nop": [ 5392 ],
           "player": 1,
           "scenario": 1
         }
       ],
       "doors": [
         {
-          "target": "601",
-          "lock": "always",
-          "doorRando": false
-        },
-        {
-          "readOffset": 5394,
-          "writeOffset": 5374,
+          "create": true,
+          "texture": 39,
           "id": 5,
-          "target": "601",
-          "doorRando": true,
-          "scenario": 1,
-          "player": 0
-        },
-        {
-          "readOffset": 5392,
-          "writeOffset": 5372,
-          "id": 5,
-          "target": "601",
-          "doorRando": true,
-          "scenario": 1,
-          "player": 1
+          "target": "601"
         },
         {
           "target": "701",

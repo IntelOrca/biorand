@@ -52,6 +52,32 @@ namespace IntelOrca.Biohazard.Script
                     }
                 }
             }
+            else if (opcode == (byte)OpcodeV2.AotSet4p)
+            {
+                if (pIndex == 15)
+                {
+                    br.BaseStream.Position++;
+                    var sce = br.ReadByte();
+                    if (sce == 5)
+                    {
+                        br.BaseStream.Position += 21;
+                        return GetConstant('g', br.ReadByte());
+                    }
+                }
+                else if (pIndex == 17)
+                {
+                    br.BaseStream.Position++;
+                    var sce = br.ReadByte();
+                    if (sce == 5)
+                    {
+                        br.BaseStream.Position += 21;
+                        if (br.ReadByte() == (byte)OpcodeV2.Gosub)
+                        {
+                            return GetConstant('p', br.ReadByte());
+                        }
+                    }
+                }
+            }
             return null;
         }
 

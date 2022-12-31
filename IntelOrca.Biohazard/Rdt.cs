@@ -22,14 +22,15 @@ namespace IntelOrca.Biohazard
         public OpcodeBase[] Opcodes { get; set; } = new OpcodeBase[0];
         public ScriptAst? Ast { get; set; }
         public List<KeyValuePair<int, byte>> Patches { get; } = new List<KeyValuePair<int, byte>>();
-        public List<byte> AdditionalInitSCD { get; } = new List<byte>();
+        public List<OpcodeBase> AdditionalOpcodes { get; } = new List<OpcodeBase>();
 
-        public IEnumerable<IDoorAotSetOpcode> Doors => Opcodes.OfType<IDoorAotSetOpcode>();
-        public IEnumerable<SceEmSetOpcode> Enemies => Opcodes.OfType<SceEmSetOpcode>();
-        public IEnumerable<IItemAotSetOpcode> Items => Opcodes.OfType<IItemAotSetOpcode>();
-        public IEnumerable<AotResetOpcode> Resets => Opcodes.OfType<AotResetOpcode>();
-        public IEnumerable<SceItemGetOpcode> ItemGets => Opcodes.OfType<SceItemGetOpcode>();
-        public IEnumerable<XaOnOpcode> Sounds => Opcodes.OfType<XaOnOpcode>();
+        public IEnumerable<OpcodeBase> AllOpcodes => Opcodes.Concat(AdditionalOpcodes);
+        public IEnumerable<IDoorAotSetOpcode> Doors => AllOpcodes.OfType<IDoorAotSetOpcode>();
+        public IEnumerable<SceEmSetOpcode> Enemies => AllOpcodes.OfType<SceEmSetOpcode>();
+        public IEnumerable<IItemAotSetOpcode> Items => AllOpcodes.OfType<IItemAotSetOpcode>();
+        public IEnumerable<AotResetOpcode> Resets => AllOpcodes.OfType<AotResetOpcode>();
+        public IEnumerable<SceItemGetOpcode> ItemGets => AllOpcodes.OfType<SceItemGetOpcode>();
+        public IEnumerable<XaOnOpcode> Sounds => AllOpcodes.OfType<XaOnOpcode>();
 
         public Rdt(RdtFile rdtFile, RdtId rdtId)
         {
@@ -171,45 +172,29 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        public DoorAotSeOpcode ConvertToDoor(int readOffset, int writeOffset)
+        public DoorAotSeOpcode ConvertToDoor(byte id, byte texture)
         {
-            var exMsg = $"Unable to find aot_set at offset 0x{readOffset:X}";
+            var aotSet = Opcodes.OfType<AotSetOpcode>().FirstOrDefault(x => x.Id == id);
+            if (aotSet == null)
+                throw new Exception($"Failed to find aot_set for id {id}");
 
-            var opcodeIndex = Array.FindIndex(Opcodes, x => x.Offset == readOffset);
-            if (opcodeIndex == -1)
-                throw new Exception(exMsg);
-
-            var opcode = Opcodes[opcodeIndex];
-            if (!(opcode is AotSetOpcode setOpcode))
-                throw new Exception(exMsg);
-
-            var door = new DoorAotSeOpcode();
-            door.Offset = writeOffset;
-            door.Length = 32;
-            door.Opcode = (byte)OpcodeV2.DoorAotSe;
-            door.Id = setOpcode.Id;
-            door.SCE = 1;
-            door.SAT = setOpcode.SAT;
-            door.Floor = setOpcode.Floor;
-            door.Super = setOpcode.Super;
-            door.X = setOpcode.X;
-            door.Z = setOpcode.Z;
-            door.W = setOpcode.W;
-            door.D = setOpcode.D;
-
-            // We must remove any opcodes this overlaps
-            var endOffset = writeOffset + door.Length;
-            var opcodes = Opcodes.ToList();
-            opcodes.RemoveAll(x => x.Offset >= writeOffset + 1 && x.Offset < endOffset);
-            var nextOpcode = opcodes.FirstOrDefault(x => x.Offset >= endOffset);
-            if (nextOpcode.Offset > endOffset)
+            var door = new DoorAotSeOpcode()
             {
-                var nopOpcode = new UnknownOpcode(endOffset, 0, new byte[nextOpcode.Offset - endOffset - 1]);
-                opcodes.Insert(opcodeIndex + 1, nopOpcode);
-            }
-            opcodes[opcodeIndex] = door;
-            Opcodes = opcodes.ToArray();
-
+                Length = 32,
+                Opcode = (byte)OpcodeV2.DoorAotSe,
+                Id = aotSet.Id,
+                SCE = 1,
+                SAT = aotSet.SAT,
+                Floor = aotSet.Floor,
+                Super = aotSet.Super,
+                X = aotSet.X,
+                Z = aotSet.Z,
+                W = aotSet.W,
+                D = aotSet.D,
+                Texture = texture
+            };
+            AdditionalOpcodes.Add(door);
+            Nop(aotSet.Offset);
             return door;
         }
 
@@ -287,7 +272,7 @@ namespace IntelOrca.Biohazard
 
         private void PrependOpcodes()
         {
-            if (AdditionalInitSCD.Count == 0)
+            if (AdditionalOpcodes.Count == 0)
                 return;
 
             var initScd = _rdtFile.GetScd(BioScriptKind.Init);
@@ -301,7 +286,10 @@ namespace IntelOrca.Biohazard
             var newMs = new MemoryStream();
             var bw = new BinaryWriter(newMs);
             bw.Write((ushort)2);
-            bw.Write(AdditionalInitSCD.ToArray());
+            foreach (var opcode in AdditionalOpcodes)
+            {
+                opcode.Write(bw);
+            }
             bw.Write(initScd.Skip(2).ToArray());
             _rdtFile.SetScd(BioScriptKind.Init, newMs.ToArray());
         }

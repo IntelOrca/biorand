@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
+using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard
@@ -938,14 +940,7 @@ namespace IntelOrca.Biohazard
                     if (door.DoorRando != null && door.DoorRando != _config.RandomDoors)
                         continue;
 
-                    IDoorAotSetOpcode? targetEntrance = null;
-                    if (door.ReadOffset != null && door.WriteOffset != null)
-                    {
-                        targetEntrance = rdt.ConvertToDoor(door.ReadOffset.Value, door.WriteOffset.Value);
-                    }
-
                     DoorEntrance? entrance = null;
-
                     Rdt targetRdt;
                     IDoorAotSetOpcode? targetExit;
                     var target = RdtDoorTarget.Parse(door.Target!);
@@ -975,17 +970,15 @@ namespace IntelOrca.Biohazard
                     else if (targetExit != null)
                     {
                         entrance = DoorEntrance.FromOpcode(targetExit);
-                        if (targetEntrance != null)
-                        {
-                            targetEntrance.Texture = targetExit.Texture;
-                            targetEntrance.Animation = targetExit.Animation;
-                            targetEntrance.Sound = targetExit.Sound;
-                        }
-
                         if (entrance != null && door.Cut != null)
                         {
                             entrance = entrance.Value.WithCamera(door.Cut.Value);
                         }
+                    }
+
+                    if (_config.RandomDoors && door.Create)
+                    {
+                        rdt.ConvertToDoor((byte)door.Id!, (byte)door.Texture);
                     }
 
                     var edgeNode = GetOrCreateNode(target.Rdt);

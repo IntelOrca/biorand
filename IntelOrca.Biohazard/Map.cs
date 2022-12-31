@@ -39,8 +39,8 @@ namespace IntelOrca.Biohazard
 
     public class MapRoomDoor
     {
-        public int? ReadOffset { get; set; }
-        public int? WriteOffset { get; set; }
+        public bool Create { get; set; }
+        public int Texture { get; set; }
         public int? Id { get; set; }
         public byte? Cut { get; set; }
         public MapRoomDoorEntrance? Entrance { get; set; }
