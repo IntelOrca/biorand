@@ -237,9 +237,10 @@ namespace IntelOrca.Biohazard
                 .ToArray();
 
             var offsetToTypeMap = new Dictionary<int, byte>();
+            var idToTypeMap = new Dictionary<byte, byte>();
             foreach (var cutscene in npcs.GroupBy(x => x.Cutscene))
             {
-                var actorToNewActorMap  = RandomizeCharacters(rdt, npcRng, defaultIncludeTypes, cutscene.ToArray(), offsetToTypeMap);
+                var actorToNewActorMap  = RandomizeCharacters(rdt, npcRng, defaultIncludeTypes, cutscene.ToArray(), offsetToTypeMap, idToTypeMap);
                 var pc = cutscene.First().PlayerActor ?? _originalPlayerActor!;
                 if (pc == _originalPlayerActor || _config.RandomDoors)
                 {
@@ -304,7 +305,7 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private Dictionary<string, string> RandomizeCharacters(Rdt rdt, Rng rng, byte[] defaultIncludeTypes, MapRoomNpcs[] npcs, Dictionary<int, byte> offsetToTypeMap)
+        private Dictionary<string, string> RandomizeCharacters(Rdt rdt, Rng rng, byte[] defaultIncludeTypes, MapRoomNpcs[] npcs, Dictionary<int, byte> offsetToTypeMap, Dictionary<byte, byte> idToTypeMap)
         {
             var actorToNewActorMap = new Dictionary<string, string>();
             foreach (var npc in npcs)
@@ -339,6 +340,28 @@ namespace IntelOrca.Biohazard
                             supportedNpcs = noDuplicatesSupportedNpcs;
                         }
                     }
+
+                    // HACK A specific enemy ID must always be Sherry, or never be Sherry otherwise there will be an EMR conflict
+                    foreach (var enemyId in enemyGroup.Select(x => x.Id).Distinct())
+                    {
+                        if (idToTypeMap.TryGetValue(enemyId, out var alreadyType))
+                        {
+                            var actor = GetActor(alreadyType);
+                            if (actor == "sherry")
+                            {
+                                supportedNpcs = supportedNpcs.Where(x => GetActor(x) == "sherry").ToArray();
+                            }
+                            else
+                            {
+                                supportedNpcs = supportedNpcs.Where(x => GetActor(x) != "sherry").ToArray();
+                            }
+                        }
+                    }
+                    if (supportedNpcs.Length == 0)
+                    {
+                        continue;
+                    }
+
                     foreach (var enemy in enemyGroup)
                     {
                         if (npc.IncludeOffsets != null && !npc.IncludeOffsets.Contains(enemy.Offset))
@@ -361,6 +384,7 @@ namespace IntelOrca.Biohazard
                             newActor = GetActor(newEnemyType)!;
                             _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) [{_npcHelper.GetNpcName(enemy.Type)}] becomes [{_npcHelper.GetNpcName(newEnemyType)} ({newActor})]");
                             offsetToTypeMap[enemy.Offset] = newEnemyType;
+                            idToTypeMap[enemy.Id] = newEnemyType;
                         }
                         actorToNewActorMap[oldActor] = newActor;
                     }
