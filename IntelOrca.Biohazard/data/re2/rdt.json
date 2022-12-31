@@ -1487,17 +1487,20 @@
           "includeOffsets": [ 4342 ],
           "excludeTypes": [ 64, 66 ],
           "playerActor": "sherry",
+          "emrScale": false,
           "cutscene": 0,
           "player": 1
         },
         {
           "includeOffsets": [ 4396, 4422 ],
           "excludeTypes": [ 64, 66 ],
+          "emrScale": false,
           "cutscene": 1,
           "player": 1
         },
         {
           "includeOffsets": [],
+          "emrScale": false,
           "cutscene": 2,
           "player": 1
         }
@@ -2269,6 +2272,10 @@
         {
           "excludeTypes": [ 89, 90 ],
           "player": 0
+        },
+        {
+          "includeTypes": [ 69, 79 ],
+          "player": 1
         }
       ]
     },
@@ -2469,25 +2476,42 @@
       "npcs": [
         {
           "includeOffsets": [ 4342, 7408 ],
+          "emrScale": false,
           "cutscene": 0,
           "player": 0
         },
         {
           "includeOffsets": [ 4510, 4622 ],
+          "emrScale": false,
           "cutscene": 1,
           "player": 0
         },
         {
+          "includeOffsets": [ 4324 ],
+          "emrScale": false,
+          "cutscene": 0,
+          "player": 1
+        },
+        {
+          "includeOffsets": [ 4500, 7402 ],
+          "emrScale": false,
+          "cutscene": 1,
           "scenario": 0,
           "player": 1
         },
         {
+          "includeOffsets": [ 4556, 4644 ],
           "includeTypes": [ 69, 79 ],
+          "emrScale": false,
+          "cutscene": 2,
           "scenario": 1,
           "player": 1,
           "doorRando": false
         },
         {
+          "includeOffsets": [ 4556, 4644 ],
+          "emrScale": false,
+          "cutscene": 2,
           "scenario": 1,
           "player": 1,
           "doorRando": true
@@ -3064,6 +3088,13 @@
         },
         {
           "category": "box",
+          "nop": [ 4988 ],
+          "cutscene": true,
+          "player": 1,
+          "scenario": 0
+        },
+        {
+          "category": "box",
           "nop": [ 4834 ],
           "cutscene": true,
           "player": 1,
@@ -3086,9 +3117,15 @@
           "player": 1
         },
         {
-          "includeOffsets": [ 4870, 4892 ],
+          "includeOffsets": [ 4870 ],
           "excludeTypes": [ 88, 89, 90 ],
           "cutscene": 1,
+          "player": 1
+        },
+        {
+          "includeOffsets": [ 4892 ],
+          "excludeTypes": [ 88, 89, 90 ],
+          "cutscene": 2,
           "player": 1
         }
       ]

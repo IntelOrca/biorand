@@ -128,6 +128,11 @@ namespace IntelOrca.Biohazard.RE2
                 {
                     foreach (var rdt in gameData.Rdts)
                     {
+                        if (rdt.RdtId == new RdtId(2, 0x06) ||
+                            rdt.RdtId == new RdtId(2, 0x07))
+                        {
+                            continue;
+                        }
                         ScaleEmrY(logger, rdt, EmrFlags.Player, false);
                     }
                 }
@@ -148,7 +153,7 @@ namespace IntelOrca.Biohazard.RE2
             var emrIndex = rdt.ScaleEmrY(flags, scale);
             if (emrIndex != null)
             {
-                logger.WriteLine($"  {rdt}: EMR {emrIndex.Value} Y offsets scaled by {scale}");
+                logger.WriteLine($"  {rdt}: EMR [{flags}] Y offsets scaled by {scale}");
             }
         }
 

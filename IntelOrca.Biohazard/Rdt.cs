@@ -218,15 +218,14 @@ namespace IntelOrca.Biohazard
             if (_emrScales.Any(x => x.Item1 == flags))
                 return null;
 
-            var index = 0;
-            foreach (var emr in _rdtFile.Emrs)
+            for (int i = 0; i < _rdtFile.EmrCount; i++)
             {
-                if ((emr.Flags & flags) != 0)
+                var emrFlags = _rdtFile.GetEmrFlags(i);
+                if ((emrFlags & flags) != 0)
                 {
                     _emrScales.Add((flags, scale));
-                    return index;
+                    return i;
                 }
-                index++;
             }
             return null;
         }
@@ -248,15 +247,42 @@ namespace IntelOrca.Biohazard
                 }
             }
 
-            foreach (var (flags, scale) in _emrScales)
-            {
-                _rdtFile.ScaleEmrYs(flags, scale);
-            }
-
+            UpdateEmrs();
             PrependOpcodes();
 
             Directory.CreateDirectory(Path.GetDirectoryName(ModifiedPath!)!);
             File.WriteAllBytes(ModifiedPath!, _rdtFile.Data);
+        }
+
+        private void UpdateEmrs()
+        {
+            foreach (var (flags, scale) in _emrScales)
+            {
+                for (int i = 0; i < _rdtFile.EmrCount; i++)
+                {
+                    var emrFlags = _rdtFile.GetEmrFlags(i);
+                    if (emrFlags == flags)
+                    {
+                        _rdtFile.ScaleEmrYs(i, scale);
+                        continue;
+                    }
+                    else if ((emrFlags & flags) != 0)
+                    {
+                        var newIndex = _rdtFile.DuplicateEmr(i);
+                        _rdtFile.SetEmrFlags(i, flags);
+                        _rdtFile.SetEmrFlags(newIndex, emrFlags & ~flags);
+                        _rdtFile.ScaleEmrYs(i, scale);
+                        continue;
+                    }
+                }
+            }
+
+            // if (RdtId == new RdtId(5, 0x12) && _emrScales.Count != 0)
+            // {
+            //     _rdtFile.DuplicateEmr(0);
+            //     _rdtFile.UpdateEmrFlags(0, EmrFlags.Player);
+            //     _rdtFile.UpdateEmrFlags(1, EmrFlags.Entity1 | EmrFlags.Entity2);
+            // }
         }
 
         private void PrependOpcodes()

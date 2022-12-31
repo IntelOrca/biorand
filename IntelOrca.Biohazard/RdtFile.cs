@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -18,7 +19,6 @@ namespace IntelOrca.Biohazard
         public BioVersion Version { get; }
         public byte[] Data { get; private set; }
         public ulong Checksum { get; }
-        internal Emr[] Emrs { get; private set; } = new Emr[0];
 
         public RdtFile(string path)
             : this(null, path)
@@ -86,79 +86,7 @@ namespace IntelOrca.Biohazard
         public void SetScd(BioScriptKind kind, byte[] data)
         {
             var index = GetScdChunkIndex(kind);
-            if (_lengths[index] == data.Length)
-            {
-                var start = _offsets[index];
-                Array.Copy(data, 0, Data, start, data.Length);
-            }
-            else
-            {
-                var start = _offsets[index];
-                var length = _lengths[index];
-                var end = _offsets[index] + length;
-                var lengthDelta = data.Length - length;
-                var sliceA = Data.Take(start).ToArray();
-                var sliceB = Data.Skip(end).ToArray();
-                for (int i = 0; i < _offsets.Length; i++)
-                {
-                    if (_offsets[i] != 0 && _offsets[i] > start)
-                        _offsets[i] += lengthDelta;
-                }
-                _lengths[index] = data.Length;
-                Data = sliceA.Concat(data).Concat(sliceB).ToArray();
-
-                if (Version == BioVersion.Biohazard1)
-                {
-                    // Re-write ESP offsets
-                    var ms = new MemoryStream(Data);
-                    var br = new BinaryReader(ms);
-                    var bw = new BinaryWriter(ms);
-                    ms.Position = _offsets[14];
-                    for (int i = 0; i < 8; i++)
-                    {
-                        var x = br.ReadInt32();
-                        bw.BaseStream.Position -= 4;
-                        if (x != -1)
-                        {
-                            var y = x + lengthDelta;
-                            bw.Write(y);
-                            bw.BaseStream.Position -= 4;
-                        }
-                        bw.BaseStream.Position -= 4;
-                    }
-
-                    // Re-write ESP offsets
-                    ms.Position = Data.Length - 4;
-                    for (int i = 0; i < 8; i++)
-                    {
-                        var x = br.ReadInt32();
-                        bw.BaseStream.Position -= 4;
-                        if (x != -1)
-                        {
-                            var y = x + lengthDelta;
-                            bw.Write(y);
-                            bw.BaseStream.Position -= 4;
-                        }
-                        bw.BaseStream.Position -= 4;
-                    }
-                }
-                else
-                {
-                    // Re-write TIM offsets
-                    var numEmbeddedTIMs = Data[2];
-                    if (numEmbeddedTIMs != 0)
-                    {
-                        var ms = new MemoryStream(Data);
-                        ms.Position = _offsets[10];
-                        for (int i = 0; i < numEmbeddedTIMs; i++)
-                        {
-                            RewriteOffset(ms, start, lengthDelta);
-                            RewriteOffset(ms, start, lengthDelta);
-                        }
-                    }
-                }
-                WriteOffsets();
-            }
+            UpdateChunk(index, data);
         }
 
         private void RewriteOffset(Stream stream, int min, int delta)
@@ -359,53 +287,174 @@ namespace IntelOrca.Biohazard
                 _emrs.Add(new Range(offsets[i * 2 + 0], offsets[i * 2 + 1] - offsets[i * 2 + 0]));
                 _edds.Add(new Range(offsets[i * 2 + 1], offsets[i * 2 + 2] - offsets[i * 2 + 1]));
             }
+        }
 
-            Emrs = new Emr[_emrs.Count];
-            var emrIndex = 0;
-            foreach (var emr in _emrs)
+        internal int EmrCount => _emrs.Count;
+
+        internal EmrFlags GetEmrFlags(int index)
+        {
+            var ms = GetStream();
+            var br = new BinaryReader(ms);
+            ms.Position = _emrs[index].Start;
+            return (EmrFlags)br.ReadInt32();
+        }
+
+        internal void SetEmrFlags(int index, EmrFlags flags)
+        {
+            var ms = GetStream();
+            var bw = new BinaryWriter(ms);
+            ms.Position = _emrs[index].Start;
+            bw.Write((int)flags);
+        }
+
+        internal void ScaleEmrYs(int index, double yRatio)
+        {
+            var ms = GetStream();
+            var br = new BinaryReader(ms);
+            var bw = new BinaryWriter(ms);
+
+            var emr = _emrs[index];
+            ms.Position = emr.Start;
+
+            var flags = (EmrFlags)br.ReadUInt32();
+            var pArmature = br.ReadUInt16();
+            var pFrames = br.ReadUInt16();
+            var nArmature = br.ReadUInt16();
+            var frameLen = br.ReadUInt16();
+            var totalFrames = (emr.Length - 12) / 80;
+            for (int i = 0; i < totalFrames; i++)
             {
-                ms.Position = emr.Start;
-                var flags = (EmrFlags)br.ReadUInt32();
-                Emrs[emrIndex] = new Emr(flags);
-                emrIndex++;
+                var xOffset = br.ReadInt16();
+                var yOffset = br.ReadInt16();
+                if (yOffset != 0)
+                {
+                    ms.Position -= 2;
+                    bw.Write((short)(yOffset * yRatio));
+                }
+                var zOffset = br.ReadInt16();
+                var xSpeed = br.ReadInt16();
+                var ySpeed = br.ReadInt16();
+                var zSpeed = br.ReadInt16();
+
+                // Rotations
+                ms.Position += 68;
             }
         }
 
-        internal void ScaleEmrYs(EmrFlags mask, double yRatio)
+        internal int DuplicateEmr(int index)
         {
-            var ms = new MemoryStream(Data);
-            var br = new BinaryReader(ms);
-            var bw = new BinaryWriter(ms);
-            foreach (var emr in _emrs)
+            var emr = _emrs[index];
+            var edd = _edds[index];
+            var emrData = Data.Skip(emr.Start).Take(emr.Length).ToArray();
+            var eddData = Data.Skip(edd.Start).Take(edd.Length).ToArray();
+
+            var rbjOffset = _offsets[22];
+            var oldChunkLength = BitConverter.ToInt32(Data, rbjOffset);
+            var chunkLength = oldChunkLength;
+            _emrs.Add(new Range(rbjOffset + chunkLength, emrData.Length));
+            chunkLength += emrData.Length;
+            _edds.Add(new Range(rbjOffset + chunkLength, eddData.Length));
+            chunkLength += eddData.Length;
+
+            var rbjData = new List<byte>();
+            rbjData.AddRange(BitConverter.GetBytes(chunkLength));
+            rbjData.AddRange(BitConverter.GetBytes(_emrs.Count));
+            rbjData.AddRange(Data.Skip(rbjOffset + 8).Take(oldChunkLength - 8));
+            rbjData.AddRange(emrData);
+            rbjData.AddRange(eddData);
+            for (int i = 0; i < _emrs.Count; i++)
             {
-                ms.Position = emr.Start;
-                var flags = (EmrFlags)br.ReadUInt32();
-                if ((flags & mask) == 0)
-                    continue;
+                rbjData.AddRange(BitConverter.GetBytes(_emrs[i].Start - rbjOffset));
+                rbjData.AddRange(BitConverter.GetBytes(_edds[i].Start - rbjOffset));
+            }
+            UpdateChunk(22, rbjData.ToArray());
+            return EmrCount - 1;
+        }
 
-                var pArmature = br.ReadUInt16();
-                var pFrames = br.ReadUInt16();
-                var nArmature = br.ReadUInt16();
-                var frameLen = br.ReadUInt16();
+        internal void UpdateEmrFlags(int index, EmrFlags flags)
+        {
+            var emr = _emrs[index];
+            var stream = GetStream();
+            stream.Position = emr.Start;
+            var bw = new BinaryWriter(stream);
+            bw.Write((int)flags);
+        }
 
-                var totalFrames = (emr.Length - 12) / 80;
-                for (int i = 0; i < totalFrames; i++)
+        private void UpdateChunk(int index, byte[] data)
+        {
+            if (_lengths[index] == data.Length)
+            {
+                Array.Copy(data, 0, Data, _offsets[index], data.Length);
+            }
+            else
+            {
+                var start = _offsets[index];
+                var length = _lengths[index];
+                var end = _offsets[index] + length;
+                var lengthDelta = data.Length - length;
+                var sliceA = Data.Take(start).ToArray();
+                var sliceB = Data.Skip(end).ToArray();
+                for (int i = 0; i < _offsets.Length; i++)
                 {
-                    var xOffset = br.ReadInt16();
-                    var yOffset = br.ReadInt16();
-                    if (yOffset != 0)
+                    if (_offsets[i] != 0 && _offsets[i] > start)
                     {
-                        ms.Position -= 2;
-                        bw.Write((short)(yOffset * yRatio));
+                        _offsets[i] += lengthDelta;
                     }
-                    var zOffset = br.ReadInt16();
-                    var xSpeed = br.ReadInt16();
-                    var ySpeed = br.ReadInt16();
-                    var zSpeed = br.ReadInt16();
-
-                    // Rotations
-                    ms.Position += 68;
                 }
+                _lengths[index] = data.Length;
+                Data = sliceA.Concat(data).Concat(sliceB).ToArray();
+
+                if (Version == BioVersion.Biohazard1)
+                {
+                    // Re-write ESP offsets
+                    var ms = new MemoryStream(Data);
+                    var br = new BinaryReader(ms);
+                    var bw = new BinaryWriter(ms);
+                    ms.Position = _offsets[14];
+                    for (int i = 0; i < 8; i++)
+                    {
+                        var x = br.ReadInt32();
+                        bw.BaseStream.Position -= 4;
+                        if (x != -1)
+                        {
+                            var y = x + lengthDelta;
+                            bw.Write(y);
+                            bw.BaseStream.Position -= 4;
+                        }
+                        bw.BaseStream.Position -= 4;
+                    }
+
+                    // Re-write ESP offsets
+                    ms.Position = Data.Length - 4;
+                    for (int i = 0; i < 8; i++)
+                    {
+                        var x = br.ReadInt32();
+                        bw.BaseStream.Position -= 4;
+                        if (x != -1)
+                        {
+                            var y = x + lengthDelta;
+                            bw.Write(y);
+                            bw.BaseStream.Position -= 4;
+                        }
+                        bw.BaseStream.Position -= 4;
+                    }
+                }
+                else
+                {
+                    // Re-write TIM offsets
+                    var numEmbeddedTIMs = Data[2];
+                    if (numEmbeddedTIMs != 0)
+                    {
+                        var ms = new MemoryStream(Data);
+                        ms.Position = _offsets[10];
+                        for (int i = 0; i < numEmbeddedTIMs; i++)
+                        {
+                            RewriteOffset(ms, start, lengthDelta);
+                            RewriteOffset(ms, start, lengthDelta);
+                        }
+                    }
+                }
+                WriteOffsets();
             }
         }
 

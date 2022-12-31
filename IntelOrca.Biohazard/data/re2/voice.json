@@ -484,22 +484,31 @@
     "pl1/voice/stage5/v001.sap": { "rdt": "503", "player": 1, "actor": "claire", "condition": "@sherry", "nameClipped": { "start": 0.5 } },
     "pl1/voice/stage5/v002.sap": { "rdt": "503", "player": 1, "actor": "sherry" },
     "pl1/voice/stage5/v003.sap": { "rdt": "503", "player": 1, "actor": "claire", "condition": "@sherry", "nameClipped": { "start": 0.75 } },
-    "pl1/voice/stage5/v004.sap": { "rdt": "505", "player": 1, "actor": "sherry", "condition": "@claire", "nameClipped": { "start": 1.6 } },
-    "pl1/voice/stage5/v005.sap": { "rdt": "505", "player": 1, "actor": "claire", "condition": "@sherry" },
-    "pl1/voice/stage5/v006.sap": { "rdt": "505", "player": 1, "actor": "claire" },
-    "pl1/voice/stage5/v007.sap": { "rdt": "505", "player": 1, "actor": "claire" },
-    "pl1/voice/stage5/v008.sap": { "rdt": "505", "player": 1, "actor": "sherry", "condition": "@claire", "nameClipped": { "start": 1.0 } }, 
-    "pl1/voice/stage5/v009.sap": { "rdt": "505", "player": 1, "actor": "claire" },
-    "pl1/voice/stage5/v010.sap": { "rdt": "505", "player": 1, "actor": "sherry" },
-    "pl1/voice/stage5/v011.sap": { "rdt": "505", "player": 1, "actor": "claire", "condition": "@sherry" },
-    "pl1/voice/stage5/v012.sap": { "rdt": "505", "player": 1, "actor": "claire" },
-    "pl1/voice/stage5/v013.sap": { "rdt": "505", "player": 1, "actor": "sherry" },
-    "pl1/voice/stage5/v014.sap": { "rdt": "505", "player": 1, "actor": "claire" },
-    "pl1/voice/stage5/v015.sap": { "rdt": "505", "player": 1, "actor": "sherry", "condition": "@claire", "nameClipped": { "end": 0.55 } },
-    "pl1/voice/stage5/v016.sap": { "rdt": "505", "player": 1, "actor": "sherry" },
-    "pl1/voice/stage5/v017.sap": { "rdt": "505", "player": 1, "actor": "sherry" },
-    "pl1/voice/stage5/v018.sap": { "rdt": "505", "player": 1, "actor": "claire", "condition": "@sherry" },
-    "pl1/voice/stage5/v019.sap": { "rdt": "505", "player": 1, "actor": "claire", "condition": "@sherry", "nameClipped": { "start": 2.0 } },
+
+    // Claire A (cutscene 0)
+    "pl1/voice/stage5/v004.sap": { "rdt": "505", "player": 1, "cutscene": 0, "actor": "sherry", "condition": "@claire", "nameClipped": { "start": 1.6 } },
+    "pl1/voice/stage5/v005.sap": { "rdt": "505", "player": 1, "cutscene": 0, "actor": "claire", "condition": "@sherry" },
+    "pl1/voice/stage5/v006.sap": { "rdt": "505", "player": 1, "cutscene": 0, "actor": "claire" },
+    // Unused?
+    "pl1/voice/stage5/v007.sap": { "rdt": "505", "player": 1, "cutscene": 0, "actor": "claire" },
+    // Claire B (cutscene 0)
+    "pl1/voice/stage5/v008.sap": { "rdt": "505", "player": 1, "cutscene": 0, "actor": "sherry", "condition": "@claire", "nameClipped": { "start": 1.0 } }, 
+    "pl1/voice/stage5/v009.sap": { "rdt": "505", "player": 1, "cutscene": 0, "actor": "claire" },
+    // Claire A (cutscene 1)
+    "pl1/voice/stage5/v010.sap": { "rdt": "505", "player": 1, "cutscene": 1, "actor": "sherry" },
+    // Unused?
+    "pl1/voice/stage5/v011.sap": { "rdt": "505", "player": 1, "cutscene": 1, "actor": "claire", "condition": "@sherry" },
+    "pl1/voice/stage5/v012.sap": { "rdt": "505", "player": 1, "cutscene": 1, "actor": "claire" },
+    // Claire B (cutscene 1)
+    "pl1/voice/stage5/v013.sap": { "rdt": "505", "player": 1, "cutscene": 1, "actor": "sherry" },
+    "pl1/voice/stage5/v014.sap": { "rdt": "505", "player": 1, "cutscene": 1, "actor": "claire" },
+    "pl1/voice/stage5/v015.sap": { "rdt": "505", "player": 1, "cutscene": 1, "actor": "sherry", "condition": "@claire", "nameClipped": { "end": 0.55 } },
+    "pl1/voice/stage5/v016.sap": { "rdt": "505", "player": 1, "cutscene": 1, "actor": "sherry" },
+    "pl1/voice/stage5/v017.sap": { "rdt": "505", "player": 1, "cutscene": 1, "actor": "sherry" },
+    // Claire A & B (cutscene 1)
+    "pl1/voice/stage5/v018.sap": { "rdt": "505", "player": 1, "cutscene": 1, "actor": "claire", "condition": "@sherry" },
+    //Claire B (cutscene 2)
+    "pl1/voice/stage5/v019.sap": { "rdt": "505", "player": 1, "cutscene": 2, "actor": "claire", "condition": "@sherry", "nameClipped": { "start": 2.0 } },
 
     "pl1/voice/stage6/v001.sap": { "rdt": "603", "player": 1, "actor": "claire", "condition": "@sherry", "nameClipped": { "start": 0.9 } },
     "pl1/voice/stage6/v002.sap": { "rdt": "603", "player": 1, "actor": "claire" },
