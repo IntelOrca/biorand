@@ -43,6 +43,7 @@ namespace IntelOrca.Biohazard
         public int? WriteOffset { get; set; }
         public int? Id { get; set; }
         public byte? Cut { get; set; }
+        public MapRoomDoorEntrance? Entrance { get; set; }
         public string? Target { get; set; }
         public bool? Randomize { get; set; }
         public string? Lock { get; set; }
@@ -53,6 +54,16 @@ namespace IntelOrca.Biohazard
         public bool? DoorRando { get; set; }
         public int? Player { get; set; }
         public int? Scenario { get; set; }
+    }
+
+    public class MapRoomDoorEntrance
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Z { get; set; }
+        public int D { get; set; }
+        public int Floor { get; set; }
+        public int Cut { get; set; }
     }
 
     public class MapRoomItem

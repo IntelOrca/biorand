@@ -960,7 +960,19 @@ namespace IntelOrca.Biohazard
                         targetExit = targetRdt.Doors.FirstOrDefault(x => IsSameRdtId(targetRdt, x.Target, rdtId));
                     }
                     var doorId = door.Id ?? rdt.Doors.FirstOrDefault(x => x.Target == target.Rdt)?.Id;
-                    if (targetExit != null)
+                    if (door.Entrance != null)
+                    {
+                        entrance = new DoorEntrance()
+                        {
+                            X = (short)door.Entrance.X,
+                            Y = (short)door.Entrance.Y,
+                            Z = (short)door.Entrance.Z,
+                            D = (short)door.Entrance.D,
+                            Floor = (byte)door.Entrance.Floor,
+                            Camera = (byte)door.Entrance.Cut
+                        };
+                    }
+                    else if (targetExit != null)
                     {
                         entrance = DoorEntrance.FromOpcode(targetExit);
                         if (targetEntrance != null)

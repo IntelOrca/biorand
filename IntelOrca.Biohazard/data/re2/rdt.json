@@ -255,12 +255,31 @@
       "enemies": []
     },
     "10C": {
+      "doorRando": [
+        {
+          "nop": [ 6576 ]
+        }
+      ],
       "doors": [
         {
-          "target": "207"
+          "target": "207",
+          "lock": "unblock" // Temporary so that we always enter through brand new door (to show players the new door)!
         },
         {
-          "target": "114"
+          "target": "114",
+          "lock": "unblock" // Temporary so that we always enter through brand new door (to show players the new door)!
+        },
+        {
+          "target": "113",
+          "entrance": {
+            "x": -14768,
+            "y": -3600,
+            "z": -11424,
+            "d": -1000,
+            "floor": 2,
+            "cut": 3
+          },
+          "doorRando": true
         }
       ]
     },
@@ -599,17 +618,20 @@
       ]
     },
     "11B": {
-      "doorRando": [
-        {
-          "category": "exclude"
-        }
-      ],
       "doors": [
         {
           "target": "11A"
         },
         {
           "target": "103",
+          "entrance": {
+            "x": 12068,
+            "y": 0,
+            "z": -14992,
+            "d": 1000,
+            "floor": 0,
+            "cut": 4
+          },
           "noReturn": true
         }
       ]
