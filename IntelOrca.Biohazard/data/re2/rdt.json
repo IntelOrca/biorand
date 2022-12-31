@@ -3338,28 +3338,46 @@
     "701": {
       "doorRando": [
         {
-          "category": "exclude"
+          "category": "box",
+          "nop": [ 7998 ],
+          "scenario": 0
+        },
+        {
+          "category": "exclude",
+          "scenario": 1
         }
       ],
       "doors": [
         {
           "target": "700",
-          "randomize": false
+          "scenario": 0
+        },
+        {
+          "target": "702",
+          "scenario": 0
+        },
+        {
+          "target": "700",
+          "randomize": false,
+          "scenario": 1
         },
         {
           "target": "702",
           "requires": [ 84, 85 ],
-          "randomize": false
+          "randomize": false,
+          "scenario": 1
         }
       ],
       "items": [
         {
           "id": 4,
-          "priority": "low"
+          "priority": "low",
+          "scenario": 1
         },
         {
           "id": 5,
-          "priority": "low"
+          "priority": "low",
+          "scenario": 1
         }
       ]
     },
