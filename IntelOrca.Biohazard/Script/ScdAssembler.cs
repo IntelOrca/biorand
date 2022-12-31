@@ -460,6 +460,10 @@ namespace IntelOrca.Biohazard.Script
                     var stage = (_operandValue >> 8) & 0xFF;
                     WriteUInt8((byte)((stage << 5) | (room & 0b11111)));
                 }
+                else if (char.IsUpper(arg))
+                {
+                    WriteUint16((ushort)_operandValue);
+                }
                 else
                 {
                     WriteUInt8((byte)_operandValue);
