@@ -288,6 +288,12 @@ namespace IntelOrca.Biohazard.RE2
                         else
                             waveformBuilder.SaveAppend(corePath);
                     }
+                    {
+                        var coreDeathPath = Path.Combine(modPath, "common", "sound", "core", $"core{32 + config.Player:00}.sap");
+                        var waveformBuilder = new WaveformBuilder();
+                        waveformBuilder.Append(hurtFiles[3]);
+                        waveformBuilder.Save(coreDeathPath);
+                    }
                 }
             }
         }
