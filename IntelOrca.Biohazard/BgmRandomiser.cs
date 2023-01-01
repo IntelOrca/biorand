@@ -12,6 +12,7 @@ namespace IntelOrca.Biohazard
         public const string TagCalm = "calm";
         public const string TagClown = "clown";
         public const string TagCreepy = "creepy";
+        public const string TagCountdown = "countdown";
         public const string TagDanger = "danger";
         public const string TagInstrument = "instrument";
         public const string TagOutside = "outside";
@@ -22,6 +23,7 @@ namespace IntelOrca.Biohazard
         public const string TagInstrumentGood = "instrument_good";
 
         private readonly RandoLogger _logger;
+        private readonly RandoConfig _config;
         private readonly BgmList _srcBgmList = new BgmList();
         private readonly string _bgmJson;
         private readonly string _bgmDirectory;
@@ -31,9 +33,10 @@ namespace IntelOrca.Biohazard
 
         public float ImportVolume { get; set; } = 1.0f;
 
-        public BgmRandomiser(RandoLogger logger, string bgmDirectory, string bgmJson, bool isWav, Rng rng, DataManager dataManager)
+        public BgmRandomiser(RandoLogger logger, RandoConfig config, string bgmDirectory, string bgmJson, bool isWav, Rng rng, DataManager dataManager)
         {
             _logger = logger;
+            _config = config;
             _bgmJson = bgmJson;
             _bgmDirectory = bgmDirectory;
             _isWav = isWav;
@@ -96,12 +99,17 @@ namespace IntelOrca.Biohazard
 
             // Ensure these are randomized, but otherwise give custom priority
             Shuffle(bgmList, TagBasement, TagCreepy);
+            Shuffle(bgmList, TagCountdown, TagCreepy);
             Shuffle(bgmList, TagSafe, TagCalm);
             Shuffle(bgmList, TagResults, TagCalm);
 
             // Shuffle tracks in each tag
             foreach (var tag in bgmList.Tags)
             {
+                // Countdown only really works in a normal run
+                if (tag == TagCountdown && _config.RandomDoors)
+                    continue;
+
                 Shuffle(bgmList, tag, tag);
             }
 

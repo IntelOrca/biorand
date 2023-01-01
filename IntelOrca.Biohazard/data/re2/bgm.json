@@ -2,6 +2,11 @@
   "basement": [
     "main03"
   ],
+  "countdown": [
+    "*main11",
+    "*main23",
+    "*main34"
+  ],
   "safe": [
     "main0C"
   ],
@@ -43,13 +48,6 @@
     "sub42",
     "sub44",
 
-    // Alarm
-    "*main11",
-    "*main23",
-    "*main34",
-    "*sub33",
-    "*sub34",
-
     // Ambient
     "*main04",
     "*main0f",
@@ -70,7 +68,11 @@
     "sub1b",
     "sub24",
     "sub30",
-    "main38"
+    "main38",
+
+    // Alarm
+    "*sub33",
+    "*sub34"
   ],
   "danger": [
     "main1a",

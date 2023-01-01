@@ -2,11 +2,15 @@
   "basement": [
     "BGM_1A"
   ],
+  "countdown": [
+    "BGM_30"
+  ],
   "safe": [
     "BGM_31"
   ],
   "creepy": [
     "!BGM_1A",
+    "!BGM_30",
     "BGM_00",
     "BGM_0A",
     "BGM_0E",
@@ -29,7 +33,6 @@
     "BGM_19",
     "BGM_20",
     "BGM_26",
-    "BGM_30",
     "BGM_32",
     "BGM_33",
     "BGM_34",
@@ -79,10 +82,7 @@
     "*BGM_10",
     "*BGM_12",
     "!BGM_0F",
-    "!BGM_2C",
-    "!SELECT05",
-    "!SE_45",
-    "!ENDING06"
+    "!BGM_2C"
   ],
   "instrument_progress": [
     "*BGM_1F",
