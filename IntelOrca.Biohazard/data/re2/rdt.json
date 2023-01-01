@@ -3341,7 +3341,8 @@
           "create": true,
           "texture": 39,
           "id": 5,
-          "target": "601"
+          "target": "601",
+          "doorRando": true
         },
         {
           "target": "701",

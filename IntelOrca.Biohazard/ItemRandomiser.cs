@@ -253,6 +253,11 @@ namespace IntelOrca.Biohazard
                     }
                     else
                     {
+                        if (g_debugLogging)
+                        {
+                            var items = requiredItems!.Select(x => _itemHelper.GetItemName((byte)x)).ToArray();
+                            _logger.WriteLine($"        Key requirement [{string.Join(", ", items)}] for {node} -> {edge.Node}");
+                        }
                         _requiredItems.Add(new KeyRequirement(requiredItems, null, isDoor: true));
                     }
                 }
