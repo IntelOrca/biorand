@@ -1759,7 +1759,14 @@
     "400": {
       "doorRando": [
         {
-          "category": "exclude"
+          "category": "exclude",
+          "scenario": 0,
+          "player": 1
+        },
+        {
+          "cutscene": true,
+          "scenario": 1,
+          "player": 1
         }
       ],
       "doors": [
@@ -1767,7 +1774,13 @@
           "target": "30A"
         },
         {
-          "target": "401"
+          "id": 1,
+          "target": "401:2"
+        },
+        {
+          "id": 2,
+          "target": "401:1",
+          "lock": "always"
         }
       ],
       "npcs": [
