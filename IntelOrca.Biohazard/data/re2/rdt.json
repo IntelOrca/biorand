@@ -1034,11 +1034,6 @@
       ]
     },
     "20E": {
-      "doorRando": [
-        {
-          "category": "exclude"
-        }
-      ],
       "doors": [
         {
           "id": 0,
@@ -1046,7 +1041,26 @@
         },
         {
           "id": 1,
-          "target": "20C:3"
+          "target": "20C:3",
+          "doorRando": false
+        },
+        {
+          "id": 1,
+          "target": "20C:3",
+          "lock": "always",
+          "doorRando": true
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "type": 0,
+          "doorRando": true
+        },
+        {
+          "id": 5,
+          "type": 0,
+          "doorRando": true
         }
       ],
       "enemies": [
