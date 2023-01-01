@@ -7,7 +7,7 @@ namespace IntelOrca.Biohazard
     {
         Player = 1,
         Partner = 2,
-        Entity1 = 4,
-        Entity2 = 8
+        Entity0 = 4,
+        Entity1 = 8
     }
 }

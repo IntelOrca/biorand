@@ -287,14 +287,16 @@ namespace IntelOrca.Biohazard
             EmrFlags flags = 0;
             switch (id)
             {
+                case 0:
+                    flags = EmrFlags.Entity0;
+                    break;
                 case 1:
                     flags = EmrFlags.Entity1;
                     break;
-                case 2:
-                    flags = EmrFlags.Entity2;
-                    break;
                 case 255:
                     flags = EmrFlags.Partner;
+                    break;
+                default:
                     break;
             }
             if (flags != 0)
