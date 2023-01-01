@@ -3184,10 +3184,9 @@
     "614": {
       "doorRando": [
         {
-          "nop": [ 3168, 3590 ],
+          "nop": [ 3160, 3168, 3582, 3590 ],
           "cutscene": true,
-          "player": 1,
-          "scenario": 0
+          "player": 1
         }
       ],
       "doors": [
