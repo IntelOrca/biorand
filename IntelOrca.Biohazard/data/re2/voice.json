@@ -9,6 +9,8 @@
     "common/sound/core/core01.sap#2": { "player": 1, "actor": "claire", "kind": "hurt" },
     "common/sound/core/core01.sap#3": { "player": 1, "actor": "claire", "kind": "death" },
 
+    "common/sound/enemy/enemy31.sap#1": { "rdt": "400", "player": 1, "actor": "sherry", "kind": "hurt" },
+
     "common/sound/room/room404.sap#5": { "rdt": "404", "player": 0, "actor": "leon" },
     "common/sound/room/room404.sap#6": { "rdt": "404", "player": 0, "actor": "leon", "kind": "hurt" },
     "common/sound/room/room404.sap#7": { "rdt": "404", "player": 0, "actor": "leon", "condition": "@ada" },
