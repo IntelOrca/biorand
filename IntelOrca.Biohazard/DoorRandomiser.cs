@@ -137,7 +137,6 @@ namespace IntelOrca.Biohazard
                 beginNode = bridgeNode;
                 if (i < numAreas - 1)
                 {
-                    pool.Clear();
                     pool.AddRange(bridgeSuperNodes[i]);
                 }
             }
