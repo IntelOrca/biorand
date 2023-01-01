@@ -56,14 +56,14 @@
                     <TextBlock FontSize="24">Contributors</TextBlock>
                     <StackPanel Margin="12,0,0,0">
                         <TextBlock FontSize="16">IntelOrca - programmer</TextBlock>
-                        <TextBlock FontSize="16">Kashup - testing, pld/emd models</TextBlock>
-                        <TextBlock FontSize="16">Snipz - testing, pld/emd models</TextBlock>
+                        <TextBlock FontSize="16">Kashup - testing, pld/emd models, voice sample labeling</TextBlock>
+                        <TextBlock FontSize="16">Snipz - testing, Sherry animations, pld/emd models</TextBlock>
                         <TextBlock FontSize="16">StarringRole - Rebecca pld/emd model</TextBlock>
                         <TextBlock FontSize="16">AndrewC - Barry, Enrico, Jill, Rebecca pld/emd models</TextBlock>
                         <TextBlock FontSize="16">ALSOP - Kendo pld/emd model</TextBlock>
-                        <TextBlock FontSize="16">Rusty - Richard pld/emd model</TextBlock>
+                        <TextBlock FontSize="16">Rusty - Ark, Kevin, Richard, William pld/emd models</TextBlock>
                         <TextBlock FontSize="16">Komizo - Wesker pld/emd model</TextBlock>
-                        <TextBlock FontSize="16">re_duke - rdt information</TextBlock>
+                        <TextBlock FontSize="16">re_duke - RDT information</TextBlock>
                         <TextBlock FontSize="16">Classic RE Modding community discord</TextBlock>
                     </StackPanel>
                     <StackPanel Margin="12,16,0,0">
