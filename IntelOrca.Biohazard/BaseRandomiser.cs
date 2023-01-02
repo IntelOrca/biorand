@@ -30,12 +30,16 @@ namespace IntelOrca.Biohazard
         {
             get
             {
-                var assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var basePath = assemblyDir;
-#if DEBUG
-                basePath = Path.GetFullPath(Path.Combine(assemblyDir, "..\\..\\..\\..\\IntelOrca.Biohazard"));
-#endif
-                var dataPath = Path.Combine(basePath, "data");
+                var dataPath = Environment.GetEnvironmentVariable("BIORAND_DATA");
+                if (string.IsNullOrEmpty(dataPath))
+                {
+                    var assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    var basePath = assemblyDir;
+    #if DEBUG
+                    basePath = Path.GetFullPath(Path.Combine(assemblyDir, "..\\..\\..\\..\\IntelOrca.Biohazard"));
+    #endif
+                    dataPath = Path.Combine(basePath, "data");
+                }
                 return new DataManager(dataPath);
             }
         }
