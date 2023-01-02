@@ -923,6 +923,9 @@ namespace IntelOrca.Biohazard
             if (mapRoom.Items != null)
             {
                 node.RequiresRoom = mapRoom.Items
+                    .Where(x => x.Player == null || x.Player == _config.Player)
+                    .Where(x => x.Scenario == null || x.Scenario == _config.Scenario)
+                    .Where(x => x.DoorRando == null || x.DoorRando == _config.RandomDoors)
                     .SelectMany(x => x.RequiresRoom ?? Array.Empty<string>())
                     .Select(x => GetOrCreateNode(RdtId.Parse(x)))
                     .ToArray();

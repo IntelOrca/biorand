@@ -2971,7 +2971,22 @@
         {
           "target": "60E",
           "requires": [ 76 ],
-          "requiresRoom": [ "608" ]
+          "requiresRoom": [ "611" ],
+          "player": 0,
+          "doorRando": true
+        },
+        {
+          "target": "60E",
+          "requires": [ 76 ],
+          "requiresRoom": [ "608" ],
+          "player": 0,
+          "doorRando": false
+        },
+        {
+          "target": "60E",
+          "requires": [ 76 ],
+          "requiresRoom": [ "608" ],
+          "player": 1
         }
       ]
     },
@@ -3004,7 +3019,15 @@
         {
           "target": "60F",
           "requires": [ 76 ],
+          "requiresRoom": [ "611" ],
+          "player": 0,
+          "doorRando": true
+        },
+        {
+          "target": "60F",
+          "requires": [ 76 ],
           "requiresRoom": [ "608" ],
+          "player": 1,
           "doorRando": true
         },
         {
