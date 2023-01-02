@@ -562,14 +562,10 @@ namespace IntelOrca.Biohazard
                 var spawn = true;
                 if (_startingWeapon == null && _itemHelper.GetInventorySize(_config) != null)
                 {
-                    var isCompatibleWithBothPlayers = _itemHelper.IsWeaponCompatible(0, itemType) && _itemHelper.IsWeaponCompatible(1, itemType);
-                    if (isCompatibleWithBothPlayers)
+                    _startingWeapon = new RandomInventory.Entry(itemType, amount, 0);
+                    if (_config.Game != 2 || _config.Scenario == 0)
                     {
-                        _startingWeapon = new RandomInventory.Entry(itemType, amount, 0);
-                        if (_config.Game != 2 || _config.Scenario == 0)
-                        {
-                            spawn = false;
-                        }
+                        spawn = false;
                     }
                 }
                 if (spawn)
