@@ -13,7 +13,7 @@ namespace IntelOrca.Biohazard
 {
     public abstract class BaseRandomiser
     {
-        private List<RandomInventory?> _inventories { get; } = new List<RandomInventory?>();
+        internal List<RandomInventory?> Inventories { get; } = new List<RandomInventory?>();
 
         protected abstract BioVersion BiohazardVersion { get; }
         internal abstract IItemHelper ItemHelper { get; }
@@ -49,13 +49,13 @@ namespace IntelOrca.Biohazard
             if (inventory == null)
                 return;
 
-            lock (_inventories)
+            lock (Inventories)
             {
-                while (_inventories.Count <= player)
+                while (Inventories.Count <= player)
                 {
-                    _inventories.Add(null);
+                    Inventories.Add(null);
                 }
-                _inventories[player] = inventory;
+                Inventories[player] = inventory;
             }
         }
 
@@ -171,11 +171,17 @@ namespace IntelOrca.Biohazard
 
             Generate(config, reConfig, originalDataPath, modPath);
 
-            File.WriteAllText(Path.Combine(modPath, "manifest.txt"), "[MOD]\nName = BioRand: A Resident Evil Randomizer\n");
+            File.WriteAllText(Path.Combine(modPath, "manifest.txt"), "[MOD]\nName = BioRand: A Resident Evil Randomizer\nModule = biorand.dll\n");
+            File.WriteAllText(Path.Combine(modPath, "description.txt"), $"{Program.CurrentVersionInfo}\nSeed: {config}\n");
         }
 
         public virtual void Generate(RandoConfig config, ReInstallConfig reConfig, string installPath, string modPath)
         {
+            if (config.RandomItems)
+            {
+                SerialiseInventory(modPath);
+            }
+
             if (config.RandomBgm)
             {
                 using var logger = new RandoLogger(Path.Combine(modPath, $"log_bgm.txt"));
@@ -205,6 +211,15 @@ namespace IntelOrca.Biohazard
             }
 
             RandoBgCreator.Save(config, modPath, BiohazardVersion, DataManager);
+
+            var biorandModuleFilename = "biorand.dll";
+            try
+            {
+                File.Copy(DataManager.GetPath(biorandModuleFilename), Path.Combine(modPath, biorandModuleFilename), true);
+            }
+            catch
+            {
+            }
         }
 
         public void GenerateRdts(RandoConfig config, string originalDataPath, string modPath)
@@ -379,27 +394,8 @@ namespace IntelOrca.Biohazard
             // }
         }
 
-        protected void SerialiseInventory(string modPath)
+        protected virtual void SerialiseInventory(string modPath)
         {
-            var doc = new XmlDocument();
-            var root = doc.CreateElement("Init");
-            foreach (var inventory in _inventories.Reverse<RandomInventory?>())
-            {
-                var playerNode = doc.CreateElement("Player");
-                if (inventory != null)
-                {
-                    foreach (var entry in inventory.Entries)
-                    {
-                        var entryNode = doc.CreateElement("Entry");
-                        entryNode.SetAttribute("id", entry.Type.ToString());
-                        entryNode.SetAttribute("count", entry.Count.ToString());
-                        playerNode.AppendChild(entryNode);
-                    }
-                }
-                root.AppendChild(playerNode);
-            }
-            doc.AppendChild(root);
-            doc.Save(Path.Combine(modPath, "init.xml"));
         }
 
         public virtual string[] GetPlayerCharacters(int index)

@@ -13,11 +13,13 @@
         {
             public byte Type { get; }
             public byte Count { get; }
+            public byte Part { get; }
 
-            public Entry(byte type, byte count)
+            public Entry(byte type, byte count, byte part)
             {
                 Type = type;
                 Count = count;
+                Part = part;
             }
         }
     }

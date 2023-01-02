@@ -6,6 +6,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\biorandmod\biorandmod.vcxproj" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="6.0.6" />
     <PackageReference Include="OpenSoftware.DgmlBuilder" Version="2.0.0" />
     <PackageReference Include="NVorbis" Version="0.10.5" />
@@ -28,5 +31,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ProjectExtensions><VisualStudio><UserProperties data_4re2_4rdt_1json__JsonSchema="https://geojson.org/schema/GeoJSON.json" /></VisualStudio></ProjectExtensions>
+  <Target Name="CopyDllModuleToData" BeforeTargets="Compile">
+    <Copy SourceFiles="..\biorandmod\bin\biorand.dll" DestinationFolder="data" />
+  </Target>
 </Project>

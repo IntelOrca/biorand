@@ -6,6 +6,20 @@ namespace IntelOrca.Biohazard.RE2
 {
     internal class Re2ItemHelper : IItemHelper
     {
+        public byte GetItemSize(byte type)
+        {
+            switch ((ItemType)type)
+            {
+                case ItemType.Flamethrower:
+                case ItemType.Sparkshot:
+                case ItemType.RocketLauncher:
+                case ItemType.SMG:
+                    return 2;
+                default:
+                    return 1;
+            }
+        }
+
         public string GetItemName(byte type)
         {
             return Items.GetItemName(type);
@@ -282,14 +296,32 @@ namespace IntelOrca.Biohazard.RE2
             return items.Select(x => (byte)x).ToArray();
         }
 
-        public bool HasInkRibbons(RandoConfig config)
+        public bool IsWeaponCompatible(byte player, byte item)
         {
+            if (player == 1)
+            {
+                switch ((ItemType)item)
+                {
+                    case ItemType.Flamethrower:
+                    case ItemType.Shotgun:
+                    case ItemType.Magnum:
+                        return false;
+                }
+            }
             return true;
         }
 
-        public int[]? GetInventorySize(RandoConfig config)
-        {
-            return null;
-        }
+    public bool HasInkRibbons(RandoConfig config)
+    {
+        return true;
     }
+
+    public int[]? GetInventorySize(RandoConfig config)
+    {
+        if (config.Player == 0)
+            return new int[] { 8 };
+        else
+            return new int[] { 8 };
+    }
+}
 }

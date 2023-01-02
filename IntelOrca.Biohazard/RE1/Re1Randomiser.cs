@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using IntelOrca.Biohazard.RE2;
+using System.Xml;
 
 namespace IntelOrca.Biohazard.RE1
 {
@@ -105,11 +104,6 @@ namespace IntelOrca.Biohazard.RE1
                 () => GenerateRdts(config.WithPlayerScenario(0, 0), installPath, modPath),
                 () => GenerateRdts(config.WithPlayerScenario(1, 0), installPath, modPath));
 
-            if (config.RandomItems)
-            {
-                SerialiseInventory(modPath);
-            }
-
             base.Generate(config, reConfig, installPath, modPath);
         }
 
@@ -118,6 +112,29 @@ namespace IntelOrca.Biohazard.RE1
             var dataPath = GetDataPath(reConfig.GetInstallPath(BiohazardVersion));
             var srcBgmDirectory = Path.Combine(dataPath, BGMPath);
             bgmRandomizer.AddToSelection(GetBgmJson(), srcBgmDirectory, ".wav");
+        }
+
+        protected override void SerialiseInventory(string modPath)
+        {
+            var doc = new XmlDocument();
+            var root = doc.CreateElement("Init");
+            foreach (var inventory in Inventories.Reverse<RandomInventory?>())
+            {
+                var playerNode = doc.CreateElement("Player");
+                if (inventory != null)
+                {
+                    foreach (var entry in inventory.Entries)
+                    {
+                        var entryNode = doc.CreateElement("Entry");
+                        entryNode.SetAttribute("id", entry.Type.ToString());
+                        entryNode.SetAttribute("count", entry.Count.ToString());
+                        playerNode.AppendChild(entryNode);
+                    }
+                }
+                root.AppendChild(playerNode);
+            }
+            doc.AppendChild(root);
+            doc.Save(Path.Combine(modPath, "init.xml"));
         }
 
         internal override string BGMPath => "sound";

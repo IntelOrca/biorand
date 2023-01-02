@@ -9,6 +9,8 @@ namespace IntelOrca.Biohazard.RE2
     public class Re2Randomiser : BaseRandomiser
     {
         private const double SherryScaleY = 0.735911602209945;
+        private const uint AddressInventoryLeon = 0x400000 + 0x001401B8;
+        private const uint AddressInventoryClaire = 0x400000 + 0x001401D9;
 
         private ReInstallConfig? _reInstallConfig;
 
@@ -296,6 +298,38 @@ namespace IntelOrca.Biohazard.RE2
                     }
                 }
             }
+        }
+
+        protected override void SerialiseInventory(string modPath)
+        {
+            var inventoryAddress = new[]
+            {
+                AddressInventoryLeon,
+                AddressInventoryClaire
+            };
+
+            var ms = new MemoryStream();
+            var bw = new BinaryWriter(ms);
+            for (int i = 0; i < inventoryAddress.Length; i++)
+            {
+                if (Inventories.Count <= i)
+                    break;
+
+                var inventory = Inventories[i];
+                if (inventory == null)
+                    continue;
+
+                var offset = inventoryAddress[i];
+                bw.Write(offset);
+                bw.Write(inventory.Entries.Length * 3);
+                foreach (var entry in inventory.Entries)
+                {
+                    bw.Write((byte)entry.Type);
+                    bw.Write((byte)entry.Count);
+                    bw.Write((byte)entry.Part);
+                }
+            }
+            File.WriteAllBytes(Path.Combine(modPath, "biorand.dat"), ms.ToArray());
         }
     }
 }

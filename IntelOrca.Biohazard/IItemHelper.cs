@@ -2,6 +2,7 @@
 {
     public interface IItemHelper
     {
+        byte GetItemSize(byte type);
         string GetItemName(byte type);
         byte GetItemId(CommonItemKind kind);
         bool IsOptionalItem(RandoConfig config, byte type);
@@ -14,6 +15,7 @@
         byte GetMaxAmmoForAmmoType(byte type);
         double GetItemProbability(byte type);
         byte[] GetWeapons(Rng rng, RandoConfig config);
+        bool IsWeaponCompatible(byte player, byte item);
         bool HasInkRibbons(RandoConfig config);
         int[]? GetInventorySize(RandoConfig config);
     }

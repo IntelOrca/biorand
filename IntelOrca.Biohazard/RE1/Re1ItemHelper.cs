@@ -6,6 +6,11 @@ namespace IntelOrca.Biohazard.RE1
 {
     internal class Re1ItemHelper : IItemHelper
     {
+        public byte GetItemSize(byte type)
+        {
+            return 1;
+        }
+
         public string GetItemName(byte type)
         {
             var name = new Bio1ConstantTable().GetItemName(type);
@@ -208,6 +213,11 @@ namespace IntelOrca.Biohazard.RE1
             if (rng.Next(0, 2) == 0)
                 items.Add(Re1ItemIds.RocketLauncher);
             return items.ToArray();
+        }
+
+        public bool IsWeaponCompatible(byte player, byte item)
+        {
+            return true;
         }
 
         public bool HasInkRibbons(RandoConfig config)

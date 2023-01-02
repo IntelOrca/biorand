@@ -108,12 +108,12 @@ namespace IntelOrca.Biohazard
                 _logger.WriteHeading($"Randomizing Inventory {i}:");
                 remaining = size[i];
 
-                // Always give the player a knife
-                AddToInventoryCommon(CommonItemKind.Knife, 0);
-
                 // Primary weapon
                 if (_startingWeapon != null)
                     AddToInventory(_startingWeapon.Value.Type, _startingWeapon.Value.Count);
+
+                // Always give the player a knife
+                AddToInventoryCommon(CommonItemKind.Knife, 0);
 
                 // Health items
                 if (_rng.NextProbability(50))
@@ -147,9 +147,18 @@ namespace IntelOrca.Biohazard
             {
                 if (remaining > 0)
                 {
-                    entries.Add(new RandomInventory.Entry(type, count));
+                    var size = _itemHelper.GetItemSize(type);
+                    if (size == 2)
+                    {
+                        entries.Add(new RandomInventory.Entry(type, count, 1));
+                        entries.Add(new RandomInventory.Entry(type, count, 2));
+                    }
+                    else
+                    {
+                        entries.Add(new RandomInventory.Entry(type, count, 0));
+                    }
                     _logger.WriteLine($"Adding {_itemHelper.GetItemName(type)} x{count}");
-                    remaining--;
+                    remaining -= size;
                 }
             }
         }
@@ -545,16 +554,25 @@ namespace IntelOrca.Biohazard
             // Weapons first
             var ammoTypes = new HashSet<byte>() { _itemHelper.GetItemId(CommonItemKind.HandgunAmmo) };
             var items = _itemHelper.GetWeapons(_rng, _config).Shuffle(_rng);
-            var firstWeapon = true;
+            _startingWeapon = null;
             foreach (var itemType in items)
             {
                 // Spawn weapon
                 var amount = GetRandomAmount(itemType, true);
-                if (firstWeapon && _itemHelper.GetInventorySize(_config) != null)
+                var spawn = true;
+                if (_startingWeapon == null && _itemHelper.GetInventorySize(_config) != null)
                 {
-                    _startingWeapon = new RandomInventory.Entry(itemType, amount);
+                    var isCompatibleWithBothPlayers = _itemHelper.IsWeaponCompatible(0, itemType) && _itemHelper.IsWeaponCompatible(1, itemType);
+                    if (isCompatibleWithBothPlayers)
+                    {
+                        _startingWeapon = new RandomInventory.Entry(itemType, amount, 0);
+                        if (_config.Game != 2 || _config.Scenario == 0)
+                        {
+                            spawn = false;
+                        }
+                    }
                 }
-                else
+                if (spawn)
                 {
                     SpawnItem(shuffled, itemType, amount);
                 }
@@ -565,8 +583,6 @@ namespace IntelOrca.Biohazard
                 {
                     ammoTypes.Add(ammoType);
                 }
-
-                firstWeapon = false;
             }
 
             // Now everything else
