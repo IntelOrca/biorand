@@ -172,7 +172,7 @@ namespace IntelOrca.Biohazard
             Generate(config, reConfig, originalDataPath, modPath);
 
             File.WriteAllText(Path.Combine(modPath, "manifest.txt"), "[MOD]\nName = BioRand: A Resident Evil Randomizer\nModule = biorand.dll\n");
-            File.WriteAllText(Path.Combine(modPath, "description.txt"), $"{Program.CurrentVersionInfo}\nSeed: {config}\n");
+            File.WriteAllText(Path.Combine(modPath, "description.txt"), $"{Program.CurrentVersionInfo}\r\nSeed: {config}\r\n");
         }
 
         public virtual void Generate(RandoConfig config, ReInstallConfig reConfig, string installPath, string modPath)
