@@ -10,16 +10,20 @@ jobs:
     - name: Restore
       run: dotnet restore
     - name: Build
-      run: dotnet build -c Release --no-restore
+      shell: cmd
+      run: |
+        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat"
+        msbuild biorand.sln /t:build /p:Configuration=Release
     - name: Publish
       working-directory: biorand
+      shell: cmd
       run: |
         dotnet publish -c Release --no-build
         cd bin/Release/net472/publish
-        cp ${{ github.workspace }}/README.md .
-        cp ${{ github.workspace }}/LICENSE .
-        mkdir ${{ github.workspace }}/artefacts
-        rm *.pdb
+        copy ${{ github.workspace }}/README.md .
+        copy ${{ github.workspace }}/LICENSE .
+        md ${{ github.workspace }}/artefacts
+        del *.pdb
         7z -r a ${{ github.workspace }}/artefacts/biorand.zip data *.exe *.dll *.config README.md LICENSE
     - name: Upload artifacts
       uses: actions/upload-artifact@v2

@@ -6,9 +6,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\biorandmod\biorandmod.vcxproj" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="6.0.6" />
     <PackageReference Include="OpenSoftware.DgmlBuilder" Version="2.0.0" />
     <PackageReference Include="NVorbis" Version="0.10.5" />
