@@ -3260,7 +3260,12 @@
           "player": 1
         }
       ],
-      "enemies": []
+      "enemies": [],
+      "npcs": [
+        {
+          "excludeTypes": [ 81, 83, 85, 87, 89, 91 ]
+        }
+      ]
     },
     "615": {
       "doorRando": [
