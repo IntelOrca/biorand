@@ -2162,7 +2162,7 @@
       "npcs": [
         {
           "includeOffsets": [ 9180 ],
-          "excludeTypes": [ 65, 66, 67, 73, 80, 81 ],
+          "excludeTypes": [ 65, 66, 67, 73, 79, 80, 81 ],
           "playerActor": "ada",
           "cutscene": 0,
           "player": 0
