@@ -2,6 +2,7 @@
 using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using IntelOrca.Biohazard;
 using IntelOrca.Biohazard.Script;
@@ -35,16 +36,15 @@ namespace IntelOrca.Scd
                 if (rdtPath.EndsWith(".rdt", StringComparison.OrdinalIgnoreCase))
                 {
                     var rdtFile = new RdtFile(rdtPath);
-
-                    var sb = new StringBuilder();
-                    sb.AppendLine(".version " + (rdtFile.Version == BioVersion.Biohazard1 ? 1 : 2));
-                    sb.AppendLine(Diassemble(rdtFile.Version, BioScriptKind.Init, rdtFile.GetScd(BioScriptKind.Init)));
-                    sb.AppendLine(Diassemble(rdtFile.Version, BioScriptKind.Main, rdtFile.GetScd(BioScriptKind.Main)));
-                    for (int i = 0; i < rdtFile.EventScriptCount; i++)
+                    foreach (var listing in new[] { false, true })
                     {
-                        sb.AppendLine(Diassemble(rdtFile.Version, BioScriptKind.Event, rdtFile.GetScd(BioScriptKind.Event, i)));
+                        if (listing && !args.Contains("--list"))
+                            continue;
+
+                        var script = rdtFile.DisassembleScd(listing);
+                        var extension = listing ? ".lst" : ".s";
+                        File.WriteAllText(Path.ChangeExtension(Path.GetFileName(rdtPath), extension), script);
                     }
-                    File.WriteAllText(Path.ChangeExtension(Path.GetFileName(rdtPath), ".s"), sb.ToString());
                 }
                 else if (rdtPath.EndsWith(".scd", StringComparison.OrdinalIgnoreCase))
                 {

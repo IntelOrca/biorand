@@ -5,6 +5,8 @@ namespace IntelOrca.Biohazard.Script
 {
     internal class Bio2ConstantTable : IConstantTable
     {
+        private const byte SCE_EVENT = 5;
+
         public byte? FindOpcode(string name)
         {
             for (int i = 0; i < g_instructionSignatures.Length; i++)
@@ -26,13 +28,39 @@ namespace IntelOrca.Biohazard.Script
 
         public string? GetConstant(byte opcode, int pIndex, BinaryReader br)
         {
-            if (opcode == (byte)OpcodeV2.AotSet)
+            if (opcode == (byte)OpcodeV2.AotReset)
+            {
+                if (pIndex == 4)
+                {
+                    br.BaseStream.Position++;
+                    var sce = br.ReadByte();
+                    if (sce == SCE_EVENT)
+                    {
+                        br.BaseStream.Position += 3;
+                        return GetConstant('g', br.ReadByte());
+                    }
+                }
+                else if (pIndex == 5)
+                {
+                    br.BaseStream.Position++;
+                    var sce = br.ReadByte();
+                    if (sce == SCE_EVENT)
+                    {
+                        br.BaseStream.Position += 3;
+                        if (br.ReadByte() == (byte)OpcodeV2.Gosub)
+                        {
+                            return GetConstant('p', br.ReadByte());
+                        }
+                    }
+                }
+            }
+            else if (opcode == (byte)OpcodeV2.AotSet)
             {
                 if (pIndex == 11)
                 {
                     br.BaseStream.Position++;
                     var sce = br.ReadByte();
-                    if (sce == 5)
+                    if (sce == SCE_EVENT)
                     {
                         br.BaseStream.Position += 13;
                         return GetConstant('g', br.ReadByte());
@@ -42,7 +70,7 @@ namespace IntelOrca.Biohazard.Script
                 {
                     br.BaseStream.Position++;
                     var sce = br.ReadByte();
-                    if (sce == 5)
+                    if (sce == SCE_EVENT)
                     {
                         br.BaseStream.Position += 13;
                         if (br.ReadByte() == (byte)OpcodeV2.Gosub)
@@ -58,7 +86,7 @@ namespace IntelOrca.Biohazard.Script
                 {
                     br.BaseStream.Position++;
                     var sce = br.ReadByte();
-                    if (sce == 5)
+                    if (sce == SCE_EVENT)
                     {
                         br.BaseStream.Position += 21;
                         return GetConstant('g', br.ReadByte());
@@ -68,7 +96,7 @@ namespace IntelOrca.Biohazard.Script
                 {
                     br.BaseStream.Position++;
                     var sce = br.ReadByte();
-                    if (sce == 5)
+                    if (sce == SCE_EVENT)
                     {
                         br.BaseStream.Position += 21;
                         if (br.ReadByte() == (byte)OpcodeV2.Gosub)
