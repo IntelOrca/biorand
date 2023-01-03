@@ -133,13 +133,23 @@
       ]
     },
     "106": {
-      "doors": [
+      "doorRando": [
         {
-          "target": "105",
-          "lock": "always"
+          "nop": [ 3514, 3698, 3892, 4664 ],
+          "player": 0
         },
         {
-          "target": "107"
+          "nop": [ 3564, 3748, 3942, 4714 ],
+          "player": 1
+        }
+      ],
+      "doors": [
+        {
+          "target": "105"
+        },
+        {
+          "target": "107",
+          "lock": "unblock"
         }
       ],
       "enemies": [
