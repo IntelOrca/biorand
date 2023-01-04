@@ -165,7 +165,7 @@ namespace IntelOrca.Biohazard.Script
                         return "I_GOSUB";
                     break;
                 case 'p':
-                    return $"sub_{value:X2}";
+                    return $"main_{value:X2}";
             }
             return null;
         }
@@ -259,7 +259,7 @@ namespace IntelOrca.Biohazard.Script
             "evt_exec:ugp",
             "evt_kill",
             "if:uL",
-            "else:uL",
+            "else:u@",
             "endif",
             "sleep:uU",
             "sleeping:U",
@@ -271,7 +271,7 @@ namespace IntelOrca.Biohazard.Script
 
             "ewhile",
             "do:uL",
-            "edwhile:l",
+            "edwhile:'",
             "switch:uL",
             "case:uLU",
             "default",

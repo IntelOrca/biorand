@@ -4,7 +4,7 @@
       "commandName": "Project",
       // "commandLineArgs": "--decompile F:\\games\\re2\\data\\pl0\\rdt\\ROOM1010.RDT",
       // "commandLineArgs": "ROOM1000.RDT --init init.scd",
-      "commandLineArgs": "ROOM10C0.s",
+      "commandLineArgs": "main.s",
       // "commandLineArgs": "F:\\games\\re1\\JPN\\STAGE1\\ROOM1010.RDT 101.s -o F:\\games\\re1\\mod_test\\STAGE1\\ROOM1010.RDT",
       // "commandLineArgs": "F:\\games\\re1\\JPN\\STAGE1\\ROOM1010.RDT 101.s -o F:\\games\\re1\\mod_test\\STAGE1\\ROOM1010.RDT.bad",
       // "commandLineArgs": "F:\\games\\re2\\data\\pl0\\Rdt\\ROOM3010.RDT ROOM3010.s -o F:\\games\\re2\\mod_biorand\\pl0\\Rdt\\ROOM3010.RDT",

@@ -48,11 +48,12 @@ namespace IntelOrca.Scd
                 }
                 else if (rdtPath.EndsWith(".scd", StringComparison.OrdinalIgnoreCase))
                 {
+                    var kind = args.Contains("--main") ? BioScriptKind.Main : BioScriptKind.Init;
                     var scd = File.ReadAllBytes(rdtPath);
-                    var s = Diassemble(BioVersion.Biohazard2, BioScriptKind.Init, scd);
+                    var s = Diassemble(BioVersion.Biohazard2, kind, scd);
                     var sPath = Path.ChangeExtension(rdtPath, ".s");
                     File.WriteAllText(sPath, s);
-                    var lst = Diassemble(BioVersion.Biohazard2, BioScriptKind.Init, scd, listing: true);
+                    var lst = Diassemble(BioVersion.Biohazard2, kind, scd, listing: true);
                     var lstPath = Path.ChangeExtension(rdtPath, ".lst");
                     File.WriteAllText(lstPath, lst);
                 }
@@ -82,12 +83,12 @@ namespace IntelOrca.Scd
                     var result = scdAssembler.Assemble(rdtPath, s);
                     if (result == 0)
                     {
-                        if (scdAssembler.OutputInit != null)
+                        if (scdAssembler.OutputInit != null && scdAssembler.OutputInit.Length != 0)
                         {
                             var scdPath = Path.ChangeExtension(rdtPath, "init.scd");
                             File.WriteAllBytes(scdPath, scdAssembler.OutputInit);
                         }
-                        if (scdAssembler.OutputMain != null)
+                        if (scdAssembler.OutputMain != null && scdAssembler.OutputMain.Length != 0)
                         {
                             var scdPath = Path.ChangeExtension(rdtPath, "main.scd");
                             File.WriteAllBytes(scdPath, scdAssembler.OutputMain);
@@ -131,7 +132,7 @@ namespace IntelOrca.Scd
                             {
                                 foreach (var error in scdAssembler.Errors.Errors)
                                 {
-                                    Console.WriteLine($"{error.Path}({error.Line + 1},{error.Column + 1}): error {error.ErrorCodeString}: {error.Message}");
+                                    Console.WriteLine(error);
                                 }
                             }
                         }

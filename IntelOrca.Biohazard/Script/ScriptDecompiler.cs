@@ -13,6 +13,7 @@ namespace IntelOrca.Biohazard.Script
         private bool _constructingBinaryExpression;
         private int _expressionCount;
         private IConstantTable _constantTable = new Bio1ConstantTable();
+        private BioScriptKind _kind;
 
         public bool AssemblyFormat => _sb.AssemblyFormat;
 
@@ -35,7 +36,7 @@ namespace IntelOrca.Biohazard.Script
             else
                 _constantTable = new Bio2ConstantTable();
 
-            // _sb.WriteLine(".version " + (int)version);
+            _sb.WriteLine(".version " + (int)version);
         }
 
         public override void VisitBeginScript(BioScriptKind kind)
@@ -43,6 +44,7 @@ namespace IntelOrca.Biohazard.Script
             switch (kind)
             {
                 case BioScriptKind.Init:
+                    _kind = BioScriptKind.Init;
                     if (AssemblyFormat)
                     {
                         _sb.WriteLine(".init");
@@ -54,6 +56,7 @@ namespace IntelOrca.Biohazard.Script
                     }
                     break;
                 case BioScriptKind.Main:
+                    _kind = BioScriptKind.Main;
                     _sb.WriteLine();
                     if (AssemblyFormat)
                     {
@@ -66,6 +69,7 @@ namespace IntelOrca.Biohazard.Script
                     }
                     break;
                 case BioScriptKind.Event:
+                    _kind = BioScriptKind.Event;
                     _sb.WriteLine();
                     if (AssemblyFormat)
                     {
@@ -98,18 +102,26 @@ namespace IntelOrca.Biohazard.Script
             if (AssemblyFormat)
             {
                 if (Version != BioVersion.Biohazard1)
-                    _sb.WriteLine($".proc sub_{index:X2}");
+                    _sb.WriteLine($".proc {GetProcedureName(index)}");
             }
             else
             {
                 _sb.ResetIndent();
 
                 _sb.Indent();
-                _sb.WriteLine($"sub_{index:X2}()");
+                _sb.WriteLine($"{GetProcedureName(index)}()");
                 _sb.OpenBlock();
 
                 _blockEnds.Clear();
             }
+        }
+
+        private string GetProcedureName(int index)
+        {
+            if (_kind == BioScriptKind.Init)
+                return $"init_{index:X2}";
+            else
+                return $"main_{index:X2}";
         }
 
         public override void VisitEndSubroutine(int index)
@@ -129,10 +141,7 @@ namespace IntelOrca.Biohazard.Script
         {
             _sb.RecordOpcode(offset, opcodeSpan);
 
-            var opcodeBytes = opcodeSpan.ToArray();
-            var br = new BinaryReader(new MemoryStream(opcodeBytes));
-            var opcode = br.PeekByte();
-
+            var opcode = opcodeSpan[0];
             if (_constructingBinaryExpression)
             {
                 if (!IsOpcodeCondition(opcode))
@@ -160,19 +169,24 @@ namespace IntelOrca.Biohazard.Script
                 CloseCurrentBlock();
             }
 
-            if (AssemblyFormat)
+            var opcodeBytes = opcodeSpan.ToArray();
+            var br = new BinaryReader(new MemoryStream(opcodeBytes));
+            var backupPosition = br.BaseStream.Position;
+            if (!AssemblyFormat)
             {
-                DiassembleGeneralOpcode(br, offset, (byte)opcode);
-                return;
+                if (Version == BioVersion.Biohazard1)
+                {
+                    if (VisitOpcode(offset, (OpcodeV1)opcode, br))
+                        return;
+                }
+                else
+                {
+                    if (VisitOpcode(offset, (OpcodeV2)opcode, br))
+                        return;
+                }
+                br.BaseStream.Position = backupPosition;
             }
-            else if (Version == BioVersion.Biohazard1)
-            {
-                VisitOpcode(offset, (OpcodeV1)opcode, br);
-            }
-            else
-            {
-                VisitOpcode(offset, (OpcodeV2)opcode, br);
-            }
+            DiassembleGeneralOpcode(br, offset, opcode, opcodeBytes.Length);
         }
 
         private bool IsOpcodeCondition(byte opcodeB)
@@ -205,16 +219,14 @@ namespace IntelOrca.Biohazard.Script
             }
         }
 
-        private void VisitOpcode(int offset, OpcodeV1 opcode, BinaryReader br)
+        private bool VisitOpcode(int offset, OpcodeV1 opcode, BinaryReader br)
         {
             var sb = _sb;
             br.ReadByte();
             switch (opcode)
             {
                 default:
-                    br.BaseStream.Position--;
-                    DiassembleGeneralOpcode(br, offset, (byte)opcode);
-                    break;
+                    return false;
                 case OpcodeV1.Nop:
                     break;
                 case OpcodeV1.IfelCk:
@@ -300,18 +312,17 @@ namespace IntelOrca.Biohazard.Script
                         break;
                     }
             }
+            return true;
         }
 
-        private void VisitOpcode(int offset, OpcodeV2 opcode, BinaryReader br)
+        private bool VisitOpcode(int offset, OpcodeV2 opcode, BinaryReader br)
         {
             var sb = _sb;
             br.ReadByte();
             switch (opcode)
             {
                 default:
-                    br.BaseStream.Position--;
-                    DiassembleGeneralOpcode(br, offset, (byte)opcode);
-                    break;
+                    return false;
                 case OpcodeV2.Nop:
                 case OpcodeV2.Nop20:
                     break;
@@ -423,7 +434,7 @@ namespace IntelOrca.Biohazard.Script
                     break;
                 case OpcodeV2.Gosub:
                     var num = br.ReadByte();
-                    sb.WriteLine($"sub_{num:X2}();");
+                    sb.WriteLine($"{GetProcedureName(num)}();");
                     break;
                 case OpcodeV2.Return:
                     sb.WriteLine("return;");
@@ -537,9 +548,10 @@ namespace IntelOrca.Biohazard.Script
                         break;
                     }
             }
+            return true;
         }
 
-        private void DiassembleGeneralOpcode(BinaryReader br, int offset, byte opcode)
+        private void DiassembleGeneralOpcode(BinaryReader br, int offset, byte opcode, int instructionLength)
         {
             var parameters = new List<object>();
             string opcodeName;
@@ -592,16 +604,36 @@ namespace IntelOrca.Biohazard.Script
                             case 'l':
                                 {
                                     var blockLen = br.ReadByte();
-                                    _sb.InsertLabel(offset + blockLen);
-                                    parameters.Add(_sb.GetLabelName(offset + blockLen));
+                                    var labelOffset = offset + blockLen;
+                                    _sb.InsertLabel(labelOffset);
+                                    parameters.Add(_sb.GetLabelName(labelOffset));
+                                    break;
+                                }
+                            case '\'':
+                                {
+                                    var blockLen = br.ReadByte();
+                                    var labelOffset = offset + instructionLength + blockLen;
+                                    _sb.InsertLabel(labelOffset);
+                                    parameters.Add(_sb.GetLabelName(labelOffset));
                                     break;
                                 }
                             case 'L':
                             case '~':
                                 {
                                     var blockLen = c == '~' ? (int)br.ReadInt16() : (int)br.ReadUInt16();
-                                    _sb.InsertLabel(offset + blockLen);
-                                    parameters.Add(_sb.GetLabelName(offset + blockLen));
+                                    var labelOffset = offset + instructionLength + blockLen;
+                                    if (c == '~')
+                                        labelOffset -= 2;
+                                    _sb.InsertLabel(labelOffset);
+                                    parameters.Add(_sb.GetLabelName(labelOffset));
+                                    break;
+                                }
+                            case '@':
+                                {
+                                    var blockLen = br.ReadInt16();
+                                    var labelOffset = offset + blockLen;
+                                    _sb.InsertLabel(labelOffset);
+                                    parameters.Add(_sb.GetLabelName(labelOffset));
                                     break;
                                 }
                             case 'b':
