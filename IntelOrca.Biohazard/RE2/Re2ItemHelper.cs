@@ -6,6 +6,8 @@ namespace IntelOrca.Biohazard.RE2
 {
     internal class Re2ItemHelper : IItemHelper
     {
+        private const bool g_claireWeaponFix = true;
+
         public byte GetItemSize(byte type)
         {
             switch ((ItemType)type)
@@ -236,7 +238,7 @@ namespace IntelOrca.Biohazard.RE2
 
             var items = new List<ItemType>();
             ItemType[] allWeapons;
-            if (config.Player == 0)
+            if (config.Player == 0 || g_claireWeaponFix)
             {
                 allWeapons = new[] {
                     ItemType.SMG,
@@ -298,7 +300,7 @@ namespace IntelOrca.Biohazard.RE2
 
         public bool IsWeaponCompatible(byte player, byte item)
         {
-            if (player == 1)
+            if (!g_claireWeaponFix && player == 1)
             {
                 switch ((ItemType)item)
                 {

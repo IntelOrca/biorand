@@ -113,6 +113,7 @@ namespace IntelOrca.Biohazard.RE2
                     () => GenerateRdts(config.WithPlayerScenario(1, 0), installPath, modPath));
             }
 
+            FixClaireWeapons();
             base.Generate(config, reConfig, installPath, modPath);
         }
 
@@ -308,8 +309,7 @@ namespace IntelOrca.Biohazard.RE2
                 AddressInventoryClaire
             };
 
-            var ms = new MemoryStream();
-            var bw = new BinaryWriter(ms);
+            var bw = new BinaryWriter(ExePatch);
             for (int i = 0; i < inventoryAddress.Length; i++)
             {
                 if (Inventories.Count <= i)
@@ -329,7 +329,31 @@ namespace IntelOrca.Biohazard.RE2
                     bw.Write((byte)entry.Part);
                 }
             }
-            File.WriteAllBytes(Path.Combine(modPath, "biorand.dat"), ms.ToArray());
+        }
+
+        private void FixClaireWeapons()
+        {
+            // bio2.exe+0x13A386: 0xB8 -> 0xF7
+            // bio2.exe+0x13A38E: 0xB8 -> 0xF7
+            // bio2.exe+0x13A396: 0xEF -> 0xF8
+            // bio2.exe+0x13A39E: 0xEF -> 0xF8
+            // bio2.exe+0x13A598: 0x60 -> 0x64
+
+            var offset = 0x400000 + 0x13A386;
+            var data = new byte[] {
+                0xB8, 0xF7, 0x38, 0xFF, 0x2C, 0x01, 0x85, 0xF6, 0xB8, 0xF7,
+                0x0C, 0xFE, 0x96, 0x00, 0xEB, 0xF8, 0xEF, 0xF8, 0x0C, 0xFE,
+                0xC8, 0x00, 0xEB, 0xF8, 0xEF, 0xF8
+            };
+
+            var bw = new BinaryWriter(ExePatch);
+            bw.Write(offset);
+            bw.Write(data.Length);
+            bw.Write(data);
+
+            bw.Write(0x400000 + 0x13A598);
+            bw.Write(1);
+            bw.Write((byte)0x64);
         }
     }
 }

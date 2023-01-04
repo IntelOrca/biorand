@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using System.Xml;
 using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.RE2;
 
@@ -13,6 +12,7 @@ namespace IntelOrca.Biohazard
 {
     public abstract class BaseRandomiser
     {
+        protected MemoryStream ExePatch { get; } = new MemoryStream();
         internal List<RandomInventory?> Inventories { get; } = new List<RandomInventory?>();
 
         protected abstract BioVersion BiohazardVersion { get; }
@@ -211,6 +211,8 @@ namespace IntelOrca.Biohazard
             }
 
             RandoBgCreator.Save(config, modPath, BiohazardVersion, DataManager);
+
+            File.WriteAllBytes(Path.Combine(modPath, "biorand.dat"), ExePatch.ToArray());
 
             var biorandModuleFilename = "biorand.dll";
             try
