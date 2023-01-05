@@ -416,7 +416,7 @@ namespace IntelOrca.Biohazard.Script
                 _currScriptKind = BioScriptKind.Init;
 
             _currentOpcodeOffset = _procData.Count;
-            if (name == "unk")
+            if (name == "unk" || name == "db")
             {
                 _currentOpcode = UnkOpcode;
                 _currentOpcodeLength = 0;
@@ -450,7 +450,15 @@ namespace IntelOrca.Biohazard.Script
 
         private void AddOperandNumber(in Token token)
         {
-            var num = int.Parse(token.Text);
+            int num;
+            if (token.Text.StartsWith("0x"))
+            {
+                num = int.Parse(token.Text.Substring(2), System.Globalization.NumberStyles.HexNumber);
+            }
+            else
+            {
+                num = int.Parse(token.Text);
+            }
             AddOperandNumber(in token, num);
         }
 

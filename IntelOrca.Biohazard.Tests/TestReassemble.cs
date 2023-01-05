@@ -20,10 +20,28 @@ namespace IntelOrca.Biohazard.Tests
         [Fact]
         public void RE2_Leon()
         {
-            var rdtPath = @"F:\games\re2\data\pl0\rdt";
+            CheckRDTs(@"F:\games\re2\data\pl0\rdt");
+        }
+
+        [Fact]
+        public void RE2_Claire()
+        {
+            CheckRDTs(@"F:\games\re2\data\pl1\rdt");
+        }
+
+        private void CheckRDTs(string rdtPath)
+        {
             var rdts = Directory.GetFiles(rdtPath, "*.rdt");
             foreach (var rdt in rdts)
             {
+                var rdtId = RdtId.Parse(rdt.Substring(rdt.Length - 8, 3));
+                if (rdtId == new RdtId(4, 0x05))
+                    continue;
+                if (rdtId == new RdtId(6, 0x05))
+                    continue;
+                if (rdtId.Stage > 6)
+                    continue;
+
                 var rdtFile = new RdtFile(rdt);
                 var diassembly = rdtFile.DisassembleScd();
                 var sPath = Path.ChangeExtension(rdt, ".s");

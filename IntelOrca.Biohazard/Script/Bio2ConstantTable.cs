@@ -26,87 +26,90 @@ namespace IntelOrca.Biohazard.Script
             return null;
         }
 
-        public string? GetConstant(byte opcode, int pIndex, BinaryReader br)
+        public string? GetConstant(byte opcode, int pIndex, BinaryReader reader)
         {
-            if (opcode == (byte)OpcodeV2.AotReset)
+            using (var br = reader.Fork())
             {
-                if (pIndex == 4)
+                if (opcode == (byte)OpcodeV2.AotReset)
                 {
-                    br.BaseStream.Position++;
-                    var sce = br.ReadByte();
-                    if (sce == SCE_EVENT)
+                    if (pIndex == 5)
                     {
-                        br.BaseStream.Position += 3;
-                        return GetConstant('g', br.ReadByte());
-                    }
-                }
-                else if (pIndex == 5)
-                {
-                    br.BaseStream.Position++;
-                    var sce = br.ReadByte();
-                    if (sce == SCE_EVENT)
-                    {
-                        br.BaseStream.Position += 3;
-                        if (br.ReadByte() == (byte)OpcodeV2.Gosub)
+                        br.BaseStream.Position++;
+                        var sce = br.ReadByte();
+                        if (sce == SCE_EVENT)
                         {
-                            return GetConstant('p', br.ReadByte());
+                            br.BaseStream.Position += 3;
+                            return GetConstant('g', br.ReadByte());
+                        }
+                    }
+                    else if (pIndex == 6)
+                    {
+                        br.BaseStream.Position++;
+                        var sce = br.ReadByte();
+                        if (sce == SCE_EVENT)
+                        {
+                            br.BaseStream.Position += 3;
+                            if (br.ReadByte() == (byte)OpcodeV2.Gosub)
+                            {
+                                return GetConstant('p', br.ReadByte());
+                            }
                         }
                     }
                 }
-            }
-            else if (opcode == (byte)OpcodeV2.AotSet)
-            {
-                if (pIndex == 11)
+                else if (opcode == (byte)OpcodeV2.AotSet)
                 {
-                    br.BaseStream.Position++;
-                    var sce = br.ReadByte();
-                    if (sce == SCE_EVENT)
+                    if (pIndex == 11)
                     {
-                        br.BaseStream.Position += 13;
-                        return GetConstant('g', br.ReadByte());
-                    }
-                }
-                else if (pIndex == 12)
-                {
-                    br.BaseStream.Position++;
-                    var sce = br.ReadByte();
-                    if (sce == SCE_EVENT)
-                    {
-                        br.BaseStream.Position += 13;
-                        if (br.ReadByte() == (byte)OpcodeV2.Gosub)
+                        br.BaseStream.Position++;
+                        var sce = br.ReadByte();
+                        if (sce == SCE_EVENT)
                         {
-                            return GetConstant('p', br.ReadByte());
+                            br.BaseStream.Position += 13;
+                            return GetConstant('g', br.ReadByte());
+                        }
+                    }
+                    else if (pIndex == 12)
+                    {
+                        br.BaseStream.Position++;
+                        var sce = br.ReadByte();
+                        if (sce == SCE_EVENT)
+                        {
+                            br.BaseStream.Position += 13;
+                            if (br.ReadByte() == (byte)OpcodeV2.Gosub)
+                            {
+                                return GetConstant('p', br.ReadByte());
+                            }
                         }
                     }
                 }
-            }
-            else if (opcode == (byte)OpcodeV2.AotSet4p)
-            {
-                if (pIndex == 15)
+                else if (opcode == (byte)OpcodeV2.AotSet4p)
                 {
-                    br.BaseStream.Position++;
-                    var sce = br.ReadByte();
-                    if (sce == SCE_EVENT)
+                    if (pIndex == 15)
                     {
-                        br.BaseStream.Position += 21;
-                        return GetConstant('g', br.ReadByte());
-                    }
-                }
-                else if (pIndex == 17)
-                {
-                    br.BaseStream.Position++;
-                    var sce = br.ReadByte();
-                    if (sce == SCE_EVENT)
-                    {
-                        br.BaseStream.Position += 21;
-                        if (br.ReadByte() == (byte)OpcodeV2.Gosub)
+                        br.BaseStream.Position++;
+                        var sce = br.ReadByte();
+                        if (sce == SCE_EVENT)
                         {
-                            return GetConstant('p', br.ReadByte());
+                            br.BaseStream.Position += 21;
+                            return GetConstant('g', br.ReadByte());
+                        }
+                    }
+                    else if (pIndex == 16)
+                    {
+                        br.BaseStream.Position++;
+                        var sce = br.ReadByte();
+                        if (sce == SCE_EVENT)
+                        {
+                            br.BaseStream.Position += 21;
+                            if (br.ReadByte() == (byte)OpcodeV2.Gosub)
+                            {
+                                return GetConstant('p', br.ReadByte());
+                            }
                         }
                     }
                 }
+                return null;
             }
-            return null;
         }
 
         public string? GetConstant(char kind, int value)

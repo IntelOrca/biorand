@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 
 namespace IntelOrca.Biohazard.Script
 {
@@ -558,13 +559,18 @@ namespace IntelOrca.Biohazard.Script
 
             var originalStreamPosition = br.BaseStream.Position;
 
-            // Read opcode
             var opcodeRaw = br.ReadByte();
             Debug.Assert(opcodeRaw == opcode);
 
-            var length = _constantTable.GetInstructionSize(opcode, br);
             br.BaseStream.Position = originalStreamPosition + 1;
+
             var signature = _constantTable.GetOpcodeSignature(opcode);
+            var expectedLength = _constantTable.GetInstructionSize(opcode, br);
+            if (expectedLength == 0 || expectedLength != instructionLength)
+            {
+                signature = "";
+            }
+
             var colonIndex = signature.IndexOf(':');
             if (colonIndex == -1)
             {
@@ -574,7 +580,7 @@ namespace IntelOrca.Biohazard.Script
                     opcodeName = "unk";
                     parameters.Add(opcode);
                 }
-                foreach (var b in br.ReadBytes(length))
+                foreach (var b in br.ReadBytes(instructionLength))
                 {
                     parameters.Add(b);
                 }
@@ -586,10 +592,12 @@ namespace IntelOrca.Biohazard.Script
                 for (int i = colonIndex + 1; i < signature.Length; i++)
                 {
                     var c = signature[i];
-                    var backup = br.BaseStream.Position;
-                    br.BaseStream.Position = originalStreamPosition + 1;
-                    var szv = _constantTable.GetConstant(opcode, pIndex, br);
-                    br.BaseStream.Position = backup;
+                    string? szv;
+                    using (var br2 = br.Fork())
+                    {
+                        br.BaseStream.Position = originalStreamPosition + 1;
+                        szv = _constantTable.GetConstant(opcode, pIndex, br);
+                    }
                     if (szv != null)
                     {
                         br.BaseStream.Position++;
@@ -676,8 +684,27 @@ namespace IntelOrca.Biohazard.Script
             _sb.WriteStandardOpcode(opcodeName, parameters.ToArray());
 
             var streamPosition = br.BaseStream.Position;
-            if (streamPosition != originalStreamPosition + length)
+            if (streamPosition != originalStreamPosition + instructionLength)
                 throw new Exception($"Opcode {opcode} not diassembled correctly.");
+        }
+
+        public override void VisitTrailingData(int offset, Span<byte> data)
+        {
+            var sb = new StringBuilder();
+            for (int i = 0; i < data.Length; i += 16)
+            {
+                var slice = data.Slice(i, Math.Min(data.Length - i, 16));
+
+                sb.Clear();
+                for (int j = 0; j < slice.Length; j++)
+                {
+                    sb.AppendFormat("0x{0:X2}, ", slice[j]);
+                }
+                sb.Remove(sb.Length - 2, 2);
+                _sb.CurrentOffset = offset + i;
+                _sb.CurrentOpcodeBytes = slice.ToArray();
+                _sb.WriteStandardOpcode("db", sb.ToString());
+            }
         }
 
         private static string GetVariableName(int id)

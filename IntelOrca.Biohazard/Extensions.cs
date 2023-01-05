@@ -127,5 +127,10 @@ namespace IntelOrca.Biohazard
             if (count != length)
                 throw new IOException($"Unable to copy {length} bytes to new stream.");
         }
+
+        public static ForkedBinaryReader Fork(this BinaryReader br)
+        {
+            return new ForkedBinaryReader(br);
+        }
     }
 }
