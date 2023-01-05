@@ -573,6 +573,13 @@ namespace IntelOrca.Biohazard
                     SpawnItem(shuffled, itemType, amount);
                 }
 
+                // Spawn upgrade
+                var upgradeType = _itemHelper.GetWeaponUpgrade(itemType, _rng, _config);
+                if (upgradeType != null)
+                {
+                    SpawnItem(shuffled, upgradeType.Value, 1);
+                }
+
                 // Add supported ammo types
                 var weaponAmmoTypes = _itemHelper.GetAmmoTypeForWeapon(itemType);
                 foreach (var ammoType in weaponAmmoTypes)

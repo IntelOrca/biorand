@@ -241,6 +241,8 @@ namespace IntelOrca.Biohazard.RE2
             if (config.Player == 0 || g_claireWeaponFix)
             {
                 allWeapons = new[] {
+                    ItemType.HandgunLeon,
+                    ItemType.HandgunClaire,
                     ItemType.SMG,
                     ItemType.Flamethrower,
                     ItemType.ColtSAA,
@@ -262,6 +264,7 @@ namespace IntelOrca.Biohazard.RE2
             else
             {
                 allWeapons = new[] {
+                    ItemType.HandgunClaire,
                     ItemType.SMG,
                     ItemType.ColtSAA,
                     ItemType.Beretta,
@@ -287,15 +290,27 @@ namespace IntelOrca.Biohazard.RE2
                 }
             }
 
-            // Weapon upgrades
-            if (rng.NextProbability(33) && config.Player == 0)
-                items.Add(ItemType.HandgunParts);
-            if (rng.NextProbability(50) && items.Contains(ItemType.Shotgun))
-                items.Add(ItemType.ShotgunParts);
-            if (rng.NextProbability(50) && items.Contains(ItemType.Magnum))
-                items.Add(ItemType.MagnumParts);
-
             return items.Select(x => (byte)x).ToArray();
+        }
+
+        public byte? GetWeaponUpgrade(byte weapon, Rng rng, RandoConfig config)
+        {
+            switch ((ItemType)weapon)
+            {
+                case ItemType.HandgunLeon:
+                    if (rng.NextProbability(33))
+                        return (byte)ItemType.HandgunParts;
+                    break;
+                case ItemType.Shotgun:
+                    if (rng.NextProbability(50))
+                        return (byte)ItemType.ShotgunParts;
+                    break;
+                case ItemType.Magnum:
+                    if (rng.NextProbability(50))
+                        return (byte)ItemType.MagnumParts;
+                    break;
+            }
+            return null;
         }
 
         public bool IsWeaponCompatible(byte player, byte item)

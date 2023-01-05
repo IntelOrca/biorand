@@ -215,6 +215,11 @@ namespace IntelOrca.Biohazard.RE1
             return items.ToArray();
         }
 
+        public byte? GetWeaponUpgrade(byte weapon, Rng rng, RandoConfig config)
+        {
+            return null;
+        }
+
         public bool IsWeaponCompatible(byte player, byte item)
         {
             return true;

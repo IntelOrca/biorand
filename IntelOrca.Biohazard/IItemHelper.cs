@@ -15,6 +15,7 @@
         byte GetMaxAmmoForAmmoType(byte type);
         double GetItemProbability(byte type);
         byte[] GetWeapons(Rng rng, RandoConfig config);
+        byte? GetWeaponUpgrade(byte weapon, Rng rng, RandoConfig config);
         bool IsWeaponCompatible(byte player, byte item);
         bool HasInkRibbons(RandoConfig config);
         int[]? GetInventorySize(RandoConfig config);
