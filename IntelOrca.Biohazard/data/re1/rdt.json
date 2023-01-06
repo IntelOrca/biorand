@@ -1546,7 +1546,14 @@
     "502": {
       "doorRando": [
         {
-          "category": "box"
+          "category": "box",
+          "nop": [ "0x4934-0x4964", "0x4970-0x497A" ],
+          "player": 0
+        },
+        {
+          "category": "box",
+          "nop": [ "0x4984-0x4A72" ],
+          "player": 1
         }
       ],
       "doors": [
