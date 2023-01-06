@@ -1040,6 +1040,12 @@
       ]
     },
     "308": {
+      "doorRando": [
+        {
+          "nop": [ "0x1AFD8-0x1B074" ],
+          "player": 1
+        }
+      ],
       "doors": [
         {
           "target": "307"

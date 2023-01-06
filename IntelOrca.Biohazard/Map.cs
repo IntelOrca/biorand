@@ -109,7 +109,7 @@ namespace IntelOrca.Biohazard
     public class DoorRandoSpec
     {
         public string? Category { get; set; }
-        public int[]? Nop { get; set; }
+        public System.Text.Json.JsonElement[]? Nop { get; set; }
         public bool Cutscene { get; set; }
         public int? Player { get; set; }
         public int? Scenario { get; set; }
