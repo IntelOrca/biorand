@@ -129,15 +129,60 @@ namespace IntelOrca.Biohazard
                         continue;
                     }
 
+                    var fileName = Path.GetFileName(sampleFile);
+                    var condition = GetThingFromFileName(fileName, '-');
+                    if (condition != null)
+                    {
+                        if (condition.StartsWith("no", StringComparison.OrdinalIgnoreCase))
+                        {
+                            condition = "!" + condition.Substring(2);
+                        }
+                        else
+                        {
+                            condition = "@" + condition;
+                        }
+                    }
+
                     var sample = new VoiceSample();
                     sample.BasePath = Path.GetDirectoryName(sampleFile);
-                    sample.Path = Path.GetFileName(sampleFile);
+                    sample.Path = fileName;
                     sample.Actor = actor;
                     sample.End = GetVoiceLength(sampleFile);
+                    sample.Kind = GetThingFromFileName(fileName, '_');
+                    sample.Condition = condition;
                     samples.Add(sample);
                 }
             }
             return samples.ToArray();
+        }
+
+        private static string? GetThingFromFileName(string filename, char symbol)
+        {
+            var end = filename.LastIndexOf('.');
+            if (end == -1)
+                end = filename.Length;
+
+            var start = -1;
+            for (int i = 0; i < end; i++)
+            {
+                var c = filename[i];
+                if (c == symbol)
+                {
+                    start = i + 1;
+                }
+                else if (c == '_' || c == '-')
+                {
+                    if (start != -1)
+                    {
+                        end = i;
+                        break;
+                    }
+                }
+            }
+            if (start == -1)
+                return null;
+            var result = filename.Substring(start, end - start);
+            return result == "" ? null : result;
         }
 
         public void AddNPC(bool isFemale, string actor, string emdPath, string timPath)
