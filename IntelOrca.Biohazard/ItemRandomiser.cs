@@ -110,24 +110,63 @@ namespace IntelOrca.Biohazard
 
                 // Primary weapon
                 if (_startingWeapon != null)
-                    AddToInventory(_startingWeapon.Value.Type, _startingWeapon.Value.Count);
+                {
+                    var weaponType = _startingWeapon.Value.Type;
+                    var ammoType = _itemHelper
+                        .GetAmmoTypeForWeapon(weaponType)
+                        .Shuffle(_rng)
+                        .FirstOrDefault();
+
+                    var amount = _startingWeapon.Value.Count;
+                    var extra = (byte)0;
+                    if (_rng.NextProbability(75))
+                    {
+                        amount = _itemHelper.GetMaxAmmoForAmmoType(weaponType);
+                        var max = (int)Math.Max(1, _itemHelper.GetMaxAmmoForAmmoType(ammoType) * (_config.AmmoQuantity / 8.0));
+                        extra = (byte)_rng.Next(0, Math.Min(max * 2, 100));
+                    }
+                    AddToInventory(weaponType, amount);
+                    if (extra != 0 && ammoType != 0)
+                    {
+                        AddToInventory(ammoType, extra);
+                    }
+                }
 
                 // Always give the player a knife
                 AddToInventoryCommon(CommonItemKind.Knife, 0);
 
                 // Health items
-                if (_rng.NextProbability(50))
-                    AddToInventoryCommon(CommonItemKind.GreenHerb, 1);
-                if (_rng.NextProbability(50))
-                    AddToInventoryCommon(CommonItemKind.RedHerb, 1);
-                if (_rng.NextProbability(50))
-                    AddToInventoryCommon(CommonItemKind.BlueHerb, 1);
-                if (_rng.NextProbability(25))
-                    AddToInventoryCommon(CommonItemKind.FirstAid, 1);
+                if (_config.RatioHealth != 0)
+                {
+                    var healthItems = new[]
+                    {
+                        CommonItemKind.FirstAid,
+                        CommonItemKind.HerbG,
+                        CommonItemKind.HerbGG,
+                        CommonItemKind.HerbGGG,
+                        CommonItemKind.HerbGR,
+                        CommonItemKind.HerbGB,
+                        CommonItemKind.HerbGGB,
+                        CommonItemKind.HerbGRB,
+                        CommonItemKind.HerbR,
+                        CommonItemKind.HerbB
+                    };
+                    healthItems = healthItems.Shuffle(_rng);
+                    for (int j = 0; j < 4; j++)
+                    {
+                        if (_rng.NextProbability(50))
+                        {
+                            AddToInventoryCommon(healthItems[j], 1);
+                        }
+                    }
+                }
 
                 // Maybe an ink ribbon or two
-                if (_itemHelper.HasInkRibbons(_config) && _rng.NextProbability(50))
-                    AddToInventoryCommon(CommonItemKind.InkRibbon, (byte)_rng.Next(1, 3));
+                if (_config.RatioInkRibbons != 0)
+                {
+                    if (_itemHelper.HasInkRibbons(_config) && _rng.NextProbability(50))
+                        AddToInventoryCommon(CommonItemKind.InkRibbon, (byte)_rng.Next(1, 3));
+                }
 
                 while (remaining > 0)
                 {
@@ -555,12 +594,13 @@ namespace IntelOrca.Biohazard
             var ammoTypes = new HashSet<byte>() { _itemHelper.GetItemId(CommonItemKind.HandgunAmmo) };
             var items = _itemHelper.GetWeapons(_rng, _config).Shuffle(_rng);
             _startingWeapon = null;
+            var giveWeapon = _rng.NextProbability(90);
             foreach (var itemType in items)
             {
                 // Spawn weapon
                 var amount = GetRandomAmount(itemType, true);
                 var spawn = true;
-                if (_startingWeapon == null && _itemHelper.GetInventorySize(_config) != null)
+                if (_config.RandomInventory && giveWeapon && _startingWeapon == null && _itemHelper.GetInventorySize(_config) != null)
                 {
                     _startingWeapon = new RandomInventory.Entry(itemType, amount, 0);
                     if (_config.Game != 2 || _config.Scenario == 0)
@@ -597,9 +637,9 @@ namespace IntelOrca.Biohazard
             }
 
             var healthTable = _rng.CreateProbabilityTable<byte>();
-            healthTable.Add(_itemHelper.GetItemId(CommonItemKind.GreenHerb), 0.5);
-            healthTable.Add(_itemHelper.GetItemId(CommonItemKind.RedHerb), 0.3);
-            healthTable.Add(_itemHelper.GetItemId(CommonItemKind.BlueHerb), 0.1);
+            healthTable.Add(_itemHelper.GetItemId(CommonItemKind.HerbG), 0.5);
+            healthTable.Add(_itemHelper.GetItemId(CommonItemKind.HerbR), 0.3);
+            healthTable.Add(_itemHelper.GetItemId(CommonItemKind.HerbB), 0.1);
             healthTable.Add(_itemHelper.GetItemId(CommonItemKind.FirstAid), 0.1);
 
             var inkTable = _rng.CreateProbabilityTable<byte>();

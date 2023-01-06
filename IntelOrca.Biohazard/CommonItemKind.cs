@@ -4,10 +4,16 @@
     {
         HandgunAmmo,
         InkRibbon,
-        GreenHerb,
-        RedHerb,
-        BlueHerb,
         FirstAid,
+        HerbG,
+        HerbGG,
+        HerbGGG,
+        HerbGR,
+        HerbGB,
+        HerbGGB,
+        HerbGRB,
+        HerbR,
+        HerbB,
         Knife,
     }
 }

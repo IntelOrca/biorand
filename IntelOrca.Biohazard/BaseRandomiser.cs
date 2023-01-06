@@ -177,7 +177,7 @@ namespace IntelOrca.Biohazard
 
         public virtual void Generate(RandoConfig config, ReInstallConfig reConfig, string installPath, string modPath)
         {
-            if (config.RandomItems)
+            if (config.RandomItems && config.RandomInventory)
             {
                 SerialiseInventory(modPath);
             }
@@ -263,7 +263,10 @@ namespace IntelOrca.Biohazard
                     try
                     {
                         itemRando.RandomiseItems(graph);
-                        SetInventory(config.Player, itemRando.RandomizeStartInventory());
+                        if (config.RandomInventory)
+                        {
+                            SetInventory(config.Player, itemRando.RandomizeStartInventory());
+                        }
                     }
                     finally
                     {

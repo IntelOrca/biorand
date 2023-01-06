@@ -35,12 +35,24 @@ namespace IntelOrca.Biohazard.RE2
                     return (byte)ItemType.HandgunAmmo;
                 case CommonItemKind.InkRibbon:
                     return (byte)ItemType.InkRibbon;
-                case CommonItemKind.GreenHerb:
+                case CommonItemKind.HerbG:
                     return (byte)ItemType.HerbG;
-                case CommonItemKind.RedHerb:
+                case CommonItemKind.HerbGG:
+                    return (byte)ItemType.HerbGG;
+                case CommonItemKind.HerbGGG:
+                    return (byte)ItemType.HerbGGG;
+                case CommonItemKind.HerbR:
                     return (byte)ItemType.HerbR;
-                case CommonItemKind.BlueHerb:
+                case CommonItemKind.HerbGR:
+                    return (byte)ItemType.HerbGR;
+                case CommonItemKind.HerbB:
                     return (byte)ItemType.HerbB;
+                case CommonItemKind.HerbGB:
+                    return (byte)ItemType.HerbGB;
+                case CommonItemKind.HerbGGB:
+                    return (byte)ItemType.HerbGGB;
+                case CommonItemKind.HerbGRB:
+                    return (byte)ItemType.HerbGRB;
                 case CommonItemKind.FirstAid:
                     return (byte)ItemType.FAidSpray;
                 case CommonItemKind.Knife:

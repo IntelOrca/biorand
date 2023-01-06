@@ -171,6 +171,7 @@ namespace IntelOrca.Biohazard.BioRand
                 chkShuffleItems.IsChecked = _config.ShuffleItems && !_config.RandomDoors;
                 chkAlternativeRoute.IsChecked = _config.AlternativeRoutes && !_config.RandomDoors;
                 chkIncludeDocuments.IsChecked = _config.IncludeDocuments;
+                chkRandomInventory.IsChecked = _config.RandomInventory;
 
                 sliderEnemyDifficulty.Value = _config.EnemyDifficulty;
 
@@ -438,6 +439,7 @@ namespace IntelOrca.Biohazard.BioRand
             _config.ShuffleItems = chkShuffleItems.IsChecked == true && !_config.RandomDoors;
             _config.AlternativeRoutes = chkAlternativeRoute.IsChecked == true && !_config.RandomDoors;
             _config.IncludeDocuments = chkIncludeDocuments.IsChecked == true;
+            _config.RandomInventory = chkRandomInventory.IsChecked == true;
 
             _config.EnemyDifficulty = (byte)sliderEnemyDifficulty.Value;
 

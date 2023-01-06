@@ -69,15 +69,15 @@
         public const byte DoomBook1 = 64;
         public const byte FAidSpray = 65;
         public const byte Serum = 66;
-        public const byte RedHerb = 67;
-        public const byte GreenHerb = 68;
-        public const byte BlueHerb = 69;
-        public const byte MixedGreenRed = 70;
-        public const byte MixedGreenGreen = 71;
-        public const byte MixedGreenBlue = 72;
-        public const byte MixedAll = 73;
-        public const byte MixedSilverColor = 74;
-        public const byte MixedBrightBlueGreen = 75;
+        public const byte HerbR = 67;
+        public const byte HerbG = 68;
+        public const byte HerbB = 69;
+        public const byte HerbGR = 70;
+        public const byte HerbGG = 71;
+        public const byte HerbGB = 72;
+        public const byte HerbGRB = 73;
+        public const byte HerbGGG = 74;
+        public const byte HerbGGB = 75;
         public const byte Uzi = 0x6F;
         public const byte MiniGun = 0x70;
     }

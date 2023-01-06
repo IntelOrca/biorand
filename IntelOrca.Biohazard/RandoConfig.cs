@@ -30,6 +30,7 @@ namespace IntelOrca.Biohazard
         public bool ShuffleItems { get; set; } = true;
         public bool AlternativeRoutes { get; set; } = true;
         public bool IncludeDocuments { get; set; }
+        public bool RandomInventory { get; set; } = true;
 
         public bool IncludeBGMRE1 { get; set; } = true;
         public bool IncludeBGMRE2 { get; set; } = true;
@@ -104,6 +105,9 @@ namespace IntelOrca.Biohazard
 
             result.Player0 = reader.ReadDigit();
             result.Player1 = reader.ReadDigit();
+
+            result.RandomInventory = reader.ReadFlag();
+            reader.ReadByte(4);
             return result;
         }
 
@@ -164,6 +168,9 @@ namespace IntelOrca.Biohazard
 
             writer.WriteDigit(Player0);
             writer.WriteDigit(Player1);
+
+            writer.Write(RandomInventory);
+            writer.Write(4, 0);
             return writer.ToString();
         }
 

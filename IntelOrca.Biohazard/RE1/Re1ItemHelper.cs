@@ -59,7 +59,7 @@ namespace IntelOrca.Biohazard.RE1
 
         public bool IsItemDocument(byte type)
         {
-            return type > Re1ItemIds.MixedBrightBlueGreen &&
+            return type > Re1ItemIds.HerbGGB &&
                 type != Re1ItemIds.Uzi &&
                 type != Re1ItemIds.MiniGun;
         }
@@ -122,12 +122,24 @@ namespace IntelOrca.Biohazard.RE1
                     return Re1ItemIds.Clip;
                 case CommonItemKind.InkRibbon:
                     return Re1ItemIds.InkRibbon;
-                case CommonItemKind.GreenHerb:
-                    return Re1ItemIds.GreenHerb;
-                case CommonItemKind.RedHerb:
-                    return Re1ItemIds.RedHerb;
-                case CommonItemKind.BlueHerb:
-                    return Re1ItemIds.BlueHerb;
+                case CommonItemKind.HerbG:
+                    return Re1ItemIds.HerbG;
+                case CommonItemKind.HerbGG:
+                    return Re1ItemIds.HerbGG;
+                case CommonItemKind.HerbGGG:
+                    return Re1ItemIds.HerbGGG;
+                case CommonItemKind.HerbR:
+                    return Re1ItemIds.HerbR;
+                case CommonItemKind.HerbGR:
+                    return Re1ItemIds.HerbGR;
+                case CommonItemKind.HerbB:
+                    return Re1ItemIds.HerbB;
+                case CommonItemKind.HerbGB:
+                    return Re1ItemIds.HerbGB;
+                case CommonItemKind.HerbGGB:
+                    return Re1ItemIds.HerbGGB;
+                case CommonItemKind.HerbGRB:
+                    return Re1ItemIds.HerbGRB;
                 case CommonItemKind.FirstAid:
                     return Re1ItemIds.FAidSpray;
                 case CommonItemKind.Knife:
