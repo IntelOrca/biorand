@@ -1070,7 +1070,7 @@ namespace IntelOrca.Biohazard
                         {
                             if (entry.ValueKind == System.Text.Json.JsonValueKind.String)
                             {
-                                var s = entry.GetString();
+                                var s = entry.GetString()!;
                                 if (s.Contains('-'))
                                 {
                                     var parts = s.Split('-');
