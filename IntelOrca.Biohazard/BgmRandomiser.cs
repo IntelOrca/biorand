@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace IntelOrca.Biohazard
 {
@@ -30,6 +31,7 @@ namespace IntelOrca.Biohazard
         private readonly bool _isWav;
         private readonly Rng _rng;
         private readonly DataManager _dataManager;
+        private readonly List<KeyValuePair<string, string>> _trackSetList = new List<KeyValuePair<string, string>>();
 
         public float ImportVolume { get; set; } = 1.0f;
 
@@ -95,6 +97,7 @@ namespace IntelOrca.Biohazard
         public void Randomise()
         {
             _logger.WriteHeading("Shuffling BGM:");
+            _trackSetList.Clear();
             var bgmList = GetBgmList(_bgmJson);
 
             // Ensure these are randomized, but otherwise give custom priority
@@ -119,6 +122,12 @@ namespace IntelOrca.Biohazard
             {
                 Shuffle(bgmList, TagBasement, TagClown, true);
             }
+
+            // Copy/convert all tracks
+            Parallel.ForEach(_trackSetList, kvp =>
+            {
+                SetMusicTrack(kvp.Key, kvp.Value);
+            });
         }
 
         private void Shuffle(BgmList bgmList, string dstTag, string srcTag, bool overlay = false)
@@ -163,10 +172,15 @@ namespace IntelOrca.Biohazard
                 }
 
                 var dst = Path.Combine(dstDir, dstName + extension);
-                SetMusicTrack(src, dst);
+                PrepareMusicTrack(src, dst);
 
                 _logger.WriteLine($"Setting {dstName} to {src}");
             }
+        }
+
+        private void PrepareMusicTrack(string src, string dst)
+        {
+            _trackSetList.Add(new KeyValuePair<string, string>(src, dst));
         }
 
         private void SetMusicTrack(string src, string dst)
