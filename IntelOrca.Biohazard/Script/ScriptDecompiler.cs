@@ -32,12 +32,20 @@ namespace IntelOrca.Biohazard.Script
         public override void VisitVersion(BioVersion version)
         {
             base.VisitVersion(version);
-            if (version == BioVersion.Biohazard1)
-                _constantTable = new Bio1ConstantTable();
-            else
-                _constantTable = new Bio2ConstantTable();
 
-            _sb.WriteLine(".version " + (int)version);
+            int versionNumber;
+            if (version == BioVersion.Biohazard1)
+            {
+                _constantTable = new Bio1ConstantTable();
+                versionNumber = 1;
+            }
+            else
+            {
+                _constantTable = new Bio2ConstantTable();
+                versionNumber = 2;
+            }
+
+            _sb.WriteLine(".version " + versionNumber);
         }
 
         public override void VisitBeginScript(BioScriptKind kind)
@@ -612,7 +620,7 @@ namespace IntelOrca.Biohazard.Script
                             case 'l':
                                 {
                                     var blockLen = br.ReadByte();
-                                    var labelOffset = offset + blockLen;
+                                    var labelOffset = offset + instructionLength + blockLen;
                                     _sb.InsertLabel(labelOffset);
                                     parameters.Add(_sb.GetLabelName(labelOffset));
                                     break;

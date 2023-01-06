@@ -45,7 +45,7 @@ namespace IntelOrca.Biohazard.Script
             {
                 case 'e':
                     return GetEnemyName((byte)value);
-                case 't':
+                case 'i':
                     if (value == 255)
                         return "LOCKED";
                     else if (value == 254)
