@@ -637,6 +637,12 @@
     },
     "203": {
       "linkedRoom": "703",
+      "doorRando": [
+        {
+          "nop": [ "0x23698-0x236EA" ],
+          "player": 1
+        }
+      ],
       "doors": [
         {
           "target": "106",
