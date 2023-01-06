@@ -1043,6 +1043,13 @@
           "target": "30B",
           "requires": [ 30 ]
         }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "priority": "low",
+          "player": 1
+        }
       ]
     },
     "308": {
