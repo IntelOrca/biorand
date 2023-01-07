@@ -3176,11 +3176,13 @@
       "npcs": [
         {
           "includeOffsets": [ 13608 ],
+          "excludeTypes": [ 90 ],
           "cutscene": 0,
           "player": 0
         },
         {
           "includeOffsets": [ 13608, 13630, 13786 ],
+          "excludeTypes": [ 90 ],
           "cutscene": 1,
           "player": 0
         },
