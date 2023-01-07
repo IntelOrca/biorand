@@ -1187,6 +1187,7 @@
       "doorRando": [
         {
           "cutscene": true,
+          "nop": [ 3890, 3912 ],
           "player": 0
         }
       ],
