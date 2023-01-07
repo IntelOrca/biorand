@@ -101,6 +101,7 @@ namespace IntelOrca.Biohazard
         public int[]? ExcludeTypes { get; set; }
         public int? Player { get; set; }
         public int? Scenario { get; set; }
+        public bool? DoorRando { get; set; }
         public int Cutscene { get; set; }
         public string? PlayerActor { get; set; }
         public bool? EmrScale { get; set; }

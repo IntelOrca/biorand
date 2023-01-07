@@ -2578,7 +2578,7 @@
           "includeOffsets": [ 4556, 4644 ],
           "includeTypes": [ 69, 79 ],
           "emrScale": false,
-          "cutscene": 2,
+          "cutscene": 1,
           "scenario": 1,
           "player": 1,
           "doorRando": false
@@ -2586,10 +2586,16 @@
         {
           "includeOffsets": [ 4556, 4644 ],
           "emrScale": false,
-          "cutscene": 2,
+          "cutscene": 1,
           "scenario": 1,
           "player": 1,
           "doorRando": true
+        },
+        {
+          "includeOffsets": [],
+          "cutscene": 2,
+          "scenario": 1,
+          "player": 1
         }
       ]
     },

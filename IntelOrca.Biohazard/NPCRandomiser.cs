@@ -276,7 +276,9 @@ namespace IntelOrca.Biohazard
             if (npcs == null)
                 npcs = new[] { new MapRoomNpcs() };
             npcs = npcs
-                .Where(x => (x.Player == null || x.Player == _config.Player) && (x.Scenario == null || x.Scenario == _config.Scenario))
+                .Where(x => (x.Player == null || x.Player == _config.Player) &&
+                            (x.Scenario == null || x.Scenario == _config.Scenario) &&
+                            (x.DoorRando == null || x.DoorRando == _config.RandomDoors))
                 .ToArray();
 
             var offsetToTypeMap = new Dictionary<int, byte>();
@@ -358,6 +360,8 @@ namespace IntelOrca.Biohazard
                 if (npc.Player != null && npc.Player != _config.Player)
                     continue;
                 if (npc.Scenario != null && npc.Scenario != _config.Scenario)
+                    continue;
+                if (npc.DoorRando != null && npc.DoorRando != _config.RandomDoors)
                     continue;
 
                 var supportedNpcs = npc.IncludeTypes?.Select(x => (byte)x).ToArray() ?? defaultIncludeTypes;
