@@ -33,12 +33,12 @@ namespace IntelOrca.Biohazard.RE2
                     addIfSupported((byte)EnemyType.Crow, 10);
                     addIfSupported((byte)EnemyType.ZombieArms, 10);
                     addIfSupported((byte)EnemyType.Spider, 10);
-                    addIfSupported((byte)EnemyType.GiantMoth, 10);
-                    addIfSupported((byte)EnemyType.Ivy, 15);
-                    addIfSupported((byte)EnemyType.IvyPurple, 5);
+                    addIfSupported((byte)EnemyType.GiantMoth, 2);
+                    addIfSupported((byte)EnemyType.Ivy, 3);
+                    addIfSupported((byte)EnemyType.IvyPurple, 2);
                     addIfSupported((byte)EnemyType.Tyrant1, 1);
-                    AddZombieTypes(30, addIfSupported);
-                    addIfSupported((byte)EnemyType.Cerebrus, 5);
+                    AddZombieTypes(50, addIfSupported);
+                    addIfSupported((byte)EnemyType.Cerebrus, 8);
                     addIfSupported((byte)EnemyType.LickerRed, 2);
                     addIfSupported((byte)EnemyType.LickerGrey, 2);
                     break;

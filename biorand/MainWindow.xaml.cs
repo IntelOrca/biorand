@@ -357,14 +357,14 @@ namespace IntelOrca.Biohazard.BioRand
                     AddRatio("Crow", Colors.Black, 10);
                     AddRatio("Arms", Colors.LightGray, 10);
                     AddRatio("Spider", Colors.YellowGreen, 10);
-                    AddRatio("Moth", Colors.DarkOliveGreen, 10);
-                    AddRatio("Ivy", Colors.SpringGreen, 15);
-                    AddRatio("Ivy", Colors.Purple, 5);
+                    AddRatio("Moth", Colors.DarkOliveGreen, 2);
+                    AddRatio("Ivy", Colors.SpringGreen, 3);
+                    AddRatio("Ivy", Colors.Purple, 2);
                     AddRatio("Tyrant", Colors.DarkGray, 1);
-                    AddRatio("Zombie", Colors.LightGray, 30);
+                    AddRatio("Zombie", Colors.LightGray, 50);
                     AddRatio("Licker", Colors.IndianRed, 2);
                     AddRatio("Licker", Colors.Gray, 2);
-                    AddRatio("Cerebrus", Colors.Black, 5);
+                    AddRatio("Cerebrus", Colors.Black, 8);
                     break;
                 case 1:
                     AddRatio("Crow", Colors.Black, 5);
