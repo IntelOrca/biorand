@@ -85,7 +85,8 @@
           "create": true,
           "texture": 10,
           "target": "11B",
-          "id": 1
+          "id": 1,
+          "doorRando": true
         },
         {
           "target": "200",
