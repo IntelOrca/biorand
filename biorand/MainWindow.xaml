@@ -95,7 +95,7 @@
                                     TextAlignment="Center"
                                     TextChanged="txtSeed_TextChanged"
                                     Margin="4,0" />
-                            <Button Grid.Column="2" Content="Config" Click="RandomizeConfig_Click" />
+                            <Button Grid.Column="2" Content="Random" Click="RandomizeConfig_Click" />
                             <Grid Grid.Row="1" Grid.ColumnSpan="3">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*" />
