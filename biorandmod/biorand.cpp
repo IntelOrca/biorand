@@ -41,8 +41,25 @@ static void ProcessDataFile(const wchar_t* path)
             break;
         if (!ReadFileData(hFile, &size, sizeof(size)))
             break;
-        if (!ReadFileData(hFile, (void*)address, size))
-            break;
+
+        uint8_t dataStack[256];
+        uint8_t* data = dataStack;
+        if (size > sizeof(dataStack))
+        {
+            data = (uint8_t*)malloc(size);
+        }
+        if (data != nullptr)
+        {
+            if (ReadFileData(hFile, data, size))
+            {
+                WriteProcessMemory(GetCurrentProcess(), (LPVOID)address, data, size, NULL);
+            }
+            if (data != dataStack)
+            {
+                free(data);
+                data = nullptr;
+            }
+        }
     }
     CloseHandle(hFile);
 }
@@ -58,7 +75,7 @@ static void SetupDataPath(HMODULE hExecutable)
             break;
         }
     }
-    wcsncat(_dataPath, L"mod_biorand\\biorand.dat", sizeof(_dataPath) - wcslen(_dataPath));
+    wcsncat(_dataPath, L"mod_biorand\\biorand.dat", std::size(_dataPath) - wcslen(_dataPath));
 }
 
 static DWORD WINAPI ModThreadRunner(LPVOID)
