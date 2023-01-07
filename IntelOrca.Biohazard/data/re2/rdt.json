@@ -1071,6 +1071,11 @@
           "id": 5,
           "type": 0,
           "doorRando": true
+        },
+        {
+          "id": 7,
+          "type": 0,
+          "doorRando": true
         }
       ],
       "enemies": [
