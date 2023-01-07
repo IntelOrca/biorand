@@ -133,7 +133,7 @@ namespace IntelOrca.Biohazard
                 }
 
                 // Always give the player a knife
-                AddToInventoryCommon(CommonItemKind.Knife, 0);
+                AddToInventoryCommon(CommonItemKind.Knife, 1);
 
                 // Health items
                 if (_config.RatioHealth != 0)
