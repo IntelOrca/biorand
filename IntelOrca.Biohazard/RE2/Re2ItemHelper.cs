@@ -6,6 +6,7 @@ namespace IntelOrca.Biohazard.RE2
 {
     internal class Re2ItemHelper : IItemHelper
     {
+        private const bool g_leonWeaponFix = true;
         private const bool g_claireWeaponFix = true;
 
         public byte GetItemSize(byte type)
@@ -247,51 +248,30 @@ namespace IntelOrca.Biohazard.RE2
         {
             var enemyDifficulty = config.RandomEnemies ? config.EnemyDifficulty : 0;
             var glWeapon = rng.NextOf(ItemType.GrenadeLauncherExplosive, ItemType.GrenadeLauncherFlame, ItemType.GrenadeLauncherAcid);
+            var allWeapons = new[] {
+                ItemType.HandgunLeon,
+                ItemType.HandgunClaire,
+                ItemType.SMG,
+                ItemType.Flamethrower,
+                ItemType.ColtSAA,
+                ItemType.Beretta,
+                ItemType.Sparkshot,
+                ItemType.Bowgun,
+                ItemType.Shotgun,
+                ItemType.Magnum,
+                ItemType.RocketLauncher,
+                glWeapon
+            };
+            allWeapons = allWeapons.Where(x => IsWeaponCompatible((byte)config.Player, (byte)x)).ToArray();
+            var goodWeapon = allWeapons.Where(x => x == ItemType.Shotgun || x == ItemType.Bowgun).Shuffle(rng).FirstOrDefault();
+            var greatWeapon = allWeapons.Where(x => x == ItemType.Magnum || x == glWeapon).Shuffle(rng).FirstOrDefault();
 
+            // Guarantee good weapons for higher enemy difficulty
             var items = new List<ItemType>();
-            ItemType[] allWeapons;
-            if (config.Player == 0 || g_claireWeaponFix)
-            {
-                allWeapons = new[] {
-                    ItemType.HandgunLeon,
-                    ItemType.HandgunClaire,
-                    ItemType.SMG,
-                    ItemType.Flamethrower,
-                    ItemType.ColtSAA,
-                    ItemType.Beretta,
-                    ItemType.Sparkshot,
-                    ItemType.Bowgun,
-                    ItemType.Shotgun,
-                    ItemType.Magnum,
-                    ItemType.RocketLauncher,
-                    glWeapon
-                };
-
-                // Guarantee good weapons for higher enemy difficulty
-                if (enemyDifficulty >= 2)
-                    items.Add(rng.NextOf(ItemType.Shotgun, ItemType.Bowgun));
-                if (enemyDifficulty >= 3)
-                    items.Add(rng.NextOf(ItemType.Magnum, glWeapon));
-            }
-            else
-            {
-                allWeapons = new[] {
-                    ItemType.HandgunClaire,
-                    ItemType.SMG,
-                    ItemType.ColtSAA,
-                    ItemType.Beretta,
-                    ItemType.Sparkshot,
-                    ItemType.Bowgun,
-                    ItemType.RocketLauncher,
-                    glWeapon
-                };
-
-                // Guarantee good weapons for higher enemy difficulty
-                if (enemyDifficulty >= 2)
-                    items.Add(ItemType.Bowgun);
-                if (enemyDifficulty >= 3)
-                    items.Add(glWeapon);
-            }
+            if (enemyDifficulty >= 2)
+                items.Add(goodWeapon);
+            if (enemyDifficulty >= 3)
+                items.Add(greatWeapon);
 
             // Remaining weapons
             foreach (var weapon in allWeapons)
@@ -327,13 +307,33 @@ namespace IntelOrca.Biohazard.RE2
 
         public bool IsWeaponCompatible(byte player, byte item)
         {
-            if (!g_claireWeaponFix && player == 1)
+            if (player == 0 && !g_leonWeaponFix)
             {
                 switch ((ItemType)item)
                 {
-                    case ItemType.Flamethrower:
+                    case ItemType.HandgunClaire:
+                    case ItemType.Bowgun:
+                    case ItemType.GrenadeLauncherAcid:
+                    case ItemType.GrenadeLauncherExplosive:
+                    case ItemType.GrenadeLauncherFlame:
+                    case ItemType.ColtSAA:
+                    case ItemType.Sparkshot:
+                    case ItemType.Beretta:
+                        return false;
+                }
+            }
+            if (player == 1 && !g_claireWeaponFix)
+            {
+                switch ((ItemType)item)
+                {
+                    case ItemType.HandgunLeon:
+                    case ItemType.CustomHandgun:
                     case ItemType.Shotgun:
+                    case ItemType.CustomShotgun:
                     case ItemType.Magnum:
+                    case ItemType.CustomMagnum:
+                    case ItemType.Beretta:
+                    case ItemType.Flamethrower:
                         return false;
                 }
             }
