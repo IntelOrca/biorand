@@ -21,10 +21,11 @@ jobs:
         dotnet publish -c Release --no-build
         cd bin/Release/net472/publish
         copy ${{ github.workspace }}/README.md .
+        copy ${{ github.workspace }}/CHANGELOG.md .
         copy ${{ github.workspace }}/LICENSE .
         md ${{ github.workspace }}/artefacts
         del *.pdb
-        7z -r a ${{ github.workspace }}/artefacts/biorand.zip data *.exe *.dll *.config README.md LICENSE
+        7z -r a ${{ github.workspace }}/artefacts/biorand.zip data *.exe *.dll *.config README.md CHANGELOG.md LICENSE
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
