@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection.Emit;
+using System.Text.Json;
 using System.Xml;
 using IntelOrca.Biohazard.RE1;
+using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard
@@ -22,6 +25,9 @@ namespace IntelOrca.Biohazard
         private readonly string _modPath;
         private readonly DataManager _dataManager;
         private XmlDocument? _re1sounds;
+        private EnemyPosition[] _enemyPositions = new EnemyPosition[0];
+        private HashSet<byte> _killIdPool = new HashSet<byte>();
+        private Queue<byte> _killIds = new Queue<byte>();
 
         public EnemyRandomiser(BioVersion version, RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng rng, IEnemyHelper enemyHelper, string modPath, DataManager dataManager)
         {
@@ -36,9 +42,48 @@ namespace IntelOrca.Biohazard
             _dataManager = dataManager;
         }
 
+        private void ReadEnemyPlacements()
+        {
+            var json = _dataManager.GetText(_version, "enemy.json");
+            _enemyPositions = JsonSerializer.Deserialize<EnemyPosition[]>(json, new JsonSerializerOptions()
+            {
+                ReadCommentHandling = JsonCommentHandling.Skip,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            })!;
+        }
+
+        private byte GetNextKillId()
+        {
+            if (_killIds.Count == 0)
+            {
+                foreach (var id in _killIdPool.Shuffle(_rng))
+                {
+                    _killIds.Enqueue(id);
+                }
+            }
+            return _killIds.Dequeue();
+        }
+
         public void Randomise()
         {
             _logger.WriteHeading("Randomizing enemies:");
+            ReadEnemyPlacements();
+            _enemyPositions = _enemyPositions.Shuffle(_rng);
+
+            for (byte i = 0; i < 255; i++)
+                _killIdPool.Add(i);
+            foreach (var rdt in _gameData.Rdts)
+            {
+                if (_enemyPositions.Any(x => x.RdtId == rdt.RdtId))
+                    continue;
+
+                var killIds = rdt.Enemies
+                    .Where(x => _enemyHelper.IsEnemy(x.Type))
+                    .Select(x => x.KillId)
+                    .ToArray();
+                _killIdPool.RemoveMany(killIds);
+            }
+
             foreach (var rdt in _gameData.Rdts)
             {
                 byte? fixType = null;
@@ -119,8 +164,13 @@ namespace IntelOrca.Biohazard
                 .Where(e => enemySpec.ExcludeOffsets?.Contains(e.Offset) != true)
                 .Where(e => _enemyHelper.ShouldChangeEnemy(_config, e))
                 .ToArray();
-            var numEnemies = enemiesToChange.DistinctBy(x => x.Id).Count();
 
+            if (_config.RandomEnemyPlacement)
+            {
+                enemiesToChange = GenerateRandomEnemies(rdt, enemiesToChange);
+            }
+
+            var numEnemies = enemiesToChange.DistinctBy(x => x.Id).Count();
             var includeTypes = enemySpec.IncludeTypes == null ?
                 null :
                 enemySpec.IncludeTypes.Select(x => (byte)x).ToHashSet();
@@ -163,6 +213,55 @@ namespace IntelOrca.Biohazard
                     enemy.Y = enemySpec.Y.Value;
                 _enemyHelper.SetEnemy(_config, rng, enemy, enemySpec, enemyType);
             }
+        }
+
+        private SceEmSetOpcode[] GenerateRandomEnemies(Rdt rdt, SceEmSetOpcode[] currentEnemies)
+        {
+            var relevantPlacements = _enemyPositions
+                .Where(x => x.RdtId == rdt.RdtId)
+                .ToArray();
+
+            if (relevantPlacements.Length == 0)
+                return currentEnemies;
+
+            foreach (var enemy in currentEnemies)
+                rdt.Nop(enemy.Offset);
+
+            var enemies = new List<SceEmSetOpcode>();
+            byte enemyId = 0;
+            byte killId = 0;
+            foreach (var ep in relevantPlacements)
+            {
+                var newEnemy = new SceEmSetOpcode()
+                {
+                    Length = 22,
+                    Opcode = (byte)OpcodeV2.SceEmSet,
+                    Unk01 = 0,
+                    Id = enemyId,
+                    Type = (byte)EnemyType.ZombieRandom,
+                    State = 0,
+                    Ai = 0,
+                    Floor = (byte)ep.F,
+                    SoundBank = 9,
+                    Texture = 0,
+                    KillId = GetNextKillId(),
+                    X = (short)ep.X,
+                    Y = (short)ep.Y,
+                    Z = (short)ep.Z,
+                    D = (short)ep.D,
+                    Animation = 0,
+                    Unk15 = 0
+                };
+                rdt.AdditionalOpcodes.Add(newEnemy);
+                enemies.Add(newEnemy);
+                enemyId++;
+                killId++;
+                _logger.WriteLine($"Created new enemy at {ep.RdtId}, {ep.X}, {ep.Y}, {ep.Z}");
+
+                // if (enemyId >= 8)
+                //     break;
+            }
+            return enemies.ToArray();
         }
 
         private static void PrintAllEnemies(GameData gameData)
@@ -299,6 +398,49 @@ namespace IntelOrca.Biohazard
             }
             Array.Resize(ref result, 16);
             return result;
+        }
+
+        public struct EnemyPosition : IEquatable<EnemyPosition>
+        {
+            private RdtId _rdtId;
+
+            public RdtId RdtId => _rdtId;
+
+            public string? Room
+            {
+                get => _rdtId.ToString();
+                set
+                {
+                    _rdtId = value == null ? default(RdtId) : RdtId.Parse(value);
+                }
+            }
+
+            public int X { get; set; }
+            public int Y { get; set; }
+            public int Z { get; set; }
+            public int D { get; set; }
+            public int F { get; set; }
+
+            public override bool Equals(object? obj)
+            {
+                return obj is EnemyPosition pos ? Equals(pos) : false;
+            }
+
+            public bool Equals(EnemyPosition other)
+            {
+                return other is EnemyPosition position &&
+                       Room == position.Room &&
+                       X == position.X &&
+                       Y == position.Y &&
+                       Z == position.Z &&
+                       D == position.D &&
+                       F == position.F;
+            }
+
+            public override int GetHashCode()
+            {
+                return (Room?.GetHashCode() ?? 0) ^ X ^ Y ^ Z ^ D ^ F;
+            }
         }
     }
 }

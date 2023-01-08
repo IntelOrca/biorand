@@ -167,6 +167,7 @@ namespace IntelOrca.Biohazard.BioRand
                 chkRngDoors.IsChecked = _config.RandomDoors;
                 chkProtectSoftLock.IsChecked = _config.ProtectFromSoftLock || _config.RandomDoors;
                 chkRngEnemies.IsChecked = _config.RandomEnemies;
+                chkRandomEnemyPlacements.IsChecked = _config.RandomEnemyPlacement;
                 chkRngItems.IsChecked = _config.RandomItems || _config.RandomDoors;
                 chkShuffleItems.IsChecked = _config.ShuffleItems && !_config.RandomDoors;
                 chkAlternativeRoute.IsChecked = _config.AlternativeRoutes && !_config.RandomDoors;
@@ -436,6 +437,7 @@ namespace IntelOrca.Biohazard.BioRand
             _config.ProtectFromSoftLock = chkProtectSoftLock.IsChecked == true || _config.RandomDoors;
             _config.RandomEnemies = chkRngEnemies.IsChecked == true;
             _config.RandomItems = chkRngItems.IsChecked == true || _config.RandomDoors;
+            _config.RandomEnemyPlacement = chkRandomEnemyPlacements.IsChecked == true;
             _config.ShuffleItems = chkShuffleItems.IsChecked == true && !_config.RandomDoors;
             _config.AlternativeRoutes = chkAlternativeRoute.IsChecked == true && !_config.RandomDoors;
             _config.IncludeDocuments = chkIncludeDocuments.IsChecked == true;
@@ -805,17 +807,21 @@ namespace IntelOrca.Biohazard.BioRand
                         chkNPCsRE1.IsEnabled = true;
                         chkNPCsRE2.IsEnabled = false;
                         chkNPCsOther.IsEnabled = false;
+                        chkRandomEnemyPlacements.IsEnabled = false;
 
                         _config.IncludeNPCRE1 = true;
                         _config.IncludeNPCRE2 = false;
                         _config.IncludeNPCRE3 = false;
                         _config.IncludeNPCOther = false;
+
+                        _config.RandomEnemyPlacement = false;
                     }
                     else
                     {
                         chkNPCsRE1.IsEnabled = true;
                         chkNPCsRE2.IsEnabled = true;
                         chkNPCsOther.IsEnabled = true;
+                        chkRandomEnemyPlacements.IsEnabled = true;
                     }
                     dropdownVariant.Visibility = index == 1 ?
                         Visibility.Visible :

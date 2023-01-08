@@ -31,6 +31,7 @@ namespace IntelOrca.Biohazard
         public bool AlternativeRoutes { get; set; } = true;
         public bool IncludeDocuments { get; set; }
         public bool RandomInventory { get; set; } = true;
+        public bool RandomEnemyPlacement { get; set; }
 
         public bool IncludeBGMRE1 { get; set; } = true;
         public bool IncludeBGMRE2 { get; set; } = true;
@@ -107,7 +108,8 @@ namespace IntelOrca.Biohazard
             result.Player1 = reader.ReadDigit();
 
             result.RandomInventory = reader.ReadFlag();
-            reader.ReadByte(4);
+            result.RandomEnemyPlacement = reader.ReadFlag();
+            reader.ReadByte(3);
             return result;
         }
 
@@ -170,7 +172,8 @@ namespace IntelOrca.Biohazard
             writer.WriteDigit(Player1);
 
             writer.Write(RandomInventory);
-            writer.Write(4, 0);
+            writer.Write(RandomEnemyPlacement);
+            writer.Write(3, 0);
             return writer.ToString();
         }
 

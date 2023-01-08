@@ -144,15 +144,18 @@
                         </local:CheckGroupBox>
                     </Grid>
                     <local:CheckGroupBox x:Name="chkRngEnemies" Header="Randomize Enemies">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="25" />
-                            </Grid.RowDefinitions>
-                            <local:RandoSlider Grid.Row="0" x:Name="sliderEnemyDifficulty" Heading="Difficulty" LowText="Ez" HighText="Hard" Maximum="3"
-                                               ToolTip="Adjust likelyhood of more easier / slower enemies (crows, ivies, spiders, zombies), or more difficult / faster enemies (ceberus', lickers, tyrants) being placed."/>
-                            <local:PieChart Grid.Row="1" x:Name="pieEnemies" Kind="Bar" Margin="3" />
-                        </Grid>
+                        <StackPanel>
+                            <CheckBox x:Name="chkRandomEnemyPlacements" ToolTip="When checked, enemy quantity and positions will be random.">Random enemy placements (Experiemental)</CheckBox>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="25" />
+                                </Grid.RowDefinitions>
+                                <local:RandoSlider Grid.Row="0" x:Name="sliderEnemyDifficulty" Heading="Difficulty" LowText="Ez" HighText="Hard" Maximum="3"
+                                                   ToolTip="Adjust likelyhood of more easier / slower enemies (crows, ivies, spiders, zombies), or more difficult / faster enemies (ceberus', lickers, tyrants) being placed."/>
+                                <local:PieChart Grid.Row="1" x:Name="pieEnemies" Kind="Bar" Margin="3" />
+                            </Grid>
+                        </StackPanel>
                     </local:CheckGroupBox>
                     <local:CheckGroupBox x:Name="chkRngDoors" Header="Randomize Doors">
                         <StackPanel>

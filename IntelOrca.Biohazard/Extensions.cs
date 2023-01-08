@@ -52,7 +52,7 @@ namespace IntelOrca.Biohazard
                 set.Add(item);
         }
 
-        public static void RemoveMany<T>(this List<T> items, IEnumerable<T> removeList)
+        public static void RemoveMany<T>(this ICollection<T> items, IEnumerable<T> removeList)
         {
             foreach (var item in removeList)
             {
