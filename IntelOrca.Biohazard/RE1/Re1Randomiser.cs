@@ -13,6 +13,10 @@ namespace IntelOrca.Biohazard.RE1
         internal override IEnemyHelper EnemyHelper { get; } = new Re1EnemyHelper();
         internal override INpcHelper NpcHelper { get; } = new Re1NpcHelper();
 
+        public Re1Randomiser(IBgCreator? bgCreator) : base(bgCreator)
+        {
+        }
+
         public override string GetPlayerName(int player) => player == 0 ? "Chris" : "Jill";
 
         public override bool ValidateGamePath(string path)

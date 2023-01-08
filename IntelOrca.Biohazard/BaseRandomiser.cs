@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using IntelOrca.Biohazard.RE1;
@@ -12,6 +13,8 @@ namespace IntelOrca.Biohazard
 {
     public abstract class BaseRandomiser
     {
+        private readonly IBgCreator? _bgCreator;
+
         protected MemoryStream ExePatch { get; } = new MemoryStream();
         internal List<RandomInventory?> Inventories { get; } = new List<RandomInventory?>();
 
@@ -25,6 +28,11 @@ namespace IntelOrca.Biohazard
         protected abstract string GetDataPath(string installPath);
         protected abstract RdtId[] GetRdtIds(string dataPath);
         protected abstract string GetRdtPath(string dataPath, RdtId rdtId, int player);
+
+        public BaseRandomiser(IBgCreator? bgCreator)
+        {
+            _bgCreator = bgCreator;
+        }
 
         internal DataManager DataManager
         {
@@ -192,12 +200,12 @@ namespace IntelOrca.Biohazard
                 var bgmRandomizer = new BgmRandomiser(logger, config, bgmDirectory, GetBgmJson(), BiohazardVersion == BioVersion.Biohazard1, new Rng(config.Seed), DataManager);
                 if (config.IncludeBGMRE1)
                 {
-                    var r = new Re1Randomiser();
+                    var r = new Re1Randomiser(_bgCreator);
                     r.AddMusicSelection(bgmRandomizer, reConfig);
                 }
                 if (config.IncludeBGMRE2)
                 {
-                    var r = new Re2Randomiser();
+                    var r = new Re2Randomiser(_bgCreator);
                     r.AddMusicSelection(bgmRandomizer, reConfig);
                 }
                 bgmRandomizer.AddCutomMusicToSelection(config);
@@ -210,18 +218,8 @@ namespace IntelOrca.Biohazard
                 bgmRandomizer.Randomise();
             }
 
-            RandoBgCreator.Save(config, modPath, BiohazardVersion, DataManager);
-
-            File.WriteAllBytes(Path.Combine(modPath, "biorand.dat"), ExePatch.ToArray());
-
-            var biorandModuleFilename = "biorand.dll";
-            try
-            {
-                File.Copy(DataManager.GetPath(biorandModuleFilename), Path.Combine(modPath, biorandModuleFilename), true);
-            }
-            catch
-            {
-            }
+            CreateBackgrounds(config, modPath);
+            CreateDataModule(modPath);
         }
 
         public void GenerateRdts(RandoConfig config, string originalDataPath, string modPath)
@@ -406,6 +404,72 @@ namespace IntelOrca.Biohazard
         public virtual string[] GetPlayerCharacters(int index)
         {
             return new string[0];
+        }
+
+        private void CreateBackgrounds(RandoConfig config, string modPath)
+        {
+            try
+            {
+                var src = DataManager.GetData(BiohazardVersion, "bg.png");
+                if (BiohazardVersion == BioVersion.Biohazard1)
+                {
+                    CreateBackgroundRaw(config, src, Path.Combine(modPath, @"data\title.pix"));
+                    CreateBackgroundPng(config, src, Path.Combine(modPath, @"type.png"));
+                }
+                else
+                {
+                    CreateBackgroundPng(config, src, Path.Combine(modPath, @"common\data\title_bg.png"));
+                    CreateBackgroundPng(config, src, Path.Combine(modPath, @"common\data\type00.png"));
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        private void CreateBackgroundRaw(RandoConfig config, byte[] pngBackground, string outputFilename)
+        {
+            if (_bgCreator == null)
+                return;
+
+            Directory.CreateDirectory(Path.GetDirectoryName(outputFilename));
+            var titleBg = _bgCreator.CreateARGB(config, pngBackground);
+            using var fs = new FileStream(outputFilename, FileMode.Create);
+            var bw = new BinaryWriter(fs);
+
+            var pixels = MemoryMarshal.Cast<byte, uint>(titleBg);
+            for (int i = 0; i < 320 * 240; i++)
+            {
+                var c = pixels[i];
+                var r = (byte)((c >> 16) & 0xFF);
+                var g = (byte)((c >> 8) & 0xFF);
+                var b = (byte)((c >> 0) & 0xFF);
+                var c4 = (ushort)((r / 8) | ((g / 8) << 5) | ((b / 8) << 10));
+                bw.Write(c4);
+            }
+        }
+
+        private void CreateBackgroundPng(RandoConfig config, byte[] pngBackground, string outputFilename)
+        {
+            if (_bgCreator == null)
+                return;
+
+            Directory.CreateDirectory(Path.GetDirectoryName(outputFilename));
+            var titleBg = _bgCreator.CreatePNG(config, pngBackground);
+            File.WriteAllBytes(outputFilename, titleBg);
+        }
+
+        private void CreateDataModule(string modPath)
+        {
+            File.WriteAllBytes(Path.Combine(modPath, "biorand.dat"), ExePatch.ToArray());
+            var biorandModuleFilename = "biorand.dll";
+            try
+            {
+                File.Copy(DataManager.GetPath(biorandModuleFilename), Path.Combine(modPath, biorandModuleFilename), true);
+            }
+            catch
+            {
+            }
         }
     }
 }

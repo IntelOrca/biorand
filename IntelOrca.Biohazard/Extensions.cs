@@ -31,6 +31,11 @@ namespace IntelOrca.Biohazard
             return a.Except(b).Union(b.Except(a));
         }
 
+        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> items)
+        {
+            return new HashSet<T>(items);
+        }
+
         public static Queue<T> ToQueue<T>(this IEnumerable<T> items)
         {
             return new Queue<T>(items);

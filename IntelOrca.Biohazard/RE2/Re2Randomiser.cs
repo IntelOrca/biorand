@@ -19,6 +19,10 @@ namespace IntelOrca.Biohazard.RE2
         internal override IEnemyHelper EnemyHelper { get; } = new Re2EnemyHelper();
         internal override INpcHelper NpcHelper { get; } = new Re2NpcHelper();
 
+        public Re2Randomiser(IBgCreator? bgCreator) : base(bgCreator)
+        {
+        }
+
         public override string GetPlayerName(int player) => player == 0 ? "Leon" : "Claire";
 
         public override bool ValidateGamePath(string path)
@@ -114,6 +118,13 @@ namespace IntelOrca.Biohazard.RE2
             }
 
             FixClaireWeapons();
+
+            // tmoji.bin
+            var src = DataManager.GetPath(BiohazardVersion, "tmoji.bin");
+            var dst = Path.Combine(modPath, "common", "data", "tmoji.bin");
+            Directory.CreateDirectory(Path.GetDirectoryName(dst));
+            File.Copy(src, dst);
+
             base.Generate(config, reConfig, installPath, modPath);
         }
 

@@ -74,8 +74,8 @@ namespace IntelOrca.Biohazard.Tests
         private BaseRandomiser GetRandomizer()
         {
             return Game == 1 ?
-                (BaseRandomiser)new Re1Randomiser() :
-                (BaseRandomiser)new Re2Randomiser();
+                (BaseRandomiser)new Re1Randomiser(null) :
+                (BaseRandomiser)new Re2Randomiser(null);
         }
 
         private RandoConfig GetBaseConfig()

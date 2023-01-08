@@ -847,9 +847,9 @@ namespace IntelOrca.Biohazard.BioRand
             switch (index)
             {
                 case 0:
-                    return new Re1Randomiser();
+                    return new Re1Randomiser(new BiorandBgCreator());
                 case 1:
-                    return new Re2Randomiser();
+                    return new Re2Randomiser(new BiorandBgCreator());
                 default:
                     throw new NotImplementedException();
             }
