@@ -146,7 +146,8 @@
       ],
       "doors": [
         {
-          "target": "105"
+          "target": "105",
+          "doorRando": true
         },
         {
           "target": "107",
