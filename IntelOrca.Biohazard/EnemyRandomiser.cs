@@ -167,10 +167,9 @@ namespace IntelOrca.Biohazard
 
             if (_config.RandomEnemyPlacement)
             {
-                enemiesToChange = GenerateRandomEnemies(rdt, enemiesToChange);
+                enemiesToChange = GenerateRandomEnemies(rng, rdt, enemiesToChange);
             }
 
-            var numEnemies = enemiesToChange.DistinctBy(x => x.Id).Count();
             var includeTypes = enemySpec.IncludeTypes == null ?
                 null :
                 enemySpec.IncludeTypes.Select(x => (byte)x).ToHashSet();
@@ -215,10 +214,17 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private SceEmSetOpcode[] GenerateRandomEnemies(Rdt rdt, SceEmSetOpcode[] currentEnemies)
+        private SceEmSetOpcode[] GenerateRandomEnemies(Rng rng, Rdt rdt, SceEmSetOpcode[] currentEnemies)
         {
             var relevantPlacements = _enemyPositions
                 .Where(x => x.RdtId == rdt.RdtId)
+                .Shuffle(rng);
+
+            var maxQuantity = (_config.EnemyDifficulty + 1) * 4;
+            var upperBound = Math.Max(maxQuantity, relevantPlacements.Length);
+            var quantity = rng.Next(0, upperBound);
+            relevantPlacements = relevantPlacements
+                .Take(quantity)
                 .ToArray();
 
             if (relevantPlacements.Length == 0)

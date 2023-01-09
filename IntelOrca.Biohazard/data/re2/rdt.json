@@ -266,7 +266,11 @@
           "requires": [ 51 ]
         }
       ],
-      "enemies": []
+      "enemies": [
+        {
+          "scenario": 0
+        }
+      ]
     },
     "10C": {
       "doorRando": [
@@ -320,7 +324,11 @@
           "player": 1
         }
       ],
-      "enemies": []
+      "enemies": [
+        {
+          "scenario": 0
+        }
+      ]
     },
     "10E": {
       "doorRando": [
@@ -553,6 +561,16 @@
         {
           "player": 1
         }
+      ],
+      "enemies": [
+        {
+          "player": 0,
+          "scenario": 1
+        },
+        {
+          "player": 1,
+          "scenario": 0
+        }
       ]
     },
     "116": {
@@ -717,10 +735,12 @@
       ],
       "enemies": [
         {
+          "nop": [ 3552 ],
           "excludeOffsets": [ 3552 ],
           "player": 0
         },
         {
+          "nop": [ 3470 ],
           "excludeOffsets": [ 3470 ],
           "player": 1
         }
@@ -3302,7 +3322,7 @@
     "615": {
       "doorRando": [
         {
-          "cutscene": true,   // Item pickup in room needed for cutscene trigger in 614
+          "cutscene": true, // Item pickup in room needed for cutscene trigger in 614
           "player": 1,
           "scenario": 0
         }
