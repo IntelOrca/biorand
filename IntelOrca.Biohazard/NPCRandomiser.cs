@@ -528,8 +528,12 @@ namespace IntelOrca.Biohazard
             if (!refillPool)
                 return null;
 
+            // Do not add lines that are already in the pool.
+            // Otherwise we can end up with many duplicates in a row
+            var poolHash = _pool.ToHashSet();
             var newItems = _uniqueSamples
                 .Where(x => x.Actor == actor)
+                .Where(x => !poolHash.Contains(x))
                 .Shuffle(rng);
             _pool.AddRange(newItems);
             return GetRandomVoice(rng, actor, kind, actors, maxLength, refillPool: false);
