@@ -1412,7 +1412,11 @@
           "target": "309"
         }
       ],
-      "enemies": [],
+      "enemies": [
+        {
+          "player": 0
+        }
+      ],
       "npcs": [
         {
           "includeOffsets": [ 5392, 5444 ],
@@ -1451,7 +1455,11 @@
           "priority": "low"
         }
       ],
-      "enemies": [],
+      "enemies": [
+        {
+          "player": 1
+        }
+      ],
       "npcs": [
         {
           "includeOffsets": [ 6876, 7204, 7508 ],
@@ -1546,6 +1554,11 @@
           "target": "402",
           "noReturn": true
         }
+      ],
+      "enemies": [
+        {
+          "player": 0
+        }
       ]
     },
     "305": {
@@ -1559,8 +1572,7 @@
         {
           "target": "30B"
         }
-      ],
-      "enemies": [ {} ]
+      ]
     },
     "306": {
       "doors": [
@@ -1627,6 +1639,11 @@
           "cutscene": 2,
           "player": 1
         }
+      ],
+      "enemies": [
+        {
+          "player": 0
+        }
       ]
     },
     "308": {
@@ -1647,6 +1664,11 @@
           "includeOffsets": [ 2698 ],
           "includeTypes": [ 69, 79 ],
           "player": 1
+        }
+      ],
+      "enemies": [
+        {
+          "player": 0
         }
       ]
     },
@@ -1672,7 +1694,11 @@
           "player": 1
         }
       ],
-      "enemies": [],
+      "enemies": [
+        {
+          "player": 0
+        }
+      ],
       "npcs": [
         {
           "includeTypes": [ 69, 79 ],
@@ -1700,6 +1726,11 @@
         {
           "includeTypes": [ 69, 79 ],
           "player": 1
+        }
+      ],
+      "enemies": [
+        {
+          "player": 0
         }
       ]
     },
@@ -1800,6 +1831,11 @@
         {
           "includeOffsets": [],
           "cutscene": 3 // Leon, Claire
+        }
+      ],
+      "enemies": [
+        {
+          "player": 1
         }
       ]
     },
@@ -2221,6 +2257,11 @@
         {
           "includeOffsets": [ 10784, 10810, 10870 ]
         }
+      ],
+      "enemies": [
+        {
+          "player": 0
+        }
       ]
     },
     "409": {
@@ -2251,6 +2292,11 @@
           "includeOffsets": [ 9260, 9286 ],
           "cutscene": 1,
           "player": 0
+        }
+      ],
+      "enemies": [
+        {
+          "player": 1
         }
       ]
     },
@@ -2812,6 +2858,11 @@
         {
           "scenario": 1
         }
+      ],
+      "enemies": [
+        {
+          "player": 1
+        }
       ]
     },
     "603": {
@@ -2833,7 +2884,11 @@
           "target": "605"
         }
       ],
-      "enemies": []
+      "enemies": [
+        {
+          "excludeOffsets": [ 10858 ]
+        }
+      ]
     },
     "604": {
       "doorRando": [
@@ -3015,6 +3070,11 @@
           "includeOffsets": [ 11100, 11246, 12056 ],
           "includeTypes": [ 79 ]
         }
+      ],
+      "enemies": [
+        {
+          "player": 0
+        }
       ]
     },
     "609": {
@@ -3164,6 +3224,11 @@
       "npcs": [
         {
           "scenario": 0
+        }
+      ],
+      "enemies": [
+        {
+          "player": 1
         }
       ]
     },
@@ -3317,6 +3382,11 @@
           "cutscene": 2,
           "player": 1
         }
+      ],
+      "enemies": [
+        {
+          "player": 0
+        }
       ]
     },
     "613": {
@@ -3439,7 +3509,8 @@
       ],
       "enemies": [
         {
-          "excludeOffsets": [ 8072, 8128, 8208, 8264, 8312, 8334 ]
+          "excludeOffsets": [ 8072, 8128, 8208, 8264, 8312, 8334 ],
+          "randomPlacements": false
         }
       ]
     },
