@@ -2320,6 +2320,10 @@
         {
           "includeOffsets": [ 9572, 9746, 9772 ],
           "player": 0
+        },
+        {
+          "includeTypes": [ 69, 79 ],
+          "player": 1
         }
       ],
       "enemies": []
