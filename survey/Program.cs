@@ -11,7 +11,7 @@ namespace IntelOrca.Biohazard.Survey
         [DllImport("kernel32.dll")]
         private extern static bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, IntPtr lpBuffer, IntPtr nSize, out IntPtr lpNumberOfBytesRead);
 
-        private static string _jsonPath = @"M:\git\biorand\IntelOrca.Biohazard\data\re2\enemy.json";
+        private static string _jsonPath = @"M:\git\rer\IntelOrca.Biohazard\data\re2\enemy.json";
 
         private static bool _exit;
         private static byte[] _buffer = new byte[64];
@@ -19,7 +19,7 @@ namespace IntelOrca.Biohazard.Survey
 
         private static void LoadJSON()
         {
-            var json = File.ReadAllText(@"M:\git\biorand\IntelOrca.Biohazard\data\re2\enemy.json");
+            var json = File.ReadAllText(_jsonPath);
             _enemyPositions = JsonSerializer.Deserialize<List<EnemyPosition>>(json, new JsonSerializerOptions()
             {
                 ReadCommentHandling = JsonCommentHandling.Skip,
@@ -31,9 +31,15 @@ namespace IntelOrca.Biohazard.Survey
         {
             var sb = new StringBuilder();
             sb.Append("[\n");
-            if (_enemyPositions.Count > 0)
+            var positions = _enemyPositions
+                .OrderBy(x => x.Room)
+                .ThenByDescending(x => x.Y)
+                .ThenBy(x => x.X)
+                .ThenBy(x => x.Z)
+                .ToArray();
+            if (positions.Length > 0)
             {
-                foreach (var pos in _enemyPositions)
+                foreach (var pos in positions)
                 {
                     sb.Append($"    {{ \"room\": \"{pos.Room}\", \"x\": {pos.X}, \"y\": {pos.Y}, \"z\": {pos.Z}, \"d\": {pos.D}, \"f\": {pos.F} }},\n");
                 }
@@ -86,9 +92,20 @@ namespace IntelOrca.Biohazard.Survey
                     Console.WriteLine($"D: {gameState.D,8}");
                     Console.WriteLine($"F: {gameState.Floor,8}");
 
-                    if (gameState.Key == 0x10C0)
+                    if (gameState.Key == 0x2300)
                     {
                         AddEnemyPosition(gameState);
+                    }
+
+                    Console.WriteLine("--------------------");
+                    for (int i = 0; i < 10; i++)
+                    {
+                        var index = _enemyPositions.Count - i - 1;
+                        if (index >= _enemyPositions.Count)
+                            break;
+
+                        var pos = _enemyPositions[index];
+                        Console.WriteLine("{0}, {1}, {2}, {3}, {4}                         ", pos.Room, pos.X, pos.Y, pos.Z, pos.D);
                     }
                 }
                 Thread.Sleep(10);
@@ -226,6 +243,22 @@ namespace IntelOrca.Biohazard.Survey
             public override int GetHashCode()
             {
                 return HashCode.Combine(Room, X, Y, Z, D, F);
+            }
+
+            public bool IsVeryClose(EnemyPosition other)
+            {
+                if (Room != other.Room)
+                    return false;
+                if (Y != other.Y)
+                    return false;
+
+                var deltaX = X - other.X;
+                var deltaY = Y - other.Y;
+                var dist = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+                if (dist <= 1000)
+                    return true;
+
+                return false;
             }
         }
     }

@@ -280,17 +280,32 @@ namespace IntelOrca.Biohazard
             var br = new BinaryReader(ms);
             var firstSub = br.ReadUInt16();
             var numSubs = firstSub / 2;
-            if (numSubs != 1)
-                throw new NotImplementedException();
+            var subPositions = new ushort[numSubs];
+            subPositions[0] = firstSub;
+            for (int i = 1; i < numSubs; i++)
+                subPositions[i] = br.ReadUInt16();
 
             var newMs = new MemoryStream();
+
+            // Move to first sub and write new opcodes
+            newMs.Position = firstSub;
             var bw = new BinaryWriter(newMs);
-            bw.Write((ushort)2);
             foreach (var opcode in AdditionalOpcodes)
             {
                 opcode.Write(bw);
             }
-            bw.Write(initScd.Skip(2).ToArray());
+            var increaseDelta = newMs.Position - firstSub;
+
+            bw.Write(initScd.Skip(firstSub).ToArray());
+
+            // Write sub offset table
+            newMs.Position = 0;
+            bw.Write(firstSub);
+            for (int i = 1; i < numSubs; i++)
+            {
+                bw.Write((ushort)(subPositions[i] + increaseDelta));
+            }
+
             _rdtFile.SetScd(BioScriptKind.Init, newMs.ToArray());
         }
 

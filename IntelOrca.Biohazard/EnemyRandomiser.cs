@@ -237,11 +237,18 @@ namespace IntelOrca.Biohazard
             foreach (var enemy in currentEnemies)
                 rdt.Nop(enemy.Offset);
 
+            var usedIds = rdt.Enemies.Select(x => x.Id).ToHashSet();
+
             var enemies = new List<SceEmSetOpcode>();
             byte enemyId = 0;
             byte killId = 0;
             foreach (var ep in relevantPlacements)
             {
+                while (usedIds.Contains(enemyId))
+                {
+                    enemyId++;
+                }
+
                 var newEnemy = new SceEmSetOpcode()
                 {
                     Length = 22,
