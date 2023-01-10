@@ -1322,6 +1322,12 @@
         },
         {
           "target": "308",
+          "lock": "always",
+          "noUnlock": true,
+          "player": 0
+        },
+        {
+          "target": "308",
           "noReturn": true,
           "requires": [ 54, 56, 57, 58 ],
           "requiresRoom": [ "10E" ],
