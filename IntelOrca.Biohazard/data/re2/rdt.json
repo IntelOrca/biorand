@@ -347,6 +347,11 @@
         {
           "excludeTypes": [ 64, 66 ]
         }
+      ],
+      "enemies": [
+        {
+          "player": 0
+        }
       ]
     },
     "10F": {
@@ -476,7 +481,18 @@
       "enemies": [
         {
           "excludeTypes": [ 42, 58 ],
-          "difficulty": "hard"
+          "difficulty": "hard",
+          "randomPlacements": false
+        },
+        {
+          "randomPlacements": true,
+          "scenario": 0,
+          "player": 0
+        },
+        {
+          "randomPlacements": true,
+          "scenario": 1,
+          "player": 1
         }
       ],
       "npcs": [
@@ -1373,6 +1389,11 @@
           "includeOffsets": [],
           "cutscene": 3,
           "player": 1
+        }
+      ],
+      "enemies": [
+        {
+          "player": 0
         }
       ]
     },
