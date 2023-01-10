@@ -1063,39 +1063,8 @@ namespace IntelOrca.Biohazard
                     {
                         node.Category = (DoorRandoCategory)Enum.Parse(typeof(DoorRandoCategory), spec.Category, true);
                     }
-                    if (spec.Nop != null)
-                    {
-                        var nop = new List<int>();
-                        foreach (var entry in spec.Nop)
-                        {
-                            if (entry.ValueKind == System.Text.Json.JsonValueKind.String)
-                            {
-                                var s = entry.GetString()!;
-                                if (s.Contains('-'))
-                                {
-                                    var parts = s.Split('-');
-                                    var lower = ParseLiteral(parts[0]);
-                                    var upper = ParseLiteral(parts[1]);
-                                    foreach (var op in rdt.Opcodes)
-                                    {
-                                        if (op.Offset >= lower && op.Offset <= upper)
-                                        {
-                                            nop.Add(op.Offset);
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    nop.Add(ParseLiteral(s));
-                                }
-                            }
-                            else
-                            {
-                                nop.Add(entry.GetInt32());
-                            }
-                        }
-                        node.DoorRandoNop = nop.ToArray();
-                    }
+
+                    node.DoorRandoNop = Map.ParseNopArray(spec.Nop, rdt);
                     node.HasCutscene = spec.Cutscene;
                 }
             }
@@ -1106,15 +1075,6 @@ namespace IntelOrca.Biohazard
             }
 
             return node;
-        }
-
-        private static int ParseLiteral(string s)
-        {
-            if (s.StartsWith("0x"))
-            {
-                return int.Parse(s.Substring(2), System.Globalization.NumberStyles.HexNumber);
-            }
-            return int.Parse(s);
         }
 
         private void FinishOffEndNodes(PlayNode endNode)

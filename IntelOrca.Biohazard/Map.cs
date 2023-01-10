@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace IntelOrca.Biohazard
 {
@@ -13,6 +14,52 @@ namespace IntelOrca.Biohazard
                 return null;
             Rooms.TryGetValue(id.ToString(), out var value);
             return value;
+        }
+
+        internal static int[] ParseNopArray(System.Text.Json.JsonElement[]? nopArray, Rdt rdt)
+        {
+            var nop = new List<int>();
+            if (nopArray != null)
+            {
+                foreach (var entry in nopArray)
+                {
+                    if (entry.ValueKind == System.Text.Json.JsonValueKind.String)
+                    {
+                        var s = entry.GetString()!;
+                        if (s.Contains('-'))
+                        {
+                            var parts = s.Split('-');
+                            var lower = ParseLiteral(parts[0]);
+                            var upper = ParseLiteral(parts[1]);
+                            foreach (var op in rdt.Opcodes)
+                            {
+                                if (op.Offset >= lower && op.Offset <= upper)
+                                {
+                                    nop.Add(op.Offset);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            nop.Add(ParseLiteral(s));
+                        }
+                    }
+                    else
+                    {
+                        nop.Add(entry.GetInt32());
+                    }
+                }
+            }
+            return nop.ToArray();
+        }
+
+        private static int ParseLiteral(string s)
+        {
+            if (s.StartsWith("0x"))
+            {
+                return int.Parse(s.Substring(2), System.Globalization.NumberStyles.HexNumber);
+            }
+            return int.Parse(s);
         }
     }
 
@@ -82,7 +129,7 @@ namespace IntelOrca.Biohazard
 
     public class MapRoomEnemies
     {
-        public int[]? Nop { get; set; }
+        public System.Text.Json.JsonElement[]? Nop { get; set; }
         public int[]? ExcludeOffsets { get; set; }
         public int[]? ExcludeTypes { get; set; }
         public int[]? IncludeTypes { get; set; }
@@ -90,6 +137,7 @@ namespace IntelOrca.Biohazard
         public bool KeepAi { get; set; }
         public short? Y { get; set; }
         public string? Difficulty { get; set; }
+        public bool? RandomPlacements { get; set; }
         public int? Player { get; set; }
         public int? Scenario { get; set; }
     }

@@ -736,13 +736,25 @@
       ],
       "enemies": [
         {
-          "nop": [ 3552 ],
           "excludeOffsets": [ 3552 ],
+          "randomPlacements": false,
           "player": 0
         },
         {
-          "nop": [ 3470 ],
+          "nop": [ 3532, 3552, "0xDD8-0xE06" ],
+          "excludeOffsets": [ 3552 ],
+          "randomPlacements": true,
+          "player": 0
+        },
+        {
           "excludeOffsets": [ 3470 ],
+          "randomPlacements": false,
+          "player": 1
+        },
+        {
+          "nop": [ 3470, 3434, "0xD86-0xDB4" ],
+          "excludeOffsets": [ 3470 ],
+          "randomPlacements": true,
           "player": 1
         }
       ]

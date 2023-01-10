@@ -151,9 +151,13 @@ namespace IntelOrca.Biohazard
             if (enemySpec.Scenario != null && enemySpec.Scenario != _config.Scenario)
                 return;
 
+            if (enemySpec.RandomPlacements != null && enemySpec.RandomPlacements != _config.RandomEnemyPlacement)
+                return;
+            
             if (enemySpec.Nop != null)
             {
-                foreach (var offset in enemySpec.Nop)
+                var nopArray = Map.ParseNopArray(enemySpec.Nop, rdt);
+                foreach (var offset in nopArray)
                 {
                     rdt.Nop(offset);
                     _logger.WriteLine($"{rdt.RdtId} (0x{offset:X2}) opcode removed");
@@ -220,15 +224,15 @@ namespace IntelOrca.Biohazard
                 .Where(x => x.RdtId == rdt.RdtId)
                 .Shuffle(rng);
 
+            if (relevantPlacements.Length == 0)
+                return currentEnemies;
+
             var maxQuantity = (_config.EnemyDifficulty + 1) * 4;
             var upperBound = Math.Max(maxQuantity, relevantPlacements.Length);
             var quantity = rng.Next(0, upperBound);
             relevantPlacements = relevantPlacements
                 .Take(quantity)
                 .ToArray();
-
-            if (relevantPlacements.Length == 0)
-                return currentEnemies;
 
             foreach (var enemy in currentEnemies)
                 rdt.Nop(enemy.Offset);
