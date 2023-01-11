@@ -90,15 +90,33 @@ namespace IntelOrca.Biohazard
                 var enemies = rdt.Enemies.ToArray();
                 var logEnemies = enemies.Select(GetEnemyLogText).ToArray();
                 RandomiseRoom(_rng.NextFork(), rdt);
-                for (int i = 0; i < logEnemies.Length; i++)
+
+                // Force log if enemy count changed
+                var newEnemies = rdt.Enemies.ToArray();
+                if (newEnemies.Length != logEnemies.Length)
                 {
-                    var enemy = enemies[i];
-                    var oldLog = logEnemies[i];
-                    var newLog = GetEnemyLogText(enemy);
-                    if (oldLog != newLog)
+                    foreach (var enemy in newEnemies)
                     {
-                        _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) {oldLog} becomes {newLog}");
+                        if (!rdt.AdditionalOpcodes.Contains(enemy))
+                            continue;
+
+                        var newLog = GetNewEnemyLogText(enemy);
+                        _logger.WriteLine($"Created {rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) {newLog}");
                         fixType ??= enemy.Type;
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < logEnemies.Length; i++)
+                    {
+                        var enemy = enemies[i];
+                        var oldLog = logEnemies[i];
+                        var newLog = GetEnemyLogText(enemy);
+                        if (oldLog != newLog)
+                        {
+                            _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) {oldLog} becomes {newLog}");
+                            fixType ??= enemy.Type;
+                        }
                     }
                 }
 
@@ -128,6 +146,11 @@ namespace IntelOrca.Biohazard
         private string GetEnemyLogText(SceEmSetOpcode enemy)
         {
             return $"[{_enemyHelper.GetEnemyName(enemy.Type)},{enemy.State},{enemy.Ai},{enemy.SoundBank},{enemy.Texture}]";
+        }
+
+        private string GetNewEnemyLogText(SceEmSetOpcode enemy)
+        {
+            return $"[{_enemyHelper.GetEnemyName(enemy.Type)},{enemy.State},{enemy.Ai},{enemy.SoundBank},{enemy.Texture}] at ({enemy.X},{enemy.Y},{enemy.Z})";
         }
 
         private void RandomiseRoom(Rng rng, Rdt rdt)
@@ -277,10 +300,6 @@ namespace IntelOrca.Biohazard
                 enemies.Add(newEnemy);
                 enemyId++;
                 killId++;
-                _logger.WriteLine($"Created new enemy at {ep.RdtId}, {ep.X}, {ep.Y}, {ep.Z}");
-
-                // if (enemyId >= 8)
-                //     break;
             }
             return enemies.ToArray();
         }
