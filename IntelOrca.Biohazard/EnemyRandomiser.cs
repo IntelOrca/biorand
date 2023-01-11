@@ -227,9 +227,13 @@ namespace IntelOrca.Biohazard
             if (relevantPlacements.Length == 0)
                 return currentEnemies;
 
-            var maxQuantity = (_config.EnemyDifficulty + 1) * 4;
-            var upperBound = Math.Max(maxQuantity, relevantPlacements.Length);
-            var quantity = rng.Next(0, upperBound);
+            var quantity = 1;
+            if (!_rng.NextProbability(10))
+            {
+                var maxQuantity = (_config.EnemyDifficulty + 1) * 4;
+                var upperBound = Math.Max(maxQuantity, relevantPlacements.Length);
+                quantity = rng.Next(0, upperBound);
+            }
             relevantPlacements = relevantPlacements
                 .Take(quantity)
                 .ToArray();

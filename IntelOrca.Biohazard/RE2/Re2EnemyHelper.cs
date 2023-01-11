@@ -1,5 +1,5 @@
 ﻿using System;
-using IntelOrca.Biohazard.RE1;
+using System.Linq;
 using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.RE2
@@ -65,6 +65,7 @@ namespace IntelOrca.Biohazard.RE2
                     addIfSupported((byte)EnemyType.Cerebrus, 25);
                     addIfSupported((byte)EnemyType.LickerRed, 15);
                     addIfSupported((byte)EnemyType.LickerGrey, 10);
+                    addIfSupported((byte)EnemyType.Birkin1, 1000);
                     break;
                 case 3:
                 default:
@@ -77,6 +78,7 @@ namespace IntelOrca.Biohazard.RE2
                     addIfSupported((byte)EnemyType.Cerebrus, 40);
                     addIfSupported((byte)EnemyType.LickerRed, 5);
                     addIfSupported((byte)EnemyType.LickerGrey, 20);
+                    addIfSupported((byte)EnemyType.Birkin1, 1000);
                     break;
             }
         }
@@ -92,6 +94,16 @@ namespace IntelOrca.Biohazard.RE2
 
         public void ExcludeEnemies(RandoConfig config, Rdt rdt, string difficulty, Action<byte> exclude)
         {
+            var types = rdt.Enemies
+                .Select(x => x.Type)
+                .Where(IsEnemy)
+                .ToArray();
+
+            if (types.Length != 1)
+            {
+                exclude((byte)EnemyType.Birkin1);
+            }
+
             if (difficulty == "medium" && config.EnemyDifficulty < 2)
             {
                 exclude((byte)EnemyType.LickerRed);
@@ -210,6 +222,10 @@ namespace IntelOrca.Biohazard.RE2
                 case EnemyType.Tyrant1:
                     enemy.State = 0;
                     enemy.SoundBank = 18;
+                    break;
+                case EnemyType.Birkin1:
+                    enemy.State = 1;
+                    enemy.SoundBank = 24;
                     break;
             }
         }
