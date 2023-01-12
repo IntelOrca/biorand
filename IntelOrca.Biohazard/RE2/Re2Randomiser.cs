@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.RE2
 {
@@ -152,13 +151,6 @@ namespace IntelOrca.Biohazard.RE2
                         ScaleEmrY(logger, rdt, EmrFlags.Player, false);
                     }
                 }
-                if (config.Player == 0)
-                {
-                    var rdt1000 = gameData.GetRdt(new RdtId(0, 0));
-                    var rdt1040 = gameData.GetRdt(new RdtId(0, 4));
-                    rdt1000!.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x22, new byte[] { 0x1D, 0x05, 0x01 }));
-                    rdt1040!.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x22, new byte[] { 0x1D, 0x05, 0x01 }));
-                }
             }
             else
             {
@@ -271,7 +263,7 @@ namespace IntelOrca.Biohazard.RE2
             // Replace other PLDs
             if (actor != originalPlayerActor)
             {
-                var numbers = new[] { 2, 4, 6, 8 };
+                var numbers = new[] { 2, 4, 6 };
                 var src = Path.Combine(targetPldDir, $"pl{config.Player:X2}.pld");
                 foreach (var n in numbers)
                 {
