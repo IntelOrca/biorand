@@ -1,3 +1,31 @@
+BioRand v2.1.5 (2023-01-12)
+
+* [Feature] RE 2, Add Ada as a playable character.
+* [Feature] RE 2, Add Alyssa (RE Outbreak) as a playable character and NPC.
+* [Feature] RE 2, Add Jake (RE 6) as a playable character and NPC.
+* [Feature] RE 2, Add Piers (RE 6) as a playable character and NPC.
+* [Feature] RE 2, Add random enemy positions and quantities.
+* [Feature] RE 2, Add Regina (Dino Crisis) as a playable character.
+* [Feature] RE 2, Birkin / G1 can now appear with random enemy placements enabled.
+* [Enhancement] Title backgrounds now have BioRand logo.
+* [Fix] #124: RE 2, room 601, softlock due to partner flag in door rando.
+* [Fix] #125: Random enemy placements places enemies in cutscene rooms.
+* [Fix] #127: Firing the grenade launcher (explosive) crashes the game.
+* [Fix] #128: Cabin key spawned in A scenario non-door rando.
+* [Fix] #131: RE 2, room 404, Claire softlock when partner is not Sherry.
+* [Fix] #132: RE 2, room 409, Irons invisible during Ada / Annette cutscene.
+* [Fix] #142: RE 2, room 601, soft lock when door is locked.
+* [Fix] #143: RE 1, room 10E, crash when dog is in closet.
+* [Fix] RE 2, Hunk model..
+* [Fix] RE 2, Kevin voice lines do not play.
+* [Fix] RE 2, Richard PLD injured texture was incorrect.
+* [Fix] RE 2, room 21B, lift is not randomized for Leon.
+* [Fix] RE 2, room 40A, voices not randomized for Claire.
+* [Fix] RE 2, room 611, crash when em90 is used.
+* [Fix] RE 2, William, two voice lines do not play.
+* [Fix] Reduce chance of duplicates in voice randomization.
+* [Fix] Volume of some BGM tracks were too loud.
+
 BioRand v2.1.4 (2023-01-07)
 
 * [Feature] Claire / female playable characters can now use all of Leon's weapons.
