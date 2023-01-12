@@ -418,6 +418,11 @@
           "id": 3,
           "type": 0
         }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 2 ]
+        }
       ]
     },
     "10F": {
