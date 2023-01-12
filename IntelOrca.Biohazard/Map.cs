@@ -138,6 +138,7 @@ namespace IntelOrca.Biohazard
         public short? Y { get; set; }
         public string? Difficulty { get; set; }
         public bool? RandomPlacements { get; set; }
+        public bool? Restricted { get; set; }
         public int? Player { get; set; }
         public int? Scenario { get; set; }
     }

@@ -179,7 +179,10 @@ namespace IntelOrca.Biohazard
 
             if (enemySpec.RandomPlacements != null && enemySpec.RandomPlacements != _config.RandomEnemyPlacement)
                 return;
-            
+
+            if (enemySpec.Restricted != null && enemySpec.Restricted != _config.AllowEnemiesAnyRoom)
+                return;
+
             if (enemySpec.Nop != null)
             {
                 var nopArray = Map.ParseNopArray(enemySpec.Nop, rdt);
@@ -256,7 +259,7 @@ namespace IntelOrca.Biohazard
             var quantity = 1;
             if (!_rng.NextProbability(10))
             {
-                var maxQuantity = (_config.EnemyDifficulty + 1) * 4;
+                var maxQuantity = (_config.EnemyQuantity + 1) * 2;
                 var upperBound = Math.Max(maxQuantity, relevantPlacements.Length);
                 quantity = rng.Next(0, upperBound);
             }

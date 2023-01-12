@@ -32,6 +32,8 @@ namespace IntelOrca.Biohazard
         public bool IncludeDocuments { get; set; }
         public bool RandomInventory { get; set; } = true;
         public bool RandomEnemyPlacement { get; set; }
+        public bool AllowEnemiesAnyRoom { get; set; } = true;
+        public byte EnemyQuantity { get; set; } = 2;
 
         public bool IncludeBGMRE1 { get; set; } = true;
         public bool IncludeBGMRE2 { get; set; } = true;
@@ -109,7 +111,8 @@ namespace IntelOrca.Biohazard
 
             result.RandomInventory = reader.ReadFlag();
             result.RandomEnemyPlacement = reader.ReadFlag();
-            reader.ReadByte(3);
+            result.AllowEnemiesAnyRoom = reader.ReadFlag();
+            result.EnemyQuantity = reader.ReadByte(2);
             return result;
         }
 
@@ -173,7 +176,8 @@ namespace IntelOrca.Biohazard
 
             writer.Write(RandomInventory);
             writer.Write(RandomEnemyPlacement);
-            writer.Write(3, 0);
+            writer.Write(AllowEnemiesAnyRoom);
+            writer.Write(2, EnemyQuantity);
             return writer.ToString();
         }
 

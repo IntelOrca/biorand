@@ -65,7 +65,7 @@ namespace IntelOrca.Biohazard.RE2
                     addIfSupported((byte)EnemyType.Cerebrus, 25);
                     addIfSupported((byte)EnemyType.LickerRed, 15);
                     addIfSupported((byte)EnemyType.LickerGrey, 10);
-                    addIfSupported((byte)EnemyType.Birkin1, 1000);
+                    addIfSupported((byte)EnemyType.Birkin1, 5);
                     break;
                 case 3:
                 default:
@@ -78,7 +78,7 @@ namespace IntelOrca.Biohazard.RE2
                     addIfSupported((byte)EnemyType.Cerebrus, 40);
                     addIfSupported((byte)EnemyType.LickerRed, 5);
                     addIfSupported((byte)EnemyType.LickerGrey, 20);
-                    addIfSupported((byte)EnemyType.Birkin1, 1000);
+                    addIfSupported((byte)EnemyType.Birkin1, 25);
                     break;
             }
         }

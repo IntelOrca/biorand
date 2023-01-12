@@ -168,6 +168,8 @@ namespace IntelOrca.Biohazard.BioRand
                 chkProtectSoftLock.IsChecked = _config.ProtectFromSoftLock || _config.RandomDoors;
                 chkRngEnemies.IsChecked = _config.RandomEnemies;
                 chkRandomEnemyPlacements.IsChecked = _config.RandomEnemyPlacement;
+                chkEnemyRestrictedRooms.IsChecked = _config.AllowEnemiesAnyRoom;
+                sliderEnemyCount.Value = _config.EnemyQuantity;
                 chkRngItems.IsChecked = _config.RandomItems || _config.RandomDoors;
                 chkShuffleItems.IsChecked = _config.ShuffleItems && !_config.RandomDoors;
                 chkAlternativeRoute.IsChecked = _config.AlternativeRoutes && !_config.RandomDoors;
@@ -435,7 +437,12 @@ namespace IntelOrca.Biohazard.BioRand
 
             _config.RandomDoors = chkRngDoors.IsChecked == true;
             _config.ProtectFromSoftLock = chkProtectSoftLock.IsChecked == true || _config.RandomDoors;
+
             _config.RandomEnemies = chkRngEnemies.IsChecked == true;
+            _config.AllowEnemiesAnyRoom = chkEnemyRestrictedRooms.IsChecked == true;
+            _config.EnemyQuantity = (byte)sliderEnemyCount.Value;
+            _config.EnemyDifficulty = (byte)sliderEnemyDifficulty.Value;
+
             _config.RandomItems = chkRngItems.IsChecked == true || _config.RandomDoors;
             _config.RandomEnemyPlacement = chkRandomEnemyPlacements.IsChecked == true;
             _config.ShuffleItems = chkShuffleItems.IsChecked == true && !_config.RandomDoors;
@@ -443,7 +450,6 @@ namespace IntelOrca.Biohazard.BioRand
             _config.IncludeDocuments = chkIncludeDocuments.IsChecked == true;
             _config.RandomInventory = chkRandomInventory.IsChecked == true;
 
-            _config.EnemyDifficulty = (byte)sliderEnemyDifficulty.Value;
 
             _config.RatioAmmo = (byte)sliderAmmo.Value;
             _config.RatioHealth = (byte)sliderHealth.Value;
@@ -464,6 +470,8 @@ namespace IntelOrca.Biohazard.BioRand
             chkShuffleItems.IsEnabled = chkRngDoors.IsChecked != true;
             chkAlternativeRoute.IsEnabled = chkRngDoors.IsChecked != true;
             chkProtectSoftLock.IsEnabled = chkRngDoors.IsChecked != true;
+            chkEnemyRestrictedRooms.IsEnabled = chkRandomEnemyPlacements.IsChecked == true;
+            sliderEnemyCount.IsEnabled = chkRandomEnemyPlacements.IsChecked == true;
         }
 
         private IEnumerable<FrameworkElement> GetAllControls(object parent)
@@ -808,6 +816,8 @@ namespace IntelOrca.Biohazard.BioRand
                         chkNPCsRE2.IsEnabled = false;
                         chkNPCsOther.IsEnabled = false;
                         chkRandomEnemyPlacements.IsEnabled = false;
+                        chkEnemyRestrictedRooms.IsEnabled = false;
+                        sliderEnemyCount.IsEnabled = false;
 
                         _config.IncludeNPCRE1 = true;
                         _config.IncludeNPCRE2 = false;
@@ -822,6 +832,8 @@ namespace IntelOrca.Biohazard.BioRand
                         chkNPCsRE2.IsEnabled = true;
                         chkNPCsOther.IsEnabled = true;
                         chkRandomEnemyPlacements.IsEnabled = true;
+                        chkEnemyRestrictedRooms.IsEnabled = true;
+                        sliderEnemyCount.IsEnabled = true;
                     }
                     dropdownVariant.Visibility = index == 1 ?
                         Visibility.Visible :
