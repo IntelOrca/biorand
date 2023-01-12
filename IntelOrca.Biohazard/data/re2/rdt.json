@@ -157,7 +157,8 @@
       "enemies": [
         {
           "includeTypes": [ 16, 22, 23, 31, 33, 37, 58 ],
-          "keepAi": true
+          "keepAi": true,
+          "restricted": true
         }
       ]
     },
