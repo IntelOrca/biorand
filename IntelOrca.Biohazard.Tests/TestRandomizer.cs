@@ -14,6 +14,12 @@ namespace IntelOrca.Biohazard.Tests
     public class TestRE2Rando : TestBaseRandomizer
     {
         public override byte Game => 2;
+
+        [Fact]
+        public void RandomizeEnemyPlacements()
+        {
+            RandomizeEnemyPlacementsInner();
+        }
     }
 
     public abstract class TestBaseRandomizer
@@ -25,6 +31,13 @@ namespace IntelOrca.Biohazard.Tests
         {
             var config = GetBaseConfig();
             config.RandomDoors = true;
+            Randomize(config);
+        }
+
+        protected void RandomizeEnemyPlacementsInner()
+        {
+            var config = GetBaseConfig();
+            config.RandomEnemyPlacement = true;
             Randomize(config);
         }
 
@@ -97,6 +110,7 @@ namespace IntelOrca.Biohazard.Tests
             config.ShuffleItems = false;
 
             config.RandomEnemies = true;
+            config.RandomEnemyPlacement = false;
             config.EnemyDifficulty = 2;
 
             config.IncludeNPCRE1 = true;

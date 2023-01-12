@@ -44,12 +44,15 @@ namespace IntelOrca.Biohazard
 
         private void ReadEnemyPlacements()
         {
-            var json = _dataManager.GetText(_version, "enemy.json");
-            _enemyPositions = JsonSerializer.Deserialize<EnemyPosition[]>(json, new JsonSerializerOptions()
+            if (_config.RandomEnemyPlacement)
             {
-                ReadCommentHandling = JsonCommentHandling.Skip,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            })!;
+                var json = _dataManager.GetText(_version, "enemy.json");
+                _enemyPositions = JsonSerializer.Deserialize<EnemyPosition[]>(json, new JsonSerializerOptions()
+                {
+                    ReadCommentHandling = JsonCommentHandling.Skip,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                })!;
+            }
         }
 
         private byte GetNextKillId()
