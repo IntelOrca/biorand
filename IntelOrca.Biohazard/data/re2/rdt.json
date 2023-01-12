@@ -2847,10 +2847,12 @@
       ],
       "doors": [
         {
-          "target": "602"
+          "target": "602",
+          "noUnlock": true
         },
         {
-          "target": "606"
+          "target": "606",
+          "noUnlock": true
         },
         {
           "target": "700",
