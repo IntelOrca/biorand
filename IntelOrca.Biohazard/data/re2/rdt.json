@@ -745,7 +745,9 @@
       ],
       "enemies": [
         {
-          "restricted": true
+          "nop": [ 10474, 10526 ],
+          "restricted": true,
+          "randomPlacements": true
         }
       ]
     },
