@@ -2247,7 +2247,18 @@
       ],
       "enemies": [
         {
-          "y": 0
+          "y": 0,
+          "randomPlacements": false
+        },
+        {
+          "nop": [ 4104 ],
+          "randomPlacements": true,
+          "player": 0
+        },
+        {
+          "nop": [ 3898 ],
+          "randomPlacements": true,
+          "player": 1
         }
       ],
       "npcs": [
