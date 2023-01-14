@@ -260,7 +260,7 @@ namespace IntelOrca.Biohazard
             if (!_rng.NextProbability(10))
             {
                 var maxQuantity = (_config.EnemyQuantity + 1) * 2;
-                var upperBound = Math.Max(maxQuantity, relevantPlacements.Length);
+                var upperBound = Math.Min(maxQuantity, relevantPlacements.Length);
                 quantity = rng.Next(0, upperBound);
             }
             relevantPlacements = relevantPlacements
