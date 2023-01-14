@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
@@ -16,6 +15,7 @@ namespace IntelOrca.Biohazard.Survey
         private static bool _exit;
         private static byte[] _buffer = new byte[64];
         private static List<EnemyPosition> _enemyPositions = new List<EnemyPosition>();
+        private static List<string> _log = new List<string>();
 
         private static void LoadJSON()
         {
@@ -53,6 +53,29 @@ namespace IntelOrca.Biohazard.Survey
         public static void Main(string[] args)
         {
             LoadJSON();
+
+            for (int i = 0; i < _enemyPositions.Count; i++)
+            {
+                var a = _enemyPositions[i];
+                var closestOtherEnemyDistance = int.MaxValue;
+                for (int j = 0; j < _enemyPositions.Count; j++)
+                {
+                    if (i == j)
+                        continue;
+
+                    var b = _enemyPositions[j];
+                    var dist = a.DistanceTo(b);
+                    if (dist == int.MaxValue)
+                        continue;
+
+                    if (dist < closestOtherEnemyDistance)
+                        closestOtherEnemyDistance = dist;
+                }
+                if (closestOtherEnemyDistance == int.MaxValue)
+                    continue;
+                Console.WriteLine("{1,12} {0}", a, closestOtherEnemyDistance);
+            }
+
             Console.CancelKeyPress += Console_CancelKeyPress;
             while (!_exit)
             {
@@ -95,17 +118,17 @@ namespace IntelOrca.Biohazard.Survey
                     if (gameState.Key == 0x2300)
                     {
                         AddEnemyPosition(gameState);
+                        // RemoveEnemyPositions(gameState, 2000);
                     }
 
                     Console.WriteLine("--------------------");
                     for (int i = 0; i < 10; i++)
                     {
-                        var index = _enemyPositions.Count - i - 1;
-                        if (index >= _enemyPositions.Count)
+                        var index = _log.Count - i - 1;
+                        if (index < 0)
                             break;
 
-                        var pos = _enemyPositions[index];
-                        Console.WriteLine("{0}, {1}, {2}, {3}, {4}                         ", pos.Room, pos.X, pos.Y, pos.Z, pos.D);
+                        Console.WriteLine("{0,64}", _log[index]);
                     }
                 }
                 Thread.Sleep(10);
@@ -118,7 +141,7 @@ namespace IntelOrca.Biohazard.Survey
         {
             var pos = new EnemyPosition()
             {
-                Room = $"{state.Stage + 1:X}{state.Room:X2}",
+                Room = state.RtdId,
                 X = state.X,
                 Y = state.Y,
                 Z = state.Z,
@@ -128,8 +151,28 @@ namespace IntelOrca.Biohazard.Survey
             if (!_enemyPositions.Contains(pos))
             {
                 _enemyPositions.Add(pos);
+                _log.Add(string.Format("[ADD] {0}, {1}, {2}, {3}, {4}                         ", pos.Room, pos.X, pos.Y, pos.Z, pos.D));
                 SaveJSON();
             }
+        }
+
+        private static EnemyPosition[] RemoveEnemyPositions(GameState state, int radius)
+        {
+            var result = new List<EnemyPosition>();
+            for (int i = 0; i < _enemyPositions.Count; i++)
+            {
+                var enemy = _enemyPositions[i];
+                if (enemy.DistanceTo(state) < radius)
+                {
+                    var pos = enemy;
+                    _log.Add(string.Format("[DEL] {0}, {1}, {2}, {3}, {4}                         ", pos.Room, pos.X, pos.Y, pos.Z, pos.D));
+                    result.Add(enemy);
+                    _enemyPositions.RemoveAt(i);
+                    i--;
+                }
+            }
+            SaveJSON();
+            return result.ToArray();
         }
 
         private static void GetGameState(Process p, GameState gameState)
@@ -165,7 +208,7 @@ namespace IntelOrca.Biohazard.Survey
             }
         }
 
-        private class GameState : IEquatable<GameState>
+        public class GameState : IEquatable<GameState>
         {
             public ushort Key { get; set; }
             public byte Stage { get; set; }
@@ -177,6 +220,8 @@ namespace IntelOrca.Biohazard.Survey
             public short Z { get; set; }
             public short D { get; set; }
             public byte Floor { get; set; }
+
+            public string RtdId => $"{Stage + 1:X}{Room:X2}";
 
             public override bool Equals(object? obj)
             {
@@ -245,20 +290,28 @@ namespace IntelOrca.Biohazard.Survey
                 return HashCode.Combine(Room, X, Y, Z, D, F);
             }
 
-            public bool IsVeryClose(EnemyPosition other)
+            public int DistanceTo(string? room, int x, int y, int z)
             {
-                if (Room != other.Room)
-                    return false;
-                if (Y != other.Y)
-                    return false;
+                if (Room != room)
+                    return int.MaxValue;
+                if (Y != y)
+                    return int.MaxValue;
 
-                var deltaX = X - other.X;
-                var deltaY = Y - other.Y;
-                var dist = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
-                if (dist <= 1000)
-                    return true;
+                var deltaX = (long)Math.Abs(X - x);
+                var deltaZ = (long)Math.Abs(Z - z);
+                var dist = Math.Sqrt(deltaX * deltaX + deltaZ * deltaZ);
+                if (double.IsNaN(dist))
+                    throw new Exception();
+                return (int)dist;
+            }
 
-                return false;
+            public int DistanceTo(GameState other) => DistanceTo(other.RtdId, other.X, other.Y, other.Z);
+            public int DistanceTo(EnemyPosition other) => DistanceTo(other.Room, other.X, other.Y, other.Z);
+            public bool IsVeryClose(EnemyPosition other) => DistanceTo(other) <= 500;
+
+            public override string ToString()
+            {
+                return $"{Room}: {X}, {Y}, {Z}, {D}, {F}";
             }
         }
     }
