@@ -183,7 +183,7 @@ namespace IntelOrca.Biohazard.RE2
         internal override void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser)
         {
             var actors = new HashSet<string>();
-            actors.AddRange(new[] { "brad", "hunk" });
+            actors.AddRange(new[] { "brad", "irons", "hunk", "kendo", "marvin" });
 
             if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard1))
             {

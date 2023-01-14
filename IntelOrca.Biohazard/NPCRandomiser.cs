@@ -1,4 +1,4 @@
-﻿#define ALWAYS_SWAP_NPC
+﻿// #define ALWAYS_SWAP_NPC
 
 using System;
 using System.Collections.Generic;
@@ -208,7 +208,7 @@ namespace IntelOrca.Biohazard
                 return;
 
             _logger.WriteHeading("Adding additional NPCs:");
-            var availableSlotsLeon = new byte[] { 0x52, 0x54, 0x56, 0x58, 0x5A };
+            var availableSlotsLeon = new byte[] { 0x48, 0x52, 0x54, 0x56, 0x58, 0x5A };
             var availableSlotsClaire = new byte[] { 0x53, 0x55, 0x57, 0x59, 0x5B };
 
             var emds = _emds
@@ -310,7 +310,7 @@ namespace IntelOrca.Biohazard
                     var npc = npcs.FirstOrDefault(x => x.IncludeOffsets == null || x.IncludeOffsets.Contains(enemy.Offset));
                     if (npc == null || npc.EmrScale != false)
                     {
-                        var oldActor = GetActor(enemy.Type);
+                        var oldActor = GetActor(enemy.Type, originalOnly: true);
                         var newActor = GetActor(newType);
                         if (oldActor != newActor)
                         {
@@ -416,7 +416,7 @@ namespace IntelOrca.Biohazard
                         if (npc.IncludeOffsets != null && !npc.IncludeOffsets.Contains(enemy.Offset))
                             continue;
 
-                        var oldActor = GetActor(enemy.Type)!;
+                        var oldActor = GetActor(enemy.Type, originalOnly: true)!;
                         string newActor;
                         if (offsetToTypeMap.TryGetValue(enemy.Offset, out var newEnemyType))
                         {
@@ -425,7 +425,7 @@ namespace IntelOrca.Biohazard
                         else
                         {
 #if ALWAYS_SWAP_NPC
-                            var newEnemyTypeIndex = Array.FindIndex(supportedNpcs, x => GetActor(x) != GetActor(enemy.Type));
+                            var newEnemyTypeIndex = Array.FindIndex(supportedNpcs, x => GetActor(x) != oldActor);
                             newEnemyType = newEnemyTypeIndex == -1 ? supportedNpcs[0] : supportedNpcs[newEnemyTypeIndex];
 #else
                             newEnemyType = supportedNpcs[0];
@@ -502,9 +502,9 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private string? GetActor(byte enemyType)
+        private string? GetActor(byte enemyType, bool originalOnly = false)
         {
-            if (_extraNpcMap.TryGetValue(enemyType, out var actor))
+            if (!originalOnly && _extraNpcMap.TryGetValue(enemyType, out var actor))
                 return actor;
             return _npcHelper.GetActor(enemyType);
         }

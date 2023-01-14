@@ -17,17 +17,17 @@ namespace IntelOrca.Biohazard.RE2
         public byte[] GetDefaultIncludeTypes(Rdt rdt)
         {
             var defaultIncludeTypes = new byte[] {
-                (byte)EnemyType.ChiefIrons1,
+                // (byte)EnemyType.ChiefIrons1,
                 (byte)EnemyType.AdaWong1,
-                (byte)EnemyType.ChiefIrons2,
+                // (byte)EnemyType.ChiefIrons2,
                 (byte)EnemyType.AdaWong2,
                 (byte)EnemyType.BenBertolucci1,
                 (byte)EnemyType.SherryWithPendant,
                 (byte)EnemyType.BenBertolucci2,
                 (byte)EnemyType.AnnetteBirkin1,
-                (byte)EnemyType.RobertKendo,
+                // (byte)EnemyType.RobertKendo,
                 (byte)EnemyType.AnnetteBirkin2,
-                (byte)EnemyType.MarvinBranagh,
+                // (byte)EnemyType.MarvinBranagh,
                 (byte)EnemyType.SherryWithClairesJacket,
                 (byte)EnemyType.LeonKennedyRpd,
                 (byte)EnemyType.ClaireRedfield };
