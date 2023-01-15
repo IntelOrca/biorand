@@ -999,6 +999,11 @@
           "requires": [ 80 ],
           "priority": "low"
         }
+      ],
+      "enemies": [
+        {
+          "restricted": true
+        }
       ]
     },
     "209": {
