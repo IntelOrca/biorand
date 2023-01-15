@@ -773,7 +773,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void ReportIssue_Click(object sender, RoutedEventArgs e)
         {
-            var body = UrlEncoder.Default.Encode("Seed: " + _config.ToString());
+            var body = UrlEncoder.Default.Encode($"Version: {Program.CurrentVersionInfo}\nSeed: {_config}");
             Process.Start($"https://github.com/IntelOrca/biorand/issues/new?body={body}");
         }
 
