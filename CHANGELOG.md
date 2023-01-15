@@ -1,3 +1,17 @@
+BioRand v2.1.6 (2023-01-15)
+
+* [Enhancement] Add settings to control enemy quanity and whether they appear in save rooms.
+* [Enhancement] Report issue with seed now inserts version info into issue body.
+* [Fix] #147: RE 2, Regina inventory has yellow line artefacts.
+* [Fix] #153: RE 2, room 201, crash at licker window with random enemies enabled on Claire.
+* [Fix] #154: RE 2, room 200, glitch when enemy attacks during cutscene.
+* [Fix] Increase volume of some BGM tracks.
+* [Fix] RE 2, Alyssa inventory shows Claire.
+* [Fix] RE 2, Irons, Kendo and Marvin have wonky walk animations.
+* [Fix] RE 2, room 403, Leon switches to Ada when going down the lift.
+* [Fix] RE 2, room 405, prevent enemy repositioning for random placement.
+* [Fix] RE 2, some enemies are out of bounds when random enemy placement is enabled.
+
 BioRand v2.1.5 (2023-01-12)
 
 * [Feature] RE 2, Add Ada as a playable character.
