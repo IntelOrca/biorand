@@ -136,8 +136,8 @@ namespace IntelOrca.Biohazard.Tests
         private static ReInstallConfig GetInstallConfig()
         {
             var reInstall = new ReInstallConfig();
-            reInstall.SetInstallPath(0, @"F:\games\re1");
-            reInstall.SetInstallPath(1, @"F:\games\re2");
+            reInstall.SetInstallPath(0, TestInfo.GetInstallPath(0));
+            reInstall.SetInstallPath(1, TestInfo.GetInstallPath(1));
             reInstall.SetEnabled(0, true);
             reInstall.SetEnabled(1, true);
             return reInstall;

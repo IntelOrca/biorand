@@ -20,13 +20,13 @@ namespace IntelOrca.Biohazard.Tests
         [Fact]
         public void RE2_Leon()
         {
-            CheckRDTs(@"F:\games\re2\data\pl0\rdt");
+            CheckRDTs(Path.Combine(TestInfo.GetInstallPath(1), @"data\pl0\rdt"));
         }
 
         [Fact]
         public void RE2_Claire()
         {
-            CheckRDTs(@"F:\games\re2\data\pl1\rdt");
+            CheckRDTs(Path.Combine(TestInfo.GetInstallPath(1), @"data\pl1\rdt"));
         }
 
         private void CheckRDTs(string rdtPath)
