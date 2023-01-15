@@ -259,9 +259,13 @@ namespace IntelOrca.Biohazard
             var quantity = 1;
             if (!_rng.NextProbability(10))
             {
-                var maxQuantity = (_config.EnemyQuantity + 1) * 2;
-                var upperBound = Math.Min(maxQuantity, relevantPlacements.Length);
-                quantity = rng.Next(0, upperBound);
+                var maxArray = new[] { 3, 5, 8, 10 };
+                var avgArray = new[] { 1, 2, 4, 6 };
+                var max = maxArray[Math.Min(_config.EnemyQuantity, maxArray.Length - 1)];
+                var avg = avgArray[Math.Min(_config.EnemyQuantity, avgArray.Length - 1)];
+                max = Math.Min(max, relevantPlacements.Length);
+                quantity = rng.Next(0, avg * 2);
+                quantity = Math.Min(quantity, max);
             }
             relevantPlacements = relevantPlacements
                 .Take(quantity)

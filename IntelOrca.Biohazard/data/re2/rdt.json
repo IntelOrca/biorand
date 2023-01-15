@@ -1620,6 +1620,16 @@
         {
           "target": "305"
         }
+      ],
+      "enemies": [
+        {
+          "includeTypes": [ 31, 32, 33, 37, 41, 45 ],
+          "player": 0
+        },
+        {
+          "includeTypes": [ 31, 33, 41, 45 ],
+          "player": 1
+        }
       ]
     },
     "307": {

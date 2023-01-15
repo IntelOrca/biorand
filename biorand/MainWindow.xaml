@@ -148,11 +148,11 @@
                             <CheckBox x:Name="chkRandomEnemyPlacements" ToolTip="When checked, enemy quantity and positions will be random.">Random enemy placements (Experiemental)</CheckBox>
                             <CheckBox x:Name="chkEnemyRestrictedRooms" ToolTip="When checked, enemies can be in save rooms.">Allow enemies in save rooms</CheckBox>
                             <local:RandoSlider x:Name="sliderEnemyCount"
-                                               Heading="Max enemies per room"
-                                               LowText="2"
-                                               HighText="8+"
+                                               Heading="Average number of enemies per room"
+                                               LowText="1"
+                                               HighText="6"
                                                Maximum="3"
-                                               ToolTip="Adjusts the maximum number of enemies that can occur in a room." />
+                                               ToolTip="Adjusts the average number of enemies that can occur in a room." />
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
