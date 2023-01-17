@@ -2267,11 +2267,13 @@
         },
         {
           "nop": [ 4104 ],
+          "excludeTypes": [ 42 ],
           "randomPlacements": true,
           "player": 0
         },
         {
           "nop": [ 3898 ],
+          "excludeTypes": [ 42 ],
           "randomPlacements": true,
           "player": 1
         }
