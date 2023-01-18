@@ -439,9 +439,16 @@
         },
         {
           "id": 4,
+          "priority": "low",
+          "requires": [ 31, 35 ],
+          "player": 0
+        },
+        {
+          "id": 4,
           // "type": 32,
           // "priority": "fixed",
-          "requires": [ 31, 35 ]
+          "requires": [ 31, 35 ],
+          "player": 1
         },
         {
           "id": 5,
