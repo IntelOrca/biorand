@@ -1350,7 +1350,8 @@
           "requires": [ 58 ]
         },
         {
-          "target": "40C"
+          "target": "40C",
+          "lock": "always"
         }
       ],
       "items": [
