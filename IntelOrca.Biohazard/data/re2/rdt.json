@@ -861,6 +861,11 @@
         {
           "target": "204"
         }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 42 ]
+        }
       ]
     },
     "204": {
