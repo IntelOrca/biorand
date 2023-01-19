@@ -1375,6 +1375,10 @@
     "21B": {
       "doorRando": [
         {
+          "nop": [ "0x2560-0x2588" ],
+          "player": 0
+        },
+        {
           "nop": [ 10092, 10276, 15284 ],
           "cutscene": true,
           "player": 1
