@@ -840,12 +840,14 @@
         {
           "nop": [ 7854, 7858, 7862, 7868, 8166, 8170, 8174, 8180, 8184 ],
           "difficulty": "medium",
+          "randomPlacements": false,
           "player": 0,
           "scenario": 1
         },
         {
           "nop": [ 7816, 7820, 7824, 7830, 8128, 8132, 8136, 8142, 8146 ],
           "difficulty": "medium",
+          "randomPlacements": false,
           "player": 1,
           "scenario": 1
         }
