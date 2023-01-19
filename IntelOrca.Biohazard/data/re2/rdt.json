@@ -2503,11 +2503,7 @@
           "player": 1
         }
       ],
-      "enemies": [
-        {
-          "player": 0
-        }
-      ]
+      "enemies": []
     },
     "40F": {
       "doorRando": [
