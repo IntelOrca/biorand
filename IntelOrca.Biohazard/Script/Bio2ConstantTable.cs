@@ -240,6 +240,18 @@ namespace IntelOrca.Biohazard.Script
             return "";
         }
 
+        public bool IsOpcodeCondition(byte opcode)
+        {
+            switch ((OpcodeV2)opcode)
+            {
+                case OpcodeV2.Ck:
+                case OpcodeV2.Cmp:
+                case OpcodeV2.MemberCmp:
+                    return true;
+            }
+            return false;
+        }
+
         private static int[] g_instructionSizes = new int[]
         {
             1, 2, 1, 4, 4, 2, 4, 4, 1, 4, 3, 1, 1, 6, 2, 4,

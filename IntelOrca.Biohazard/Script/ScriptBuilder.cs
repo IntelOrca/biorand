@@ -146,6 +146,19 @@ namespace IntelOrca.Biohazard.Script
             WriteLine();
         }
 
+        public void WriteStandardExpression(string name, params object[] args)
+        {
+            Write(name);
+            Write("(");
+            for (int i = 0; i < args.Length; i++)
+            {
+                Write(args[i].ToString());
+                if (i != args.Length - 1)
+                    Write(", ");
+            }
+            Write(")");
+        }
+
         public string GetLabelName(int offset)
         {
             return $"off_{offset:X4}";

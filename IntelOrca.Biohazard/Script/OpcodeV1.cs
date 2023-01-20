@@ -16,6 +16,8 @@
         DoorAotSe = 0x0C,
         NonItemSet = 0x0D,
         Nop,
+        TestItem = 0x10,
+        TestPickup = 0x11,
         Item12 = 0x12,
         ItemAotSet = 0x18,
         SceEmSet = 0x1B,

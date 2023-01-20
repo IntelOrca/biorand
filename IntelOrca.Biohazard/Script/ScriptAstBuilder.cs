@@ -44,6 +44,8 @@ namespace IntelOrca.Biohazard.Script
                     case OpcodeV1.Ck:
                     case OpcodeV1.Cmp6:
                     case OpcodeV1.Cmp7:
+                    case OpcodeV1.TestItem:
+                    case OpcodeV1.TestPickup:
                         VisitConditionOpcode(opcodeNode);
                         break;
                     case OpcodeV1.ElseCk:

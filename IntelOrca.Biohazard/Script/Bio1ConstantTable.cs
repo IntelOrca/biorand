@@ -147,6 +147,20 @@ namespace IntelOrca.Biohazard.Script
             return null;
         }
 
+        public bool IsOpcodeCondition(byte opcode)
+        {
+            switch ((OpcodeV1)opcode)
+            {
+                case OpcodeV1.Ck:
+                case OpcodeV1.Cmp6:
+                case OpcodeV1.Cmp7:
+                case OpcodeV1.TestItem:
+                case OpcodeV1.TestPickup:
+                    return true;
+            }
+            return false;
+        }
+
         private string[] g_enemyNames = new string[]
         {
             "Zombie (Groundskeeper)",
@@ -296,19 +310,19 @@ namespace IntelOrca.Biohazard.Script
             "cutnext:u",
             "cutcurr:u",
             "",
-            "door:uIIIIuuuuurIIIItu",
+            "door:uIIIIuuuuurIIIIiu",
             "nitem:uIIIIvuuuuuuu",
             "nop:u",
             "",
-            "testbyte:u",
-            "byteop:u",
+            "testitem:i",
+            "testpickup:i",
             "",
             "",
             "",
             "sndvol:u",
             "bgmvol:u",
             "",
-            "item:uIIIItuuuuuuuuuuuuuuu",
+            "item:uIIIIiuuuuuuuuuuuuuuu",
             "setbyte:uuu",
             "",
             "enemy:euuuuuuIuuIIIuuuu",

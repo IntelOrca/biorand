@@ -11,6 +11,7 @@ namespace IntelOrca.Biohazard.Script
         string? GetConstant(byte opcode, int pIndex, BinaryReader br);
         int? GetConstantValue(string symbol);
         int GetInstructionSize(byte opcode, BinaryReader? br);
+        bool IsOpcodeCondition(byte opcode);
         byte? FindOpcode(string name);
     }
 }

@@ -153,7 +153,7 @@ namespace IntelOrca.Biohazard.Script
             var opcode = opcodeSpan[0];
             if (_constructingBinaryExpression)
             {
-                if (!IsOpcodeCondition(opcode))
+                if (!_constantTable.IsOpcodeCondition(opcode))
                 {
                     _constructingBinaryExpression = false;
                     if (_endDoWhile)
@@ -196,24 +196,6 @@ namespace IntelOrca.Biohazard.Script
                 br.BaseStream.Position = backupPosition;
             }
             DiassembleGeneralOpcode(br, offset, opcode, opcodeBytes.Length);
-        }
-
-        private bool IsOpcodeCondition(byte opcodeB)
-        {
-            if (Version == BioVersion.Biohazard1)
-            {
-                var opcode = (OpcodeV1)opcodeB;
-                return opcode == OpcodeV1.Ck ||
-                    opcode == OpcodeV1.Cmp6 ||
-                    opcode == OpcodeV1.Cmp7;
-            }
-            else
-            {
-                var opcode = (OpcodeV2)opcodeB;
-                return opcode == OpcodeV2.Ck ||
-                    opcode == OpcodeV2.Cmp ||
-                    opcode == OpcodeV2.MemberCmp;
-            }
         }
 
         private void CloseCurrentBlock()
@@ -689,7 +671,14 @@ namespace IntelOrca.Biohazard.Script
                     pIndex++;
                 }
             }
-            _sb.WriteStandardOpcode(opcodeName, parameters.ToArray());
+            if (!AssemblyFormat && _constructingBinaryExpression)
+            {
+                _sb.WriteStandardExpression(opcodeName, parameters.ToArray());
+            }
+            else
+            {
+                _sb.WriteStandardOpcode(opcodeName, parameters.ToArray());
+            }
 
             var streamPosition = br.BaseStream.Position;
             if (streamPosition != originalStreamPosition + instructionLength)
