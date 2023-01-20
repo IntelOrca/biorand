@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard
 {
@@ -787,6 +788,20 @@ namespace IntelOrca.Biohazard
                 }
                 else
                 {
+                    if (rdt.Version == BioVersion.Biohazard1)
+                    {
+                        var originalType = rdt.Items.FirstOrDefault(x => x.Id == entry.Id)?.Type;
+                        if (originalType != null)
+                        {
+                            foreach (var opcode in rdt.Opcodes)
+                            {
+                                if (opcode is TestPickupOpcode testPickup && testPickup.Type == (byte)originalType)
+                                {
+                                    testPickup.Type = (byte)entry.Type;
+                                }
+                            }
+                        }
+                    }
                     rdt.SetItem(entry.Id, entry.Type, entry.Amount);
                 }
             }

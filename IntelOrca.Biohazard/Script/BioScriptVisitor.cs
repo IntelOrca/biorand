@@ -40,97 +40,50 @@ namespace IntelOrca.Biohazard.Script
 
         private void VisitOpcode(int offset, int length, BinaryReader br)
         {
-            var opcode = br.PeekByte();
-            if (Version == BioVersion.Biohazard1)
-            {
-                switch ((OpcodeV1)opcode)
-                {
-                    default:
-                        VisitUnknownOpcode(UnknownOpcode.Read(br, offset, length));
-                        break;
-                    case OpcodeV1.ElseCk:
-                        VisitElseCk(ElseCkOpcode.Read(br, offset));
-                        break;
-                    case OpcodeV1.DoorAotSe:
-                        VisitDoorAotSe(DoorAotSeOpcode.Read(br, offset));
-                        break;
-                    case OpcodeV1.ItemAotSet:
-                        VisitItemAotSet(ItemAotSetOpcode.Read(br, offset));
-                        break;
-                    case OpcodeV1.SceEmSet:
-                        VisitSceEmSet(SceEmSetOpcode.Read(br, offset));
-                        break;
-                }
-                return;
-            }
-            else
-            {
-                switch ((OpcodeV2)opcode)
-                {
-                    default:
-                        VisitUnknownOpcode(UnknownOpcode.Read(br, offset, length));
-                        break;
-                    case OpcodeV2.ElseCk:
-                        VisitElseCk(ElseCkOpcode.Read(br, offset));
-                        break;
-                    case OpcodeV2.Gosub:
-                        VisitGosub(GosubOpcode.Read(br, offset));
-                        break;
-                    case OpcodeV2.Ck:
-                        VisitCk(CkOpcode.Read(br, offset));
-                        break;
-                    case OpcodeV2.Cmp:
-                        VisitCmp(CmpOpcode.Read(br, offset));
-                        break;
-                    case OpcodeV2.AotSet:
-                        VisitAotSet(AotSetOpcode.Read(br, offset));
-                        break;
-                    case OpcodeV2.DoorAotSe:
-                        VisitDoorAotSe(DoorAotSeOpcode.Read(br, offset));
-                        break;
-                    case OpcodeV2.SceEmSet:
-                        VisitSceEmSet(SceEmSetOpcode.Read(br, offset));
-                        break;
-                    case OpcodeV2.AotReset:
-                        VisitAotReset(AotResetOpcode.Read(br, offset));
-                        break;
-                    case OpcodeV2.ItemAotSet:
-                        VisitItemAotSet(ItemAotSetOpcode.Read(br, offset));
-                        break;
-                    case OpcodeV2.XaOn:
-                        VisitXaOn(XaOnOpcode.Read(br, offset));
-                        break;
-                    case OpcodeV2.SceItemGet:
-                        VisitSceItemGet(SceItemGetOpcode.Read(br, offset));
-                        break;
-                    case OpcodeV2.DoorAotSet4p:
-                        VisitDoorAotSet4p(DoorAotSet4pOpcode.Read(br, offset));
-                        break;
-                    case OpcodeV2.ItemAotSet4p:
-                        VisitItemAotSet4p(ItemAotSet4pOpcode.Read(br, offset));
-                        break;
-                }
-            }
+            var opcode = ReadOpcode(offset, length, br);
+            VisitOpcode(opcode);
         }
 
         protected virtual void VisitOpcode(OpcodeBase opcode)
         {
         }
 
-        protected virtual void VisitUnknownOpcode(UnknownOpcode opcode) => VisitOpcode(opcode);
-        protected virtual void VisitElseCk(ElseCkOpcode opcode) => VisitOpcode(opcode);
-        protected virtual void VisitGosub(GosubOpcode opcode) => VisitOpcode(opcode);
-        protected virtual void VisitCk(CkOpcode opcode) => VisitOpcode(opcode);
-        protected virtual void VisitCmp(CmpOpcode opcode) => VisitOpcode(opcode);
-        protected virtual void VisitAotSet(AotSetOpcode opcode) => VisitOpcode(opcode);
-        protected virtual void VisitDoorAotSe(DoorAotSeOpcode opcode) => VisitOpcode(opcode);
-        protected virtual void VisitSceEmSet(SceEmSetOpcode opcode) => VisitOpcode(opcode);
-        protected virtual void VisitAotReset(AotResetOpcode opcode) => VisitOpcode(opcode);
-        protected virtual void VisitItemAotSet(ItemAotSetOpcode opcode) => VisitOpcode(opcode);
-        protected virtual void VisitXaOn(XaOnOpcode opcode) => VisitOpcode(opcode);
-        protected virtual void VisitSceItemGet(SceItemGetOpcode opcode) => VisitOpcode(opcode);
-        protected virtual void VisitDoorAotSet4p(DoorAotSet4pOpcode opcode) => VisitOpcode(opcode);
-        protected virtual void VisitItemAotSet4p(ItemAotSet4pOpcode opcode) => VisitOpcode(opcode);
+        private OpcodeBase ReadOpcode(int offset, int length, BinaryReader br)
+        {
+            var opcode = br.PeekByte();
+            if (Version == BioVersion.Biohazard1)
+            {
+                return (OpcodeV1)opcode switch
+                {
+                    OpcodeV1.ElseCk => ElseCkOpcode.Read(br, offset),
+                    OpcodeV1.TestPickup => TestPickupOpcode.Read(br, offset),
+                    OpcodeV1.DoorAotSe => DoorAotSeOpcode.Read(br, offset),
+                    OpcodeV1.ItemAotSet => ItemAotSetOpcode.Read(br, offset),
+                    OpcodeV1.SceEmSet => SceEmSetOpcode.Read(br, offset),
+                    _ => UnknownOpcode.Read(br, offset, length),
+                };
+            }
+            else
+            {
+                return (OpcodeV2)opcode switch
+                {
+                    OpcodeV2.ElseCk => ElseCkOpcode.Read(br, offset),
+                    OpcodeV2.Gosub => GosubOpcode.Read(br, offset),
+                    OpcodeV2.Ck => CkOpcode.Read(br, offset),
+                    OpcodeV2.Cmp => CmpOpcode.Read(br, offset),
+                    OpcodeV2.AotSet => AotSetOpcode.Read(br, offset),
+                    OpcodeV2.DoorAotSe => DoorAotSeOpcode.Read(br, offset),
+                    OpcodeV2.SceEmSet => SceEmSetOpcode.Read(br, offset),
+                    OpcodeV2.AotReset => AotResetOpcode.Read(br, offset),
+                    OpcodeV2.ItemAotSet => ItemAotSetOpcode.Read(br, offset),
+                    OpcodeV2.XaOn => XaOnOpcode.Read(br, offset),
+                    OpcodeV2.SceItemGet => SceItemGetOpcode.Read(br, offset),
+                    OpcodeV2.DoorAotSet4p => DoorAotSet4pOpcode.Read(br, offset),
+                    OpcodeV2.ItemAotSet4p => ItemAotSet4pOpcode.Read(br, offset),
+                    _ => UnknownOpcode.Read(br, offset, length),
+                };
+            }
+        }
     }
 
     public enum BioScriptKind
