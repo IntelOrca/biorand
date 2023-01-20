@@ -1,3 +1,25 @@
+BioRand v2.1.7 (2023-01-20)
+
+* [Change] Remove RE 1 BGM 40 out of music rotation, too short.
+* [Change] RE 2, update Regina model.
+* [Fix] #137: RE 1, room 10F, Rebecca disappears after leaving potentially causing softlock.
+* [Fix] #164: RE 2, room 208, enemies in safe room even when option unchecked.
+* [Fix] #165: RE 1, room 400, moving statue over hole in guard house hall can crash game.
+* [Fix] #168: RE 1, room 309, Barry vs. hunter crash.
+* [Fix] #171: RE 2, room 10D, enemy out of bounds when random enemy position enabled.
+* [Fix] #173: RE 2, room 203, softlock when Tyrant hits you off ladder.
+* [Fix] #174: RE 2, room 300, confusing if cutscene plays from wrong door.
+* [Fix] #175: RE 2, room 400, cutscene adds invisible wall / camera glitch.
+* [Fix] #177: RE 2, room 405, crash caused by lots of tyrants.
+* [Fix] #178: RE 2, room 101, crash when NPC is em90.
+* [Fix] #179: RE 2, room 402, crash due to random NPC.
+* [Fix] #180: RE 2, room 40E, crash when random enemy placement enabled.
+* [Fix] #183: RE 1, obtaining 003 key requires helmet key.
+* [Fix] #184: RE 1, room 116, broken shotgun cannot be placed.
+* [Fix] #186: RE 2, room 202, Claire B crash with random enemy placements.
+* [Fix] #187: RE 2, room 21B, wall unexpectedly unblocked for Leon in door rando.
+* [Fix] #189: RE 2, Irons backwards animation glitches.
+
 BioRand v2.1.6 (2023-01-15)
 
 * [Enhancement] Add settings to control enemy quanity and whether they appear in save rooms.
