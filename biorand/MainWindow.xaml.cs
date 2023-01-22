@@ -47,12 +47,6 @@ namespace IntelOrca.Biohazard.BioRand
         private void LoadSettings()
         {
             _settings = RandoAppSettings.Load();
-            _config = _settings.Seed1 == null ? new RandoConfig() : RandoConfig.FromString(_settings.Seed1);
-            if (_settings.Seed1 == null)
-            {
-                RandomizeSeed();
-            }
-
             try
             {
                 _suspendEvents = true;
@@ -67,6 +61,16 @@ namespace IntelOrca.Biohazard.BioRand
             finally
             {
                 _suspendEvents = false;
+            }
+
+            var seed = SelectedGame == 0 ? _settings.Seed1 : _settings.Seed2;
+            if (seed == null)
+            {
+                RandomizeSeed();
+            }
+            else
+            {
+                _config = RandoConfig.FromString(seed);
             }
         }
 
