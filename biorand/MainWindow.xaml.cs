@@ -192,6 +192,8 @@ namespace IntelOrca.Biohazard.BioRand
                 dropdownVariant.SelectedIndex = _config.GameVariant;
 
                 txtSeed.Text = _config.ToString();
+                seedQrCode.Seed = null;
+                seedQrCode.Seed = _config;
 
                 UpdateHints();
             }

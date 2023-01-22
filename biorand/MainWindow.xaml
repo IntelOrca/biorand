@@ -79,24 +79,31 @@
                     <GroupBox Header="Seed">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="50" />
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="50" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <Button Grid.Column="0" Content="Seed" Click="RandomizeSeed_Click" />
+                            <local:SeedQR x:Name="seedQrCode"
+                                          Grid.Column="0"
+                                          Grid.RowSpan="2"
+                                          Grid.Row="0" />
                             <TextBox x:Name="txtSeed"
                                     Grid.Column="1"
+                                    Grid.ColumnSpan="3"
                                     FontFamily="Courier New"
                                     FontSize="24"
                                     TextAlignment="Center"
                                     TextChanged="txtSeed_TextChanged"
-                                    Margin="4,0" />
-                            <Button Grid.Column="2" Content="Random" Click="RandomizeConfig_Click" />
-                            <Grid Grid.Row="1" Grid.ColumnSpan="3">
+                                    Margin="4" />
+                            <Button Grid.Column="1" Grid.Row="1" Margin="2" Width="80" Content="Seed" Click="RandomizeSeed_Click" />
+                            <Button Grid.Column="2" Grid.Row="1" Margin="2" Width="80" Content="Random" Click="RandomizeConfig_Click" />
+                            <Grid Grid.Row="2" Grid.ColumnSpan="4">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*" />
                                     <ColumnDefinition Width="1*" />
