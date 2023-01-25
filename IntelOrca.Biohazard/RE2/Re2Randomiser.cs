@@ -233,10 +233,45 @@ namespace IntelOrca.Biohazard.RE2
             foreach (var pldPath in pldFiles)
             {
                 var actor = Path.GetFileName(pldPath);
-                actor = char.ToUpper(actor[0]) + actor.Substring(1);
-                result.Add(actor);
+                result.Add(actor.ToTitle());
             }
             return result.ToArray();
+        }
+
+        public override string[] GetNPCs()
+        {
+            var actors = new HashSet<string>();
+            actors.AddRange(new[] { "leon", "claire", "ada", "sherry", "annette", "marvin", "irons", "ben", "kendo" });
+            for (int i = 0; i < 2; i++)
+            {
+                var emds = DataManager
+                    .GetFiles(BiohazardVersion, $"emd{i}")
+                    .Where(x => x.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
+                    .Select(Path.GetFileNameWithoutExtension)
+                    .ToArray();
+                actors.AddRange(emds);
+            }
+            return actors
+                .Select(x => x.ToTitle())
+                .OrderBy(x => x)
+                .ToArray();
+        }
+
+        public override string[] GetEnemies()
+        {
+            return new[]
+            {
+                "Arms",
+                "Birkin",
+                "Cerberus",
+                "Crow",
+                "Ivy",
+                "Licker",
+                "Moth",
+                "Spider",
+                "Tyrant",
+                "Zombie"
+            };
         }
 
         private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, string actor, string modPath)

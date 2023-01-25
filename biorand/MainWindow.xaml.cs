@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -158,14 +160,26 @@ namespace IntelOrca.Biohazard.BioRand
                 dropdownPlayer1.SelectedIndex = _config.Player1;
 
                 chkRngChars.IsChecked = _config.RandomNPCs;
-                chkNPCsRE1.IsChecked = _config.IncludeNPCRE1;
-                chkNPCsRE2.IsChecked = _config.IncludeNPCRE2;
-                chkNPCsOther.IsChecked = _config.IncludeNPCOther;
+                if (listNPCs.ItemsSource != null)
+                {
+                    var index = 0;
+                    foreach (CheckBoxListItem item in listNPCs.ItemsSource)
+                    {
+                        item.IsChecked = _config.EnabledNPCs.Length > index ? _config.EnabledNPCs[index] : false;
+                        index++;
+                    }
+                }
 
                 chkRngBgm.IsChecked = _config.RandomBgm;
-                chkBGMRE1.IsChecked = _config.IncludeBGMRE1;
-                chkBGMRE2.IsChecked = _config.IncludeBGMRE2;
-                chkBGMOther.IsChecked = _config.IncludeBGMOther;
+                if (listBGMs.ItemsSource != null)
+                {
+                    var index = 0;
+                    foreach (CheckBoxListItem item in listBGMs.ItemsSource)
+                    {
+                        item.IsChecked = _config.EnabledBGMs.Length > index ? _config.EnabledBGMs[index] : false;
+                        index++;
+                    }
+                }
 
                 chkRngDoors.IsChecked = _config.RandomDoors;
                 chkProtectSoftLock.IsChecked = _config.ProtectFromSoftLock || _config.RandomDoors;
@@ -431,14 +445,16 @@ namespace IntelOrca.Biohazard.BioRand
             _config.Player1 = (byte)dropdownPlayer1.SelectedIndex;
 
             _config.RandomNPCs = chkRngChars.IsChecked == true;
-            _config.IncludeNPCRE1 = chkNPCsRE1.IsChecked == true;
-            _config.IncludeNPCRE2 = chkNPCsRE2.IsChecked == true;
-            _config.IncludeNPCOther = chkNPCsOther.IsChecked == true;
+            _config.EnabledNPCs = listNPCs.ItemsSource
+                .Cast<CheckBoxListItem>()
+                .Select(x => x.IsChecked)
+                .ToArray();
 
             _config.RandomBgm = chkRngBgm.IsChecked == true;
-            _config.IncludeBGMRE1 = chkBGMRE1.IsChecked == true;
-            _config.IncludeBGMRE2 = chkBGMRE2.IsChecked == true;
-            _config.IncludeBGMOther = chkBGMOther.IsChecked == true;
+            _config.EnabledBGMs = listBGMs.ItemsSource
+                .Cast<CheckBoxListItem>()
+                .Select(x => x.IsChecked)
+                .ToArray();
 
             _config.RandomDoors = chkRngDoors.IsChecked == true;
             _config.ProtectFromSoftLock = chkProtectSoftLock.IsChecked == true || _config.RandomDoors;
@@ -818,9 +834,6 @@ namespace IntelOrca.Biohazard.BioRand
                     panelRando.Visibility = Visibility.Visible;
                     if (index == 0)
                     {
-                        chkNPCsRE1.IsEnabled = true;
-                        chkNPCsRE2.IsEnabled = false;
-                        chkNPCsOther.IsEnabled = false;
                         chkRandomEnemyPlacements.IsEnabled = false;
                         chkEnemyRestrictedRooms.IsEnabled = false;
                         sliderEnemyCount.IsEnabled = false;
@@ -834,9 +847,6 @@ namespace IntelOrca.Biohazard.BioRand
                     }
                     else
                     {
-                        chkNPCsRE1.IsEnabled = true;
-                        chkNPCsRE2.IsEnabled = true;
-                        chkNPCsOther.IsEnabled = true;
                         chkRandomEnemyPlacements.IsEnabled = true;
                         chkEnemyRestrictedRooms.IsEnabled = true;
                         sliderEnemyCount.IsEnabled = true;
@@ -845,6 +855,9 @@ namespace IntelOrca.Biohazard.BioRand
                         Visibility.Visible :
                         Visibility.Hidden;
                     UpdatePlayerDropdowns();
+                    UpdateEnemies();
+                    UpdateNPCList();
+                    UpdateBGMList();
                     UpdateLogButtons();
                 }
             }
@@ -984,6 +997,41 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
+        private void UpdateEnemies()
+        {
+            var randomizer = GetRandomizer();
+            listEnemies.ItemsSource = randomizer
+                .GetEnemies()
+                .Select(x => new SliderListItem(x, 4, 7))
+                .ToArray();
+        }
+
+        private void EnemySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (sender is RandoSlider randoSlider)
+            {
+                randoSlider.Value = (byte)randoSlider.Value;
+            }
+        }
+
+        private void UpdateNPCList()
+        {
+            var randomizer = GetRandomizer();
+            listNPCs.ItemsSource = randomizer
+                .GetNPCs()
+                .Select(x => new CheckBoxListItem(x, true))
+                .ToArray();
+        }
+
+        private void UpdateBGMList()
+        {
+            var randomizer = GetRandomizer();
+            listBGMs.ItemsSource = randomizer
+                .GetMusicAlbums()
+                .Select(x => new CheckBoxListItem(x, true))
+                .ToArray();
+        }
+
         private void UpdateLogButtons()
         {
             var randomizer = GetRandomizer();
@@ -1029,5 +1077,59 @@ namespace IntelOrca.Biohazard.BioRand
     public class GameMenuItem
     {
         public ImageSource Image { get; set; }
+    }
+
+    public class CheckBoxListItem : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private string _text;
+        private bool _isChecked;
+
+        public string Text
+        {
+            get => _text;
+            set
+            {
+                if (_text != value)
+                {
+                    _text = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Text)));
+                }
+            }
+        }
+
+        public bool IsChecked
+        {
+            get => _isChecked;
+            set
+            {
+                if (_isChecked != value)
+                {
+                    _isChecked = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsChecked)));
+                }
+            }
+        }
+
+        public CheckBoxListItem(string text, bool isChecked)
+        {
+            _text = text;
+            _isChecked = isChecked;
+        }
+    }
+
+    public class SliderListItem
+    {
+        public string Text { get; set; }
+        public int Value { get; set; }
+        public double Maximum { get; set; }
+
+        public SliderListItem(string text, int value, int max)
+        {
+            Text = text;
+            Value = value;
+            Maximum = max;
+        }
     }
 }

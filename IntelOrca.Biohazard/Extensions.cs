@@ -8,6 +8,25 @@ namespace IntelOrca.Biohazard
 {
     internal static class Extensions
     {
+        public static string ToTitle(this string x)
+        {
+            var chars = x.ToCharArray();
+            var newWord = true;
+            for (int i = 0; i < chars.Length; i++)
+            {
+                if (newWord && char.IsLetter(chars[i]))
+                {
+                    chars[i] = char.ToUpper(chars[i]);
+                    newWord = false;
+                }
+                else if (!char.IsLetter(chars[i]))
+                {
+                    newWord = true;
+                }
+            }
+            return new string(chars);
+        }
+
         public static T[] Shuffle<T>(this IEnumerable<T> items, Rng rng)
         {
             var array = items.ToArray();

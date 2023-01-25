@@ -25,7 +25,8 @@
                 LargeChange="4"
                 Minimum="0"
                 Maximum="{Binding Maximum, ElementName=randoSlider}"
-                Value="{Binding Value, ElementName=randoSlider}" />
+                Value="{Binding Value, ElementName=randoSlider}"
+                ValueChanged="Slider_ValueChanged" />
         <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding HighText, ElementName=randoSlider}" />
     </Grid>
 </UserControl>

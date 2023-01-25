@@ -23,6 +23,8 @@ namespace IntelOrca.Biohazard.BioRand
         public static readonly DependencyProperty MaximumProperty =
             DependencyProperty.Register(nameof(Maximum), typeof(double), typeof(RandoSlider));
 
+        public event RoutedPropertyChangedEventHandler<double> ValueChanged;
+
         public string Heading
         {
             get => (string)GetValue(HeadingProperty);
@@ -56,6 +58,11 @@ namespace IntelOrca.Biohazard.BioRand
         public RandoSlider()
         {
             InitializeComponent();
+        }
+
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            ValueChanged?.Invoke(this, e);
         }
     }
 }

@@ -406,6 +406,24 @@ namespace IntelOrca.Biohazard
             return new string[0];
         }
 
+        public virtual string[] GetNPCs()
+        {
+            return new string[0];
+        }
+
+        public virtual string[] GetMusicAlbums()
+        {
+            return DataManager
+                .GetDirectoriesIn("bgm")
+                .Select(x => Path.GetFileName(x).ToUpper())
+                .ToArray();
+        }
+
+        public virtual string[] GetEnemies()
+        {
+            return new string[0];
+        }
+
         private void CreateBackgrounds(RandoConfig config, string modPath)
         {
             try
