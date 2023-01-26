@@ -158,6 +158,11 @@
         {
           "includeTypes": [ 16, 22, 23, 31, 33, 37, 58 ],
           "keepAi": true,
+          "randomPlacements": false,
+          "doorRando": false
+        },
+        {
+          "doorRando": true,
           "restricted": true
         }
       ]

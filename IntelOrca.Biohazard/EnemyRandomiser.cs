@@ -183,6 +183,9 @@ namespace IntelOrca.Biohazard
             if (enemySpec.Restricted != null && enemySpec.Restricted != _config.AllowEnemiesAnyRoom)
                 return;
 
+            if (enemySpec.DoorRando != null && enemySpec.DoorRando != _config.RandomDoors)
+                return;
+
             if (enemySpec.Nop != null)
             {
                 var nopArray = Map.ParseNopArray(enemySpec.Nop, rdt);
