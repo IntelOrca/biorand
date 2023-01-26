@@ -445,6 +445,11 @@
           "requires": [ 67, 74 ],
           "doorRando": true
         }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 48, 58 ]
+        }
       ]
     },
     "112": {
