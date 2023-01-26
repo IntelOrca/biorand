@@ -135,10 +135,13 @@ namespace IntelOrca.Biohazard
         public int[]? IncludeTypes { get; set; }
         public bool KeepState { get; set; }
         public bool KeepAi { get; set; }
+        public bool KeepPositions { get; set; }
         public short? Y { get; set; }
         public string? Difficulty { get; set; }
-        public bool? RandomPlacements { get; set; }
         public bool? Restricted { get; set; }
+
+        // Filters
+        public bool? RandomPlacements { get; set; }
         public bool? DoorRando { get; set; }
         public int? Player { get; set; }
         public int? Scenario { get; set; }

@@ -158,12 +158,12 @@
         {
           "includeTypes": [ 16, 22, 23, 31, 33, 37, 58 ],
           "keepAi": true,
-          "randomPlacements": false,
+          "keepPositions": true,
           "doorRando": false
         },
         {
-          "doorRando": true,
-          "restricted": true
+          "restricted": true,
+          "doorRando": true
         }
       ]
     },
@@ -845,14 +845,14 @@
         {
           "nop": [ 7854, 7858, 7862, 7868, 8166, 8170, 8174, 8180, 8184 ],
           "difficulty": "medium",
-          "randomPlacements": false,
+          "keepPositions": true,
           "player": 0,
           "scenario": 1
         },
         {
           "nop": [ 7816, 7820, 7824, 7830, 8128, 8132, 8136, 8142, 8146 ],
           "difficulty": "medium",
-          "randomPlacements": false,
+          "keepPositions": true,
           "player": 1,
           "scenario": 1
         }
@@ -2282,18 +2282,26 @@
       "enemies": [
         {
           "y": 0,
+          "keepPositions": true,
+          "doorRando": false,
+          "randomPlacements": true
+        },
+        {
+          "y": 0,
           "randomPlacements": false
         },
         {
           "nop": [ 4104 ],
           "excludeTypes": [ 42 ],
           "randomPlacements": true,
+          "doorRando": true,
           "player": 0
         },
         {
           "nop": [ 3898 ],
           "excludeTypes": [ 42 ],
           "randomPlacements": true,
+          "doorRando": true,
           "player": 1
         }
       ],
@@ -2319,7 +2327,18 @@
       ],
       "enemies": [
         {
-          "y": 0
+          "y": 0,
+          "randomPlacements": false
+        },
+        {
+          "y": 0,
+          "keepPositions": true,
+          "randomPlacements": true,
+          "doorRando": false
+        },
+        {
+          "randomPlacements": true,
+          "doorRando": true
         }
       ],
       "npcs": [
@@ -2747,6 +2766,11 @@
         {
           "includeTypes": [ 69, 79 ],
           "player": 1
+        }
+      ],
+      "enemies": [
+        {
+          "doorRando": true
         }
       ]
     },
@@ -3633,7 +3657,7 @@
       "enemies": [
         {
           "excludeOffsets": [ 8072, 8128, 8208, 8264, 8312, 8334 ],
-          "randomPlacements": false
+          "keepPositions": true
         }
       ]
     },

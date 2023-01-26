@@ -128,6 +128,8 @@ namespace IntelOrca.Biohazard
                     FixRE1Sounds(rdt.RdtId, fixType.Value);
                 }
             }
+
+            FixRooms();
         }
 
         private Rng.Table<byte> CreateEnemyProbabilityTable(Rng rng, HashSet<byte>? includeTypes, HashSet<byte>? excludeTypes)
@@ -201,7 +203,7 @@ namespace IntelOrca.Biohazard
                 .Where(e => _enemyHelper.ShouldChangeEnemy(_config, e))
                 .ToArray();
 
-            if (_config.RandomEnemyPlacement)
+            if (_config.RandomEnemyPlacement && !enemySpec.KeepPositions)
             {
                 enemiesToChange = GenerateRandomEnemies(rng, rdt, enemiesToChange);
             }
@@ -451,6 +453,27 @@ namespace IntelOrca.Biohazard
             }
             Array.Resize(ref result, 16);
             return result;
+        }
+
+        private void FixRooms()
+        {
+            // For RE 2, room 405, 407, and 501 crash if partner and random enemy placements
+            // are both enabled
+            if (_config.RandomDoors)
+            {
+                DetachPartner(new RdtId(3, 0x05));
+                DetachPartner(new RdtId(3, 0x07));
+                DetachPartner(new RdtId(4, 0x04));
+            }
+        }
+
+        private void DetachPartner(RdtId rdtId)
+        {
+            var rdt = _gameData.GetRdt(rdtId);
+            if (rdt != null && rdt.Version == BioVersion.Biohazard2)
+            {
+                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x22, new byte[] { 0x01, 0x03, 0x00 }));
+            }
         }
 
         public struct EnemyPosition : IEquatable<EnemyPosition>
