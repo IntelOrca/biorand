@@ -31,7 +31,7 @@ namespace IntelOrca.Biohazard
         private readonly bool _isWav;
         private readonly Rng _rng;
         private readonly DataManager _dataManager;
-        private readonly List<KeyValuePair<string, string>> _trackSetList = new List<KeyValuePair<string, string>>();
+        private readonly Dictionary<string, string> _trackSetList = new Dictionary<string, string>();
 
         public float ImportVolume { get; set; } = 1.0f;
 
@@ -126,7 +126,7 @@ namespace IntelOrca.Biohazard
             // Copy/convert all tracks
             Parallel.ForEach(_trackSetList, kvp =>
             {
-                SetMusicTrack(kvp.Key, kvp.Value);
+                SetMusicTrack(kvp.Value, kvp.Key);
             });
         }
 
@@ -180,7 +180,7 @@ namespace IntelOrca.Biohazard
 
         private void PrepareMusicTrack(string src, string dst)
         {
-            _trackSetList.Add(new KeyValuePair<string, string>(src, dst));
+            _trackSetList[dst] = src;
         }
 
         private void SetMusicTrack(string src, string dst)
