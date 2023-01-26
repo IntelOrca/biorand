@@ -3032,6 +3032,7 @@
       "enemies": [
         {
           "excludeOffsets": [ 10858 ],
+          "excludeTypes": [ 58 ],
           "restricted": true
         }
       ]
