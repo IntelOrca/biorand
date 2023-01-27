@@ -3226,7 +3226,8 @@
       ],
       "npcs": [
         {
-          "includeOffsets": [ 11140, 11288 ]
+          "includeOffsets": [ 11140, 11288 ],
+          "excludeTypes": [ 90 ]
         },
         {
           "includeOffsets": [ 11100, 11246, 12056 ],
