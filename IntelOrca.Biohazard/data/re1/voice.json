@@ -281,7 +281,7 @@
   },
   "voice/V00D_02.wav": { "rdt": "30A", "player": 0, "actor": "chris" },
   "voice/V00D_03.wav": { "rdt": "30A", "player": 0, "actor": "chris" },
-  "voice/V00D_04.wav": { "rdt": "30A", "player": 0, "actor": "enrico" },
+  "voice/V00D_04.wav": { "rdt": "30A", "player": 0, "actor": "enrico", "kind": "death" },
   "voice/V00D_05.wav": { "rdt": "30A", "player": 0, "actor": "chris" },
   "voice/V00E_00.wav": { "rdt": "50C", "player": 0, "actor": "chris", "condition": "@rebecca", "nameClipped": { "start": 1.0 } },
   "voice/V00E_01.wav": { "rdt": "50C", "player": 0, "actor": "rebecca" },
@@ -981,7 +981,20 @@
   },
   "voice/V10F_04.wav": { "rdt": "30A", "player": 1, "actor": "jill" },
   "voice/V10F_05.wav": { "rdt": "30A", "player": 1, "actor": "enrico" },
-  "voice/V10F_06.wav": { "rdt": "30A", "player": 1, "actor": "enrico" },
+  "voice/V10F_06.wav": {
+    "rdt": "30A",
+    "player": 1,
+    "actors": [
+      {
+        "actor": "enrico",
+        "split": 2.5
+      },
+      {
+        "actor": "enrico",
+        "kind": "death"
+      }
+    ]
+  },
   "voice/V10F_07.wav": { "rdt": "30A", "player": 1, "actor": "jill", "condition": "@enrico" },
   "voice/V10F_08.wav": { "rdt": "30A", "player": 1, "actor": "jill" },
   "voice/V10F_10.wav": {
@@ -1017,12 +1030,26 @@
     ]
   },
   "voice/V10F_15.wav": { "rdt": "30A", "player": 1, "actor": "jill" },
-  "voice/V10F_16.wav": { "rdt": "30A", "player": 1, "actor": "barry", "condition": "@enrico" },
-  "voice/V10F_17.wav": { "rdt": "30A", "player": 1, "actor": "enrico", "condition": "@jill && @barry" },
-  "voice/V10F_18.wav": { "rdt": "30A", "player": 1, "actor": "barry", "condition": "@enrico" },
-  "voice/V10F_19.wav": { "rdt": "30A", "player": 1, "actor": "enrico" },
-  "voice/V10F_1A.wav": { "rdt": "30A", "player": 1, "actor": "enrico" },
-  "voice/V10F_1B.wav": { "rdt": "30A", "player": 1, "actor": "jill", "condition": "@enrico" },
+  "voice/V10F_16.wav": { "rdt": "30A", "player": 1, "actor": "barry", "condition": "@enrico", "cutscene": 1 },
+  "voice/V10F_17.wav": { "rdt": "30A", "player": 1, "actor": "enrico", "condition": "@jill && @barry", "cutscene": 1 },
+  "voice/V10F_18.wav": { "rdt": "30A", "player": 1, "actor": "barry", "condition": "@enrico", "cutscene": 1 },
+  "voice/V10F_19.wav": { "rdt": "30A", "player": 1, "actor": "enrico", "cutscene": 1 },
+  "voice/V10F_1A.wav": {
+    "rdt": "30A",
+    "player": 1,
+    "cutscene": 1,
+    "actors": [
+      {
+        "actor": "enrico",
+        "split": 2.4
+      },
+      {
+        "actor": "enrico",
+        "kind": "death"
+      }
+    ]
+  },
+  "voice/V10F_1B.wav": { "rdt": "30A", "player": 1, "actor": "jill", "condition": "@enrico", "cutscene": 1 },
   "voice/V110_00.wav": {
     "rdt": "307",
     "player": 1,

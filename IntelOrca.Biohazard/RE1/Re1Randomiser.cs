@@ -201,6 +201,27 @@ namespace IntelOrca.Biohazard.RE1
             }
         }
 
+        internal override void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser)
+        {
+            var emdFolders = DataManager.GetDirectories(BiohazardVersion, $"emd");
+            foreach (var emdFolder in emdFolders)
+            {
+                var actor = Path.GetFileName(emdFolder);
+                var files = Directory.GetFiles(emdFolder);
+                foreach (var file in files)
+                {
+                    if (file.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var hex = Path.GetFileName(file).Substring(3, 3);
+                        if (int.TryParse(hex, System.Globalization.NumberStyles.HexNumber, null, out var result))
+                        {
+                            npcRandomiser.AddNPC1((byte)result, file, actor);
+                        }
+                    }
+                }
+            }
+        }
+
         internal void AddMusicSelection(BgmRandomiser bgmRandomizer, ReInstallConfig reConfig)
         {
             var dataPath = GetDataPath(reConfig.GetInstallPath(BiohazardVersion));

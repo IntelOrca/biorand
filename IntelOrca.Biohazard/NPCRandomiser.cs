@@ -15,6 +15,8 @@ namespace IntelOrca.Biohazard
 {
     internal class NPCRandomiser
     {
+        private static readonly object _sync = new object();
+
         private readonly BioVersion _version;
         private readonly RandoLogger _logger;
         private readonly RandoConfig _config;
@@ -33,7 +35,8 @@ namespace IntelOrca.Biohazard
         private string? _playerActor;
         private string? _originalPlayerActor;
         private Dictionary<byte, string> _extraNpcMap = new Dictionary<byte, string>();
-        private List<ExternalCharacter> _emds = new List<ExternalCharacter>();
+        private List<ExternalCharacter1> _emds1 = new List<ExternalCharacter1>();
+        private List<ExternalCharacter2> _emds2 = new List<ExternalCharacter2>();
 
         public NPCRandomiser(
             BioVersion version,
@@ -185,9 +188,14 @@ namespace IntelOrca.Biohazard
             return result == "" ? null : result;
         }
 
-        public void AddNPC(bool isFemale, string actor, string emdPath, string timPath)
+        public void AddNPC1(byte emId, string emPath, string actor)
         {
-            _emds.Add(new ExternalCharacter(isFemale, actor, emdPath, timPath));
+            _emds1.Add(new ExternalCharacter1(emId, emPath, actor));
+        }
+
+        public void AddNPC2(bool isFemale, string actor, string emdPath, string timPath)
+        {
+            _emds2.Add(new ExternalCharacter2(isFemale, actor, emdPath, timPath));
         }
 
         private bool ActorHasVoiceSamples(string actor)
@@ -204,14 +212,52 @@ namespace IntelOrca.Biohazard
 
         private void RandomizeExternalNPCs(Rng rng)
         {
-            if (_emds.Count == 0)
+            if (_config.Game == 1)
+            {
+                lock (_sync)
+                {
+                    // RE 1 shared EMD files, so must have a shared RNG
+                    var sharedRng = new Rng(_config.Seed);
+                    RandomizeExternalNPCsRE1(sharedRng);
+                }
+            }
+            else
+            {
+                RandomizeExternalNPCsRE2(rng);
+            }
+        }
+
+        private void RandomizeExternalNPCsRE1(Rng rng)
+        {
+            if (_emds1.Count == 0)
+                return;
+
+            var enemyDirectory = Path.Combine(_modPath, "enemy");
+            Directory.CreateDirectory(enemyDirectory);
+
+            _logger.WriteHeading("Adding additional NPCs:");
+            foreach (var g in _emds1.GroupBy(x => x.EmId))
+            {
+                var emd = rng.NextOf(g.ToArray());
+                _extraNpcMap[emd.EmId] = emd.Actor;
+
+                var dst = Path.Combine(enemyDirectory, $"EM1{emd.EmId:X3}.EMD");
+                File.Copy(emd.EmPath, dst, true);
+
+                _logger.WriteLine($"Enemy 0x{emd.EmId:X2} becomes {emd.Actor}");
+            }
+        }
+
+        private void RandomizeExternalNPCsRE2(Rng rng)
+        {
+            if (_emds2.Count == 0)
                 return;
 
             _logger.WriteHeading("Adding additional NPCs:");
             var availableSlotsLeon = new byte[] { 0x48, 0x52, 0x54, 0x56, 0x58, 0x5A };
             var availableSlotsClaire = new byte[] { 0x53, 0x55, 0x57, 0x59, 0x5B };
 
-            var emds = _emds
+            var emds = _emds2
                 .Where(x => x.Actor != _playerActor)
                 .Where(x => ActorHasVoiceSamples(x.Actor))
                 .ToArray();
@@ -220,7 +266,7 @@ namespace IntelOrca.Biohazard
             RandomizeExternalNPCs(emds.Where(x => x.IsFemale).Shuffle(rng), availableSlotsClaire);
         }
 
-        private void RandomizeExternalNPCs(ExternalCharacter[] emds, byte[] availableSlots)
+        private void RandomizeExternalNPCs(ExternalCharacter2[] emds, byte[] availableSlots)
         {
             var maxEmds = Math.Min(availableSlots.Length, emds.Length);
             for (int i = 0; i < maxEmds; i++)
@@ -819,6 +865,7 @@ namespace IntelOrca.Biohazard
                 End = end,
                 MaxLength = end - start,
                 Condition = sub.Condition,
+                Kind = sub.Kind,
                 NameClipped = nameClip
             };
         }
@@ -879,6 +926,7 @@ namespace IntelOrca.Biohazard
         public string? Actor { get; set; }
         public double Split { get; set; }
         public string? Condition { get; set; }
+        public string? Kind { get; set; }
         public VoiceSampleNameClip? NameClipped { get; set; }
     }
 
@@ -927,14 +975,29 @@ namespace IntelOrca.Biohazard
     }
 
     [DebuggerDisplay("{Actor}")]
-    public struct ExternalCharacter
+    public struct ExternalCharacter1
+    {
+        public byte EmId { get; }
+        public string EmPath { get; }
+        public string Actor { get; }
+
+        public ExternalCharacter1(byte emId, string emPath, string actor)
+        {
+            EmId = emId;
+            EmPath = emPath;
+            Actor = actor;
+        }
+    }
+
+    [DebuggerDisplay("{Actor}")]
+    public struct ExternalCharacter2
     {
         public bool IsFemale { get; }
         public string Actor { get; }
         public string ModelPath { get; }
         public string TexturePath { get; }
 
-        public ExternalCharacter(bool isFemale, string actor, string modelPath, string texturePath)
+        public ExternalCharacter2(bool isFemale, string actor, string modelPath, string texturePath)
         {
             IsFemale = isFemale;
             Actor = actor;

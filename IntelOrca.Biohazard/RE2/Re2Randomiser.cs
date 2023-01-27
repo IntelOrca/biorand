@@ -208,7 +208,7 @@ namespace IntelOrca.Biohazard.RE2
                         if (emdPath.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
                         {
                             var timPath = Path.ChangeExtension(emdPath, ".tim");
-                            npcRandomiser.AddNPC(i == 1, actor, emdPath, timPath);
+                            npcRandomiser.AddNPC2(i == 1, actor, emdPath, timPath);
                         }
                     }
                 }

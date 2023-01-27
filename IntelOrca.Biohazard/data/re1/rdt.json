@@ -1104,7 +1104,25 @@
       "enemies": [],
       "npcs": [
         {
-          "includeTypes": [ 42 ]
+          "includeTypes": [ 40 ],
+          "player": 0
+        },
+        {
+          "includeOffsets": [ 43940 ],
+          "includeTypes": [ 40 ],
+          "cutscene": 0,
+          "player": 1
+        },
+        {
+          "includeOffsets": [ 43940 ],
+          "includeTypes": [ 40 ],
+          "cutscene": 1,
+          "player": 1
+        },
+        {
+          "includeOffsets": [ 43814, 43868 ],
+          "cutscene": 1,
+          "player": 1
         }
       ]
     },
