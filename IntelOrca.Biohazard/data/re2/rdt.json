@@ -420,6 +420,14 @@
           "target": "219",
           "noUnlock": true,
           "requires": [ 67, 74 ],
+          "entrance": {
+            "x": -26476,
+            "y": -5400,
+            "z": -27918,
+            "d": 0,
+            "floor": 3,
+            "cut": 9
+          },
           "player": 0
         }
       ],
@@ -2038,7 +2046,8 @@
         },
         {
           "id": 2,
-          "target": "400:1"
+          "target": "400:1",
+          "lock": "unblock" // So we always enter via lift (prevents cut glitch when doing down ladder)
         },
         {
           "target": "404"
@@ -3262,11 +3271,6 @@
       ]
     },
     "60A": {
-      "doorRando": [
-        {
-          "category": "bridge"
-        }
-      ],
       "doors": [
         {
           "target": "60B"
@@ -3274,7 +3278,15 @@
         {
           "target": "609",
           "lock": "unblock",
-          "noUnlock": true
+          "noUnlock": true,
+          "entrance": {
+            "x": -15896,
+            "y": 0,
+            "z": -16960,
+            "d": -500,
+            "floor": 0,
+            "cut": 2
+          }
         }
       ],
       "requires": [ 47 ]
