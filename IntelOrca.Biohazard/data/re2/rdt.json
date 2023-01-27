@@ -2667,6 +2667,11 @@
           "includeTypes": [ 69, 79 ],
           "player": 1
         }
+      ],
+      "enemies": [
+        {
+          "doorRando": true
+        }
       ]
     },
     "502": {
