@@ -2126,7 +2126,7 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 72, 82 ],
+          "doorRando": true,
           "player": 0
         }
       ]

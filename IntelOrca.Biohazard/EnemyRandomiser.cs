@@ -457,10 +457,11 @@ namespace IntelOrca.Biohazard
 
         private void FixRooms()
         {
-            // For RE 2, room 405, 407, 501, and 504 crash if partner and random enemy placements
-            // are both enabled
+            // For RE 2, room 402, 405, 407, 501, and 504 crash if partner and random enemy placements
+            // are both enabled.
             if (_config.RandomDoors)
             {
+                DetachPartner(new RdtId(3, 0x02));
                 DetachPartner(new RdtId(3, 0x05));
                 DetachPartner(new RdtId(3, 0x07));
                 DetachPartner(new RdtId(4, 0x01));
