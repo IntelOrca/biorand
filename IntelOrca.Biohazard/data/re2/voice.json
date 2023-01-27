@@ -57,7 +57,7 @@
     "pl0/voice/stage1/v019.sap": { "rdt": "113", "player": 0, "actor": "leon" },
     "pl0/voice/stage1/v020.sap": { "rdt": "113", "player": 0, "actor": "leon" },
     "pl0/voice/stage1/v021.sap": { "rdt": "113", "player": 0, "actor": "claire" },
-    "pl0/voice/stage1/v022.sap": { "rdt": "115", "player": 0, "actor": "claire", "condition": "@leon" },
+    "pl0/voice/stage1/v022.sap": { "rdts": [ "113", "115" ], "player": 0, "actor": "claire", "condition": "@leon" },
     "pl0/voice/stage1/v023.sap": { "rdt": "115", "player": 0, "actor": "leon" },
     "pl0/voice/stage1/v024.sap": { "rdt": "115", "player": 0, "actor": "leon" },
     "pl0/voice/stage1/v025.sap": { "rdt": "115", "player": 0, "actor": "leon" },
@@ -326,7 +326,7 @@
     "pl1/voice/stage1/v033.sap": { "rdt": "113", "player": 1, "actor": "leon", "condition": "@claire", "nameClipped": { "start": 0.7 } },
     "pl1/voice/stage1/v034.sap": { "rdt": "113", "player": 1, "actor": "claire", "condition": "!sherry" },
     "pl1/voice/stage1/v035.sap": { "rdt": "113", "player": 1, "actor": "leon" },
-    "pl1/voice/stage1/v036.sap": { "rdt": "113", "player": 1, "actor": "claire" },
+    "pl1/voice/stage1/v036.sap": { "rdt": "113", "player": 1, "actor": "claire", "strict": true },
     "pl1/voice/stage1/v037.sap": { "rdt": "113", "player": 1, "actor": "claire", "condition": "@leon", "nameClipped": { "start": 3.0 } }, // end : 2.37 for alternate
     "pl1/voice/stage1/v038.sap": { "rdt": "113", "player": 1, "actor": "leon" },
     "pl1/voice/stage1/v039.sap": { "rdt": "113", "player": 1, "actor": "leon" },
