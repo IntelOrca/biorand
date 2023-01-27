@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using System.Xml;
 
@@ -109,6 +111,94 @@ namespace IntelOrca.Biohazard.RE1
                 () => GenerateRdts(config.WithPlayerScenario(1, 0), installPath, modPath));
 
             base.Generate(config, reConfig, installPath, modPath);
+        }
+
+        internal override string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, string modPath)
+        {
+            string? actor = null;
+            if (config.ChangePlayer)
+            {
+                var pldIndex = config.Player == 0 ? config.Player0 : config.Player1;
+                var pldPath = DataManager.GetDirectories(BiohazardVersion, $"pld{config.Player}")
+                    .Skip(pldIndex)
+                    .FirstOrDefault();
+                actor = Path.GetFileName(pldPath);
+                SwapPlayerCharacter(config, logger, actor, modPath);
+            }
+            return actor;
+        }
+
+        public override string[] GetPlayerCharacters(int index)
+        {
+            var result = new List<string>();
+            var pldFiles = DataManager
+                .GetDirectories(BiohazardVersion, $"pld{index}")
+                .ToArray();
+            foreach (var pldPath in pldFiles)
+            {
+                var actor = Path.GetFileName(pldPath);
+                actor = char.ToUpper(actor[0]) + actor.Substring(1);
+                result.Add(actor);
+            }
+            return result.ToArray();
+        }
+
+        private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, string actor, string modPath)
+        {
+            var originalPlayerActor = config.Player == 0 ? "chris" : "jill";
+            var srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld{config.Player}\\{actor}");
+            var srcFacePath = DataManager.GetPath(BiohazardVersion, $"face\\{actor}.tim");
+
+            if (originalPlayerActor != actor)
+            {
+                logger.WriteHeading("Randomizing Player:");
+                logger.WriteLine($"{originalPlayerActor} becomes {actor}");
+            }
+
+            var targetEnemyDir = Path.Combine(modPath, $"enemy");
+            var targetPlayersDir = Path.Combine(modPath, $"players");
+            Directory.CreateDirectory(targetEnemyDir);
+            Directory.CreateDirectory(targetPlayersDir);
+            var pldFiles = Directory.GetFiles(srcPldDir);
+            foreach (var pldPath in pldFiles)
+            {
+                var pldFile = Path.GetFileName(pldPath);
+                var dstDir = pldFile.EndsWith(".emd", StringComparison.OrdinalIgnoreCase) ?
+                    targetEnemyDir :
+                    targetPlayersDir;
+                File.Copy(pldPath, Path.Combine(dstDir, pldFile), true);
+            }
+
+            // Replace hurt sounds
+            if (actor != originalPlayerActor)
+            {
+                var allHurtFiles = DataManager.GetHurtFiles(actor)
+                    .Where(x => x.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) || x.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
+                    .ToArray();
+                var hurtFiles = new string[4];
+                foreach (var hurtFile in allHurtFiles)
+                {
+                    if (int.TryParse(Path.GetFileNameWithoutExtension(hurtFile), out var i))
+                    {
+                        if (i < hurtFiles.Length)
+                        {
+                            hurtFiles[i] = hurtFile;
+                        }
+                    }
+                }
+                if (hurtFiles.All(x => x != null))
+                {
+                    var soundDir = Path.Combine(modPath, "sound");
+                    Directory.CreateDirectory(soundDir);
+                    for (int i = 0; i < hurtFiles.Length; i++)
+                    {
+                        var soundPath = Path.Combine(soundDir, $"{originalPlayerActor.ToUpperInvariant()}{i + 1:00}.WAV");
+                        var waveformBuilder = new WaveformBuilder();
+                        waveformBuilder.Append(hurtFiles[i]);
+                        waveformBuilder.Save(soundPath);
+                    }
+                }
+            }
         }
 
         internal void AddMusicSelection(BgmRandomiser bgmRandomizer, ReInstallConfig reConfig)
