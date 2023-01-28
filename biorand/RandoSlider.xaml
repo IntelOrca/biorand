@@ -14,10 +14,10 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="16" />
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition />
+            <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <TextBlock x:Name="headingLabel" Grid.Row="0" Grid.ColumnSpan="3" Text="{Binding Heading, ElementName=randoSlider}" />
+        <TextBlock x:Name="headingLabel" Grid.Row="0" Grid.ColumnSpan="4" Text="{Binding Heading, ElementName=randoSlider}" />
         <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding LowText, ElementName=randoSlider}" />
         <Slider Grid.Row="1" Grid.Column="2"
                 Margin="3,0"

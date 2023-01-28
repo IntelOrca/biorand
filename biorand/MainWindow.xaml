@@ -75,32 +75,16 @@
                     <local:GameLocationBox x:Name="gameLocation3" Tag="2" Header="Resident Evil 3" Validate="gameLocation_Validate" Changed="gameLocation_Changed" Visibility="Collapsed" />
                 </StackPanel>
                 <StackPanel x:Name="panelRando" Visibility="Visible">
+                    <TextBlock Margin="4 0"  TextAlignment="Right"><Hyperlink Click="ViewDocs_Click">View Documentation</Hyperlink></TextBlock>
                     <GroupBox Header="Seed">
-                        <StackPanel>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <Grid Grid.Row="0" Grid.ColumnSpan="4">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1*" />
-                                        <ColumnDefinition Width="1*" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" TextAlignment="Left"><Hyperlink Click="ReportIssue_Click">Report an issue with this seed</Hyperlink></TextBlock>
-                                    <TextBlock Grid.Column="1" TextAlignment="Right"><Hyperlink Click="ViewDocs_Click">View Documentation</Hyperlink></TextBlock>
-                                </Grid>
-                                <local:SeedQR x:Name="seedQrCode"
-                                              Grid.Row="1"
-                                              Grid.Column="0"
-                                              Grid.RowSpan="2" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <local:SeedQR x:Name="seedQrCode"
+                                            Grid.Column="0" />
+                            <StackPanel Grid.Column="1" Margin="0,8,0,0">
                                 <TextBox x:Name="txtSeed"
                                         Grid.Row="1"
                                         Grid.Column="1"
@@ -110,27 +94,30 @@
                                         TextAlignment="Center"
                                         TextChanged="txtSeed_TextChanged"
                                         Margin="4" />
-                                <Button Grid.Column="1" Grid.Row="2" Margin="2" Width="80" Content="Seed" Click="RandomizeSeed_Click" />
-                                <Button Grid.Column="2" Grid.Row="2" Margin="2" Width="80" Content="Random" Click="RandomizeConfig_Click" />
-                            </Grid>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="150" />
-                                    <ColumnDefinition Width="80" />
-                                    <ColumnDefinition Width="80" />
-                                </Grid.ColumnDefinitions>
-                                <ComboBox x:Name="dropdownVariant" Grid.Column="0" Margin="4" SelectedIndex="0">
-                                    <ComboBoxItem Content="Leon A / Claire B" />
-                                    <ComboBoxItem Content="Claire A / Leon B" />
-                                </ComboBox>
-                                <Button Grid.Column="1" Margin="4" Click="btnGenerate_Click">Generate</Button>
-                                <Button Grid.Column="2" x:Name="btnLog0" Margin="4" IsEnabled="False" Click="btnLog0_Click">Leon Log...</Button>
-                                <Button Grid.Column="3" x:Name="btnLog1" Margin="4" IsEnabled="False" Click="btnLog1_Click">Claire Log...</Button>
-                            </Grid>
-                        </StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="80" />
+                                        <ColumnDefinition Width="150" />
+                                    </Grid.ColumnDefinitions>
+                                    <ComboBox x:Name="dropdownVariant" Grid.Column="0" Margin="4" SelectedIndex="0">
+                                        <ComboBoxItem Content="Leon A / Claire B" />
+                                        <ComboBoxItem Content="Claire A / Leon B" />
+                                    </ComboBox>
+                                    <Button Grid.Column="1" Margin="4" Click="RandomizeSeed_Click">Seed</Button>
+                                    <Button Grid.Column="2" Margin="4" Click="btnGenerate_Click"
+                                            Background="#FFA8FFA8"
+                                            Foreground="Black">Generate</Button>
+                                </Grid>
+                                <StackPanel Orientation="Horizontal" Margin="4 8 4 0">
+                                    <TextBlock Margin="0 0 8 0"><Hyperlink Click="ReportIssue_Click">Report an issue with this seed</Hyperlink></TextBlock>
+                                    <TextBlock x:Name="btnLog0"  IsEnabled="False" Margin="0 0 8 0"><Hyperlink Click="btnLog0_Click">Leon Log</Hyperlink></TextBlock>
+                                    <TextBlock x:Name="btnLog1" IsEnabled="False" Margin="0 0 8 0"><Hyperlink Click="btnLog1_Click">Claire Log</Hyperlink></TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
                     </GroupBox>
-                    <local:LeftPriorityContainer Visibility="Collapsed">
+                    <local:LeftPriorityContainer>
                         <StackPanel Grid.Column="0" x:Name="gridLeft">
                             <local:CheckGroupBox x:Name="chkPlayer" Header="Change Player Character">
                                 <Grid>
@@ -207,16 +194,31 @@
                         </StackPanel>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" x:Name="gridRight">
                             <local:CheckGroupBox x:Name="chkRngEnemies" Header="Randomize Enemies">
-                                <StackPanel>
-                                    <CheckBox x:Name="chkRandomEnemyPlacements" ToolTip="When checked, enemy quantity and positions will be random.">Random enemy placements (Experiemental)</CheckBox>
-                                    <CheckBox x:Name="chkEnemyRestrictedRooms" ToolTip="When checked, enemies can be in save rooms.">Allow enemies in save rooms</CheckBox>
-                                    <local:RandoSlider x:Name="sliderEnemyCount"
-                                                       Heading="Average number of enemies per room"
-                                                       LowText="1"
-                                                       HighText="6"
-                                                       Maximum="3"
-                                                       ToolTip="Adjusts the average number of enemies that can occur in a room." />
-                                    <ListView x:Name="listEnemies" HorizontalContentAlignment="Stretch">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <StackPanel Grid.Row="0">
+                                        <CheckBox x:Name="chkRandomEnemyPlacements" ToolTip="When checked, enemy quantity and positions will be random.">Random enemy placements (Experiemental)</CheckBox>
+                                        <CheckBox x:Name="chkEnemyRestrictedRooms" ToolTip="When checked, enemies can be in save rooms.">Allow enemies in save rooms</CheckBox>
+                                        <local:RandoSlider x:Name="sliderEnemyCount"
+                                                           Heading="Average number of enemies per room"
+                                                           LowText="1"
+                                                           HighText="6"
+                                                           Maximum="3"
+                                                           ToolTip="Adjusts the average number of enemies that can occur in a room." />
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="25" />
+                                            </Grid.RowDefinitions>
+                                            <local:RandoSlider Grid.Row="0" x:Name="sliderEnemyDifficulty" Heading="Difficulty" LowText="Ez" HighText="Hard" Maximum="3"
+                                                                   ToolTip="Adjust likelyhood of more easier / slower enemies (crows, ivies, spiders, zombies), or more difficult / faster enemies (ceberus', lickers, tyrants) being placed."/>
+                                            <local:PieChart Grid.Row="1" x:Name="pieEnemies" Kind="Bar" Margin="3" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <ListView Grid.Row="1" x:Name="listEnemies" HorizontalContentAlignment="Stretch">
                                         <ListView.ItemContainerStyle>
                                             <Style TargetType="ListViewItem">
                                                 <Setter Property="Focusable" Value="false" />
@@ -231,27 +233,18 @@
                                                     </Grid.ColumnDefinitions>
                                                     <TextBlock Grid.Column="0" Text="{Binding Text}" />
                                                     <local:RandoSlider Grid.Column="1"
-                                                                       HorizontalContentAlignment="Stretch"
-                                                                       Heading=""
-                                                                       Maximum="{Binding Maximum}"
-                                                                       Value="{Binding Value}"
-                                                                       LowText="None"
-                                                                       HighText="High"
-                                                                       ValueChanged="EnemySlider_ValueChanged" />
+                                                                        HorizontalContentAlignment="Stretch"
+                                                                        Heading=""
+                                                                        Maximum="{Binding Maximum}"
+                                                                        Value="{Binding Value}"
+                                                                        LowText="None"
+                                                                        HighText="High"
+                                                                        ValueChanged="EnemySlider_ValueChanged" />
                                                 </Grid>
                                             </DataTemplate>
                                         </ListView.ItemTemplate>
                                     </ListView>
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="25" />
-                                        </Grid.RowDefinitions>
-                                        <local:RandoSlider Grid.Row="0" x:Name="sliderEnemyDifficulty" Heading="Difficulty" LowText="Ez" HighText="Hard" Maximum="3"
-                                                               ToolTip="Adjust likelyhood of more easier / slower enemies (crows, ivies, spiders, zombies), or more difficult / faster enemies (ceberus', lickers, tyrants) being placed."/>
-                                        <local:PieChart Grid.Row="1" x:Name="pieEnemies" Kind="Bar" Margin="3" />
-                                    </Grid>
-                                </StackPanel>
+                                </Grid>
                             </local:CheckGroupBox>
                             <local:CheckGroupBox x:Name="chkRngChars" Grid.Column="0" Header="Randomize NPCs">
                                 <ListView x:Name="listNPCs">

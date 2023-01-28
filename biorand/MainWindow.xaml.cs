@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.RE2;
@@ -1042,7 +1043,9 @@ namespace IntelOrca.Biohazard.BioRand
                 var btn = buttons[i];
                 var path = GetLogPath(i);
                 btn.IsEnabled = File.Exists(path);
-                btn.Content = randomizer.GetPlayerName(i) + " Log...";
+                var hyperlink = btn.Inlines.FirstInline as Hyperlink;
+                hyperlink.Inlines.Clear();
+                hyperlink.Inlines.Add($"{randomizer.GetPlayerName(i)} Log");
             }
         }
 
@@ -1067,15 +1070,6 @@ namespace IntelOrca.Biohazard.BioRand
 
             var path = Path.Combine(location, "mod_biorand", $"log_pl{player}.txt");
             return path;
-        }
-
-        protected override Size ArrangeOverride(Size arrangeBounds)
-        {
-            var result = base.ArrangeOverride(arrangeBounds);
-            gridRight.Height = gridLeft.ActualHeight;
-            InvalidateMeasure();
-            InvalidateArrange();
-            return result;
         }
     }
 
