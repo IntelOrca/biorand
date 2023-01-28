@@ -9,7 +9,7 @@ namespace IntelOrca.Biohazard.BioRand
     public partial class RandoSlider : UserControl
     {
         public static readonly DependencyProperty HeadingProperty =
-           DependencyProperty.Register(nameof(Heading), typeof(string), typeof(RandoSlider), new PropertyMetadata("Heading"));
+           DependencyProperty.Register(nameof(Heading), typeof(string), typeof(RandoSlider), new PropertyMetadata("Heading", OnHeadingChanged));
 
         public static readonly DependencyProperty LowTextProperty =
             DependencyProperty.Register(nameof(LowText), typeof(string), typeof(RandoSlider), new PropertyMetadata("Low"));
@@ -58,6 +58,16 @@ namespace IntelOrca.Biohazard.BioRand
         public RandoSlider()
         {
             InitializeComponent();
+        }
+
+        private static void OnHeadingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is RandoSlider slider)
+            {
+                slider.headingLabel.Visibility = string.IsNullOrEmpty((string)e.NewValue) ?
+                    Visibility.Collapsed :
+                    Visibility.Visible;
+            }
         }
 
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

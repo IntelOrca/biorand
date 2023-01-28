@@ -17,7 +17,7 @@
             <ColumnDefinition />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" Grid.ColumnSpan="3" Text="{Binding Heading, ElementName=randoSlider}" />
+        <TextBlock x:Name="headingLabel" Grid.Row="0" Grid.ColumnSpan="3" Text="{Binding Heading, ElementName=randoSlider}" />
         <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding LowText, ElementName=randoSlider}" />
         <Slider Grid.Row="1" Grid.Column="2"
                 Margin="3,0"

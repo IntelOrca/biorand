@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
@@ -1066,6 +1067,15 @@ namespace IntelOrca.Biohazard.BioRand
 
             var path = Path.Combine(location, "mod_biorand", $"log_pl{player}.txt");
             return path;
+        }
+
+        protected override Size ArrangeOverride(Size arrangeBounds)
+        {
+            var result = base.ArrangeOverride(arrangeBounds);
+            gridRight.Height = gridLeft.ActualHeight;
+            InvalidateMeasure();
+            InvalidateArrange();
+            return result;
         }
     }
 

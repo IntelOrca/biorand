@@ -130,8 +130,8 @@
                             </Grid>
                         </StackPanel>
                     </GroupBox>
-                    <StackPanel Orientation="Horizontal">
-                        <StackPanel>
+                    <local:LeftPriorityContainer Visibility="Collapsed">
+                        <StackPanel Grid.Column="0" x:Name="gridLeft">
                             <local:CheckGroupBox x:Name="chkPlayer" Header="Change Player Character">
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -205,17 +205,56 @@
                                 </Grid>
                             </local:CheckGroupBox>
                         </StackPanel>
-                        <local:CheckGroupBox x:Name="chkRngEnemies" Header="Randomize Enemies">
-                            <StackPanel>
-                                <CheckBox x:Name="chkRandomEnemyPlacements" ToolTip="When checked, enemy quantity and positions will be random.">Random enemy placements (Experiemental)</CheckBox>
-                                <CheckBox x:Name="chkEnemyRestrictedRooms" ToolTip="When checked, enemies can be in save rooms.">Allow enemies in save rooms</CheckBox>
-                                <local:RandoSlider x:Name="sliderEnemyCount"
-                                                   Heading="Average number of enemies per room"
-                                                   LowText="1"
-                                                   HighText="6"
-                                                   Maximum="3"
-                                                   ToolTip="Adjusts the average number of enemies that can occur in a room." />
-                                <ListView x:Name="listEnemies" HorizontalContentAlignment="Stretch">
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" x:Name="gridRight">
+                            <local:CheckGroupBox x:Name="chkRngEnemies" Header="Randomize Enemies">
+                                <StackPanel>
+                                    <CheckBox x:Name="chkRandomEnemyPlacements" ToolTip="When checked, enemy quantity and positions will be random.">Random enemy placements (Experiemental)</CheckBox>
+                                    <CheckBox x:Name="chkEnemyRestrictedRooms" ToolTip="When checked, enemies can be in save rooms.">Allow enemies in save rooms</CheckBox>
+                                    <local:RandoSlider x:Name="sliderEnemyCount"
+                                                       Heading="Average number of enemies per room"
+                                                       LowText="1"
+                                                       HighText="6"
+                                                       Maximum="3"
+                                                       ToolTip="Adjusts the average number of enemies that can occur in a room." />
+                                    <ListView x:Name="listEnemies" HorizontalContentAlignment="Stretch">
+                                        <ListView.ItemContainerStyle>
+                                            <Style TargetType="ListViewItem">
+                                                <Setter Property="Focusable" Value="false" />
+                                            </Style>
+                                        </ListView.ItemContainerStyle>
+                                        <ListView.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="50" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Grid.Column="0" Text="{Binding Text}" />
+                                                    <local:RandoSlider Grid.Column="1"
+                                                                       HorizontalContentAlignment="Stretch"
+                                                                       Heading=""
+                                                                       Maximum="{Binding Maximum}"
+                                                                       Value="{Binding Value}"
+                                                                       LowText="None"
+                                                                       HighText="High"
+                                                                       ValueChanged="EnemySlider_ValueChanged" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="25" />
+                                        </Grid.RowDefinitions>
+                                        <local:RandoSlider Grid.Row="0" x:Name="sliderEnemyDifficulty" Heading="Difficulty" LowText="Ez" HighText="Hard" Maximum="3"
+                                                               ToolTip="Adjust likelyhood of more easier / slower enemies (crows, ivies, spiders, zombies), or more difficult / faster enemies (ceberus', lickers, tyrants) being placed."/>
+                                        <local:PieChart Grid.Row="1" x:Name="pieEnemies" Kind="Bar" Margin="3" />
+                                    </Grid>
+                                </StackPanel>
+                            </local:CheckGroupBox>
+                            <local:CheckGroupBox x:Name="chkRngChars" Grid.Column="0" Header="Randomize NPCs">
+                                <ListView x:Name="listNPCs">
                                     <ListView.ItemContainerStyle>
                                         <Style TargetType="ListViewItem">
                                             <Setter Property="Focusable" Value="false" />
@@ -223,65 +262,37 @@
                                     </ListView.ItemContainerStyle>
                                     <ListView.ItemTemplate>
                                         <DataTemplate>
-                                            <local:RandoSlider Heading="{Binding Text}"
-                                                               Maximum="{Binding Maximum}"
-                                                               Value="{Binding Value}"
-                                                               LowText="None"
-                                                               HighText="High"
-                                                               ValueChanged="EnemySlider_ValueChanged" />
+                                            <StackPanel>
+                                                <CheckBox Content="{Binding Text}"
+                                                          IsChecked="{Binding IsChecked}"
+                                                          Checked="OnCheckBoxChanged"
+                                                          Unchecked="OnCheckBoxChanged" />
+                                            </StackPanel>
                                         </DataTemplate>
                                     </ListView.ItemTemplate>
                                 </ListView>
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="25" />
-                                    </Grid.RowDefinitions>
-                                    <local:RandoSlider Grid.Row="0" x:Name="sliderEnemyDifficulty" Heading="Difficulty" LowText="Ez" HighText="Hard" Maximum="3"
-                                                           ToolTip="Adjust likelyhood of more easier / slower enemies (crows, ivies, spiders, zombies), or more difficult / faster enemies (ceberus', lickers, tyrants) being placed."/>
-                                    <local:PieChart Grid.Row="1" x:Name="pieEnemies" Kind="Bar" Margin="3" />
-                                </Grid>
-                            </StackPanel>
-                        </local:CheckGroupBox>
-                        <local:CheckGroupBox x:Name="chkRngChars" Grid.Column="0" Header="Randomize NPCs">
-                            <ListView x:Name="listNPCs">
-                                <ListView.ItemContainerStyle>
-                                    <Style TargetType="ListViewItem">
-                                        <Setter Property="Focusable" Value="false" />
-                                    </Style>
-                                </ListView.ItemContainerStyle>
-                                <ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel>
-                                            <CheckBox Content="{Binding Text}"
-                                                      IsChecked="{Binding IsChecked}"
-                                                      Checked="OnCheckBoxChanged"
-                                                      Unchecked="OnCheckBoxChanged" />
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
-                        </local:CheckGroupBox>
-                        <local:CheckGroupBox x:Name="chkRngBgm" Grid.Column="1" Header="Randomize Music">
-                            <ListView x:Name="listBGMs">
-                                <ListView.ItemContainerStyle>
-                                    <Style TargetType="ListViewItem">
-                                        <Setter Property="Focusable" Value="false" />
-                                    </Style>
-                                </ListView.ItemContainerStyle>
-                                <ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel>
-                                            <CheckBox Content="{Binding Text}"
-                                                      IsChecked="{Binding IsChecked}"
-                                                      Checked="OnCheckBoxChanged"
-                                                      Unchecked="OnCheckBoxChanged" />
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
-                        </local:CheckGroupBox>
-                    </StackPanel>
+                            </local:CheckGroupBox>
+                            <local:CheckGroupBox x:Name="chkRngBgm" Grid.Column="1" Header="Randomize Music">
+                                <ListView x:Name="listBGMs">
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="ListViewItem">
+                                            <Setter Property="Focusable" Value="false" />
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <CheckBox Content="{Binding Text}"
+                                                          IsChecked="{Binding IsChecked}"
+                                                          Checked="OnCheckBoxChanged"
+                                                          Unchecked="OnCheckBoxChanged" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </local:CheckGroupBox>
+                        </StackPanel>
+                    </local:LeftPriorityContainer>
                 </StackPanel>
             </Grid>
         </Grid>
