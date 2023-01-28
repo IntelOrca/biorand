@@ -13,7 +13,7 @@ namespace IntelOrca.Biohazard
 {
     public abstract class BaseRandomiser
     {
-        private readonly IBgCreator? _bgCreator;
+        protected IBgCreator? BgCreator { get; }
 
         protected MemoryStream ExePatch { get; } = new MemoryStream();
         internal List<RandomInventory?> Inventories { get; } = new List<RandomInventory?>();
@@ -31,7 +31,7 @@ namespace IntelOrca.Biohazard
 
         public BaseRandomiser(IBgCreator? bgCreator)
         {
-            _bgCreator = bgCreator;
+            BgCreator = bgCreator;
         }
 
         internal DataManager DataManager
@@ -200,12 +200,12 @@ namespace IntelOrca.Biohazard
                 var bgmRandomizer = new BgmRandomiser(logger, config, bgmDirectory, GetBgmJson(), BiohazardVersion == BioVersion.Biohazard1, new Rng(config.Seed), DataManager);
                 if (config.IncludeBGMRE1)
                 {
-                    var r = new Re1Randomiser(_bgCreator);
+                    var r = new Re1Randomiser(BgCreator);
                     r.AddMusicSelection(bgmRandomizer, reConfig);
                 }
                 if (config.IncludeBGMRE2)
                 {
-                    var r = new Re2Randomiser(_bgCreator);
+                    var r = new Re2Randomiser(BgCreator);
                     r.AddMusicSelection(bgmRandomizer, reConfig);
                 }
                 bgmRandomizer.AddCutomMusicToSelection(config);
@@ -429,15 +429,14 @@ namespace IntelOrca.Biohazard
 
         private void CreateBackgroundRaw(RandoConfig config, byte[] pngBackground, string outputFilename)
         {
-            if (_bgCreator == null)
+            if (BgCreator == null)
                 return;
 
             Directory.CreateDirectory(Path.GetDirectoryName(outputFilename));
-            var titleBg = _bgCreator.CreateARGB(config, pngBackground);
+            var pixels = BgCreator.CreateARGB(config, pngBackground);
             using var fs = new FileStream(outputFilename, FileMode.Create);
             var bw = new BinaryWriter(fs);
 
-            var pixels = MemoryMarshal.Cast<byte, uint>(titleBg);
             for (int i = 0; i < 320 * 240; i++)
             {
                 var c = pixels[i];
@@ -451,11 +450,11 @@ namespace IntelOrca.Biohazard
 
         private void CreateBackgroundPng(RandoConfig config, byte[] pngBackground, string outputFilename)
         {
-            if (_bgCreator == null)
+            if (BgCreator == null)
                 return;
 
             Directory.CreateDirectory(Path.GetDirectoryName(outputFilename));
-            var titleBg = _bgCreator.CreatePNG(config, pngBackground);
+            var titleBg = BgCreator.CreatePNG(config, pngBackground);
             File.WriteAllBytes(outputFilename, titleBg);
         }
 

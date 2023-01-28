@@ -16,33 +16,12 @@ namespace IntelOrca.Biohazard.BioRand
             return ms.ToArray();
         }
 
-        public unsafe byte[] CreateARGB(RandoConfig config, byte[] pngBackground)
+        public unsafe uint[] CreateARGB(RandoConfig config, byte[] pngBackground)
         {
-            var ms = new MemoryStream();
-            var bw = new BinaryWriter(ms);
             using (var titleBg = CreateImage(config, pngBackground))
             {
-                var bounds = new Rectangle(0, 0, titleBg.Width, titleBg.Height);
-                var bitmapData = titleBg.LockBits(bounds, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-                try
-                {
-                    var src = (uint*)bitmapData.Scan0;
-                    var padding = bitmapData.Stride - (titleBg.Width * 4);
-                    for (int y = 0; y < titleBg.Height; y++)
-                    {
-                        for (int x = 0; x < titleBg.Width; x++)
-                        {
-                            bw.Write(*src++);
-                        }
-                        src += padding;
-                    }
-                }
-                finally
-                {
-                    titleBg.UnlockBits(bitmapData);
-                }
+                return titleBg.ToArgb();
             }
-            return ms.ToArray();
         }
 
         private static void CreateBitmap(RandoConfig config, string modPath, string filename, byte[] src)
@@ -77,6 +56,21 @@ namespace IntelOrca.Biohazard.BioRand
                 g.DrawString(seed, font, Brushes.White, titleBg.Width - seedSize.Width + 1, 0);
             }
             return titleBg;
+        }
+
+        public void DrawImage(TimFile timFile, string srcImagePath, int x, int y)
+        {
+            using (var srcBitmap = new Bitmap(srcImagePath))
+            {
+                using (var bitmap = timFile.ToBitmap())
+                {
+                    using (var g = Graphics.FromImage(bitmap))
+                    {
+                        g.DrawImageUnscaled(srcBitmap, x, y);
+                    }
+                    timFile.ImportBitmap(bitmap);
+                }
+            }
         }
     }
 }
