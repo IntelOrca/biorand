@@ -198,17 +198,18 @@ namespace IntelOrca.Biohazard
 
                 var bgmDirectory = Path.Combine(modPath, BGMPath);
                 var bgmRandomizer = new BgmRandomiser(logger, config, bgmDirectory, GetBgmJson(), BiohazardVersion == BioVersion.Biohazard1, new Rng(config.Seed), DataManager);
-                if (config.IncludeBGMRE1)
+                var enabledBgms = GetSelectedAlbums(config);
+                if (enabledBgms.Contains("RE1", StringComparer.OrdinalIgnoreCase))
                 {
                     var r = new Re1Randomiser(BgCreator);
                     r.AddMusicSelection(bgmRandomizer, reConfig);
                 }
-                if (config.IncludeBGMRE2)
+                if (enabledBgms.Contains("RE2", StringComparer.OrdinalIgnoreCase))
                 {
                     var r = new Re2Randomiser(BgCreator);
                     r.AddMusicSelection(bgmRandomizer, reConfig);
                 }
-                bgmRandomizer.AddCutomMusicToSelection(config);
+                bgmRandomizer.AddCutomMusicToSelection(enabledBgms);
 
                 if (BiohazardVersion == BioVersion.Biohazard1)
                 {
@@ -413,9 +414,33 @@ namespace IntelOrca.Biohazard
 
         public virtual string[] GetMusicAlbums()
         {
-            return DataManager
+            var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "re1",
+                "re2"
+            };
+            result.AddRange(DataManager
                 .GetDirectoriesIn("bgm")
-                .Select(x => Path.GetFileName(x).ToUpper())
+                .Select(Path.GetFileName));
+            return result
+                .Select(x => x.ToUpper())
+                .OrderBy(x => x)
+                .ToArray();
+        }
+
+        private string[] GetSelectedAlbums(RandoConfig config)
+        {
+            var enabledBgms = config.EnabledBGMs;
+            var albums = GetMusicAlbums();
+            for (int i = 0; i < albums.Length; i++)
+            {
+                if (enabledBgms.Length <= i || !enabledBgms[i])
+                {
+                    albums[i] = "";
+                }
+            }
+            return albums
+                .Where(x => !string.IsNullOrEmpty(x))
                 .ToArray();
         }
 
