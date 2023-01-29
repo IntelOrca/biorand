@@ -257,20 +257,20 @@ namespace IntelOrca.Biohazard.RE2
                 .ToArray();
         }
 
-        public override string[] GetEnemies()
+        public override (string, string)[] GetEnemies()
         {
             return new[]
             {
-                "Arms",
-                "Birkin",
-                "Cerberus",
-                "Crow",
-                "Ivy",
-                "Licker",
-                "Moth",
-                "Spider",
-                "Tyrant",
-                "Zombie"
+                ("Arms", "LightGray"),
+                ("Crow", "Black"),
+                ("Spider", "YellowGreen"),
+                ("Zombie", "LightGray"),
+                ("Moth", "DarkOliveGreen"),
+                ("Ivy", "SpringGreen"),
+                ("Licker", "IndianRed"),
+                ("Cerberus", "Black"),
+                ("Tyrant", "DarkGray"),
+                ("Birkin", "IndianRed"),
             };
         }
 

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Threading.Tasks;
 using System.Xml;
 
@@ -20,6 +19,41 @@ namespace IntelOrca.Biohazard.RE1
         }
 
         public override string GetPlayerName(int player) => player == 0 ? "Chris" : "Jill";
+
+        public override (string, string)[] GetEnemies()
+        {
+            return new[]
+            {
+                ("Bee", "Yellow"),
+                ("Crow", "Black"),
+                ("Snake", "DarkOliveGreen"),
+                ("Spider", "YellowGreen"),
+                ("Zombie", "LightGray"),
+                ("Chimera", "Gray"),
+                ("Hunter", "IndianRed"),
+                ("Cerberus", "Black"),
+                ("Tyrant", "DarkGray"),
+                ("Yawn", "DarkOliveGreen"),
+            };
+        }
+
+        public override string[] GetNPCs()
+        {
+            var actors = new HashSet<string>();
+            actors.AddRange(new[] { "chris", "jill", "barry", "rebecca", "wesker", "enrico", "richard" });
+            for (int i = 0; i < 2; i++)
+            {
+                var emds = DataManager
+                    .GetDirectories(BiohazardVersion, $"emd")
+                    .Select(Path.GetFileName)
+                    .ToArray();
+                actors.AddRange(emds);
+            }
+            return actors
+                .Select(x => x.ToTitle())
+                .OrderBy(x => x)
+                .ToArray();
+        }
 
         public override bool ValidateGamePath(string path)
         {

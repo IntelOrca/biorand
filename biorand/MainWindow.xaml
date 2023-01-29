@@ -118,7 +118,7 @@
                         </Grid>
                     </GroupBox>
                     <local:LeftPriorityContainer>
-                        <StackPanel Grid.Column="0" x:Name="gridLeft">
+                        <StackPanel Width="380">
                             <local:CheckGroupBox x:Name="chkPlayer" Header="Change Player Character">
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -127,7 +127,7 @@
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="9" />
+                                        <ColumnDefinition Width="16" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Row="0" Grid.Column="0" x:Name="lblPlayer0" Text="Leon becomes:" />
@@ -140,9 +140,9 @@
                                 <StackPanel>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="1*" />
+                                            <ColumnDefinition />
                                             <ColumnDefinition Width="16" />
-                                            <ColumnDefinition Width="2*" />
+                                            <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
                                         <local:RandoSlider Grid.Column="0"
                                                         x:Name="sliderAreaCount"
@@ -165,9 +165,9 @@
                             <local:CheckGroupBox x:Name="chkRngItems" Header="Randomize Items">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1*" />
+                                        <ColumnDefinition />
                                         <ColumnDefinition Width="16" />
-                                        <ColumnDefinition Width="2*" />
+                                        <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
                                         <CheckBox x:Name="chkRandomInventory" ToolTip="When checked, your initial inventory will be random.">Random inventory</CheckBox>
@@ -175,7 +175,7 @@
                                         <CheckBox x:Name="chkAlternativeRoute" ToolTip="When checked, key items will be placed in any order. For example the spade key may be placed in the basement and the heart key in the main hall.">Allow alternative routes</CheckBox>
                                         <CheckBox x:Name="chkProtectSoftLock" ToolTip="When checked, prevents lab keys from spawning in the police station.">Safe key placement</CheckBox>
                                         <CheckBox x:Name="chkShuffleItems" ToolTip="When checked, keeps original items and quantities, but shuffles them.">Shuffle default items</CheckBox>
-                                        <local:PieChart x:Name="pieItemRatios" Padding="8,8,8,0" Width="120" />
+                                        <local:PieChart x:Name="pieItemRatios" Padding="8,20,8,0" Width="120" />
                                         <TextBlock TextAlignment="Center">Item Pickup Distribution</TextBlock>
                                     </StackPanel>
                                     <StackPanel Grid.Column="2"
@@ -192,12 +192,13 @@
                                 </Grid>
                             </local:CheckGroupBox>
                         </StackPanel>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" x:Name="gridRight">
-                            <local:CheckGroupBox x:Name="chkRngEnemies" Header="Randomize Enemies">
+                        <StackPanel Orientation="Horizontal">
+                            <local:CheckGroupBox x:Name="chkRngEnemies" Header="Randomize Enemies" Width="300">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="*" />
+                                        <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
                                     <StackPanel Grid.Row="0">
                                         <CheckBox x:Name="chkRandomEnemyPlacements" ToolTip="When checked, enemy quantity and positions will be random.">Random enemy placements (Experiemental)</CheckBox>
@@ -208,17 +209,10 @@
                                                            HighText="6"
                                                            Maximum="3"
                                                            ToolTip="Adjusts the average number of enemies that can occur in a room." />
-                                        <Grid>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="25" />
-                                            </Grid.RowDefinitions>
-                                            <local:RandoSlider Grid.Row="0" x:Name="sliderEnemyDifficulty" Heading="Difficulty" LowText="Ez" HighText="Hard" Maximum="3"
-                                                                   ToolTip="Adjust likelyhood of more easier / slower enemies (crows, ivies, spiders, zombies), or more difficult / faster enemies (ceberus', lickers, tyrants) being placed."/>
-                                            <local:PieChart Grid.Row="1" x:Name="pieEnemies" Kind="Bar" Margin="3" />
-                                        </Grid>
+                                        <local:RandoSlider x:Name="sliderEnemyDifficulty" Heading="Difficulty" LowText="Ez" HighText="Hard" Maximum="3"
+                                                           ToolTip="Adjust likelyhood of more easier / slower enemies (crows, ivies, spiders, zombies), or more difficult / faster enemies (ceberus', lickers, tyrants) being placed."/>
                                     </StackPanel>
-                                    <ListView Grid.Row="1" x:Name="listEnemies" HorizontalContentAlignment="Stretch">
+                                    <ListView Grid.Row="1" x:Name="listEnemies" HorizontalContentAlignment="Stretch" Margin="0 4">
                                         <ListView.ItemContainerStyle>
                                             <Style TargetType="ListViewItem">
                                                 <Setter Property="Focusable" Value="false" />
@@ -233,17 +227,18 @@
                                                     </Grid.ColumnDefinitions>
                                                     <TextBlock Grid.Column="0" Text="{Binding Text}" />
                                                     <local:RandoSlider Grid.Column="1"
-                                                                        HorizontalContentAlignment="Stretch"
-                                                                        Heading=""
-                                                                        Maximum="{Binding Maximum}"
-                                                                        Value="{Binding Value}"
-                                                                        LowText="None"
-                                                                        HighText="High"
-                                                                        ValueChanged="EnemySlider_ValueChanged" />
+                                                                       HorizontalContentAlignment="Stretch"
+                                                                       Heading=""
+                                                                       Maximum="{Binding Maximum}"
+                                                                       Value="{Binding Value, Mode=TwoWay}"
+                                                                       LowText="None"
+                                                                       HighText="High"
+                                                                       ValueChanged="Slider_ValueChanged" />
                                                 </Grid>
                                             </DataTemplate>
                                         </ListView.ItemTemplate>
                                     </ListView>
+                                    <local:PieChart Grid.Row="2" x:Name="pieEnemies" Kind="Bar" />
                                 </Grid>
                             </local:CheckGroupBox>
                             <local:CheckGroupBox x:Name="chkRngChars" Grid.Column="0" Header="Randomize NPCs">

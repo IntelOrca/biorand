@@ -7,7 +7,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
@@ -134,6 +133,10 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 slider.Value = (byte)slider.Value;
             }
+            else if (sender is RandoSlider randoSlider)
+            {
+                randoSlider.Value = (byte)randoSlider.Value;
+            }
 
             if (!_suspendEvents)
             {
@@ -160,6 +163,16 @@ namespace IntelOrca.Biohazard.BioRand
                 chkPlayer.IsChecked = _config.ChangePlayer;
                 dropdownPlayer0.SelectedIndex = _config.Player0;
                 dropdownPlayer1.SelectedIndex = _config.Player1;
+
+                if (listEnemies.ItemsSource != null)
+                {
+                    var index = 0;
+                    foreach (SliderListItem item in listEnemies.ItemsSource)
+                    {
+                        item.Value = _config.EnemyRatios.Length > index ? _config.EnemyRatios[index] : 0;
+                        index++;
+                    }
+                }
 
                 chkRngChars.IsChecked = _config.RandomNPCs;
                 if (listNPCs.ItemsSource != null)
@@ -225,10 +238,7 @@ namespace IntelOrca.Biohazard.BioRand
         {
             UpdateEstimateCompletion();
             UpdateItemPie();
-            if (SelectedGame == 0)
-                UpdateEnemyPie1();
-            else
-                UpdateEnemyPie2();
+            UpdateEnemyPie();
         }
 
         private void UpdateEstimateCompletion()
@@ -306,138 +316,35 @@ namespace IntelOrca.Biohazard.BioRand
             pieItemRatios.Update();
         }
 
-        private void UpdateEnemyPie1()
+        private void UpdateEnemyPie()
         {
             pieEnemies.Records.Clear();
 
-            switch (_config.EnemyDifficulty)
+            var randomizer = GetRandomizer();
+            if (randomizer != null)
             {
-                case 0:
-                    AddRatio("Crow", Colors.Black, 20);
-                    AddRatio("Snake", Colors.DarkOliveGreen, 20);
-                    AddRatio("Bee", Colors.Yellow, 10);
-                    AddRatio("Spider", Colors.YellowGreen, 5);
-                    AddRatio("Chimera", Colors.Gray, 5);
-                    AddRatio("Tyrant / Yawn", Colors.DarkGray, 4);
-                    AddRatio("Zombie", Colors.LightGray, 20);
-                    AddRatio("Hunter", Colors.IndianRed, 5);
-                    AddRatio("Cerebrus", Colors.Black, 10);
-                    break;
-                case 1:
-                    AddRatio("Crow", Colors.Black, 10);
-                    AddRatio("Snake", Colors.DarkOliveGreen, 10);
-                    AddRatio("Bee", Colors.Yellow, 5);
-                    AddRatio("Spider", Colors.YellowGreen, 10);
-                    AddRatio("Chimera", Colors.Gray, 10);
-                    AddRatio("Tyrant / Yawn", Colors.DarkGray, 8);
-                    AddRatio("Zombie", Colors.LightGray, 25);
-                    AddRatio("Hunter", Colors.IndianRed, 10);
-                    AddRatio("Cerebrus", Colors.Black, 15);
-                    break;
-                case 2:
-                    AddRatio("Crow", Colors.Black, 1);
-                    AddRatio("Snake", Colors.DarkOliveGreen, 1);
-                    AddRatio("Bee", Colors.Yellow, 1);
-                    AddRatio("Spider", Colors.YellowGreen, 10);
-                    AddRatio("Chimera", Colors.Gray, 15);
-                    AddRatio("Tyrant / Yawn", Colors.DarkGray, 20);
-                    AddRatio("Zombie", Colors.LightGray, 30);
-                    AddRatio("Hunter", Colors.IndianRed, 15);
-                    AddRatio("Cerebrus", Colors.Black, 20);
-                    break;
-                case 3:
-                default:
-                    AddRatio("Crow", Colors.Black, 1);
-                    AddRatio("Snake", Colors.DarkOliveGreen, 1);
-                    AddRatio("Bee", Colors.Yellow, 1);
-                    AddRatio("Spider", Colors.YellowGreen, 12);
-                    AddRatio("Chimera", Colors.Gray, 25);
-                    AddRatio("Tyrant / Yawn", Colors.DarkGray, 40);
-                    AddRatio("Zombie", Colors.LightGray, 20);
-                    AddRatio("Hunter", Colors.IndianRed, 25);
-                    AddRatio("Cerebrus", Colors.Black, 40);
-                    break;
-            }
-            pieEnemies.Update();
-
-            void AddRatio(string enemyName, Color color, double value)
-            {
-                pieEnemies.Records.Add(new PieChart.Record()
+                var enemies = randomizer.GetEnemies();
+                var index = 0;
+                foreach (var (enemyName, colourName) in enemies)
                 {
-                    Name = enemyName,
-                    Value = value,
-                    Color = color
-                });
+                    var colour = (Color)ColorConverter.ConvertFromString(colourName);
+                    var ratio = _config.EnemyRatios.Length > index ?
+                        _config.EnemyRatios[index] :
+                        0;
+                    if (ratio != 0)
+                    {
+                        pieEnemies.Records.Add(new PieChart.Record()
+                        {
+                            Name = enemyName,
+                            Value = ratio,
+                            Color = colour
+                        });
+                    }
+                    index++;
+                }
             }
-        }
 
-        private void UpdateEnemyPie2()
-        {
-            pieEnemies.Records.Clear();
-
-            switch (_config.EnemyDifficulty)
-            {
-                case 0:
-                    AddRatio("Crow", Colors.Black, 10);
-                    AddRatio("Arms", Colors.LightGray, 10);
-                    AddRatio("Spider", Colors.YellowGreen, 10);
-                    AddRatio("Moth", Colors.DarkOliveGreen, 2);
-                    AddRatio("Ivy", Colors.SpringGreen, 3);
-                    AddRatio("Ivy", Colors.Purple, 2);
-                    AddRatio("Tyrant", Colors.DarkGray, 1);
-                    AddRatio("Zombie", Colors.LightGray, 50);
-                    AddRatio("Licker", Colors.IndianRed, 2);
-                    AddRatio("Licker", Colors.Gray, 2);
-                    AddRatio("Cerebrus", Colors.Black, 8);
-                    break;
-                case 1:
-                    AddRatio("Crow", Colors.Black, 5);
-                    AddRatio("Arms", Colors.LightGray, 5);
-                    AddRatio("Spider", Colors.YellowGreen, 6);
-                    AddRatio("Moth", Colors.DarkOliveGreen, 5);
-                    AddRatio("Ivy", Colors.SpringGreen, 6);
-                    AddRatio("Ivy", Colors.Purple, 6);
-                    AddRatio("Tyrant", Colors.DarkGray, 2);
-                    AddRatio("Zombie", Colors.LightGray, 40);
-                    AddRatio("Licker", Colors.IndianRed, 10);
-                    AddRatio("Licker", Colors.Gray, 5);
-                    AddRatio("Cerebrus", Colors.Black, 10);
-                    break;
-                case 2:
-                    AddRatio("Spider", Colors.YellowGreen, 7);
-                    AddRatio("Moth", Colors.DarkOliveGreen, 3);
-                    AddRatio("Ivy", Colors.SpringGreen, 6);
-                    AddRatio("Ivy", Colors.Purple, 6);
-                    AddRatio("Tyrant", Colors.DarkGray, 3);
-                    AddRatio("Zombie", Colors.LightGray, 25);
-                    AddRatio("Licker", Colors.IndianRed, 15);
-                    AddRatio("Licker", Colors.Gray, 10);
-                    AddRatio("Cerebrus", Colors.Black, 25);
-                    break;
-                case 3:
-                default:
-                    AddRatio("Spider", Colors.YellowGreen, 5);
-                    AddRatio("Moth", Colors.DarkOliveGreen, 2);
-                    AddRatio("Ivy", Colors.SpringGreen, 3);
-                    AddRatio("Ivy", Colors.Purple, 3);
-                    AddRatio("Tyrant", Colors.DarkGray, 5);
-                    AddRatio("Zombie", Colors.LightGray, 17);
-                    AddRatio("Licker", Colors.IndianRed, 5);
-                    AddRatio("Licker", Colors.Gray, 20);
-                    AddRatio("Cerebrus", Colors.Black, 40);
-                    break;
-            }
             pieEnemies.Update();
-
-            void AddRatio(string enemyName, Color color, double value)
-            {
-                pieEnemies.Records.Add(new PieChart.Record()
-                {
-                    Name = enemyName,
-                    Value = value,
-                    Color = color
-                });
-            }
         }
 
         private void UpdateConfig()
@@ -445,6 +352,11 @@ namespace IntelOrca.Biohazard.BioRand
             _config.ChangePlayer = chkPlayer.IsChecked == true;
             _config.Player0 = (byte)dropdownPlayer0.SelectedIndex;
             _config.Player1 = (byte)dropdownPlayer1.SelectedIndex;
+
+            _config.EnemyRatios = listEnemies.ItemsSource
+                .Cast<SliderListItem>()
+                .Select(x => (byte)x.Value)
+                .ToArray();
 
             _config.RandomNPCs = chkRngChars.IsChecked == true;
             _config.EnabledNPCs = listNPCs.ItemsSource
@@ -890,7 +802,7 @@ namespace IntelOrca.Biohazard.BioRand
                 case 1:
                     return new Re2Randomiser(new BiorandBgCreator());
                 default:
-                    throw new NotImplementedException();
+                    return null;
             }
         }
 
@@ -1002,18 +914,12 @@ namespace IntelOrca.Biohazard.BioRand
         private void UpdateEnemies()
         {
             var randomizer = GetRandomizer();
-            listEnemies.ItemsSource = randomizer
-                .GetEnemies()
-                .Select(x => new SliderListItem(x, 4, 7))
-                .ToArray();
-        }
-
-        private void EnemySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (sender is RandoSlider randoSlider)
+            var items = new List<SliderListItem>();
+            foreach (var (enemyName, _) in randomizer.GetEnemies())
             {
-                randoSlider.Value = (byte)randoSlider.Value;
+                items.Add(new SliderListItem(enemyName, 4, 7));
             }
+            listEnemies.ItemsSource = items;
         }
 
         private void UpdateNPCList()
@@ -1123,13 +1029,54 @@ namespace IntelOrca.Biohazard.BioRand
         }
     }
 
-    public class SliderListItem
+    public class SliderListItem : INotifyPropertyChanged
     {
-        public string Text { get; set; }
-        public int Value { get; set; }
-        public double Maximum { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        public SliderListItem(string text, int value, int max)
+        private string _text;
+        private double _value;
+        private double _maximum;
+
+        public string Text
+        {
+            get => _text;
+            set
+            {
+                if (_text != value)
+                {
+                    _text = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Text)));
+                }
+            }
+        }
+
+        public double Value
+        {
+            get => _value;
+            set
+            {
+                if (_value != value)
+                {
+                    _value = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+                }
+            }
+        }
+
+        public double Maximum
+        {
+            get => _maximum;
+            set
+            {
+                if (_maximum != value)
+                {
+                    _maximum = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Maximum)));
+                }
+            }
+        }
+
+        public SliderListItem(string text, double value, int max)
         {
             Text = text;
             Value = value;

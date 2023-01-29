@@ -419,9 +419,9 @@ namespace IntelOrca.Biohazard
                 .ToArray();
         }
 
-        public virtual string[] GetEnemies()
+        public virtual (string, string)[] GetEnemies()
         {
-            return new string[0];
+            return new (string, string)[0];
         }
 
         private void CreateBackgrounds(RandoConfig config, string modPath)

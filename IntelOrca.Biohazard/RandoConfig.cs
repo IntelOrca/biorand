@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace IntelOrca.Biohazard
@@ -118,6 +119,12 @@ namespace IntelOrca.Biohazard
             result.AllowEnemiesAnyRoom = reader.ReadFlag();
             result.EnemyQuantity = reader.ReadByte(2);
 
+            var values = new List<byte>();
+            for (int i = 0; i < 10; i++)
+            {
+                values.Add(reader.ReadByte(3));
+            }
+            result.EnemyRatios = values.ToArray();
             result.EnabledNPCs = reader.ReadBooleanArray(30);
             result.EnabledBGMs = reader.ReadBooleanArray(15);
 
@@ -187,6 +194,17 @@ namespace IntelOrca.Biohazard
             writer.Write(AllowEnemiesAnyRoom);
             writer.Write(2, EnemyQuantity);
 
+            for (int i = 0; i < 10; i++)
+            {
+                if (EnemyRatios.Length > i)
+                {
+                    writer.Write(3, EnemyRatios[i]);
+                }
+                else
+                {
+                    writer.Write(3, 0);
+                }
+            }
             writer.WriteArray(30, EnabledNPCs);
             writer.WriteArray(15, EnabledBGMs);
 
