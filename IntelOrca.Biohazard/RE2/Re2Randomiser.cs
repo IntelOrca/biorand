@@ -246,23 +246,6 @@ namespace IntelOrca.Biohazard.RE2
                 .ToArray();
         }
 
-        public override (string, string)[] GetEnemies()
-        {
-            return new[]
-            {
-                ("Arms", "LightGray"),
-                ("Crow", "Black"),
-                ("Spider", "YellowGreen"),
-                ("Zombie", "LightGray"),
-                ("Moth", "DarkOliveGreen"),
-                ("Ivy", "SpringGreen"),
-                ("Licker", "IndianRed"),
-                ("Cerberus", "Black"),
-                ("Tyrant", "DarkGray"),
-                ("Birkin", "IndianRed"),
-            };
-        }
-
         private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, string actor, string modPath)
         {
             var originalPlayerActor = config.Player == 0 ? "leon" : "claire";

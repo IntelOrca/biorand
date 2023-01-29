@@ -276,5 +276,19 @@ namespace IntelOrca.Biohazard.RE2
         {
             return type < (byte)EnemyType.ChiefIrons1;
         }
+
+        public SelectableEnemy[] GetSelectableEnemies() => new[]
+        {
+            new SelectableEnemy("Arms", "LightGray", new[] { (byte)EnemyType.ZombieArms }),
+            new SelectableEnemy("Crow", "Black", new[] { (byte)EnemyType.Crow }),
+            new SelectableEnemy("Spider", "YellowGreen", new[] { (byte)EnemyType.Spider }),
+            new SelectableEnemy("Zombie", "LightGray", new[] { (byte)EnemyType.ZombieRandom }),
+            new SelectableEnemy("Moth", "DarkOliveGreen", new[] { (byte)EnemyType.GiantMoth }),
+            new SelectableEnemy("Ivy", "SpringGreen", new[] { (byte)EnemyType.Ivy }),
+            new SelectableEnemy("Licker", "IndianRed", new[] { (byte)EnemyType.LickerRed, (byte)EnemyType.LickerGrey }),
+            new SelectableEnemy("Cerberus", "Black", new[] { (byte)EnemyType.Cerebrus }),
+            new SelectableEnemy("Tyrant", "DarkGray", new[] { (byte)EnemyType.Tyrant1 }),
+            new SelectableEnemy("Birkin", "IndianRed", new[] { (byte)EnemyType.Birkin1 }),
+        };
     }
 }

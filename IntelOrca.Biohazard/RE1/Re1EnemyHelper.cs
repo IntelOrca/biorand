@@ -230,5 +230,19 @@ namespace IntelOrca.Biohazard.RE1
         {
             return type <= Re1EnemyIds.Yawn2;
         }
+
+        public SelectableEnemy[] GetSelectableEnemies() => new[]
+        {
+            new SelectableEnemy("Bee", "Yellow", new[] { Re1EnemyIds.Bee }),
+            new SelectableEnemy("Crow", "Black", new[] { Re1EnemyIds.Crow }),
+            new SelectableEnemy("Snake", "DarkOliveGreen", new[] { Re1EnemyIds.Snake }),
+            new SelectableEnemy("Spider", "YellowGreen", new[] { Re1EnemyIds.SpiderBrown }),
+            new SelectableEnemy("Zombie", "LightGray", new[] { Re1EnemyIds.Zombie }),
+            new SelectableEnemy("Chimera", "Gray", new[] { Re1EnemyIds.Chimera }),
+            new SelectableEnemy("Hunter", "IndianRed", new[] { Re1EnemyIds.Hunter }),
+            new SelectableEnemy("Cerberus", "Black", new[] { Re1EnemyIds.Cerberus }),
+            new SelectableEnemy("Tyrant", "DarkGray", new[] { Re1EnemyIds.Tyrant1 }),
+            new SelectableEnemy("Yawn", "DarkOliveGreen", new[] { Re1EnemyIds.Yawn1, Re1EnemyIds.Yawn2 }),
+        };
     }
 }

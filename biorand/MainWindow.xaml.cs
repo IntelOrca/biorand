@@ -325,9 +325,9 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 var enemies = randomizer.GetEnemies();
                 var index = 0;
-                foreach (var (enemyName, colourName) in enemies)
+                foreach (var enemy in enemies)
                 {
-                    var colour = (Color)ColorConverter.ConvertFromString(colourName);
+                    var colour = (Color)ColorConverter.ConvertFromString(enemy.Colour);
                     var ratio = _config.EnemyRatios.Length > index ?
                         _config.EnemyRatios[index] :
                         0;
@@ -335,7 +335,7 @@ namespace IntelOrca.Biohazard.BioRand
                     {
                         pieEnemies.Records.Add(new PieChart.Record()
                         {
-                            Name = enemyName,
+                            Name = enemy.Name,
                             Value = ratio,
                             Color = colour
                         });
@@ -917,9 +917,9 @@ namespace IntelOrca.Biohazard.BioRand
         {
             var randomizer = GetRandomizer();
             var items = new List<SliderListItem>();
-            foreach (var (enemyName, _) in randomizer.GetEnemies())
+            foreach (var enemy in randomizer.GetEnemies())
             {
-                items.Add(new SliderListItem(enemyName, 4, 7));
+                items.Add(new SliderListItem(enemy.Name, 4, 7));
             }
             listEnemies.ItemsSource = items;
         }
