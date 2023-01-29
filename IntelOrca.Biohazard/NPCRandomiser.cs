@@ -38,6 +38,8 @@ namespace IntelOrca.Biohazard
         private List<ExternalCharacter1> _emds1 = new List<ExternalCharacter1>();
         private List<ExternalCharacter2> _emds2 = new List<ExternalCharacter2>();
 
+        public HashSet<string> SelectedActors { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         public NPCRandomiser(
             BioVersion version,
             RandoLogger logger,
@@ -238,7 +240,8 @@ namespace IntelOrca.Biohazard
             _logger.WriteHeading("Adding additional NPCs:");
             foreach (var g in _emds1.GroupBy(x => x.EmId))
             {
-                var emd = rng.NextOf(g.ToArray());
+                var gSelected = g.Where(x => SelectedActors.Contains(x.Actor)).ToArray();
+                var emd = rng.NextOf(gSelected);
                 _extraNpcMap[emd.EmId] = emd.Actor;
 
                 var dst = Path.Combine(enemyDirectory, $"EM1{emd.EmId:X3}.EMD");
@@ -259,6 +262,7 @@ namespace IntelOrca.Biohazard
 
             var emds = _emds2
                 .Where(x => x.Actor != _playerActor)
+                .Where(x => SelectedActors.Contains(x.Actor))
                 .Where(x => ActorHasVoiceSamples(x.Actor))
                 .ToArray();
 
@@ -419,6 +423,15 @@ namespace IntelOrca.Biohazard
                 {
                     continue;
                 }
+                
+                var selectedNpcs = supportedNpcs
+                    .Where(x => SelectedActors.Contains(GetActor(x) ?? ""))
+                    .ToArray();
+                if (selectedNpcs.Length != 0)
+                {
+                    supportedNpcs = selectedNpcs;
+                }
+
                 foreach (var enemyGroup in rdt.Enemies.GroupBy(x => x.Type))
                 {
                     if (!_npcHelper.IsNpc(enemyGroup.Key))

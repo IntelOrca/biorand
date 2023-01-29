@@ -182,19 +182,11 @@ namespace IntelOrca.Biohazard.RE2
 
         internal override void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser)
         {
-            var actors = new HashSet<string>();
-            actors.AddRange(new[] { "brad", "irons", "hunk", "kendo", "marvin" });
-
             if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard1))
             {
                 var dataPath = GetDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard1));
                 dataPath = Path.Combine(dataPath, "JPN");
                 npcRandomiser.AddToSelection(BioVersion.Biohazard1, dataPath);
-            }
-
-            if (config.IncludeNPCRE1)
-            {
-                actors.AddRange(new[] { "chris", "enrico", "jill", "rebecca", "richard", "wesker" });
             }
 
             for (int i = 0; i < 2; i++)
@@ -203,13 +195,10 @@ namespace IntelOrca.Biohazard.RE2
                 foreach (var emdPath in emdFiles)
                 {
                     var actor = Path.GetFileNameWithoutExtension(emdPath);
-                    if (config.IncludeNPCOther || actors.Contains(actor))
+                    if (emdPath.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
                     {
-                        if (emdPath.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
-                        {
-                            var timPath = Path.ChangeExtension(emdPath, ".tim");
-                            npcRandomiser.AddNPC2(i == 1, actor, emdPath, timPath);
-                        }
+                        var timPath = Path.ChangeExtension(emdPath, ".tim");
+                        npcRandomiser.AddNPC2(i == 1, actor, emdPath, timPath);
                     }
                 }
             }

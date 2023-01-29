@@ -283,6 +283,7 @@ namespace IntelOrca.Biohazard
                 if (config.RandomNPCs)
                 {
                     var npcRandomiser = new NPCRandomiser(BiohazardVersion, logger, config, originalDataPath, modPath, gameData, map, randomNpcs, NpcHelper, DataManager, playerActor);
+                    npcRandomiser.SelectedActors.AddRange(GetSelectedActors(config));
                     RandomizeNPCs(config, npcRandomiser);
                     npcRandomiser.Randomise();
                 }
@@ -425,6 +426,22 @@ namespace IntelOrca.Biohazard
             return result
                 .Select(x => x.ToUpper())
                 .OrderBy(x => x)
+                .ToArray();
+        }
+
+        private string[] GetSelectedActors(RandoConfig config)
+        {
+            var enabledNpcs = config.EnabledNPCs;
+            var npcs = GetNPCs();
+            for (int i = 0; i < npcs.Length; i++)
+            {
+                if (enabledNpcs.Length <= i || !enabledNpcs[i])
+                {
+                    npcs[i] = "";
+                }
+            }
+            return npcs
+                .Where(x => !string.IsNullOrEmpty(x))
                 .ToArray();
         }
 
