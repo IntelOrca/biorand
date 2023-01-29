@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
@@ -22,77 +23,11 @@ namespace IntelOrca.Biohazard.RE1
                 .Replace("_", " ");
         }
 
-        public void GetEnemyProbabilities(RandoConfig config, Action<byte, double> addIfSupported)
+        public bool SupportsEnemyType(RandoConfig config, Rdt rdt, string difficulty, bool hasEnemyPlacements, byte enemyType)
         {
-            switch (config.EnemyDifficulty)
-            {
-                case 0:
-                    AddZombieTypes(20, addIfSupported);
-                    addIfSupported(Re1EnemyIds.Cerberus, 10);
-                    addIfSupported(Re1EnemyIds.SpiderBrown, 5);
-                    addIfSupported(Re1EnemyIds.SpiderBlack, 5);
-                    addIfSupported(Re1EnemyIds.Crow, 20);
-                    addIfSupported(Re1EnemyIds.Hunter, 5);
-                    addIfSupported(Re1EnemyIds.Bee, 10);
-                    addIfSupported(Re1EnemyIds.Chimera, 5);
-                    addIfSupported(Re1EnemyIds.Snake, 20);
-                    addIfSupported(Re1EnemyIds.Tyrant1, 1);
-                    addIfSupported(Re1EnemyIds.Yawn1, 1);
-                    addIfSupported(Re1EnemyIds.Yawn2, 1);
-                    break;
-                case 1:
-                    AddZombieTypes(25, addIfSupported);
-                    addIfSupported(Re1EnemyIds.Cerberus, 15);
-                    addIfSupported(Re1EnemyIds.SpiderBrown, 10);
-                    addIfSupported(Re1EnemyIds.SpiderBlack, 10);
-                    addIfSupported(Re1EnemyIds.Crow, 10);
-                    addIfSupported(Re1EnemyIds.Hunter, 10);
-                    addIfSupported(Re1EnemyIds.Bee, 5);
-                    addIfSupported(Re1EnemyIds.Chimera, 10);
-                    addIfSupported(Re1EnemyIds.Snake, 10);
-                    addIfSupported(Re1EnemyIds.Tyrant1, 2);
-                    addIfSupported(Re1EnemyIds.Yawn1, 2);
-                    addIfSupported(Re1EnemyIds.Yawn2, 2);
-                    break;
-                case 2:
-                    AddZombieTypes(30, addIfSupported);
-                    addIfSupported(Re1EnemyIds.Cerberus, 20);
-                    addIfSupported(Re1EnemyIds.SpiderBrown, 10);
-                    addIfSupported(Re1EnemyIds.SpiderBlack, 10);
-                    addIfSupported(Re1EnemyIds.Crow, 1);
-                    addIfSupported(Re1EnemyIds.Hunter, 15);
-                    addIfSupported(Re1EnemyIds.Bee, 1);
-                    addIfSupported(Re1EnemyIds.Snake, 1);
-                    addIfSupported(Re1EnemyIds.Chimera, 15);
-                    addIfSupported(Re1EnemyIds.Tyrant1, 5);
-                    addIfSupported(Re1EnemyIds.Yawn1, 5);
-                    addIfSupported(Re1EnemyIds.Yawn2, 5);
-                    break;
-                case 3:
-                default:
-                    AddZombieTypes(20, addIfSupported);
-                    addIfSupported(Re1EnemyIds.Cerberus, 40);
-                    addIfSupported(Re1EnemyIds.SpiderBrown, 12);
-                    addIfSupported(Re1EnemyIds.SpiderBlack, 12);
-                    addIfSupported(Re1EnemyIds.Crow, 1);
-                    addIfSupported(Re1EnemyIds.Hunter, 25);
-                    addIfSupported(Re1EnemyIds.Bee, 1);
-                    addIfSupported(Re1EnemyIds.Snake, 1);
-                    addIfSupported(Re1EnemyIds.Chimera, 25);
-                    addIfSupported(Re1EnemyIds.Tyrant1, 10);
-                    addIfSupported(Re1EnemyIds.Yawn1, 10);
-                    addIfSupported(Re1EnemyIds.Yawn2, 10);
-                    break;
-            }
-        }
-
-        private static void AddZombieTypes(double prob, Action<byte, double> addIfSupported)
-        {
-            var subProb = prob / _zombieTypes.Length;
-            foreach (var zombieType in _zombieTypes)
-            {
-                addIfSupported(zombieType, subProb);
-            }
+            var exclude = new HashSet<byte>();
+            ExcludeEnemies(config, rdt, difficulty, x => exclude.Add(x));
+            return !exclude.Contains(enemyType);
         }
 
         public void ExcludeEnemies(RandoConfig config, Rdt rdt, string difficulty, Action<byte> exclude)
@@ -231,13 +166,15 @@ namespace IntelOrca.Biohazard.RE1
             return type <= Re1EnemyIds.Yawn2;
         }
 
+        public int GetEnemyTypeLimit(RandoConfig config, byte type) => 32;
+
         public SelectableEnemy[] GetSelectableEnemies() => new[]
         {
             new SelectableEnemy("Bee", "Yellow", new[] { Re1EnemyIds.Bee }),
             new SelectableEnemy("Crow", "Black", new[] { Re1EnemyIds.Crow }),
             new SelectableEnemy("Snake", "DarkOliveGreen", new[] { Re1EnemyIds.Snake }),
             new SelectableEnemy("Spider", "YellowGreen", new[] { Re1EnemyIds.SpiderBrown }),
-            new SelectableEnemy("Zombie", "LightGray", new[] { Re1EnemyIds.Zombie }),
+            new SelectableEnemy("Zombie", "LightGray", _zombieTypes),
             new SelectableEnemy("Chimera", "Gray", new[] { Re1EnemyIds.Chimera }),
             new SelectableEnemy("Hunter", "IndianRed", new[] { Re1EnemyIds.Hunter }),
             new SelectableEnemy("Cerberus", "Black", new[] { Re1EnemyIds.Cerberus }),

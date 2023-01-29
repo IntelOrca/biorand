@@ -1,5 +1,8 @@
-﻿namespace IntelOrca.Biohazard
+﻿using System.Diagnostics;
+
+namespace IntelOrca.Biohazard
 {
+    [DebuggerDisplay("{Name}")]
     public class SelectableEnemy
     {
         public string Name { get; }
