@@ -790,6 +790,8 @@ namespace IntelOrca.Biohazard.BioRand
 
         private BaseRandomiser GetRandomizer()
         {
+            if (SelectedGame == null)
+                return null;
             return GetRandomizer(SelectedGame.Value);
         }
 
