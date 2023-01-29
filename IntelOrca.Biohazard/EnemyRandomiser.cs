@@ -84,21 +84,58 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        public void Randomise()
+        public void Randomise(PlayGraph? graph)
         {
             _logger.WriteHeading("Randomizing enemies:");
             ReadEnemyPlacements();
             SetupRandomEnemyPlacements();
-            RandomizeRooms();
+            RandomizeRooms(GetAccessibleRdts(graph));
             FixRooms();
         }
 
-        private void RandomizeRooms()
+        private Rdt[] GetAccessibleRdts(PlayGraph? graph)
         {
-            var enemyRdts = _gameData.Rdts
+            if (graph == null || graph.Start == null)
+                return _gameData.Rdts;
+
+            var visited = new HashSet<PlayNode>();
+            var q = new Queue<PlayNode>();
+            q.Enqueue(graph.Start);
+            while (q.Count > 0)
+            {
+                var node = q.Dequeue();
+                if (visited.Add(node))
+                {
+                    foreach (var e in node.Edges)
+                    {
+                        if (e.Node != null)
+                        {
+                            q.Enqueue(e.Node);
+                        }
+                    }
+                }
+            }
+            return visited
+                .Select(x => _gameData.GetRdt(x.RdtId)!)
+                .ToArray();
+        }
+
+        private void RandomizeRooms(Rdt[] rdts)
+        {
+            var enemyRdts = rdts
                 .Where(RdtCanHaveEnemies)
-                // .Shuffle(_rng)
+                .Shuffle(_rng)
                 .ToList();
+
+            if (_config.RandomEnemyPlacement)
+            {
+                var maxArray = new[] { 3, 5, 8, 10 };
+                var maxQuantity = maxArray[_config.EnemyQuantity];
+                var numEmptyRdts = Enumerable.Range(0, enemyRdts.Count)
+                    .Count(x => _rng.Next(0, maxQuantity) == 0);
+                numEmptyRdts = Math.Min(numEmptyRdts, enemyRdts.Count);
+                enemyRdts.RemoveRange(0, numEmptyRdts);
+            }
 
             var roomRandomized = true;
             while (enemyRdts.Count != 0 && roomRandomized)

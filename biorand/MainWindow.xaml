@@ -210,7 +210,7 @@
                                                            Maximum="3"
                                                            ToolTip="Adjusts the average number of enemies that can occur in a room." />
                                         <local:RandoSlider x:Name="sliderEnemyDifficulty" Heading="Difficulty" LowText="Ez" HighText="Hard" Maximum="3"
-                                                           ToolTip="Adjust likelyhood of more easier / slower enemies (crows, ivies, spiders, zombies), or more difficult / faster enemies (ceberus', lickers, tyrants) being placed."/>
+                                                           ToolTip="Adjusts the limit of how many difficult enemies can appear in a single room, and the likelyhood of them being aggravated."/>
                                     </StackPanel>
                                     <ListView Grid.Row="1" x:Name="listEnemies" HorizontalContentAlignment="Stretch" Margin="0 4">
                                         <ListView.ItemContainerStyle>

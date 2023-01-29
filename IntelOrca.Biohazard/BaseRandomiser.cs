@@ -251,12 +251,13 @@ namespace IntelOrca.Biohazard
 #endif
 
                 var map = GetMapFromJson();
+                var graph = null as PlayGraph;
                 if (config.RandomDoors || config.RandomItems)
                 {
                     var dgmlPath = Path.Combine(modPath, $"graph_pl{config.Player}.dgml");
                     var doorRando = new DoorRandomiser(logger, config, gameData, map, randomDoors, ItemHelper);
                     var itemRando = new ItemRandomiser(logger, config, gameData, randomItems, ItemHelper);
-                    var graph = config.RandomDoors ?
+                    graph = config.RandomDoors ?
                         doorRando.CreateRandomGraph() :
                         doorRando.CreateOriginalGraph();
                     try
@@ -276,7 +277,7 @@ namespace IntelOrca.Biohazard
                 if (config.RandomEnemies)
                 {
                     var enemyRandomiser = new EnemyRandomiser(BiohazardVersion, logger, config, gameData, map, randomEnemies, EnemyHelper, modPath, DataManager);
-                    enemyRandomiser.Randomise();
+                    enemyRandomiser.Randomise(graph);
                 }
 
                 var playerActor = ChangePlayerCharacters(config, logger, gameData, modPath);
