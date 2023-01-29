@@ -66,7 +66,7 @@ namespace IntelOrca.Biohazard.BioRand
                 {
                     using (var g = Graphics.FromImage(bitmap))
                     {
-                        g.DrawImageUnscaled(srcBitmap, x, y);
+                        g.DrawImage(srcBitmap, x, y, 30, 30);
                     }
                     timFile.ImportBitmap(bitmap);
                 }
