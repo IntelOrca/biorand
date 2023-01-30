@@ -207,7 +207,13 @@
       "enemies": [],
       "npcs": [
         {
-          "includeOffsets": [ 164604, 164650, 164674 ]
+          "includeOffsets": [ 164604, 164650, 164674 ],
+          "cutscene": 0
+        },
+        {
+          "includeOffsets": [ 164772 ],
+          "includeTypes": [ 32, 33, 34, 35, 36 ],
+          "cutscene": 1
         }
       ]
     },
