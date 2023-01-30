@@ -241,6 +241,9 @@ namespace IntelOrca.Biohazard
             foreach (var g in _emds1.GroupBy(x => x.EmId))
             {
                 var gSelected = g.Where(x => SelectedActors.Contains(x.Actor)).ToArray();
+                if (gSelected.Length == 0)
+                    continue;
+
                 var emd = rng.NextOf(gSelected);
                 _extraNpcMap[emd.EmId] = emd.Actor;
 
