@@ -9,6 +9,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
+using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.RE2;
 using IntelOrca.Biohazard.Script.Opcodes;
 using NVorbis;
@@ -248,19 +249,52 @@ namespace IntelOrca.Biohazard
             Directory.CreateDirectory(enemyDirectory);
 
             _logger.WriteHeading("Adding additional NPCs:");
+            var normalSlots = new Queue<byte>(new byte[] {
+                Re1EnemyIds.ChrisStars,
+                Re1EnemyIds.JillStars,
+                Re1EnemyIds.BarryStars,
+                Re1EnemyIds.RebeccaStars,
+                Re1EnemyIds.WeskerStars
+            }.Shuffle(_rng));
+
             foreach (var g in _emds1.GroupBy(x => x.EmId))
             {
                 var gSelected = g.Where(x => SelectedActors.Contains(x.Actor)).ToArray();
                 if (gSelected.Length == 0)
                     continue;
 
-                var emd = rng.NextOf(gSelected);
-                _extraNpcMap[emd.EmId] = emd.Actor;
+                if (g.Key == 0x20)
+                {
+                    // Normal slot, take all selected characters
+                    var randomCharactersToInclude = gSelected.Shuffle(_rng);
+                    foreach (var rchar in randomCharactersToInclude)
+                    {
+                        // 50:50 on whether to use original or new character, unless original is not selected.
+                        var slot = normalSlots.Dequeue();
+                        var originalActor = GetActor(slot, true) ?? "";
+                        if (!SelectedActors.Contains(originalActor) ||
+                            _rng.NextProbability(50))
+                        {
+                            SetEm(slot, rchar);
+                        }
+                    }
+                }
+                else
+                {
+                    // Special slot, only take one of the selected characters
+                    var emd = rng.NextOf(gSelected);
+                    SetEm(emd.EmId, emd);
+                }
+            }
 
-                var dst = Path.Combine(enemyDirectory, $"EM1{emd.EmId:X3}.EMD");
-                File.Copy(emd.EmPath, dst, true);
+            void SetEm(byte id, ExternalCharacter1 ec)
+            {
+                _extraNpcMap[id] = ec.Actor;
 
-                _logger.WriteLine($"Enemy 0x{emd.EmId:X2} becomes {emd.Actor}");
+                var dst = Path.Combine(enemyDirectory, $"EM1{id:X3}.EMD");
+                File.Copy(ec.EmPath, dst, true);
+
+                _logger.WriteLine($"Enemy 0x{id:X2} becomes {ec.Actor}");
             }
         }
 
