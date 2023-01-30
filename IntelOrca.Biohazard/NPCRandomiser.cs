@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using System.Threading.Tasks;
 using IntelOrca.Biohazard.RE2;
 using IntelOrca.Biohazard.Script.Opcodes;
 using NVorbis;
@@ -122,43 +124,51 @@ namespace IntelOrca.Biohazard
                     samples.Add(sample);
                 }
             }
-            foreach (var actorPath in _dataManager.GetDirectoriesIn("voice"))
-            {
-                var actor = Path.GetFileName(actorPath);
-                var sampleFiles = Directory.GetFiles(actorPath);
-                foreach (var sampleFile in sampleFiles)
+
+            return _dataManager
+                .GetDirectoriesIn("voice")
+                .SelectMany(x =>
                 {
-                    if (!sampleFile.EndsWith(".wav", StringComparison.OrdinalIgnoreCase) &&
-                        !sampleFile.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
+                    var actor = Path.GetFileName(x);
+                    var sampleFiles = Directory.GetFiles(x);
+                    return sampleFiles.Select(y => (Actor: actor, SampleFiles: y));
+                })
+                .AsParallel()
+                .Select(x => ProcessSample(x.Actor, x.SampleFiles))
+                .Where(x => x != null)
+                .ToArray()!;
+        }
 
-                    var fileName = Path.GetFileName(sampleFile);
-                    var condition = GetThingFromFileName(fileName, '-');
-                    if (condition != null)
-                    {
-                        if (condition.StartsWith("no", StringComparison.OrdinalIgnoreCase))
-                        {
-                            condition = "!" + condition.Substring(2);
-                        }
-                        else
-                        {
-                            condition = "@" + condition;
-                        }
-                    }
+        private VoiceSample? ProcessSample(string actor, string sampleFile)
+        {
+            if (!sampleFile.EndsWith(".wav", StringComparison.OrdinalIgnoreCase) &&
+                !sampleFile.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
 
-                    var sample = new VoiceSample();
-                    sample.BasePath = Path.GetDirectoryName(sampleFile);
-                    sample.Path = fileName;
-                    sample.Actor = actor;
-                    sample.End = GetVoiceLength(sampleFile);
-                    sample.Kind = GetThingFromFileName(fileName, '_');
-                    sample.Condition = condition;
-                    samples.Add(sample);
+            var fileName = Path.GetFileName(sampleFile);
+            var condition = GetThingFromFileName(fileName, '-');
+            if (condition != null)
+            {
+                if (condition.StartsWith("no", StringComparison.OrdinalIgnoreCase))
+                {
+                    condition = "!" + condition.Substring(2);
+                }
+                else
+                {
+                    condition = "@" + condition;
                 }
             }
-            return samples.ToArray();
+
+            var sample = new VoiceSample();
+            sample.BasePath = Path.GetDirectoryName(sampleFile);
+            sample.Path = fileName;
+            sample.Actor = actor;
+            sample.End = GetVoiceLength(sampleFile);
+            sample.Kind = GetThingFromFileName(fileName, '_');
+            sample.Condition = condition;
+            return sample;
         }
 
         private static string? GetThingFromFileName(string filename, char symbol)
