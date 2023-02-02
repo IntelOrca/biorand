@@ -293,9 +293,23 @@ namespace IntelOrca.Biohazard
                 }
             }
 
-            if (rdt.Version == BioVersion.Biohazard1 && fixType != null)
+            if (rdt.Version == BioVersion.Biohazard1)
             {
-                FixRE1Sounds(rdt.RdtId, fixType.Value);
+                if (fixType != null)
+                {
+                    FixRE1Sounds(rdt.RdtId, fixType.Value);
+                }
+            }
+            else
+            {
+                // Mute all NPCs in the room so that we can hear enemies
+                foreach (var em in rdt.Enemies)
+                {
+                    if (!_enemyHelper.IsEnemy(em.Type))
+                    {
+                        em.SoundBank = 0;
+                    }
+                }
             }
             return fixType != null;
         }
