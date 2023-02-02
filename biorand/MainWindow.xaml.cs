@@ -208,6 +208,10 @@ namespace IntelOrca.Biohazard.BioRand
                 chkIncludeDocuments.IsChecked = _config.IncludeDocuments;
                 chkRandomInventory.IsChecked = _config.RandomInventory;
 
+                dropdownWeapon0.SelectedIndex = _config.Weapon0;
+                dropdownWeapon1.SelectedIndex = _config.Weapon1;
+                sliderWeaponQuantity.Value = _config.WeaponQuantity;
+
                 sliderEnemyDifficulty.Value = _config.EnemyDifficulty;
 
                 sliderAmmo.Value = _config.RatioAmmo;
@@ -384,7 +388,9 @@ namespace IntelOrca.Biohazard.BioRand
             _config.AlternativeRoutes = chkAlternativeRoute.IsChecked == true && !_config.RandomDoors;
             _config.IncludeDocuments = chkIncludeDocuments.IsChecked == true;
             _config.RandomInventory = chkRandomInventory.IsChecked == true;
-
+            _config.Weapon0 = (byte)dropdownWeapon0.SelectedIndex;
+            _config.Weapon1 = (byte)dropdownWeapon1.SelectedIndex;
+            _config.WeaponQuantity = (byte)sliderWeaponQuantity.Value;
 
             _config.RatioAmmo = (byte)sliderAmmo.Value;
             _config.RatioHealth = (byte)sliderHealth.Value;
@@ -401,6 +407,8 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void UpdateEnabledUi()
         {
+            dropdownWeapon0.IsEnabled = chkRandomInventory.IsChecked == true;
+            dropdownWeapon1.IsEnabled = chkRandomInventory.IsChecked == true;
             panelItemSliders.IsEnabled = chkShuffleItems.IsChecked != true;
             chkShuffleItems.IsEnabled = chkRngDoors.IsChecked != true;
             chkAlternativeRoute.IsEnabled = chkRngDoors.IsChecked != true;
@@ -756,17 +764,17 @@ namespace IntelOrca.Biohazard.BioRand
                     panelRando.Visibility = Visibility.Visible;
                     if (index == 0)
                     {
-                        chkRandomEnemyPlacements.IsEnabled = false;
-                        chkEnemyRestrictedRooms.IsEnabled = false;
-                        sliderEnemyCount.IsEnabled = false;
+                        chkRandomEnemyPlacements.Visibility = Visibility.Hidden;
+                        chkEnemyRestrictedRooms.Visibility = Visibility.Hidden;
+                        sliderEnemyCount.Visibility = Visibility.Hidden;
 
                         _config.RandomEnemyPlacement = false;
                     }
                     else
                     {
-                        chkRandomEnemyPlacements.IsEnabled = true;
-                        chkEnemyRestrictedRooms.IsEnabled = true;
-                        sliderEnemyCount.IsEnabled = true;
+                        chkRandomEnemyPlacements.Visibility = Visibility.Visible;
+                        chkEnemyRestrictedRooms.Visibility = Visibility.Visible;
+                        sliderEnemyCount.Visibility = Visibility.Visible;
                     }
                     dropdownVariant.Visibility = index == 1 ?
                         Visibility.Visible :

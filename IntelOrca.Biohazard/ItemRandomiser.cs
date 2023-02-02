@@ -24,7 +24,7 @@ namespace IntelOrca.Biohazard
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
         private HashSet<RdtItemId> _visitedItems = new HashSet<RdtItemId>();
 
-        private RandomInventory.Entry? _startingWeapon;
+        private List<RandomInventory.Entry> _startingWeapons = new List<RandomInventory.Entry>();
 
         public ItemRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Rng random, IItemHelper itemHelper)
         {
@@ -110,15 +110,15 @@ namespace IntelOrca.Biohazard
                 remaining = size[i];
 
                 // Primary weapon
-                if (_startingWeapon != null)
+                foreach (var weapon in _startingWeapons)
                 {
-                    var weaponType = _startingWeapon.Value.Type;
+                    var weaponType = weapon.Type;
                     var ammoType = _itemHelper
                         .GetAmmoTypeForWeapon(weaponType)
                         .Shuffle(_rng)
                         .FirstOrDefault();
 
-                    var amount = _startingWeapon.Value.Count;
+                    var amount = weapon.Count;
                     var extra = (byte)0;
                     if (_rng.NextProbability(75))
                     {
@@ -190,8 +190,14 @@ namespace IntelOrca.Biohazard
                     var size = _itemHelper.GetItemSize(type);
                     if (size == 2)
                     {
-                        entries.Add(new RandomInventory.Entry(type, count, 1));
-                        entries.Add(new RandomInventory.Entry(type, count, 2));
+                        var index = entries.Count;
+                        if ((entries.Count & 1) != 0)
+                        {
+                            // Double items must be placed on an even index
+                            index--;
+                        }
+                        entries.Insert(index + 0, new RandomInventory.Entry(type, count, 1));
+                        entries.Insert(index + 1, new RandomInventory.Entry(type, count, 2));
                     }
                     else
                     {
@@ -592,28 +598,54 @@ namespace IntelOrca.Biohazard
             _shufflePool.Clear();
 
             // Weapons first
-            var ammoTypes = new HashSet<byte>() { _itemHelper.GetItemId(CommonItemKind.HandgunAmmo) };
-            var items = _itemHelper.GetWeapons(_rng, _config).Shuffle(_rng);
-            _startingWeapon = null;
-            var giveWeapon = _rng.NextProbability(90);
-            foreach (var itemType in items)
+            _startingWeapons.Clear();
+
+            var availableWeapons = new List<byte>();
+            var weaponPool = _itemHelper
+                .GetWeapons(_rng, _config)
+                .Shuffle(_rng)
+                .ToList();
+
+            var numWeapons = Math.Max(1, _config.WeaponQuantity * weaponPool.Count / 7);
+
+            if (_config.RandomInventory)
             {
-                // Spawn weapon
-                var amount = GetRandomAmount(itemType, true);
-                var spawn = true;
-                if (_config.RandomInventory && giveWeapon && _startingWeapon == null && _itemHelper.GetInventorySize(_config) != null)
+                var weaponKinds = new[] { (WeaponKind)_config.Weapon0, (WeaponKind)_config.Weapon1 };
+                for (int i = 0; i < weaponKinds.Length; i++)
                 {
-                    _startingWeapon = new RandomInventory.Entry(itemType, amount, 0);
-                    if (_config.Game != 2 || _config.Scenario == 0)
+                    var weaponKind = weaponKinds[i];
+                    if (weaponKind == WeaponKind.Random)
+                        weaponKind = _rng.NextOf(WeaponKind.None, WeaponKind.Sidearm, WeaponKind.Primary, WeaponKind.Powerful);
+                    if (weaponKind == WeaponKind.None)
+                        continue;
+
+                    var itemIndex = weaponPool.FindLastIndex(x => weaponKind == _itemHelper.GetWeaponKind(x));
+                    if (itemIndex != -1)
                     {
-                        spawn = false;
+                        var itemType = weaponPool[itemIndex];
+                        weaponPool.RemoveAt(itemIndex);
+                        availableWeapons.Add(itemType);
+
+                        // Add to inventory
+                        var amount = GetRandomAmount(itemType, true);
+                        _startingWeapons.Add(new RandomInventory.Entry(itemType, amount));
                     }
                 }
-                if (spawn)
-                {
-                    SpawnItem(shuffled, itemType, amount);
-                }
+            }
+            else
+            {
+                availableWeapons.AddRange(_itemHelper.GetDefaultWeapons(_config));
+            }
 
+            while (availableWeapons.Count < numWeapons && weaponPool.Count != 0)
+            {
+                availableWeapons.Add(weaponPool[weaponPool.Count - 1]);
+                weaponPool.RemoveAt(weaponPool.Count - 1);
+            }
+
+            var ammoTypes = new HashSet<byte>();
+            foreach (var itemType in availableWeapons)
+            {
                 // Spawn upgrade
                 var upgradeType = _itemHelper.GetWeaponUpgrade(itemType, _rng, _config);
                 if (upgradeType != null)

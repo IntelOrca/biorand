@@ -208,23 +208,25 @@ namespace IntelOrca.Biohazard.RE1
             }
         }
 
+        public byte[] GetDefaultWeapons(RandoConfig config)
+        {
+            if (config.Player == 0)
+                return new byte[0];
+            else
+                return new[] { (byte)ItemType.Beretta };
+        }
+
         public byte[] GetWeapons(Rng rng, RandoConfig config)
         {
-            var enemyDifficulty = config.RandomEnemies ? 0 : config.EnemyDifficulty;
-
-            var items = new List<byte>();
-            items.Add(Re1ItemIds.Beretta);
-            if (enemyDifficulty >= 2 || rng.Next(0, 2) >= 1)
-                items.Add(Re1ItemIds.Shotgun);
-            if (enemyDifficulty >= 3 || rng.Next(0, 3) >= 1)
-                items.Add(rng.NextOf(Re1ItemIds.ColtPython, Re1ItemIds.DumDumColt));
-            // if (rng.Next(0, 2) == 0)
-            //     items.Add(Re1ItemIds.FlameThrower);
-            if (enemyDifficulty >= 3 || rng.Next(0, 3) >= 1)
-                items.Add(rng.NextOf(Re1ItemIds.BazookaAcid, Re1ItemIds.BazookaExplosive, Re1ItemIds.BazookaFlame));
-            if (rng.Next(0, 2) == 0)
-                items.Add(Re1ItemIds.RocketLauncher);
-            return items.ToArray();
+            return new[]
+            {
+                Re1ItemIds.Beretta,
+                Re1ItemIds.Shotgun,
+                Re1ItemIds.FlameThrower,
+                rng.NextOf(Re1ItemIds.BazookaAcid, Re1ItemIds.BazookaExplosive, Re1ItemIds.BazookaFlame),
+                rng.NextOf(Re1ItemIds.ColtPython, Re1ItemIds.DumDumColt),
+                Re1ItemIds.RocketLauncher
+            };
         }
 
         public byte? GetWeaponUpgrade(byte weapon, Rng rng, RandoConfig config)
@@ -235,6 +237,26 @@ namespace IntelOrca.Biohazard.RE1
         public bool IsWeaponCompatible(byte player, byte item)
         {
             return true;
+        }
+
+        public WeaponKind GetWeaponKind(byte item)
+        {
+            switch (item)
+            {
+                case Re1ItemIds.Beretta:
+                    return WeaponKind.Sidearm;
+                case Re1ItemIds.Shotgun:
+                case Re1ItemIds.FlameThrower:
+                    return WeaponKind.Primary;
+                case Re1ItemIds.BazookaAcid:
+                case Re1ItemIds.BazookaExplosive:
+                case Re1ItemIds.BazookaFlame:
+                case Re1ItemIds.ColtPython:
+                case Re1ItemIds.DumDumColt:
+                    return WeaponKind.Powerful;
+                default:
+                    return WeaponKind.None;
+            }
         }
 
         public bool HasInkRibbons(RandoConfig config)

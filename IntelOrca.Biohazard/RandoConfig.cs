@@ -39,6 +39,9 @@ namespace IntelOrca.Biohazard
         // Numbers
         public byte Player0 { get; set; }
         public byte Player1 { get; set; }
+        public byte Weapon0 { get; set; } = 1;
+        public byte Weapon1 { get; set; } = 1;
+        public byte WeaponQuantity { get; set; } = 7;
         public byte RatioAmmo { get; set; } = 16;
         public byte RatioHealth { get; set; } = 16;
         public byte RatioInkRibbons { get; set; } = 16;
@@ -87,8 +90,10 @@ namespace IntelOrca.Biohazard
             result.AreaCount = reader.ReadByte(2);
             result.AreaSize = reader.ReadByte(3);
 
-            reader.ReadDigit();
-            reader.ReadDigit();
+            result.Weapon0 = reader.ReadByte(3);
+            result.Weapon1 = reader.ReadByte(3);
+            result.WeaponQuantity = reader.ReadByte(3);
+            reader.ReadFlag();
 
             result.Player0 = reader.ReadDigit();
             result.Player1 = reader.ReadDigit();
@@ -153,8 +158,10 @@ namespace IntelOrca.Biohazard
             writer.Write(2, AreaCount);
             writer.Write(3, AreaSize);
 
-            writer.WriteDigit(0);
-            writer.WriteDigit(0);
+            writer.Write(3, Weapon0);
+            writer.Write(3, Weapon1);
+            writer.Write(3, WeaponQuantity);
+            writer.Write(1, 0);
 
             writer.WriteDigit(Player0);
             writer.WriteDigit(Player1);

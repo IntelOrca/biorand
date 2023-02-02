@@ -119,6 +119,14 @@ namespace IntelOrca.Biohazard.RE2
             return new byte[0];
         }
 
+        public byte[] GetDefaultWeapons(RandoConfig config)
+        {
+            if (config.Player == 0)
+                return new[] { (byte)ItemType.HandgunLeon };
+            else
+                return new[] { (byte)ItemType.HandgunClaire };
+        }
+
         public int GetItemQuantity(RandoConfig config, byte item)
         {
             if (item == (byte)ItemType.RedJewel)
@@ -246,8 +254,6 @@ namespace IntelOrca.Biohazard.RE2
 
         public byte[] GetWeapons(Rng rng, RandoConfig config)
         {
-            var enemyDifficulty = config.RandomEnemies ? config.EnemyDifficulty : 0;
-            var glWeapon = rng.NextOf(ItemType.GrenadeLauncherExplosive, ItemType.GrenadeLauncherFlame, ItemType.GrenadeLauncherAcid);
             var allWeapons = new[] {
                 ItemType.HandgunLeon,
                 ItemType.HandgunClaire,
@@ -260,29 +266,12 @@ namespace IntelOrca.Biohazard.RE2
                 ItemType.Shotgun,
                 ItemType.Magnum,
                 ItemType.RocketLauncher,
-                glWeapon
+                rng.NextOf(ItemType.GrenadeLauncherExplosive, ItemType.GrenadeLauncherFlame, ItemType.GrenadeLauncherAcid)
             };
-            allWeapons = allWeapons.Where(x => IsWeaponCompatible((byte)config.Player, (byte)x)).ToArray();
-            var goodWeapon = allWeapons.Where(x => x == ItemType.Shotgun || x == ItemType.Bowgun).Shuffle(rng).FirstOrDefault();
-            var greatWeapon = allWeapons.Where(x => x == ItemType.Magnum || x == glWeapon).Shuffle(rng).FirstOrDefault();
-
-            // Guarantee good weapons for higher enemy difficulty
-            var items = new List<ItemType>();
-            if (enemyDifficulty >= 2)
-                items.Add(goodWeapon);
-            if (enemyDifficulty >= 3)
-                items.Add(greatWeapon);
-
-            // Remaining weapons
-            foreach (var weapon in allWeapons)
-            {
-                if (rng.NextProbability(50) && !items.Contains(weapon))
-                {
-                    items.Add(weapon);
-                }
-            }
-
-            return items.Select(x => (byte)x).ToArray();
+            return allWeapons
+                .Where(x => IsWeaponCompatible((byte)config.Player, (byte)x))
+                .Select(x => (byte)x)
+                .ToArray();
         }
 
         public byte? GetWeaponUpgrade(byte weapon, Rng rng, RandoConfig config)
@@ -340,17 +329,45 @@ namespace IntelOrca.Biohazard.RE2
             return true;
         }
 
-    public bool HasInkRibbons(RandoConfig config)
-    {
-        return true;
-    }
+        public WeaponKind GetWeaponKind(byte item)
+        {
+            switch ((ItemType)item)
+            {
+                case ItemType.HandgunLeon:
+                case ItemType.HandgunClaire:
+                case ItemType.CustomHandgun:
+                case ItemType.Beretta:
+                case ItemType.ColtSAA:
+                    return WeaponKind.Sidearm;
+                case ItemType.Shotgun:
+                case ItemType.CustomShotgun:
+                case ItemType.Bowgun:
+                case ItemType.SMG:
+                case ItemType.Flamethrower:
+                case ItemType.Sparkshot:
+                    return WeaponKind.Primary;
+                case ItemType.Magnum:
+                case ItemType.CustomMagnum:
+                case ItemType.GrenadeLauncherAcid:
+                case ItemType.GrenadeLauncherExplosive:
+                case ItemType.GrenadeLauncherFlame:
+                    return WeaponKind.Powerful;
+                default:
+                    return WeaponKind.None;
+            }
+        }
 
-    public int[]? GetInventorySize(RandoConfig config)
-    {
-        if (config.Player == 0)
-            return new int[] { 8 };
-        else
-            return new int[] { 8 };
+        public bool HasInkRibbons(RandoConfig config)
+        {
+            return true;
+        }
+
+        public int[]? GetInventorySize(RandoConfig config)
+        {
+            if (config.Player == 0)
+                return new int[] { 8 };
+            else
+                return new int[] { 8 };
+        }
     }
-}
 }
