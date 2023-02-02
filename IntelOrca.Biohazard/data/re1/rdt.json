@@ -245,6 +245,11 @@
       ],
       "npcs": [
         {
+          "cutscene": 0,
+          "player": 0
+        },
+        {
+          "cutscene": 1,
           "player": 0
         },
         {
