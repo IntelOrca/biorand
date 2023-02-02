@@ -198,17 +198,18 @@ namespace IntelOrca.Biohazard
 
                 var bgmDirectory = Path.Combine(modPath, BGMPath);
                 var bgmRandomizer = new BgmRandomiser(logger, config, bgmDirectory, GetBgmJson(), BiohazardVersion == BioVersion.Biohazard1, new Rng(config.Seed), DataManager);
-                if (config.IncludeBGMRE1)
+                var enabledBgms = GetSelectedAlbums(config);
+                if (enabledBgms.Contains("RE1", StringComparer.OrdinalIgnoreCase))
                 {
                     var r = new Re1Randomiser(BgCreator);
                     r.AddMusicSelection(bgmRandomizer, reConfig);
                 }
-                if (config.IncludeBGMRE2)
+                if (enabledBgms.Contains("RE2", StringComparer.OrdinalIgnoreCase))
                 {
                     var r = new Re2Randomiser(BgCreator);
                     r.AddMusicSelection(bgmRandomizer, reConfig);
                 }
-                bgmRandomizer.AddCutomMusicToSelection(config);
+                bgmRandomizer.AddCutomMusicToSelection(enabledBgms);
 
                 if (BiohazardVersion == BioVersion.Biohazard1)
                 {
@@ -250,12 +251,13 @@ namespace IntelOrca.Biohazard
 #endif
 
                 var map = GetMapFromJson();
+                var graph = null as PlayGraph;
                 if (config.RandomDoors || config.RandomItems)
                 {
                     var dgmlPath = Path.Combine(modPath, $"graph_pl{config.Player}.dgml");
                     var doorRando = new DoorRandomiser(logger, config, gameData, map, randomDoors, ItemHelper);
                     var itemRando = new ItemRandomiser(logger, config, gameData, randomItems, ItemHelper);
-                    var graph = config.RandomDoors ?
+                    graph = config.RandomDoors ?
                         doorRando.CreateRandomGraph() :
                         doorRando.CreateOriginalGraph();
                     try
@@ -275,13 +277,14 @@ namespace IntelOrca.Biohazard
                 if (config.RandomEnemies)
                 {
                     var enemyRandomiser = new EnemyRandomiser(BiohazardVersion, logger, config, gameData, map, randomEnemies, EnemyHelper, modPath, DataManager);
-                    enemyRandomiser.Randomise();
+                    enemyRandomiser.Randomise(graph);
                 }
 
                 var playerActor = ChangePlayerCharacters(config, logger, gameData, modPath);
                 if (config.RandomNPCs)
                 {
                     var npcRandomiser = new NPCRandomiser(BiohazardVersion, logger, config, originalDataPath, modPath, gameData, map, randomNpcs, NpcHelper, DataManager, playerActor);
+                    npcRandomiser.SelectedActors.AddRange(GetSelectedActors(config));
                     RandomizeNPCs(config, npcRandomiser);
                     npcRandomiser.Randomise();
                 }
@@ -404,6 +407,64 @@ namespace IntelOrca.Biohazard
         public virtual string[] GetPlayerCharacters(int index)
         {
             return new string[0];
+        }
+
+        public virtual string[] GetNPCs()
+        {
+            return new string[0];
+        }
+
+        public virtual string[] GetMusicAlbums()
+        {
+            var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "re1",
+                "re2"
+            };
+            result.AddRange(DataManager
+                .GetDirectoriesIn("bgm")
+                .Select(Path.GetFileName));
+            return result
+                .Select(x => x.ToUpper())
+                .OrderBy(x => x)
+                .ToArray();
+        }
+
+        private string[] GetSelectedActors(RandoConfig config)
+        {
+            var enabledNpcs = config.EnabledNPCs;
+            var npcs = GetNPCs();
+            for (int i = 0; i < npcs.Length; i++)
+            {
+                if (enabledNpcs.Length <= i || !enabledNpcs[i])
+                {
+                    npcs[i] = "";
+                }
+            }
+            return npcs
+                .Where(x => !string.IsNullOrEmpty(x))
+                .ToArray();
+        }
+
+        private string[] GetSelectedAlbums(RandoConfig config)
+        {
+            var enabledBgms = config.EnabledBGMs;
+            var albums = GetMusicAlbums();
+            for (int i = 0; i < albums.Length; i++)
+            {
+                if (enabledBgms.Length <= i || !enabledBgms[i])
+                {
+                    albums[i] = "";
+                }
+            }
+            return albums
+                .Where(x => !string.IsNullOrEmpty(x))
+                .ToArray();
+        }
+
+        public SelectableEnemy[] GetEnemies()
+        {
+            return EnemyHelper.GetSelectableEnemies();
         }
 
         private void CreateBackgrounds(RandoConfig config, string modPath)

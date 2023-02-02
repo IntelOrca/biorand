@@ -182,19 +182,11 @@ namespace IntelOrca.Biohazard.RE2
 
         internal override void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser)
         {
-            var actors = new HashSet<string>();
-            actors.AddRange(new[] { "brad", "irons", "hunk", "kendo", "marvin" });
-
             if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard1))
             {
                 var dataPath = GetDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard1));
                 dataPath = Path.Combine(dataPath, "JPN");
                 npcRandomiser.AddToSelection(BioVersion.Biohazard1, dataPath);
-            }
-
-            if (config.IncludeNPCRE1)
-            {
-                actors.AddRange(new[] { "chris", "enrico", "jill", "rebecca", "richard", "wesker" });
             }
 
             for (int i = 0; i < 2; i++)
@@ -203,13 +195,10 @@ namespace IntelOrca.Biohazard.RE2
                 foreach (var emdPath in emdFiles)
                 {
                     var actor = Path.GetFileNameWithoutExtension(emdPath);
-                    if (config.IncludeNPCOther || actors.Contains(actor))
+                    if (emdPath.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
                     {
-                        if (emdPath.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
-                        {
-                            var timPath = Path.ChangeExtension(emdPath, ".tim");
-                            npcRandomiser.AddNPC2(i == 1, actor, emdPath, timPath);
-                        }
+                        var timPath = Path.ChangeExtension(emdPath, ".tim");
+                        npcRandomiser.AddNPC2(i == 1, actor, emdPath, timPath);
                     }
                 }
             }
@@ -233,10 +222,28 @@ namespace IntelOrca.Biohazard.RE2
             foreach (var pldPath in pldFiles)
             {
                 var actor = Path.GetFileName(pldPath);
-                actor = char.ToUpper(actor[0]) + actor.Substring(1);
-                result.Add(actor);
+                result.Add(actor.ToTitle());
             }
             return result.ToArray();
+        }
+
+        public override string[] GetNPCs()
+        {
+            var actors = new HashSet<string>();
+            actors.AddRange(new[] { "leon", "claire", "ada", "sherry", "annette", "marvin", "irons", "ben", "kendo" });
+            for (int i = 0; i < 2; i++)
+            {
+                var emds = DataManager
+                    .GetFiles(BiohazardVersion, $"emd{i}")
+                    .Where(x => x.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
+                    .Select(Path.GetFileNameWithoutExtension)
+                    .ToArray();
+                actors.AddRange(emds);
+            }
+            return actors
+                .Select(x => x.ToTitle())
+                .OrderBy(x => x)
+                .ToArray();
         }
 
         private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, string actor, string modPath)

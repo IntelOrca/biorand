@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace IntelOrca.Biohazard
@@ -58,6 +59,10 @@ namespace IntelOrca.Biohazard
         public byte AreaCount { get; set; } = 3;
         public byte AreaSize { get; set; } = 7;
 
+        public byte[] EnemyRatios { get; set; } = new byte[0];
+        public bool[] EnabledNPCs { get; set; } = new bool[0];
+        public bool[] EnabledBGMs { get; set; } = new bool[0];
+
         public static RandoConfig FromString(string code)
         {
             var result = new RandoConfig();
@@ -113,6 +118,16 @@ namespace IntelOrca.Biohazard
             result.RandomEnemyPlacement = reader.ReadFlag();
             result.AllowEnemiesAnyRoom = reader.ReadFlag();
             result.EnemyQuantity = reader.ReadByte(2);
+
+            var values = new List<byte>();
+            for (int i = 0; i < 10; i++)
+            {
+                values.Add(reader.ReadByte(3));
+            }
+            result.EnemyRatios = values.ToArray();
+            result.EnabledNPCs = reader.ReadBooleanArray(30);
+            result.EnabledBGMs = reader.ReadBooleanArray(15);
+
             return result;
         }
 
@@ -178,6 +193,21 @@ namespace IntelOrca.Biohazard
             writer.Write(RandomEnemyPlacement);
             writer.Write(AllowEnemiesAnyRoom);
             writer.Write(2, EnemyQuantity);
+
+            for (int i = 0; i < 10; i++)
+            {
+                if (EnemyRatios.Length > i)
+                {
+                    writer.Write(3, EnemyRatios[i]);
+                }
+                else
+                {
+                    writer.Write(3, 0);
+                }
+            }
+            writer.WriteArray(30, EnabledNPCs);
+            writer.WriteArray(15, EnabledBGMs);
+
             return writer.ToString();
         }
 
@@ -249,6 +279,16 @@ namespace IntelOrca.Biohazard
                 _bitsRemaining -= numBits;
                 return result;
             }
+
+            public bool[] ReadBooleanArray(int numBits)
+            {
+                var result = new bool[numBits];
+                for (int i = 0; i < numBits; i++)
+                {
+                    result[i] = ReadFlag();
+                }
+                return result;
+            }
         }
 
         private class Writer
@@ -273,6 +313,15 @@ namespace IntelOrca.Biohazard
             public void Write(char c)
             {
                 _sb.Append(c);
+            }
+
+            public void WriteArray(int max, bool[] values)
+            {
+                for (int i = 0; i < max; i++)
+                {
+                    var flag = values.Length > i ? values[i] : true;
+                    Write(flag);
+                }
             }
 
             private void Flush()

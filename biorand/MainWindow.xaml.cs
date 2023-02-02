@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -9,6 +11,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.RE2;
@@ -130,6 +133,10 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 slider.Value = (byte)slider.Value;
             }
+            else if (sender is RandoSlider randoSlider)
+            {
+                randoSlider.Value = (byte)randoSlider.Value;
+            }
 
             if (!_suspendEvents)
             {
@@ -157,15 +164,37 @@ namespace IntelOrca.Biohazard.BioRand
                 dropdownPlayer0.SelectedIndex = _config.Player0;
                 dropdownPlayer1.SelectedIndex = _config.Player1;
 
+                if (listEnemies.ItemsSource != null)
+                {
+                    var index = 0;
+                    foreach (SliderListItem item in listEnemies.ItemsSource)
+                    {
+                        item.Value = _config.EnemyRatios.Length > index ? _config.EnemyRatios[index] : 0;
+                        index++;
+                    }
+                }
+
                 chkRngChars.IsChecked = _config.RandomNPCs;
-                chkNPCsRE1.IsChecked = _config.IncludeNPCRE1;
-                chkNPCsRE2.IsChecked = _config.IncludeNPCRE2;
-                chkNPCsOther.IsChecked = _config.IncludeNPCOther;
+                if (listNPCs.ItemsSource != null)
+                {
+                    var index = 0;
+                    foreach (CheckBoxListItem item in listNPCs.ItemsSource)
+                    {
+                        item.IsChecked = _config.EnabledNPCs.Length > index ? _config.EnabledNPCs[index] : false;
+                        index++;
+                    }
+                }
 
                 chkRngBgm.IsChecked = _config.RandomBgm;
-                chkBGMRE1.IsChecked = _config.IncludeBGMRE1;
-                chkBGMRE2.IsChecked = _config.IncludeBGMRE2;
-                chkBGMOther.IsChecked = _config.IncludeBGMOther;
+                if (listBGMs.ItemsSource != null)
+                {
+                    var index = 0;
+                    foreach (CheckBoxListItem item in listBGMs.ItemsSource)
+                    {
+                        item.IsChecked = _config.EnabledBGMs.Length > index ? _config.EnabledBGMs[index] : false;
+                        index++;
+                    }
+                }
 
                 chkRngDoors.IsChecked = _config.RandomDoors;
                 chkProtectSoftLock.IsChecked = _config.ProtectFromSoftLock || _config.RandomDoors;
@@ -192,6 +221,8 @@ namespace IntelOrca.Biohazard.BioRand
                 dropdownVariant.SelectedIndex = _config.GameVariant;
 
                 txtSeed.Text = _config.ToString();
+                seedQrCode.Seed = null;
+                seedQrCode.Seed = _config;
 
                 UpdateHints();
             }
@@ -207,10 +238,7 @@ namespace IntelOrca.Biohazard.BioRand
         {
             UpdateEstimateCompletion();
             UpdateItemPie();
-            if (SelectedGame == 0)
-                UpdateEnemyPie1();
-            else
-                UpdateEnemyPie2();
+            UpdateEnemyPie();
         }
 
         private void UpdateEstimateCompletion()
@@ -288,138 +316,35 @@ namespace IntelOrca.Biohazard.BioRand
             pieItemRatios.Update();
         }
 
-        private void UpdateEnemyPie1()
+        private void UpdateEnemyPie()
         {
             pieEnemies.Records.Clear();
 
-            switch (_config.EnemyDifficulty)
+            var randomizer = GetRandomizer();
+            if (randomizer != null)
             {
-                case 0:
-                    AddRatio("Crow", Colors.Black, 20);
-                    AddRatio("Snake", Colors.DarkOliveGreen, 20);
-                    AddRatio("Bee", Colors.Yellow, 10);
-                    AddRatio("Spider", Colors.YellowGreen, 5);
-                    AddRatio("Chimera", Colors.Gray, 5);
-                    AddRatio("Tyrant / Yawn", Colors.DarkGray, 4);
-                    AddRatio("Zombie", Colors.LightGray, 20);
-                    AddRatio("Hunter", Colors.IndianRed, 5);
-                    AddRatio("Cerebrus", Colors.Black, 10);
-                    break;
-                case 1:
-                    AddRatio("Crow", Colors.Black, 10);
-                    AddRatio("Snake", Colors.DarkOliveGreen, 10);
-                    AddRatio("Bee", Colors.Yellow, 5);
-                    AddRatio("Spider", Colors.YellowGreen, 10);
-                    AddRatio("Chimera", Colors.Gray, 10);
-                    AddRatio("Tyrant / Yawn", Colors.DarkGray, 8);
-                    AddRatio("Zombie", Colors.LightGray, 25);
-                    AddRatio("Hunter", Colors.IndianRed, 10);
-                    AddRatio("Cerebrus", Colors.Black, 15);
-                    break;
-                case 2:
-                    AddRatio("Crow", Colors.Black, 1);
-                    AddRatio("Snake", Colors.DarkOliveGreen, 1);
-                    AddRatio("Bee", Colors.Yellow, 1);
-                    AddRatio("Spider", Colors.YellowGreen, 10);
-                    AddRatio("Chimera", Colors.Gray, 15);
-                    AddRatio("Tyrant / Yawn", Colors.DarkGray, 20);
-                    AddRatio("Zombie", Colors.LightGray, 30);
-                    AddRatio("Hunter", Colors.IndianRed, 15);
-                    AddRatio("Cerebrus", Colors.Black, 20);
-                    break;
-                case 3:
-                default:
-                    AddRatio("Crow", Colors.Black, 1);
-                    AddRatio("Snake", Colors.DarkOliveGreen, 1);
-                    AddRatio("Bee", Colors.Yellow, 1);
-                    AddRatio("Spider", Colors.YellowGreen, 12);
-                    AddRatio("Chimera", Colors.Gray, 25);
-                    AddRatio("Tyrant / Yawn", Colors.DarkGray, 40);
-                    AddRatio("Zombie", Colors.LightGray, 20);
-                    AddRatio("Hunter", Colors.IndianRed, 25);
-                    AddRatio("Cerebrus", Colors.Black, 40);
-                    break;
-            }
-            pieEnemies.Update();
-
-            void AddRatio(string enemyName, Color color, double value)
-            {
-                pieEnemies.Records.Add(new PieChart.Record()
+                var enemies = randomizer.GetEnemies();
+                var index = 0;
+                foreach (var enemy in enemies)
                 {
-                    Name = enemyName,
-                    Value = value,
-                    Color = color
-                });
+                    var colour = (Color)ColorConverter.ConvertFromString(enemy.Colour);
+                    var ratio = _config.EnemyRatios.Length > index ?
+                        _config.EnemyRatios[index] :
+                        0;
+                    if (ratio != 0)
+                    {
+                        pieEnemies.Records.Add(new PieChart.Record()
+                        {
+                            Name = enemy.Name,
+                            Value = ratio,
+                            Color = colour
+                        });
+                    }
+                    index++;
+                }
             }
-        }
 
-        private void UpdateEnemyPie2()
-        {
-            pieEnemies.Records.Clear();
-
-            switch (_config.EnemyDifficulty)
-            {
-                case 0:
-                    AddRatio("Crow", Colors.Black, 10);
-                    AddRatio("Arms", Colors.LightGray, 10);
-                    AddRatio("Spider", Colors.YellowGreen, 10);
-                    AddRatio("Moth", Colors.DarkOliveGreen, 2);
-                    AddRatio("Ivy", Colors.SpringGreen, 3);
-                    AddRatio("Ivy", Colors.Purple, 2);
-                    AddRatio("Tyrant", Colors.DarkGray, 1);
-                    AddRatio("Zombie", Colors.LightGray, 50);
-                    AddRatio("Licker", Colors.IndianRed, 2);
-                    AddRatio("Licker", Colors.Gray, 2);
-                    AddRatio("Cerebrus", Colors.Black, 8);
-                    break;
-                case 1:
-                    AddRatio("Crow", Colors.Black, 5);
-                    AddRatio("Arms", Colors.LightGray, 5);
-                    AddRatio("Spider", Colors.YellowGreen, 6);
-                    AddRatio("Moth", Colors.DarkOliveGreen, 5);
-                    AddRatio("Ivy", Colors.SpringGreen, 6);
-                    AddRatio("Ivy", Colors.Purple, 6);
-                    AddRatio("Tyrant", Colors.DarkGray, 2);
-                    AddRatio("Zombie", Colors.LightGray, 40);
-                    AddRatio("Licker", Colors.IndianRed, 10);
-                    AddRatio("Licker", Colors.Gray, 5);
-                    AddRatio("Cerebrus", Colors.Black, 10);
-                    break;
-                case 2:
-                    AddRatio("Spider", Colors.YellowGreen, 7);
-                    AddRatio("Moth", Colors.DarkOliveGreen, 3);
-                    AddRatio("Ivy", Colors.SpringGreen, 6);
-                    AddRatio("Ivy", Colors.Purple, 6);
-                    AddRatio("Tyrant", Colors.DarkGray, 3);
-                    AddRatio("Zombie", Colors.LightGray, 25);
-                    AddRatio("Licker", Colors.IndianRed, 15);
-                    AddRatio("Licker", Colors.Gray, 10);
-                    AddRatio("Cerebrus", Colors.Black, 25);
-                    break;
-                case 3:
-                default:
-                    AddRatio("Spider", Colors.YellowGreen, 5);
-                    AddRatio("Moth", Colors.DarkOliveGreen, 2);
-                    AddRatio("Ivy", Colors.SpringGreen, 3);
-                    AddRatio("Ivy", Colors.Purple, 3);
-                    AddRatio("Tyrant", Colors.DarkGray, 5);
-                    AddRatio("Zombie", Colors.LightGray, 17);
-                    AddRatio("Licker", Colors.IndianRed, 5);
-                    AddRatio("Licker", Colors.Gray, 20);
-                    AddRatio("Cerebrus", Colors.Black, 40);
-                    break;
-            }
             pieEnemies.Update();
-
-            void AddRatio(string enemyName, Color color, double value)
-            {
-                pieEnemies.Records.Add(new PieChart.Record()
-                {
-                    Name = enemyName,
-                    Value = value,
-                    Color = color
-                });
-            }
         }
 
         private void UpdateConfig()
@@ -428,15 +353,22 @@ namespace IntelOrca.Biohazard.BioRand
             _config.Player0 = (byte)dropdownPlayer0.SelectedIndex;
             _config.Player1 = (byte)dropdownPlayer1.SelectedIndex;
 
+            _config.EnemyRatios = listEnemies.ItemsSource
+                .Cast<SliderListItem>()
+                .Select(x => (byte)x.Value)
+                .ToArray();
+
             _config.RandomNPCs = chkRngChars.IsChecked == true;
-            _config.IncludeNPCRE1 = chkNPCsRE1.IsChecked == true;
-            _config.IncludeNPCRE2 = chkNPCsRE2.IsChecked == true;
-            _config.IncludeNPCOther = chkNPCsOther.IsChecked == true;
+            _config.EnabledNPCs = listNPCs.ItemsSource
+                .Cast<CheckBoxListItem>()
+                .Select(x => x.IsChecked)
+                .ToArray();
 
             _config.RandomBgm = chkRngBgm.IsChecked == true;
-            _config.IncludeBGMRE1 = chkBGMRE1.IsChecked == true;
-            _config.IncludeBGMRE2 = chkBGMRE2.IsChecked == true;
-            _config.IncludeBGMOther = chkBGMOther.IsChecked == true;
+            _config.EnabledBGMs = listBGMs.ItemsSource
+                .Cast<CheckBoxListItem>()
+                .Select(x => x.IsChecked)
+                .ToArray();
 
             _config.RandomDoors = chkRngDoors.IsChecked == true;
             _config.ProtectFromSoftLock = chkProtectSoftLock.IsChecked == true || _config.RandomDoors;
@@ -816,9 +748,6 @@ namespace IntelOrca.Biohazard.BioRand
                     panelRando.Visibility = Visibility.Visible;
                     if (index == 0)
                     {
-                        chkNPCsRE1.IsEnabled = true;
-                        chkNPCsRE2.IsEnabled = false;
-                        chkNPCsOther.IsEnabled = false;
                         chkRandomEnemyPlacements.IsEnabled = false;
                         chkEnemyRestrictedRooms.IsEnabled = false;
                         sliderEnemyCount.IsEnabled = false;
@@ -832,9 +761,6 @@ namespace IntelOrca.Biohazard.BioRand
                     }
                     else
                     {
-                        chkNPCsRE1.IsEnabled = true;
-                        chkNPCsRE2.IsEnabled = true;
-                        chkNPCsOther.IsEnabled = true;
                         chkRandomEnemyPlacements.IsEnabled = true;
                         chkEnemyRestrictedRooms.IsEnabled = true;
                         sliderEnemyCount.IsEnabled = true;
@@ -843,6 +769,9 @@ namespace IntelOrca.Biohazard.BioRand
                         Visibility.Visible :
                         Visibility.Hidden;
                     UpdatePlayerDropdowns();
+                    UpdateEnemies();
+                    UpdateNPCList();
+                    UpdateBGMList();
                     UpdateLogButtons();
                 }
             }
@@ -861,6 +790,8 @@ namespace IntelOrca.Biohazard.BioRand
 
         private BaseRandomiser GetRandomizer()
         {
+            if (SelectedGame == null)
+                return null;
             return GetRandomizer(SelectedGame.Value);
         }
 
@@ -873,7 +804,7 @@ namespace IntelOrca.Biohazard.BioRand
                 case 1:
                     return new Re2Randomiser(new BiorandBgCreator());
                 default:
-                    throw new NotImplementedException();
+                    return null;
             }
         }
 
@@ -982,6 +913,35 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
+        private void UpdateEnemies()
+        {
+            var randomizer = GetRandomizer();
+            var items = new List<SliderListItem>();
+            foreach (var enemy in randomizer.GetEnemies())
+            {
+                items.Add(new SliderListItem(enemy.Name, 4, 7));
+            }
+            listEnemies.ItemsSource = items;
+        }
+
+        private void UpdateNPCList()
+        {
+            var randomizer = GetRandomizer();
+            listNPCs.ItemsSource = randomizer
+                .GetNPCs()
+                .Select(x => new CheckBoxListItem(x, true))
+                .ToArray();
+        }
+
+        private void UpdateBGMList()
+        {
+            var randomizer = GetRandomizer();
+            listBGMs.ItemsSource = randomizer
+                .GetMusicAlbums()
+                .Select(x => new CheckBoxListItem(x, true))
+                .ToArray();
+        }
+
         private void UpdateLogButtons()
         {
             var randomizer = GetRandomizer();
@@ -991,7 +951,9 @@ namespace IntelOrca.Biohazard.BioRand
                 var btn = buttons[i];
                 var path = GetLogPath(i);
                 btn.IsEnabled = File.Exists(path);
-                btn.Content = randomizer.GetPlayerName(i) + " Log...";
+                var hyperlink = btn.Inlines.FirstInline as Hyperlink;
+                hyperlink.Inlines.Clear();
+                hyperlink.Inlines.Add($"{randomizer.GetPlayerName(i)} Log");
             }
         }
 
@@ -1027,5 +989,100 @@ namespace IntelOrca.Biohazard.BioRand
     public class GameMenuItem
     {
         public ImageSource Image { get; set; }
+    }
+
+    public class CheckBoxListItem : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private string _text;
+        private bool _isChecked;
+
+        public string Text
+        {
+            get => _text;
+            set
+            {
+                if (_text != value)
+                {
+                    _text = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Text)));
+                }
+            }
+        }
+
+        public bool IsChecked
+        {
+            get => _isChecked;
+            set
+            {
+                if (_isChecked != value)
+                {
+                    _isChecked = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsChecked)));
+                }
+            }
+        }
+
+        public CheckBoxListItem(string text, bool isChecked)
+        {
+            _text = text;
+            _isChecked = isChecked;
+        }
+    }
+
+    public class SliderListItem : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private string _text;
+        private double _value;
+        private double _maximum;
+
+        public string Text
+        {
+            get => _text;
+            set
+            {
+                if (_text != value)
+                {
+                    _text = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Text)));
+                }
+            }
+        }
+
+        public double Value
+        {
+            get => _value;
+            set
+            {
+                if (_value != value)
+                {
+                    _value = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+                }
+            }
+        }
+
+        public double Maximum
+        {
+            get => _maximum;
+            set
+            {
+                if (_maximum != value)
+                {
+                    _maximum = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Maximum)));
+                }
+            }
+        }
+
+        public SliderListItem(string text, double value, int max)
+        {
+            Text = text;
+            Value = value;
+            Maximum = max;
+        }
     }
 }

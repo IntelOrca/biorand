@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using IntelOrca.Biohazard.Script.Opcodes;
 
@@ -25,70 +26,17 @@ namespace IntelOrca.Biohazard.RE2
             return ((EnemyType)type).ToString();
         }
 
-        public void GetEnemyProbabilities(RandoConfig config, Action<byte, double> addIfSupported)
+        public bool SupportsEnemyType(RandoConfig config, Rdt rdt, string difficulty, bool hasEnemyPlacements, byte enemyType)
         {
-            switch (config.EnemyDifficulty)
+            if (config.RandomEnemyPlacement && hasEnemyPlacements)
             {
-                case 0:
-                    addIfSupported((byte)EnemyType.Crow, 10);
-                    addIfSupported((byte)EnemyType.ZombieArms, 10);
-                    addIfSupported((byte)EnemyType.Spider, 10);
-                    addIfSupported((byte)EnemyType.GiantMoth, 2);
-                    addIfSupported((byte)EnemyType.Ivy, 3);
-                    addIfSupported((byte)EnemyType.IvyPurple, 2);
-                    addIfSupported((byte)EnemyType.Tyrant1, 1);
-                    AddZombieTypes(50, addIfSupported);
-                    addIfSupported((byte)EnemyType.Cerebrus, 8);
-                    addIfSupported((byte)EnemyType.LickerRed, 2);
-                    addIfSupported((byte)EnemyType.LickerGrey, 2);
-                    break;
-                case 1:
-                    addIfSupported((byte)EnemyType.Crow, 5);
-                    addIfSupported((byte)EnemyType.ZombieArms, 5);
-                    addIfSupported((byte)EnemyType.Spider, 6);
-                    addIfSupported((byte)EnemyType.GiantMoth, 5);
-                    addIfSupported((byte)EnemyType.Ivy, 6);
-                    addIfSupported((byte)EnemyType.IvyPurple, 6);
-                    addIfSupported((byte)EnemyType.Tyrant1, 2);
-                    AddZombieTypes(40, addIfSupported);
-                    addIfSupported((byte)EnemyType.Cerebrus, 10);
-                    addIfSupported((byte)EnemyType.LickerRed, 10);
-                    addIfSupported((byte)EnemyType.LickerGrey, 5);
-                    break;
-                case 2:
-                    addIfSupported((byte)EnemyType.Spider, 7);
-                    addIfSupported((byte)EnemyType.GiantMoth, 3);
-                    addIfSupported((byte)EnemyType.Ivy, 6);
-                    addIfSupported((byte)EnemyType.IvyPurple, 6);
-                    addIfSupported((byte)EnemyType.Tyrant1, 3);
-                    AddZombieTypes(25, addIfSupported);
-                    addIfSupported((byte)EnemyType.Cerebrus, 25);
-                    addIfSupported((byte)EnemyType.LickerRed, 15);
-                    addIfSupported((byte)EnemyType.LickerGrey, 10);
-                    addIfSupported((byte)EnemyType.Birkin1, 5);
-                    break;
-                case 3:
-                default:
-                    addIfSupported((byte)EnemyType.Spider, 5);
-                    addIfSupported((byte)EnemyType.GiantMoth, 2);
-                    addIfSupported((byte)EnemyType.Ivy, 3);
-                    addIfSupported((byte)EnemyType.IvyPurple, 3);
-                    addIfSupported((byte)EnemyType.Tyrant1, 5);
-                    AddZombieTypes(17, addIfSupported);
-                    addIfSupported((byte)EnemyType.Cerebrus, 40);
-                    addIfSupported((byte)EnemyType.LickerRed, 5);
-                    addIfSupported((byte)EnemyType.LickerGrey, 20);
-                    addIfSupported((byte)EnemyType.Birkin1, 25);
-                    break;
+                return true;
             }
-        }
-
-        private static void AddZombieTypes(double prob, Action<byte, double> addIfSupported)
-        {
-            var subProb = prob / _zombieTypes.Length;
-            foreach (var zombieType in _zombieTypes)
+            else
             {
-                addIfSupported(zombieType, subProb);
+                var exclude = new HashSet<byte>();
+                ExcludeEnemies(config, rdt, difficulty, x => exclude.Add(x));
+                return !exclude.Contains(enemyType);
             }
         }
 
@@ -276,5 +224,38 @@ namespace IntelOrca.Biohazard.RE2
         {
             return type < (byte)EnemyType.ChiefIrons1;
         }
+
+        public int GetEnemyTypeLimit(RandoConfig config, byte type)
+        {
+            switch ((EnemyType)type)
+            {
+                case EnemyType.Birkin1:
+                    return 1;
+                case EnemyType.Cerebrus:
+                case EnemyType.GiantMoth:
+                case EnemyType.Ivy:
+                case EnemyType.IvyPurple:
+                    return 8;
+                case EnemyType.LickerRed:
+                case EnemyType.LickerGrey:
+                    return 5;
+                default:
+                    return 16;
+            }
+        }
+
+        public SelectableEnemy[] GetSelectableEnemies() => new[]
+        {
+            new SelectableEnemy("Arms", "LightGray", new[] { (byte)EnemyType.ZombieArms }),
+            new SelectableEnemy("Crow", "Black", new[] { (byte)EnemyType.Crow }),
+            new SelectableEnemy("Spider", "YellowGreen", new[] { (byte)EnemyType.Spider }),
+            new SelectableEnemy("Zombie", "LightGray", _zombieTypes),
+            new SelectableEnemy("Moth", "DarkOliveGreen", new[] { (byte)EnemyType.GiantMoth }),
+            new SelectableEnemy("Ivy", "SpringGreen", new[] { (byte)EnemyType.Ivy }),
+            new SelectableEnemy("Licker", "IndianRed", new[] { (byte)EnemyType.LickerRed, (byte)EnemyType.LickerGrey }),
+            new SelectableEnemy("Cerberus", "Black", new[] { (byte)EnemyType.Cerebrus }),
+            new SelectableEnemy("Tyrant", "DarkGray", new[] { (byte)EnemyType.Tyrant1 }),
+            new SelectableEnemy("Birkin", "IndianRed", new[] { (byte)EnemyType.Birkin1 }),
+        };
     }
 }

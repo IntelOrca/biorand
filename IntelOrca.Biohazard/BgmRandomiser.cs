@@ -53,27 +53,13 @@ namespace IntelOrca.Biohazard
             _srcBgmList.Union(bgmList);
         }
 
-        public void AddCutomMusicToSelection(RandoConfig config)
+        public void AddCutomMusicToSelection(string[] albums)
         {
             var bgmList = new BgmList();
-            var directories = _dataManager.GetDirectoriesIn("bgm");
-            foreach (var dir in directories)
+            foreach (var album in albums)
             {
-                bool good = config.IncludeBGMOther;
-                if (!good)
-                {
-                    var d = Path.GetFileName(dir);
-                    if (d == "re1" && config.IncludeBGMRE1)
-                        good = true;
-                    if (d == "re2" && config.IncludeBGMRE2)
-                        good = true;
-                    // if (d == "re3" && config.IncludeBGMRE3)
-                    //     good = true;
-                    // if (d == "re4" && config.IncludeBGMRE4)
-                    //     good = true;
-                }
-                if (good)
-                    AddCustomMusicToSelection(bgmList, dir);
+                var dir = _dataManager.GetPath("bgm", album);
+                AddCustomMusicToSelection(bgmList, dir);
             }
             _srcBgmList.Union(bgmList);
         }
@@ -124,9 +110,11 @@ namespace IntelOrca.Biohazard
             }
 
             // Copy/convert all tracks
-            Parallel.ForEach(_trackSetList, kvp =>
+            Parallel.ForEach(_trackSetList.GroupBy(x => x.Value), g =>
             {
-                SetMusicTrack(kvp.Value, kvp.Key);
+                var src = g.Key;
+                var dst = g.Select(x => x.Key).ToArray();
+                SetMusicTrack(src, dst);
             });
         }
 
@@ -183,13 +171,19 @@ namespace IntelOrca.Biohazard
             _trackSetList[dst] = src;
         }
 
-        private void SetMusicTrack(string src, string dst)
+        private void SetMusicTrack(string src, string[] dst)
         {
+            if (dst.Length == 0)
+                return;
+
             var srcExtension = Path.GetExtension(src);
-            var dstExtension = Path.GetExtension(dst);
+            var dstExtension = Path.GetExtension(dst[0]);
             if (string.Equals(srcExtension, dstExtension, StringComparison.OrdinalIgnoreCase))
             {
-                File.Copy(src, dst, true);
+                for (int i = 0; i < dst.Length; i++)
+                {
+                    File.Copy(src, dst[i], true);
+                }
             }
             else
             {
@@ -204,7 +198,11 @@ namespace IntelOrca.Biohazard
                 {
                     builder.Append(src);
                 }
-                builder.Save(dst);
+                builder.Save(dst[0]);
+                for (int i = 1; i < dst.Length; i++)
+                {
+                    File.Copy(dst[0], dst[i], true);
+                }
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using QRCoder;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 
@@ -52,8 +53,10 @@ namespace IntelOrca.Biohazard.BioRand
                 g.DrawString(versionInfo, font, Brushes.White, 0, 0);
 
                 var seed = config.ToString();
-                var seedSize = g.MeasureString(seed, font);
-                g.DrawString(seed, font, Brushes.White, titleBg.Width - seedSize.Width + 1, 0);
+                // var seedSize = g.MeasureString(seed, font);
+                // g.DrawString(seed, font, Brushes.White, titleBg.Width - seedSize.Width + 1, 0);
+                var qr = GetQRImage(seed);
+                g.DrawImage(qr, titleBg.Width - qr.Width, 0);
             }
             return titleBg;
         }
@@ -71,6 +74,15 @@ namespace IntelOrca.Biohazard.BioRand
                     timFile.ImportBitmap(bitmap);
                 }
             }
+        }
+
+        private static Bitmap GetQRImage(string text)
+        {
+            var qrGenerator = new QRCodeGenerator();
+            var qrCodeData = qrGenerator.CreateQrCode(text, QRCodeGenerator.ECCLevel.Q);
+            var qrCode = new QRCode(qrCodeData);
+            var qrCodeImage = qrCode.GetGraphic(1, Color.White, Color.Transparent, true);
+            return qrCodeImage;
         }
     }
 }

@@ -5,8 +5,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using System.Threading.Tasks;
+using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.RE2;
 using IntelOrca.Biohazard.Script.Opcodes;
 using NVorbis;
@@ -37,6 +40,8 @@ namespace IntelOrca.Biohazard
         private Dictionary<byte, string> _extraNpcMap = new Dictionary<byte, string>();
         private List<ExternalCharacter1> _emds1 = new List<ExternalCharacter1>();
         private List<ExternalCharacter2> _emds2 = new List<ExternalCharacter2>();
+
+        public HashSet<string> SelectedActors { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         public NPCRandomiser(
             BioVersion version,
@@ -120,43 +125,51 @@ namespace IntelOrca.Biohazard
                     samples.Add(sample);
                 }
             }
-            foreach (var actorPath in _dataManager.GetDirectoriesIn("voice"))
-            {
-                var actor = Path.GetFileName(actorPath);
-                var sampleFiles = Directory.GetFiles(actorPath);
-                foreach (var sampleFile in sampleFiles)
+
+            return _dataManager
+                .GetDirectoriesIn("voice")
+                .SelectMany(x =>
                 {
-                    if (!sampleFile.EndsWith(".wav", StringComparison.OrdinalIgnoreCase) &&
-                        !sampleFile.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
+                    var actor = Path.GetFileName(x);
+                    var sampleFiles = Directory.GetFiles(x);
+                    return sampleFiles.Select(y => (Actor: actor, SampleFiles: y));
+                })
+                .AsParallel()
+                .Select(x => ProcessSample(x.Actor, x.SampleFiles))
+                .Where(x => x != null)
+                .ToArray()!;
+        }
 
-                    var fileName = Path.GetFileName(sampleFile);
-                    var condition = GetThingFromFileName(fileName, '-');
-                    if (condition != null)
-                    {
-                        if (condition.StartsWith("no", StringComparison.OrdinalIgnoreCase))
-                        {
-                            condition = "!" + condition.Substring(2);
-                        }
-                        else
-                        {
-                            condition = "@" + condition;
-                        }
-                    }
+        private VoiceSample? ProcessSample(string actor, string sampleFile)
+        {
+            if (!sampleFile.EndsWith(".wav", StringComparison.OrdinalIgnoreCase) &&
+                !sampleFile.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
 
-                    var sample = new VoiceSample();
-                    sample.BasePath = Path.GetDirectoryName(sampleFile);
-                    sample.Path = fileName;
-                    sample.Actor = actor;
-                    sample.End = GetVoiceLength(sampleFile);
-                    sample.Kind = GetThingFromFileName(fileName, '_');
-                    sample.Condition = condition;
-                    samples.Add(sample);
+            var fileName = Path.GetFileName(sampleFile);
+            var condition = GetThingFromFileName(fileName, '-');
+            if (condition != null)
+            {
+                if (condition.StartsWith("no", StringComparison.OrdinalIgnoreCase))
+                {
+                    condition = "!" + condition.Substring(2);
+                }
+                else
+                {
+                    condition = "@" + condition;
                 }
             }
-            return samples.ToArray();
+
+            var sample = new VoiceSample();
+            sample.BasePath = Path.GetDirectoryName(sampleFile);
+            sample.Path = fileName;
+            sample.Actor = actor;
+            sample.End = GetVoiceLength(sampleFile);
+            sample.Kind = GetThingFromFileName(fileName, '_');
+            sample.Condition = condition;
+            return sample;
         }
 
         private static string? GetThingFromFileName(string filename, char symbol)
@@ -236,15 +249,52 @@ namespace IntelOrca.Biohazard
             Directory.CreateDirectory(enemyDirectory);
 
             _logger.WriteHeading("Adding additional NPCs:");
+            var normalSlots = new Queue<byte>(new byte[] {
+                Re1EnemyIds.ChrisStars,
+                Re1EnemyIds.JillStars,
+                Re1EnemyIds.BarryStars,
+                Re1EnemyIds.RebeccaStars,
+                Re1EnemyIds.WeskerStars
+            }.Shuffle(_rng));
+
             foreach (var g in _emds1.GroupBy(x => x.EmId))
             {
-                var emd = rng.NextOf(g.ToArray());
-                _extraNpcMap[emd.EmId] = emd.Actor;
+                var gSelected = g.Where(x => SelectedActors.Contains(x.Actor)).ToArray();
+                if (gSelected.Length == 0)
+                    continue;
 
-                var dst = Path.Combine(enemyDirectory, $"EM1{emd.EmId:X3}.EMD");
-                File.Copy(emd.EmPath, dst, true);
+                if (g.Key == 0x20)
+                {
+                    // Normal slot, take all selected characters
+                    var randomCharactersToInclude = gSelected.Shuffle(_rng);
+                    foreach (var rchar in randomCharactersToInclude)
+                    {
+                        // 50:50 on whether to use original or new character, unless original is not selected.
+                        var slot = normalSlots.Dequeue();
+                        var originalActor = GetActor(slot, true) ?? "";
+                        if (!SelectedActors.Contains(originalActor) ||
+                            _rng.NextProbability(50))
+                        {
+                            SetEm(slot, rchar);
+                        }
+                    }
+                }
+                else
+                {
+                    // Special slot, only take one of the selected characters
+                    var emd = rng.NextOf(gSelected);
+                    SetEm(emd.EmId, emd);
+                }
+            }
 
-                _logger.WriteLine($"Enemy 0x{emd.EmId:X2} becomes {emd.Actor}");
+            void SetEm(byte id, ExternalCharacter1 ec)
+            {
+                _extraNpcMap[id] = ec.Actor;
+
+                var dst = Path.Combine(enemyDirectory, $"EM1{id:X3}.EMD");
+                File.Copy(ec.EmPath, dst, true);
+
+                _logger.WriteLine($"Enemy 0x{id:X2} becomes {ec.Actor}");
             }
         }
 
@@ -259,6 +309,7 @@ namespace IntelOrca.Biohazard
 
             var emds = _emds2
                 .Where(x => x.Actor != _playerActor)
+                .Where(x => SelectedActors.Contains(x.Actor))
                 .Where(x => ActorHasVoiceSamples(x.Actor))
                 .ToArray();
 
@@ -419,6 +470,15 @@ namespace IntelOrca.Biohazard
                 {
                     continue;
                 }
+                
+                var selectedNpcs = supportedNpcs
+                    .Where(x => SelectedActors.Contains(GetActor(x) ?? ""))
+                    .ToArray();
+                if (selectedNpcs.Length != 0)
+                {
+                    supportedNpcs = selectedNpcs;
+                }
+
                 foreach (var enemyGroup in rdt.Enemies.GroupBy(x => x.Type))
                 {
                     if (!_npcHelper.IsNpc(enemyGroup.Key))
