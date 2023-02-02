@@ -620,16 +620,24 @@ namespace IntelOrca.Biohazard.BioRand
             if (ex is AggregateException)
                 ex = ex.InnerException;
 
-            if (ex is BioRandVersionException)
-                ShowGenerateFailedMessage(ex.Message + "\n" + "Click the seed button to pick a new seed.");
-            if (ex is BioRandUserException)
-                ShowGenerateFailedMessage(ex.Message);
-            else if (ex is UnauthorizedAccessException)
-                ShowGenerateFailedMessage(accessDeniedMessage);
-            else if (IsTypicalException(ex))
-                ShowGenerateFailedMessage("An error occured during generation.\nPlease report this seed and try another.");
-            else
-                ShowGenerateFailedMessage(ex.Message + "\n" + "Please report this seed and try another.");
+            switch (ex)
+            {
+                case BioRandVersionException _:
+                    ShowGenerateFailedMessage(ex.Message + "\n" + "Click the seed button to pick a new seed.");
+                    break;
+                case BioRandUserException _:
+                    ShowGenerateFailedMessage(ex.Message);
+                    break;
+                case UnauthorizedAccessException _:
+                    ShowGenerateFailedMessage(accessDeniedMessage);
+                    break;
+                case Exception _ when IsTypicalException(ex):
+                    ShowGenerateFailedMessage("An error occured during generation.\nPlease report this seed and try another.");
+                    break;
+                default:
+                    ShowGenerateFailedMessage(ex.Message + "\n" + "Please report this seed and try another.");
+                    break;
+            }
         }
 
         private static bool IsTypicalException(Exception ex)

@@ -13,7 +13,7 @@ namespace IntelOrca.Biohazard
         };
 
         public const int MaxSeed = 0b11111_11111_11111_11111;
-        public const byte LatestVersion = 5;
+        public const byte LatestVersion = 6;
 
         public byte Version { get; set; } = LatestVersion;
         public byte Game { get; set; } = 2;
