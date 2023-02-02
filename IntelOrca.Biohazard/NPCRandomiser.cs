@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.Json;
 using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.RE2;
@@ -147,16 +148,23 @@ namespace IntelOrca.Biohazard
             }
 
             var fileName = Path.GetFileName(sampleFile);
-            var condition = GetThingFromFileName(fileName, '-');
-            if (condition != null)
+            var conditions = GetThingsFromFileName(fileName, '-');
+            var conditionsb = new StringBuilder();
+            foreach (var condition in conditions)
             {
                 if (condition.StartsWith("no", StringComparison.OrdinalIgnoreCase))
                 {
-                    condition = "!" + condition.Substring(2);
+                    if (conditionsb.Length != 0)
+                        conditionsb.Append(" && ");
+                    conditionsb.Append('!');
+                    conditionsb.Append(condition, 2, condition.Length - 2);
                 }
                 else
                 {
-                    condition = "@" + condition;
+                    if (conditionsb.Length != 0)
+                        conditionsb.Append(" || ");
+                    conditionsb.Append('@');
+                    conditionsb.Append(condition);
                 }
             }
 
@@ -165,22 +173,23 @@ namespace IntelOrca.Biohazard
             sample.Path = fileName;
             sample.Actor = actor;
             sample.End = GetVoiceLength(sampleFile);
-            sample.Kind = GetThingFromFileName(fileName, '_');
-            sample.Condition = condition;
+            sample.Kind = GetThingsFromFileName(fileName, '_').FirstOrDefault();
+            sample.Condition = conditionsb.Length == 0 ? null : conditionsb.ToString();
             return sample;
         }
 
-        private static string? GetThingFromFileName(string filename, char symbol)
+        private static string[] GetThingsFromFileName(string filename, char symbol)
         {
-            var end = filename.LastIndexOf('.');
-            if (end == -1)
-                end = filename.Length;
+            var filenameEnd = filename.LastIndexOf('.');
+            if (filenameEnd == -1)
+                filenameEnd = filename.Length;
 
+            var result = new List<string>();
             var start = -1;
-            for (int i = 0; i < end; i++)
+            for (int i = 0; i < filenameEnd; i++)
             {
                 var c = filename[i];
-                if (c == symbol)
+                if (c == symbol && start == -1)
                 {
                     start = i + 1;
                 }
@@ -188,15 +197,17 @@ namespace IntelOrca.Biohazard
                 {
                     if (start != -1)
                     {
-                        end = i;
-                        break;
+                        result.Add(filename.Substring(start, i - start));
+                        i--;
+                        start = -1;
                     }
                 }
             }
-            if (start == -1)
-                return null;
-            var result = filename.Substring(start, end - start);
-            return result == "" ? null : result;
+            if (start != -1)
+            {
+                result.Add(filename.Substring(start, filenameEnd - start));
+            }
+            return result.ToArray();
         }
 
         public void AddNPC1(byte emId, string emPath, string actor)
@@ -946,23 +957,36 @@ namespace IntelOrca.Biohazard
             var conditions = Condition.Replace("&&", "&").Split('&');
             foreach (var singleCondition in conditions)
             {
-                var sc = singleCondition.Trim();
-                if (sc.StartsWith("!"))
+                var orResult = false;
+                var orConditions = singleCondition.Replace("||", "|").Split('|');
+                foreach (var orCondition in orConditions)
                 {
-                    var cc = sc.Substring(1);
-                    if (otherActors.Contains(cc))
+                    var result = true;
+                    var sc = orCondition.Trim();
+                    if (sc.StartsWith("!"))
                     {
-                        return false;
+                        var cc = sc.Substring(1);
+                        if (otherActors.Contains(cc))
+                        {
+                            result = false;
+                        }
+                    }
+                    else if (sc.StartsWith("@"))
+                    {
+                        var cc = sc.Substring(1);
+                        if (!otherActors.Contains(cc))
+                        {
+                            result = false;
+                        }
+                    }
+                    if (result)
+                    {
+                        orResult = true;
+                        break;
                     }
                 }
-                else if (sc.StartsWith("@"))
-                {
-                    var cc = sc.Substring(1);
-                    if (!otherActors.Contains(cc))
-                    {
-                        return false;
-                    }
-                }
+                if (!orResult)
+                    return false;
             }
 
             return true;
