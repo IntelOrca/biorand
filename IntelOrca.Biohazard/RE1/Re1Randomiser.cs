@@ -33,7 +33,6 @@ namespace IntelOrca.Biohazard.RE1
                 actors.AddRange(emds);
             }
             return actors
-                .Select(x => x.ToTitle())
                 .OrderBy(x => x)
                 .ToArray();
         }
@@ -186,8 +185,7 @@ namespace IntelOrca.Biohazard.RE1
             foreach (var pldPath in pldFiles)
             {
                 var actor = Path.GetFileName(pldPath);
-                actor = char.ToUpper(actor[0]) + actor.Substring(1);
-                result.Add(actor);
+                result.Add(actor.ToActorString());
             }
             return result.ToArray();
         }

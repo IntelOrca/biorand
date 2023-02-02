@@ -940,7 +940,7 @@ namespace IntelOrca.Biohazard.BioRand
             var randomizer = GetRandomizer();
             listNPCs.ItemsSource = randomizer
                 .GetNPCs()
-                .Select(x => new CheckBoxListItem(x, true))
+                .Select(x => new CheckBoxListItem(x.ToActorString(), true))
                 .ToArray();
         }
 

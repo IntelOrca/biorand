@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace IntelOrca.Biohazard
 {
-    internal static class Extensions
+    public static class Extensions
     {
         public static string ToTitle(this string x)
         {
@@ -25,6 +25,23 @@ namespace IntelOrca.Biohazard
                 }
             }
             return new string(chars);
+        }
+
+        public static string ToActorString(this string x)
+        {
+            var actor = x;
+            var fsIndex = actor.IndexOf('.');
+            if (fsIndex != -1)
+            {
+                var name = actor.Substring(0, fsIndex).ToTitle();
+                var game = actor.Substring(fsIndex + 1).ToUpper();
+                actor = $"{name} ({game})";
+            }
+            else
+            {
+                actor = actor.ToTitle();
+            }
+            return actor;
         }
 
         public static T[] Shuffle<T>(this IEnumerable<T> items, Rng rng)
@@ -60,7 +77,7 @@ namespace IntelOrca.Biohazard
             return new Queue<T>(items);
         }
 
-        public static EndlessBag<T> ToEndlessBag<T>(this IEnumerable<T> items, Rng rng)
+        internal static EndlessBag<T> ToEndlessBag<T>(this IEnumerable<T> items, Rng rng)
         {
             return new EndlessBag<T>(rng, items);
         }
@@ -152,7 +169,7 @@ namespace IntelOrca.Biohazard
                 throw new IOException($"Unable to copy {length} bytes to new stream.");
         }
 
-        public static ForkedBinaryReader Fork(this BinaryReader br)
+        internal static ForkedBinaryReader Fork(this BinaryReader br)
         {
             return new ForkedBinaryReader(br);
         }

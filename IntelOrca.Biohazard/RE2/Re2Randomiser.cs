@@ -222,7 +222,7 @@ namespace IntelOrca.Biohazard.RE2
             foreach (var pldPath in pldFiles)
             {
                 var actor = Path.GetFileName(pldPath);
-                result.Add(actor.ToTitle());
+                result.Add(actor.ToActorString());
             }
             return result.ToArray();
         }
@@ -241,7 +241,6 @@ namespace IntelOrca.Biohazard.RE2
                 actors.AddRange(emds);
             }
             return actors
-                .Select(x => x.ToTitle())
                 .OrderBy(x => x)
                 .ToArray();
         }

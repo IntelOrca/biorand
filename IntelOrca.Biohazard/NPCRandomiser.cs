@@ -5,10 +5,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text.Json;
-using System.Threading.Tasks;
 using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.RE2;
 using IntelOrca.Biohazard.Script.Opcodes;
@@ -595,6 +593,7 @@ namespace IntelOrca.Biohazard
             if (_randomized.Contains(voice))
                 return;
 
+            actors = actors.Select(TrimActorGame).ToArray();
             var randomVoice = GetRandomVoice(rng, newActor, kind, actors, voice.MaxLength);
             if (randomVoice != null)
             {
@@ -606,6 +605,15 @@ namespace IntelOrca.Biohazard
                 var logClip = randomVoice.IsClipped ? $" ({randomVoice.Start:0.00}-{randomVoice.End:0.00})" : "";
                 _logger.WriteLine($"    {voice.PathWithSapIndex} [{actor}{logKindSource}] becomes {randomVoice.PathWithSapIndex} [{newActor}{logKindTarget}]{logClip}");
             }
+        }
+
+        private static string TrimActorGame(string actor)
+        {
+            var fsIndex = actor.IndexOf('.');
+            if (fsIndex == -1)
+                return actor;
+
+            return actor.Substring(0, fsIndex);
         }
 
         private string? GetActor(byte enemyType, bool originalOnly = false)
