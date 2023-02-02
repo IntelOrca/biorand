@@ -3016,6 +3016,13 @@
           "target": "603"
         }
       ],
+      "items": [
+        {
+          "id": 0,
+          "priority": "low",
+          "player": 0
+        }
+      ],
       "npcs": [
         {
           "scenario": 1
