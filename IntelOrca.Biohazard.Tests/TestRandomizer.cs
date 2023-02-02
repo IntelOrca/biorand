@@ -113,11 +113,6 @@ namespace IntelOrca.Biohazard.Tests
             config.RandomEnemyPlacement = false;
             config.EnemyDifficulty = 2;
 
-            config.IncludeNPCRE1 = true;
-            config.IncludeNPCRE2 = true;
-            config.IncludeNPCRE3 = true;
-            config.IncludeNPCOther = true;
-
             if (config.Game == 2)
             {
                 config.ChangePlayer = true;

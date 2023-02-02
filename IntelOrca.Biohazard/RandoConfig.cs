@@ -36,18 +36,6 @@ namespace IntelOrca.Biohazard
         public bool AllowEnemiesAnyRoom { get; set; } = true;
         public byte EnemyQuantity { get; set; } = 2;
 
-        public bool IncludeBGMRE1 { get; set; } = true;
-        public bool IncludeBGMRE2 { get; set; } = true;
-        public bool IncludeBGMRE3 { get; set; } = true;
-        public bool IncludeBGMRE4 { get; set; } = true;
-        public bool IncludeBGMOther { get; set; } = true;
-
-        public bool IncludeNPCRE1 { get; set; } = true;
-        public bool IncludeNPCRE2 { get; set; } = true;
-        public bool IncludeNPCRE3 { get; set; } = true;
-        public bool IncludeNPCOther { get; set; } = true;
-
-
         // Numbers
         public byte Player0 { get; set; }
         public byte Player1 { get; set; }
@@ -99,17 +87,8 @@ namespace IntelOrca.Biohazard
             result.AreaCount = reader.ReadByte(2);
             result.AreaSize = reader.ReadByte(3);
 
-            result.IncludeBGMRE1 = reader.ReadFlag();
-            result.IncludeBGMRE2 = reader.ReadFlag();
-            reader.ReadFlag();
-            reader.ReadFlag();
-            result.IncludeBGMOther = reader.ReadFlag();
-
-            result.IncludeNPCRE1 = reader.ReadFlag();
-            result.IncludeNPCRE2 = reader.ReadFlag();
-            reader.ReadFlag();
-            reader.ReadFlag();
-            result.IncludeNPCOther = reader.ReadFlag();
+            reader.ReadDigit();
+            reader.ReadDigit();
 
             result.Player0 = reader.ReadDigit();
             result.Player1 = reader.ReadDigit();
@@ -174,17 +153,8 @@ namespace IntelOrca.Biohazard
             writer.Write(2, AreaCount);
             writer.Write(3, AreaSize);
 
-            writer.Write(IncludeBGMRE1);
-            writer.Write(IncludeBGMRE2);
-            writer.Write(false);
-            writer.Write(false);
-            writer.Write(IncludeBGMOther);
-
-            writer.Write(IncludeNPCRE1);
-            writer.Write(IncludeNPCRE2);
-            writer.Write(false);
-            writer.Write(false);
-            writer.Write(IncludeNPCOther);
+            writer.WriteDigit(0);
+            writer.WriteDigit(0);
 
             writer.WriteDigit(Player0);
             writer.WriteDigit(Player1);

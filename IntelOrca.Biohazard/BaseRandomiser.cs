@@ -414,6 +414,11 @@ namespace IntelOrca.Biohazard
             return new string[0];
         }
 
+        protected bool MusicAlbumSelected(string album)
+        {
+            return GetMusicAlbums().Contains(album, StringComparer.OrdinalIgnoreCase);
+        }
+
         public virtual string[] GetMusicAlbums()
         {
             var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase)

@@ -86,7 +86,7 @@ namespace IntelOrca.Biohazard.RE2
         {
             _reInstallConfig = reConfig;
 
-            if ((config.RandomBgm && config.IncludeBGMRE1) || (config.RandomNPCs && config.IncludeNPCRE1))
+            if (config.RandomBgm && MusicAlbumSelected("RE1"))
             {
                 if (!reConfig.IsEnabled(BioVersion.Biohazard1))
                 {

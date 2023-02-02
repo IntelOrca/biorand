@@ -106,7 +106,7 @@ namespace IntelOrca.Biohazard.RE1
 
         public override void Generate(RandoConfig config, ReInstallConfig reConfig, string installPath, string modPath)
         {
-            if (config.RandomBgm && config.IncludeBGMRE2)
+            if (config.RandomBgm && MusicAlbumSelected("RE2"))
             {
                 if (!reConfig.IsEnabled(BioVersion.Biohazard2))
                 {

@@ -760,11 +760,6 @@ namespace IntelOrca.Biohazard.BioRand
                         chkEnemyRestrictedRooms.IsEnabled = false;
                         sliderEnemyCount.IsEnabled = false;
 
-                        _config.IncludeNPCRE1 = true;
-                        _config.IncludeNPCRE2 = false;
-                        _config.IncludeNPCRE3 = false;
-                        _config.IncludeNPCOther = false;
-
                         _config.RandomEnemyPlacement = false;
                     }
                     else
