@@ -109,7 +109,7 @@ namespace IntelOrca.Biohazard
                 values.Add(reader.ReadByte(3));
             }
             result.EnemyRatios = values.ToArray();
-            result.EnabledNPCs = reader.ReadBooleanArray(30);
+            result.EnabledNPCs = reader.ReadBooleanArray(50);
             result.EnabledBGMs = reader.ReadBooleanArray(15);
 
             return result;
@@ -182,7 +182,7 @@ namespace IntelOrca.Biohazard
                     writer.Write(3, 0);
                 }
             }
-            writer.WriteArray(30, EnabledNPCs);
+            writer.WriteArray(50, EnabledNPCs);
             writer.WriteArray(15, EnabledBGMs);
 
             return writer.ToString();
