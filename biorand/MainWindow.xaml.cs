@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
@@ -724,8 +725,8 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void ReportIssue_Click(object sender, RoutedEventArgs e)
         {
-            var version = Program.CurrentVersionNumber;
-            var seed = _config.ToString();
+            var version = UrlEncoder.Default.Encode(string.Format("{0} ({1})", Program.CurrentVersionNumber, Program.GitHash));
+            var seed = UrlEncoder.Default.Encode(_config.ToString());
             Process.Start($"https://github.com/IntelOrca/biorand/issues/new?template=bug_report.yml&version={version}&seed={seed}");
         }
 
