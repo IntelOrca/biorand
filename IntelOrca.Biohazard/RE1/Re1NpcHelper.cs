@@ -80,5 +80,29 @@ namespace IntelOrca.Biohazard.RE1
                     return null;
             }
         }
+
+        public byte[] GetSlots(byte id)
+        {
+            if (id == Re1EnemyIds.ChrisStars)
+            {
+                return new[]
+                {
+                    Re1EnemyIds.ChrisStars,
+                    Re1EnemyIds.JillStars,
+                    Re1EnemyIds.BarryStars,
+                    Re1EnemyIds.RebeccaStars,
+                    Re1EnemyIds.WeskerStars
+                };
+            }
+            else
+            {
+                return new[] { id };
+            }
+        }
+
+        public bool IsSpareSlot(byte id)
+        {
+            return false;
+        }
     }
 }

@@ -20,21 +20,9 @@ namespace IntelOrca.Biohazard.RE1
 
         public override string GetPlayerName(int player) => player == 0 ? "Chris" : "Jill";
 
-        public override string[] GetNPCs()
+        protected override string[] GetDefaultNPCs()
         {
-            var actors = new HashSet<string>();
-            actors.AddRange(new[] { "chris", "jill", "barry", "rebecca", "wesker", "enrico", "richard" });
-            for (int i = 0; i < 2; i++)
-            {
-                var emds = DataManager
-                    .GetDirectories(BiohazardVersion, $"emd")
-                    .Select(Path.GetFileName)
-                    .ToArray();
-                actors.AddRange(emds);
-            }
-            return actors
-                .OrderBy(x => x)
-                .ToArray();
+            return new[] { "chris", "jill", "barry", "rebecca", "wesker", "enrico", "richard" };
         }
 
         public override bool ValidateGamePath(string path)
@@ -262,7 +250,7 @@ namespace IntelOrca.Biohazard.RE1
                         var hex = Path.GetFileName(file).Substring(3, 3);
                         if (int.TryParse(hex, System.Globalization.NumberStyles.HexNumber, null, out var result))
                         {
-                            npcRandomiser.AddNPC1((byte)result, file, actor);
+                            npcRandomiser.AddNPC((byte)result, file, actor);
                         }
                     }
                 }

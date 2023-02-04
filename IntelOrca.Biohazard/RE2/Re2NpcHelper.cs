@@ -84,5 +84,68 @@ namespace IntelOrca.Biohazard.RE2
                     return null;
             }
         }
+
+        public byte[] GetSlots(byte id)
+        {
+            switch ((EnemyType)id)
+            {
+                case EnemyType.LeonKennedyRpd:
+                    return new byte[] { 0x48, 0x52, 0x54, 0x56, 0x58, 0x5A };
+                case EnemyType.ClaireRedfield:
+                    return new byte[] { 0x53, 0x55, 0x57, 0x59, 0x5B };
+                case EnemyType.SherryWithPendant:
+                case EnemyType.SherryWithClairesJacket:
+                    return new byte[] {
+                        (byte)EnemyType.SherryWithPendant,
+                        (byte)EnemyType.SherryWithClairesJacket
+                    };
+                case EnemyType.AdaWong1:
+                case EnemyType.AdaWong2:
+                    return new byte[] {
+                        (byte)EnemyType.AdaWong1,
+                        (byte)EnemyType.AdaWong2
+                    };
+                case EnemyType.BenBertolucci1:
+                case EnemyType.BenBertolucci2:
+                case EnemyType.ChiefIrons1:
+                case EnemyType.ChiefIrons2:
+                    return new byte[] {
+                        (byte)EnemyType.BenBertolucci1,
+                        (byte)EnemyType.BenBertolucci1,
+                        (byte)EnemyType.ChiefIrons1,
+                        (byte)EnemyType.ChiefIrons2
+                    };
+                default:
+                    return new[] { id };
+            }
+        }
+
+        public bool IsSpareSlot(byte id)
+        {
+            switch (id)
+            {
+                // Leon skins
+                case 0x52:
+                case 0x54:
+                case 0x56:
+                case 0x58:
+                case 0x5A:
+
+                // Claire skins
+                case 0x53:
+                case 0x55:
+                case 0x57:
+                case 0x59:
+                case 0x5B:
+
+                case (byte)EnemyType.SherryWithClairesJacket:
+                case (byte)EnemyType.AdaWong2:
+                case (byte)EnemyType.BenBertolucci2:
+                case (byte)EnemyType.ChiefIrons2:
+                    return true;
+                default:
+                    return false;
+            }
+        }
     }
 }

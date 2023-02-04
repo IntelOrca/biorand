@@ -1,11 +1,13 @@
 ﻿// #define ALWAYS_SWAP_NPC
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using IntelOrca.Biohazard.RE1;
@@ -37,8 +39,7 @@ namespace IntelOrca.Biohazard
         private string? _playerActor;
         private string? _originalPlayerActor;
         private Dictionary<byte, string> _extraNpcMap = new Dictionary<byte, string>();
-        private List<ExternalCharacter1> _emds1 = new List<ExternalCharacter1>();
-        private List<ExternalCharacter2> _emds2 = new List<ExternalCharacter2>();
+        private List<ExternalCharacter> _emds = new List<ExternalCharacter>();
 
         public HashSet<string> SelectedActors { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -210,14 +211,9 @@ namespace IntelOrca.Biohazard
             return result.ToArray();
         }
 
-        public void AddNPC1(byte emId, string emPath, string actor)
+        public void AddNPC(byte emId, string emPath, string actor)
         {
-            _emds1.Add(new ExternalCharacter1(emId, emPath, actor));
-        }
-
-        public void AddNPC2(bool isFemale, string actor, string emdPath, string timPath)
-        {
-            _emds2.Add(new ExternalCharacter2(isFemale, actor, emdPath, timPath));
+            _emds.Add(new ExternalCharacter(emId, emPath, actor));
         }
 
         private bool ActorHasVoiceSamples(string actor)
@@ -240,110 +236,83 @@ namespace IntelOrca.Biohazard
                 {
                     // RE 1 shared EMD files, so must have a shared RNG
                     var sharedRng = new Rng(_config.Seed);
-                    RandomizeExternalNPCsRE1(sharedRng);
+                    RandomizeExternalNPC(sharedRng);
                 }
             }
             else
             {
-                RandomizeExternalNPCsRE2(rng);
+                RandomizeExternalNPC(rng);
             }
         }
 
-        private void RandomizeExternalNPCsRE1(Rng rng)
+        private void RandomizeExternalNPC(Rng rng)
         {
-            if (_emds1.Count == 0)
+            if (_emds.Count == 0)
                 return;
 
-            var enemyDirectory = Path.Combine(_modPath, "enemy");
-            Directory.CreateDirectory(enemyDirectory);
-
             _logger.WriteHeading("Adding additional NPCs:");
-            var normalSlots = new Queue<byte>(new byte[] {
-                Re1EnemyIds.ChrisStars,
-                Re1EnemyIds.JillStars,
-                Re1EnemyIds.BarryStars,
-                Re1EnemyIds.RebeccaStars,
-                Re1EnemyIds.WeskerStars
-            }.Shuffle(_rng));
-
-            foreach (var g in _emds1.GroupBy(x => x.EmId))
+            foreach (var g in _emds.GroupBy(x => x.EmId))
             {
                 var gSelected = g.Where(x => SelectedActors.Contains(x.Actor)).ToArray();
                 if (gSelected.Length == 0)
                     continue;
 
-                if (g.Key == 0x20)
+                var slots = _npcHelper.GetSlots(g.Key);
+                var spare = slots
+                    .Where(x => _npcHelper.IsSpareSlot(x))
+                    .ToQueue();
+                var notSpare = slots
+                    .Where(x => !_npcHelper.IsSpareSlot(x))
+                    .Shuffle(rng)
+                    .ToQueue();
+
+                // Normal slot, take all selected characters
+                var randomCharactersToInclude = gSelected.Shuffle(rng);
+                foreach (var rchar in randomCharactersToInclude)
                 {
-                    // Normal slot, take all selected characters
-                    var randomCharactersToInclude = gSelected.Shuffle(_rng);
-                    foreach (var rchar in randomCharactersToInclude)
+                    if (spare.Count != 0)
+                    {
+                        var slot = spare.Dequeue();
+                        SetEm(slot, rchar);
+                    }
+                    else if (notSpare.Count != 0)
                     {
                         // 50:50 on whether to use original or new character, unless original is not selected.
-                        var slot = normalSlots.Dequeue();
+                        var slot = notSpare.Dequeue();
                         var originalActor = GetActor(slot, true) ?? "";
                         if (!SelectedActors.Contains(originalActor) ||
-                            _rng.NextProbability(50))
+                            rng.NextProbability(50))
                         {
                             SetEm(slot, rchar);
                         }
                     }
                 }
-                else
-                {
-                    // Special slot, only take one of the selected characters
-                    var emd = rng.NextOf(gSelected);
-                    SetEm(emd.EmId, emd);
-                }
             }
+        }
 
-            void SetEm(byte id, ExternalCharacter1 ec)
+        void SetEm(byte id, ExternalCharacter ec)
+        {
+            _extraNpcMap[id] = ec.Actor;
+            if (_config.Game == 1)
             {
-                _extraNpcMap[id] = ec.Actor;
-
+                var enemyDirectory = Path.Combine(_modPath, "enemy");
+                Directory.CreateDirectory(enemyDirectory);
                 var dst = Path.Combine(enemyDirectory, $"EM1{id:X3}.EMD");
                 File.Copy(ec.EmPath, dst, true);
-
-                _logger.WriteLine($"Enemy 0x{id:X2} becomes {ec.Actor}");
             }
-        }
-
-        private void RandomizeExternalNPCsRE2(Rng rng)
-        {
-            if (_emds2.Count == 0)
-                return;
-
-            _logger.WriteHeading("Adding additional NPCs:");
-            var availableSlotsLeon = new byte[] { 0x48, 0x52, 0x54, 0x56, 0x58, 0x5A };
-            var availableSlotsClaire = new byte[] { 0x53, 0x55, 0x57, 0x59, 0x5B };
-
-            var emds = _emds2
-                .Where(x => x.Actor != _playerActor)
-                .Where(x => SelectedActors.Contains(x.Actor))
-                .Where(x => ActorHasVoiceSamples(x.Actor))
-                .ToArray();
-
-            RandomizeExternalNPCs(emds.Where(x => !x.IsFemale).Shuffle(rng), availableSlotsLeon);
-            RandomizeExternalNPCs(emds.Where(x => x.IsFemale).Shuffle(rng), availableSlotsClaire);
-        }
-
-        private void RandomizeExternalNPCs(ExternalCharacter2[] emds, byte[] availableSlots)
-        {
-            var maxEmds = Math.Min(availableSlots.Length, emds.Length);
-            for (int i = 0; i < maxEmds; i++)
+            else
             {
-                var emd = emds[i];
-                var enemyType = availableSlots[i];
-                _extraNpcMap[enemyType] = emd.Actor;
+                var emdPath = Path.Combine(_modPath, $"pl{_config.Player}", $"emd{_config.Player}");
+                Directory.CreateDirectory(emdPath);
 
-                var emd0Path = Path.Combine(_modPath, $"pl{_config.Player}", $"emd{_config.Player}");
-                var emdPath = Path.Combine(emd0Path, $"em{_config.Player}{enemyType:X2}.emd");
-                var timPath = Path.ChangeExtension(emdPath, ".tim");
-                Directory.CreateDirectory(Path.GetDirectoryName(emdPath));
-                File.Copy(emd.ModelPath, emdPath, true);
-                File.Copy(emd.TexturePath, timPath, true);
-
-                _logger.WriteLine($"Enemy 0x{enemyType:X2} becomes {emd.Actor}");
+                var srcEmd = ec.EmPath;
+                var dstEmd = Path.Combine(emdPath, $"EM{_config.Player}{id:X2}.EMD");
+                var srcTim = Path.ChangeExtension(ec.EmPath, ".tim");
+                var dstTim = Path.Combine(emdPath, $"EM{_config.Player}{id:X2}.TIM");
+                File.Copy(srcEmd, dstEmd, true);
+                File.Copy(srcTim, dstTim, true);
             }
+            _logger.WriteLine($"Enemy 0x{id:X2} becomes {ec.Actor}");
         }
 
         private void RandomizeRooms(Rng rng)
@@ -420,11 +389,11 @@ namespace IntelOrca.Biohazard
                         var newActor = GetActor(newType);
                         if (oldActor != newActor)
                         {
-                            if (oldActor == "sherry")
+                            if (IsSherryActor(oldActor) && !IsSherryActor(newActor))
                             {
                                 ScaleEMRs(rdt, enemy.Id, true);
                             }
-                            else if (newActor == "sherry")
+                            else if (IsSherryActor(newActor) && !IsSherryActor(oldActor))
                             {
                                 ScaleEMRs(rdt, enemy.Id, false);
                             }
@@ -456,6 +425,22 @@ namespace IntelOrca.Biohazard
             {
                 Re2Randomiser.ScaleEmrY(_logger, rdt, flags, inverse);
             }
+        }
+
+        private static bool IsSherryActor(string? actor)
+        {
+            var sherry = "sherry";
+            if (actor == null)
+                return false;
+
+            var fsIndex = actor.IndexOf('.');
+            if (fsIndex != -1)
+            {
+                if (actor.Length - fsIndex + 1 != sherry.Length)
+                    return false;
+                return actor.StartsWith(sherry, StringComparison.OrdinalIgnoreCase);
+            }
+            return string.Equals(actor, sherry, StringComparison.OrdinalIgnoreCase);
         }
 
         private Dictionary<string, string> RandomizeCharacters(Rdt rdt, Rng rng, byte[] defaultIncludeTypes, MapRoomNpcs[] npcs, Dictionary<int, byte> offsetToTypeMap, Dictionary<byte, byte> idToTypeMap)
@@ -511,13 +496,13 @@ namespace IntelOrca.Biohazard
                         if (idToTypeMap.TryGetValue(enemyId, out var alreadyType))
                         {
                             var actor = GetActor(alreadyType);
-                            if (actor == "sherry")
+                            if (IsSherryActor(actor))
                             {
-                                supportedNpcs = supportedNpcs.Where(x => GetActor(x) == "sherry").ToArray();
+                                supportedNpcs = supportedNpcs.Where(x => IsSherryActor(GetActor(x))).ToArray();
                             }
                             else
                             {
-                                supportedNpcs = supportedNpcs.Where(x => GetActor(x) != "sherry").ToArray();
+                                supportedNpcs = supportedNpcs.Where(x => !IsSherryActor(GetActor(x))).ToArray();
                             }
                         }
                     }
@@ -1067,34 +1052,17 @@ namespace IntelOrca.Biohazard
     }
 
     [DebuggerDisplay("{Actor}")]
-    public struct ExternalCharacter1
+    public struct ExternalCharacter
     {
         public byte EmId { get; }
         public string EmPath { get; }
         public string Actor { get; }
 
-        public ExternalCharacter1(byte emId, string emPath, string actor)
+        public ExternalCharacter(byte emId, string emPath, string actor)
         {
             EmId = emId;
             EmPath = emPath;
             Actor = actor;
-        }
-    }
-
-    [DebuggerDisplay("{Actor}")]
-    public struct ExternalCharacter2
-    {
-        public bool IsFemale { get; }
-        public string Actor { get; }
-        public string ModelPath { get; }
-        public string TexturePath { get; }
-
-        public ExternalCharacter2(bool isFemale, string actor, string modelPath, string texturePath)
-        {
-            IsFemale = isFemale;
-            Actor = actor;
-            ModelPath = modelPath;
-            TexturePath = texturePath;
         }
     }
 }

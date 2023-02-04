@@ -411,7 +411,24 @@ namespace IntelOrca.Biohazard
 
         public virtual string[] GetNPCs()
         {
-            return new string[0];
+            var actors = new HashSet<string>();
+            actors.AddRange(GetDefaultNPCs());
+            for (int i = 0; i < 2; i++)
+            {
+                var emds = DataManager
+                    .GetDirectories(BiohazardVersion, $"emd")
+                    .Select(Path.GetFileName)
+                    .ToArray();
+                actors.AddRange(emds);
+            }
+            return actors
+                .OrderBy(x => x)
+                .ToArray();
+        }
+
+        protected virtual string[] GetDefaultNPCs()
+        {
+            return new[] { "chris", "jill", "barry", "rebecca", "wesker", "enrico", "richard" };
         }
 
         protected bool MusicAlbumSelected(string album)
