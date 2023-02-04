@@ -1,16 +1,12 @@
-﻿// #define ALWAYS_SWAP_NPC
-
-using System;
-using System.Collections;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.RE2;
 using IntelOrca.Biohazard.Script.Opcodes;
 using NVorbis;
@@ -20,6 +16,7 @@ namespace IntelOrca.Biohazard
     internal class NPCRandomiser
     {
         private static readonly object _sync = new object();
+        private static ConcurrentDictionary<string, double> _voiceLengthCache = new ConcurrentDictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 
         private readonly BioVersion _version;
         private readonly RandoLogger _logger;
@@ -834,6 +831,17 @@ namespace IntelOrca.Biohazard
         }
 
         private static double GetVoiceLength(string path)
+        {
+            if (_voiceLengthCache.TryGetValue(path, out var result))
+            {
+                return result;
+            }
+            result = GetVoiceLengthInner(path);
+            _voiceLengthCache.TryAdd(path, result);
+            return result;
+        }
+
+        private static double GetVoiceLengthInner(string path)
         {
             if (path.EndsWith(".sap", StringComparison.OrdinalIgnoreCase))
             {
