@@ -99,7 +99,7 @@ static BYTE LoadGameHookCallback(LPVOID buffer, LPCSTR filename, DWORD bytes)
 	// buffer: 0x689A98+0x1F4
 	// inventory: 0x98E79C + 0x598
 
-	auto player = (uint16_t*)((BYTE*)buffer + 0x20A);
+	auto player = (uint8_t*)((BYTE*)buffer + 0x20A);
 	auto stage = (uint16_t*)((BYTE*)buffer + 0x378);
 	auto room = (uint8_t*)((BYTE*)buffer + 0x37A);
 	auto item0 = (BYTE*)buffer + 0x598;
@@ -108,7 +108,7 @@ static BYTE LoadGameHookCallback(LPVOID buffer, LPCSTR filename, DWORD bytes)
 		auto AddressInventoryLeon = (BYTE*)(0x400000 + 0x001401B8);
 		auto AddressInventoryClaire = (BYTE*)(0x400000 + 0x001401D9);
 
-		auto src = player == 0 ? AddressInventoryLeon : AddressInventoryClaire;
+		auto src = *player == 0 ? AddressInventoryLeon : AddressInventoryClaire;
 		auto dst = item0;
 		for (int i = 0; i < 10; i++)
 		{
