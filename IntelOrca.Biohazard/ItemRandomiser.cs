@@ -610,27 +610,7 @@ namespace IntelOrca.Biohazard
 
             if (_config.RandomInventory)
             {
-                var weaponKinds = new[] { (WeaponKind)_config.Weapon0, (WeaponKind)_config.Weapon1 };
-                for (int i = 0; i < weaponKinds.Length; i++)
-                {
-                    var weaponKind = weaponKinds[i];
-                    if (weaponKind == WeaponKind.Random)
-                        weaponKind = _rng.NextOf(WeaponKind.None, WeaponKind.Sidearm, WeaponKind.Primary, WeaponKind.Powerful);
-                    if (weaponKind == WeaponKind.None)
-                        continue;
-
-                    var itemIndex = weaponPool.FindLastIndex(x => weaponKind == _itemHelper.GetWeaponKind(x));
-                    if (itemIndex != -1)
-                    {
-                        var itemType = weaponPool[itemIndex];
-                        weaponPool.RemoveAt(itemIndex);
-                        availableWeapons.Add(itemType);
-
-                        // Add to inventory
-                        var amount = GetRandomAmount(itemType, true);
-                        _startingWeapons.Add(new RandomInventory.Entry(itemType, amount));
-                    }
-                }
+                RandomizeInventory(weaponPool, availableWeapons);
             }
             else
             {
@@ -707,6 +687,31 @@ namespace IntelOrca.Biohazard
             }
         }
 
+        private void RandomizeInventory(List<byte> weaponPool, List<byte> availableWeapons)
+        {
+            var weaponKinds = new[] { (WeaponKind)_config.Weapon0, (WeaponKind)_config.Weapon1 };
+            for (int i = 0; i < weaponKinds.Length; i++)
+            {
+                var weaponKind = weaponKinds[i];
+                if (weaponKind == WeaponKind.Random)
+                    weaponKind = _rng.NextOf(WeaponKind.None, WeaponKind.Sidearm, WeaponKind.Primary, WeaponKind.Powerful);
+                if (weaponKind == WeaponKind.None)
+                    continue;
+
+                var itemIndex = weaponPool.FindLastIndex(x => weaponKind == _itemHelper.GetWeaponKind(x));
+                if (itemIndex != -1)
+                {
+                    var itemType = weaponPool[itemIndex];
+                    weaponPool.RemoveAt(itemIndex);
+                    availableWeapons.Add(itemType);
+
+                    // Add to inventory
+                    var amount = GetRandomAmount(itemType, true);
+                    _startingWeapons.Add(new RandomInventory.Entry(itemType, amount));
+                }
+            }
+        }
+
         private void SpawnItems(Queue<ItemPoolEntry> pool, int count, Rng.Table<byte> probabilityTable)
         {
             for (int i = 0; i < count; i++)
@@ -754,6 +759,16 @@ namespace IntelOrca.Biohazard
         private void ShuffleRemainingPool()
         {
             _logger.WriteLine("Shuffling non-key items:");
+
+            if (_config.RandomInventory)
+            {
+                var weaponPool = _itemHelper
+                    .GetWeapons(_rng, _config)
+                    .Shuffle(_rng)
+                    .ToList();
+                RandomizeInventory(weaponPool, new List<byte>());
+            }
+
             var shufflePool = _shufflePool
                 .Where(x => x.Priority != ItemPriority.Low)
                 .ToArray();
