@@ -1093,6 +1093,14 @@
           "id": 2,
           "target": "309:1"
         }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "type": 6,
+          "priority": "fixed",
+          "player": 0
+        }
       ]
     },
     "309": {
