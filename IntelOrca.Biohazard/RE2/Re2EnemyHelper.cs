@@ -238,6 +238,7 @@ namespace IntelOrca.Biohazard.RE2
                     return 8;
                 case EnemyType.LickerRed:
                 case EnemyType.LickerGrey:
+                case EnemyType.Tyrant1:
                     return 5;
                 default:
                     return 16;
