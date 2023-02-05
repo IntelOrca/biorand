@@ -182,6 +182,13 @@ namespace IntelOrca.Biohazard.RE2
 
         internal override void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser)
         {
+            if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard1))
+            {
+                var dataPath = GetDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard1));
+                dataPath = Path.Combine(dataPath, "JPN");
+                npcRandomiser.AddToSelection(BioVersion.Biohazard1, dataPath);
+            }
+
             var emdFolders = DataManager.GetDirectories(BiohazardVersion, $"emd");
             foreach (var emdFolder in emdFolders)
             {
