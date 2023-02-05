@@ -134,7 +134,20 @@ namespace IntelOrca.Biohazard
                 var numEmptyRdts = Enumerable.Range(0, enemyRdts.Count)
                     .Count(x => _rng.Next(0, maxQuantity) == 0);
                 numEmptyRdts = Math.Min(numEmptyRdts, enemyRdts.Count);
-                enemyRdts.RemoveRange(0, numEmptyRdts);
+
+                var numRdtsCleared = 0;
+                for (int i = enemyRdts.Count - 1; i >= 0; i--)
+                {
+                    if (numRdtsCleared >= numEmptyRdts)
+                        break;
+
+                    var rdt = enemyRdts[i];
+                    if (RemoveAllEnemiesFromRoom(rdt))
+                    {
+                        enemyRdts.RemoveAt(i);
+                        numRdtsCleared++;
+                    }
+                }
             }
 
             var roomRandomized = true;
@@ -322,6 +335,43 @@ namespace IntelOrca.Biohazard
         private string GetNewEnemyLogText(SceEmSetOpcode enemy)
         {
             return $"[{_enemyHelper.GetEnemyName(enemy.Type)},{enemy.State},{enemy.Ai},{enemy.SoundBank},{enemy.Texture}] at ({enemy.X},{enemy.Y},{enemy.Z})";
+        }
+
+        private bool RemoveAllEnemiesFromRoom(Rdt rdt)
+        {
+            // Only count rooms that could have had enemies changed
+            var newPlacements = _enemyPositions.Count(x => x.RdtId == rdt.RdtId);
+            if (newPlacements == 0)
+                return false;
+
+            var numEnemiesRemoved = 0;
+            var enemySpecs = GetEnemySpecs(rdt.RdtId);
+            foreach (var enemySpec in enemySpecs)
+            {
+                if (enemySpec.Nop != null)
+                {
+                    var nopArray = Map.ParseNopArray(enemySpec.Nop, rdt);
+                    foreach (var offset in nopArray)
+                    {
+                        rdt.Nop(offset);
+                        _logger.WriteLine($"{rdt.RdtId} (0x{offset:X2}) opcode removed");
+                    }
+                }
+
+                var currentEnemies = rdt.Enemies
+                    .Where(e => enemySpec.ExcludeOffsets?.Contains(e.Offset) != true)
+                    .Where(e => _enemyHelper.ShouldChangeEnemy(_config, e))
+                    .ToArray();
+
+                foreach (var enemy in currentEnemies)
+                {
+                    rdt.Nop(enemy.Offset);
+                    numEnemiesRemoved++;
+                }
+            }
+            if (numEnemiesRemoved != 0)
+                _logger.WriteLine($"{rdt.RdtId}, {numEnemiesRemoved} enemies removed");
+            return true;
         }
 
         private void RandomiseRoom(Rng rng, Rdt rdt, MapRoomEnemies enemySpec, SelectableEnemy targetEnemy)
