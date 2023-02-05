@@ -162,8 +162,8 @@ namespace IntelOrca.Biohazard.BioRand
                 _suspendEvents = true;
 
                 chkPlayer.IsChecked = _config.ChangePlayer;
-                dropdownPlayer0.SelectedIndex = _config.Player0;
-                dropdownPlayer1.SelectedIndex = _config.Player1;
+                dropdownPlayer0.SelectedIndex = Math.Min(_config.Player0, dropdownPlayer0.Items.Count - 1);
+                dropdownPlayer1.SelectedIndex = Math.Min(_config.Player1, dropdownPlayer1.Items.Count - 1);
 
                 if (listEnemies.ItemsSource != null)
                 {
@@ -209,8 +209,8 @@ namespace IntelOrca.Biohazard.BioRand
                 chkIncludeDocuments.IsChecked = _config.IncludeDocuments;
                 chkRandomInventory.IsChecked = _config.RandomInventory;
 
-                dropdownWeapon0.SelectedIndex = _config.Weapon0;
-                dropdownWeapon1.SelectedIndex = _config.Weapon1;
+                dropdownWeapon0.SelectedIndex = Math.Min(_config.Weapon0, dropdownWeapon0.Items.Count - 1);
+                dropdownWeapon1.SelectedIndex = Math.Min(_config.Weapon1, dropdownWeapon1.Items.Count - 1);
                 sliderWeaponQuantity.Value = _config.WeaponQuantity;
 
                 sliderEnemyDifficulty.Value = _config.EnemyDifficulty;
@@ -223,7 +223,7 @@ namespace IntelOrca.Biohazard.BioRand
                 sliderAreaCount.Value = _config.AreaCount;
                 sliderAreaSize.Value = _config.AreaSize;
 
-                dropdownVariant.SelectedIndex = _config.GameVariant;
+                dropdownVariant.SelectedIndex = Math.Min(_config.GameVariant, dropdownVariant.Items.Count - 1);
 
                 txtSeed.Text = _config.ToString();
                 seedQrCode.Seed = null;
