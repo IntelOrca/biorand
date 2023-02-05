@@ -7,15 +7,19 @@ namespace IntelOrca.Biohazard.Tests
     {
         public static string GetInstallPath(int game)
         {
-            var a = $@"F:\games\re{game + 1}";
-            var b = $@"M:\games\re{game + 1}";
-            if (Directory.Exists(a))
+            var places = new[]
             {
-                return a;
-            }
-            if (Directory.Exists(b))
+                $@"D:\games\re{game + 1}",
+                $@"F:\games\re{game + 1}",
+                $@"M:\games\re{game + 1}"
+            };
+
+            foreach (var place in places)
             {
-                return b;
+                if (Directory.Exists(place))
+                {
+                    return place;
+                }
             }
             throw new Exception("Unable to find RE.");
         }

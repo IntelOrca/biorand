@@ -62,6 +62,19 @@ namespace IntelOrca.Biohazard.Tests
         }
 
         [Fact]
+        public void RandomizeNPCs()
+        {
+            var config = GetBaseConfig();
+            config.RandomDoors = false;
+            config.RandomItems = false;
+            config.RandomEnemies = false;
+            config.RandomNPCs = false;
+            config.ChangePlayer = false;
+            config.RandomNPCs = true;
+            Randomize(config);
+        }
+
+        [Fact]
         public void RandomizeBGM()
         {
             var config = GetBaseConfig();
@@ -71,6 +84,9 @@ namespace IntelOrca.Biohazard.Tests
             config.RandomNPCs = false;
             config.ChangePlayer = false;
             config.RandomBgm = true;
+            config.EnabledBGMs = new bool[5];
+            for (int i = 0; i < 5; i++)
+                config.EnabledBGMs[i] = i % 2 == 0;
             Randomize(config);
         }
 
@@ -112,6 +128,14 @@ namespace IntelOrca.Biohazard.Tests
             config.RandomEnemies = true;
             config.RandomEnemyPlacement = false;
             config.EnemyDifficulty = 2;
+            config.EnemyRatios = new byte[5];
+            for (int i = 0; i < 5; i++)
+                config.EnemyRatios[i] = 7;
+
+            config.RandomNPCs = false;
+            config.EnabledNPCs = new bool[10];
+            for (int i = 0; i < 10; i++)
+                config.EnabledNPCs[i] = i % 2 == 0;
 
             if (config.Game == 2)
             {
@@ -125,6 +149,9 @@ namespace IntelOrca.Biohazard.Tests
             }
 
             config.RandomBgm = false;
+            config.EnabledBGMs = new bool[5];
+            for (int i = 0; i < 5; i++)
+                config.EnabledBGMs[i] = i % 2 == 0;
             return config;
         }
 
