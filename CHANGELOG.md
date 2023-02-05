@@ -1,3 +1,52 @@
+BioRand v2.2.1 (2023-02-05)
+
+* [Feature] Allow customisation of starting weapons.
+* [Feature] Allow quantity of weapons in seed to be customised.
+* [Feature] Allow full enemy selection.
+* [Feature] Allow full NPC selection.
+* [Feature] Allow full background music selection.
+* [Feature] RE 1, Rebecca, and Wesker are now playable characters.
+* [Feature] RE 2, add Billy from RE 0.
+* [Feature] RE 2, add Ada, Annette, Claire, Kendo, Leon, Marvin, and Sherry from RE 2 remake.
+* [Feature] RE 2, add Chris, Steve, and Wesker from RE Code Veronica X.
+* [Feature] RE 2, add Ashley, and Krauser from RE 4.
+* [Feature] RE 2, add Chris, Sheva, and Wesker from RE 5.
+* [Enhancement] RE 1, all characters can now have Enrico animations.
+* [Enhancement] RE 2, Add Claire voice lines from RE:CV.
+* [Enhancement] RE 2, Add walking NPCs for Enrico and Richard.
+* [Enhancement] Speed up NPC generation by caching voice sample lengths and using all processors.
+* [Enhancement] Support multiple conditions in custom voice filenames.
+* [Enhancement] Report issue now uses a more user friendly GitHub form.
+* [Change] Use QR code for seed when in game.
+* [Change] Limit maximum number of certain enemy types within a single room.
+* [Change] Last judgement RE2R BGM updated to include intro.
+* [Change] RE 2, room 111, exclude moths from randomization pool.
+* [Change] RE 2, room 603, exclude moths from randomization pool.
+* [Fix] #97: RE 2, room 401, going down ladder breaks if lift is unconnected.
+* [Fix] #170: UI is too tall for small screen resolutions.
+* [Fix] #190: RE 2, room 402, crash when random enemy placement is enabled.
+* [Fix] #191: Number of ink ribbons in seed does not reflect probability.
+* [Fix] #192: Permission denied when generating seed.
+* [Fix] #193: RE 2, room 501, crash when random enemy placement is enabled.
+* [Fix] #197: RE 2, room 106, crash when opening door with random enemy placement enabled.
+* [Fix] #198: RE 2, room 110, 10F, 111, enemies out bounds.
+* [Fix] #200: RE 2, room 208, key item behind Film A document.
+* [Fix] #203: RE 2, room 405, 407, 504, crash with random enemy placements.
+* [Fix] #204: RE 1, room 406, item 8 can not be picked up.
+* [Fix] #205: RE 2, room 113, first Claire line is not randomized correctly.
+* [Fix] #206: RE 2, room 608, EM90 NPC crashes.
+* [Fix] #212: RE 2, room 602, Leon B Tyrant item can be key item.
+* [Fix] #214: RE 2, enemies are silent when partner is present.
+* [Fix] #216: RE 1, room 10B, key item not present.
+* [Fix] #219: RE 1, room 308, flamethrower randomized causing softlock.
+* [Fix] #220: RE 1, room 118, items from Barry / Wesker not randomized.
+* [Fix] #221: RE 1, Rebecca's invetory could be full not allowing her to pickup serum or V-Jolt.
+* [Fix] RE 1, room 105, zombie cutscene not randomized.
+* [Fix] RE 1, room 106, Chris voice not randomized for cutscene 2.
+* [Fix] RE 1, room 405, Enrico / Richard are unsuitable for Wesker cutscene.
+* [Fix] RE 2, inventory may not be randomized for scenario B.
+* [Fix] Install path does not get saved.
+
 BioRand v2.1.7 (2023-01-20)
 
 * [Change] Remove RE 1 BGM 40 out of music rotation, too short.
