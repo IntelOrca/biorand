@@ -571,14 +571,20 @@
       "items": [
         {
           "id": 2,
+          "type": 65,
+          "amount": 1,
           "priority": "low"
         },
         {
           "id": 4,
+          "type": 12,
+          "amount": 7,
           "priority": "low"
         },
         {
           "id": 5,
+          "type": 11,
+          "amount": 15,
           "priority": "low"
         }
       ]

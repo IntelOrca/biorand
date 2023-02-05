@@ -1044,6 +1044,19 @@ namespace IntelOrca.Biohazard
                         items[idx].Requires = correctedItem.Requires;
                         items[idx].Priority = ParsePriority(correctedItem.Priority);
                     }
+                    else
+                    {
+                        items = items.Concat(new[] {
+                                new ItemPoolEntry() {
+                                    RdtId = rdtId,
+                                    Id = correctedItem.Id,
+                                    Type = (ushort)(correctedItem.Type ?? 0),
+                                    Amount = correctedItem.Amount ?? 1,
+                                    Requires = correctedItem.Requires,
+                                    Priority = ParsePriority(correctedItem.Priority)
+                                }
+                            }).ToArray();
+                    }
                 }
 
                 // Remove any items that have no type (removed fixed items)
