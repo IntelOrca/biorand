@@ -123,7 +123,7 @@ namespace IntelOrca.Biohazard
                 }
             }
 
-            return _dataManager
+            var voiceLines = _dataManager
                 .GetDirectoriesIn("voice")
                 .SelectMany(x =>
                 {
@@ -134,7 +134,10 @@ namespace IntelOrca.Biohazard
                 .AsParallel()
                 .Select(x => ProcessSample(x.Actor, x.SampleFiles))
                 .Where(x => x != null)
-                .ToArray()!;
+                .ToArray() as VoiceSample[];
+
+            samples.AddRange(voiceLines);
+            return samples.ToArray();
         }
 
         private VoiceSample? ProcessSample(string actor, string sampleFile)
