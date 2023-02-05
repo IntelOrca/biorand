@@ -54,6 +54,11 @@ namespace IntelOrca.Biohazard
             return GetDirectoriesSafe(fullPath);
         }
 
+        public string[] GetFiles(string baseName)
+        {
+            return GetFilesSafe(GetPath(baseName));
+        }
+
         public string[] GetFiles(BioVersion version, string baseName)
         {
             return GetFilesSafe(GetPath(version, baseName));

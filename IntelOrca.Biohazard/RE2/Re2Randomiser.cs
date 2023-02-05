@@ -128,6 +128,14 @@ namespace IntelOrca.Biohazard.RE2
             base.Generate(config, reConfig, installPath, modPath);
         }
 
+        protected override string[] GetTitleCardSoundFiles(string modPath)
+        {
+            return new[] {
+                Path.Combine(modPath, "Common/Sound/core/core16.sap"),
+                Path.Combine(modPath, "Common/Sound/core/core17.sap")
+            };
+        }
+
         internal override string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, string modPath)
         {
             string actor;

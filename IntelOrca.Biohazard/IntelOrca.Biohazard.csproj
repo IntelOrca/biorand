@@ -28,6 +28,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="data\title\" />
+  </ItemGroup>
   <Target Name="CopyDllModuleToData" BeforeTargets="Compile">
     <Copy SourceFiles="..\biorandmod\bin\biorand.dll" DestinationFolder="data" />
   </Target>

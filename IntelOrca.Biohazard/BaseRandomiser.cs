@@ -220,6 +220,7 @@ namespace IntelOrca.Biohazard
             }
 
             CreateBackgrounds(config, modPath);
+            CreateTitleCardSounds(config, modPath);
             CreateDataModule(modPath);
         }
 
@@ -304,6 +305,11 @@ namespace IntelOrca.Biohazard
                 logger.WriteException(ex);
                 throw;
             }
+        }
+
+        protected virtual string[] GetTitleCardSoundFiles(string modPath)
+        {
+            return new string[0];
         }
 
         internal virtual string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, string modPath)
@@ -539,6 +545,33 @@ namespace IntelOrca.Biohazard
             Directory.CreateDirectory(Path.GetDirectoryName(outputFilename));
             var titleBg = BgCreator.CreatePNG(config, pngBackground);
             File.WriteAllBytes(outputFilename, titleBg);
+        }
+
+        private void CreateTitleCardSounds(RandoConfig config, string modPath)
+        {
+            // Title sound
+            var targetTitleCardSounds = GetTitleCardSoundFiles(modPath);
+            if (targetTitleCardSounds.Length != 0)
+            {
+                var titleSounds = DataManager
+                    .GetFiles("title")
+                    .Where(x => x.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase))
+                    .ToArray();
+                if (titleSounds.Length != 0)
+                {
+                    var rng = new Rng(config.Seed);
+                    var titleSound = rng.NextOf(titleSounds);
+                    var builder = new WaveformBuilder();
+                    builder.Append(titleSound);
+
+                    var coreDirectory = Path.Combine(modPath, "Common/Sound/core");
+                    foreach (var dst in targetTitleCardSounds)
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(dst));
+                        builder.Save(dst);
+                    }
+                }
+            }
         }
 
         private void CreateDataModule(string modPath)
