@@ -626,9 +626,13 @@ namespace IntelOrca.Biohazard
             var ammoTypes = new HashSet<byte>();
             foreach (var itemType in availableWeapons)
             {
+                // Spawn weapon
+                var amount = GetRandomAmount(itemType, true);
+                SpawnItem(shuffled, itemType, amount);
+
                 // Spawn upgrade
                 var upgradeType = _itemHelper.GetWeaponUpgrade(itemType, _rng, _config);
-                if (upgradeType != null)
+                if (upgradeType != null && _rng.NextProbability(50))
                 {
                     SpawnItem(shuffled, upgradeType.Value, 1);
                 }

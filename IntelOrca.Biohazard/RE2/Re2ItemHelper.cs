@@ -279,17 +279,11 @@ namespace IntelOrca.Biohazard.RE2
             switch ((ItemType)weapon)
             {
                 case ItemType.HandgunLeon:
-                    if (rng.NextProbability(33))
-                        return (byte)ItemType.HandgunParts;
-                    break;
+                    return (byte)ItemType.HandgunParts;
                 case ItemType.Shotgun:
-                    if (rng.NextProbability(50))
-                        return (byte)ItemType.ShotgunParts;
-                    break;
+                    return (byte)ItemType.ShotgunParts;
                 case ItemType.Magnum:
-                    if (rng.NextProbability(50))
-                        return (byte)ItemType.MagnumParts;
-                    break;
+                    return (byte)ItemType.MagnumParts;
             }
             return null;
         }
