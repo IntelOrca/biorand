@@ -109,32 +109,43 @@ namespace IntelOrca.Biohazard
                 _logger.WriteHeading($"Randomizing Inventory {i}:");
                 remaining = size[i];
 
-                // Primary weapon
-                foreach (var weapon in _startingWeapons)
+                if (remaining >= 3 || _rng.NextProbability(75))
                 {
-                    var weaponType = weapon.Type;
-                    var ammoType = _itemHelper
-                        .GetAmmoTypeForWeapon(weaponType)
-                        .Shuffle(_rng)
-                        .FirstOrDefault();
+                    // Weapons
+                    foreach (var weapon in _startingWeapons)
+                    {
+                        var weaponType = weapon.Type;
+                        var ammoType = _itemHelper
+                            .GetAmmoTypeForWeapon(weaponType)
+                            .Shuffle(_rng)
+                            .FirstOrDefault();
 
-                    var amount = weapon.Count;
-                    var extra = (byte)0;
-                    if (_rng.NextProbability(75))
-                    {
-                        amount = _itemHelper.GetMaxAmmoForAmmoType(weaponType);
-                        var max = (int)Math.Max(1, _itemHelper.GetMaxAmmoForAmmoType(ammoType) * (_config.AmmoQuantity / 8.0));
-                        extra = (byte)_rng.Next(0, Math.Min(max * 2, 100));
-                    }
-                    AddToInventory(weaponType, amount);
-                    if (extra != 0 && ammoType != 0)
-                    {
-                        AddToInventory(ammoType, extra);
+                        var amount = weapon.Count;
+                        var extra = (byte)0;
+                        if (_rng.NextProbability(75))
+                        {
+                            amount = _itemHelper.GetMaxAmmoForAmmoType(weaponType);
+                            var max = (int)Math.Max(1, _itemHelper.GetMaxAmmoForAmmoType(ammoType) * (_config.AmmoQuantity / 8.0));
+                            extra = (byte)_rng.Next(0, Math.Min(max * 2, 100));
+                        }
+                        AddToInventory(weaponType, amount);
+                        if (remaining >= 2)
+                        {
+                            if (extra != 0 && ammoType != 0)
+                            {
+                                AddToInventory(ammoType, extra);
+                            }
+                        }
+                        if (remaining <= 1)
+                            break;
                     }
                 }
 
-                // Always give the player a knife
-                AddToInventoryCommon(CommonItemKind.Knife, 1);
+                if (remaining >= 2)
+                {
+                    // Always give the player a knife
+                    AddToInventoryCommon(CommonItemKind.Knife, 1);
+                }
 
                 // Health items
                 if (_config.RatioHealth != 0)

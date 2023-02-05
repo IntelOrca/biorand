@@ -191,7 +191,7 @@ namespace IntelOrca.Biohazard.RE1
                 case Re1ItemIds.RocketLauncher:
                     return 5;
                 case Re1ItemIds.FlameThrower:
-                    return 100;
+                    return 240;
 
                 case Re1ItemIds.Clip:
                     return 60;
@@ -267,7 +267,7 @@ namespace IntelOrca.Biohazard.RE1
         public int[] GetInventorySize(RandoConfig config)
         {
             if (config.Player == 0)
-                return new int[] { 6, 6 };
+                return new int[] { 6, 2 }; // Rebecca needs at 4 spare slots for serum / v-jolt bottles
             else
                 return new int[] { 8 };
         }
