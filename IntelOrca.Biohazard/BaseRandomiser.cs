@@ -556,6 +556,7 @@ namespace IntelOrca.Biohazard
                 var titleSounds = DataManager
                     .GetFiles("title")
                     .Where(x => x.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase))
+                    .Where(x => !Path.GetFileName(x).Equals("template.ogg", StringComparison.OrdinalIgnoreCase))
                     .ToArray();
                 if (titleSounds.Length != 0)
                 {
