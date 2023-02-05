@@ -55,13 +55,15 @@
                     <TextBlock FontSize="24">Contributors</TextBlock>
                     <StackPanel Margin="12,0,0,0">
                         <TextBlock FontSize="16">IntelOrca - programmer</TextBlock>
-                        <TextBlock FontSize="16">Kashup - testing, pld/emd models, voice sample labeling</TextBlock>
-                        <TextBlock FontSize="16">Snipz - testing, Sherry animations, pld/emd models</TextBlock>
+                        <TextBlock FontSize="16">Kashup - testing, models, textures, voices</TextBlock>
+                        <TextBlock FontSize="16">Snipz - testing, animations, models, voices</TextBlock>
+                        <TextBlock FontSize="16">Shannon - testing</TextBlock>
+                        <TextBlock FontSize="16">ALSOP - Kendo texture</TextBlock>
+                        <TextBlock FontSize="16">AndrewC - Barry, Enrico, Jill, and extra models</TextBlock>
+                        <TextBlock FontSize="16">Komizo - misc.</TextBlock>
+                        <TextBlock FontSize="16">Leigi - Chris (RE 5), Sheva, Ashley, Krauser models</TextBlock>
+                        <TextBlock FontSize="16">Rusty - Ark, Kevin, Richard, William, Wesker (RE 5), and extra models</TextBlock>
                         <TextBlock FontSize="16">StarringRole - Rebecca pld/emd model</TextBlock>
-                        <TextBlock FontSize="16">AndrewC - Barry, Enrico, Jill, Rebecca pld/emd models</TextBlock>
-                        <TextBlock FontSize="16">ALSOP - Kendo pld/emd model</TextBlock>
-                        <TextBlock FontSize="16">Rusty - Ark, Kevin, Richard, William pld/emd models</TextBlock>
-                        <TextBlock FontSize="16">Komizo - Wesker pld/emd model</TextBlock>
                         <TextBlock FontSize="16">re_duke - RDT information</TextBlock>
                         <TextBlock FontSize="16">Classic RE Modding community discord</TextBlock>
                     </StackPanel>
