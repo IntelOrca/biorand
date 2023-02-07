@@ -288,6 +288,11 @@
           "id": 2,
           "type": 0
         }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 13 ]
+        }
       ]
     },
     "108": {
