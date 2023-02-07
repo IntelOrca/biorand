@@ -26,7 +26,7 @@ namespace IntelOrca.Biohazard.BioRand
     {
         private static Version CurrentVersion = Assembly.GetEntryAssembly().GetName().Version;
 
-        private Random _random = new Random();
+        private Rng _random = new Rng();
         private RandoAppSettings _settings = new RandoAppSettings();
         private RandoConfig _config = new RandoConfig();
         private bool _suspendEvents;
@@ -51,9 +51,8 @@ namespace IntelOrca.Biohazard.BioRand
         private void LoadSettings()
         {
             _settings = RandoAppSettings.Load();
-            try
+            using (SuspendEvents())
             {
-                _suspendEvents = true;
                 gameLocation1.Location = _settings.GamePath1;
                 gameLocation2.Location = _settings.GamePath2;
                 gameLocation3.Location = _settings.GamePath3;
@@ -61,10 +60,6 @@ namespace IntelOrca.Biohazard.BioRand
                 gameLocation1.IsChecked = _settings.GameEnabled1;
                 gameLocation2.IsChecked = _settings.GameEnabled2;
                 gameLocation3.IsChecked = _settings.GameEnabled3;
-            }
-            finally
-            {
-                _suspendEvents = false;
             }
 
             var seed = SelectedGame == 0 ? _settings.Seed1 : _settings.Seed2;
@@ -158,10 +153,8 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void UpdateUi()
         {
-            try
+            using (SuspendEvents())
             {
-                _suspendEvents = true;
-
                 chkPlayer.IsChecked = _config.ChangePlayer;
                 dropdownPlayer0.SelectedIndex = Math.Min(_config.Player0, dropdownPlayer0.Items.Count - 1);
                 dropdownPlayer1.SelectedIndex = Math.Min(_config.Player1, dropdownPlayer1.Items.Count - 1);
@@ -232,11 +225,6 @@ namespace IntelOrca.Biohazard.BioRand
 
                 UpdateHints();
             }
-            finally
-            {
-                _suspendEvents = false;
-            }
-
             UpdateEnabledUi();
         }
 
@@ -747,9 +735,8 @@ namespace IntelOrca.Biohazard.BioRand
             else if (index == 1)
                 _config = RandoConfig.FromString(_settings.Seed2);
 
-            try
+            using (SuspendEvents())
             {
-                _suspendEvents = true;
                 if (index == 3)
                 {
                     panelInfo.Visibility = Visibility.Visible;
@@ -790,10 +777,6 @@ namespace IntelOrca.Biohazard.BioRand
                     UpdateBGMList();
                     UpdateLogButtons();
                 }
-            }
-            finally
-            {
-                _suspendEvents = false;
             }
 
             if (index >= 0 && index <= 1)
@@ -994,6 +977,113 @@ namespace IntelOrca.Biohazard.BioRand
 
             var path = Path.Combine(location, "mod_biorand", $"log_pl{player}.txt");
             return path;
+        }
+
+        private void npcContextUnselectAll_Click(object sender, RoutedEventArgs e)
+        {
+            using (SuspendEvents())
+            {
+                foreach (CheckBoxListItem item in listNPCs.ItemsSource)
+                {
+                    item.IsChecked = false;
+                }
+            }
+            UpdateConfig();
+            UpdateUi();
+        }
+
+        private void npcContextSelectAll_Click(object sender, RoutedEventArgs e)
+        {
+            using (SuspendEvents())
+            {
+                foreach (CheckBoxListItem item in listNPCs.ItemsSource)
+                {
+                    item.IsChecked = true;
+                }
+            }
+            UpdateConfig();
+            UpdateUi();
+        }
+
+        private void npcContextRandom_Click(object sender, RoutedEventArgs e)
+        {
+            using (SuspendEvents())
+            {
+                var items = listNPCs.ItemsSource.Cast<CheckBoxListItem>();
+                var numItems = items.Count();
+                var numChecked = _random.Next(0, numItems);
+                var checkedItems = items.Shuffle(_random).Take(numChecked).ToArray();
+                foreach (CheckBoxListItem item in listNPCs.ItemsSource)
+                {
+                    item.IsChecked = checkedItems.Contains(item);
+                }
+            }
+            UpdateConfig();
+            UpdateUi();
+        }
+
+        private void enemyContextAllNone_Click(object sender, RoutedEventArgs e)
+        {
+            using (SuspendEvents())
+            {
+                foreach (SliderListItem item in listEnemies.ItemsSource)
+                {
+                    item.Value = 0;
+                }
+            }
+            UpdateConfig();
+            UpdateUi();
+        }
+
+        private void enemyContextAllMax_Click(object sender, RoutedEventArgs e)
+        {
+            using (SuspendEvents())
+            {
+                foreach (SliderListItem item in listEnemies.ItemsSource)
+                {
+                    item.Value = item.Maximum;
+                }
+            }
+            UpdateConfig();
+            UpdateUi();
+        }
+
+        private void enemyContextRandom_Click(object sender, RoutedEventArgs e)
+        {
+            using (SuspendEvents())
+            {
+                var items = listEnemies.ItemsSource.Cast<SliderListItem>();
+                var numItems = items.Count();
+                var numChecked = _random.Next(0, numItems);
+                var checkedItems = items.Shuffle(_random).Take(numChecked).ToArray();
+                foreach (SliderListItem item in listEnemies.ItemsSource)
+                {
+                    item.Value = _random.Next(0, (int)item.Maximum);
+                }
+            }
+            UpdateConfig();
+            UpdateUi();
+        }
+
+        private SuspendEventsScope SuspendEvents()
+        {
+            return new SuspendEventsScope(this);
+        }
+
+        private readonly struct SuspendEventsScope : IDisposable
+        {
+            private readonly MainWindow _mainWindow;
+
+            public SuspendEventsScope(MainWindow mainWindow)
+            {
+                _mainWindow = mainWindow;
+                _mainWindow._suspendEvents = true;
+            }
+
+            public void Dispose()
+            {
+                _mainWindow._suspendEvents = false;
+            }
         }
     }
 

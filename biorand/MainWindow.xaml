@@ -267,6 +267,13 @@
                                                            ToolTip="Adjusts the limit of how many difficult enemies can appear in a single room, and the likelyhood of them being aggravated."/>
                                     </StackPanel>
                                     <ListView Grid.Row="1" x:Name="listEnemies" HorizontalContentAlignment="Stretch" Margin="0 4">
+                                        <ListView.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Set all to none" Click="enemyContextAllNone_Click" />
+                                                <MenuItem Header="Set all to max" Click="enemyContextAllMax_Click" />
+                                                <MenuItem Header="Random" Click="enemyContextRandom_Click" />
+                                            </ContextMenu>
+                                        </ListView.ContextMenu>
                                         <ListView.ItemContainerStyle>
                                             <Style TargetType="ListViewItem">
                                                 <Setter Property="Focusable" Value="false" />
@@ -298,6 +305,13 @@
                             </local:CheckGroupBox>
                             <local:CheckGroupBox x:Name="chkRngChars" Grid.Column="0" Header="Randomize NPCs">
                                 <ListView x:Name="listNPCs">
+                                    <ListView.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Unselect All" Click="npcContextUnselectAll_Click" />
+                                            <MenuItem Header="Select All" Click="npcContextSelectAll_Click" />
+                                            <MenuItem Header="Random" Click="npcContextRandom_Click" />
+                                        </ContextMenu>
+                                    </ListView.ContextMenu>
                                     <ListView.ItemContainerStyle>
                                         <Style TargetType="ListViewItem">
                                             <Setter Property="Focusable" Value="false" />
