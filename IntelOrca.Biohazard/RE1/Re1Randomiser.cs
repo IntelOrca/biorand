@@ -130,7 +130,7 @@ namespace IntelOrca.Biohazard.RE1
             };
         }
 
-        internal override string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, string modPath)
+        internal override string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, string originalDataPath, string modPath)
         {
             string? actor = null;
             if (config.ChangePlayer)
@@ -150,8 +150,6 @@ namespace IntelOrca.Biohazard.RE1
             if (BgCreator == null)
                 return;
 
-            var faceDirectory = DataManager.GetPath(BiohazardVersion, "face");
-
             var inputTimPath = Path.Combine(installPath, "data", "statface.tim");
             var outputTimPath = Path.Combine(modPath, "data", "statface.tim");
             Directory.CreateDirectory(Path.GetDirectoryName(outputTimPath!));
@@ -160,9 +158,8 @@ namespace IntelOrca.Biohazard.RE1
 
             for (int i = 0; i < 2; i++)
             {
-                var player = i == 0 ? config.Player0 : config.Player1;
-                var actor = GetPlayerCharacters(i)[player].ToLower();
-                var facePath = Path.Combine(faceDirectory, $"{actor}.png");
+                var actor = GetSelectedActor(config, i);
+                var facePath = DataManager.GetPath(BiohazardVersion, Path.Combine($"pld{i}", actor, "face.png"));
                 if (File.Exists(facePath))
                 {
                     BgCreator.DrawImage(timFile, facePath, i * 32, 0);

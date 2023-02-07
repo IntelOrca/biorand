@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using IntelOrca.Biohazard.RE1;
@@ -281,7 +280,7 @@ namespace IntelOrca.Biohazard
                     enemyRandomiser.Randomise(graph);
                 }
 
-                var playerActor = ChangePlayerCharacters(config, logger, gameData, modPath);
+                var playerActor = ChangePlayerCharacters(config, logger, gameData, originalDataPath, modPath);
                 if (config.RandomNPCs)
                 {
                     var npcRandomiser = new NPCRandomiser(BiohazardVersion, logger, config, originalDataPath, modPath, gameData, map, randomNpcs, NpcHelper, DataManager, playerActor);
@@ -312,7 +311,7 @@ namespace IntelOrca.Biohazard
             return new string[0];
         }
 
-        internal virtual string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, string modPath)
+        internal virtual string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, string originalDataPath, string modPath)
         {
             return null;
         }
@@ -413,6 +412,23 @@ namespace IntelOrca.Biohazard
         public virtual string[] GetPlayerCharacters(int index)
         {
             return new string[0];
+        }
+
+        protected string GetSelectedActor(RandoConfig config)
+        {
+            return GetSelectedActor(config, config.Player);
+        }
+
+        protected string GetSelectedActor(RandoConfig config, int player)
+        {
+            if (!config.ChangePlayer)
+                return GetPlayerName(player).ToLower();
+
+            var pldIndex = player == 0 ? config.Player0 : config.Player1;
+            var pldPath = DataManager.GetDirectories(BiohazardVersion, $"pld{player}")
+                .Skip(pldIndex)
+                .FirstOrDefault();
+            return Path.GetFileName(pldPath).ToLower();
         }
 
         public virtual string[] GetNPCs()

@@ -136,7 +136,7 @@ namespace IntelOrca.Biohazard.RE2
             };
         }
 
-        internal override string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, string modPath)
+        internal override string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, string originalDataPath, string modPath)
         {
             string actor;
             if (config.ChangePlayer)
@@ -146,7 +146,7 @@ namespace IntelOrca.Biohazard.RE2
                     .Skip(pldIndex)
                     .FirstOrDefault();
                 actor = Path.GetFileName(pldPath);
-                SwapPlayerCharacter(config, logger, actor, modPath);
+                SwapPlayerCharacter(config, logger, actor, originalDataPath, modPath);
                 if (actor == "sherry")
                 {
                     foreach (var rdt in gameData.Rdts)
@@ -164,7 +164,7 @@ namespace IntelOrca.Biohazard.RE2
             {
                 // We still need to replace Leon / Claire so they can use more weapons
                 actor = config.Player == 0 ? "leon" : "claire";
-                SwapPlayerCharacter(config, logger, actor, modPath);
+                SwapPlayerCharacter(config, logger, actor, originalDataPath, modPath);
             }
 
             var emdFiles = DataManager.GetFiles(BiohazardVersion, $"pld{config.Player}/{actor}/emd{config.Player}");
@@ -244,11 +244,10 @@ namespace IntelOrca.Biohazard.RE2
             return new[] { "leon", "claire", "ada", "sherry", "annette", "marvin", "irons", "ben", "kendo" };
         }
 
-        private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, string actor, string modPath)
+        private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, string actor, string originalDataPath, string modPath)
         {
             var originalPlayerActor = config.Player == 0 ? "leon" : "claire";
             var srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld{config.Player}\\{actor}");
-            var srcFacePath = DataManager.GetPath(BiohazardVersion, $"face\\{actor}.tim");
 
             if (originalPlayerActor != actor)
             {
@@ -276,9 +275,7 @@ namespace IntelOrca.Biohazard.RE2
                     File.Copy(src, dst, true);
                 }
 
-                var dstFacePath = Path.Combine(modPath, $"common", "data", $"st{config.Player}_jp.tim");
-                Directory.CreateDirectory(Path.GetDirectoryName(dstFacePath));
-                File.Copy(srcFacePath, dstFacePath, true);
+                ChangePlayerInventoryFace(config, actor, originalDataPath, modPath);
 
                 var allHurtFiles = DataManager.GetHurtFiles(actor)
                     .Where(x => x.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) || x.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
@@ -314,6 +311,32 @@ namespace IntelOrca.Biohazard.RE2
                         waveformBuilder.Save(coreDeathPath);
                     }
                 }
+            }
+        }
+
+        private void ChangePlayerInventoryFace(RandoConfig config, string actor, string installPath, string modPath)
+        {
+            if (BgCreator == null)
+                return;
+
+            var facePath = DataManager.GetPath(BiohazardVersion, Path.Combine($"pld{config.Player}", actor, "face.png"));
+            if (!File.Exists(facePath))
+                return;
+
+            var filename = Path.Combine("common", "data", $"st{config.Player}_jp.tim");
+            var inputTimPath = Path.Combine(installPath, filename);
+            var outputTimPath = Path.Combine(modPath, filename);
+            Directory.CreateDirectory(Path.GetDirectoryName(outputTimPath!));
+
+            var timCollection = new TimCollectionFile(inputTimPath);
+            if (timCollection.Tims.Count > 1)
+            {
+                var tim1 = timCollection.Tims[1];
+                if (File.Exists(facePath))
+                {
+                    BgCreator.DrawImage(tim1, facePath, 0, 72);
+                }
+                timCollection.Save(outputTimPath);
             }
         }
 
