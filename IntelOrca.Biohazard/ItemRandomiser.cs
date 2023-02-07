@@ -630,17 +630,18 @@ namespace IntelOrca.Biohazard
 
             while (availableWeapons.Count < numWeapons && weaponPool.Count != 0)
             {
-                availableWeapons.Add(weaponPool[weaponPool.Count - 1]);
+                var weapon = weaponPool[weaponPool.Count - 1];
                 weaponPool.RemoveAt(weaponPool.Count - 1);
+                availableWeapons.Add(weapon);
+
+                // Spawn weapon
+                var amount = GetRandomAmount(weapon, true);
+                SpawnItem(shuffled, weapon, amount);
             }
 
             var ammoTypes = new HashSet<byte>();
             foreach (var itemType in availableWeapons)
             {
-                // Spawn weapon
-                var amount = GetRandomAmount(itemType, true);
-                SpawnItem(shuffled, itemType, amount);
-
                 // Spawn upgrade
                 var upgradeType = _itemHelper.GetWeaponUpgrade(itemType, _rng, _config);
                 if (upgradeType != null && _rng.NextProbability(50))
