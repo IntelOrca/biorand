@@ -2677,6 +2677,7 @@
       ],
       "enemies": [
         {
+          "nop": [ "0x1386-0x1404" ],
           "doorRando": true
         }
       ]

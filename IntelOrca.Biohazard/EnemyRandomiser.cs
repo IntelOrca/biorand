@@ -649,7 +649,6 @@ namespace IntelOrca.Biohazard
                 DetachPartner(new RdtId(3, 0x02));
                 DetachPartner(new RdtId(3, 0x05));
                 DetachPartner(new RdtId(3, 0x07));
-                DetachPartner(new RdtId(4, 0x01));
                 DetachPartner(new RdtId(4, 0x04));
             }
         }
