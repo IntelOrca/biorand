@@ -77,7 +77,20 @@
                     <local:GameLocationBox x:Name="gameLocation3" Tag="2" Header="Resident Evil 3" Validate="gameLocation_Validate" Changed="gameLocation_Changed" Visibility="Collapsed" />
                 </StackPanel>
                 <StackPanel x:Name="panelRando" Visibility="Visible">
-                    <TextBlock Margin="4 0"  TextAlignment="Right"><Hyperlink Click="ViewDocs_Click">View Documentation</Hyperlink></TextBlock>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" x:Name="versionLabel" />
+                        <StackPanel Grid.Column="2" Margin="4 0" Orientation="Horizontal">
+                            <TextBlock Margin="0 0 8 0"><Hyperlink Click="Link_Click" NavigateUri="https://discord.gg/zNeTSxxHU5">Discord</Hyperlink></TextBlock>
+                            <TextBlock Margin="0 0 8 0"><Hyperlink Click="Link_Click" NavigateUri="https://github.com/IntelOrca/biorand">GitHub</Hyperlink></TextBlock>
+                            <TextBlock Margin="0 0 8 0"><Hyperlink Click="Link_Click" NavigateUri="https://twitter.com/re_biorand">Twitter</Hyperlink></TextBlock>
+                            <TextBlock><Hyperlink Click="Link_Click" NavigateUri="https://github.com/IntelOrca/biorand#readme">View Documentation</Hyperlink></TextBlock>
+                        </StackPanel>
+                    </Grid>
                     <GroupBox Header="Seed">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -111,7 +124,7 @@
                                             Background="#FFA8FFA8"
                                             Foreground="Black">Generate</Button>
                                 </Grid>
-                                <StackPanel Orientation="Horizontal" Margin="4 8 4 0">
+                                <StackPanel Orientation="Horizontal" Margin="4 0">
                                     <TextBlock Margin="0 0 8 0"><Hyperlink Click="ReportIssue_Click">Report an issue with this seed</Hyperlink></TextBlock>
                                     <TextBlock x:Name="btnLog0"  IsEnabled="False" Margin="0 0 8 0"><Hyperlink Click="btnLog0_Click">Leon Log</Hyperlink></TextBlock>
                                     <TextBlock x:Name="btnLog1" IsEnabled="False" Margin="0 0 8 0"><Hyperlink Click="btnLog1_Click">Claire Log</Hyperlink></TextBlock>

@@ -45,6 +45,7 @@ namespace IntelOrca.Biohazard.BioRand
             var version = CurrentVersion;
             Title += $" - v{version.Major}.{version.Minor}.{version.Build}";
             SelectedGame = _settings.LastSelectedGame;
+            versionLabel.Text = Program.CurrentVersionInfo;
         }
 
         private void LoadSettings()
@@ -730,9 +731,12 @@ namespace IntelOrca.Biohazard.BioRand
             Process.Start($"https://github.com/IntelOrca/biorand/issues/new?template=bug_report.yml&version={version}&seed={seed}");
         }
 
-        private void ViewDocs_Click(object sender, RoutedEventArgs e)
+        private void Link_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start($"https://github.com/IntelOrca/biorand#readme");
+            if (sender is Hyperlink hyperlink)
+            {
+                Process.Start(hyperlink.NavigateUri.ToString());
+            }
         }
 
         private void gameListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
