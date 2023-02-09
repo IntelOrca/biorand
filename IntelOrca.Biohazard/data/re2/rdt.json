@@ -2953,7 +2953,15 @@
           "randomize": false
         },
         {
-          "target": "602"
+          "target": "602",
+          "entrance": {
+            "x": -12250,
+            "y": -1800,
+            "z": -17190,
+            "d": 0,
+            "floor": 1,
+            "cut": 7
+          }
         }
       ]
     },
