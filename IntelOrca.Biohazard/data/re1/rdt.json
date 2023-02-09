@@ -865,6 +865,11 @@
           "target": "210",
           "requires": [ 53 ]
         }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 13 ]
+        }
       ]
     },
     "20F": {
