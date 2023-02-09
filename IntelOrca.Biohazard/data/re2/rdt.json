@@ -3289,6 +3289,7 @@
         },
         {
           "target": "609",
+          "requires": [ 47 ],
           "lock": "unblock",
           "noUnlock": true,
           "entrance": {
@@ -3300,8 +3301,7 @@
             "cut": 2
           }
         }
-      ],
-      "requires": [ 47 ]
+      ]
     },
     "60B": {
       "doorRando": [
