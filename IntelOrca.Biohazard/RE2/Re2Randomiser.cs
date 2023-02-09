@@ -82,7 +82,7 @@ namespace IntelOrca.Biohazard.RE2
             return path;
         }
 
-        public override void Generate(RandoConfig config, ReInstallConfig reConfig, string installPath, string modPath)
+        public override void Generate(RandoConfig config, ReInstallConfig reConfig, IRandoProgress progress, string installPath, string modPath)
         {
             _reInstallConfig = reConfig;
 
@@ -106,15 +106,15 @@ namespace IntelOrca.Biohazard.RE2
             {
                 // Leon A / Claire B
                 Parallel.Invoke(po,
-                    () => GenerateRdts(config.WithPlayerScenario(0, 0), installPath, modPath),
-                    () => GenerateRdts(config.WithPlayerScenario(1, 1), installPath, modPath));
+                    () => GenerateRdts(config.WithPlayerScenario(0, 0), progress, installPath, modPath),
+                    () => GenerateRdts(config.WithPlayerScenario(1, 1), progress, installPath, modPath));
             }
             else
             {
                 // Leon B / Claire A
                 Parallel.Invoke(po,
-                    () => GenerateRdts(config.WithPlayerScenario(0, 1), installPath, modPath),
-                    () => GenerateRdts(config.WithPlayerScenario(1, 0), installPath, modPath));
+                    () => GenerateRdts(config.WithPlayerScenario(0, 1), progress, installPath, modPath),
+                    () => GenerateRdts(config.WithPlayerScenario(1, 0), progress, installPath, modPath));
             }
 
             FixClaireWeapons();
@@ -125,7 +125,7 @@ namespace IntelOrca.Biohazard.RE2
             Directory.CreateDirectory(Path.GetDirectoryName(dst));
             File.Copy(src, dst);
 
-            base.Generate(config, reConfig, installPath, modPath);
+            base.Generate(config, reConfig, progress, installPath, modPath);
         }
 
         protected override string[] GetTitleCardSoundFiles(string modPath)

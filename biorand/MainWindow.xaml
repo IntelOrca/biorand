@@ -124,11 +124,20 @@
                                             Background="#FFA8FFA8"
                                             Foreground="Black">Generate</Button>
                                 </Grid>
-                                <StackPanel Orientation="Horizontal" Margin="4 0">
-                                    <TextBlock Margin="0 0 8 0"><Hyperlink Click="ReportIssue_Click">Report an issue with this seed</Hyperlink></TextBlock>
-                                    <TextBlock x:Name="btnLog0"  IsEnabled="False" Margin="0 0 8 0"><Hyperlink Click="btnLog0_Click">Leon Log</Hyperlink></TextBlock>
-                                    <TextBlock x:Name="btnLog1" IsEnabled="False" Margin="0 0 8 0"><Hyperlink Click="btnLog1_Click">Claire Log</Hyperlink></TextBlock>
-                                </StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="4 0">
+                                        <TextBlock Margin="0 0 8 0"><Hyperlink Click="ReportIssue_Click">Report an issue with this seed</Hyperlink></TextBlock>
+                                        <TextBlock x:Name="btnLog0"  IsEnabled="False" Margin="0 0 8 0"><Hyperlink Click="btnLog0_Click">Leon Log</Hyperlink></TextBlock>
+                                        <TextBlock x:Name="btnLog1" IsEnabled="False" Margin="0 0 8 0"><Hyperlink Click="btnLog1_Click">Claire Log</Hyperlink></TextBlock>
+                                    </StackPanel>
+                                    <local:RestrictedContainer Grid.Column="1">
+                                        <TextBlock x:Name="progressLabel" HorizontalAlignment="Right" />
+                                    </local:RestrictedContainer>
+                                </Grid>
                             </StackPanel>
                         </Grid>
                     </GroupBox>

@@ -97,7 +97,7 @@ namespace IntelOrca.Biohazard.Tests
 
             var reInstall = GetInstallConfig();
             var rando = GetRandomizer();
-            rando.Generate(config, reInstall);
+            rando.Generate(config, reInstall, new NullProgress());
         }
 
         private BaseRandomiser GetRandomizer()
@@ -163,6 +163,21 @@ namespace IntelOrca.Biohazard.Tests
             reInstall.SetEnabled(0, true);
             reInstall.SetEnabled(1, true);
             return reInstall;
+        }
+
+        private class NullProgress : IRandoProgress
+        {
+            public IDisposable BeginTask(int? player, string message)
+            {
+                return new NullDisposable();
+            }
+
+            private struct NullDisposable : IDisposable
+            {
+                public void Dispose()
+                {
+                }
+            }
         }
     }
 }

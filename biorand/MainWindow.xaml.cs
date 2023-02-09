@@ -593,7 +593,8 @@ namespace IntelOrca.Biohazard.BioRand
                 btn.Content = "Generating...";
                 IsEnabled = false;
                 var randomiser = GetRandomizer();
-                await Task.Run(() => randomiser.Generate(_config, GetInstallConfig()));
+                await Task.Run(() => randomiser.Generate(_config, GetInstallConfig(), new RandoProgress(this)));
+                progressLabel.Text = string.Empty;
                 RandoAppSettings.LogGeneration(_config.ToString(), GetGameLocation());
                 ShowGenerateCompleteMessage();
             }
@@ -615,7 +616,7 @@ namespace IntelOrca.Biohazard.BioRand
                 "BioRand does not have permission to write to this location.\n" +
                 "If your game is installed in 'Program Files', you may need to run BioRand as administrator.";
 
-            if (ex is AggregateException)
+            while (ex is AggregateException)
                 ex = ex.InnerException;
 
             switch (ex)
@@ -1083,6 +1084,81 @@ namespace IntelOrca.Biohazard.BioRand
             public void Dispose()
             {
                 _mainWindow._suspendEvents = false;
+            }
+        }
+
+        private class RandoProgress : IRandoProgress
+        {
+            private readonly MainWindow _mainWindow;
+            private readonly LinkedList<(int eventId, string message)> _events = new LinkedList<(int eventId, string message)>();
+            private readonly object _sync = new object();
+            private int _nextEventId;
+
+            public RandoProgress(MainWindow mainWindow)
+            {
+                _mainWindow = mainWindow;
+            }
+
+            private void SetLabel(string message)
+            {
+                _mainWindow.Dispatcher.Invoke(() =>
+                {
+                    _mainWindow.progressLabel.Text = message;
+                });
+            }
+
+            public IDisposable BeginTask(int? player, string message)
+            {
+                message += "...";
+
+                int eventId;
+                lock (_sync)
+                {
+                    SetLabel(message);
+                    _events.AddLast((_nextEventId, message));
+                    eventId = _nextEventId++;
+                }
+                return new RandoProgressTask(this, eventId);
+            }
+
+            private void EndTask(int eventId)
+            {
+                lock (_sync)
+                {
+                    var node = _events.First;
+                    while (node != null)
+                    {
+                        if (node.Value.eventId == eventId)
+                        {
+                            if (node == _events.Last)
+                            {
+                                if (node.Previous == null)
+                                    SetLabel("");
+                                else
+                                    SetLabel(node.Previous.Value.message);
+                            }
+                            _events.Remove(node);
+                        }
+                        node = node.Next;
+                    }
+                }
+            }
+
+            private readonly struct RandoProgressTask : IDisposable
+            {
+                private readonly RandoProgress _parent;
+                private readonly int _eventId;
+
+                public RandoProgressTask(RandoProgress parent, int eventId)
+                {
+                    _parent = parent;
+                    _eventId = eventId;
+                }
+
+                public void Dispose()
+                {
+                    _parent.EndTask(_eventId);
+                }
             }
         }
     }

@@ -42,9 +42,9 @@ namespace IntelOrca.Biohazard
                 {
                     var assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                     var basePath = assemblyDir;
-    #if DEBUG
+#if DEBUG
                     basePath = Path.GetFullPath(Path.Combine(assemblyDir, "..\\..\\..\\..\\IntelOrca.Biohazard"));
-    #endif
+#endif
                     dataPath = Path.Combine(basePath, "data");
                 }
                 return new DataManager(dataPath);
@@ -149,7 +149,7 @@ namespace IntelOrca.Biohazard
             return new GameData(rdts.ToArray());
         }
 
-        public void Generate(RandoConfig config, ReInstallConfig reConfig)
+        public void Generate(RandoConfig config, ReInstallConfig reConfig, IRandoProgress progress)
         {
             if (config.Version < RandoConfig.LatestVersion)
             {
@@ -164,25 +164,32 @@ namespace IntelOrca.Biohazard
             var originalDataPath = GetDataPath(installPath);
             var modPath = Path.Combine(installPath, @"mod_biorand");
 
-            if (Directory.Exists(modPath))
+            using (progress.BeginTask(null, $"Clearing '{modPath}'"))
             {
-                try
+                if (Directory.Exists(modPath))
                 {
-                    Directory.Delete(modPath, true);
+                    try
+                    {
+                        Directory.Delete(modPath, true);
+                    }
+                    catch
+                    {
+                    }
                 }
-                catch
-                {
-                }
+                Directory.CreateDirectory(modPath);
             }
-            Directory.CreateDirectory(modPath);
 
-            Generate(config, reConfig, originalDataPath, modPath);
+            using (progress.BeginTask(config.Player, $"Generating seed"))
+                Generate(config, reConfig, progress, originalDataPath, modPath);
 
-            File.WriteAllText(Path.Combine(modPath, "manifest.txt"), "[MOD]\nName = BioRand: A Resident Evil Randomizer\nModule = biorand.dll\n");
-            File.WriteAllText(Path.Combine(modPath, "description.txt"), $"{Program.CurrentVersionInfo}\r\nSeed: {config}\r\n");
+            using (progress.BeginTask(null, $"Writing manifest"))
+            {
+                File.WriteAllText(Path.Combine(modPath, "manifest.txt"), "[MOD]\nName = BioRand: A Resident Evil Randomizer\nModule = biorand.dll\n");
+                File.WriteAllText(Path.Combine(modPath, "description.txt"), $"{Program.CurrentVersionInfo}\r\nSeed: {config}\r\n");
+            }
         }
 
-        public virtual void Generate(RandoConfig config, ReInstallConfig reConfig, string installPath, string modPath)
+        public virtual void Generate(RandoConfig config, ReInstallConfig reConfig, IRandoProgress progress, string installPath, string modPath)
         {
             if (config.RandomItems && config.RandomInventory)
             {
@@ -191,7 +198,7 @@ namespace IntelOrca.Biohazard
 
             if (config.RandomBgm)
             {
-                using var logger = new RandoLogger(Path.Combine(modPath, $"log_bgm.txt"));
+                using var logger = new RandoLogger(progress, Path.Combine(modPath, $"log_bgm.txt"));
                 logger.WriteHeading(Program.CurrentVersionInfo);
                 logger.WriteLine($"Seed: {config}");
 
@@ -215,15 +222,21 @@ namespace IntelOrca.Biohazard
                     bgmRandomizer.ImportVolume = 0.25f;
                 }
 
-                bgmRandomizer.Randomise();
+                using (progress.BeginTask(null, "Randomizing BGM"))
+                {
+                    bgmRandomizer.Randomise();
+                }
             }
 
-            CreateBackgrounds(config, modPath);
-            CreateTitleCardSounds(config, modPath);
-            CreateDataModule(modPath);
+            using (progress.BeginTask(null, $"Creating backgrounds"))
+                CreateBackgrounds(config, modPath);
+            using (progress.BeginTask(null, $"Copying title card sounds"))
+                CreateTitleCardSounds(config, modPath);
+            using (progress.BeginTask(null, $"Copying biorand.dll"))
+                CreateDataModule(modPath);
         }
 
-        public void GenerateRdts(RandoConfig config, string originalDataPath, string modPath)
+        public void GenerateRdts(RandoConfig config, IRandoProgress progress, string originalDataPath, string modPath)
         {
             var baseSeed = config.Seed + config.Player;
             var randomDoors = new Rng(baseSeed + 1);
@@ -235,7 +248,7 @@ namespace IntelOrca.Biohazard
             if (BiohazardVersion == BioVersion.Biohazard1)
                 randomEnemies = new Rng(config.Seed + 3);
 
-            using var logger = new RandoLogger(Path.Combine(modPath, $"log_pl{config.Player}.txt"));
+            using var logger = new RandoLogger(progress, Path.Combine(modPath, $"log_pl{config.Player}.txt"));
             logger.WriteHeading(Program.CurrentVersionInfo);
             logger.WriteLine($"Seed: {config}");
             logger.WriteLine($"Player: {config.Player} {GetPlayerName(config.Player)}");
@@ -247,7 +260,10 @@ namespace IntelOrca.Biohazard
                 var gameData = ReadGameData(originalDataPath, modPath, config.Player, rdtIds);
 
 #if DEBUG
-                DumpScripts(config, gameData, Path.Combine(modPath, $"scripts_pl{config.Player}"));
+                using (progress.BeginTask(config.Player, "Dumping original RDT disassemblies"))
+                {
+                    DumpScripts(config, gameData, Path.Combine(modPath, $"scripts_pl{config.Player}"));
+                }
 #endif
 
                 var map = GetMapFromJson();
@@ -257,12 +273,18 @@ namespace IntelOrca.Biohazard
                     var dgmlPath = Path.Combine(modPath, $"graph_pl{config.Player}.dgml");
                     var doorRando = new DoorRandomiser(logger, config, gameData, map, randomDoors, ItemHelper);
                     var itemRando = new ItemRandomiser(logger, config, gameData, randomItems, ItemHelper);
-                    graph = config.RandomDoors ?
+                    using (progress.BeginTask(config.Player, "Randomizing doors"))
+                    {
+                        graph = config.RandomDoors ?
                         doorRando.CreateRandomGraph() :
                         doorRando.CreateOriginalGraph();
+                    }
                     try
                     {
-                        itemRando.RandomiseItems(graph);
+                        using (progress.BeginTask(config.Player, "Randomizing items"))
+                        {
+                            itemRando.RandomiseItems(graph);
+                        }
                         if (config.RandomInventory)
                         {
                             SetInventory(config.Player, itemRando.RandomizeStartInventory());
@@ -276,27 +298,41 @@ namespace IntelOrca.Biohazard
 
                 if (config.RandomEnemies)
                 {
-                    var enemyRandomiser = new EnemyRandomiser(BiohazardVersion, logger, config, gameData, map, randomEnemies, EnemyHelper, modPath, DataManager);
-                    enemyRandomiser.Randomise(graph);
+                    using (progress.BeginTask(config.Player, "Randomizing enemies"))
+                    {
+                        var enemyRandomiser = new EnemyRandomiser(BiohazardVersion, logger, config, gameData, map, randomEnemies, EnemyHelper, modPath, DataManager);
+                        enemyRandomiser.Randomise(graph);
+                    }
                 }
 
-                var playerActor = ChangePlayerCharacters(config, logger, gameData, originalDataPath, modPath);
+                string? playerActor;
+                using (progress.BeginTask(config.Player, $"Changing player character"))
+                    playerActor = ChangePlayerCharacters(config, logger, gameData, originalDataPath, modPath);
                 if (config.RandomNPCs)
                 {
-                    var npcRandomiser = new NPCRandomiser(BiohazardVersion, logger, config, originalDataPath, modPath, gameData, map, randomNpcs, NpcHelper, DataManager, playerActor);
-                    npcRandomiser.SelectedActors.AddRange(GetSelectedActors(config));
-                    RandomizeNPCs(config, npcRandomiser);
-                    npcRandomiser.Randomise();
+                    using (progress.BeginTask(config.Player, "Randomizing NPCs"))
+                    {
+                        var npcRandomiser = new NPCRandomiser(BiohazardVersion, logger, config, originalDataPath, modPath, gameData, map, randomNpcs, NpcHelper, DataManager, playerActor);
+                        npcRandomiser.SelectedActors.AddRange(GetSelectedActors(config));
+                        RandomizeNPCs(config, npcRandomiser);
+                        npcRandomiser.Randomise();
+                    }
                 }
 
-                foreach (var rdt in gameData.Rdts)
+                using (progress.BeginTask(config.Player, "Writing RDT files"))
                 {
-                    rdt.Save();
+                    foreach (var rdt in gameData.Rdts)
+                    {
+                        rdt.Save();
+                    }
                 }
 
 #if DEBUG
-                var moddedGameData = ReadGameData(modPath, modPath, config.Player, rdtIds);
-                DumpScripts(config, moddedGameData, Path.Combine(modPath, $"scripts_modded_pl{config.Player}"));
+                using (progress.BeginTask(config.Player, "Dumping modified RDT disassemblies"))
+                {
+                    var moddedGameData = ReadGameData(modPath, modPath, config.Player, rdtIds);
+                    DumpScripts(config, moddedGameData, Path.Combine(modPath, $"scripts_modded_pl{config.Player}"));
+                }
 #endif
             }
             catch (Exception ex)

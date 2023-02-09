@@ -7,8 +7,11 @@ namespace IntelOrca.Biohazard
     {
         private readonly StreamWriter _sw;
 
-        public RandoLogger(string path)
+        public IRandoProgress Progress { get; }
+
+        public RandoLogger(IRandoProgress progress, string path)
         {
+            Progress = progress;
             _sw = new StreamWriter(path);
         }
 

@@ -176,32 +176,44 @@ namespace IntelOrca.Biohazard
             if (dst.Length == 0)
                 return;
 
-            var srcExtension = Path.GetExtension(src);
-            var dstExtension = Path.GetExtension(dst[0]);
-            if (string.Equals(srcExtension, dstExtension, StringComparison.OrdinalIgnoreCase))
+            using (_logger.Progress.BeginTask(null, $"Processing BGM, '{src}'"))
             {
-                for (int i = 0; i < dst.Length; i++)
+                var srcExtension = Path.GetExtension(src);
+                var dstExtension = Path.GetExtension(dst[0]);
+                if (string.Equals(srcExtension, dstExtension, StringComparison.OrdinalIgnoreCase))
                 {
-                    File.Copy(src, dst[i], true);
-                }
-            }
-            else
-            {
-                var builder = new WaveformBuilder();
-                builder.Volume = ImportVolume;
-                if (_isWav)
-                {
-                    // RE1 can't handle very large .wav files, limit tracks to 3 minutes
-                    builder.Append(src, 0, 2.5 * 60);
+                    for (int i = 0; i < dst.Length; i++)
+                    {
+                        using (_logger.Progress.BeginTask(null, $"Copying '{src}'"))
+                        {
+                            File.Copy(src, dst[i], true);
+                        }
+                    }
                 }
                 else
                 {
-                    builder.Append(src);
-                }
-                builder.Save(dst[0]);
-                for (int i = 1; i < dst.Length; i++)
-                {
-                    File.Copy(dst[0], dst[i], true);
+                    using (_logger.Progress.BeginTask(null, $"Converting '{src}'"))
+                    {
+                        var builder = new WaveformBuilder();
+                        builder.Volume = ImportVolume;
+                        if (_isWav)
+                        {
+                            // RE1 can't handle very large .wav files, limit tracks to 3 minutes
+                            builder.Append(src, 0, 2.5 * 60);
+                        }
+                        else
+                        {
+                            builder.Append(src);
+                        }
+                        builder.Save(dst[0]);
+                    }
+                    using (_logger.Progress.BeginTask(null, $"Copying '{dst[0]}'"))
+                    {
+                        for (int i = 1; i < dst.Length; i++)
+                        {
+                            File.Copy(dst[0], dst[i], true);
+                        }
+                    }
                 }
             }
         }

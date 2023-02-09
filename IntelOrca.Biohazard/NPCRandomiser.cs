@@ -67,8 +67,11 @@ namespace IntelOrca.Biohazard
             _originalPlayerActor = _npcHelper.GetPlayerActor(config.Player);
             _playerActor = playerActor ?? _originalPlayerActor;
 
-            var customSamples = AddCustom();
-            _uniqueSamples.AddRange(customSamples);
+            using (_logger.Progress.BeginTask(config.Player, "Scanning voices"))
+            {
+                var customSamples = AddCustom();
+                _uniqueSamples.AddRange(customSamples);
+            }
 
             FixRooms();
         }
@@ -148,35 +151,38 @@ namespace IntelOrca.Biohazard
                 return null;
             }
 
-            var fileName = Path.GetFileName(sampleFile);
-            var conditions = GetThingsFromFileName(fileName, '-');
-            var conditionsb = new StringBuilder();
-            foreach (var condition in conditions)
+            using (_logger.Progress.BeginTask(_config.Player, $"Scanning '{sampleFile}'"))
             {
-                if (condition.StartsWith("no", StringComparison.OrdinalIgnoreCase))
+                var fileName = Path.GetFileName(sampleFile);
+                var conditions = GetThingsFromFileName(fileName, '-');
+                var conditionsb = new StringBuilder();
+                foreach (var condition in conditions)
                 {
-                    if (conditionsb.Length != 0)
-                        conditionsb.Append(" && ");
-                    conditionsb.Append('!');
-                    conditionsb.Append(condition, 2, condition.Length - 2);
+                    if (condition.StartsWith("no", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (conditionsb.Length != 0)
+                            conditionsb.Append(" && ");
+                        conditionsb.Append('!');
+                        conditionsb.Append(condition, 2, condition.Length - 2);
+                    }
+                    else
+                    {
+                        if (conditionsb.Length != 0)
+                            conditionsb.Append(" || ");
+                        conditionsb.Append('@');
+                        conditionsb.Append(condition);
+                    }
                 }
-                else
-                {
-                    if (conditionsb.Length != 0)
-                        conditionsb.Append(" || ");
-                    conditionsb.Append('@');
-                    conditionsb.Append(condition);
-                }
-            }
 
-            var sample = new VoiceSample();
-            sample.BasePath = Path.GetDirectoryName(sampleFile);
-            sample.Path = fileName;
-            sample.Actor = actor;
-            sample.End = GetVoiceLength(sampleFile);
-            sample.Kind = GetThingsFromFileName(fileName, '_').FirstOrDefault();
-            sample.Condition = conditionsb.Length == 0 ? null : conditionsb.ToString();
-            return sample;
+                var sample = new VoiceSample();
+                sample.BasePath = Path.GetDirectoryName(sampleFile);
+                sample.Path = fileName;
+                sample.Actor = actor;
+                sample.End = GetVoiceLength(sampleFile);
+                sample.Kind = GetThingsFromFileName(fileName, '_').FirstOrDefault();
+                sample.Condition = conditionsb.Length == 0 ? null : conditionsb.ToString();
+                return sample;
+            }
         }
 
         private static string[] GetThingsFromFileName(string filename, char symbol)
@@ -360,7 +366,7 @@ namespace IntelOrca.Biohazard
             var idToTypeMap = new Dictionary<byte, byte>();
             foreach (var cutscene in npcs.GroupBy(x => x.Cutscene))
             {
-                var actorToNewActorMap  = RandomizeCharacters(rdt, npcRng, defaultIncludeTypes, cutscene.ToArray(), offsetToTypeMap, idToTypeMap);
+                var actorToNewActorMap = RandomizeCharacters(rdt, npcRng, defaultIncludeTypes, cutscene.ToArray(), offsetToTypeMap, idToTypeMap);
                 var pc = cutscene.First().PlayerActor ?? _originalPlayerActor!;
                 if (pc == _originalPlayerActor || _config.RandomDoors)
                 {
@@ -464,7 +470,7 @@ namespace IntelOrca.Biohazard
                 {
                     continue;
                 }
-                
+
                 var selectedNpcs = supportedNpcs
                     .Where(x => SelectedActors.Contains(GetActor(x) ?? ""))
                     .ToArray();
@@ -675,50 +681,56 @@ namespace IntelOrca.Biohazard
 
                 var firstSample = sampleOrder[0];
                 var dstPath = GetVoicePath(_modPath, firstSample);
-                Directory.CreateDirectory(Path.GetDirectoryName(dstPath)!);
-
-                if (sampleOrder.Length == 1 && firstSample.Replacement?.IsClipped == false && firstSample.SapIndex == null && firstSample.Replacement.Source.SapIndex == null)
+                using (_logger.Progress.BeginTask(_config.Player, $"Writing '{dstPath}'"))
                 {
-                    var srcPath = GetVoicePath(firstSample.Replacement.Source);
-                    CopySample(srcPath, dstPath);
-                }
-                else
-                {
-                    var builder = new WaveformBuilder();
-                    foreach (var sample in sampleOrder)
-                    {
-                        var replacement = sample.Replacement;
-                        if (replacement != null)
-                        {
-                            var sliceSrcPath = GetVoicePath(replacement.Source);
-                            if (replacement.Source.SapIndex != null)
-                            {
-                                builder.Append(sliceSrcPath, replacement.Source.SapIndex.Value, replacement.Start, replacement.End);
-                            }
-                            else
-                            {
-                                builder.Append(sliceSrcPath, replacement.Start, replacement.End);
-                            }
-                            builder.AppendSilence(sample.Length - replacement.Length);
-                        }
-                        else
-                        {
-                            builder.AppendSilence(sample.Length);
-                        }
-                    }
+                    Directory.CreateDirectory(Path.GetDirectoryName(dstPath)!);
 
-                    if (firstSample.SapIndex != null)
+                    if (sampleOrder.Length == 1 && firstSample.Replacement?.IsClipped == false && firstSample.SapIndex == null && firstSample.Replacement.Source.SapIndex == null)
                     {
-                        // Copy existing sap file first, then modify the embedded .wavs
-                        if (!File.Exists(dstPath))
-                        {
-                            File.Copy(GetVoicePath(firstSample), dstPath, true);
-                        }
-                        builder.SaveAt(dstPath, firstSample.SapIndex.Value);
+                        var srcPath = GetVoicePath(firstSample.Replacement.Source);
+                        CopySample(srcPath, dstPath);
                     }
                     else
                     {
-                        builder.Save(dstPath);
+                        var builder = new WaveformBuilder();
+                        foreach (var sample in sampleOrder)
+                        {
+                            var replacement = sample.Replacement;
+                            if (replacement != null)
+                            {
+                                var sliceSrcPath = GetVoicePath(replacement.Source);
+                                using (_logger.Progress.BeginTask(_config.Player, $"Reading '{sliceSrcPath}'"))
+                                {
+                                    if (replacement.Source.SapIndex != null)
+                                    {
+                                        builder.Append(sliceSrcPath, replacement.Source.SapIndex.Value, replacement.Start, replacement.End);
+                                    }
+                                    else
+                                    {
+                                        builder.Append(sliceSrcPath, replacement.Start, replacement.End);
+                                    }
+                                }
+                                builder.AppendSilence(sample.Length - replacement.Length);
+                            }
+                            else
+                            {
+                                builder.AppendSilence(sample.Length);
+                            }
+                        }
+
+                        if (firstSample.SapIndex != null)
+                        {
+                            // Copy existing sap file first, then modify the embedded .wavs
+                            if (!File.Exists(dstPath))
+                            {
+                                File.Copy(GetVoicePath(firstSample), dstPath, true);
+                            }
+                            builder.SaveAt(dstPath, firstSample.SapIndex.Value);
+                        }
+                        else
+                        {
+                            builder.Save(dstPath);
+                        }
                     }
                 }
             }
