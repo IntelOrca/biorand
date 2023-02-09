@@ -85,14 +85,17 @@ namespace IntelOrca.Biohazard.RE2
             }
         }
 
-        public byte[] GetSlots(byte id)
+        public byte[] GetSlots(RandoConfig config, byte id)
         {
             switch ((EnemyType)id)
             {
                 case EnemyType.LeonKennedyRpd:
                     return new byte[] { 0x48, 0x52, 0x54, 0x56, 0x58, 0x5A };
                 case EnemyType.ClaireRedfield:
-                    return new byte[] { 0x53, 0x55, 0x57, 0x59, 0x5B };
+                    if (config.Player == 0)
+                        return new byte[] { 0x53, 0x55, 0x57, 0x59, 0x5B };
+                    else
+                        return new byte[] { 0x53, 0x55, 0x57, 0x5B };
                 case EnemyType.SherryWithPendant:
                 case EnemyType.SherryWithClairesJacket:
                     return new byte[] {

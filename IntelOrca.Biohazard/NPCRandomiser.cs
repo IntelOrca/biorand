@@ -257,7 +257,7 @@ namespace IntelOrca.Biohazard
                 if (gSelected.Length == 0)
                     continue;
 
-                var slots = _npcHelper.GetSlots(g.Key);
+                var slots = _npcHelper.GetSlots(_config, g.Key);
                 var spare = slots
                     .Where(x => _npcHelper.IsSpareSlot(x))
                     .ToQueue();

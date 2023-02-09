@@ -81,7 +81,7 @@ namespace IntelOrca.Biohazard.RE1
             }
         }
 
-        public byte[] GetSlots(byte id)
+        public byte[] GetSlots(RandoConfig config, byte id)
         {
             if (id == Re1EnemyIds.ChrisStars)
             {
