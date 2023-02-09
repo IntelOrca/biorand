@@ -166,6 +166,22 @@ namespace IntelOrca.Biohazard.RE1
             return type <= Re1EnemyIds.Yawn2;
         }
 
+        public bool IsUniqueEnemyType(byte type)
+        {
+            switch (type)
+            {
+                case Re1EnemyIds.SpiderBlack:
+                case Re1EnemyIds.Plant42:
+                case Re1EnemyIds.Yawn1:
+                case Re1EnemyIds.Yawn2:
+                case Re1EnemyIds.Tyrant1:
+                case Re1EnemyIds.Tyrant2:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         public int GetEnemyTypeLimit(RandoConfig config, byte type) => 32;
 
         public SelectableEnemy[] GetSelectableEnemies() => new[]

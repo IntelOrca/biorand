@@ -73,13 +73,23 @@ namespace IntelOrca.Biohazard
                 _killIdPool.Add(i);
             foreach (var rdt in _gameData.Rdts)
             {
+                byte[] killIds;
                 if (_enemyPositions.Any(x => x.RdtId == rdt.RdtId))
-                    continue;
-
-                var killIds = rdt.Enemies
-                    .Where(x => _enemyHelper.IsEnemy(x.Type))
-                    .Select(x => x.KillId)
-                    .ToArray();
+                {
+                    // Exclude IDs which belong to special enemies like tyrants or bosses
+                    killIds = rdt.Enemies
+                        .Where(x => _enemyHelper.IsUniqueEnemyType(x.Type))
+                        .Select(x => x.KillId)
+                        .ToArray();
+                }
+                else
+                {
+                    // Exclude IDs which belong to static enemy rooms
+                    killIds = rdt.Enemies
+                        .Where(x => _enemyHelper.IsEnemy(x.Type))
+                        .Select(x => x.KillId)
+                        .ToArray();
+                }
                 _killIdPool.RemoveMany(killIds);
             }
         }

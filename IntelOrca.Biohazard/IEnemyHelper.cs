@@ -12,6 +12,7 @@ namespace IntelOrca.Biohazard
         void BeginRoom(Rdt rdt);
         void SetEnemy(RandoConfig config, Rng rng, SceEmSetOpcode enemy, MapRoomEnemies enemySpec, byte enemyTypeRaw);
         bool IsEnemy(byte type);
+        bool IsUniqueEnemyType(byte type);
         SelectableEnemy[] GetSelectableEnemies();
         int GetEnemyTypeLimit(RandoConfig config, byte type);
     }

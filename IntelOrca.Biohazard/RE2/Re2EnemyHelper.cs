@@ -225,6 +225,24 @@ namespace IntelOrca.Biohazard.RE2
             return type < (byte)EnemyType.ChiefIrons1;
         }
 
+        public bool IsUniqueEnemyType(byte type)
+        {
+            switch ((EnemyType)type)
+            {
+                case EnemyType.Alligator:
+                case EnemyType.Tyrant1:
+                case EnemyType.Tyrant2:
+                case EnemyType.Birkin1:
+                case EnemyType.Birkin2:
+                case EnemyType.Birkin3:
+                case EnemyType.Birkin4:
+                case EnemyType.Birkin5:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         public int GetEnemyTypeLimit(RandoConfig config, byte type)
         {
             switch ((EnemyType)type)
