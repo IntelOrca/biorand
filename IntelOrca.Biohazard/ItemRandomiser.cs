@@ -196,19 +196,14 @@ namespace IntelOrca.Biohazard
 
             void AddToInventory(byte type, byte count)
             {
-                if (remaining > 0)
+                var size = _itemHelper.GetItemSize(type);
+                if (remaining >= size)
                 {
-                    var size = _itemHelper.GetItemSize(type);
                     if (size == 2)
                     {
-                        var index = entries.Count;
-                        if ((entries.Count & 1) != 0)
-                        {
-                            // Double items must be placed on an even index
-                            index--;
-                        }
-                        entries.Insert(index + 0, new RandomInventory.Entry(type, count, 1));
-                        entries.Insert(index + 1, new RandomInventory.Entry(type, count, 2));
+                        // Double items must be placed at the top of the inventory
+                        entries.Insert(0, new RandomInventory.Entry(type, count, 1));
+                        entries.Insert(1, new RandomInventory.Entry(type, count, 2));
                     }
                     else
                     {
