@@ -1,3 +1,27 @@
+BioRand v2.2.2 (2023-02-10)
+
+* [Feature] RE 2, custom player inventory faces now use .png files.
+* [Feature] Add context menus to enemies and NPCs UI.
+* [Enhancement] Add more links to UI.
+* [Enhancement] Add progress / status indicator when generating.
+* [Enhancement] RE 2, room 602, allow return to room in door rando.
+* [Fix] #227: RE 2, room 203, zombie arms prevents step ladder from being pushed.
+* [Fix] #228: RE 2, room 40D, crash due to partner and random enemy placement.
+* [Fix] #230: Weapons in inventory also found as pick ups.
+* [Fix] #231: RE 2, room 501, crash due to partner and random enemy placement.
+* [Fix] #234: RE 1, room 20E, crash when enemy is Yawn.
+* [Fix] #235: RE 1, no Wesker face image in inventory.
+* [Fix] #237: RE 2, room 202, crash when enemies are arms.
+* [Fix] #238: RE 2, random inventory double items glitch if not at top.
+* [Fix] #239: RE 2, room 117, crash caused by Claire B Tyrant cutscene.
+* [Fix] #241: RE 2, room 30B, freeze when NPC 0x59 is used.
+* [Fix] #244: RE 2, freeze when NPC 0x59 is used for Claire scenario.
+* [Fix] #245: RE 2, room 409, crash due to Sherry (0x45) as NPC.
+* [Fix] #249: RE 2, room 60A, Lighter not placed before vent door.
+* [Fix] RE 1, room 107, Yawn causes player to disappear.
+* [Fix] RE 2, room 107, enemies out of bounds.
+* [Fix] RE 2, room 20D, enemies out of bounds.
+
 BioRand v2.2.1 (2023-02-05)
 
 * [Feature] Allow customisation of starting weapons.
