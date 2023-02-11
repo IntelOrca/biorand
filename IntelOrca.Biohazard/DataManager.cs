@@ -31,6 +31,8 @@ namespace IntelOrca.Biohazard
                     return GetPath("re1", path);
                 case BioVersion.Biohazard2:
                     return GetPath("re2", path);
+                case BioVersion.Biohazard3:
+                    return GetPath("re3", path);
                 default:
                     throw new NotImplementedException();
             }

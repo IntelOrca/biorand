@@ -146,25 +146,7 @@ namespace IntelOrca.Biohazard
         {
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
-                if (path.EndsWith(".sap", StringComparison.OrdinalIgnoreCase))
-                {
-                    fs.Position += 8;
-
-                    var ms = new MemoryStream();
-                    var decoder = new ADPCMDecoder();
-                    decoder.Convert(fs, ms);
-
-                    ms.Position = 0;
-                    Append(ms, start, end);
-                }
-                else if (path.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase))
-                {
-                    AppendOgg(fs, start, end);
-                }
-                else
-                {
-                    Append(fs, start, end);
-                }
+                Append(path, fs, start, end);
             }
         }
 
@@ -177,13 +159,49 @@ namespace IntelOrca.Biohazard
             var decoder = new ADPCMDecoder();
             decoder.Convert(sapStream, wavStream);
             wavStream.Position = 0;
-            Append(wavStream, start, end);
+            AppendWav(wavStream, start, end);
         }
 
-        public void Append(Stream input, double start, double end)
+        public void Append(string path, Stream input) => Append(path, input, 0, double.NaN);
+
+        public void Append(string path, Stream input, double start, double end)
         {
+            if (path.EndsWith(".sap", StringComparison.OrdinalIgnoreCase))
+            {
+                input.Position += 8;
+
+                var ms = new MemoryStream();
+                var decoder = new ADPCMDecoder();
+                decoder.Convert(input, ms);
+
+                ms.Position = 0;
+                AppendWav(ms, start, end);
+            }
+            else if (path.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase))
+            {
+                AppendOgg(input, start, end);
+            }
+            else
+            {
+                AppendWav(input, start, end);
+            }
+        }
+
+        public void AppendWav(Stream input, double start, double end)
+        {
+            var initialPosition = input.Position;
             var br = new BinaryReader(input);
             var header = br.ReadStruct<WaveHeader>();
+            if (header.wFormatTag == 2)
+            {
+                input.Position = initialPosition;
+                var ms = new MemoryStream();
+                var decoder = new ADPCMDecoder();
+                decoder.Convert(input, ms);
+                ms.Position = 0;
+                AppendWav(ms, start, end);
+                return;
+            }
 
             if (!_headerWritten)
             {

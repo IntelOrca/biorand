@@ -16,6 +16,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.RE2;
+using IntelOrca.Biohazard.RE3;
 
 namespace IntelOrca.Biohazard.BioRand
 {
@@ -803,6 +804,8 @@ namespace IntelOrca.Biohazard.BioRand
                     return new Re1Randomiser(new BiorandBgCreator());
                 case 1:
                     return new Re2Randomiser(new BiorandBgCreator());
+                case 2:
+                    return new Re3Randomiser(new BiorandBgCreator());
                 default:
                     return null;
             }
