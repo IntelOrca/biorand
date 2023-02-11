@@ -30,6 +30,7 @@ namespace IntelOrca.Biohazard
 
         private readonly FileStream _fs;
         private readonly List<File> _files;
+        private readonly object _sync = new object();
 
         public int NumFiles => _files.Count;
 
@@ -109,8 +110,11 @@ namespace IntelOrca.Biohazard
         public byte[] GetFileContents(int index)
         {
             var file = _files[index];
-            _fs.Position = file.Offset;
-            return DecryptFile(new BinaryReader(_fs));
+            lock (_sync)
+            {
+                _fs.Position = file.Offset;
+                return DecryptFile(new BinaryReader(_fs));
+            }
         }
 
         private byte[] DecryptFile(BinaryReader br)

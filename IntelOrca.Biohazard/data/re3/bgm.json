@@ -1,0 +1,143 @@
+{
+  "countdown": [
+    "MAIN2C"
+  ],
+  "safe": [
+    "MAIN07"
+  ],
+  "creepy": [
+    "MAIN01",
+    "MAIN02",
+    "MAIN03",
+    "MAIN06", // RPD LOBBY
+    "MAIN0A", // RPD 1F
+    "MAIN0B",
+    "MAIN0E",
+    "MAIN13",
+    "MAIN17",
+    "MAIN18",
+    "MAIN19",
+    "MAIN1A",
+    "MAIN1B",
+    "MAIN1D",
+    "MAIN2D",
+    "MAIN3A",
+
+    "MAIN32", // SMOOTH
+    "MAIN33", // SMOOTH
+    "MAIN38", // OPTIONS
+
+    "SBB_00", // NEMESIS HUNTING
+    "SBB_02",
+    "SBB_03",
+    "SBB_05",
+    "SBB_06_0",
+    "SBB_06_1",
+    "SBB_0E",
+    "SBB_0F",
+    "SBB_17",
+    "SBB_18",
+    "SBB_1A",
+    "SBB_1C",
+    "SBB_2A",
+    "SBB_2B",
+    "SBB_30",
+    "SBB_31",
+    "SBB_33",
+    "SBB_34",
+    "SBB_35",
+    "SBB_37",
+    "SBB_39",
+    "SBB_3F"
+
+    // "SBB_41" // too short
+    // "SBB_0A", // too short
+    // "SBB_12", // too short
+    // "SBB_1B", // too short
+    // "SBB_1D", // too short
+    // "SBB_38_0" // too short
+    // "SBB_38_1" // too short
+    // "SBB_38_2" // too short
+
+    // "MAIN00",    // RAIN & THUNDER INSIDE
+    // "MAIN05"     // OUTSIDE WIND AMBIENCE
+    // "MAIN08"     // ALARM
+    // "MAIN0D",    // RUNNING WATER
+    // "MAIN0F_0",  // TRAIN ACCELERATION
+    // "MAIN0F_1",  // TRAIN FRICTION
+    // "MAIN11"     // OUTSIDE HIGH WIND AMBIENCE
+    // "MAIN14"     // FIRE
+    // "MAIN16_0"   // MACHINE
+    // "MAIN16_1"   // MACHINE
+    // "MAIN16_2"   // MACHINE
+    // "MAIN1E",    // OUTSIDE WIND / BIRD / ZOMBIE AMBIENCE
+    // "MAIN20_0"   // VENT AMBIENCE
+    // "MAIN20_1"   // SPLASH AMBIENCE
+    // "MAIN21"     // FAN AMBIENCE
+    // "MAIN23"     // HIGH WIND AMBIENCE
+    // "MAIN24_0"   // CLOCK TOWER CHIME 1
+    // "MAIN24_1"   // CLOCK TOWER CHIME 2
+    // "MAIN29"     // FAN & BUZZ AMBIENCE
+    // "MAIN2A",    // RAIN & THUNDER OUTSIDE 1
+    // "MAIN2A_1",  // RAIN & THUNDER OUTSIDE 2
+    // "MAIN2B_0",  // FAN
+    // "MAIN2B_1",  // UNDERWATER
+    // "MAIN30_0"   // RAY CHARGE UP
+    // "MAIN30_1"   // RAY "5" (a)
+    // "MAIN30_2"   // RAY "5" (b)
+    // "MAIN30_3"   // RAY "4" (a)
+    // "MAIN30_4"   // RAY "4" (b)
+    // "MAIN30_5"   // RAY "3" (a)
+    // "MAIN30_6"   // RAY "3" (b)
+    // "MAIN30_7"   // RAY "2" (a)
+    // "MAIN30_8"   // RAY "2" (b)
+    // "MAIN30_9"   // RAY "1" (a)
+    // "MAIN30_A"   // RAY "1" (b)
+    // "MAIN30_B"   // RAY "fire" (a)
+    // "MAIN30_C"   // RAY "fire" (b)
+    // "OTHER_00"   // OUTSIDE WIND / BIRD / ZOMBIE AMBIENCE
+    // "OTHER_01"   // FIRE
+    // "OTHER_02"   // WATER
+    // "OTHER_03"   // RAIN HEAVY
+    // "OTHER_04"   // RAIN LIGHT
+    // "SBB_11"     // GEARS
+    // "SBB_16"     // SPARKS
+    // "SBB_1E_0"   // ?
+    // "SBB_1E_1"   // BUBBLE
+    // "SBB_1F"     // ?
+    // "SBB_27"     // GEARS
+    // "SBB_2E_0"   // DUCK?
+    // "SBB_2E_1"   // CRICKETS / OWL HOOT
+    // "SBB_2F"     // FOUNTAIN
+    // "SBB_36"     // UNDERWATER
+    // "SBB_3D"     // ?
+    // "SBB_3E"     // ?
+    // "SBB_42"     // COMPUTER
+    // "SBB_44"     // WATER
+  ],
+  "calm": [
+    "MAIN3C",
+    "MAIN3D",
+    "SBB_10",
+    "SBB_19",
+    "SBB_20",
+    "SBB_24",
+    "SBB_25"
+  ],
+  "danger": [
+    "MAIN04",
+    "SBB_01", // NEMESIS ENCOUNTER
+    "SBB_0C",
+    "SBB_23",
+    "SBB_3A",
+    "SBB_3C",
+    "SBB_40"
+    // "SBB_09", // too short?
+  ],
+  "boss": [
+    "MAIN39",
+    "MAIN3B",
+    "SBB_29",
+    "SBB_3B"
+  ]
+}

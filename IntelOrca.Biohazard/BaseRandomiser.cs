@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.RE2;
+using IntelOrca.Biohazard.RE3;
 
 namespace IntelOrca.Biohazard
 {
@@ -202,8 +203,9 @@ namespace IntelOrca.Biohazard
                 logger.WriteHeading(Program.CurrentVersionInfo);
                 logger.WriteLine($"Seed: {config}");
 
+                var fileRepo = new FileRepository();
                 var bgmDirectory = Path.Combine(modPath, BGMPath);
-                var bgmRandomizer = new BgmRandomiser(logger, config, bgmDirectory, GetBgmJson(), BiohazardVersion == BioVersion.Biohazard1, new Rng(config.Seed), DataManager);
+                var bgmRandomizer = new BgmRandomiser(logger, config, fileRepo, bgmDirectory, GetBgmJson(), BiohazardVersion == BioVersion.Biohazard1, new Rng(config.Seed), DataManager);
                 var enabledBgms = GetSelectedAlbums(config);
                 if (enabledBgms.Contains("RE1", StringComparer.OrdinalIgnoreCase))
                 {
@@ -213,6 +215,12 @@ namespace IntelOrca.Biohazard
                 if (enabledBgms.Contains("RE2", StringComparer.OrdinalIgnoreCase))
                 {
                     var r = new Re2Randomiser(BgCreator);
+                    r.AddMusicSelection(bgmRandomizer, reConfig);
+                }
+                if (enabledBgms.Contains("RE3", StringComparer.OrdinalIgnoreCase))
+                {
+                    var r = new Re3Randomiser(BgCreator);
+                    r.AddArchives(reConfig, fileRepo);
                     r.AddMusicSelection(bgmRandomizer, reConfig);
                 }
                 bgmRandomizer.AddCutomMusicToSelection(enabledBgms);

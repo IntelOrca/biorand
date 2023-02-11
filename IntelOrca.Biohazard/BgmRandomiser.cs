@@ -25,6 +25,7 @@ namespace IntelOrca.Biohazard
 
         private readonly RandoLogger _logger;
         private readonly RandoConfig _config;
+        private readonly FileRepository _fileRepo;
         private readonly BgmList _srcBgmList = new BgmList();
         private readonly string _bgmJson;
         private readonly string _bgmDirectory;
@@ -35,10 +36,19 @@ namespace IntelOrca.Biohazard
 
         public float ImportVolume { get; set; } = 1.0f;
 
-        public BgmRandomiser(RandoLogger logger, RandoConfig config, string bgmDirectory, string bgmJson, bool isWav, Rng rng, DataManager dataManager)
+        public BgmRandomiser(
+            RandoLogger logger,
+            RandoConfig config,
+            FileRepository fileRepo,
+            string bgmDirectory,
+            string bgmJson,
+            bool isWav,
+            Rng rng,
+            DataManager dataManager)
         {
             _logger = logger;
             _config = config;
+            _fileRepo = fileRepo;
             _bgmJson = bgmJson;
             _bgmDirectory = bgmDirectory;
             _isWav = isWav;
@@ -110,12 +120,22 @@ namespace IntelOrca.Biohazard
             }
 
             // Copy/convert all tracks
-            Parallel.ForEach(_trackSetList.GroupBy(x => x.Value), g =>
+            var groups = _trackSetList.GroupBy(x => x.Value);
+#if SINGLE_THREADED
+            foreach (var g in groups)
+            {
+                var src = g.Key;
+                var dst = g.Select(x => x.Key).ToArray();
+                SetMusicTrack(src, dst);
+            }
+#else
+            Parallel.ForEach(groups, g =>
             {
                 var src = g.Key;
                 var dst = g.Select(x => x.Key).ToArray();
                 SetMusicTrack(src, dst);
             });
+#endif
         }
 
         private void Shuffle(BgmList bgmList, string dstTag, string srcTag, bool overlay = false)
@@ -186,7 +206,7 @@ namespace IntelOrca.Biohazard
                     {
                         using (_logger.Progress.BeginTask(null, $"Copying '{src}'"))
                         {
-                            File.Copy(src, dst[i], true);
+                            _fileRepo.Copy(src, dst[i]);
                         }
                     }
                 }
@@ -194,16 +214,17 @@ namespace IntelOrca.Biohazard
                 {
                     using (_logger.Progress.BeginTask(null, $"Converting '{src}'"))
                     {
+                        using var stream = _fileRepo.GetStream(src);
                         var builder = new WaveformBuilder();
                         builder.Volume = ImportVolume;
                         if (_isWav)
                         {
                             // RE1 can't handle very large .wav files, limit tracks to 3 minutes
-                            builder.Append(src, 0, 2.5 * 60);
+                            builder.Append(src, stream, 0, 2.5 * 60);
                         }
                         else
                         {
-                            builder.Append(src);
+                            builder.Append(src, stream);
                         }
                         builder.Save(dst[0]);
                     }
