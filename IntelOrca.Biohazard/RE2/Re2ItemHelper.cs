@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace IntelOrca.Biohazard.RE2
 {
-    internal class Re2ItemHelper : IItemHelper
+    internal class Re3ItemHelper : IItemHelper
     {
         private const bool g_leonWeaponFix = true;
         private const bool g_claireWeaponFix = true;

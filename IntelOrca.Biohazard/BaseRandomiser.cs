@@ -205,7 +205,7 @@ namespace IntelOrca.Biohazard
 
                 var fileRepo = new FileRepository();
                 var bgmDirectory = Path.Combine(modPath, BGMPath);
-                var bgmRandomizer = new BgmRandomiser(logger, config, fileRepo, bgmDirectory, GetBgmJson(), BiohazardVersion == BioVersion.Biohazard1, new Rng(config.Seed), DataManager);
+                var bgmRandomizer = new BgmRandomiser(logger, config, fileRepo, bgmDirectory, GetBgmJson(), BiohazardVersion != BioVersion.Biohazard2, new Rng(config.Seed), DataManager);
                 var enabledBgms = GetSelectedAlbums(config);
                 if (enabledBgms.Contains("RE1", StringComparer.OrdinalIgnoreCase))
                 {

@@ -47,6 +47,7 @@
                 </ListView.ItemTemplate>
                 <local:GameMenuItem Image="/resources/re1.png" />
                 <local:GameMenuItem Image="/resources/re2.png" />
+                <local:GameMenuItem Image="/resources/re3.png" />
                 <local:GameMenuItem Image="/resources/settings.png" />
                 <local:GameMenuItem Image="/resources/info.png" />
             </ListView>

@@ -63,7 +63,7 @@ namespace IntelOrca.Biohazard.BioRand
                 gameLocation3.IsChecked = _settings.GameEnabled3;
             }
 
-            var seed = SelectedGame == 0 ? _settings.Seed1 : _settings.Seed2;
+            var seed = SelectedGame == 0 ? _settings.Seed1 : SelectedGame == 1 ? _settings.Seed2 : _settings.Seed3;
             if (seed == null)
             {
                 RandomizeSeed();
@@ -84,10 +84,18 @@ namespace IntelOrca.Biohazard.BioRand
             _settings.GameEnabled2 = gameLocation2.IsChecked == true;
             _settings.GameEnabled3 = gameLocation3.IsChecked == true;
 
-            if (SelectedGame == 0)
-                _settings.Seed1 = _config.ToString();
-            else
-                _settings.Seed2 = _config.ToString();
+            switch (SelectedGame)
+            {
+                case 0:
+                    _settings.Seed1 = _config.ToString();
+                    break;
+                case 1:
+                    _settings.Seed2 = _config.ToString();
+                    break;
+                case 2:
+                    _settings.Seed3 = _config.ToString();
+                    break;
+            }
             _settings.Save();
         }
 
@@ -493,7 +501,7 @@ namespace IntelOrca.Biohazard.BioRand
 
             if (_config.Game != (SelectedGame + 1))
             {
-                if (_config.Game == 1 || _config.Game == 2)
+                if (_config.Game >= 1 && _config.Game <= 3)
                     SelectedGame = _config.Game - 1;
                 else
                     _config.Game = (byte)(SelectedGame + 1);
@@ -572,6 +580,14 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 var r = GetRandomizer(1);
                 if (!ValidateGameData(r, _settings.GamePath2, "RE2"))
+                {
+                    return false;
+                }
+            }
+            if (_settings.GameEnabled3)
+            {
+                var r = GetRandomizer(2);
+                if (!ValidateGameData(r, _settings.GamePath3, "RE3"))
                 {
                     return false;
                 }
@@ -732,20 +748,28 @@ namespace IntelOrca.Biohazard.BioRand
         private void gameListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var index = gameListView.SelectedIndex;
-            if (index == 0)
-                _config = RandoConfig.FromString(_settings.Seed1);
-            else if (index == 1)
-                _config = RandoConfig.FromString(_settings.Seed2);
+            switch (index)
+            {
+                case 0:
+                    _config = RandoConfig.FromString(_settings.Seed1);
+                    break;
+                case 1:
+                    _config = RandoConfig.FromString(_settings.Seed2);
+                    break;
+                case 2:
+                    _config = RandoConfig.FromString(_settings.Seed3);
+                    break;
+            }
 
             using (SuspendEvents())
             {
-                if (index == 3)
+                if (index == 4)
                 {
                     panelInfo.Visibility = Visibility.Visible;
                     panelConfig.Visibility = Visibility.Hidden;
                     panelRando.Visibility = Visibility.Hidden;
                 }
-                else if (index == 2)
+                else if (index == 3)
                 {
                     panelInfo.Visibility = Visibility.Hidden;
                     panelConfig.Visibility = Visibility.Visible;
@@ -872,13 +896,13 @@ namespace IntelOrca.Biohazard.BioRand
             get
             {
                 var index = gameListView.SelectedIndex;
-                if (index > 1)
+                if (index > 2)
                     return null;
                 return index;
             }
             set
             {
-                gameListView.SelectedIndex = value ?? 2;
+                gameListView.SelectedIndex = value ?? 3;
             }
         }
 
@@ -894,12 +918,6 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void UpdatePlayerDropdowns()
         {
-            if (SelectedGame == 3)
-            {
-                chkPlayer.Visibility = Visibility.Collapsed;
-                return;
-            }
-
             var randomizer = GetRandomizer();
             chkPlayer.Visibility = Visibility.Visible;
 
@@ -913,6 +931,14 @@ namespace IntelOrca.Biohazard.BioRand
                 dropdown.ItemsSource = randomizer.GetPlayerCharacters(i);
                 if (dropdown.SelectedIndex == -1)
                     dropdown.SelectedIndex = 0;
+            }
+
+            if (SelectedGame == 2)
+            {
+                lblPlayer1.Visibility = Visibility.Collapsed;
+                dropdownPlayer1.Visibility = Visibility.Collapsed;
+                chkPlayer.Visibility = Visibility.Hidden;
+                return;
             }
         }
 
