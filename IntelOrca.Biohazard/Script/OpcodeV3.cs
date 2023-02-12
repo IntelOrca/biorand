@@ -1,0 +1,37 @@
+﻿namespace IntelOrca.Biohazard.Script
+{
+    internal enum OpcodeV3 : byte
+    {
+        Nop = 0x00,
+        EvtEnd = 0x01,
+        IfelCk = 0x06,
+        ElseCk = 0x07,
+        EndIf = 0x08,
+        For = 0x0D,
+        EndFor = 0x0F,
+        While = 0x10,
+        Ewhile = 0x11,
+        Do = 0x12,
+        Edwhile = 0x13,
+        Switch = 0x14,
+        Case = 0x15,
+        Default = 0x16,
+        Eswitch = 0x17,
+        Goto = 0x18,
+        Gosub = 0x19,
+        Return = 0x1A,
+        Break = 0x1B,
+        Set = 0x1E,
+        Set2 = 0x1F,
+        Calc = 0x20,
+        Ck = 0x4C,
+        Cmp = 0x4E,
+        AotSet = 0x63,
+        DoorAotSe = 0x61,
+        SceEmSet = 0x7D,
+        AotReset = 0x65,
+        ItemAotSet = 0x67,
+        DoorAotSet4p = 0x62,
+        ItemAotSet4p = 0x68,
+    }
+}

@@ -34,17 +34,23 @@ namespace IntelOrca.Biohazard.Script
             base.VisitVersion(version);
 
             int versionNumber;
-            if (version == BioVersion.Biohazard1)
+            switch (version)
             {
-                _constantTable = new Bio1ConstantTable();
-                versionNumber = 1;
+                case BioVersion.Biohazard1:
+                    _constantTable = new Bio1ConstantTable();
+                    versionNumber = 1;
+                    break;
+                case BioVersion.Biohazard2:
+                    _constantTable = new Bio2ConstantTable();
+                    versionNumber = 2;
+                    break;
+                case BioVersion.Biohazard3:
+                    _constantTable = new Bio3ConstantTable();
+                    versionNumber = 3;
+                    break;
+                default:
+                    throw new NotSupportedException();
             }
-            else
-            {
-                _constantTable = new Bio2ConstantTable();
-                versionNumber = 2;
-            }
-
             _sb.WriteLine(".version " + versionNumber);
         }
 
@@ -183,15 +189,20 @@ namespace IntelOrca.Biohazard.Script
             var backupPosition = br.BaseStream.Position;
             if (!AssemblyFormat)
             {
-                if (Version == BioVersion.Biohazard1)
+                switch (Version)
                 {
-                    if (VisitOpcode(offset, (OpcodeV1)opcode, br))
-                        return;
-                }
-                else
-                {
-                    if (VisitOpcode(offset, (OpcodeV2)opcode, br))
-                        return;
+                    case BioVersion.Biohazard1:
+                        if (VisitOpcode(offset, (OpcodeV1)opcode, br))
+                            return;
+                        break;
+                    case BioVersion.Biohazard2:
+                        if (VisitOpcode(offset, (OpcodeV2)opcode, br))
+                            return;
+                        break;
+                    case BioVersion.Biohazard3:
+                        if (VisitOpcode(offset, (OpcodeV3)opcode, br))
+                            return;
+                        break;
                 }
                 br.BaseStream.Position = backupPosition;
             }
@@ -343,11 +354,6 @@ namespace IntelOrca.Biohazard.Script
                 case OpcodeV2.EndIf:
                     _sb.CloseBlock();
                     break;
-                case OpcodeV2.Wsleeping:
-                    {
-                        sb.WriteStandardOpcode("wsleeping");
-                        break;
-                    }
                 case OpcodeV2.For:
                     {
                         br.ReadByte();
@@ -536,6 +542,198 @@ namespace IntelOrca.Biohazard.Script
                             sb.Write($"&{flag} {opS} {value}");
                             _expressionCount++;
                         }
+                        break;
+                    }
+            }
+            return true;
+        }
+
+        private bool VisitOpcode(int offset, OpcodeV3 opcode, BinaryReader br)
+        {
+            var sb = _sb;
+            br.ReadByte();
+            switch (opcode)
+            {
+                default:
+                    return false;
+                case OpcodeV3.Nop:
+                    break;
+                case OpcodeV3.EvtEnd:
+                    {
+                        var ret = br.ReadByte();
+                        sb.WriteLine($"return {ret};");
+                        break;
+                    }
+                case OpcodeV3.IfelCk:
+                    {
+                        sb.Write("if (");
+                        _constructingBinaryExpression = true;
+                        _expressionCount = 0;
+                        break;
+                    }
+                case OpcodeV3.ElseCk:
+                    {
+                        br.ReadByte();
+                        var blockLen = br.ReadUInt16();
+                        _sb.CloseBlock();
+                        _blockEnds.Push(((byte)opcode, offset + blockLen));
+                        sb.WriteLine("else");
+                        _sb.OpenBlock();
+                    }
+                    break;
+                case OpcodeV3.EndIf:
+                    _sb.CloseBlock();
+                    break;
+                case OpcodeV3.For:
+                    {
+                        br.ReadByte();
+                        var blockLen = br.ReadUInt16();
+                        var count = br.ReadUInt16();
+                        sb.WriteLine($"for {count} times");
+                        _sb.OpenBlock();
+                        break;
+                    }
+                case OpcodeV3.EndFor:
+                    sb.CloseBlock();
+                    break;
+                case OpcodeV3.While:
+                    {
+                        br.ReadByte();
+                        var blockLen = br.ReadUInt16();
+                        sb.WriteLine($"while (");
+                        _sb.OpenBlock();
+                        break;
+                    }
+                case OpcodeV3.Ewhile:
+                    sb.CloseBlock();
+                    break;
+                case OpcodeV3.Do:
+                    {
+                        br.ReadByte();
+                        var blockLen = br.ReadUInt16();
+                        _blockEnds.Push(((byte)opcode, offset + blockLen));
+                        sb.WriteLine($"do");
+                        _sb.OpenBlock();
+                        break;
+                    }
+                case OpcodeV3.Edwhile:
+                    {
+                        sb.Unindent();
+                        sb.Write("} while (");
+                        _constructingBinaryExpression = true;
+                        _expressionCount = 0;
+                        _endDoWhile = true;
+                        break;
+                    }
+                case OpcodeV3.Switch:
+                    {
+                        var varw = br.ReadByte();
+                        sb.WriteLine($"switch ({GetVariableName(varw)})");
+                        _sb.OpenBlock();
+                        break;
+                    }
+                case OpcodeV3.Case:
+                    {
+                        br.ReadByte();
+                        sb.Unindent();
+                        sb.WriteLine($"case when (");
+                        sb.Indent();
+                        _constructingBinaryExpression = true;
+                        _expressionCount = 0;
+                        break;
+                    }
+                case OpcodeV3.Default:
+                    sb.Unindent();
+                    sb.WriteLine($"default:");
+                    sb.Indent();
+                    break;
+                case OpcodeV3.Eswitch:
+                    sb.CloseBlock();
+                    break;
+                case OpcodeV3.Goto:
+                    var a = br.ReadByte();
+                    var b = br.ReadByte();
+                    var c = br.ReadByte();
+                    var rel = br.ReadInt16();
+                    var io = offset + rel;
+                    sb.WriteLine($"goto {sb.GetLabelName(io)};");
+                    sb.InsertLabel(io);
+                    break;
+                case OpcodeV3.Gosub:
+                    var num = br.ReadByte();
+                    sb.WriteLine($"{GetProcedureName(num)}();");
+                    break;
+                case OpcodeV3.Return:
+                    sb.WriteLine("return;");
+                    break;
+                case OpcodeV3.Break:
+                    sb.WriteLine("break;");
+                    break;
+                case OpcodeV3.Cmp:
+                    {
+                        br.ReadByte();
+                        var index = br.ReadByte();
+                        var op = br.ReadByte();
+                        var value = br.ReadInt16();
+                        if (_constructingBinaryExpression)
+                        {
+                            if (_expressionCount != 0)
+                            {
+                                sb.Write(" && ");
+                            }
+
+                            var ops = new[] { "==", ">", ">=", "<", "<=", "!=" };
+                            var opS = ops.Length > op ? ops[op] : "?";
+                            if (index == 27)
+                                sb.Write($"game.last_room {opS} 0x{value:X3}");
+                            else
+                                sb.Write($"arr[{index}] {opS} {value}");
+                            _expressionCount++;
+                        }
+                        break;
+                    }
+                case OpcodeV3.Ck:
+                    {
+                        var bitArray = br.ReadByte();
+                        var number = br.ReadByte();
+                        var value = br.ReadByte();
+                        var bitString = GetBitsString(bitArray, number);
+                        if (_constructingBinaryExpression)
+                        {
+                            if (_expressionCount != 0)
+                            {
+                                sb.Write(" && ");
+                            }
+                            sb.Write($"{GetBitsString(bitArray, number)} == {value}");
+                            _expressionCount++;
+                        }
+                        break;
+                    }
+                case OpcodeV3.Set:
+                    {
+                        var bitArray = br.ReadByte();
+                        var number = br.ReadByte();
+                        var opChg = br.ReadByte();
+                        sb.Write(GetBitsString(bitArray, number));
+                        if (opChg == 0)
+                            sb.WriteLine(" = 0;");
+                        else if (opChg == 1)
+                            sb.WriteLine(" = 1;");
+                        else if (opChg == 7)
+                            sb.WriteLine(" ^= 1;");
+                        else
+                            sb.WriteLine(" (INVALID);");
+                        break;
+                    }
+                case OpcodeV3.Calc:
+                    {
+                        br.ReadByte();
+                        var op = br.ReadByte();
+                        var var = br.ReadByte();
+                        var src = br.ReadInt16();
+                        var ops = new string[] { "+", "-", "*", "/", "%", "|", "&", "^", "~", "<<", ">>", ">>>" };
+                        var opS = ops.Length > op ? ops[op] : "?";
+                        sb.WriteLine($"{GetVariableName(var)} {opS}= {src:X2};");
                         break;
                     }
             }

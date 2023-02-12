@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.Script
@@ -94,12 +93,9 @@ namespace IntelOrca.Biohazard.Script
 
         public override void VisitOpcode(OpcodeAstNode node)
         {
-            if (_scriptNode.Version == BioVersion.Biohazard1)
-                return;
-
-            if ((OpcodeV2)node.Opcode.Opcode == OpcodeV2.Gosub)
+            if (node.Opcode is GosubOpcode gosubOp)
             {
-                VisitSubroutine(((GosubOpcode)node.Opcode).Index);
+                VisitSubroutine(gosubOp.Index);
             }
         }
 
@@ -194,26 +190,19 @@ namespace IntelOrca.Biohazard.Script
         {
             base.VisitOpcode(node);
             var indent = new string(' ', 4);
-            switch ((OpcodeV2)node.Opcode.Opcode)
+            switch (node.Opcode)
             {
-                case OpcodeV2.DoorAotSe:
-                case OpcodeV2.DoorAotSet4p:
-                    {
-                        var door = (IDoorAotSetOpcode)node.Opcode;
-                        _sb.Append($"{indent}Door #{door.Id}: {new RdtId(door.NextStage, door.NextRoom)} (0x{door.Offset:X2})");
-                        AppendConditions();
-                        _sb.AppendLine();
-                        break;
-                    }
-                case OpcodeV2.ItemAotSet:
-                case OpcodeV2.ItemAotSet4p:
-                    var item = (ItemAotSetOpcode)node.Opcode;
+                case IDoorAotSetOpcode door:
+                    _sb.Append($"{indent}Door #{door.Id}: {new RdtId(door.NextStage, door.NextRoom)} (0x{door.Offset:X2})");
+                    AppendConditions();
+                    _sb.AppendLine();
+                    break;
+                case IItemAotSetOpcode item:
                     _sb.Append($"{indent}Item #{item.Id}: {(ItemType)item.Type} x{item.Amount} (0x{item.Offset:X2})");
                     AppendConditions();
                     _sb.AppendLine();
                     break;
-                case OpcodeV2.SceEmSet:
-                    var enemy = (SceEmSetOpcode)node.Opcode;
+                case SceEmSetOpcode enemy:
                     _sb.Append($"{indent}Enemy #{enemy.Id}: {enemy.Type} (0x{enemy.Offset:X2})");
                     AppendConditions();
                     _sb.AppendLine();

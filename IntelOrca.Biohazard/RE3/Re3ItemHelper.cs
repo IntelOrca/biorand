@@ -1,4 +1,6 @@
 ﻿using System;
+using IntelOrca.Biohazard.RE1;
+using IntelOrca.Biohazard.Script;
 
 namespace IntelOrca.Biohazard.RE3
 {
@@ -6,97 +8,206 @@ namespace IntelOrca.Biohazard.RE3
     {
         public byte[] GetAmmoTypeForWeapon(byte type)
         {
-            throw new NotImplementedException();
+            switch (type)
+            {
+                case Re3ItemIds.HandgunSigpro:
+                case Re3ItemIds.HandgunSigproEnhanced:
+                case Re3ItemIds.HandgunBeretta:
+                case Re3ItemIds.HandgunBerettaEnhanced:
+                    return new byte[] {
+                        Re3ItemIds.HandgunAmmo,
+                        Re3ItemIds.HandgunBerettaEnhanced
+                    };
+                case Re3ItemIds.HangunEagle:
+                    return new byte[] { Re3ItemIds.HandgunAmmo };
+                case Re3ItemIds.ShotgunBenelli:
+                case Re3ItemIds.ShotgunBenelliEnhanced:
+                    return new byte[] { Re3ItemIds.ShotgunAmmo, Re3ItemIds.ShotgunEnhancedAmmo };
+                case Re3ItemIds.MagnumSW:
+                    return new byte[] { Re3ItemIds.MagnumAmmo };
+                case Re3ItemIds.GrenadeLauncherBurst:
+                case Re3ItemIds.GrenadeLauncherFlame:
+                case Re3ItemIds.GrenadeLauncherAcid:
+                case Re3ItemIds.GrenadeLauncherFreeze:
+                    return new[] {
+                        Re3ItemIds.AcidRounds,
+                        Re3ItemIds.GrenadeRounds,
+                        Re3ItemIds.FlameRounds,
+                        Re3ItemIds.FreezeRounds
+                    };
+                case Re3ItemIds.MineThrower:
+                case Re3ItemIds.MineThrowerEnhanced:
+                    return new byte[] { Re3ItemIds.MineThrowerAmmo };
+                case Re3ItemIds.RifleM4A1Manual:
+                case Re3ItemIds.RifleM4A1Auto:
+                    return new byte[] { Re3ItemIds.RifleAmmo };
+                case Re3ItemIds.ShotgunM37:
+                    return new byte[] { Re3ItemIds.ShotgunAmmo };
+                default:
+                    return new byte[0];
+            }
         }
 
         public byte[] GetDefaultWeapons(RandoConfig config)
         {
-            throw new NotImplementedException();
+            return new[] { Re3ItemIds.HandgunBeretta, Re3ItemIds.ReloadingTool };
         }
 
         public byte[] GetInitialItems(RandoConfig config)
         {
-            throw new NotImplementedException();
+            return new byte[0];
         }
 
         public int[]? GetInventorySize(RandoConfig config)
         {
-            throw new NotImplementedException();
+            return new[] { 8 };
         }
 
         public byte GetItemId(CommonItemKind kind)
         {
+            switch (kind)
+            {
+                case CommonItemKind.HandgunAmmo:
+                    return Re3ItemIds.HandgunAmmo;
+                case CommonItemKind.InkRibbon:
+                    return Re3ItemIds.InkRibbon;
+                case CommonItemKind.HerbG:
+                    return Re3ItemIds.HerbG;
+                case CommonItemKind.HerbGG:
+                    return Re3ItemIds.HerbGG;
+                case CommonItemKind.HerbGGG:
+                    return Re3ItemIds.HerbGGG;
+                case CommonItemKind.HerbR:
+                    return Re3ItemIds.HerbR;
+                case CommonItemKind.HerbGR:
+                    return Re3ItemIds.HerbGR;
+                case CommonItemKind.HerbB:
+                    return Re3ItemIds.HerbB;
+                case CommonItemKind.HerbGB:
+                    return Re3ItemIds.HerbGB;
+                case CommonItemKind.HerbGGB:
+                    return Re3ItemIds.HerbGGB;
+                case CommonItemKind.HerbGRB:
+                    return Re3ItemIds.HerbGRB;
+                case CommonItemKind.FirstAid:
+                    return Re3ItemIds.FirstAidSpray;
+                case CommonItemKind.Knife:
+                    return Re3ItemIds.CombatKnife;
+            }
             throw new NotImplementedException();
         }
 
         public string GetItemName(byte type)
         {
-            throw new NotImplementedException();
+            var name = new Bio3ConstantTable().GetItemName(type);
+            return name
+                .Remove(0, 5)
+                .Replace("_", " ");
         }
 
         public double GetItemProbability(byte type)
         {
-            throw new NotImplementedException();
+            switch (type)
+            {
+                case Re3ItemIds.HandgunAmmo:
+                    return 0.3;
+                case Re3ItemIds.ShotgunAmmo:
+                case Re3ItemIds.RifleAmmo:
+                case Re3ItemIds.HandgunEnhancedAmmo:
+                case Re3ItemIds.ShotgunEnhancedAmmo:
+                    return 0.2;
+                case Re3ItemIds.AcidRounds:
+                case Re3ItemIds.GrenadeRounds:
+                case Re3ItemIds.FlameRounds:
+                case Re3ItemIds.FreezeRounds:
+                case Re3ItemIds.MineThrowerAmmo:
+                case Re3ItemIds.MagnumAmmo:
+                    return 0.1;
+                default:
+                    return 0;
+            }
         }
 
         public int GetItemQuantity(RandoConfig config, byte item)
         {
-            throw new NotImplementedException();
+            return 1;
         }
 
         public byte GetItemSize(byte type)
         {
-            throw new NotImplementedException();
+            return 1;
         }
 
         public byte GetMaxAmmoForAmmoType(byte type)
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         public WeaponKind GetWeaponKind(byte item)
         {
-            throw new NotImplementedException();
+            switch (item)
+            {
+                case Re3ItemIds.HandgunSigpro:
+                    return WeaponKind.Sidearm;
+                default:
+                    return WeaponKind.None;
+            }
         }
 
         public byte[] GetWeapons(Rng rng, RandoConfig config)
         {
-            throw new NotImplementedException();
+            return new[] {
+                rng.NextOf(Re3ItemIds.HandgunSigpro, Re3ItemIds.HandgunSigproEnhanced),
+                rng.NextOf(Re3ItemIds.HandgunBeretta, Re3ItemIds.HandgunBerettaEnhanced),
+                rng.NextOf(Re3ItemIds.ShotgunBenelli, Re3ItemIds.ShotgunBenelliEnhanced),
+                Re3ItemIds.MagnumSW,
+                rng.NextOf(
+                    Re3ItemIds.GrenadeLauncherBurst,
+                    Re3ItemIds.GrenadeLauncherFlame,
+                    Re3ItemIds.GrenadeLauncherAcid,
+                    Re3ItemIds.GrenadeLauncherFreeze),
+                Re3ItemIds.RocketLauncher,
+                Re3ItemIds.GatlingGun,
+                rng.NextOf(Re3ItemIds.MineThrower, Re3ItemIds.MineThrowerEnhanced),
+                Re3ItemIds.HangunEagle,
+                rng.NextOf(Re3ItemIds.RifleM4A1Manual, Re3ItemIds.RifleM4A1Auto),
+                Re3ItemIds.ShotgunM37
+            };
         }
 
         public byte? GetWeaponUpgrade(byte weapon, Rng rng, RandoConfig config)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public bool HasInkRibbons(RandoConfig config)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public bool IsItemDocument(byte type)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
         public bool IsItemInfinite(byte type)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
         public bool IsItemTypeDiscardable(byte type)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
         public bool IsOptionalItem(RandoConfig config, byte type)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
         public bool IsWeaponCompatible(byte player, byte item)
         {
-            throw new NotImplementedException();
+            return true;
         }
     }
 }

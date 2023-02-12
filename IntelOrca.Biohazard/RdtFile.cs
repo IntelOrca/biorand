@@ -112,23 +112,40 @@ namespace IntelOrca.Biohazard
 
         private int GetScdChunkIndex(BioScriptKind kind)
         {
-            if (Version == BioVersion.Biohazard1)
+            switch (Version)
             {
-                switch (kind)
-                {
-                    case BioScriptKind.Init:
-                        return 6;
-                    case BioScriptKind.Main:
-                        return 7;
-                    case BioScriptKind.Event:
-                        return 8;
-                    default:
-                        throw new ArgumentException("Invalid kind", nameof(kind));
-                }
-            }
-            else
-            {
-                return kind == BioScriptKind.Init ? 16 : 17;
+                case BioVersion.Biohazard1:
+                    switch (kind)
+                    {
+                        case BioScriptKind.Init:
+                            return 6;
+                        case BioScriptKind.Main:
+                            return 7;
+                        case BioScriptKind.Event:
+                            return 8;
+                        default:
+                            throw new ArgumentException("Invalid kind", nameof(kind));
+                    }
+                case BioVersion.Biohazard2:
+                    switch (kind)
+                    {
+                        case BioScriptKind.Init:
+                            return 16;
+                        case BioScriptKind.Main:
+                            return 17;
+                        default:
+                            throw new ArgumentException("Invalid kind", nameof(kind));
+                    }
+                case BioVersion.Biohazard3:
+                    switch (kind)
+                    {
+                        case BioScriptKind.Init:
+                            return 16;
+                        default:
+                            throw new ArgumentException("Invalid kind", nameof(kind));
+                    }
+                default:
+                    throw new NotSupportedException();
             }
         }
 
@@ -238,8 +255,10 @@ namespace IntelOrca.Biohazard
         {
             visitor.VisitVersion(Version);
             ReadScript(BioScriptKind.Init, visitor);
-            ReadScript(BioScriptKind.Main, visitor);
-            ReadScript(BioScriptKind.Event, visitor);
+            if (Version != BioVersion.Biohazard3)
+                ReadScript(BioScriptKind.Main, visitor);
+            if (Version == BioVersion.Biohazard1)
+                ReadScript(BioScriptKind.Event, visitor);
         }
 
         private void ReadScript(BioScriptKind kind, BioScriptVisitor visitor)
