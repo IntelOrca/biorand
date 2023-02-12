@@ -51,37 +51,54 @@ namespace IntelOrca.Biohazard.Script
         private OpcodeBase ReadOpcode(int offset, int length, BinaryReader br)
         {
             var opcode = br.PeekByte();
-            if (Version == BioVersion.Biohazard1)
+            switch (Version)
             {
-                return (OpcodeV1)opcode switch
-                {
-                    OpcodeV1.ElseCk => ElseCkOpcode.Read(br, offset),
-                    OpcodeV1.TestPickup => TestPickupOpcode.Read(br, offset),
-                    OpcodeV1.DoorAotSe => DoorAotSeOpcode.Read(br, offset),
-                    OpcodeV1.ItemAotSet => ItemAotSetOpcode.Read(br, offset),
-                    OpcodeV1.SceEmSet => SceEmSetOpcode.Read(br, offset),
-                    _ => UnknownOpcode.Read(br, offset, length),
-                };
-            }
-            else
-            {
-                return (OpcodeV2)opcode switch
-                {
-                    OpcodeV2.ElseCk => ElseCkOpcode.Read(br, offset),
-                    OpcodeV2.Gosub => GosubOpcode.Read(br, offset),
-                    OpcodeV2.Ck => CkOpcode.Read(br, offset),
-                    OpcodeV2.Cmp => CmpOpcode.Read(br, offset),
-                    OpcodeV2.AotSet => AotSetOpcode.Read(br, offset),
-                    OpcodeV2.DoorAotSe => DoorAotSeOpcode.Read(br, offset),
-                    OpcodeV2.SceEmSet => SceEmSetOpcode.Read(br, offset),
-                    OpcodeV2.AotReset => AotResetOpcode.Read(br, offset),
-                    OpcodeV2.ItemAotSet => ItemAotSetOpcode.Read(br, offset),
-                    OpcodeV2.XaOn => XaOnOpcode.Read(br, offset),
-                    OpcodeV2.SceItemGet => SceItemGetOpcode.Read(br, offset),
-                    OpcodeV2.DoorAotSet4p => DoorAotSet4pOpcode.Read(br, offset),
-                    OpcodeV2.ItemAotSet4p => ItemAotSet4pOpcode.Read(br, offset),
-                    _ => UnknownOpcode.Read(br, offset, length),
-                };
+                case BioVersion.Biohazard1:
+                    return (OpcodeV1)opcode switch
+                    {
+                        OpcodeV1.ElseCk => ElseCkOpcode.Read(br, offset),
+                        OpcodeV1.TestPickup => TestPickupOpcode.Read(br, offset),
+                        OpcodeV1.DoorAotSe => DoorAotSeOpcode.Read(br, offset),
+                        OpcodeV1.ItemAotSet => ItemAotSetOpcode.Read(br, offset),
+                        OpcodeV1.SceEmSet => SceEmSetOpcode.Read(br, offset),
+                        _ => UnknownOpcode.Read(br, offset, length),
+                    };
+                case BioVersion.Biohazard2:
+                    return (OpcodeV2)opcode switch
+                    {
+                        OpcodeV2.ElseCk => ElseCkOpcode.Read(br, offset),
+                        OpcodeV2.Gosub => GosubOpcode.Read(br, offset),
+                        OpcodeV2.Ck => CkOpcode.Read(br, offset),
+                        OpcodeV2.Cmp => CmpOpcode.Read(br, offset),
+                        OpcodeV2.AotSet => AotSetOpcode.Read(br, offset),
+                        OpcodeV2.DoorAotSe => DoorAotSeOpcode.Read(br, offset),
+                        OpcodeV2.SceEmSet => SceEmSetOpcode.Read(br, offset),
+                        OpcodeV2.AotReset => AotResetOpcode.Read(br, offset),
+                        OpcodeV2.ItemAotSet => ItemAotSetOpcode.Read(br, offset),
+                        OpcodeV2.XaOn => XaOnOpcode.Read(br, offset),
+                        OpcodeV2.SceItemGet => SceItemGetOpcode.Read(br, offset),
+                        OpcodeV2.DoorAotSet4p => DoorAotSet4pOpcode.Read(br, offset),
+                        OpcodeV2.ItemAotSet4p => ItemAotSet4pOpcode.Read(br, offset),
+                        _ => UnknownOpcode.Read(br, offset, length),
+                    };
+                case BioVersion.Biohazard3:
+                    return (OpcodeV3)opcode switch
+                    {
+                        OpcodeV3.ElseCk => ElseCkOpcode.Read(br, offset),
+                        OpcodeV3.Gosub => GosubOpcode.Read(br, offset),
+                        OpcodeV3.Ck => CkOpcode.Read(br, offset),
+                        OpcodeV3.Cmp => CmpOpcode.Read(br, offset),
+                        OpcodeV3.AotSet => AotSetOpcode.Read(br, offset),
+                        OpcodeV3.DoorAotSe => DoorAotSeOpcode.Read(br, offset),
+                        OpcodeV3.SceEmSet => SceEmSetOpcode.Read(br, offset),
+                        OpcodeV3.AotReset => AotResetOpcode.Read(br, offset),
+                        OpcodeV3.ItemAotSet => ItemAotSetOpcode.Read(br, offset),
+                        OpcodeV3.DoorAotSet4p => DoorAotSet4pOpcode.Read(br, offset),
+                        OpcodeV3.ItemAotSet4p => ItemAotSet4pOpcode.Read(br, offset),
+                        _ => UnknownOpcode.Read(br, offset, length),
+                    };
+                default:
+                    throw new NotSupportedException();
             }
         }
     }

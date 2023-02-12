@@ -670,9 +670,9 @@ namespace IntelOrca.Biohazard
             inkTable.Add(_itemHelper.GetItemId(CommonItemKind.InkRibbon), 1);
 
             var totalRatio = (double)_config.RatioAmmo + _config.RatioHealth + _config.RatioInkRibbons;
-            var numAmmo = (int)((_config.RatioAmmo / totalRatio) * shuffled.Count);
-            var numHealth = (int)((_config.RatioHealth / totalRatio) * shuffled.Count);
-            var numInk = (int)((_config.RatioInkRibbons / totalRatio) * shuffled.Count);
+            var numAmmo = (int)Math.Ceiling((_config.RatioAmmo / totalRatio) * shuffled.Count);
+            var numHealth = (int)Math.Ceiling((_config.RatioHealth / totalRatio) * shuffled.Count);
+            var numInk = (int)Math.Ceiling((_config.RatioInkRibbons / totalRatio) * shuffled.Count);
 
             var proportions = new List<(int, Rng.Table<byte>)>();
             proportions.Add((numAmmo, ammoTable));

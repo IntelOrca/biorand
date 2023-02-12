@@ -213,7 +213,7 @@ namespace IntelOrca.Biohazard.RE1
             if (config.Player == 0)
                 return new byte[0];
             else
-                return new[] { (byte)ItemType.Beretta };
+                return new[] { Re1ItemIds.Beretta };
         }
 
         public byte[] GetWeapons(Rng rng, RandoConfig config)
