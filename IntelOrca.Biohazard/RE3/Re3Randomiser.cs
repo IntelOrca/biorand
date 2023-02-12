@@ -6,9 +6,9 @@ namespace IntelOrca.Biohazard.RE3
     public class Re3Randomiser : BaseRandomiser
     {
         protected override BioVersion BiohazardVersion => BioVersion.Biohazard3;
-        internal override IItemHelper ItemHelper => throw new NotImplementedException();
-        internal override IEnemyHelper EnemyHelper => throw new NotImplementedException();
-        internal override INpcHelper NpcHelper => throw new NotImplementedException();
+        internal override IItemHelper ItemHelper => new Re3ItemHelper();
+        internal override IEnemyHelper EnemyHelper => new Re3EnemyHelper();
+        internal override INpcHelper NpcHelper => new Re3NpcHelper();
         internal override string BGMPath => "DATA_A/SOUND";
 
         public Re3Randomiser(IBgCreator? bgCreator)
