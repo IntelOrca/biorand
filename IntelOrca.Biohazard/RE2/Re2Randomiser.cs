@@ -83,7 +83,7 @@ namespace IntelOrca.Biohazard.RE2
             return path;
         }
 
-        public override void Generate(RandoConfig config, ReInstallConfig reConfig, IRandoProgress progress, string installPath, string modPath)
+        public override void Generate(RandoConfig config, ReInstallConfig reConfig, IRandoProgress progress, FileRepository fileRepository)
         {
             _reInstallConfig = reConfig;
 
@@ -107,37 +107,35 @@ namespace IntelOrca.Biohazard.RE2
             {
                 // Leon A / Claire B
                 Parallel.Invoke(po,
-                    () => GenerateRdts(config.WithPlayerScenario(0, 0), progress, installPath, modPath),
-                    () => GenerateRdts(config.WithPlayerScenario(1, 1), progress, installPath, modPath));
+                    () => GenerateRdts(config.WithPlayerScenario(0, 0), progress, fileRepository),
+                    () => GenerateRdts(config.WithPlayerScenario(1, 1), progress, fileRepository));
             }
             else
             {
                 // Leon B / Claire A
                 Parallel.Invoke(po,
-                    () => GenerateRdts(config.WithPlayerScenario(0, 1), progress, installPath, modPath),
-                    () => GenerateRdts(config.WithPlayerScenario(1, 0), progress, installPath, modPath));
+                    () => GenerateRdts(config.WithPlayerScenario(0, 1), progress, fileRepository),
+                    () => GenerateRdts(config.WithPlayerScenario(1, 0), progress, fileRepository));
             }
 
             FixClaireWeapons();
 
             // tmoji.bin
             var src = DataManager.GetPath(BiohazardVersion, "tmoji.bin");
-            var dst = Path.Combine(modPath, "common", "data", "tmoji.bin");
+            var dst = fileRepository.GetModPath("common/data/tmoji.bin");
             Directory.CreateDirectory(Path.GetDirectoryName(dst));
             File.Copy(src, dst);
 
-            base.Generate(config, reConfig, progress, installPath, modPath);
+            base.Generate(config, reConfig, progress, fileRepository);
         }
 
-        protected override string[] GetTitleCardSoundFiles(string modPath)
-        {
-            return new[] {
-                Path.Combine(modPath, "Common/Sound/core/core16.sap"),
-                Path.Combine(modPath, "Common/Sound/core/core17.sap")
+        protected override string[] TitleCardSoundFiles { get; } =
+            new[] {
+                "Common/Sound/core/core16.sap",
+                "Common/Sound/core/core17.sap"
             };
-        }
 
-        internal override string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, string originalDataPath, string modPath)
+        internal override string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, FileRepository fileRepository)
         {
             string actor;
             if (config.ChangePlayer)
@@ -147,7 +145,7 @@ namespace IntelOrca.Biohazard.RE2
                     .Skip(pldIndex)
                     .FirstOrDefault();
                 actor = Path.GetFileName(pldPath);
-                SwapPlayerCharacter(config, logger, actor, originalDataPath, modPath);
+                SwapPlayerCharacter(config, logger, actor, fileRepository);
                 if (actor == "sherry")
                 {
                     foreach (var rdt in gameData.Rdts)
@@ -165,11 +163,11 @@ namespace IntelOrca.Biohazard.RE2
             {
                 // We still need to replace Leon / Claire so they can use more weapons
                 actor = config.Player == 0 ? "leon" : "claire";
-                SwapPlayerCharacter(config, logger, actor, originalDataPath, modPath);
+                SwapPlayerCharacter(config, logger, actor, fileRepository);
             }
 
             var emdFiles = DataManager.GetFiles(BiohazardVersion, $"pld{config.Player}/{actor}/emd{config.Player}");
-            var emdFolder = Path.Combine(modPath, $"pl{config.Player}", $"emd{config.Player}");
+            var emdFolder = fileRepository.GetModPath($"pl{config.Player}/emd{config.Player}");
             Directory.CreateDirectory(emdFolder);
             foreach (var src in emdFiles)
             {
@@ -244,7 +242,7 @@ namespace IntelOrca.Biohazard.RE2
             return new[] { "leon", "claire", "ada", "sherry", "annette", "marvin", "irons", "ben", "kendo" };
         }
 
-        private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, string actor, string originalDataPath, string modPath)
+        private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, string actor, FileRepository fileRepository)
         {
             var originalPlayerActor = config.Player == 0 ? "leon" : "claire";
             var srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld{config.Player}\\{actor}");
@@ -255,7 +253,7 @@ namespace IntelOrca.Biohazard.RE2
                 logger.WriteLine($"{originalPlayerActor} becomes {actor}");
             }
 
-            var targetPldDir = Path.Combine(modPath, $"pl{config.Player}", "pld");
+            var targetPldDir = fileRepository.GetModPath($"pl{config.Player}/pld");
             Directory.CreateDirectory(targetPldDir);
             var pldFiles = Directory.GetFiles(srcPldDir);
             foreach (var pldPath in pldFiles)
@@ -275,7 +273,7 @@ namespace IntelOrca.Biohazard.RE2
                     File.Copy(src, dst, true);
                 }
 
-                ChangePlayerInventoryFace(config, actor, originalDataPath, modPath);
+                ChangePlayerInventoryFace(config, actor, fileRepository);
 
                 var allHurtFiles = DataManager.GetHurtFiles(actor)
                     .Where(x => x.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) || x.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
@@ -293,7 +291,7 @@ namespace IntelOrca.Biohazard.RE2
                 }
                 if (hurtFiles.All(x => x != null))
                 {
-                    var corePath = Path.Combine(modPath, "common", "sound", "core", $"core{config.Player:X2}.sap");
+                    var corePath = fileRepository.GetModPath($"common/sound/core/core{config.Player:X2}.sap");
                     Directory.CreateDirectory(Path.GetDirectoryName(corePath));
                     for (int i = 0; i < hurtFiles.Length; i++)
                     {
@@ -305,7 +303,7 @@ namespace IntelOrca.Biohazard.RE2
                             waveformBuilder.SaveAppend(corePath);
                     }
                     {
-                        var coreDeathPath = Path.Combine(modPath, "common", "sound", "core", $"core{32 + config.Player:00}.sap");
+                        var coreDeathPath = fileRepository.GetModPath($"common/sound/core/core{32 + config.Player:00}.sap");
                         var waveformBuilder = new WaveformBuilder();
                         waveformBuilder.Append(hurtFiles[3]);
                         waveformBuilder.Save(coreDeathPath);
@@ -314,7 +312,7 @@ namespace IntelOrca.Biohazard.RE2
             }
         }
 
-        private void ChangePlayerInventoryFace(RandoConfig config, string actor, string installPath, string modPath)
+        private void ChangePlayerInventoryFace(RandoConfig config, string actor, FileRepository fileRepository)
         {
             if (BgCreator == null)
                 return;
@@ -324,8 +322,8 @@ namespace IntelOrca.Biohazard.RE2
                 return;
 
             var filename = Path.Combine("common", "data", $"st{config.Player}_jp.tim");
-            var inputTimPath = Path.Combine(installPath, filename);
-            var outputTimPath = Path.Combine(modPath, filename);
+            var inputTimPath = fileRepository.GetDataPath(filename);
+            var outputTimPath = fileRepository.GetModPath(filename);
             Directory.CreateDirectory(Path.GetDirectoryName(outputTimPath!));
 
             var timCollection = new TimCollectionFile(inputTimPath);
@@ -340,7 +338,7 @@ namespace IntelOrca.Biohazard.RE2
             }
         }
 
-        protected override void SerialiseInventory(string modPath)
+        protected override void SerialiseInventory(FileRepository fileRepository)
         {
             var inventoryAddress = new[]
             {

@@ -5,10 +5,21 @@ using System.Text;
 
 namespace IntelOrca.Biohazard
 {
-    internal class FileRepository : IDisposable
+    public class FileRepository : IDisposable
     {
         private readonly List<RE3Archive> _re3Archives = new List<RE3Archive>();
         private readonly Dictionary<string, Func<Stream>> _re3Paths = new Dictionary<string, Func<Stream>>(StringComparer.OrdinalIgnoreCase);
+        private readonly string _dataPath;
+        private readonly string? _modPath;
+
+        public string DataPath => _dataPath;
+        public string ModPath => _modPath!;
+
+        public FileRepository(string dataPath, string? modPath)
+        {
+            _dataPath = dataPath;
+            _modPath = modPath;
+        }
 
         public void Dispose()
         {
@@ -17,6 +28,16 @@ namespace IntelOrca.Biohazard
                 archive.Dispose();
             }
             _re3Archives.Clear();
+        }
+
+        public string GetDataPath(string path)
+        {
+            return NormalizePath(Path.Combine(_dataPath, path));
+        }
+
+        public string GetModPath(string path)
+        {
+            return NormalizePath(Path.Combine(_modPath, path));
         }
 
         public void AddRE3Archive(string path)
@@ -34,6 +55,24 @@ namespace IntelOrca.Biohazard
             }
         }
 
+        public string[] GetFiles(string path)
+        {
+            var result = new List<string>();
+            path = NormalizePath(path);
+            foreach (var kvp in _re3Paths)
+            {
+                var filePath = kvp.Key;
+                if (filePath.StartsWith(path, StringComparison.OrdinalIgnoreCase))
+                {
+                    if (filePath.IndexOf('\\', path.Length + 1) == -1)
+                    {
+                        result.Add(filePath);
+                    }
+                }
+            }
+            return result.ToArray();
+        }
+
         public Stream GetStream(string path)
         {
             if (File.Exists(path))
@@ -45,6 +84,15 @@ namespace IntelOrca.Biohazard
                 return getStream();
             }
             throw new IOException($"File does not exist: '{normalizedPath}'");
+        }
+
+        public byte[] GetBytes(string path)
+        {
+            using var fs = GetStream(path);
+            var len = (int)fs.Length;
+            var bytes = new byte[len];
+            fs.Read(bytes, 0, len);
+            return bytes;
         }
 
         public void Copy(string src, string dst)
@@ -71,6 +119,8 @@ namespace IntelOrca.Biohazard
                 else
                     sb.Append(ch);
             }
+            if (sb[sb.Length - 1] == '\\')
+                sb.Remove(sb.Length - 1, 1);
             return sb.ToString();
         }
     }
