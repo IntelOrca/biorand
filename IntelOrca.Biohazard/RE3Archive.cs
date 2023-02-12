@@ -1,14 +1,19 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace IntelOrca.Biohazard
 {
     public class RE3Archive : IDisposable
     {
+        private const ulong IdentCompressed = 0x00706D6F435F6948;
+
         private readonly static ushort[] g_baseArray = new ushort[] {
             0x00E6, 0x01A4, 0x00E6, 0x01C5,
             0x0130, 0x00E8, 0x03DB, 0x008B,
@@ -28,6 +33,7 @@ namespace IntelOrca.Biohazard
             0x02D9, 0x0263, 0x0164, 0x0290
         };
 
+        private readonly string _path;
         private readonly FileStream _fs;
         private readonly List<File> _files;
         private readonly object _sync = new object();
@@ -36,6 +42,7 @@ namespace IntelOrca.Biohazard
 
         public RE3Archive(string path)
         {
+            _path = path;
             _fs = new FileStream(path, FileMode.Open, FileAccess.Read);
             var br = new BinaryReader(_fs);
             var a = br.ReadUInt32();
@@ -126,6 +133,7 @@ namespace IntelOrca.Biohazard
 
             for (int i = 0; i < 8; i++)
                 ident[i] ^= ident[7];
+            var compressed = BitConverter.ToUInt64(ident, 0) == IdentCompressed;
 
             var arrayKeys = new uint[numKeys];
             for (int i = 0; i < numKeys; i++)
@@ -137,9 +145,20 @@ namespace IntelOrca.Biohazard
 
             var ms = new MemoryStream();
             var bw = new BinaryWriter(ms);
+            var blockMs = new MemoryStream();
             for (int i = 0; i < numKeys; i++)
             {
-                DecryptBlock(bw, br, arrayKeys[i], arrayLength[i]);
+                if (compressed)
+                {
+                    blockMs.Position = 0;
+                    DecryptBlock(new BinaryWriter(blockMs), br, arrayKeys[i], arrayLength[i]);
+                    blockMs.Position = 0;
+                    DecompressFile(new BinaryReader(blockMs), bw, arrayLength[i]);
+                }
+                else
+                {
+                    DecryptBlock(bw, br, arrayKeys[i], arrayLength[i]);
+                }
             }
             return ms.ToArray();
         }
@@ -171,6 +190,79 @@ namespace IntelOrca.Biohazard
             key *= 0x5d588b65;
             key += 0x8000000b;
             return (byte)(key >> 24);
+        }
+
+        private static void DecompressFile(BinaryReader br, BinaryWriter bw, uint length)
+        {
+            var src = br.ReadBytes((int)length);
+            var dst = ArrayPool<byte>.Shared.Rent(0x10000);
+            try
+            {
+                var tmp4k = new byte[4096 + 256];
+                int dstIndex;
+
+                int srcNumBit, srcIndex, tmpIndex;
+                int i, value, value2, tmpStart, tmpLength;
+
+                for (i = 0; i < 256; i++)
+                {
+                    var tmp = i * 16;
+                    for (int ii = 0; ii < 16; ii++)
+                        tmp4k[tmp++] = (byte)i;
+                }
+                Array.Clear(tmp4k, 4096, 256);
+
+                srcNumBit = 0;
+                srcIndex = 0;
+                tmpIndex = 0;
+                dstIndex = 0;
+                while (srcIndex < length)
+                {
+                    srcNumBit++;
+
+                    value = src[srcIndex++] << srcNumBit;
+                    if (srcIndex < length)
+                        value |= src[srcIndex] >> (8 - srcNumBit);
+
+                    if (srcNumBit == 8)
+                    {
+                        srcIndex++;
+                        srcNumBit = 0;
+                    }
+
+                    if ((value & (1 << 8)) == 0)
+                    {
+                        dst[dstIndex++] = tmp4k[tmpIndex++] = (byte)value;
+                    }
+                    else
+                    {
+                        value2 = (src[srcIndex++] << srcNumBit) & 0xff;
+                        if (srcIndex < length)
+                            value2 |= src[srcIndex] >> (8 - srcNumBit);
+
+                        tmpLength = (value2 & 0x0f) + 2;
+
+                        tmpStart = (value2 >> 4) & 0xfff;
+                        tmpStart |= (value & 0xff) << 4;
+
+                        Array.Copy(tmp4k, tmpStart, dst, dstIndex, tmpLength);
+                        Array.Copy(dst, dstIndex, tmp4k, tmpIndex, tmpLength);
+
+                        dstIndex += tmpLength;
+                        tmpIndex += tmpLength;
+                    }
+
+                    if (tmpIndex >= 4096)
+                    {
+                        tmpIndex = 0;
+                    }
+                }
+                bw.Write(dst, 0, dstIndex - 1);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(dst);
+            }
         }
 
         public void Extract(string destination)
