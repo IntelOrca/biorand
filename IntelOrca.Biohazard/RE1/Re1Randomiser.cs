@@ -91,7 +91,7 @@ namespace IntelOrca.Biohazard.RE1
             return path;
         }
 
-        public override void Generate(RandoConfig config, ReInstallConfig reConfig, IRandoProgress progress, string installPath, string modPath)
+        public override void Generate(RandoConfig config, ReInstallConfig reConfig, IRandoProgress progress, FileRepository fileRepository)
         {
             if (config.RandomBgm && MusicAlbumSelected("RE2"))
             {
@@ -111,26 +111,24 @@ namespace IntelOrca.Biohazard.RE1
 #endif
             // Chris / Jill
             Parallel.Invoke(po,
-                () => GenerateRdts(config.WithPlayerScenario(0, 0), progress, installPath, modPath),
-                () => GenerateRdts(config.WithPlayerScenario(1, 0), progress, installPath, modPath));
+                () => GenerateRdts(config.WithPlayerScenario(0, 0), progress, fileRepository),
+                () => GenerateRdts(config.WithPlayerScenario(1, 0), progress, fileRepository));
 
             if (config.ChangePlayer)
             {
-                ChangePlayerInventoryFace(config, installPath, modPath);
+                ChangePlayerInventoryFace(config, fileRepository);
             }
 
-            base.Generate(config, reConfig, progress, installPath, modPath);
+            base.Generate(config, reConfig, progress, fileRepository);
         }
 
-        protected override string[] GetTitleCardSoundFiles(string modPath)
-        {
-            return new[] {
-                Path.Combine(modPath, "sound/BIO01.WAV"),
-                Path.Combine(modPath, "sound/EVIL01.WAV")
+        protected override string[] TitleCardSoundFiles { get; } =
+            new[] {
+                "sound/BIO01.WAV",
+                "sound/EVIL01.WAV"
             };
-        }
 
-        internal override string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, string originalDataPath, string modPath)
+        internal override string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, FileRepository fileRepository)
         {
             string? actor = null;
             if (config.ChangePlayer)
@@ -140,18 +138,18 @@ namespace IntelOrca.Biohazard.RE1
                     .Skip(pldIndex)
                     .FirstOrDefault();
                 actor = Path.GetFileName(pldPath);
-                SwapPlayerCharacter(config, logger, actor, modPath);
+                SwapPlayerCharacter(config, logger, actor, fileRepository);
             }
             return actor;
         }
 
-        private void ChangePlayerInventoryFace(RandoConfig config, string installPath, string modPath)
+        private void ChangePlayerInventoryFace(RandoConfig config, FileRepository fileRepository)
         {
             if (BgCreator == null)
                 return;
 
-            var inputTimPath = Path.Combine(installPath, "data", "statface.tim");
-            var outputTimPath = Path.Combine(modPath, "data", "statface.tim");
+            var inputTimPath = fileRepository.GetDataPath("data/statface.tim");
+            var outputTimPath = fileRepository.GetModPath("data/statface.tim");
             Directory.CreateDirectory(Path.GetDirectoryName(outputTimPath!));
 
             var timFile = new TimFile(inputTimPath);
@@ -183,7 +181,7 @@ namespace IntelOrca.Biohazard.RE1
             return result.ToArray();
         }
 
-        private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, string actor, string modPath)
+        private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, string actor, FileRepository fileRepository)
         {
             var originalPlayerActor = config.Player == 0 ? "chris" : "jill";
             var srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld{config.Player}\\{actor}");
@@ -195,8 +193,8 @@ namespace IntelOrca.Biohazard.RE1
                 logger.WriteLine($"{originalPlayerActor} becomes {actor}");
             }
 
-            var targetEnemyDir = Path.Combine(modPath, $"enemy");
-            var targetPlayersDir = Path.Combine(modPath, $"players");
+            var targetEnemyDir = fileRepository.GetModPath("enemy");
+            var targetPlayersDir = fileRepository.GetModPath("players");
             Directory.CreateDirectory(targetEnemyDir);
             Directory.CreateDirectory(targetPlayersDir);
             var pldFiles = Directory.GetFiles(srcPldDir);
@@ -228,7 +226,7 @@ namespace IntelOrca.Biohazard.RE1
                 }
                 if (hurtFiles.All(x => x != null))
                 {
-                    var soundDir = Path.Combine(modPath, "sound");
+                    var soundDir = fileRepository.GetModPath("sound");
                     Directory.CreateDirectory(soundDir);
                     for (int i = 0; i < hurtFiles.Length; i++)
                     {
@@ -269,7 +267,7 @@ namespace IntelOrca.Biohazard.RE1
             bgmRandomizer.AddToSelection(GetBgmJson(), srcBgmDirectory, ".wav");
         }
 
-        protected override void SerialiseInventory(string modPath)
+        protected override void SerialiseInventory(FileRepository fileRepository)
         {
             var doc = new XmlDocument();
             var root = doc.CreateElement("Init");
@@ -289,7 +287,7 @@ namespace IntelOrca.Biohazard.RE1
                 root.AppendChild(playerNode);
             }
             doc.AppendChild(root);
-            doc.Save(Path.Combine(modPath, "init.xml"));
+            doc.Save(fileRepository.GetModPath("init.xml"));
         }
 
         internal override string BGMPath => "sound";

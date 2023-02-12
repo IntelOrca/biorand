@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -30,10 +29,20 @@ namespace IntelOrca.Biohazard
         {
         }
 
-        private RdtFile(BioVersion? version, string path)
+        public RdtFile(byte[] data, BioVersion version)
+            : this(version, data)
         {
-            Data = File.ReadAllBytes(path);
-            Version = version ?? DetectVersion(Data);
+        }
+
+        private RdtFile(BioVersion? version, string path)
+            : this(version, File.ReadAllBytes(path))
+        {
+        }
+
+        private RdtFile(BioVersion? version, byte[] data)
+        {
+            Data = data;
+            Version = version ?? DetectVersion(data);
             _offsets = ReadHeader();
             _lengths = GetChunkLengths();
             GetNumEventScripts();

@@ -131,16 +131,18 @@ namespace IntelOrca.Biohazard
             return result;
         }
 
-        private GameData ReadGameData(string dataPath, string modDataPath, int player, RdtId[] rdtIds)
+        private GameData ReadGameData(FileRepository fileRepository, int player, RdtId[] rdtIds, bool mod)
         {
             var rdts = new List<Rdt>();
             foreach (var rdtId in rdtIds)
             {
-                var rdtPath = GetRdtPath(dataPath, rdtId, player);
-                var modRdtPath = GetRdtPath(modDataPath, rdtId, player);
+                var rdtPath = GetRdtPath(fileRepository.DataPath, rdtId, player);
+                var modRdtPath = GetRdtPath(fileRepository.ModPath, rdtId, player);
                 try
                 {
-                    var rdt = GameDataReader.ReadRdt(BiohazardVersion, rdtPath, modRdtPath);
+                    var srcPath = mod ? modRdtPath : rdtPath;
+                    var rdtBytes = fileRepository.GetBytes(srcPath);
+                    var rdt = GameDataReader.ReadRdt(BiohazardVersion, rdtBytes, srcPath, modRdtPath);
                     rdts.Add(rdt);
                 }
                 catch
@@ -164,6 +166,7 @@ namespace IntelOrca.Biohazard
             var installPath = reConfig.GetInstallPath(BiohazardVersion);
             var originalDataPath = GetDataPath(installPath);
             var modPath = Path.Combine(installPath, @"mod_biorand");
+            var fileRepo = new FileRepository(originalDataPath, modPath);
 
             using (progress.BeginTask(null, $"Clearing '{modPath}'"))
             {
@@ -181,7 +184,7 @@ namespace IntelOrca.Biohazard
             }
 
             using (progress.BeginTask(config.Player, $"Generating seed"))
-                Generate(config, reConfig, progress, originalDataPath, modPath);
+                Generate(config, reConfig, progress, fileRepo);
 
             using (progress.BeginTask(null, $"Writing manifest"))
             {
@@ -190,22 +193,21 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        public virtual void Generate(RandoConfig config, ReInstallConfig reConfig, IRandoProgress progress, string installPath, string modPath)
+        public virtual void Generate(RandoConfig config, ReInstallConfig reConfig, IRandoProgress progress, FileRepository fileRepository)
         {
             if (config.RandomItems && config.RandomInventory)
             {
-                SerialiseInventory(modPath);
+                SerialiseInventory(fileRepository);
             }
 
             if (config.RandomBgm)
             {
-                using var logger = new RandoLogger(progress, Path.Combine(modPath, $"log_bgm.txt"));
+                using var logger = new RandoLogger(progress, fileRepository.GetModPath("log_bgm.txt"));
                 logger.WriteHeading(Program.CurrentVersionInfo);
                 logger.WriteLine($"Seed: {config}");
 
-                var fileRepo = new FileRepository();
-                var bgmDirectory = Path.Combine(modPath, BGMPath);
-                var bgmRandomizer = new BgmRandomiser(logger, config, fileRepo, bgmDirectory, GetBgmJson(), BiohazardVersion != BioVersion.Biohazard2, new Rng(config.Seed), DataManager);
+                var bgmDirectory = fileRepository.GetModPath(BGMPath);
+                var bgmRandomizer = new BgmRandomiser(logger, config, fileRepository, bgmDirectory, GetBgmJson(), BiohazardVersion != BioVersion.Biohazard2, new Rng(config.Seed), DataManager);
                 var enabledBgms = GetSelectedAlbums(config);
                 if (enabledBgms.Contains("RE1", StringComparer.OrdinalIgnoreCase))
                 {
@@ -220,7 +222,7 @@ namespace IntelOrca.Biohazard
                 if (enabledBgms.Contains("RE3", StringComparer.OrdinalIgnoreCase))
                 {
                     var r = new Re3Randomiser(BgCreator);
-                    r.AddArchives(reConfig, fileRepo);
+                    r.AddArchives(reConfig.GetInstallPath(BiohazardVersion), fileRepository);
                     r.AddMusicSelection(bgmRandomizer, reConfig);
                 }
                 bgmRandomizer.AddCutomMusicToSelection(enabledBgms);
@@ -237,14 +239,14 @@ namespace IntelOrca.Biohazard
             }
 
             using (progress.BeginTask(null, $"Creating backgrounds"))
-                CreateBackgrounds(config, modPath);
+                CreateBackgrounds(config, fileRepository);
             using (progress.BeginTask(null, $"Copying title card sounds"))
-                CreateTitleCardSounds(config, modPath);
+                CreateTitleCardSounds(config, fileRepository);
             using (progress.BeginTask(null, $"Copying biorand.dll"))
-                CreateDataModule(modPath);
+                CreateDataModule(fileRepository);
         }
 
-        public void GenerateRdts(RandoConfig config, IRandoProgress progress, string originalDataPath, string modPath)
+        public void GenerateRdts(RandoConfig config, IRandoProgress progress, FileRepository fileRepository)
         {
             var baseSeed = config.Seed + config.Player;
             var randomDoors = new Rng(baseSeed + 1);
@@ -256,7 +258,7 @@ namespace IntelOrca.Biohazard
             if (BiohazardVersion == BioVersion.Biohazard1)
                 randomEnemies = new Rng(config.Seed + 3);
 
-            using var logger = new RandoLogger(progress, Path.Combine(modPath, $"log_pl{config.Player}.txt"));
+            using var logger = new RandoLogger(progress, fileRepository.GetModPath($"log_pl{config.Player}.txt"));
             logger.WriteHeading(Program.CurrentVersionInfo);
             logger.WriteLine($"Seed: {config}");
             logger.WriteLine($"Player: {config.Player} {GetPlayerName(config.Player)}");
@@ -264,13 +266,13 @@ namespace IntelOrca.Biohazard
 
             try
             {
-                var rdtIds = GetRdtIds(originalDataPath);
-                var gameData = ReadGameData(originalDataPath, modPath, config.Player, rdtIds);
+                var rdtIds = GetRdtIds(fileRepository.DataPath);
+                var gameData = ReadGameData(fileRepository, config.Player, rdtIds, mod: false);
 
 #if DEBUG
                 using (progress.BeginTask(config.Player, "Dumping original RDT disassemblies"))
                 {
-                    DumpScripts(config, gameData, Path.Combine(modPath, $"scripts_pl{config.Player}"));
+                    DumpScripts(config, gameData, fileRepository.GetModPath($"scripts_pl{config.Player}"));
                 }
 #endif
 
@@ -278,7 +280,7 @@ namespace IntelOrca.Biohazard
                 var graph = null as PlayGraph;
                 if (config.RandomDoors || config.RandomItems)
                 {
-                    var dgmlPath = Path.Combine(modPath, $"graph_pl{config.Player}.dgml");
+                    var dgmlPath = fileRepository.GetModPath($"graph_pl{config.Player}.dgml");
                     var doorRando = new DoorRandomiser(logger, config, gameData, map, randomDoors, ItemHelper);
                     var itemRando = new ItemRandomiser(logger, config, gameData, randomItems, ItemHelper);
                     using (progress.BeginTask(config.Player, "Randomizing doors"))
@@ -308,19 +310,19 @@ namespace IntelOrca.Biohazard
                 {
                     using (progress.BeginTask(config.Player, "Randomizing enemies"))
                     {
-                        var enemyRandomiser = new EnemyRandomiser(BiohazardVersion, logger, config, gameData, map, randomEnemies, EnemyHelper, modPath, DataManager);
+                        var enemyRandomiser = new EnemyRandomiser(BiohazardVersion, logger, config, gameData, map, randomEnemies, EnemyHelper, fileRepository.ModPath, DataManager);
                         enemyRandomiser.Randomise(graph);
                     }
                 }
 
                 string? playerActor;
                 using (progress.BeginTask(config.Player, $"Changing player character"))
-                    playerActor = ChangePlayerCharacters(config, logger, gameData, originalDataPath, modPath);
+                    playerActor = ChangePlayerCharacters(config, logger, gameData, fileRepository);
                 if (config.RandomNPCs)
                 {
                     using (progress.BeginTask(config.Player, "Randomizing NPCs"))
                     {
-                        var npcRandomiser = new NPCRandomiser(BiohazardVersion, logger, config, originalDataPath, modPath, gameData, map, randomNpcs, NpcHelper, DataManager, playerActor);
+                        var npcRandomiser = new NPCRandomiser(BiohazardVersion, logger, config, fileRepository.DataPath, fileRepository.ModPath, gameData, map, randomNpcs, NpcHelper, DataManager, playerActor);
                         npcRandomiser.SelectedActors.AddRange(GetSelectedActors(config));
                         RandomizeNPCs(config, npcRandomiser);
                         npcRandomiser.Randomise();
@@ -338,8 +340,8 @@ namespace IntelOrca.Biohazard
 #if DEBUG
                 using (progress.BeginTask(config.Player, "Dumping modified RDT disassemblies"))
                 {
-                    var moddedGameData = ReadGameData(modPath, modPath, config.Player, rdtIds);
-                    DumpScripts(config, moddedGameData, Path.Combine(modPath, $"scripts_modded_pl{config.Player}"));
+                    var moddedGameData = ReadGameData(fileRepository, config.Player, rdtIds, mod: true);
+                    DumpScripts(config, moddedGameData, fileRepository.GetModPath($"scripts_modded_pl{config.Player}"));
                 }
 #endif
             }
@@ -350,12 +352,9 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        protected virtual string[] GetTitleCardSoundFiles(string modPath)
-        {
-            return new string[0];
-        }
+        protected virtual string[] TitleCardSoundFiles { get; } = new string[0];
 
-        internal virtual string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, string originalDataPath, string modPath)
+        internal virtual string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, FileRepository fileRepository)
         {
             return null;
         }
@@ -449,7 +448,7 @@ namespace IntelOrca.Biohazard
             // }
         }
 
-        protected virtual void SerialiseInventory(string modPath)
+        protected virtual void SerialiseInventory(FileRepository fileRepository)
         {
         }
 
@@ -555,20 +554,20 @@ namespace IntelOrca.Biohazard
             return EnemyHelper.GetSelectableEnemies();
         }
 
-        private void CreateBackgrounds(RandoConfig config, string modPath)
+        private void CreateBackgrounds(RandoConfig config, FileRepository fileRepository)
         {
             try
             {
                 var src = DataManager.GetData(BiohazardVersion, "bg.png");
                 if (BiohazardVersion == BioVersion.Biohazard1)
                 {
-                    CreateBackgroundRaw(config, src, Path.Combine(modPath, @"data\title.pix"));
-                    CreateBackgroundPng(config, src, Path.Combine(modPath, @"type.png"));
+                    CreateBackgroundRaw(config, src, fileRepository.GetModPath("data/title.pix"));
+                    CreateBackgroundPng(config, src, fileRepository.GetModPath("type.png"));
                 }
                 else
                 {
-                    CreateBackgroundPng(config, src, Path.Combine(modPath, @"common\data\title_bg.png"));
-                    CreateBackgroundPng(config, src, Path.Combine(modPath, @"common\data\type00.png"));
+                    CreateBackgroundPng(config, src, fileRepository.GetModPath("common/data/title_bg.png"));
+                    CreateBackgroundPng(config, src, fileRepository.GetModPath("common/data/type00.png"));
                 }
             }
             catch
@@ -607,10 +606,10 @@ namespace IntelOrca.Biohazard
             File.WriteAllBytes(outputFilename, titleBg);
         }
 
-        private void CreateTitleCardSounds(RandoConfig config, string modPath)
+        private void CreateTitleCardSounds(RandoConfig config, FileRepository fileRepository)
         {
             // Title sound
-            var targetTitleCardSounds = GetTitleCardSoundFiles(modPath);
+            var targetTitleCardSounds = TitleCardSoundFiles;
             if (targetTitleCardSounds.Length != 0)
             {
                 var titleSounds = DataManager
@@ -625,7 +624,7 @@ namespace IntelOrca.Biohazard
                     var builder = new WaveformBuilder();
                     builder.Append(titleSound);
 
-                    var coreDirectory = Path.Combine(modPath, "Common/Sound/core");
+                    var coreDirectory = fileRepository.GetModPath("Common/Sound/core");
                     foreach (var dst in targetTitleCardSounds)
                     {
                         Directory.CreateDirectory(Path.GetDirectoryName(dst));
@@ -635,13 +634,16 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private void CreateDataModule(string modPath)
+        private void CreateDataModule(FileRepository fileRepository)
         {
-            File.WriteAllBytes(Path.Combine(modPath, "biorand.dat"), ExePatch.ToArray());
+            var datPath = fileRepository.GetModPath("biorand.dat");
+            File.WriteAllBytes(datPath, ExePatch.ToArray());
             var biorandModuleFilename = "biorand.dll";
             try
             {
-                File.Copy(DataManager.GetPath(biorandModuleFilename), Path.Combine(modPath, biorandModuleFilename), true);
+                var src = DataManager.GetPath(biorandModuleFilename);
+                var dst = fileRepository.GetModPath(biorandModuleFilename);
+                File.Copy(src, dst, true);
             }
             catch
             {
