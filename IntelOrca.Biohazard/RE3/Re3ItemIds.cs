@@ -7,7 +7,7 @@
         public const byte HandgunBeretta = 0x03;
         public const byte ShotgunBenelli = 0x04;
         public const byte MagnumSW = 0x05;
-        public const byte GrenadeLauncherBurst = 0x06;
+        public const byte GrenadeLauncherGrenade = 0x06;
         public const byte GrenadeLauncherFlame = 0x07;
         public const byte GrenadeLauncherAcid = 0x08;
         public const byte GrenadeLauncherFreeze = 0x09;

@@ -161,6 +161,11 @@ namespace IntelOrca.Biohazard.Script
             return false;
         }
 
+        public string? GetNamedFlag(int obj, int index)
+        {
+            return null;
+        }
+
         private string[] g_enemyNames = new string[]
         {
             "Zombie (Groundskeeper)",

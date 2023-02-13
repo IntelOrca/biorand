@@ -697,7 +697,6 @@ namespace IntelOrca.Biohazard.Script
                         var bitArray = br.ReadByte();
                         var number = br.ReadByte();
                         var value = br.ReadByte();
-                        var bitString = GetBitsString(bitArray, number);
                         if (_constructingBinaryExpression)
                         {
                             if (_expressionCount != 0)
@@ -709,7 +708,7 @@ namespace IntelOrca.Biohazard.Script
                         }
                         break;
                     }
-                case OpcodeV3.Set:
+                case OpcodeV3.Set3:
                     {
                         var bitArray = br.ReadByte();
                         var number = br.ReadByte();
@@ -912,22 +911,11 @@ namespace IntelOrca.Biohazard.Script
             return $"${obj}[{bitArray}][{number}]";
         }
 
-        private static string GetBitsString(int bitArray, int number)
+        private string GetBitsString(int bitArray, int number)
         {
-            if (bitArray == 0 && number == 0x19)
-                return "game.difficult";
-
-            if (bitArray == 1 && number == 0)
-                return "game.player";
-            if (bitArray == 1 && number == 1)
-                return "game.scenario";
-            if (bitArray == 1 && number == 6)
-                return "game.bonus";
-            if (bitArray == 1 && number == 0x1B)
-                return "game.cutscene";
-            if (bitArray == 0xB && number == 0x1F)
-                return "input.question";
-
+            var name = _constantTable.GetNamedFlag(bitArray, number);
+            if (name != null)
+                return name;
             return $"bits[{bitArray}][{number}]";
         }
     }

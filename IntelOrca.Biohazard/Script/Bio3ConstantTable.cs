@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections;
+using System.IO;
 using System.Text;
 
 namespace IntelOrca.Biohazard.Script
@@ -248,14 +249,37 @@ namespace IntelOrca.Biohazard.Script
 
         public bool IsOpcodeCondition(byte opcode)
         {
-            switch ((OpcodeV2)opcode)
+            switch ((OpcodeV3)opcode)
             {
-                case OpcodeV2.Ck:
-                case OpcodeV2.Cmp:
-                case OpcodeV2.MemberCmp:
+                case OpcodeV3.Ck:
+                case OpcodeV3.Cmp:
+                case OpcodeV3.KeepItemCk:
+                case OpcodeV3.KeyCk:
+                case OpcodeV3.TrgCk:
                     return true;
             }
             return false;
+        }
+
+        public string? GetNamedFlag(int obj, int index)
+        {
+            if (obj == 0 && index == 23)
+                return "game.easy";
+
+            // Carried over from RE 2 (may be incorrect)
+            if (obj == 0 && index == 0x19)
+                return "game.difficult";
+            if (obj == 1 && index == 0)
+                return "game.player";
+            if (obj == 1 && index == 1)
+                return "game.scenario";
+            if (obj == 1 && index == 6)
+                return "game.bonus";
+            if (obj == 1 && index == 0x1B)
+                return "game.cutscene";
+            if (obj == 0xB && index == 0x1F)
+                return "input.question";
+            return null;
         }
 
         private string[] g_itemNames = new string[]
@@ -491,9 +515,9 @@ namespace IntelOrca.Biohazard.Script
             "add_spd",
             "add_aspd",
             "add_vspd",
-            "eval_ck",
-            "set",
-            "eval_cmp",
+            "ck:uuu",
+            "set:uuu",
+            "cmp:uucI",
             "rnd",
 
             "cut_chg",

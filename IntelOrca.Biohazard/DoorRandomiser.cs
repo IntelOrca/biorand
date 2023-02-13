@@ -283,17 +283,24 @@ namespace IntelOrca.Biohazard
 
                 var rdtDoors = rdt.Doors.ToArray();
                 var linkedRdtDoors = linkedRdt.Doors.ToArray();
-                for (int i = 0; i < rdtDoors.Length; i++)
+                for (int i = 0; i < linkedRdtDoors.Length; i++)
                 {
-                    var src = rdtDoors[i];
                     var dst = linkedRdtDoors[i];
-                    dst.Target = src.Target;
-                    dst.NextX = src.NextX;
-                    dst.NextY = src.NextY;
-                    dst.NextZ = src.NextZ;
-                    dst.NextD = src.NextD;
-                    dst.LockId = src.LockId;
-                    dst.LockType = src.LockType;
+                    var src = rdtDoors.FirstOrDefault(x => x.Id == dst.Id);
+                    if (src != null)
+                    {
+                        dst.Target = src.Target;
+                        dst.NextX = src.NextX;
+                        dst.NextY = src.NextY;
+                        dst.NextZ = src.NextZ;
+                        dst.NextD = src.NextD;
+                        dst.LockId = src.LockId;
+                        dst.LockType = src.LockType;
+                    }
+                    else
+                    {
+                        _logger.WriteLine($"Unable to synchronise door {dst.Id} from {node.RdtId} to {node.LinkedRdtId}");
+                    }
                 }
                 _logger.WriteLine($"Synchronising doors from {node.RdtId} to {node.LinkedRdtId}");
             }

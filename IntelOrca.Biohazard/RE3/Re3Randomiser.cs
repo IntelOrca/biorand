@@ -49,7 +49,9 @@ namespace IntelOrca.Biohazard.RE3
 
         protected override RdtId[] GetRdtIds(string dataPath)
         {
-            return new[] { new RdtId(0, 0), new RdtId(0, 1) };
+            return Enumerable.Range(0, 0x26)
+                .Select(x => new RdtId(0, x))
+                .ToArray();
             // var repo = CreateRepository(dataPath);
             // var files = repo.GetFiles(Path.Combine(dataPath, "DATA_J", "RDT"));
             // var rdts = files

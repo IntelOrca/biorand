@@ -25,15 +25,15 @@ namespace IntelOrca.Biohazard.RE3
                     return new byte[] { Re3ItemIds.ShotgunAmmo, Re3ItemIds.ShotgunEnhancedAmmo };
                 case Re3ItemIds.MagnumSW:
                     return new byte[] { Re3ItemIds.MagnumAmmo };
-                case Re3ItemIds.GrenadeLauncherBurst:
+                case Re3ItemIds.GrenadeLauncherGrenade:
                 case Re3ItemIds.GrenadeLauncherFlame:
                 case Re3ItemIds.GrenadeLauncherAcid:
                 case Re3ItemIds.GrenadeLauncherFreeze:
                     return new[] {
                         Re3ItemIds.AcidRounds,
-                        Re3ItemIds.GrenadeRounds,
                         Re3ItemIds.FlameRounds,
-                        Re3ItemIds.FreezeRounds
+                        Re3ItemIds.FreezeRounds,
+                        Re3ItemIds.GrenadeRounds
                     };
                 case Re3ItemIds.MineThrower:
                 case Re3ItemIds.MineThrowerEnhanced:
@@ -117,9 +117,9 @@ namespace IntelOrca.Biohazard.RE3
                 case Re3ItemIds.ShotgunEnhancedAmmo:
                     return 0.2;
                 case Re3ItemIds.AcidRounds:
-                case Re3ItemIds.GrenadeRounds:
                 case Re3ItemIds.FlameRounds:
                 case Re3ItemIds.FreezeRounds:
+                case Re3ItemIds.GrenadeRounds:
                 case Re3ItemIds.MineThrowerAmmo:
                 case Re3ItemIds.MagnumAmmo:
                     return 0.1;
@@ -140,7 +140,51 @@ namespace IntelOrca.Biohazard.RE3
 
         public byte GetMaxAmmoForAmmoType(byte type)
         {
-            return 0;
+            switch (type)
+            {
+                default:
+                    return 1;
+
+                case Re3ItemIds.InkRibbon:
+                    return 3;
+
+                case Re3ItemIds.HandgunSigpro:
+                case Re3ItemIds.HandgunSigproEnhanced:
+                case Re3ItemIds.HandgunBeretta:
+                case Re3ItemIds.HandgunBerettaEnhanced:
+                case Re3ItemIds.ShotgunBenelli:
+                case Re3ItemIds.ShotgunBenelliEnhanced:
+                case Re3ItemIds.MagnumSW:
+                case Re3ItemIds.GrenadeLauncherAcid:
+                case Re3ItemIds.GrenadeLauncherFlame:
+                case Re3ItemIds.GrenadeLauncherFreeze:
+                case Re3ItemIds.GrenadeLauncherGrenade:
+                case Re3ItemIds.RocketLauncher:
+                case Re3ItemIds.GatlingGun:
+                case Re3ItemIds.MineThrower:
+                case Re3ItemIds.MineThrowerEnhanced:
+                case Re3ItemIds.HangunEagle:
+                case Re3ItemIds.RifleM4A1Manual:
+                case Re3ItemIds.RifleM4A1Auto:
+                case Re3ItemIds.ShotgunM37:
+                    return 1;
+
+                case Re3ItemIds.HandgunAmmo:
+                    return 60;
+                case Re3ItemIds.ShotgunAmmo:
+                case Re3ItemIds.HandgunEnhancedAmmo:
+                case Re3ItemIds.ShotgunEnhancedAmmo:
+                    return 30;
+                case Re3ItemIds.AcidRounds:
+                case Re3ItemIds.FlameRounds:
+                case Re3ItemIds.FreezeRounds:
+                case Re3ItemIds.GrenadeRounds:
+                case Re3ItemIds.MineThrowerAmmo:
+                case Re3ItemIds.MagnumAmmo:
+                    return 10;
+                case Re3ItemIds.RifleAmmo:
+                    return 100;
+            }
         }
 
         public WeaponKind GetWeaponKind(byte item)
@@ -148,7 +192,25 @@ namespace IntelOrca.Biohazard.RE3
             switch (item)
             {
                 case Re3ItemIds.HandgunSigpro:
+                case Re3ItemIds.HandgunSigproEnhanced:
+                case Re3ItemIds.HandgunBeretta:
+                case Re3ItemIds.HandgunBerettaEnhanced:
+                case Re3ItemIds.HangunEagle:
                     return WeaponKind.Sidearm;
+                case Re3ItemIds.ShotgunBenelli:
+                case Re3ItemIds.ShotgunBenelliEnhanced:
+                case Re3ItemIds.ShotgunM37:
+                case Re3ItemIds.RifleM4A1Manual:
+                case Re3ItemIds.RifleM4A1Auto:
+                    return WeaponKind.Primary;
+                case Re3ItemIds.MagnumSW:
+                case Re3ItemIds.GrenadeLauncherAcid:
+                case Re3ItemIds.GrenadeLauncherFlame:
+                case Re3ItemIds.GrenadeLauncherFreeze:
+                case Re3ItemIds.GrenadeLauncherGrenade:
+                case Re3ItemIds.MineThrower:
+                case Re3ItemIds.MineThrowerEnhanced:
+                    return WeaponKind.Powerful;
                 default:
                     return WeaponKind.None;
             }
@@ -162,10 +224,10 @@ namespace IntelOrca.Biohazard.RE3
                 rng.NextOf(Re3ItemIds.ShotgunBenelli, Re3ItemIds.ShotgunBenelliEnhanced),
                 Re3ItemIds.MagnumSW,
                 rng.NextOf(
-                    Re3ItemIds.GrenadeLauncherBurst,
-                    Re3ItemIds.GrenadeLauncherFlame,
                     Re3ItemIds.GrenadeLauncherAcid,
-                    Re3ItemIds.GrenadeLauncherFreeze),
+                    Re3ItemIds.GrenadeLauncherFlame,
+                    Re3ItemIds.GrenadeLauncherFreeze,
+                    Re3ItemIds.GrenadeLauncherGrenade),
                 Re3ItemIds.RocketLauncher,
                 Re3ItemIds.GatlingGun,
                 rng.NextOf(Re3ItemIds.MineThrower, Re3ItemIds.MineThrowerEnhanced),
@@ -187,7 +249,7 @@ namespace IntelOrca.Biohazard.RE3
 
         public bool IsItemDocument(byte type)
         {
-            return false;
+            return type > Re3ItemIds.GameInstructionsA2;
         }
 
         public bool IsItemInfinite(byte type)
