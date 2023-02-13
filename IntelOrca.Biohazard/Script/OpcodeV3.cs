@@ -25,6 +25,7 @@
         Set2 = 0x1F,
         Calc = 0x20,
         Ck = 0x4C,
+        Set3 = 0x4D,
         Cmp = 0x4E,
         AotSet = 0x63,
         DoorAotSe = 0x61,
@@ -33,5 +34,8 @@
         ItemAotSet = 0x67,
         DoorAotSet4p = 0x62,
         ItemAotSet4p = 0x68,
+        KeepItemCk = 0x6B,
+        KeyCk = 0x6C,
+        TrgCk = 0x6D,
     }
 }

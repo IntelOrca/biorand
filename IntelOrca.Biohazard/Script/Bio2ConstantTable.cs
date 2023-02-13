@@ -252,6 +252,23 @@ namespace IntelOrca.Biohazard.Script
             return false;
         }
 
+        public string? GetNamedFlag(int obj, int index)
+        {
+            if (obj == 0 && index == 0x19)
+                return "game.difficult";
+            if (obj == 1 && index == 0)
+                return "game.player";
+            if (obj == 1 && index == 1)
+                return "game.scenario";
+            if (obj == 1 && index == 6)
+                return "game.bonus";
+            if (obj == 1 && index == 0x1B)
+                return "game.cutscene";
+            if (obj == 0xB && index == 0x1F)
+                return "input.question";
+            return null;
+        }
+
         private static int[] g_instructionSizes = new int[]
         {
             1, 2, 1, 4, 4, 2, 4, 4, 1, 4, 3, 1, 1, 6, 2, 4,
