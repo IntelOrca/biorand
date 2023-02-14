@@ -160,6 +160,7 @@ namespace IntelOrca.Biohazard
                     DecryptBlock(bw, br, arrayKeys[i], arrayLength[i]);
                 }
             }
+            ms.SetLength(length);
             return ms.ToArray();
         }
 
@@ -194,6 +195,8 @@ namespace IntelOrca.Biohazard
 
         private static void DecompressFile(BinaryReader br, BinaryWriter bw, uint length)
         {
+            int dstLength = 32768;
+
             var src = br.ReadBytes((int)length);
             var dst = ArrayPool<byte>.Shared.Rent(0x10000);
             try
@@ -216,7 +219,7 @@ namespace IntelOrca.Biohazard
                 srcIndex = 0;
                 tmpIndex = 0;
                 dstIndex = 0;
-                while (srcIndex < length)
+                while (srcIndex < length && dstIndex < dstLength)
                 {
                     srcNumBit++;
 
@@ -245,6 +248,11 @@ namespace IntelOrca.Biohazard
                         tmpStart = (value2 >> 4) & 0xfff;
                         tmpStart |= (value & 0xff) << 4;
 
+                        if (dstIndex + tmpLength > dstLength)
+                        {
+                            tmpLength = dstLength - dstIndex;
+                        }
+
                         Array.Copy(tmp4k, tmpStart, dst, dstIndex, tmpLength);
                         Array.Copy(dst, dstIndex, tmp4k, tmpIndex, tmpLength);
 
@@ -257,7 +265,7 @@ namespace IntelOrca.Biohazard
                         tmpIndex = 0;
                     }
                 }
-                bw.Write(dst, 0, dstIndex - 1);
+                bw.Write(dst, 0, dstIndex);
             }
             finally
             {
