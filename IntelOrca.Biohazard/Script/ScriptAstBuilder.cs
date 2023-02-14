@@ -34,56 +34,84 @@ namespace IntelOrca.Biohazard.Script
             CheckEndIfElseStatement(opcode.Offset);
 
             var opcodeNode = new OpcodeAstNode(opcode);
-            if (Version == BioVersion.Biohazard1)
+            switch (Version)
             {
-                switch ((OpcodeV1)opcode.Opcode)
-                {
-                    case OpcodeV1.IfelCk:
-                        VisitIfOpcode(opcodeNode);
-                        break;
-                    case OpcodeV1.Ck:
-                    case OpcodeV1.Cmp6:
-                    case OpcodeV1.Cmp7:
-                    case OpcodeV1.TestItem:
-                    case OpcodeV1.TestPickup:
-                        VisitConditionOpcode(opcodeNode);
-                        break;
-                    case OpcodeV1.ElseCk:
-                        VisitElseOpcode(opcodeNode);
-                        break;
-                    case OpcodeV1.EndIf:
-                        VisitEndIfOpcode(opcodeNode);
-                        break;
-                    default:
-                        AddStatement(opcodeNode);
-                        break;
-                }
-            }
-            else
-            {
-                switch ((OpcodeV2)opcode.Opcode)
-                {
-                    case OpcodeV2.IfelCk:
-                        VisitIfOpcode(opcodeNode);
-                        break;
-                    case OpcodeV2.Ck:
-                    case OpcodeV2.Cmp:
-                    case OpcodeV2.MemberCmp:
-                        VisitConditionOpcode(opcodeNode);
-                        break;
-                    case OpcodeV2.ElseCk:
-                        VisitElseOpcode(opcodeNode);
-                        break;
-                    case OpcodeV2.EndIf:
-                        VisitEndIfOpcode(opcodeNode);
-                        break;
-                    case OpcodeV2.EvtEnd:
-                        VisitEndSubroutineOpcode(opcodeNode);
-                        break;
-                    default:
-                        AddStatement(opcodeNode);
-                        break;
-                }
+                case BioVersion.Biohazard1:
+                    switch ((OpcodeV1)opcode.Opcode)
+                    {
+                        case OpcodeV1.IfelCk:
+                            VisitIfOpcode(opcodeNode);
+                            break;
+                        case OpcodeV1.Ck:
+                        case OpcodeV1.Cmp6:
+                        case OpcodeV1.Cmp7:
+                        case OpcodeV1.TestItem:
+                        case OpcodeV1.TestPickup:
+                            VisitConditionOpcode(opcodeNode);
+                            break;
+                        case OpcodeV1.ElseCk:
+                            VisitElseOpcode(opcodeNode);
+                            break;
+                        case OpcodeV1.EndIf:
+                            VisitEndIfOpcode(opcodeNode);
+                            break;
+                        default:
+                            AddStatement(opcodeNode);
+                            break;
+                    }
+                    break;
+                case BioVersion.Biohazard2:
+                    switch ((OpcodeV2)opcode.Opcode)
+                    {
+                        case OpcodeV2.IfelCk:
+                            VisitIfOpcode(opcodeNode);
+                            break;
+                        case OpcodeV2.Ck:
+                        case OpcodeV2.Cmp:
+                        case OpcodeV2.MemberCmp:
+                            VisitConditionOpcode(opcodeNode);
+                            break;
+                        case OpcodeV2.ElseCk:
+                            VisitElseOpcode(opcodeNode);
+                            break;
+                        case OpcodeV2.EndIf:
+                            VisitEndIfOpcode(opcodeNode);
+                            break;
+                        case OpcodeV2.EvtEnd:
+                            VisitEndSubroutineOpcode(opcodeNode);
+                            break;
+                        default:
+                            AddStatement(opcodeNode);
+                            break;
+                    }
+                    break;
+                case BioVersion.Biohazard3:
+                    switch ((OpcodeV3)opcode.Opcode)
+                    {
+                        case OpcodeV3.IfelCk:
+                            VisitIfOpcode(opcodeNode);
+                            break;
+                        case OpcodeV3.Ck:
+                        case OpcodeV3.Cmp:
+                        case OpcodeV3.KeepItemCk:
+                        case OpcodeV3.KeyCk:
+                        case OpcodeV3.TrgCk:
+                            VisitConditionOpcode(opcodeNode);
+                            break;
+                        case OpcodeV3.ElseCk:
+                            VisitElseOpcode(opcodeNode);
+                            break;
+                        case OpcodeV3.EndIf:
+                            VisitEndIfOpcode(opcodeNode);
+                            break;
+                        case OpcodeV3.EvtEnd:
+                            VisitEndSubroutineOpcode(opcodeNode);
+                            break;
+                        default:
+                            AddStatement(opcodeNode);
+                            break;
+                    }
+                    break;
             }
         }
 
