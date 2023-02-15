@@ -422,8 +422,8 @@ namespace IntelOrca.Biohazard.Script
 
         private static int[] g_instructionSizes = new int[]
         {
-            1, 2, 1, 2, 4, 2, 4, 4, 2, 1, 3, 1, 1, 6, 5, 2,
-            4, 2, 4, 2, 4, 2, 2, 2, 6, 2, 4, 2, 1, 4, 4, 4,
+            1, 2, 1, 2, 4, 2, 4, 4, 2, 1, 3, 1, 1, 6, 4, 2,
+            4, 2, 4, 2, 4, 6, 2, 2, 6, 2, 4, 2, 1, 4, 4, 4,
             6, 4, 4, 1, 2, 4, 6, 1, 1, 8, 6, 2, 4, 4, 6, 2,
             6, 6, 6, 4, 10, 6, 3, 2, 2, 16, 16, 3, 1, 2, 2, 3,
             4, 3, 3, 6, 6, 4, 11, 3, 4, 1, 1, 1, 4, 4, 6, 1,
@@ -457,7 +457,7 @@ namespace IntelOrca.Biohazard.Script
             "do:uL",
             "edwhile:'",
             "switch:uL",
-            "case:u",
+            "case:uuuuu",
             "default",
             "eswitch",
             "goto:uuu~",
