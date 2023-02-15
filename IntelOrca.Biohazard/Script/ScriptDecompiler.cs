@@ -635,11 +635,11 @@ namespace IntelOrca.Biohazard.Script
                 case OpcodeV3.Case:
                     {
                         br.ReadByte();
+                        br.ReadUInt16();
+                        var value = br.ReadUInt16();
                         sb.Unindent();
-                        sb.WriteLine($"case when (");
+                        sb.WriteLine($"case {value}:");
                         sb.Indent();
-                        _constructingBinaryExpression = true;
-                        _expressionCount = 0;
                         break;
                     }
                 case OpcodeV3.Default:

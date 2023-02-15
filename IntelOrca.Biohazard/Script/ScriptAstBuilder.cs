@@ -8,6 +8,7 @@ namespace IntelOrca.Biohazard.Script
     {
         private List<SubroutineAstNode> _subroutines = new List<SubroutineAstNode>();
         private Stack<IfAstNode> _ifStack = new Stack<IfAstNode>();
+        private Stack<SwitchAstNode> _switchStack = new Stack<SwitchAstNode>();
         private Stack<List<IScriptAstNode>> _statementStack = new Stack<List<IScriptAstNode>>();
         private bool _endOfSubroutine;
 
@@ -88,6 +89,16 @@ namespace IntelOrca.Biohazard.Script
                 case BioVersion.Biohazard3:
                     switch ((OpcodeV3)opcode.Opcode)
                     {
+                        case OpcodeV3.Switch:
+                            VisitSwitchOpcode(opcodeNode);
+                            break;
+                        case OpcodeV3.Case:
+                        case OpcodeV3.Default:
+                            VisitCaseOpcode(opcodeNode);
+                            break;
+                        case OpcodeV3.Eswitch:
+                            VisitEswitchOpcode(opcodeNode);
+                            break;
                         case OpcodeV3.IfelCk:
                             VisitIfOpcode(opcodeNode);
                             break;
@@ -159,6 +170,48 @@ namespace IntelOrca.Biohazard.Script
             }
             ifNode.EndIf = opcodeNode;
             AddStatement(ifNode);
+        }
+
+        private void VisitSwitchOpcode(OpcodeAstNode opcodeNode)
+        {
+            var switchNode = new SwitchAstNode();
+            switchNode.Switch = opcodeNode;
+            _switchStack.Push(switchNode);
+            PushBasicBlock();
+        }
+
+        private void VisitCaseOpcode(OpcodeAstNode opcodeNode)
+        {
+            if (_switchStack.Count == 0)
+                return;
+
+            var switchNode = _switchStack.Peek();
+            if (switchNode.Cases.Count != 0)
+            {
+                var lastCase = switchNode.Cases[switchNode.Cases.Count - 1];
+                lastCase.Block = PopBasicBlock();
+            }
+            switchNode.Cases.Add(new CaseAstNode()
+            {
+                Case = opcodeNode
+            });
+            PushBasicBlock();
+        }
+
+        private void VisitEswitchOpcode(OpcodeAstNode opcodeNode)
+        {
+            if (_switchStack.Count == 0)
+                return;
+
+            var switchNode = _switchStack.Pop();
+            if (switchNode.Cases.Count != 0)
+            {
+                var lastCase = switchNode.Cases[switchNode.Cases.Count - 1];
+                lastCase.Block = PopBasicBlock();
+            }
+            PopBasicBlock();
+            switchNode.Eswitch = opcodeNode;
+            AddStatement(switchNode);
         }
 
         private void VisitEndSubroutineOpcode(OpcodeAstNode opcodeNode)
@@ -379,6 +432,38 @@ namespace IntelOrca.Biohazard.Script
 
             visitor.VisitEndIf(this);
             EndIf?.Visit(visitor);
+        }
+    }
+
+    internal class SwitchAstNode : IScriptAstNode
+    {
+        public OpcodeAstNode? Switch { get; set; }
+        public List<CaseAstNode> Cases { get; } = new List<CaseAstNode>();
+        public OpcodeAstNode? Eswitch { get; set; }
+
+        public void Visit(ScriptAstVisitor visitor)
+        {
+            visitor.VisitNode(this);
+            Switch?.Visit(visitor);
+            foreach (var c in Cases)
+            {
+                c.Visit(visitor);
+            }
+            Eswitch?.Visit(visitor);
+        }
+    }
+
+    internal class CaseAstNode : IScriptAstNode
+    {
+        public OpcodeAstNode? Case { get; set; }
+        public BasicBlockAstNode? Block { get; set; }
+        public bool IsDefault => Case?.Opcode.Opcode == (byte)OpcodeV3.Default;
+
+        public void Visit(ScriptAstVisitor visitor)
+        {
+            visitor.VisitNode(this);
+            Case?.Visit(visitor);
+            Block?.Visit(visitor);
         }
     }
 }
