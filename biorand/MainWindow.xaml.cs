@@ -805,7 +805,7 @@ namespace IntelOrca.Biohazard.BioRand
                 }
             }
 
-            if (index >= 0 && index <= 1)
+            if (index >= 0 && index <= 2)
                 _config.Game = (byte)(index + 1);
             _settings.LastSelectedGame = index;
             _settings.Save();
