@@ -1,5 +1,4 @@
 ﻿using System;
-using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.Script;
 
 namespace IntelOrca.Biohazard.RE3

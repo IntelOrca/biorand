@@ -98,5 +98,10 @@ namespace IntelOrca.Biohazard.RE3
 
             base.Generate(config, reConfig, progress, fileRepository);
         }
+
+        protected override string[] GetDefaultNPCs()
+        {
+            return new[] { "jill", "brad", "nikolai", "dario", "murphy", "carlos" };
+        }
     }
 }
