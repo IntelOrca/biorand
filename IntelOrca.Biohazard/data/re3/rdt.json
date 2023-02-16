@@ -2,7 +2,7 @@
   "beginEndRooms": [
     {
       "start": "101",
-      "end": "11A"
+      "end": "20C"
     }
   ],
   "rooms": {
@@ -354,6 +354,11 @@
       ]
     },
     "11B": {
+      "doorRando": [
+        {
+          "cutscene": true
+        }
+      ],
       "doors": [
         {
           "target": "10B"
@@ -415,6 +420,376 @@
             "floor": 0,
             "cut": 6
           }
+        }
+      ]
+    },
+    "200": {
+      "doors": [
+        {
+          "target": "218"
+        },
+        {
+          "target": "201"
+        }
+      ]
+    },
+    "201": {
+      "doorRando": [
+        {
+          "nop": [ "0x55A6-0x5682", "0x57C2-0x57DE" ]
+        }
+      ],
+      "doors": [
+        {
+          "target": "200"
+        },
+        {
+          "target": "21B"
+        }
+      ]
+    },
+    "202": {
+      "doors": [
+        {
+          "target": "203"
+        },
+        {
+          "target": "21B"
+        }
+      ]
+    },
+    "203": {
+      "doors": [
+        {
+          "target": "202"
+        },
+        {
+          "target": "204",
+          "requires": [ 49 ]
+        },
+        {
+          "target": "205"
+        }
+      ]
+    },
+    "204": {
+      "doors": [
+        {
+          "target": "203"
+        },
+        {
+          "target": "213"
+        },
+        {
+          "target": "214",
+          "lock": "side"
+        }
+      ]
+    },
+    "205": {
+      "doors": [
+        {
+          "target": "203"
+        },
+        {
+          "target": "206"
+        },
+        {
+          "target": "211"
+        }
+      ],
+      "items": [
+        {
+          "id": 12,
+          "requires": [ 79 ]
+        }
+      ]
+    },
+    "206": {
+      "doors": [
+        {
+          "target": "205"
+        },
+        {
+          "target": "207"
+        },
+        {
+          "target": "211"
+        },
+        {
+          "target": "216"
+        }
+      ]
+    },
+    "207": {
+      "doors": [
+        {
+          "target": "206"
+        },
+        {
+          "target": "208",
+          "requires": [ 68, 69 ]
+        },
+        {
+          "target": "210"
+        }
+      ]
+    },
+    "208": {
+      "doorRando": [
+        {
+          "nop": [ 17780, 17870 ]
+        }
+      ],
+      "doors": [
+        {
+          "target": "207"
+        },
+        {
+          "target": "209"
+        },
+        {
+          "target": "20E"
+        }
+      ],
+      "items": [
+        {
+          "id": 8,
+          "requires": [ 80 ]
+        }
+      ]
+    },
+    "209": {
+      "doors": [
+        {
+          "target": "208"
+        },
+        {
+          "target": "20A"
+        }
+      ]
+    },
+    "20A": {
+      "doorRando": [
+        {
+          "nop": [ "0x6FB4-0x72D0" ]
+        }
+      ],
+      "doors": [
+        {
+          "target": "209"
+        },
+        {
+          "target": "20B"
+        }
+      ]
+    },
+    "20B": {
+      "doors": [
+        {
+          "target": "20A"
+        },
+        {
+          "id": 1,
+          "target": "20C:0",
+          "lock": "side"
+        },
+        {
+          "id": 2,
+          "target": "20C:1"
+        }
+      ]
+    },
+    "20C": {
+      "doorRando": [
+        {
+          "cutscene": true
+        }
+      ],
+      "doors": [
+        {
+          "id": 0,
+          "target": "20B:1"
+        },
+        {
+          "id": 1,
+          "target": "20B:2"
+        },
+        {
+          "target": "215",
+          "requires": [ 51, 52, 54, 57 ],
+          "randomize": false
+        }
+      ]
+    },
+    "20D": {
+      "doorRando": [
+        {
+          "cutscene": true
+        }
+      ],
+      "doors": [
+        {
+          "target": "20E"
+        }
+      ],
+      "items": [
+        {
+          "id": 9,
+          "priority": "low"
+        },
+        {
+          "id": 11,
+          "priority": "low"
+        },
+        {
+          "id": 12,
+          "priority": "low"
+        },
+        {
+          "id": 13,
+          "priority": "low"
+        }
+      ]
+    },
+    "20E": {
+      "linkedRoom": "217",
+      "doorRando": [
+        {
+          "cutscene": true
+        }
+      ],
+      "doors": [
+        {
+          "target": "208"
+        },
+        {
+          "target": "20D",
+          "requires": [ 60, 95 ]
+        }
+      ]
+    },
+    "20F": {
+      "doorRando": [
+        {
+          "cutscene": true
+        }
+      ],
+      "doors": [
+        {
+          "target": "210"
+        }
+      ]
+    },
+    "210": {
+      "doorRando": [
+        {
+          "cutscene": true
+        }
+      ],
+      "doors": [
+        {
+          "target": "207"
+        },
+        {
+          "target": "20F",
+          "lock": "unblock"
+        }
+      ]
+    },
+    "211": {
+      "doors": [
+        {
+          "target": "205"
+        },
+        {
+          "target": "206"
+        },
+        {
+          "target": "212"
+        }
+      ]
+    },
+    "212": {
+      "doors": [
+        {
+          "target": "211"
+        }
+      ]
+    },
+    "213": {
+      "doors": [
+        {
+          "target": "204"
+        },
+        {
+          "target": "214"
+        }
+      ]
+    },
+    "214": {
+      "doors": [
+        {
+          "target": "204",
+          "lock": "unblock"
+        },
+        {
+          "target": "213"
+        }
+      ]
+    },
+    "215": {
+    },
+    "216": {
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "target": "206"
+        }
+      ]
+    },
+    "218": {
+      "doors": [
+        {
+          "target": "200"
+        },
+        {
+          "target": "21A"
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "requires": [ 60 ]
+        }
+      ]
+    },
+    "21A": {
+      "doors": [
+        {
+          "target": "124"
+        },
+        {
+          "target": "218"
+        }
+      ]
+    },
+    "21B": {
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "target": "201"
+        },
+        {
+          "target": "202"
         }
       ]
     }

@@ -49,16 +49,14 @@ namespace IntelOrca.Biohazard.RE3
 
         protected override RdtId[] GetRdtIds(string dataPath)
         {
-            return Enumerable.Range(0, 0x26)
-                .Select(x => new RdtId(0, x))
+            var repo = CreateRepository(dataPath);
+            var files = repo.GetFiles(Path.Combine(dataPath, "DATA_J", "RDT"));
+            var rdts = files
+                .Where(x => x.EndsWith(".RDT", StringComparison.OrdinalIgnoreCase))
+                .Select(x => RdtId.Parse(x.Substring(x.Length - 7, 3)))
+                .Where(x => x.Stage <= 1)
                 .ToArray();
-            // var repo = CreateRepository(dataPath);
-            // var files = repo.GetFiles(Path.Combine(dataPath, "DATA_J", "RDT"));
-            // var rdts = files
-            //     .Where(x => x.EndsWith(".RDT", StringComparison.OrdinalIgnoreCase))
-            //     .Select(x => RdtId.Parse(x.Substring(x.Length - 7, 3)))
-            //     .ToArray();
-            // return rdts;
+            return rdts;
         }
 
         protected override string GetRdtPath(string dataPath, RdtId rdtId, int player)
