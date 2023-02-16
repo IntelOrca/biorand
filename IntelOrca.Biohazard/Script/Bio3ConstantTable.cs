@@ -219,7 +219,13 @@ namespace IntelOrca.Biohazard.Script
 
         public string GetEnemyName(byte kind)
         {
-            return $"ENEMY_{kind:X2}";
+            if (kind >= g_enemyNames.Length || string.IsNullOrEmpty(g_enemyNames[kind]))
+                return $"ENEMY_{kind:X2}";
+            return $"ENEMY_" + g_enemyNames[kind]
+                .Replace(" ", "_")
+                .Replace("(", "")
+                .Replace(")", "")
+                .ToUpperInvariant();
         }
 
         public string GetItemName(byte kind)
@@ -281,6 +287,108 @@ namespace IntelOrca.Biohazard.Script
                 return "input.question";
             return null;
         }
+
+        private string[] g_enemyNames = new string[]
+        {
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+
+            "Zombie (Guy 1)",
+            "Zombie (Girl 1)",
+            "Zombie (Fat)",
+            "Zombie (Girl 2)",
+            "Zombie (RPD 1)",
+            "Zombie (Guy 2)",
+            "Zombie (Guy 3)",
+            "Zombie (Guy 4)",
+            "Zombie (Naked)",
+            "Zombie (Guy 5)",
+            "Zombie (Guy 6)",
+            "Zombie (Lab)",
+            "Zombie (Girl 3)",
+            "Zombie (RPD 2)",
+            "Zombie (Guy 7)",
+            "Zombie (Guy 8)",
+
+            "Cerberus",
+            "Crow",
+            "Hunter",
+            "BS23",
+            "HunterGamma",
+            "Spider",
+            "MiniSpider",
+            "MiniBrainsucker",
+            "BS28",
+            "",
+            "",
+            "",
+            "",
+            "Arm",
+            "",
+            "",
+
+            "",
+            "",
+            "MiniWorm",
+            "",
+            "Nemesis",
+            "",
+            "Nemesis 3",
+
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "Nikolai Zinoviev",
+            "Brad Vickers",
+
+            "Dario Rosso",
+            "Murphy Seeker",
+            "",
+            "",
+            "Brad (Zombie)",
+            "Dario (Zombie)",
+            "Promo Girl",
+            "",
+            "Carlos Oliveira"
+        };
 
         private string[] g_itemNames = new string[]
         {
@@ -567,7 +675,7 @@ namespace IntelOrca.Biohazard.Script
             "movie_on",
             "bgm_tbl_set",
             "status_on",
-            "em_set",
+            "em_set:uueuuuuuuuuIIIIUU",
             "mizu_div",
             "om_set",
 

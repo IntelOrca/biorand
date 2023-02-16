@@ -15,6 +15,8 @@ namespace IntelOrca.Biohazard.Script.Opcodes
         public byte SoundBank { get; set; }
         public byte Texture { get; set; }
         public byte KillId { get; set; }
+        public byte Unk09 { get; set; }
+        public byte Unk0A { get; set; }
         public short X { get; set; }
         public short Y { get; set; }
         public short Z { get; set; }
@@ -61,7 +63,7 @@ namespace IntelOrca.Biohazard.Script.Opcodes
                 op.Re1Unk15 = br.ReadByte();
                 return op;
             }
-            else
+            else if ((OpcodeV2)opcode == OpcodeV2.SceEmSet)
             {
                 return new SceEmSetOpcode()
                 {
@@ -75,6 +77,33 @@ namespace IntelOrca.Biohazard.Script.Opcodes
                     State = br.ReadByte(),
                     Ai = br.ReadByte(),
                     Floor = br.ReadByte(),
+                    SoundBank = br.ReadByte(),
+                    Texture = br.ReadByte(),
+                    KillId = br.ReadByte(),
+                    X = br.ReadInt16(),
+                    Y = br.ReadInt16(),
+                    Z = br.ReadInt16(),
+                    D = br.ReadInt16(),
+                    Animation = br.ReadUInt16(),
+                    Unk15 = br.ReadUInt16(),
+                };
+            }
+            else
+            {
+                return new SceEmSetOpcode()
+                {
+                    Offset = offset,
+                    Length = 24,
+
+                    Opcode = opcode,
+                    Unk01 = br.ReadByte(),
+                    Id = br.ReadByte(),
+                    Type = br.ReadByte(),
+                    State = br.ReadByte(),
+                    Ai = br.ReadByte(),
+                    Floor = br.ReadByte(),
+                    Unk09 = br.ReadByte(),
+                    Unk0A = br.ReadByte(),
                     SoundBank = br.ReadByte(),
                     Texture = br.ReadByte(),
                     KillId = br.ReadByte(),
@@ -111,6 +140,25 @@ namespace IntelOrca.Biohazard.Script.Opcodes
                 bw.Write(Re1Unk14);
                 bw.Write(Re1Unk15);
             }
+            else if ((OpcodeV2)Opcode == OpcodeV2.SceEmSet)
+            {
+                bw.Write(Opcode);
+                bw.Write(Unk01);
+                bw.Write(Id);
+                bw.Write(Type);
+                bw.Write(State);
+                bw.Write(Ai);
+                bw.Write(Floor);
+                bw.Write(SoundBank);
+                bw.Write(Texture);
+                bw.Write(KillId);
+                bw.Write(X);
+                bw.Write(Y);
+                bw.Write(Z);
+                bw.Write(D);
+                bw.Write(Animation);
+                bw.Write(Unk15);
+            }
             else
             {
                 bw.Write(Opcode);
@@ -120,6 +168,8 @@ namespace IntelOrca.Biohazard.Script.Opcodes
                 bw.Write(State);
                 bw.Write(Ai);
                 bw.Write(Floor);
+                bw.Write(Unk09);
+                bw.Write(Unk0A);
                 bw.Write(SoundBank);
                 bw.Write(Texture);
                 bw.Write(KillId);
