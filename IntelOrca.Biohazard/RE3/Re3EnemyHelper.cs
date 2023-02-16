@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
 

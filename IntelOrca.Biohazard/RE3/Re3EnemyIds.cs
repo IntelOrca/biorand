@@ -1,4 +1,4 @@
-﻿namespace IntelOrca.Biohazard.RE1
+﻿namespace IntelOrca.Biohazard.RE3
 {
     internal static class Re3EnemyIds
     {
