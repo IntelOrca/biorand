@@ -31,6 +31,8 @@
         public const byte MiniWorm = 50;
         public const byte Nemesis = 52;
         public const byte Nemesis3 = 54;
+        public const byte CarlosOliveira1 = 80;
+        public const byte MikhailViktor = 81;
         public const byte NikolaiZinoviev = 82;
         public const byte BradVickers = 83;
         public const byte DarioRosso = 84;
@@ -38,6 +40,7 @@
         public const byte BradZombie = 88;
         public const byte DarioZombie = 89;
         public const byte PromoGirl = 90;
-        public const byte CarlosOliveira = 92;
+        public const byte Unknown91 = 91;
+        public const byte CarlosOliveira2 = 92;
     }
 }

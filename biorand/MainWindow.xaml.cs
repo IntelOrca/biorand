@@ -938,7 +938,11 @@ namespace IntelOrca.Biohazard.BioRand
                 lblPlayer1.Visibility = Visibility.Collapsed;
                 dropdownPlayer1.Visibility = Visibility.Collapsed;
                 chkPlayer.Visibility = Visibility.Hidden;
-                return;
+            }
+            else
+            {
+                lblPlayer1.Visibility = Visibility.Visible;
+                dropdownPlayer1.Visibility = Visibility.Visible;
             }
         }
 

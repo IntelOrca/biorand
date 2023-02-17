@@ -8,6 +8,8 @@ namespace IntelOrca.Biohazard.RE3
         {
             switch (type)
             {
+                case Re3EnemyIds.MikhailViktor:
+                    return "mikhail";
                 case Re3EnemyIds.NikolaiZinoviev:
                     return "nikolai";
                 case Re3EnemyIds.BradVickers:
@@ -18,7 +20,8 @@ namespace IntelOrca.Biohazard.RE3
                     return "dario";
                 case Re3EnemyIds.MurphySeeker:
                     return "murphy";
-                case Re3EnemyIds.CarlosOliveira:
+                case Re3EnemyIds.CarlosOliveira1:
+                case Re3EnemyIds.CarlosOliveira2:
                     return "carlos";
                 case Re3EnemyIds.PromoGirl:
                     return "promogirl";
@@ -35,7 +38,7 @@ namespace IntelOrca.Biohazard.RE3
                 Re3EnemyIds.DarioRosso,
                 Re3EnemyIds.MurphySeeker,
                 Re3EnemyIds.PromoGirl,
-                Re3EnemyIds.CarlosOliveira
+                Re3EnemyIds.CarlosOliveira2
             };
             return defaultIncludeTypes;
         }
@@ -60,7 +63,7 @@ namespace IntelOrca.Biohazard.RE3
 
         public bool IsNpc(byte type)
         {
-            return type > Re3EnemyIds.Nemesis3;
+            return type >= Re3EnemyIds.CarlosOliveira1;
         }
 
         public bool IsSpareSlot(byte id)

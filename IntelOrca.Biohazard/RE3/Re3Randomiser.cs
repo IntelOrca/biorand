@@ -99,7 +99,7 @@ namespace IntelOrca.Biohazard.RE3
 
         protected override string[] GetDefaultNPCs()
         {
-            return new[] { "jill", "brad", "nikolai", "dario", "murphy", "carlos" };
+            return new[] { "jill", "brad", "mikhail", "nikolai", "dario", "murphy", "carlos" };
         }
     }
 }
