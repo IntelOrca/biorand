@@ -84,9 +84,11 @@ namespace IntelOrca.Biohazard
             var queue = new Queue<PlayNode>();
             queue.Enqueue(graph.Start);
             graph.Start.Visited = true;
-            while (!graph.End.Visited)
+            while (!graph.End.Visited && queue.Count != 0)
             {
                 var node = queue.Dequeue();
+                _logger.WriteLine($"Visited {node}");
+                if (g_debugLogging)
                 foreach (var edge in node.Edges)
                 {
                     var edgeNode = edge.Node;

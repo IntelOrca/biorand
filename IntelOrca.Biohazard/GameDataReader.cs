@@ -47,7 +47,7 @@ namespace IntelOrca.Biohazard
         public static Rdt ReadRdt(BioVersion version, byte[] data, string path, string? modPath)
         {
             var rdtFile = new RdtFile(data, version);
-            var rdt = path.StartsWith("ROOM", System.StringComparison.OrdinalIgnoreCase) ?
+            var rdt = Path.GetFileName(path).StartsWith("ROOM", System.StringComparison.OrdinalIgnoreCase) ?
                 new Rdt(rdtFile, RdtId.Parse(Path.GetFileNameWithoutExtension(path).Substring(4, 3))) :
                 new Rdt(rdtFile, RdtId.Parse(Path.GetFileNameWithoutExtension(path).Substring(1, 3)));
 

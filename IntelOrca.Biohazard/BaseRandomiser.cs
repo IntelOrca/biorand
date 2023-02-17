@@ -222,7 +222,7 @@ namespace IntelOrca.Biohazard
                 if (enabledBgms.Contains("RE3", StringComparer.OrdinalIgnoreCase))
                 {
                     var r = new Re3Randomiser(BgCreator);
-                    r.AddArchives(reConfig.GetInstallPath(BiohazardVersion), fileRepository);
+                    r.AddArchives(reConfig.GetInstallPath(BioVersion.Biohazard3), fileRepository);
                     r.AddMusicSelection(bgmRandomizer, reConfig);
                 }
                 bgmRandomizer.AddCutomMusicToSelection(enabledBgms);
