@@ -523,6 +523,9 @@ namespace IntelOrca.Biohazard
                             continue;
 
                         var oldActor = GetActor(enemy.Type, originalOnly: true)!;
+                        if (oldActor == null)
+                            continue;
+
                         string newActor;
                         if (offsetToTypeMap.TryGetValue(enemy.Offset, out var newEnemyType))
                         {

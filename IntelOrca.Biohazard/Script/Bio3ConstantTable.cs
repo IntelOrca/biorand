@@ -374,8 +374,8 @@ namespace IntelOrca.Biohazard.Script
             "",
             "",
             "",
-            "",
-            "",
+            "Carlos Oliveira 1",
+            "Mikhail Viktor",
             "Nikolai Zinoviev",
             "Brad Vickers",
 
@@ -387,7 +387,7 @@ namespace IntelOrca.Biohazard.Script
             "Dario (Zombie)",
             "Promo Girl",
             "",
-            "Carlos Oliveira"
+            "Carlos Oliveira 2"
         };
 
         private string[] g_itemNames = new string[]
