@@ -143,54 +143,79 @@ namespace IntelOrca.Biohazard
             FinishOffEndNodes(graph.End);
 
             FinalChecks(graph);
-            FixRE3HydrantAlley();
+            RE3Fixes();
             UnfixRE1Doors();
             UpdateLinkedRooms();
             return graph;
         }
 
+        private void RE3Fixes()
+        {
+            if (_config.Game != 3)
+                return;
+
+            FixRE3HydrantAlley();
+            FixRE3Restuarant();
+        }
+
         private void FixRE3HydrantAlley()
         {
-            if (_config.Game == 3)
+            var rdt = _gameData.GetRdt(new RdtId(0, 0x23));
+            if (rdt != null)
             {
-                var rdt = _gameData.GetRdt(new RdtId(0, 0x23));
-                if (rdt != null)
+                // if (bits[3][28] == 1)
+                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x06, new byte[] { 0x00, 0x5B, 0x00 }));
+                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x4C, new byte[] { 0x03, 0x1C, 0x01 }));
+
+                // cut_replace([0..8], [11..19]);
+                for (int i = 0; i < 9; i++)
+                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x53, new byte[] { (byte)i, (byte)(i + 11) }));
+
+                foreach (var cut in new[] { 0, 4, 5, 7 })
                 {
-                    // if (bits[3][28] == 1)
-                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x06, new byte[] { 0x00, 0x5B, 0x00 }));
-                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x4C, new byte[] { 0x03, 0x1C, 0x01 }));
-
-                    // cut_replace([0..8], [11..19]);
-                    for (int i = 0; i < 9; i++)
-                        rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x53, new byte[] { (byte)i, (byte)(i + 11) }));
-
-                    foreach (var cut in new[] { 0, 4, 5, 7 })
-                    {
-                        // if (cut == 0)
-                        rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x06, new byte[] { 0x00, 0x0A, 0x00 }));
-                        rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x4E, new byte[] { 0x00, 0x1A, 0x00, (byte)cut, 0x00 }));
-                        // cut_chg(11);
-                        rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x50, new byte[] { (byte)(cut + 11) }));
-                        // endif
-                        rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x08, new byte[] { 0x00 }));
-                    }
-
-                    // cut_auto(1);
-                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x52, new byte[] { 1 }));
+                    // if (cut == 0)
+                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x06, new byte[] { 0x00, 0x0A, 0x00 }));
+                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x4E, new byte[] { 0x00, 0x1A, 0x00, (byte)cut, 0x00 }));
+                    // cut_chg(11);
+                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x50, new byte[] { (byte)(cut + 11) }));
                     // endif
                     rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x08, new byte[] { 0x00 }));
-
-                    // NOP out old cut_replace
-                    rdt.Nop(0x2DC8);
-                    rdt.Nop(0x2DCB);
-                    rdt.Nop(0x2DCE);
-                    rdt.Nop(0x2DD1);
-                    rdt.Nop(0x2DD4);
-                    rdt.Nop(0x2DD7);
-                    rdt.Nop(0x2DDA);
-                    rdt.Nop(0x2DDD);
-                    rdt.Nop(0x2DE0);
                 }
+
+                // cut_auto(1);
+                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x52, new byte[] { 1 }));
+                // endif
+                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x08, new byte[] { 0x00 }));
+
+                // NOP out old cut_replace
+                rdt.Nop(0x2DC8);
+                rdt.Nop(0x2DCB);
+                rdt.Nop(0x2DCE);
+                rdt.Nop(0x2DD1);
+                rdt.Nop(0x2DD4);
+                rdt.Nop(0x2DD7);
+                rdt.Nop(0x2DDA);
+                rdt.Nop(0x2DDD);
+                rdt.Nop(0x2DE0);
+            }
+        }
+
+        private void FixRE3Restuarant()
+        {
+            var rdt = _gameData.GetRdt(new RdtId(1, 0x11));
+            if (rdt != null)
+            {
+                var door5 = rdt.Doors.FirstOrDefault(x => x.Id == 5);
+                var door23 = rdt.Doors.FirstOrDefault(x => x.Id == 23);
+                door23.Target = door5.Target;
+                door23.NextX = door5.NextX;
+                door23.NextY = door5.NextY;
+                door23.NextZ = door5.NextZ;
+                door23.NextD = door5.NextD;
+                door23.NextFloor = door5.NextFloor;
+                door23.NextCamera = door5.NextCamera;
+                door23.LockId = door5.LockId;
+                door23.LockType = door5.LockType;
             }
         }
 
