@@ -6,6 +6,7 @@ namespace IntelOrca.Biohazard.Script
 {
     internal class Bio3ConstantTable : IConstantTable
     {
+        private const byte SCE_ITEM = 2;
         private const byte SCE_EVENT = 5;
 
         public byte? FindOpcode(string name)
@@ -31,9 +32,19 @@ namespace IntelOrca.Biohazard.Script
         {
             using (var br = reader.Fork())
             {
-                if (opcode == (byte)OpcodeV2.AotReset)
+                if (opcode == (byte)OpcodeV3.AotReset)
                 {
-                    if (pIndex == 5)
+                    if (pIndex == 3)
+                    {
+                        br.BaseStream.Position++;
+                        var sce = br.ReadByte();
+                        if (sce == SCE_ITEM)
+                        {
+                            br.BaseStream.Position++;
+                            return GetConstant('t', br.ReadByte());
+                        }
+                    }
+                    else if (pIndex == 5)
                     {
                         br.BaseStream.Position++;
                         var sce = br.ReadByte();
@@ -50,14 +61,14 @@ namespace IntelOrca.Biohazard.Script
                         if (sce == SCE_EVENT)
                         {
                             br.BaseStream.Position += 3;
-                            if (br.ReadByte() == (byte)OpcodeV2.Gosub)
+                            if (br.ReadByte() == (byte)OpcodeV3.Gosub)
                             {
                                 return GetConstant('p', br.ReadByte());
                             }
                         }
                     }
                 }
-                else if (opcode == (byte)OpcodeV2.AotSet)
+                else if (opcode == (byte)OpcodeV3.AotSet)
                 {
                     if (pIndex == 11)
                     {
@@ -76,14 +87,14 @@ namespace IntelOrca.Biohazard.Script
                         if (sce == SCE_EVENT)
                         {
                             br.BaseStream.Position += 13;
-                            if (br.ReadByte() == (byte)OpcodeV2.Gosub)
+                            if (br.ReadByte() == (byte)OpcodeV3.Gosub)
                             {
                                 return GetConstant('p', br.ReadByte());
                             }
                         }
                     }
                 }
-                else if (opcode == (byte)OpcodeV2.AotSet4p)
+                else if (opcode == (byte)OpcodeV3.AotSet4p)
                 {
                     if (pIndex == 15)
                     {
@@ -102,7 +113,7 @@ namespace IntelOrca.Biohazard.Script
                         if (sce == SCE_EVENT)
                         {
                             br.BaseStream.Position += 21;
-                            if (br.ReadByte() == (byte)OpcodeV2.Gosub)
+                            if (br.ReadByte() == (byte)OpcodeV3.Gosub)
                             {
                                 return GetConstant('p', br.ReadByte());
                             }
@@ -165,11 +176,11 @@ namespace IntelOrca.Biohazard.Script
                         return g_workKinds[value];
                     break;
                 case 'g':
-                    if (value == (byte)OpcodeV2.Gosub)
+                    if (value == (byte)OpcodeV3.Gosub)
                         return "I_GOSUB";
                     break;
                 case 'p':
-                    return $"main_{value:X2}";
+                    return $"init_{value:X2}";
             }
             return null;
         }
@@ -196,7 +207,7 @@ namespace IntelOrca.Biohazard.Script
                 case "UNLOCKED":
                     return 0;
                 case "I_GOSUB":
-                    return (byte)OpcodeV2.Gosub;
+                    return (byte)OpcodeV3.Gosub;
             }
 
             if (symbol.StartsWith("ENEMY_"))
@@ -262,6 +273,7 @@ namespace IntelOrca.Biohazard.Script
                 case OpcodeV3.KeepItemCk:
                 case OpcodeV3.KeyCk:
                 case OpcodeV3.TrgCk:
+                case OpcodeV3.DoorCk:
                     return true;
             }
             return false;
@@ -328,10 +340,10 @@ namespace IntelOrca.Biohazard.Script
             "Crow",
             "Hunter",
             "BS23",
-            "HunterGamma",
+            "Hunter Gamma",
             "Spider",
-            "MiniSpider",
-            "MiniBrainsucker",
+            "Mini Spider",
+            "Mini Brainsucker",
             "BS28",
             "",
             "",
@@ -341,9 +353,9 @@ namespace IntelOrca.Biohazard.Script
             "",
             "",
 
+            "Giant Worm",
             "",
-            "",
-            "MiniWorm",
+            "Mini Worm",
             "",
             "Nemesis",
             "",
@@ -608,7 +620,7 @@ namespace IntelOrca.Biohazard.Script
             "chaser_item_set",
             "weapon_chg_old",
             "sel_evt_on",
-            "item_lost",
+            "item_lost:t",
             "floor_set",
 
             "memb_set",

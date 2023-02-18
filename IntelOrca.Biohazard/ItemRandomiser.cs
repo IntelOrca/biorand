@@ -578,7 +578,7 @@ namespace IntelOrca.Biohazard
             {
                 _currentPool.Add(item);
                 if (g_debugLogging)
-                    _logger.WriteLine($"    Add {item} to current pool");
+                    _logger.WriteLine($"    Add {item.ToString(_itemHelper)} to current pool");
             }
 
             if (_currentPool.DistinctBy(x => x.RdtItemId).Count() != _currentPool.Count())
