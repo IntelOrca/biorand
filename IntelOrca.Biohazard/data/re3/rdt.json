@@ -2,7 +2,7 @@
   "beginEndRooms": [
     {
       "start": "101",
-      "end": "20C"
+      "end": "510"
     }
   ],
   "rooms": {
@@ -770,6 +770,12 @@
       ]
     },
     "215": {
+      "doors": [
+        {
+          "target": "303",
+          "noReturn": true
+        }
+      ]
     },
     "216": {
       "doorRando": [
@@ -823,6 +829,496 @@
           "target": "202"
         }
       ]
+    },
+    "300": {
+      "linkedRoom": "310",
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "target": "301"
+        }
+      ],
+      "items": [
+        // Leave keys unrandomized (due to train crash decision)
+        {
+          "id": 7,
+          "type": 0,
+          "doorRando": false
+        }
+      ]
+    },
+    "301": {
+      "linkedRoom": "30F",
+      // "linkedRoom": "317",
+      "doors": [
+        {
+          "target": "300"
+        },
+        {
+          "target": "303"
+        },
+        {
+          "target": "302",
+          "doorRando": false
+        },
+        {
+          "target": "302",
+          "requires": [ 120 ],
+          "doorRando": true
+        }
+      ]
+    },
+    "302": {
+      "doorRando": [
+        {
+          "cutscene": true,
+          "nop": [ "0x1E5C" ]
+        }
+      ],
+      "doors": [
+        {
+          "target": "301",
+          "doorRando": false
+        },
+        {
+          "target": "301",
+          "requires": [ 120 ],
+          "doorRando": true
+        },
+        {
+          "target": "304"
+        }
+      ]
+    },
+    "303": {
+      "doors": [
+        {
+          "target": "301"
+        },
+        {
+          "target": "304",
+          "lock": "side"
+        }
+      ]
+    },
+    "304": {
+      "linkedRoom": "30E",
+      // "linkedRoom": "316",
+      "doors": [
+        {
+          "target": "302"
+        },
+        {
+          "target": "303"
+        },
+        {
+          "target": "307"
+        },
+        {
+          "target": "30A"
+        }
+      ]
+    },
+    "305": {
+      "linkedRoom": "311",
+      "doorRando": [
+        {
+          "nop": [ "0x233A" ]
+        }
+      ],
+      "doors": [
+        {
+          "target": "306"
+        }
+      ],
+      "items": [
+        // Leave keys unrandomized (due to train crash decision)
+        {
+          "id": 8,
+          "type": 0
+        }
+      ]
+    },
+    "306": {
+      "linkedRoom": "312",
+      "doorRando": [
+        {
+          "category": "box",
+          "nop": [ "0x1438" ]
+        }
+      ],
+      "doors": [
+        {
+          "target": "305"
+        },
+        {
+          "target": "307",
+          "doorRando": false
+        },
+        {
+          "target": "307",
+          "requires": [ 120 ],
+          "doorRando": true
+        }
+      ]
+    },
+    "307": {
+      "doorRando": [
+        {
+          "cutscene": true
+        }
+      ],
+      "linkedRoom": "313",
+      "doors": [
+        {
+          "target": "304"
+        },
+        {
+          "target": "306"
+        },
+        {
+          "target": "308",
+          "requires": [ 94 ], // 121
+          "doorRando": false
+        },
+        {
+          "target": "308",
+          "requires": [ 94, 120 ], // 121
+          "doorRando": true
+        }
+      ]
+    },
+    "308": {
+      "linkedRoom": "314",
+      "doors": [
+        {
+          "target": "307"
+        },
+        {
+          "target": "309"
+        }
+      ]
+    },
+    "309": {
+      "linkedRoom": "315",
+      "doors": [
+        {
+          "target": "307"
+        },
+        {
+          "target": "417",
+          "noReturn": true
+        }
+      ],
+      "items": [
+        // Randomizing the cystal balls is not simple
+        // {
+        //   "id": 4,
+        //   "requires": [ 70, 71, 72 ]
+        // }
+      ]
+    },
+    "30A": {
+      "doors": [
+        {
+          "target": "304"
+        },
+        {
+          "target": "30B"
+        }
+      ]
+    },
+    "30B": {
+      "doors": [
+        {
+          "target": "30A"
+        },
+        {
+          "target": "30C",
+          "doorRando": false
+        },
+        {
+          "target": "30C",
+          "requires": [ 119 ],
+          "doorRando": true
+        }
+      ]
+    },
+    "30C": {
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "target": "30B"
+        }
+      ],
+      "requires": [ 76, 77 ]
+    },
+    "401": {
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "id": 0,
+          "target": "417"
+        }
+      ]
+    },
+    "402": {
+      "doors": [
+        {
+          "target": "417"
+        },
+        {
+          "target": "403"
+        }
+      ]
+    },
+    "403": {
+      "doors": [
+        {
+          "target": "402"
+        },
+        {
+          "target": "404"
+        }
+      ]
+    },
+    "404": {
+      "doors": [
+        {
+          "target": "403"
+        },
+        {
+          "target": "405",
+          "requires": [ 64 ]
+        },
+        {
+          "target": "409",
+          "requires": [ 64 ]
+        }
+      ]
+    },
+    "405": {
+      "doors": [
+        {
+          "target": "404"
+        },
+        {
+          "target": "406",
+          "requires": [ 116 ]
+        },
+        {
+          "target": "407"
+        },
+        {
+          "target": "408"
+        },
+        {
+          "target": "409"
+        }
+      ]
+    },
+    "406": {
+      "doors": [
+        {
+          "target": "405"
+        }
+      ]
+    },
+    "407": {
+      "doors": [
+        {
+          "target": "405"
+        }
+      ]
+    },
+    "408": {
+      "doorRando": [
+        {
+          "cutscene": true
+        }
+      ],
+      "doors": [
+        {
+          "target": "405"
+        }
+      ]
+    },
+    "409": {
+      "doors": [
+        {
+          "target": "404"
+        },
+        {
+          "target": "405"
+        },
+        {
+          "target": "40A"
+        }
+      ]
+    },
+    "40A": {
+      "doors": [
+        {
+          "target": "409"
+        },
+        {
+          "target": "40B"
+        }
+      ]
+    },
+    "40B": {
+      "doors": [
+        {
+          "target": "409"
+        }
+      ]
+    },
+    "40C": {
+      "doors": [
+        {
+          "id": 0,
+          "target": "417"
+        },
+        {
+          "target": "40D"
+        },
+        {
+          "target": "40E"
+        }
+      ]
+    },
+    "40D": {
+      "doors": [
+        {
+          "target": "40C"
+        },
+        {
+          "target": "410"
+        }
+      ]
+    },
+    "40E": {
+      "doors": [
+        {
+          "target": "40C"
+        },
+        {
+          "target": "40F"
+        }
+      ]
+    },
+    "40F": {
+      "doors": [
+        {
+          "target": "40E"
+        },
+        {
+          "target": "510",
+          "requires": [ 125 ]
+        }
+      ]
+    },
+    "410": {
+      "doors": [
+        {
+          "target": "40D"
+        },
+        {
+          "target": "411"
+        }
+      ]
+    },
+    "411": {
+      "doors": [
+        {
+          "target": "410"
+        },
+        {
+          "target": "412"
+        }
+      ]
+    },
+    "412": {
+      "doorRando": [
+        {
+          "cutscene": true
+        }
+      ],
+      "doors": [
+        {
+          "target": "411"
+        },
+        {
+          "target": "413"
+        },
+        {
+          "target": "414",
+          "requires": [ 61, 65, 66 ]
+        }
+      ]
+    },
+    "413": {
+      "doors": [
+        {
+          "target": "412"
+        }
+      ]
+    },
+    "414": {
+      "doors": [
+        {
+          "target": "412"
+        }
+      ]
+    },
+    // 415 = giant worm pit
+    "415": {
+      "doorRando": [
+        {
+          "category": "bridge",
+          "nop": [ "0x361E" ]
+        }
+      ],
+      "doors": [
+        {
+          "target": "410",
+          "lock": "unblock",
+          "noUnlock": true
+        },
+        {
+          "target": "412"
+        }
+      ]
+    },
+    "417": {
+      "linkedRoom": "400",
+      "doors": [
+        {
+          "target": "401",
+          "requires": [ 114 ]
+        },
+        {
+          "target": "402"
+        },
+        {
+          "target": "40C",
+          "requires": [ 123 ]
+        }
+      ]
+    },
+    "510": {
     }
   }
 }

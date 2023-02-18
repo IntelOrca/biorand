@@ -54,7 +54,7 @@ namespace IntelOrca.Biohazard.RE3
             var rdts = files
                 .Where(x => x.EndsWith(".RDT", StringComparison.OrdinalIgnoreCase))
                 .Select(x => RdtId.Parse(x.Substring(x.Length - 7, 3)))
-                .Where(x => x.Stage <= 1)
+                .Where(x => x.Stage <= 4)
                 .ToArray();
             return rdts;
         }
