@@ -143,31 +143,37 @@ namespace IntelOrca.Biohazard.RE3
             {
                 default:
                     return 1;
-
                 case Re3ItemIds.InkRibbon:
                     return 3;
-
                 case Re3ItemIds.HandgunSigpro:
                 case Re3ItemIds.HandgunSigproEnhanced:
+                    return 1;
                 case Re3ItemIds.HandgunBeretta:
                 case Re3ItemIds.HandgunBerettaEnhanced:
+                    return 15;
                 case Re3ItemIds.ShotgunBenelli:
                 case Re3ItemIds.ShotgunBenelliEnhanced:
+                    return 7;
                 case Re3ItemIds.MagnumSW:
+                    return 6;
                 case Re3ItemIds.GrenadeLauncherAcid:
                 case Re3ItemIds.GrenadeLauncherFlame:
                 case Re3ItemIds.GrenadeLauncherFreeze:
                 case Re3ItemIds.GrenadeLauncherGrenade:
+                    return 6;
                 case Re3ItemIds.RocketLauncher:
+                    return 4;
                 case Re3ItemIds.GatlingGun:
-                case Re3ItemIds.MineThrower:
-                case Re3ItemIds.MineThrowerEnhanced:
+                    return 1;
                 case Re3ItemIds.HangunEagle:
+                    return 15;
                 case Re3ItemIds.RifleM4A1Manual:
                 case Re3ItemIds.RifleM4A1Auto:
                 case Re3ItemIds.ShotgunM37:
                     return 1;
-
+                case Re3ItemIds.MineThrower:
+                case Re3ItemIds.MineThrowerEnhanced:
+                    return 6;
                 case Re3ItemIds.HandgunAmmo:
                     return 60;
                 case Re3ItemIds.ShotgunAmmo:

@@ -2,7 +2,7 @@
   "beginEndRooms": [
     {
       "start": "101",
-      "end": "510"
+      "end": "50C"
     }
   ],
   "rooms": {
@@ -364,7 +364,9 @@
           "target": "10B"
         },
         {
-          "target": "11C"
+          "target": "11C",
+          "lock": "unblock",
+          "noUnlock": true
         }
       ]
     },
@@ -1334,7 +1336,206 @@
         }
       ]
     },
+    "500": {
+      "doors": [
+        {
+          "target": "501"
+        },
+        {
+          "target": "503",
+          "requires": [ 126 ]
+        },
+        {
+          "target": "50A",
+          "requires": [ 96 ]
+        },
+        {
+          "target": "510"
+        }
+      ]
+    },
+    "501": {
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "target": "500"
+        },
+        {
+          "target": "502"
+        }
+      ]
+    },
+    "502": {
+      "doors": [
+        {
+          "target": "501"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "requires": [ 96 ]
+        },
+        {
+          "id": 4,
+          "requires": [ 96 ]
+        },
+        {
+          "id": 17,
+          "requires": [ 127 ]
+        }
+      ]
+    },
+    "503": {
+      "doors": [
+        {
+          "target": "500"
+        },
+        {
+          "target": "507"
+        },
+        {
+          "target": "508",
+          "requiresRoom": [ "502", "506" ]
+        }
+      ]
+    },
+    "504": {
+      "doors": [
+        {
+          "target": "507"
+        },
+        {
+          "target": "505"
+        }
+      ]
+    },
+    "505": {
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "target": "504"
+        },
+        {
+          "target": "506"
+        }
+      ]
+    },
+    "506": {
+      "doors": [
+        {
+          "target": "505"
+        }
+      ]
+    },
+    "507": {
+      "doors": [
+        {
+          "target": "503"
+        },
+        {
+          "target": "504"
+        }
+      ]
+    },
+    "508": {
+      "doors": [
+        {
+          "target": "503"
+        },
+        {
+          "target": "509",
+          "randomize": false,
+          "requires": [ 112 ]
+        }
+      ]
+    },
+    "509": {
+      "doors": [
+        {
+          "target": "508",
+          "randomize": false
+        }
+      ]
+    },
+    "50A": {
+      "doors": [
+        {
+          "target": "500"
+        },
+        {
+          "target": "50B"
+        }
+      ]
+    },
+    "50B": {
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "target": "50A"
+        },
+        {
+          "target": "50C"
+        }
+      ]
+    },
+    "50C": {
+      "doors": [
+        {
+          "target": "50B"
+        },
+        {
+          "target": "50D",
+          "noReturn": true
+        }
+      ]
+    },
+    "50D": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "target": "50E"
+        }
+      ]
+    },
+    "50E": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ]
+    },
     "510": {
+      "doors": [
+        {
+          "target": "40F"
+        },
+        {
+          "target": "500",
+          "noReturn": true
+        }
+        // ,
+        // {
+        //   "target": "504",
+        //   "noReturn": true
+        // }
+      ]
     }
   }
 }
