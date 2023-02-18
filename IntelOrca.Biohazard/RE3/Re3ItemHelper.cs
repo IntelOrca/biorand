@@ -163,14 +163,13 @@ namespace IntelOrca.Biohazard.RE3
                     return 6;
                 case Re3ItemIds.RocketLauncher:
                     return 4;
-                case Re3ItemIds.GatlingGun:
-                    return 1;
                 case Re3ItemIds.HangunEagle:
                     return 15;
                 case Re3ItemIds.RifleM4A1Manual:
                 case Re3ItemIds.RifleM4A1Auto:
+                    return 100;
                 case Re3ItemIds.ShotgunM37:
-                    return 1;
+                    return 6;
                 case Re3ItemIds.MineThrower:
                 case Re3ItemIds.MineThrowerEnhanced:
                     return 6;
@@ -234,7 +233,6 @@ namespace IntelOrca.Biohazard.RE3
                     Re3ItemIds.GrenadeLauncherFreeze,
                     Re3ItemIds.GrenadeLauncherGrenade),
                 Re3ItemIds.RocketLauncher,
-                Re3ItemIds.GatlingGun,
                 rng.NextOf(Re3ItemIds.MineThrower, Re3ItemIds.MineThrowerEnhanced),
                 Re3ItemIds.HangunEagle,
                 rng.NextOf(Re3ItemIds.RifleM4A1Manual, Re3ItemIds.RifleM4A1Auto),

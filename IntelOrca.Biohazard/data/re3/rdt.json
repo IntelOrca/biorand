@@ -579,6 +579,12 @@
         {
           "target": "20A"
         }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "priority": "low"
+        }
       ]
     },
     "20A": {
@@ -615,13 +621,16 @@
     "20C": {
       "doorRando": [
         {
-          "cutscene": true
+          "cutscene": true,
+          "category": "bridge"
         }
       ],
       "doors": [
         {
           "id": 0,
-          "target": "20B:1"
+          "target": "20B:1",
+          "lock": "unblock",
+          "noUnlock": true
         },
         {
           "id": 1,
@@ -630,6 +639,8 @@
         {
           "target": "215",
           "requires": [ 51, 52, 54, 57 ],
+          "isBridgeEdge": true,
+          "noReturn": true,
           "randomize": false
         }
       ]
@@ -690,7 +701,25 @@
       ],
       "doors": [
         {
+          // For door rando, we just clone the other door over this,
+          // since it is an optional one-way path
+          "id": 2,
+          "target": "207",
+          "lock": "always"
+        },
+        {
+          "id": 0,
           "target": "210"
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "priority": "low"
+        },
+        {
+          "id": 9,
+          "priority": "low"
         }
       ]
     },
@@ -789,11 +818,27 @@
       ]
     },
     "215": {
+      "doorRando": [
+        {
+          "nop": [ "0x5392" ]
+        }
+      ],
       "doors": [
         {
+          "target": "20C",
+          "randomize": false,
+          "lock": "always"
+        },
+        {
           "target": "303",
+          "randomize": false,
           "noReturn": true
         }
+        // ,
+        // {
+        //   "target": "305",
+        //   "noReturn": true
+        // }
       ]
     },
     "216": {
@@ -867,6 +912,22 @@
           "id": 7,
           "type": 0,
           "doorRando": false
+        },
+        {
+          "id": 6,
+          "priority": "low"
+        },
+        {
+          "id": 11,
+          "priority": "low"
+        },
+        {
+          "id": 12,
+          "priority": "low"
+        },
+        {
+          "id": 13,
+          "priority": "low"
         }
       ]
     },
@@ -915,6 +976,11 @@
     },
     "303": {
       "doors": [
+        {
+          "target": "215",
+          "lock": "always",
+          "randomize": false
+        },
         {
           "target": "301"
         },
@@ -1008,6 +1074,16 @@
           "target": "308",
           "requires": [ 94, 120 ], // 121
           "doorRando": true
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "priority": "low"
+        },
+        {
+          "id": 5,
+          "priority": "low"
         }
       ]
     },
@@ -1172,6 +1248,12 @@
         {
           "target": "405"
         }
+      ],
+      "items": [
+        {
+          "id": 1,
+          "priority": "low"
+        }
       ]
     },
     "409": {
@@ -1272,7 +1354,8 @@
     "412": {
       "doorRando": [
         {
-          "cutscene": true
+          "cutscene": true,
+          "nop": [ "0x30F8", "0x395A-0x3973" ]
         }
       ],
       "doors": [
@@ -1284,7 +1367,8 @@
         },
         {
           "target": "414",
-          "requires": [ 61, 65, 66 ]
+          "requires": [ 61, 65, 66 ],
+          "noUnlock": true
         }
       ]
     },
@@ -1366,7 +1450,34 @@
           "target": "500"
         },
         {
-          "target": "502"
+          "target": "502",
+          "lock": "unblock"
+        }
+      ],
+      "items": [
+        {
+          "id": 5,
+          "priority": "low"
+        },
+        {
+          "id": 6,
+          "priority": "low"
+        },
+        {
+          "id": 7,
+          "priority": "low"
+        },
+        {
+          "id": 10,
+          "priority": "low"
+        },
+        {
+          "id": 12,
+          "priority": "low"
+        },
+        {
+          "id": 13,
+          "priority": "low"
         }
       ]
     },
@@ -1499,6 +1610,7 @@
         },
         {
           "target": "50D",
+          "randomize": false,
           "noReturn": true
         }
       ]
@@ -1511,7 +1623,13 @@
       ],
       "doors": [
         {
-          "target": "50E"
+          "target": "50C",
+          "lock": "always",
+          "randomize": false
+        },
+        {
+          "target": "50F",
+          "randomize": false
         }
       ]
     },
@@ -1519,6 +1637,31 @@
       "doorRando": [
         {
           "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "target": "50F",
+          "lock": "always",
+          "randomize": false
+        }
+      ]
+    },
+    "50F": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "target": "50D",
+          "lock": "always",
+          "randomize": false
+        },
+        {
+          "target": "50E",
+          "randomize": false
         }
       ]
     },
