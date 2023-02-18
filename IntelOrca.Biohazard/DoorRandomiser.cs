@@ -157,7 +157,12 @@ namespace IntelOrca.Biohazard
                 return;
 
             FixRE3HydrantAlley();
-            FixRE3Restuarant();
+            if (_config.RandomDoors)
+            {
+                FixRE3Restuarant();
+                FixRE3PressOffice();
+                FixRE3TrainCrashExit();
+            }
         }
 
         private void FixRE3HydrantAlley()
@@ -207,18 +212,52 @@ namespace IntelOrca.Biohazard
             var rdt = _gameData.GetRdt(new RdtId(1, 0x11));
             if (rdt != null)
             {
-                var door5 = rdt.Doors.FirstOrDefault(x => x.Id == 5);
-                var door23 = rdt.Doors.FirstOrDefault(x => x.Id == 23);
-                door23.Target = door5.Target;
-                door23.NextX = door5.NextX;
-                door23.NextY = door5.NextY;
-                door23.NextZ = door5.NextZ;
-                door23.NextD = door5.NextD;
-                door23.NextFloor = door5.NextFloor;
-                door23.NextCamera = door5.NextCamera;
-                door23.LockId = door5.LockId;
-                door23.LockType = door5.LockType;
+                CopyDoorTo(rdt, 23, 5);
             }
+        }
+
+        private void FixRE3PressOffice()
+        {
+            var rdt = _gameData.GetRdt(new RdtId(1, 0x0F));
+            if (rdt != null)
+            {
+                CopyDoorTo(rdt, 1, 0);
+                CopyDoorTo(rdt, 2, 0);
+                CopyDoorTo(rdt, 16, 0);
+
+                var door = rdt.Doors.First(x => x.Id == 2);
+                door.LockId = 0;
+                door.LockType = 0;
+            }
+        }
+
+        private void FixRE3TrainCrashExit()
+        {
+            var rdt = _gameData.GetRdt(new RdtId(1, 0x15));
+            if (rdt != null)
+            {
+                CopyDoorTo(rdt, 5, 4);
+            }
+        }
+
+        private static void CopyDoorTo(Rdt rdt, int dstId, int srcId)
+        {
+            var src = rdt.Doors.First(x => x.Id == srcId);
+            var dst = rdt.Doors.First(x => x.Id == dstId);
+            CopyDoorTo(dst, src);
+        }
+
+        private static void CopyDoorTo(IDoorAotSetOpcode dst, IDoorAotSetOpcode src)
+        {
+            dst.Target = src.Target;
+            dst.NextX = src.NextX;
+            dst.NextY = src.NextY;
+            dst.NextZ = src.NextZ;
+            dst.NextD = src.NextD;
+            dst.NextFloor = src.NextFloor;
+            dst.NextCamera = src.NextCamera;
+            dst.LockId = src.LockId;
+            dst.LockType = src.LockType;
         }
 
         private MapStartEnd GetBeginEnd()
@@ -385,6 +424,12 @@ namespace IntelOrca.Biohazard
             _keyItemSpotsLeft = 0;
             _keyItemRequiredSet.Clear();
 
+            var nonLinearBridgeNode = end.Edges.Count > 2;
+            if (nonLinearBridgeNode)
+            {
+                pool.Add(end);
+            }
+
             PlayEdge[] unfinishedEdges;
             do
             {
@@ -394,7 +439,7 @@ namespace IntelOrca.Biohazard
                 if (g_debugLogging)
                     _logger.WriteLine($"        Edges left: {_numUnconnectedEdges} (key = {_numKeyEdges}, unlocked = {_numUnlockedEdges})");
             } while (ConnectUpRandomNode(unfinishedEdges, pool));
-            if (!ConnectUpNode(end, unfinishedEdges))
+            if (!end.Visited && !ConnectUpNode(end, unfinishedEdges))
             {
                 _logger.WriteLine($"    Failed to connect to end node {end.RdtId}");
                 throw new Exception("Unable to connect end node");
@@ -419,7 +464,16 @@ namespace IntelOrca.Biohazard
             foreach (var edge in end.Edges)
             {
                 if (edge.Node == null)
+                {
+                    if (nonLinearBridgeNode && !edge.IsBridgeEdge)
+                    {
+                        // This was an unconnected edge that isn't the 'bridge edge', so
+                        // ensure it never gets connected.
+                        edge.Lock = LockKind.Always;
+                    }
                     edge.NoReturn = true;
+                    edge.IsBridgeEdge = false;
+                }
             }
 
             pool.RemoveAll(x => x.Visited);
@@ -437,7 +491,8 @@ namespace IntelOrca.Biohazard
                 foreach (var offset in node.DoorRandoNop)
                 {
                     rdt.Nop(offset);
-                    _logger.WriteLine($"{rdt.RdtId} (0x{offset:X2}) opcode removed");
+                    if (g_debugLogging)
+                        _logger.WriteLine($"{rdt.RdtId} (0x{offset:X2}) opcode removed");
                 }
 
                 // Lock any unconnected doors and loopback to itself to be extra safe
@@ -455,11 +510,14 @@ namespace IntelOrca.Biohazard
                     }
                 }
             }
-            foreach (var node in _allNodes)
+            if (g_debugLogging)
             {
-                if (!node.Visited)
+                foreach (var node in _allNodes)
                 {
-                    _logger.WriteLine($"{node.RdtId} not used");
+                    if (!node.Visited)
+                    {
+                        _logger.WriteLine($"{node.RdtId} not used");
+                    }
                 }
             }
 
@@ -1067,6 +1125,7 @@ namespace IntelOrca.Biohazard
                     var edge = new PlayEdge(node, edgeNode, door.NoReturn, door.Requires, doorId, entrance);
                     edge.Randomize = door.Randomize ?? true;
                     edge.NoUnlock = door.NoUnlock;
+                    edge.IsBridgeEdge = door.IsBridgeEdge;
                     if (door.Lock != null)
                     {
                         edge.Lock = (LockKind)Enum.Parse(typeof(LockKind), door.Lock, true);
@@ -1273,6 +1332,8 @@ namespace IntelOrca.Biohazard
         {
             public override bool Validate(DoorRandomiser dr, PlayEdge entrance, PlayEdge exit)
             {
+                if (entrance.IsBridgeEdge)
+                    return false;
                 if (!entrance.Randomize || !exit.Randomize)
                     return entrance.OriginalTargetRdt == exit.Parent.RdtId && exit.OriginalTargetRdt == entrance.Parent.RdtId;
                 return true;

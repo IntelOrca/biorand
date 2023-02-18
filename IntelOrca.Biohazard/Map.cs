@@ -96,6 +96,7 @@ namespace IntelOrca.Biohazard
         public string? Lock { get; set; }
         public bool NoReturn { get; set; }
         public bool NoUnlock { get; set; }
+        public bool IsBridgeEdge { get; set; }
         public ushort[]? Requires { get; set; }
         public string[]? RequiresRoom { get; set; }
         public bool? DoorRando { get; set; }

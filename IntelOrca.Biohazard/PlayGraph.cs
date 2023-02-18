@@ -195,6 +195,7 @@ namespace IntelOrca.Biohazard
         public bool PreventLoopback { get; set; }
         public bool Randomize { get; set; } = true;
         public bool NoUnlock { get; set; }
+        public bool IsBridgeEdge { get; set; }
 
         public PlayEdge(PlayNode parent, PlayNode node, bool noReturn, ushort[]? requires, int? doorId, DoorEntrance? entrance)
         {
