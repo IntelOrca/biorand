@@ -637,7 +637,8 @@
     "20D": {
       "doorRando": [
         {
-          "cutscene": true
+          "cutscene": true,
+          "nop": [ "0x4436" ]
         }
       ],
       "doors": [
