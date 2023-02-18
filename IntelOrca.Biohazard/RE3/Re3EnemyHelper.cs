@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
 
@@ -135,7 +136,37 @@ namespace IntelOrca.Biohazard.RE3
 
         public bool ShouldChangeEnemy(RandoConfig config, SceEmSetOpcode enemy)
         {
-            return true;
+            switch (enemy.Type)
+            {
+                case Re3EnemyIds.ZombieGuy1:
+                case Re3EnemyIds.ZombieGirl1:
+                case Re3EnemyIds.ZombieFat:
+                case Re3EnemyIds.ZombieGirl2:
+                case Re3EnemyIds.ZombieRpd1:
+                case Re3EnemyIds.ZombieGuy2:
+                case Re3EnemyIds.ZombieGuy3:
+                case Re3EnemyIds.ZombieGuy4:
+                case Re3EnemyIds.ZombieNaked:
+                case Re3EnemyIds.ZombieGuy5:
+                case Re3EnemyIds.ZombieGuy6:
+                case Re3EnemyIds.ZombieLab:
+                case Re3EnemyIds.ZombieGirl3:
+                case Re3EnemyIds.ZombieRpd2:
+                case Re3EnemyIds.ZombieGuy7:
+                case Re3EnemyIds.ZombieGuy8:
+                case Re3EnemyIds.Cerberus:
+                case Re3EnemyIds.Crow:
+                case Re3EnemyIds.Hunter:
+                case Re3EnemyIds.BS23:
+                case Re3EnemyIds.HunterGamma:
+                case Re3EnemyIds.Spider:
+                case Re3EnemyIds.MiniSpider:
+                case Re3EnemyIds.MiniBrainsucker:
+                case Re3EnemyIds.BS28:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         public bool SupportsEnemyType(RandoConfig config, Rdt rdt, string difficulty, bool hasEnemyPlacements, byte enemyType)
