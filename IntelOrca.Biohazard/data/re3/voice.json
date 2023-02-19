@@ -28,7 +28,7 @@
     "DATA_A/VOICE/M11CA010.WAV": { "rdt": "11C", "actor": "nikolai", "kind": "death" },
     "DATA_A/VOICE/M20BA010.WAV": { "rdt": "20B", "actor": "mikhail" },
 
-    "DATA_A/VOICE/M20CA010.WAV": { "rdt": "20C", "cutscene": 0, "actor": "jill.re3", "nameClipped": { "start": 4.4 } },
+    "DATA_A/VOICE/M20CA010.WAV": { "rdt": "20C", "cutscene": 0, "actor": "jill.re3", "condition": "!carlos" },
     "DATA_A/VOICE/M20CA020.WAV": { "rdt": "20C", "cutscene": 0, "actor": "nikolai" },
     "DATA_A/VOICE/M20CA030.WAV": { "rdt": "20C", "cutscene": 0, "actor": "jill.re3" },
     "DATA_A/VOICE/M20CA040.WAV": { "rdt": "20C", "cutscene": 0, "actor": "nikolai" },
@@ -219,7 +219,7 @@
     "DATA_A/VOICE/M50EB010.WAV": { "rdt": "50E", "actor": "jill.re3", "condition": "@carlos", "nameClipped": { "end": 0.6 } },
     "DATA_A/VOICE/M50EB020.WAV": { "rdt": "50E", "actor": "carlos" },
     "DATA_A/VOICE/M50EB030.WAV": { "rdt": "50E", "actor": "carlos" },
-    "DATA_A/VOICE/M50EB040.WAV": { "rdt": "50E", "actor": "jill" },
+    "DATA_A/VOICE/M50EB040.WAV": { "rdt": "50E", "actor": "jill.re3" },
     "DATA_A/VOICE/M50EB050.WAV": { "rdt": "50E", "actor": "carlos" },
     "DATA_A/VOICE/M50EB060.WAV": { "rdt": "50E", "actor": "carlos", "condition": "@jill" },
     "DATA_A/VOICE/M50EB070.WAV": { "rdt": "50E", "actor": "carlos" },

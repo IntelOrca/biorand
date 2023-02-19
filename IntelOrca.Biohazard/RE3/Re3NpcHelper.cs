@@ -20,6 +20,8 @@ namespace IntelOrca.Biohazard.RE3
                     return "dario";
                 case Re3EnemyIds.MurphySeeker:
                     return "murphy";
+                case Re3EnemyIds.TyrellPatrick:
+                    return "tyrell";
                 case Re3EnemyIds.CarlosOliveira1:
                 case Re3EnemyIds.CarlosOliveira2:
                     return "carlos";
@@ -37,6 +39,7 @@ namespace IntelOrca.Biohazard.RE3
                 Re3EnemyIds.BradVickers,
                 Re3EnemyIds.DarioRosso,
                 Re3EnemyIds.MurphySeeker,
+                Re3EnemyIds.TyrellPatrick,
                 Re3EnemyIds.PromoGirl,
                 Re3EnemyIds.CarlosOliveira2
             };

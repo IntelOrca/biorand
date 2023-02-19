@@ -114,12 +114,12 @@ namespace IntelOrca.Biohazard.RE3
 
         protected override string[] GetDefaultNPCs()
         {
-            return new[] { "jill", "brad", "mikhail", "nikolai", "dario", "murphy", "carlos" };
+            return new[] { "jill.re3", "brad", "mikhail", "nikolai", "dario", "murphy", "tyrell", "carlos" };
         }
 
         internal override string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, FileRepository fileRepository)
         {
-            var actor = "jill";
+            var actor = "jill.re3";
             if (config.ChangePlayer)
             {
                 var pldIndex = config.Player == 0 ? config.Player0 : config.Player1;
@@ -134,7 +134,7 @@ namespace IntelOrca.Biohazard.RE3
 
         private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, string actor, FileRepository fileRepository)
         {
-            var originalPlayerActor = "jill";
+            var originalPlayerActor = "jill.re3";
             var srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld0\\{actor}");
 
             if (originalPlayerActor != actor)
