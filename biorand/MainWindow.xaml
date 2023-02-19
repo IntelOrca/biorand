@@ -244,6 +244,8 @@
                                             <local:PieChart x:Name="pieItemRatios" Width="120" />
                                         </StackPanel>
                                         <StackPanel Grid.Column="2" x:Name="panelItemSliders">
+                                            <local:RandoSlider x:Name="sliderGunpowder" Heading="Gunpowder probability" LowText="None" HighText="High"
+                                                            ToolTip="Probability of non-key items being gunpowder." />
                                             <local:RandoSlider x:Name="sliderAmmo" Heading="Ammo probability" LowText="None" HighText="High"
                                                             ToolTip="Probability of non-key items being ammunition." />
                                             <local:RandoSlider x:Name="sliderHealth" Heading="Health probability" LowText="None" HighText="High"

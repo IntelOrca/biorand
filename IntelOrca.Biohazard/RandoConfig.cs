@@ -45,6 +45,7 @@ namespace IntelOrca.Biohazard
         public byte RatioAmmo { get; set; } = 16;
         public byte RatioHealth { get; set; } = 16;
         public byte RatioInkRibbons { get; set; } = 16;
+        public byte RatioGunpowder { get; set; } = 16;
         public byte AmmoQuantity { get; set; } = 4;
         public byte EnemyDifficulty { get; set; } = 2;
         public byte AreaCount { get; set; } = 3;
@@ -111,6 +112,8 @@ namespace IntelOrca.Biohazard
             result.EnemyRatios = values.ToArray();
             result.EnabledNPCs = reader.ReadBooleanArray(50);
             result.EnabledBGMs = reader.ReadBooleanArray(15);
+
+            result.RatioGunpowder = reader.ReadDigit();
 
             return result;
         }
@@ -184,6 +187,8 @@ namespace IntelOrca.Biohazard
             }
             writer.WriteArray(50, EnabledNPCs);
             writer.WriteArray(15, EnabledBGMs);
+
+            writer.WriteDigit(RatioGunpowder);
 
             return writer.ToString();
         }
