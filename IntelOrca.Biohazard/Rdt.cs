@@ -172,28 +172,62 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        public DoorAotSeOpcode ConvertToDoor(byte id, byte texture)
+        public IDoorAotSetOpcode ConvertToDoor(byte id, byte texture, byte? key, byte? lockId)
         {
-            var aotSet = Opcodes.OfType<AotSetOpcode>().FirstOrDefault(x => x.Id == id);
+            var aotSet = Opcodes.OfType<IAotSetOpcode>().LastOrDefault(x => x.Id == id);
             if (aotSet == null)
                 throw new Exception($"Failed to find aot_set for id {id}");
 
-            var door = new DoorAotSeOpcode()
+            IDoorAotSetOpcode door;
+            if (aotSet is AotSetOpcode aotSet2p)
             {
-                Length = 32,
-                Opcode = (byte)OpcodeV2.DoorAotSe,
-                Id = aotSet.Id,
-                SCE = 1,
-                SAT = aotSet.SAT,
-                Floor = aotSet.Floor,
-                Super = aotSet.Super,
-                X = aotSet.X,
-                Z = aotSet.Z,
-                W = aotSet.W,
-                D = aotSet.D,
-                Texture = texture
-            };
-            AdditionalOpcodes.Add(door);
+                door = new DoorAotSeOpcode()
+                {
+                    Length = 32,
+                    Opcode = Version == BioVersion.Biohazard2 ? (byte)OpcodeV2.DoorAotSe : (byte)OpcodeV3.DoorAotSe,
+                    Id = aotSet2p.Id,
+                    SCE = 1,
+                    SAT = aotSet2p.SAT,
+                    Floor = aotSet2p.Floor,
+                    Super = aotSet2p.Super,
+                    X = aotSet2p.X,
+                    Z = aotSet2p.Z,
+                    W = aotSet2p.W,
+                    D = aotSet2p.D,
+                    Texture = texture,
+                    LockType = key ?? 0,
+                    LockId = lockId ?? 0
+                };
+            }
+            else if (aotSet is AotSet4pOpcode aotSet4p)
+            {
+                door = new DoorAotSet4pOpcode()
+                {
+                    Length = 40,
+                    Opcode = Version == BioVersion.Biohazard2 ? (byte)OpcodeV2.DoorAotSet4p : (byte)OpcodeV3.DoorAotSet4p,
+                    Id = aotSet.Id,
+                    SCE = 1,
+                    SAT = aotSet.SAT,
+                    Floor = aotSet.Floor,
+                    Super = aotSet.Super,
+                    X0 = aotSet4p.X0,
+                    Z0 = aotSet4p.Z0,
+                    X1 = aotSet4p.X1,
+                    Z1 = aotSet4p.Z1,
+                    X2 = aotSet4p.X2,
+                    Z2 = aotSet4p.Z2,
+                    X3 = aotSet4p.X3,
+                    Z3 = aotSet4p.Z3,
+                    Texture = texture,
+                    LockType = key ?? 0,
+                    LockId = lockId ?? 0
+                };
+            }
+            else
+            {
+                throw new NotSupportedException("Unexpected door kind.");
+            }
+            AdditionalOpcodes.Add((OpcodeBase)door);
             Nop(aotSet.Offset);
             return door;
         }

@@ -124,6 +124,11 @@
     },
     "106": {
       "linkedRoom": "121",
+      "doorRando": [
+        {
+          "nop": [ "0x5DBA" ]
+        }
+      ],
       "doors": [
         {
           "target": "105"
@@ -131,6 +136,15 @@
         {
           "target": "107",
           "lock": "side"
+        },
+        {
+          "create": true,
+          "texture": 29,
+          "target": "10F",
+          "id": 9,
+          "lock": "0x80",
+          "lockId": 129,
+          "doorRando": true
         }
       ],
       "items": [
