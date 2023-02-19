@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -97,9 +98,108 @@ namespace IntelOrca.Biohazard.RE3
             base.Generate(config, reConfig, progress, fileRepository);
         }
 
+        public override string[] GetPlayerCharacters(int index)
+        {
+            var result = new List<string>();
+            var pldFiles = DataManager
+                .GetDirectories(BiohazardVersion, $"pld{index}")
+                .ToArray();
+            foreach (var pldPath in pldFiles)
+            {
+                var actor = Path.GetFileName(pldPath);
+                result.Add(actor.ToActorString());
+            }
+            return result.ToArray();
+        }
+
         protected override string[] GetDefaultNPCs()
         {
             return new[] { "jill", "brad", "mikhail", "nikolai", "dario", "murphy", "carlos" };
+        }
+
+        internal override string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, FileRepository fileRepository)
+        {
+            var actor = "jill";
+            if (config.ChangePlayer)
+            {
+                var pldIndex = config.Player == 0 ? config.Player0 : config.Player1;
+                var pldPath = DataManager.GetDirectories(BiohazardVersion, $"pld{config.Player}")
+                    .Skip(pldIndex)
+                    .FirstOrDefault();
+                actor = Path.GetFileName(pldPath);
+                SwapPlayerCharacter(config, logger, actor, fileRepository);
+            }
+            return actor;
+        }
+
+        private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, string actor, FileRepository fileRepository)
+        {
+            var originalPlayerActor = "jill";
+            var srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld0\\{actor}");
+
+            if (originalPlayerActor != actor)
+            {
+                logger.WriteHeading("Randomizing Player:");
+                logger.WriteLine($"{originalPlayerActor} becomes {actor}");
+            }
+
+            var targetPldDir = fileRepository.GetModPath($"DATA/PLD");
+            Directory.CreateDirectory(targetPldDir);
+            var pldFiles = Directory.GetFiles(srcPldDir);
+            foreach (var pldPath in pldFiles)
+            {
+                var pldFile = Path.GetFileName(pldPath);
+                File.Copy(pldPath, Path.Combine(targetPldDir, pldFile), true);
+            }
+
+            // Replace other PLDs
+            if (actor != originalPlayerActor)
+            {
+                var numbers = new[] { 1, 2, 3, 4, 5, 6, 7 };
+                var src = Path.Combine(targetPldDir, $"pl{config.Player:X2}.pld");
+                foreach (var n in numbers)
+                {
+                    var dst = Path.Combine(targetPldDir, $"pl{n:X2}.pld");
+                    File.Copy(src, dst, true);
+                }
+
+                // ChangePlayerInventoryFace(config, actor, fileRepository);
+
+                // var allHurtFiles = DataManager.GetHurtFiles(actor)
+                //     .Where(x => x.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) || x.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
+                //     .ToArray();
+                // var hurtFiles = new string[4];
+                // foreach (var hurtFile in allHurtFiles)
+                // {
+                //     if (int.TryParse(Path.GetFileNameWithoutExtension(hurtFile), out var i))
+                //     {
+                //         if (i < hurtFiles.Length)
+                //         {
+                //             hurtFiles[i] = hurtFile;
+                //         }
+                //     }
+                // }
+                // if (hurtFiles.All(x => x != null))
+                // {
+                //     var corePath = fileRepository.GetModPath($"common/sound/core/core{config.Player:X2}.sap");
+                //     Directory.CreateDirectory(Path.GetDirectoryName(corePath));
+                //     for (int i = 0; i < hurtFiles.Length; i++)
+                //     {
+                //         var waveformBuilder = new WaveformBuilder();
+                //         waveformBuilder.Append(hurtFiles[i]);
+                //         if (i == 0)
+                //             waveformBuilder.Save(corePath, 0x0F);
+                //         else
+                //             waveformBuilder.SaveAppend(corePath);
+                //     }
+                //     {
+                //         var coreDeathPath = fileRepository.GetModPath($"common/sound/core/core{32 + config.Player:00}.sap");
+                //         var waveformBuilder = new WaveformBuilder();
+                //         waveformBuilder.Append(hurtFiles[3]);
+                //         waveformBuilder.Save(coreDeathPath);
+                //     }
+                // }
+            }
         }
 
         protected override void SerialiseInventory(FileRepository fileRepository)
