@@ -218,6 +218,7 @@ namespace IntelOrca.Biohazard.BioRand
 
                 sliderEnemyDifficulty.Value = _config.EnemyDifficulty;
 
+                sliderGunpowder.Value = _config.RatioGunpowder;
                 sliderAmmo.Value = _config.RatioAmmo;
                 sliderHealth.Value = _config.RatioHealth;
                 sliderInkRibbons.Value = _config.RatioInkRibbons;
@@ -282,11 +283,12 @@ namespace IntelOrca.Biohazard.BioRand
         private void UpdateItemPie()
         {
             var keyItems = 1 / 8.0;
-            var totalRest = _config.RatioAmmo + _config.RatioHealth + _config.RatioInkRibbons;
+            var totalRest = _config.RatioGunpowder + _config.RatioAmmo + _config.RatioHealth + _config.RatioInkRibbons;
             if (totalRest == 0)
                 totalRest = 1;
 
             var remaining = (1 - keyItems) / totalRest;
+            var gunpowder = _config.RatioGunpowder * remaining;
             var ammo = _config.RatioAmmo * remaining;
             var health = _config.RatioHealth * remaining;
             var ink = _config.RatioInkRibbons * remaining;
@@ -297,6 +299,12 @@ namespace IntelOrca.Biohazard.BioRand
                 Name = "Keys",
                 Value = keyItems,
                 Color = Colors.LightBlue
+            });
+            pieItemRatios.Records.Add(new PieChart.Record()
+            {
+                Name = "Gunpowder",
+                Value = gunpowder,
+                Color = Colors.Gray
             });
             pieItemRatios.Records.Add(new PieChart.Record()
             {
@@ -391,6 +399,7 @@ namespace IntelOrca.Biohazard.BioRand
             _config.Weapon1 = (byte)dropdownWeapon1.SelectedIndex;
             _config.WeaponQuantity = (byte)sliderWeaponQuantity.Value;
 
+            _config.RatioGunpowder = (byte)sliderGunpowder.Value;
             _config.RatioAmmo = (byte)sliderAmmo.Value;
             _config.RatioHealth = (byte)sliderHealth.Value;
             _config.RatioInkRibbons = (byte)sliderInkRibbons.Value;
@@ -463,6 +472,7 @@ namespace IntelOrca.Biohazard.BioRand
             _config.Player1 = (byte)_random.Next(0, dropdownPlayer1.Items.Count);
             _config.EnemyDifficulty = (byte)_random.Next(0, 4);
             _config.AmmoQuantity = (byte)_random.Next(0, 8);
+            _config.RatioGunpowder = (byte)_random.Next(0, 32);
             _config.RatioAmmo = (byte)_random.Next(0, 32);
             _config.RatioHealth = (byte)_random.Next(0, 32);
             _config.RatioInkRibbons = (byte)_random.Next(0, 32);
@@ -793,6 +803,15 @@ namespace IntelOrca.Biohazard.BioRand
                         chkRandomEnemyPlacements.Visibility = Visibility.Visible;
                         chkEnemyRestrictedRooms.Visibility = Visibility.Visible;
                         sliderEnemyCount.Visibility = Visibility.Visible;
+                    }
+                    if (index == 2)
+                    {
+                        sliderGunpowder.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        _config.RatioGunpowder = 0;
+                        sliderGunpowder.Visibility = Visibility.Collapsed;
                     }
                     dropdownVariant.Visibility = index == 1 ?
                         Visibility.Visible :

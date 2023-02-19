@@ -363,5 +363,10 @@ namespace IntelOrca.Biohazard.RE2
             else
                 return new int[] { 8 };
         }
+
+        public byte[] GetWeaponGunpowder(byte weapon)
+        {
+            return new byte[0];
+        }
     }
 }

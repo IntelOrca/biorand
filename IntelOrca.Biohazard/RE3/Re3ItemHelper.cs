@@ -122,6 +122,22 @@ namespace IntelOrca.Biohazard.RE3
                 case Re3ItemIds.MineThrowerAmmo:
                 case Re3ItemIds.MagnumAmmo:
                     return 0.1;
+                case Re3ItemIds.GunpowderA:
+                case Re3ItemIds.GunpowderB:
+                case Re3ItemIds.GunpowderC:
+                    return 0.5;
+                case Re3ItemIds.GunpowderAA:
+                case Re3ItemIds.GunpowderBB:
+                case Re3ItemIds.GunpowderAC:
+                case Re3ItemIds.GunpowderBC:
+                case Re3ItemIds.GunpowderCC:
+                    return 0.5;
+                case Re3ItemIds.GunpowderAAA:
+                case Re3ItemIds.GunpowderAAB:
+                case Re3ItemIds.GunpowderBBA:
+                case Re3ItemIds.GunpowderBBB:
+                case Re3ItemIds.GunpowderCCC:
+                    return 0.1;
                 default:
                     return 0;
             }
@@ -243,6 +259,43 @@ namespace IntelOrca.Biohazard.RE3
         public byte? GetWeaponUpgrade(byte weapon, Rng rng, RandoConfig config)
         {
             return null;
+        }
+
+        public byte[] GetWeaponGunpowder(byte weapon)
+        {
+            switch (weapon)
+            {
+                case Re3ItemIds.HandgunSigpro:
+                case Re3ItemIds.HandgunSigproEnhanced:
+                case Re3ItemIds.HandgunBeretta:
+                case Re3ItemIds.HandgunBerettaEnhanced:
+                case Re3ItemIds.HangunEagle:
+                    return new[] {
+                        Re3ItemIds.GunpowderA,
+                        Re3ItemIds.GunpowderAA,
+                        Re3ItemIds.GunpowderB,
+                        Re3ItemIds.GunpowderBB
+                    };
+                case Re3ItemIds.GrenadeLauncherAcid:
+                case Re3ItemIds.GrenadeLauncherFlame:
+                case Re3ItemIds.GrenadeLauncherFreeze:
+                case Re3ItemIds.GrenadeLauncherGrenade:
+                    return new[] {
+                        Re3ItemIds.GunpowderA,
+                        Re3ItemIds.GunpowderAA,
+                        Re3ItemIds.GunpowderB,
+                        Re3ItemIds.GunpowderBB,
+                        Re3ItemIds.GunpowderC,
+                        Re3ItemIds.GunpowderCC
+                    };
+                case Re3ItemIds.MagnumSW:
+                    return new[] {
+                        Re3ItemIds.GunpowderC,
+                        Re3ItemIds.GunpowderCC
+                    };
+                default:
+                    return new byte[0];
+            }
         }
 
         public bool HasInkRibbons(RandoConfig config)
