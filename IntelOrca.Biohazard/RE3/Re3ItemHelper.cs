@@ -49,7 +49,7 @@ namespace IntelOrca.Biohazard.RE3
 
         public byte[] GetDefaultWeapons(RandoConfig config)
         {
-            return new[] { Re3ItemIds.HandgunBeretta, Re3ItemIds.ReloadingTool };
+            return new[] { Re3ItemIds.HandgunBeretta };
         }
 
         public byte[] GetInitialItems(RandoConfig config)

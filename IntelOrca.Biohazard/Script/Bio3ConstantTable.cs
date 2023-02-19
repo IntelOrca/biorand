@@ -586,7 +586,7 @@ namespace IntelOrca.Biohazard.Script
             "break",
             "break_point",
             "",
-            "set_1e",
+            "save",
             "set_1f",
 
             "calc_op",
