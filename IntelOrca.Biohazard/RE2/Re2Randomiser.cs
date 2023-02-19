@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using IntelOrca.Biohazard.RE3;
 
 namespace IntelOrca.Biohazard.RE2
 {
@@ -192,7 +193,15 @@ namespace IntelOrca.Biohazard.RE2
             if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard1))
             {
                 var dataPath = Re1Randomiser.FindDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard1));
-                npcRandomiser.AddToSelection(BioVersion.Biohazard1, dataPath);
+                npcRandomiser.AddToSelection(BioVersion.Biohazard1, new FileRepository(dataPath));
+            }
+            if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard3))
+            {
+                var dataPath = GetDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard3));
+                var fileRepository = new FileRepository(dataPath);
+                var re3randomizer = new Re3Randomiser(null);
+                re3randomizer.AddArchives(dataPath, fileRepository);
+                npcRandomiser.AddToSelection(BioVersion.Biohazard3, fileRepository);
             }
 
             var emdFolders = DataManager.GetDirectories(BiohazardVersion, $"emd");

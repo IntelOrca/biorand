@@ -15,7 +15,7 @@ namespace IntelOrca.Biohazard
         public string DataPath => _dataPath;
         public string ModPath => _modPath!;
 
-        public FileRepository(string dataPath, string? modPath)
+        public FileRepository(string dataPath, string? modPath = null)
         {
             _dataPath = dataPath;
             _modPath = modPath;

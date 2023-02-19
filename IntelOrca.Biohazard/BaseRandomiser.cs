@@ -325,7 +325,7 @@ namespace IntelOrca.Biohazard
                 {
                     using (progress.BeginTask(config.Player, "Randomizing NPCs"))
                     {
-                        var npcRandomiser = new NPCRandomiser(BiohazardVersion, logger, config, fileRepository.DataPath, fileRepository.ModPath, gameData, map, randomNpcs, NpcHelper, DataManager, playerActor);
+                        var npcRandomiser = new NPCRandomiser(BiohazardVersion, logger, fileRepository, config, fileRepository.DataPath, fileRepository.ModPath, gameData, map, randomNpcs, NpcHelper, DataManager, playerActor);
                         npcRandomiser.SelectedActors.AddRange(GetSelectedActors(config));
                         RandomizeNPCs(config, npcRandomiser);
                         npcRandomiser.Randomise();

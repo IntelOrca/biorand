@@ -20,6 +20,7 @@ namespace IntelOrca.Biohazard
 
         private readonly BioVersion _version;
         private readonly RandoLogger _logger;
+        private readonly FileRepository _fileRepository;
         private readonly RandoConfig _config;
         private readonly string _originalDataPath;
         private readonly string _modPath;
@@ -43,6 +44,7 @@ namespace IntelOrca.Biohazard
         public NPCRandomiser(
             BioVersion version,
             RandoLogger logger,
+            FileRepository fileRepository,
             RandoConfig config,
             string originalDataPath,
             string modPath,
@@ -55,6 +57,7 @@ namespace IntelOrca.Biohazard
         {
             _version = version;
             _logger = logger;
+            _fileRepository = fileRepository;
             _config = config;
             _originalDataPath = originalDataPath;
             _modPath = modPath;
@@ -63,13 +66,13 @@ namespace IntelOrca.Biohazard
             _rng = random;
             _npcHelper = npcHelper;
             _dataManager = dataManager;
-            _voiceSamples = AddToSelection(version, originalDataPath);
+            _voiceSamples = AddToSelection(version, fileRepository);
             _originalPlayerActor = _npcHelper.GetPlayerActor(config.Player);
             _playerActor = playerActor ?? _originalPlayerActor;
 
             using (_logger.Progress.BeginTask(config.Player, "Scanning voices"))
             {
-                var customSamples = AddCustom();
+                var customSamples = AddCustom(fileRepository);
                 _uniqueSamples.AddRange(customSamples);
             }
 
@@ -92,16 +95,16 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        public VoiceSample[] AddToSelection(BioVersion version, string originalDataPath)
+        public VoiceSample[] AddToSelection(BioVersion version, FileRepository fileRepository)
         {
             var voiceJsonPath = _dataManager.GetPath(version, "voice.json");
             var voiceJson = File.ReadAllText(voiceJsonPath);
-            var extraSamples = LoadVoiceInfoFromJson(originalDataPath, voiceJson);
+            var extraSamples = LoadVoiceInfoFromJson(fileRepository, voiceJson);
             _uniqueSamples.AddRange(extraSamples);
             return extraSamples;
         }
 
-        public VoiceSample[] AddCustom()
+        public VoiceSample[] AddCustom(FileRepository fileRepository)
         {
             var samples = new List<VoiceSample>();
             foreach (var actorPath in _dataManager.GetDirectoriesIn("hurt"))
@@ -120,7 +123,7 @@ namespace IntelOrca.Biohazard
                     sample.BasePath = Path.GetDirectoryName(sampleFile);
                     sample.Path = Path.GetFileName(sampleFile);
                     sample.Actor = actor;
-                    sample.End = GetVoiceLength(sampleFile);
+                    sample.End = GetVoiceLength(sampleFile, fileRepository);
                     sample.Kind = Path.GetFileNameWithoutExtension(sampleFile) == "3" ? "death" : "hurt";
                     samples.Add(sample);
                 }
@@ -135,7 +138,7 @@ namespace IntelOrca.Biohazard
                     return sampleFiles.Select(y => (Actor: actor, SampleFiles: y));
                 })
                 .AsParallel()
-                .Select(x => ProcessSample(x.Actor, x.SampleFiles))
+                .Select(x => ProcessSample(x.Actor, x.SampleFiles, fileRepository))
                 .Where(x => x != null)
                 .ToArray() as VoiceSample[];
 
@@ -143,7 +146,7 @@ namespace IntelOrca.Biohazard
             return samples.ToArray();
         }
 
-        private VoiceSample? ProcessSample(string actor, string sampleFile)
+        private VoiceSample? ProcessSample(string actor, string sampleFile, FileRepository fileRepository)
         {
             if (!sampleFile.EndsWith(".wav", StringComparison.OrdinalIgnoreCase) &&
                 !sampleFile.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase))
@@ -178,7 +181,7 @@ namespace IntelOrca.Biohazard
                 sample.BasePath = Path.GetDirectoryName(sampleFile);
                 sample.Path = fileName;
                 sample.Actor = actor;
-                sample.End = GetVoiceLength(sampleFile);
+                sample.End = GetVoiceLength(sampleFile, fileRepository);
                 sample.Kind = GetThingsFromFileName(fileName, '_').FirstOrDefault();
                 sample.Condition = conditionsb.Length == 0 ? null : conditionsb.ToString();
                 return sample;
@@ -710,7 +713,8 @@ namespace IntelOrca.Biohazard
                                     }
                                     else
                                     {
-                                        builder.Append(sliceSrcPath, replacement.Start, replacement.End);
+                                        var stream = _fileRepository.GetStream(sliceSrcPath);
+                                        builder.Append(sliceSrcPath, stream, replacement.Start, replacement.End);
                                     }
                                 }
                                 builder.AppendSilence(sample.Length - replacement.Length);
@@ -739,13 +743,13 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private static void CopySample(string srcPath, string dstPath)
+        private void CopySample(string srcPath, string dstPath)
         {
             var srcExtension = Path.GetExtension(srcPath);
             var dstExtension = Path.GetExtension(dstPath);
             if (srcExtension.Equals(dstExtension, StringComparison.OrdinalIgnoreCase))
             {
-                File.Copy(srcPath, dstPath, true);
+                _fileRepository.Copy(srcPath, dstPath);
             }
             else
             {
@@ -765,7 +769,7 @@ namespace IntelOrca.Biohazard
             return Path.Combine(basePath, sample.Path);
         }
 
-        private static VoiceSample[] LoadVoiceInfoFromJson(string originalDataPath, string json)
+        private static VoiceSample[] LoadVoiceInfoFromJson(FileRepository fileRepository, string json)
         {
             var voiceList = JsonSerializer.Deserialize<Dictionary<string, VoiceSample>>(json, new JsonSerializerOptions()
             {
@@ -777,7 +781,7 @@ namespace IntelOrca.Biohazard
             foreach (var kvp in voiceList!)
             {
                 var sample = kvp.Value;
-                sample.BasePath = originalDataPath;
+                sample.BasePath = fileRepository.DataPath;
                 sample.Path = kvp.Key;
                 if (sample.Path.Contains("#"))
                 {
@@ -786,7 +790,7 @@ namespace IntelOrca.Biohazard
                     sample.SapIndex = int.Parse(parts[1]);
                 }
 
-                var totalLength = GetVoiceLength(Path.Combine(originalDataPath, sample.Path));
+                var totalLength = GetVoiceLength(fileRepository.GetDataPath(sample.Path), fileRepository);
                 if (sample.Strict)
                     sample.MaxLength = totalLength;
                 if (sample.Actors != null)
@@ -848,18 +852,18 @@ namespace IntelOrca.Biohazard
             return (int)new FileInfo(path).Length;
         }
 
-        private static double GetVoiceLength(string path)
+        private static double GetVoiceLength(string path, FileRepository fileRepository)
         {
             if (_voiceLengthCache.TryGetValue(path, out var result))
             {
                 return result;
             }
-            result = GetVoiceLengthInner(path);
+            result = GetVoiceLengthInner(path, fileRepository);
             _voiceLengthCache.TryAdd(path, result);
             return result;
         }
 
-        private static double GetVoiceLengthInner(string path)
+        private static double GetVoiceLengthInner(string path, FileRepository fileRepository)
         {
             if (path.EndsWith(".sap", StringComparison.OrdinalIgnoreCase))
             {
@@ -875,7 +879,7 @@ namespace IntelOrca.Biohazard
             }
             else
             {
-                using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+                using (var fs = fileRepository.GetStream(path))
                 {
                     var br = new BinaryReader(fs);
                     var header = br.ReadStruct<WaveHeader>();
@@ -912,7 +916,7 @@ namespace IntelOrca.Biohazard
         public string? Kind { get; set; }
         public string? Rdt { get; set; }
         public string[]? Rdts { get; set; }
-        public int? Player { get; set; }
+        public int Player { get; set; }
         public int Cutscene { get; set; }
         public bool Strict { get; set; }
 
