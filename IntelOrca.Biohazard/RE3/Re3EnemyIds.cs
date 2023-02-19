@@ -38,6 +38,7 @@
         public const byte BradVickers = 83;
         public const byte DarioRosso = 84;
         public const byte MurphySeeker = 85;
+        public const byte TyrellPatrick = 86;
         public const byte BradZombie = 88;
         public const byte DarioZombie = 89;
         public const byte PromoGirl = 90;

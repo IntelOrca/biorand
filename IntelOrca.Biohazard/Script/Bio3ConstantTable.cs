@@ -393,7 +393,7 @@ namespace IntelOrca.Biohazard.Script
 
             "Dario Rosso",
             "Murphy Seeker",
-            "",
+            "Tyrell Patrick",
             "",
             "Brad (Zombie)",
             "Dario (Zombie)",

@@ -411,6 +411,10 @@
         {
           "includeOffsets": [ 20662, 20714, 20784 ],
           "cutscene": 1
+        },
+        {
+          "includeOffsets": [ 17196 ],
+          "cutscene": 2
         }
       ]
     },
@@ -826,6 +830,11 @@
         {
           "id": 9,
           "priority": "low"
+        }
+      ],
+      "npcs": [
+        {
+          "excludeTypes": [ 84, 85, 86 ]
         }
       ]
     },
@@ -1429,6 +1438,11 @@
         {
           "id": 1,
           "priority": "low"
+        }
+      ],
+      "npcs": [
+        {
+          "playerActor": "carlos"
         }
       ]
     },
