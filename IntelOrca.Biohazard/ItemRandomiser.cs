@@ -152,7 +152,7 @@ namespace IntelOrca.Biohazard
                 if (_config.Game == 3 && _config.RatioGunpowder != 0 && _availableGunpowder.Count != 0)
                 {
                     // If gunpowder is enabled, give the player the reloading tool
-                    AddToInventory(Re3ItemIds.ReloadingTool, 1);
+                    AddToInventory(Re3ItemIds.ReloadingTool, 255);
                 }
 
                 // Health items
