@@ -101,5 +101,120 @@ namespace IntelOrca.Biohazard.RE3
         {
             return new[] { "jill", "brad", "mikhail", "nikolai", "dario", "murphy", "carlos" };
         }
+
+        protected override void SerialiseInventory(FileRepository fileRepository)
+        {
+            const uint AddressInventoryStart = 0x0052D20C;
+            const uint AddressRefHard = 0x004609F3;
+            const uint AddressRefEasy = 0x004609EB;
+
+            var bw = new BinaryWriter(ExePatch);
+
+            // Hard then easy
+            var offset = AddressInventoryStart;
+            bw.Write(offset);
+            var lengthPosition = bw.BaseStream.Position;
+            bw.Write(0);
+
+            var baseAddress = bw.BaseStream.Position;
+            uint easyAddress = 0;
+            for (int j = 0; j < 2; j++)
+            {
+                if (j == 1)
+                    easyAddress = (uint)(offset + bw.BaseStream.Position - baseAddress);
+
+                // Jill then Carlos
+                for (int i = 0; i < 2; i++)
+                {
+                    if (Inventories.Count <= i)
+                        break;
+
+                    var inventory = Inventories[i];
+                    if (inventory == null)
+                        continue;
+
+                    foreach (var entry in inventory.Entries)
+                    {
+                        if (entry.Type == 0)
+                            break;
+
+                        bw.Write((byte)entry.Type);
+                        bw.Write((byte)entry.Count);
+                        bw.Write((byte)GetInventoryQuantityStyle(entry.Type));
+                        bw.Write((byte)0);
+                    }
+                    bw.Write((int)-1);
+                    bw.Write((int)0);
+                }
+            }
+
+            // Fix length
+            var backupPosition = bw.BaseStream.Position;
+            bw.BaseStream.Position = lengthPosition;
+            bw.Write((uint)(backupPosition - baseAddress));
+            bw.BaseStream.Position = backupPosition;
+
+            // Write easy address location
+            bw.Write(AddressRefEasy);
+            bw.Write(4);
+            bw.Write(easyAddress);
+        }
+
+        private byte GetInventoryQuantityStyle(byte type)
+        {
+            const byte None = 0b00;
+            const byte Digit = 0b01;
+            const byte Percent = 0b10;
+            const byte Infinity = 0b11;
+            const byte Green = 0 << 2;
+            const byte Red = 1 << 2;
+            const byte Orange = 2 << 2;
+            const byte Blue = 2 << 2;
+
+            switch (type)
+            {
+                case Re3ItemIds.HandgunSigpro:
+                case Re3ItemIds.HandgunBeretta:
+                case Re3ItemIds.ShotgunBenelli:
+                case Re3ItemIds.MagnumSW:
+                case Re3ItemIds.GrenadeLauncherGrenade:
+                case Re3ItemIds.RocketLauncher:
+                case Re3ItemIds.MineThrower:
+                case Re3ItemIds.HangunEagle:
+                case Re3ItemIds.ShotgunM37:
+                case Re3ItemIds.HandgunAmmo:
+                case Re3ItemIds.MagnumAmmo:
+                case Re3ItemIds.ShotgunAmmo:
+                case Re3ItemIds.GrenadeRounds:
+                case Re3ItemIds.MineThrowerAmmo:
+                case Re3ItemIds.FirstAidSprayBox:
+                    return Green | Digit;
+                case Re3ItemIds.GrenadeLauncherFlame:
+                case Re3ItemIds.HandgunSigproEnhanced:
+                case Re3ItemIds.HandgunBerettaEnhanced:
+                case Re3ItemIds.ShotgunBenelliEnhanced:
+                case Re3ItemIds.MineThrowerEnhanced:
+                case Re3ItemIds.FlameRounds:
+                case Re3ItemIds.RifleAmmo:
+                case Re3ItemIds.HandgunEnhancedAmmo:
+                case Re3ItemIds.ShotgunEnhancedAmmo:
+                    return Red | Digit;
+                case Re3ItemIds.RifleM4A1Manual:
+                case Re3ItemIds.RifleM4A1Auto:
+                    return Red | Percent;
+                case Re3ItemIds.GrenadeLauncherAcid:
+                case Re3ItemIds.AcidRounds:
+                    return Orange | Digit;
+                case Re3ItemIds.GrenadeLauncherFreeze:
+                case Re3ItemIds.FreezeRounds:
+                    return Blue | Digit;
+                case Re3ItemIds.GatlingGun:
+                    return Green | Infinity;
+                case Re3ItemIds.InkRibbon:
+                    return Blue | Digit;
+                default:
+                    return None;
+            }
+        }
     }
 }

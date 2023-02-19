@@ -59,7 +59,7 @@ namespace IntelOrca.Biohazard.RE3
 
         public int[]? GetInventorySize(RandoConfig config)
         {
-            return new[] { 8 };
+            return new[] { 8, 8 };
         }
 
         public byte GetItemId(CommonItemKind kind)
