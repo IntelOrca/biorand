@@ -104,6 +104,7 @@ namespace IntelOrca.Biohazard
                 }
             }
 
+            RE3Fixes();
             return graph;
         }
 
@@ -171,12 +172,25 @@ namespace IntelOrca.Biohazard
             if (_config.Game != 3)
                 return;
 
-            FixRE3HydrantAlley();
+            FixRE3LockpickDoor();
             if (_config.RandomDoors)
             {
+                FixRE3HydrantAlley();
                 FixRE3Restuarant();
                 FixRE3PressOffice();
                 FixRE3TrainCrashExit();
+            }
+        }
+
+        private void FixRE3LockpickDoor()
+        {
+            var rdt1 = _gameData.GetRdt(new RdtId(0, 0x0A));
+            var rdt2 = _gameData.GetRdt(new RdtId(0, 0x24));
+            if (rdt1 != null && rdt2 != null)
+            {
+                var lockpickDoor1 = rdt1.Doors.First(x => x.Id == 2);
+                var lockpickDoor2 = rdt2.Doors.First(x => x.Id == 2);
+                CopyDoorTo(lockpickDoor1, lockpickDoor2);
             }
         }
 
