@@ -53,6 +53,16 @@
           "id": 8,
           "priority": "low"
         }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 26492 ],
+          "cutscene": 0
+        },
+        {
+          "includeOffsets": [ 26632 ],
+          "cutscene": 1
+        }
       ]
     },
     "102": {
@@ -120,6 +130,11 @@
         {
           "target": "108"
         }
+      ],
+      "npcs": [
+        {
+          "includeTypes": [ 80, 81, 82, 83, 92 ]
+        }
       ]
     },
     "106": {
@@ -165,6 +180,11 @@
         },
         {
           "target": "106"
+        }
+      ],
+      "npcs": [
+        {
+          "includeTypes": [ 80, 81, 82, 83, 92 ]
         }
       ]
     },
@@ -382,6 +402,16 @@
           "lock": "unblock",
           "noUnlock": true
         }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 19778, 19826, 19968, 20016 ],
+          "cutscene": 0
+        },
+        {
+          "includeOffsets": [ 20662, 20714, 20784 ],
+          "cutscene": 1
+        }
       ]
     },
     "11C": {
@@ -529,6 +559,17 @@
           "id": 12,
           "requires": [ 79 ]
         }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 29716 ],
+          "cutscene": 0
+        },
+        {
+          "includeOffsets": [ 29256 ],
+          "includeTypes": [ 80, 81, 82, 83, 92 ],
+          "cutscene": 1
+        }
       ]
     },
     "206": {
@@ -657,6 +698,32 @@
           "noReturn": true,
           "randomize": false
         }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 20152 ],
+          "cutscene": 0 // Nikolai (first greet)
+        },
+        {
+          "includeOffsets": [ 20314 ],
+          "cutscene": 1 // Mikhail (first greet)
+        },
+        {
+          "includeOffsets": [ 20512, 20536 ],
+          "cutscene": 2 // Carlos and Nikolai
+        },
+        {
+          "includeOffsets": [ 20208 ],
+          "cutscene": 4 // Carlos (ready to go)
+        },
+        {
+          "includeOffsets": [ 20616 ],
+          "cutscene": 5 // Carlos (it's looking good)
+        },
+        {
+          "includeOffsets": [ 20286, 20652 ],
+          "cutscene": 6
+        }
       ]
     },
     "20D": {
@@ -687,6 +754,17 @@
         {
           "id": 13,
           "priority": "low"
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 17488 ],
+          "cutscene": 0
+        },
+        {
+          "includeOffsets": [ 17632 ],
+          "includeTypes": [ 81, 92 ],
+          "cutscene": 1
         }
       ]
     },
@@ -805,6 +883,11 @@
           "requires": [ 50 ],
           "noUnlock": true
         }
+      ],
+      "npcs": [
+        {
+          "includeTypes": [ 80, 81, 82, 83, 92 ]
+        }
       ]
     },
     "212": {
@@ -867,6 +950,17 @@
         //   "target": "305",
         //   "noReturn": true
         // }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 19226 ],
+          "includeTypes": [ 81, 92 ],
+          "cutscene": 0
+        },
+        {
+          "includeOffsets": [ 19346 ],
+          "cutscene": 1
+        }
       ]
     },
     "216": {

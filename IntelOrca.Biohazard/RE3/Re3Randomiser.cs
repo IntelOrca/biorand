@@ -205,7 +205,7 @@ namespace IntelOrca.Biohazard.RE3
         protected override void SerialiseInventory(FileRepository fileRepository)
         {
             const uint AddressInventoryStart = 0x0052D20C;
-            const uint AddressRefHard = 0x004609F3;
+            // const uint AddressRefHard = 0x004609F3;
             const uint AddressRefEasy = 0x004609EB;
 
             var bw = new BinaryWriter(ExePatch);
