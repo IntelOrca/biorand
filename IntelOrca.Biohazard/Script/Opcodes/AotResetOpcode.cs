@@ -13,6 +13,24 @@ namespace IntelOrca.Biohazard.Script.Opcodes
         public ushort Data1 { get; set; }
         public ushort Data2 { get; set; }
 
+        public short NextX
+        {
+            get => (short)Data0;
+            set => Data0 = (ushort)value;
+        }
+
+        public short NextY
+        {
+            get => (short)Data1;
+            set => Data1 = (ushort)value;
+        }
+
+        public short NextZ
+        {
+            get => (short)Data2;
+            set => Data2 = (ushort)value;
+        }
+
         public static AotResetOpcode Read(BinaryReader br, int offset)
         {
             return new AotResetOpcode()

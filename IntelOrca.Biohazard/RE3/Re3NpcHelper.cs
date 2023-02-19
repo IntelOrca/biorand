@@ -56,7 +56,7 @@ namespace IntelOrca.Biohazard.RE3
 
         public string GetPlayerActor(int player)
         {
-            return "jill";
+            return "jill.re3";
         }
 
         public byte[] GetSlots(RandoConfig config, byte id)

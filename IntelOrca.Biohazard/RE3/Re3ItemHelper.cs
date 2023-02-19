@@ -315,7 +315,25 @@ namespace IntelOrca.Biohazard.RE3
 
         public bool IsItemTypeDiscardable(byte type)
         {
-            return false;
+            switch (type)
+            {
+                case Re3ItemIds.Lockpick:
+                case Re3ItemIds.WarehouseKeyBackdoor:
+                case Re3ItemIds.SickroomKeyRoom402:
+                case Re3ItemIds.EmblemKeySTARS:
+                case Re3ItemIds.ClockTowerKeyBezel:
+                case Re3ItemIds.ClockTowerKeyWinder:
+                case Re3ItemIds.ChronosKey:
+                case Re3ItemIds.ParkKeyFront:
+                case Re3ItemIds.ParkKeyGraveyard:
+                case Re3ItemIds.ParkKeyRear:
+                case Re3ItemIds.FacilityKeyNobarcode:
+                case Re3ItemIds.FacilityKeyBarcode:
+                case Re3ItemIds.BoutiqueKey:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         public bool IsOptionalItem(RandoConfig config, byte type)

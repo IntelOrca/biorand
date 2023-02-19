@@ -272,8 +272,16 @@ namespace IntelOrca.Biohazard
         private static void CopyDoorTo(Rdt rdt, int dstId, int srcId)
         {
             var src = rdt.Doors.First(x => x.Id == srcId);
-            var dst = rdt.Doors.First(x => x.Id == dstId);
-            CopyDoorTo(dst, src);
+            foreach (var dst in rdt.Doors.Where(x => x.Id == dstId))
+            {
+                CopyDoorTo(dst, src);
+            }
+            foreach (var dst in rdt.Resets.Where(x => x.Id == dstId && x.SCE == 1))
+            {
+                dst.NextX = src.NextX;
+                dst.NextY = src.NextY;
+                dst.NextZ = src.NextZ;
+            }
         }
 
         private static void CopyDoorTo(IDoorAotSetOpcode dst, IDoorAotSetOpcode src)
