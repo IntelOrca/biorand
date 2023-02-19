@@ -680,7 +680,8 @@
       "linkedRoom": "217",
       "doorRando": [
         {
-          "cutscene": true
+          "cutscene": true,
+          "nop": [ "0x2BA2", "0x2BEA-0x2BF4", "0x2DD2-0x2DE4", "0x2E22", "0x2FCC-0x3016", "0x33C0", "0x344A", "0x3AD4-0x3B1E" ]
         }
       ],
       "doors": [
@@ -689,7 +690,8 @@
         },
         {
           "target": "20D",
-          "requires": [ 60, 95 ]
+          "requires": [ 60, 95 ],
+          "noUnlock": true
         }
       ]
     },
@@ -715,6 +717,18 @@
       "items": [
         {
           "id": 4,
+          "priority": "low"
+        },
+        {
+          "id": 5,
+          "priority": "low"
+        },
+        {
+          "id": 6,
+          "priority": "low"
+        },
+        {
+          "id": 7,
           "priority": "low"
         },
         {
@@ -972,6 +986,12 @@
         {
           "target": "304"
         }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "priority": "low"
+        }
       ]
     },
     "303": {
@@ -1067,12 +1087,12 @@
         },
         {
           "target": "308",
-          "requires": [ 94 ], // 121
+          "requires": [ 94 ], // 94 + 120 = 121
           "doorRando": false
         },
         {
           "target": "308",
-          "requires": [ 94, 120 ], // 121
+          "requires": [ 121 ], // Use 121, because player might combine key before using the other locks
           "doorRando": true
         }
       ],
@@ -1128,18 +1148,34 @@
       ]
     },
     "30B": {
+      "doorRando": [
+        {
+          "category": "bridge"
+        }
+      ],
       "doors": [
         {
+          "id": 0,
           "target": "30A"
         },
         {
+          "id": 1,
           "target": "30C",
           "doorRando": false
         },
         {
+          "id": 1,
           "target": "30C",
           "requires": [ 119 ],
+          "randomize": false,
           "doorRando": true
+        },
+        {
+          "id": 30, // fake ID
+          "target": "30D",
+          "requires": [ 76, 77 ],
+          "isBridgeEdge": true,
+          "randomize": false
         }
       ]
     },
@@ -1151,10 +1187,42 @@
       ],
       "doors": [
         {
-          "target": "30B"
+          "target": "30B",
+          "randomize": false
+        }
+      ],
+      "items": [
+        {
+          "id": 1,
+          "priority": "low"
+        },
+        {
+          "id": 4,
+          "priority": "low"
+        },
+        {
+          "id": 5,
+          "priority": "low"
         }
       ],
       "requires": [ 76, 77 ]
+    },
+    "30D": {
+      "doorRando": [
+        {
+          "nop": [ "0x47D2" ]
+        }
+      ],
+      "doors": [
+        {
+          "target": "30B",
+          "lock": "always"
+        },
+        {
+          "id": 0,
+          "target": "300"
+        }
+      ]
     },
     "401": {
       "doorRando": [
@@ -1386,7 +1454,6 @@
         }
       ]
     },
-    // 415 = giant worm pit
     "415": {
       "doorRando": [
         {

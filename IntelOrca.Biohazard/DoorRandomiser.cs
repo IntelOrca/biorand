@@ -110,6 +110,7 @@ namespace IntelOrca.Biohazard
         public PlayGraph CreateRandomGraph()
         {
             _logger.WriteHeading("Creating Random Room Graph:");
+            RE3PreFixes();
             _allNodes = CreateNodes();
 
             // Create start and end
@@ -149,6 +150,20 @@ namespace IntelOrca.Biohazard
             UnfixRE1Doors();
             UpdateLinkedRooms();
             return graph;
+        }
+
+        private void RE3PreFixes()
+        {
+            if (_config.Game != 3)
+                return;
+
+            // For 30B, change boos door to id 30 so we can separate it from the normal door
+            var rdt = _gameData.GetRdt(new RdtId(2, 0x0B));
+            if (rdt != null)
+            {
+                var bossDoor = rdt.Doors.Skip(1).First();
+                bossDoor.Id = 30;
+            }
         }
 
         private void RE3Fixes()
@@ -465,13 +480,23 @@ namespace IntelOrca.Biohazard
             {
                 if (edge.Node == null)
                 {
-                    if (nonLinearBridgeNode && !edge.IsBridgeEdge)
+                    if (nonLinearBridgeNode)
                     {
-                        // This was an unconnected edge that isn't the 'bridge edge', so
-                        // ensure it never gets connected.
-                        edge.Lock = LockKind.Always;
+                        if (edge.IsBridgeEdge)
+                        {
+                            edge.NoReturn = true;
+                        }
+                        else if (edge.Randomize)
+                        {
+                            // This was an unconnected edge that isn't the 'bridge edge', so
+                            // ensure it never gets connected.
+                            edge.Lock = LockKind.Always;
+                        }
                     }
-                    edge.NoReturn = true;
+                    else
+                    {
+                        edge.NoReturn = true;
+                    }
                     edge.IsBridgeEdge = false;
                 }
             }
