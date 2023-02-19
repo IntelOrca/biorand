@@ -34,6 +34,14 @@ namespace IntelOrca.Biohazard.BioRand
 
         public MainWindow()
         {
+            var tim = new TimCollectionFile(@"C:\Users\Ted\Desktop\STMAIN0J.TIM");
+            var i = 0;
+            foreach (var t in tim.Tims)
+            {
+                t.ToBitmap().Save($@"C:\Users\Ted\Desktop\STMAIN0J_{i:00}.png");
+                i++;
+            }
+
             InitializeComponent();
             InitializeEvents();
             LoadSettings();
@@ -956,7 +964,6 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 lblPlayer1.Visibility = Visibility.Collapsed;
                 dropdownPlayer1.Visibility = Visibility.Collapsed;
-                chkPlayer.Visibility = Visibility.Hidden;
             }
             else
             {
