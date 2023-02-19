@@ -1157,7 +1157,10 @@ namespace IntelOrca.Biohazard
 
                     if (_config.RandomDoors && door.Create)
                     {
-                        rdt.ConvertToDoor((byte)door.Id!, (byte)door.Texture);
+                        var key = ParseLiteral(door.Lock);
+                        var lockId = door.LockId == null ? (byte?)null : (byte?)door.LockId;
+                        rdt.ConvertToDoor((byte)door.Id!, (byte)door.Texture, key == null ? (byte?)null : (byte?)key.Value, lockId);
+                        door.Lock = null;
                     }
 
                     var edgeNode = GetOrCreateNode(target.Rdt);
@@ -1266,6 +1269,18 @@ namespace IntelOrca.Biohazard
             }
 
             return node;
+        }
+
+        private static int? ParseLiteral(string? s)
+        {
+            if (s == null)
+                return null;
+
+            if (s.StartsWith("0x"))
+            {
+                return int.Parse(s.Substring(2), System.Globalization.NumberStyles.HexNumber);
+            }
+            return int.Parse(s);
         }
 
         private void FinishOffEndNodes(PlayNode endNode)

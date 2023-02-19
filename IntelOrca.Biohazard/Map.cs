@@ -94,6 +94,7 @@ namespace IntelOrca.Biohazard
         public string? Target { get; set; }
         public bool? Randomize { get; set; }
         public string? Lock { get; set; }
+        public int? LockId { get; set; }
         public bool NoReturn { get; set; }
         public bool NoUnlock { get; set; }
         public bool IsBridgeEdge { get; set; }
