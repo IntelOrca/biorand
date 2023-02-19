@@ -59,9 +59,9 @@ namespace IntelOrca.Biohazard
             {
                 if (reset.Id == id && reset.SCE == 1)
                 {
-                    reset.Data0 = (ushort)destination.X;
-                    reset.Data1 = (ushort)destination.Y;
-                    reset.Data2 = (ushort)destination.Z;
+                    reset.NextX = destination.X;
+                    reset.NextY = destination.Y;
+                    reset.NextZ = destination.Z;
                 }
             }
             if (!noCompareRewrite)

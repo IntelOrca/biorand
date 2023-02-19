@@ -133,7 +133,7 @@
       ],
       "npcs": [
         {
-          "includeTypes": [ 80, 81, 82, 83, 92 ]
+          "excludeTypes": [ 84, 85 ]
         }
       ]
     },
@@ -184,7 +184,7 @@
       ],
       "npcs": [
         {
-          "includeTypes": [ 80, 81, 82, 83, 92 ]
+          "excludeTypes": [ 84, 85 ]
         }
       ]
     },
@@ -571,7 +571,7 @@
         },
         {
           "includeOffsets": [ 29256 ],
-          "includeTypes": [ 80, 81, 82, 83, 92 ],
+          "excludeTypes": [ 84, 85 ],
           "cutscene": 1
         }
       ]
@@ -834,7 +834,7 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 84, 85, 86 ]
+          "excludeTypes": [ 84, 85 ]
         }
       ]
     },
@@ -893,9 +893,23 @@
           "noUnlock": true
         }
       ],
+      "items": [
+        {
+          "id": 7,
+          "requires": [ 114 ]
+        },
+        {
+          "id": 10,
+          "priority": "low"
+        },
+        {
+          "id": 11,
+          "priority": "low"
+        }
+      ],
       "npcs": [
         {
-          "includeTypes": [ 80, 81, 82, 83, 92 ]
+          "excludeTypes": [ 84, 85 ]
         }
       ]
     },
@@ -1855,6 +1869,11 @@
       ]
     },
     "510": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "target": "40F"
