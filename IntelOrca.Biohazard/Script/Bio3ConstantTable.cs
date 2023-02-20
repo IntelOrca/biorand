@@ -181,6 +181,8 @@ namespace IntelOrca.Biohazard.Script
                     break;
                 case 'p':
                     return $"init_{value:X2}";
+                case 'v':
+                    return $"var_{value:X2}";
             }
             return null;
         }
@@ -587,7 +589,7 @@ namespace IntelOrca.Biohazard.Script
             "break_point",
             "",
             "save",
-            "set_1f",
+            "set_var:vvu",
 
             "calc_op",
             "",
