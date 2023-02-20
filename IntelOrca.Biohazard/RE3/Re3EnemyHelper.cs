@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.Script;
@@ -10,11 +11,6 @@ namespace IntelOrca.Biohazard.RE3
     {
         public void BeginRoom(Rdt rdt)
         {
-        }
-
-        public void ExcludeEnemies(RandoConfig config, Rdt rdt, string difficulty, Action<byte> exclude)
-        {
-            throw new NotImplementedException();
         }
 
         public string GetEnemyName(byte type)
@@ -155,10 +151,8 @@ namespace IntelOrca.Biohazard.RE3
                 case Re3EnemyIds.ZombieGuy7:
                 case Re3EnemyIds.ZombieGuy8:
                 case Re3EnemyIds.Cerberus:
-                case Re3EnemyIds.Crow:
                 case Re3EnemyIds.Hunter:
                 case Re3EnemyIds.BS23:
-                case Re3EnemyIds.HunterGamma:
                 case Re3EnemyIds.Spider:
                 case Re3EnemyIds.MiniSpider:
                 case Re3EnemyIds.MiniBrainsucker:
@@ -171,34 +165,27 @@ namespace IntelOrca.Biohazard.RE3
 
         public bool SupportsEnemyType(RandoConfig config, Rdt rdt, string difficulty, bool hasEnemyPlacements, byte enemyType)
         {
+            // These enemies always work
             switch (enemyType)
             {
-                case Re3EnemyIds.ZombieGuy1:
-                case Re3EnemyIds.ZombieGirl1:
-                case Re3EnemyIds.ZombieFat:
-                case Re3EnemyIds.ZombieGirl2:
-                case Re3EnemyIds.ZombieRpd1:
-                case Re3EnemyIds.ZombieGuy2:
-                case Re3EnemyIds.ZombieGuy3:
-                case Re3EnemyIds.ZombieGuy4:
-                case Re3EnemyIds.ZombieNaked:
-                case Re3EnemyIds.ZombieGuy5:
-                case Re3EnemyIds.ZombieGuy6:
-                case Re3EnemyIds.ZombieLab:
-                case Re3EnemyIds.ZombieGirl3:
-                case Re3EnemyIds.ZombieRpd2:
-                case Re3EnemyIds.ZombieGuy7:
-                case Re3EnemyIds.ZombieGuy8:
                 case Re3EnemyIds.Hunter:
                 case Re3EnemyIds.BS23:
                 case Re3EnemyIds.BS28:
-                case Re3EnemyIds.Spider:
                 case Re3EnemyIds.Cerberus:
                 case Re3EnemyIds.Nemesis:
                     return true;
-                default:
-                    return false;
             }
+
+            // Enemies that can already be in the room will work
+            var existingEnemyTypes = rdt.Enemies
+                .Select(x => x.Type)
+                .Where(IsEnemy)
+                .ToArray();
+
+            if (existingEnemyTypes.Contains(enemyType))
+                return true;
+
+            return false;
         }
 
         private static bool IsZombie(byte type)

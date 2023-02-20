@@ -30,7 +30,7 @@ namespace IntelOrca.Biohazard.RE1
             return !exclude.Contains(enemyType);
         }
 
-        public void ExcludeEnemies(RandoConfig config, Rdt rdt, string difficulty, Action<byte> exclude)
+        private void ExcludeEnemies(RandoConfig config, Rdt rdt, string difficulty, Action<byte> exclude)
         {
             var types = rdt.Enemies
                 .Select(x => x.Type)

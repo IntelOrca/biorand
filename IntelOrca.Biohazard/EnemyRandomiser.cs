@@ -420,11 +420,6 @@ namespace IntelOrca.Biohazard
                 enemiesToChange = GenerateRandomEnemies(rng, rdt, enemiesToChange, possibleTypes[0]);
             }
 
-            // _enemyHelper.ExcludeEnemies(_config, rdt, enemySpec.Difficulty ?? "", x => excludeTypes.Add(x));
-            // possibleTypes = possibleTypes
-            //     .Where(x => !excludeTypes.Contains(x))
-            //     .ToArray();
-
             if (possibleTypes.Length == 0)
                 return;
 

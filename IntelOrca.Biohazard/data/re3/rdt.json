@@ -133,7 +133,7 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 84, 85 ]
+          "excludeTypes": [ 47, 84, 85 ]
         }
       ]
     },
@@ -184,9 +184,10 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 84, 85 ]
+          "excludeTypes": [ 47, 84, 85 ]
         }
-      ]
+      ],
+      "enemies": []
     },
     "108": {
       "linkedRoom": "122",
@@ -207,7 +208,8 @@
             "cut": 3
           }
         }
-      ]
+      ],
+      "enemies": []
     },
     "10B": {
       "doors": [
@@ -238,6 +240,11 @@
         },
         {
           "target": "10B"
+        }
+      ],
+      "enemies": [
+        {
+          "randomPlacements": true
         }
       ]
     },
@@ -423,7 +430,8 @@
         {
           "target": "11B"
         }
-      ]
+      ],
+      "enemies": []
     },
     "123": {
       "linkedRoom": "109",
@@ -571,10 +579,11 @@
         },
         {
           "includeOffsets": [ 29256 ],
-          "excludeTypes": [ 84, 85 ],
+          "excludeTypes": [ 47, 84, 85 ],
           "cutscene": 1
         }
-      ]
+      ],
+      "enemies": []
     },
     "206": {
       "doors": [
@@ -770,7 +779,8 @@
           "includeTypes": [ 81, 92 ],
           "cutscene": 1
         }
-      ]
+      ],
+      "enemies": []
     },
     "20E": {
       "linkedRoom": "217",
@@ -834,7 +844,7 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 84, 85 ]
+          "excludeTypes": [ 47, 84, 85 ]
         }
       ]
     },
@@ -909,7 +919,7 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 84, 85 ]
+          "excludeTypes": [ 47, 84, 85 ]
         }
       ]
     },
@@ -1177,7 +1187,8 @@
           "id": 8,
           "type": 0
         }
-      ]
+      ],
+      "enemies": []
     },
     "306": {
       "linkedRoom": "312",
@@ -1247,6 +1258,11 @@
         {
           "target": "309"
         }
+      ],
+      "enemies": [
+        {
+          "y": 0
+        }
       ]
     },
     "309": {
@@ -1275,6 +1291,11 @@
         },
         {
           "target": "30B"
+        }
+      ],
+      "enemies": [
+        {
+          "y": 0
         }
       ]
     },
@@ -1355,6 +1376,13 @@
         }
       ]
     },
+    "314": {
+      "enemies": [
+        {
+          "y": 0
+        }
+      ]
+    },
     "401": {
       "doorRando": [
         {
@@ -1376,7 +1404,8 @@
         {
           "target": "403"
         }
-      ]
+      ],
+      "enemies": []
     },
     "403": {
       "doors": [
@@ -1552,6 +1581,11 @@
         },
         {
           "target": "412"
+        }
+      ],
+      "enemies": [
+        {
+          "randomPlacements": true
         }
       ]
     },
