@@ -208,6 +208,17 @@ namespace IntelOrca.Biohazard.RE3
             // const uint AddressRefHard = 0x004609F3;
             const uint AddressRefEasy = 0x004609EB;
 
+            if (Inventories.Count == 0)
+                return;
+
+            var inventoryX = Inventories[0];
+            if (inventoryX == null)
+                return;
+
+            var jillInventory = inventoryX.Entries.Take(8).ToArray();
+            var carlosInventory = inventoryX.Entries.Skip(8).Take(8).ToArray();
+            var inventories = new[] { jillInventory, carlosInventory };
+
             var bw = new BinaryWriter(ExePatch);
 
             // Hard then easy
@@ -226,14 +237,8 @@ namespace IntelOrca.Biohazard.RE3
                 // Jill then Carlos
                 for (int i = 0; i < 2; i++)
                 {
-                    if (Inventories.Count <= i)
-                        break;
-
-                    var inventory = Inventories[i];
-                    if (inventory == null)
-                        continue;
-
-                    foreach (var entry in inventory.Entries)
+                    var inventory = inventories[i];
+                    foreach (var entry in inventory)
                     {
                         if (entry.Type == 0)
                             break;
@@ -244,8 +249,8 @@ namespace IntelOrca.Biohazard.RE3
                         bw.Write((byte)0);
                     }
                     bw.Write((int)-1);
-                    bw.Write((int)0);
                 }
+                bw.Write((int)0);
             }
 
             // Fix length
