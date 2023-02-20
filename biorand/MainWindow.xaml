@@ -163,6 +163,7 @@
                             </local:CheckGroupBox>
                             <local:CheckGroupBox x:Name="chkRngDoors" Header="Randomize Doors">
                                 <StackPanel>
+                                    <CheckBox x:Name="chkPrioritiseCutscenes" ToolTip="If checked, the seed will try to include as many cutscenes as possible.">Prioritise rooms with cutscenes</CheckBox>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition />
