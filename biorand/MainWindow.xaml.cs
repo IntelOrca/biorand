@@ -201,6 +201,7 @@ namespace IntelOrca.Biohazard.BioRand
                 }
 
                 chkRngDoors.IsChecked = _config.RandomDoors;
+                chkPrioritiseCutscenes.IsChecked = _config.PrioritiseCutscenes;
                 chkProtectSoftLock.IsChecked = _config.ProtectFromSoftLock || _config.RandomDoors;
                 chkRngEnemies.IsChecked = _config.RandomEnemies;
                 chkRandomEnemyPlacements.IsChecked = _config.RandomEnemyPlacement;
@@ -382,6 +383,7 @@ namespace IntelOrca.Biohazard.BioRand
                 .ToArray();
 
             _config.RandomDoors = chkRngDoors.IsChecked == true;
+            _config.PrioritiseCutscenes = chkPrioritiseCutscenes.IsChecked == true;
             _config.ProtectFromSoftLock = chkProtectSoftLock.IsChecked == true || _config.RandomDoors;
 
             _config.RandomEnemies = chkRngEnemies.IsChecked == true;

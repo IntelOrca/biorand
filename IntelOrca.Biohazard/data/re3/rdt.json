@@ -1,7 +1,7 @@
 ﻿{
   "beginEndRooms": [
     {
-      "start": "101",
+      "start": "10D",
       "end": "50C"
     }
   ],
@@ -26,6 +26,10 @@
         {
           "target": "102",
           "requires": [ 115 ]
+        },
+        {
+          "target": "10D",
+          "lock": "always"
         }
       ],
       "items": [
@@ -232,6 +236,15 @@
           "target": "123"
         }
       ]
+    },
+    "10D": {
+      "doors": [
+        {
+          "target": "101",
+          "noReturn": true
+        }
+      ],
+      "enemies": []
     },
     "10E": {
       "doors": [
@@ -1519,7 +1532,7 @@
         {
           "id": 8,
           "priority": "low"
-        }
+        },
         {
           "id": 9,
           "priority": "low"

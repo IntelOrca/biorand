@@ -89,19 +89,19 @@ namespace IntelOrca.Biohazard
                 var node = queue.Dequeue();
                 _logger.WriteLine($"Visited {node}");
                 if (g_debugLogging)
-                foreach (var edge in node.Edges)
-                {
-                    var edgeNode = edge.Node;
-                    if (edgeNode != null)
+                    foreach (var edge in node.Edges)
                     {
-                        if (!edgeNode.Visited)
+                        var edgeNode = edge.Node;
+                        if (edgeNode != null)
                         {
-                            edgeNode.Visited = true;
-                            edgeNode.Depth = node.Depth + 1;
-                            queue.Enqueue(edgeNode);
+                            if (!edgeNode.Visited)
+                            {
+                                edgeNode.Visited = true;
+                                edgeNode.Depth = node.Depth + 1;
+                                queue.Enqueue(edgeNode);
+                            }
                         }
                     }
-                }
             }
 
             RE3Fixes();
@@ -596,8 +596,13 @@ namespace IntelOrca.Biohazard
             var boxNodes = _nodesLeft
                 .Where(x => x.Category == DoorRandoCategory.Box)
                 .Shuffle(_rng)
-                .OrderBy(x => x.HasCutscene ? 0 : 1)
                 .ToList();
+            if (_config.PrioritiseCutscenes)
+            {
+                boxNodes = _nodesLeft
+                    .OrderBy(x => x.HasCutscene ? 0 : 1)
+                    .ToList();
+            }
             if (_config.AreaSize < 7)
             {
                 var minNodes = _config.AreaCount + 1;
@@ -617,8 +622,13 @@ namespace IntelOrca.Biohazard
             // Divide up nodes of same edge count equally
             _nodesLeft = _nodesLeft
                 .Shuffle(_rng)
-                .OrderBy(x => x.HasCutscene ? 0 : 1)
                 .ToList();
+            if (_config.PrioritiseCutscenes)
+            {
+                _nodesLeft = _nodesLeft
+                    .OrderBy(x => x.HasCutscene ? 0 : 1)
+                    .ToList();
+            }
             if (_config.AreaSize < 7)
             {
                 var numNodes = (_nodesLeft.Count * (_config.AreaSize + 1)) / 8;
