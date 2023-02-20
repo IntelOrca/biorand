@@ -8,6 +8,8 @@ namespace IntelOrca.Biohazard.RE3
         {
             switch (type)
             {
+                case Re3EnemyIds.MarvinBranagh:
+                    return "marvin";
                 case Re3EnemyIds.MikhailViktor:
                     return "mikhail";
                 case Re3EnemyIds.NikolaiZinoviev:
@@ -35,6 +37,7 @@ namespace IntelOrca.Biohazard.RE3
         public byte[] GetDefaultIncludeTypes(Rdt rdt)
         {
             var defaultIncludeTypes = new byte[] {
+                Re3EnemyIds.MarvinBranagh,
                 Re3EnemyIds.NikolaiZinoviev,
                 Re3EnemyIds.BradVickers,
                 Re3EnemyIds.DarioRosso,
@@ -66,7 +69,7 @@ namespace IntelOrca.Biohazard.RE3
 
         public bool IsNpc(byte type)
         {
-            return type >= Re3EnemyIds.CarlosOliveira1;
+            return type >= Re3EnemyIds.CarlosOliveira1 || type == Re3EnemyIds.MarvinBranagh;
         }
 
         public bool IsSpareSlot(byte id)
