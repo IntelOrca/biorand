@@ -988,8 +988,7 @@
         },
         {
           "target": "303",
-          "randomize": false,
-          "noReturn": true
+          "randomize": false
         }
         // ,
         // {
@@ -1410,14 +1409,27 @@
       "doors": [
         {
           "id": 0,
-          "target": "417"
+          "target": "400",
+          "doorRando": false
+        },
+        {
+          "id": 0,
+          "target": "417",
+          "doorRando": true
         }
       ]
     },
     "402": {
       "doors": [
         {
-          "target": "417"
+          "target": "400",
+          "requires": [ 81, 82 ],
+          "noReturn": true,
+          "doorRando": false
+        },
+        {
+          "target": "417",
+          "doorRando": true
         },
         {
           "target": "403"
@@ -1549,13 +1561,25 @@
         {
           "target": "409"
         }
+      ],
+      "items": [
+        {
+          "id": 5,
+          "requires": [ 88 ]
+        }
       ]
     },
     "40C": {
       "doors": [
         {
           "id": 0,
-          "target": "417"
+          "target": "400",
+          "doorRando": false
+        },
+        {
+          "id": 0,
+          "target": "417",
+          "doorRando": true
         },
         {
           "target": "40D"
@@ -1679,10 +1703,30 @@
       "doors": [
         {
           "target": "401",
-          "requires": [ 114 ]
+          "requires": [ 114 ],
+          "doorRando": true
         },
         {
           "target": "402"
+        },
+        {
+          "target": "40C",
+          "requires": [ 81, 82, 123 ],
+          "noReturn": true,
+          "doorRando": true
+        }
+      ]
+    },
+    "400": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "target": "401",
+          "requires": [ 114 ]
         },
         {
           "target": "40C",
