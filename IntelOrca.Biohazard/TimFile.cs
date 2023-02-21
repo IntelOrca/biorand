@@ -32,6 +32,7 @@ namespace IntelOrca.Biohazard
     {
         private const int PaletteFormat4bpp = 8;
         private const int PaletteFormat8bpp = 9;
+        private const int PaletteFormat16bpp = 2;
 
         private uint _magic;
         private uint _pixelFormat;
@@ -48,7 +49,14 @@ namespace IntelOrca.Biohazard
         private ushort _imageHeight;
         private byte[] _imageData = new byte[0];
 
-        public int Width => _pixelFormat == PaletteFormat4bpp ? _imageWidth * 4 : _imageWidth * 2;
+        public int Width => _pixelFormat switch
+        {
+            PaletteFormat4bpp => _imageWidth * 4,
+            PaletteFormat8bpp => _imageWidth * 2,
+            PaletteFormat16bpp => _imageWidth,
+            _ => throw new NotSupportedException(),
+        };
+
         public int Height => _imageHeight;
 
         public TimFile(string path)
@@ -72,19 +80,24 @@ namespace IntelOrca.Biohazard
             }
 
             _pixelFormat = br.ReadUInt32();
-            if (_pixelFormat != PaletteFormat4bpp && _pixelFormat != PaletteFormat8bpp)
+            if (_pixelFormat != PaletteFormat4bpp &&
+                _pixelFormat != PaletteFormat8bpp &&
+                _pixelFormat != PaletteFormat16bpp)
             {
                 throw new NotSupportedException("Unsupported TIM pixel format");
             }
 
-            _clutSize = br.ReadUInt32();
-            _paletteOrgX = br.ReadUInt16();
-            _paletteOrgY = br.ReadUInt16();
-            _coloursPerClut = br.ReadUInt16();
-            _numCluts = br.ReadUInt16();
+            if (_pixelFormat != PaletteFormat16bpp)
+            {
+                _clutSize = br.ReadUInt32();
+                _paletteOrgX = br.ReadUInt16();
+                _paletteOrgY = br.ReadUInt16();
+                _coloursPerClut = br.ReadUInt16();
+                _numCluts = br.ReadUInt16();
 
-            var expectedClutDataSize = _numCluts * _coloursPerClut * 2;
-            _clutData = br.ReadBytes((int)_clutSize - 12);
+                var expectedClutDataSize = _numCluts * _coloursPerClut * 2;
+                _clutData = br.ReadBytes((int)_clutSize - 12);
+            }
 
             _imageSize = br.ReadUInt32();
             _imageOrgX = br.ReadUInt16();
@@ -131,8 +144,13 @@ namespace IntelOrca.Biohazard
 
         public uint GetARGB(int clutIndex, int index)
         {
-            // 0BBB_BBGG_GGGR_RRRR
             var c16 = GetCLUTEntry(clutIndex, index);
+            return Convert16to32(c16);
+        }
+
+        public static uint Convert16to32(ushort c16)
+        {
+            // 0BBB_BBGG_GGGR_RRRR
             var r = ((c16 >> 0) & 0b11111) * 8;
             var g = ((c16 >> 5) & 0b11111) * 8;
             var b = ((c16 >> 10) & 0b11111) * 8;
@@ -141,19 +159,37 @@ namespace IntelOrca.Biohazard
 
         public uint GetPixel(int x, int y)
         {
-            byte p;
-            if (_pixelFormat == PaletteFormat4bpp)
+            switch (_pixelFormat)
             {
-                var offset = (y * _imageWidth * 2) + (x / 2);
-                var b = _imageData[offset];
-                p = (byte)((x & 1) == 0 ? b & 0x0F : b >> 4);
+                case PaletteFormat4bpp:
+                    {
+                        var offset = (y * _imageWidth * 2) + (x / 2);
+                        if (offset >= _imageData.Length)
+                            return 0;
+                        var b = _imageData[offset];
+                        var p = (byte)((x & 1) == 0 ? b & 0x0F : b >> 4);
+                        return GetARGB(0, p);
+                    }
+                case PaletteFormat8bpp:
+                    {
+                        var offset = (y * Width) + x;
+                        var p = _imageData[offset];
+                        return GetARGB(0, p);
+                    }
+                case PaletteFormat16bpp:
+                    {
+                        var offset = (y * Width * 2) + (x * 2);
+                        if (offset + 1 >= _imageData.Length)
+                            return 0;
+
+                        var p0 = _imageData[offset + 0];
+                        var p1 = _imageData[offset + 1];
+                        var c16 = (ushort)(p0 | (p1 << 8));
+                        return Convert16to32(c16);
+                    }
+                default:
+                    throw new InvalidOperationException();
             }
-            else
-            {
-                var offset = (y * Width) + x;
-                p = _imageData[offset];
-            }
-            return GetARGB(0, p);
         }
 
         public uint[] GetPixels()
