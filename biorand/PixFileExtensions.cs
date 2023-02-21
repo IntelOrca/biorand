@@ -1,16 +1,14 @@
 ﻿using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
-using System.Runtime.InteropServices;
 
 namespace IntelOrca.Biohazard.BioRand
 {
-    internal static class TimFileExtensions
+    internal static class PixFileExtensions
     {
-        public static unsafe Bitmap ToBitmap(this TimFile timFile)
+        public static unsafe Bitmap ToBitmap(this PixFile pixFile)
         {
-            var pixels = timFile.GetPixels();
-            var bitmap = new Bitmap(timFile.Width, timFile.Height);
+            var pixels = pixFile.GetPixels();
+            var bitmap = new Bitmap(pixFile.Width, pixFile.Height);
             var bounds = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
             var bitmapData = bitmap.LockBits(bounds, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
             try
@@ -31,12 +29,6 @@ namespace IntelOrca.Biohazard.BioRand
                 bitmap.UnlockBits(bitmapData);
             }
             return bitmap;
-        }
-
-        public static unsafe void ImportBitmap(this TimFile timFile, Bitmap bitmap)
-        {
-            var pixels = bitmap.ToArgb();
-            timFile.ImportPixels(pixels);
         }
     }
 }

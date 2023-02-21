@@ -572,10 +572,16 @@ namespace IntelOrca.Biohazard
                     CreateBackgroundRaw(config, src, fileRepository.GetModPath("data/title.pix"));
                     CreateBackgroundPng(config, src, fileRepository.GetModPath("type.png"));
                 }
-                else
+                else if (BiohazardVersion == BioVersion.Biohazard2)
                 {
                     CreateBackgroundPng(config, src, fileRepository.GetModPath("common/data/title_bg.png"));
                     CreateBackgroundPng(config, src, fileRepository.GetModPath("common/data/type00.png"));
+                }
+                else
+                {
+                    CreateBackgroundRaw(config, src, fileRepository.GetModPath("data/etc/type00.pix"));
+                    CreateBackgroundTim(config, src, fileRepository.GetModPath("data_j/etc2/titlej.dat"));
+                    CreateBackgroundTim(config, src, fileRepository.GetModPath("data_j/etc2/titletgs.dat"));
                 }
             }
             catch
@@ -612,6 +618,34 @@ namespace IntelOrca.Biohazard
             Directory.CreateDirectory(Path.GetDirectoryName(outputFilename));
             var titleBg = BgCreator.CreatePNG(config, pngBackground);
             File.WriteAllBytes(outputFilename, titleBg);
+        }
+
+        private void CreateBackgroundTim(RandoConfig config, byte[] pngBackground, string outputFilename)
+        {
+            if (BgCreator == null)
+                return;
+
+            Directory.CreateDirectory(Path.GetDirectoryName(outputFilename));
+            var pixels = BgCreator.CreateARGB(config, pngBackground);
+            using var fs = new FileStream(outputFilename, FileMode.Create);
+            var bw = new BinaryWriter(fs);
+
+            bw.Write(16);
+            bw.Write(2);
+            bw.Write(153612);
+            bw.Write((ushort)0);
+            bw.Write((ushort)0);
+            bw.Write((ushort)320);
+            bw.Write((ushort)240);
+            for (int i = 0; i < 320 * 240; i++)
+            {
+                var c = pixels[i];
+                var r = (byte)((c >> 16) & 0xFF);
+                var g = (byte)((c >> 8) & 0xFF);
+                var b = (byte)((c >> 0) & 0xFF);
+                var c4 = (ushort)((r / 8) | ((g / 8) << 5) | ((b / 8) << 10));
+                bw.Write(c4);
+            }
         }
 
         private void CreateTitleCardSounds(RandoConfig config, FileRepository fileRepository)
