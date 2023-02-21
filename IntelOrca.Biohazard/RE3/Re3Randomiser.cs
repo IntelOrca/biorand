@@ -163,7 +163,7 @@ namespace IntelOrca.Biohazard.RE3
                     File.Copy(src, dst, true);
                 }
 
-                // ChangePlayerInventoryFace(config, actor, fileRepository);
+                ChangePlayerInventoryFace(config, actor, fileRepository);
 
                 // var allHurtFiles = DataManager.GetHurtFiles(actor)
                 //     .Where(x => x.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) || x.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
@@ -200,6 +200,25 @@ namespace IntelOrca.Biohazard.RE3
                 //     }
                 // }
             }
+        }
+
+        private void ChangePlayerInventoryFace(RandoConfig config, string actor, FileRepository fileRepository)
+        {
+            if (BgCreator == null)
+                return;
+
+            var facePath = DataManager.GetPath(BiohazardVersion, Path.Combine($"pld{config.Player}", actor, "face.png"));
+            if (!File.Exists(facePath))
+                return;
+
+            var filename = Path.Combine("DATA_J", "ETC2", "STMAIN0J.TIM");
+            var inputTimPath = fileRepository.GetDataPath(filename);
+            var outputTimPath = fileRepository.GetModPath(filename);
+            Directory.CreateDirectory(Path.GetDirectoryName(outputTimPath!));
+
+            var tim = new TimFile(fileRepository.GetStream(inputTimPath));
+            BgCreator.DrawImage(tim, facePath, 0, 192, 2);
+            tim.Save(outputTimPath);
         }
 
         protected override void SerialiseInventory(FileRepository fileRepository)

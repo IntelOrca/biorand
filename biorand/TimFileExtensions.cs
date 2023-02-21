@@ -36,7 +36,13 @@ namespace IntelOrca.Biohazard.BioRand
         public static unsafe void ImportBitmap(this TimFile timFile, Bitmap bitmap)
         {
             var pixels = bitmap.ToArgb();
-            timFile.ImportPixels(pixels);
+            timFile.ImportPixels(pixels, 0);
+        }
+
+        public static unsafe void ImportBitmap(this TimFile timFile, Bitmap bitmap, int x, int y, int clutIndex)
+        {
+            var pixels = bitmap.ToArgb();
+            timFile.ImportPixels(x, y, bitmap.Width, bitmap.Height, pixels, clutIndex);
         }
     }
 }
