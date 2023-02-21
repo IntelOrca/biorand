@@ -32,7 +32,23 @@ namespace IntelOrca.Biohazard.Script
         {
             using (var br = reader.Fork())
             {
-                if (opcode == (byte)OpcodeV3.AotReset)
+                if (opcode == (byte)OpcodeV3.EvtCut)
+                {
+                    if (pIndex == 1)
+                    {
+                        br.BaseStream.Position++;
+                        return GetConstant('g', br.ReadByte());
+                    }
+                    else if (pIndex == 2)
+                    {
+                        br.BaseStream.Position++;
+                        if (br.ReadByte() == (byte)OpcodeV3.Gosub)
+                        {
+                            return GetConstant('p', br.ReadByte());
+                        }
+                    }
+                }
+                else if (opcode == (byte)OpcodeV3.AotReset)
                 {
                     if (pIndex == 3)
                     {
@@ -285,20 +301,12 @@ namespace IntelOrca.Biohazard.Script
         {
             if (obj == 0 && index == 23)
                 return "game.easy";
-
-            // Carried over from RE 2 (may be incorrect)
-            if (obj == 0 && index == 0x19)
-                return "game.difficult";
-            if (obj == 1 && index == 0)
-                return "game.player";
-            if (obj == 1 && index == 1)
-                return "game.scenario";
+            if (obj == 1 && index == 5)
+                return "game.timer";
             if (obj == 1 && index == 6)
-                return "game.bonus";
-            if (obj == 1 && index == 0x1B)
+                return "game.radar";
+            if (obj == 1 && index == 28)
                 return "game.cutscene";
-            if (obj == 0xB && index == 0x1F)
-                return "input.question";
             return null;
         }
 
@@ -593,7 +601,7 @@ namespace IntelOrca.Biohazard.Script
 
             "calc_op",
             "",
-            "evt_cut",
+            "evt_cut:uuu",
             "",
             "chaser_evt_clr",
             "map_open",

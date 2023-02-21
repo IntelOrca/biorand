@@ -24,6 +24,7 @@
         Set = 0x1E,
         Set2 = 0x1F,
         Calc = 0x20,
+        EvtCut = 0x22,
         DoorCk = 0x27,
         Ck = 0x4C,
         Set3 = 0x4D,
