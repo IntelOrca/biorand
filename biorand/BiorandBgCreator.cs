@@ -76,6 +76,14 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
+        public void DrawImage(TimFile timFile, string srcImagePath, int x, int y, int clutIndex)
+        {
+            using (var srcBitmap = new Bitmap(srcImagePath))
+            {
+                timFile.ImportBitmap(srcBitmap, x, y, clutIndex);
+            }
+        }
+
         private static Bitmap GetQRImage(string text)
         {
             var qrGenerator = new QRCodeGenerator();

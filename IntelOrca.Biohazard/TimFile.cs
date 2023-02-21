@@ -148,15 +148,6 @@ namespace IntelOrca.Biohazard
             return Convert16to32(c16);
         }
 
-        public static uint Convert16to32(ushort c16)
-        {
-            // 0BBB_BBGG_GGGR_RRRR
-            var r = ((c16 >> 0) & 0b11111) * 8;
-            var g = ((c16 >> 5) & 0b11111) * 8;
-            var b = ((c16 >> 10) & 0b11111) * 8;
-            return (uint)(b | (g << 8) | (r << 16) | (255 << 24));
-        }
-
         public uint GetPixel(int x, int y)
         {
             switch (_pixelFormat)
@@ -192,6 +183,42 @@ namespace IntelOrca.Biohazard
             }
         }
 
+        public void SetPixel(int x, int y, int clutIndex, uint p)
+        {
+            switch (_pixelFormat)
+            {
+                case PaletteFormat4bpp:
+                    {
+                        var offset = (y * _imageWidth * 2) + (x / 2);
+                        var c8 = ImportPixel(clutIndex, p);
+                        var b = _imageData[offset];
+                        if ((x & 1) == 0)
+                            b = (byte)((b & 0xF0) | c8);
+                        else
+                            b = (byte)((b & 0x0F) | (c8 << 4));
+                        _imageData[offset] = b;
+                        break;
+                    }
+                case PaletteFormat8bpp:
+                    {
+                        var offset = (y * Width) + x;
+                        var c8 = ImportPixel(clutIndex, p);
+                        _imageData[offset] = c8;
+                        break;
+                    }
+                case PaletteFormat16bpp:
+                    {
+                        var offset = (y * Width * 2) + (x * 2);
+                        var c16 = Convert32to16(p);
+                        _imageData[offset + 0] = (byte)(c16 & 0xFF);
+                        _imageData[offset + 1] = (byte)(c16 << 8);
+                        break;
+                    }
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
+
         public uint[] GetPixels()
         {
             var result = new uint[Width * Height];
@@ -208,7 +235,7 @@ namespace IntelOrca.Biohazard
             return result;
         }
 
-        private byte ImportPixel(uint p)
+        private byte ImportPixel(int clutIndex, uint p)
         {
             var r = (byte)((p >> 16) & 0xFF);
             var g = (byte)((p >> 8) & 0xFF);
@@ -218,7 +245,7 @@ namespace IntelOrca.Biohazard
             var bestTotal = int.MaxValue;
             for (int i = 0; i < _coloursPerClut; i++)
             {
-                var entry = GetARGB(0, i);
+                var entry = GetARGB(clutIndex, i);
                 var entryR = (byte)((entry >> 16) & 0xFF);
                 var entryG = (byte)((entry >> 8) & 0xFF);
                 var entryB = (byte)((entry >> 0) & 0xFF);
@@ -235,17 +262,49 @@ namespace IntelOrca.Biohazard
             return (byte)bestIndex;
         }
 
-        public void ImportPixels(uint[] data)
+        public void ImportPixels(uint[] data, int clutIndex)
         {
             var index = 0;
             for (int y = 0; y < Height; y++)
             {
                 for (int x = 0; x < Width; x++)
                 {
-                    _imageData[index] = ImportPixel(data[index]);
+                    SetPixel(x, y, clutIndex, data[index]);
                     index++;
                 }
             }
+        }
+
+        public unsafe void ImportPixels(int x, int y, int width, int height, uint[] data, int clutIndex)
+        {
+            var index = 0;
+            for (int yy = y; yy < y + height; yy++)
+            {
+                for (int xx = x; xx < x + width; xx++)
+                {
+                    SetPixel(xx, yy, clutIndex, data[index]);
+                    index++;
+                }
+            }
+        }
+
+        public static uint Convert16to32(ushort c16)
+        {
+            // 0BBB_BBGG_GGGR_RRRR
+            var r = ((c16 >> 0) & 0b11111) * 8;
+            var g = ((c16 >> 5) & 0b11111) * 8;
+            var b = ((c16 >> 10) & 0b11111) * 8;
+            return (uint)(b | (g << 8) | (r << 16) | (255 << 24));
+        }
+
+        public static ushort Convert32to16(uint c32)
+        {
+            var r = (byte)(((c32 >> 16) & 0xFF) / 8);
+            var g = (byte)(((c32 >> 8) & 0xFF) / 8);
+            var b = (byte)(((c32 >> 0) & 0xFF) / 8);
+
+            // 0BBB_BBGG_GGGR_RRRR
+            return (ushort)((b << 10) | (g << 5) | r);
         }
     }
 }
