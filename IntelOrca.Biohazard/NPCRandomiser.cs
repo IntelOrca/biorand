@@ -536,12 +536,25 @@ namespace IntelOrca.Biohazard
                         }
                         else
                         {
+                            if (npc.Use != null)
+                            {
+                                var parts = npc.Use.Split(';');
+                                var rdtId = RdtId.Parse(parts[0]);
+                                var rdtOffset = int.Parse(parts[1].Substring(2), System.Globalization.NumberStyles.HexNumber);
+                                newEnemyType = _gameData
+                                    .GetRdt(rdtId)!
+                                    .Enemies.FirstOrDefault(x => x.Offset == rdtOffset)
+                                    .Type;
+                            }
+                            else
+                            {
 #if ALWAYS_SWAP_NPC
-                            var newEnemyTypeIndex = Array.FindIndex(supportedNpcs, x => GetActor(x) != oldActor);
-                            newEnemyType = newEnemyTypeIndex == -1 ? supportedNpcs[0] : supportedNpcs[newEnemyTypeIndex];
+                                var newEnemyTypeIndex = Array.FindIndex(supportedNpcs, x => GetActor(x) != oldActor);
+                                newEnemyType = newEnemyTypeIndex == -1 ? supportedNpcs[0] : supportedNpcs[newEnemyTypeIndex];
 #else
-                            newEnemyType = supportedNpcs[0];
+                                newEnemyType = supportedNpcs[0];
 #endif
+                            }
                             newActor = GetActor(newEnemyType)!;
                             _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) [{_npcHelper.GetNpcName(enemy.Type)}] becomes [{_npcHelper.GetNpcName(newEnemyType)} ({newActor})]");
                             offsetToTypeMap[enemy.Offset] = newEnemyType;
