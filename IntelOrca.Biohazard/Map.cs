@@ -160,6 +160,7 @@ namespace IntelOrca.Biohazard
         public int Cutscene { get; set; }
         public string? PlayerActor { get; set; }
         public bool? EmrScale { get; set; }
+        public string? Use { get; set; }
     }
 
     public class DoorRandoSpec
