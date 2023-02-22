@@ -1936,6 +1936,11 @@
           "randomize": false,
           "requires": [ 112 ]
         }
+      ],
+      "npcs": [
+        {
+          "excludeTypes": [ 47, 84, 85 ]
+        }
       ]
     },
     "509": {
