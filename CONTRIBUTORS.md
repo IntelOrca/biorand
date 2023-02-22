@@ -11,6 +11,7 @@
 * **Rusty** - Ark, Kevin, Richard, William, Wesker (RE 5), and extra models
 * **StarringRole** - Rebecca model
 * **re_duke** - RDT information
+* **HazNut** - a bugfix
 * **Classic RE Modding community discord**
 
 Special thanks to all **BioRand** streamers and bug reporters!
