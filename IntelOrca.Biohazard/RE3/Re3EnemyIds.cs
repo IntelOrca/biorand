@@ -43,7 +43,8 @@
         public const byte BradZombie = 88;
         public const byte DarioZombie = 89;
         public const byte PromoGirl = 90;
-        public const byte Unknown91 = 91;
+        public const byte JillValentine1 = 91;
         public const byte CarlosOliveira2 = 92;
+        public const byte JillValentine2 = 95;
     }
 }
