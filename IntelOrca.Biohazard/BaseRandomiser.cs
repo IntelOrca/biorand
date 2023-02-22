@@ -489,9 +489,14 @@ namespace IntelOrca.Biohazard
             return new[] { "chris", "jill", "barry", "rebecca", "wesker", "enrico", "richard" };
         }
 
-        protected bool MusicAlbumSelected(string album)
+        protected bool MusicAlbumSelected(RandoConfig config, string album)
         {
-            return GetMusicAlbums().Contains(album, StringComparer.OrdinalIgnoreCase);
+            var albumIndex = Array.FindIndex(GetMusicAlbums(), x => x.Equals(album, StringComparison.OrdinalIgnoreCase));
+            if (albumIndex > -1 && albumIndex < config.EnabledBGMs.Length)
+            {
+                return config.EnabledBGMs[albumIndex];
+            }
+            return false;
         }
 
         public virtual string[] GetMusicAlbums()
