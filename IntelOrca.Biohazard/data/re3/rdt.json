@@ -388,10 +388,27 @@
     "118": {
       "doors": [
         {
-          "target": "114"
+          "target": "114",
+          "lock": "unblock"
         },
         {
-          "target": "119"
+          "target": "119",
+          "lock": "unblock"
+        },
+        {
+          "create": true,
+          "texture": 2,
+          "target": "114",
+          "id": 2,
+          "doorRando": true,
+          "entrance": {
+            "x": -14852,
+            "y": -3600,
+            "z": -11548,
+            "d": -1000,
+            "floor": 2,
+            "cut": 3
+          }
         }
       ]
     },
