@@ -226,13 +226,13 @@ namespace IntelOrca.Biohazard
 
                     if (enemySpec.IncludeTypes != null)
                     {
-                        if (enemySpec.IncludeTypes.Contains(type))
-                            return true;
+                        if (!enemySpec.IncludeTypes.Contains(type))
+                            return false;
                     }
                     else if (enemySpec.ExcludeTypes != null)
                     {
-                        if (!enemySpec.ExcludeTypes.Contains(type))
-                            return true;
+                        if (enemySpec.ExcludeTypes.Contains(type))
+                            return false;
                     }
                     else
                     {

@@ -29,6 +29,9 @@ namespace IntelOrca.Biohazard.RE3
                     return "carlos";
                 case Re3EnemyIds.PromoGirl:
                     return "promogirl";
+                case Re3EnemyIds.JillValentine1:
+                case Re3EnemyIds.JillValentine2:
+                    return "jill.re3";
                 default:
                     return null;
             }
@@ -44,7 +47,10 @@ namespace IntelOrca.Biohazard.RE3
                 Re3EnemyIds.MurphySeeker,
                 Re3EnemyIds.TyrellPatrick,
                 Re3EnemyIds.PromoGirl,
-                Re3EnemyIds.CarlosOliveira2
+                Re3EnemyIds.CarlosOliveira1,
+                Re3EnemyIds.CarlosOliveira2,
+                Re3EnemyIds.JillValentine1,
+                Re3EnemyIds.JillValentine2
             };
             return defaultIncludeTypes;
         }
