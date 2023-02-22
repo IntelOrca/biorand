@@ -1752,6 +1752,10 @@
       "linkedRoom": "400",
       "doors": [
         {
+          "id": 2,
+          "target": "309"
+        },
+        {
           "target": "401",
           "requires": [ 114 ],
           "doorRando": true
