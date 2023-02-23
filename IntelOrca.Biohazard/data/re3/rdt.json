@@ -421,6 +421,16 @@
           "target": "11A",
           "requires": [ 117 ]
         }
+      ],
+      "items": [
+        {
+          "id": 6,
+          "priority": "low"
+        },
+        {
+          "id": 7,
+          "priority": "low"
+        }
       ]
     },
     "11A": {
@@ -969,6 +979,12 @@
           "target": "211"
         }
       ],
+      "items": [
+        {
+          "id": 4,
+          "priority": "low"
+        }
+      ],
       "npcs": [
         {
           "use": "211;0x74A8"
@@ -1003,6 +1019,20 @@
         },
         {
           "target": "213"
+        }
+      ],
+      "items": [
+        {
+          "id": 6,
+          "priority": "low"
+        },
+        {
+          "id": 7,
+          "priority": "low"
+        },
+        {
+          "id": 8,
+          "priority": "low"
         }
       ]
     },
@@ -1240,6 +1270,22 @@
         {
           "id": 8,
           "type": 0
+        },
+        {
+          "id": 9,
+          "priority": "low"
+        },
+        {
+          "id": 10,
+          "priority": "low"
+        },
+        {
+          "id": 11,
+          "priority": "low"
+        },
+        {
+          "id": 12,
+          "priority": "low"
         }
       ],
       "enemies": []
