@@ -114,7 +114,8 @@ namespace IntelOrca.Biohazard.RE3
 
         protected override string[] GetDefaultNPCs()
         {
-            return new[] { "jill.re3", "brad", "mikhail", "nikolai", "dario", "murphy", "tyrell", "carlos" };
+            return new[] { "jill.re3", "brad", "mikhail", "nikolai", "dario", "murphy", "tyrell", "carlos",
+                "marvin", "irons" };
         }
 
         internal override string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, FileRepository fileRepository)
@@ -219,6 +220,34 @@ namespace IntelOrca.Biohazard.RE3
             var tim = new TimFile(fileRepository.GetStream(inputTimPath));
             BgCreator.DrawImage(tim, facePath, 0, 192, 2);
             tim.Save(outputTimPath);
+        }
+
+        internal override void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser)
+        {
+            if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard1))
+            {
+                var dataPath = GetDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard1));
+                dataPath = Path.Combine(dataPath, "JPN");
+                npcRandomiser.AddToSelection(BioVersion.Biohazard1, new FileRepository(dataPath));
+            }
+            if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard2))
+            {
+                var dataPath = GetDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard2));
+                // HACK should be helper function from RE 2 randomizer
+                if (Directory.Exists(Path.Combine(dataPath, "data", "pl0", "rdt")))
+                {
+                    dataPath = Path.Combine(dataPath, "data");
+                }
+                npcRandomiser.AddToSelection(BioVersion.Biohazard2, new FileRepository(dataPath));
+            }
+            if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard3))
+            {
+                var dataPath = GetDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard3));
+                var fileRepository = new FileRepository(dataPath);
+                var re3randomizer = new Re3Randomiser(null);
+                re3randomizer.AddArchives(dataPath, fileRepository);
+                npcRandomiser.AddToSelection(BioVersion.Biohazard3, fileRepository);
+            }
         }
 
         protected override void SerialiseInventory(FileRepository fileRepository)

@@ -361,7 +361,7 @@ namespace IntelOrca.Biohazard.Script
             "",
             "Arm",
             "",
-            "",
+            "Marvin Branagh 1",
 
             "Giant Worm",
             "",
@@ -404,12 +404,23 @@ namespace IntelOrca.Biohazard.Script
             "Dario Rosso",
             "Murphy Seeker",
             "Tyrell Patrick",
-            "",
+            "Marvin Branagh 2",
             "Brad (Zombie)",
             "Dario (Zombie)",
             "Promo Girl",
             "",
-            "Carlos Oliveira 2"
+            "Carlos Oliveira 2",
+            "Jill Valentine 2",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "Chief Irons"
         };
 
         private string[] g_itemNames = new string[]
