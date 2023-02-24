@@ -28,7 +28,7 @@
         public const byte MiniBrainsucker = 39;
         public const byte BS28 = 40;
         public const byte Arm = 45;
-        public const byte MarvinBranagh = 47;
+        public const byte MarvinBranagh1 = 47;
         public const byte GiantWorm = 48;
         public const byte MiniWorm = 50;
         public const byte Nemesis = 52;
@@ -40,11 +40,13 @@
         public const byte DarioRosso = 84;
         public const byte MurphySeeker = 85;
         public const byte TyrellPatrick = 86;
+        public const byte MarvinBranagh2 = 87;
         public const byte BradZombie = 88;
         public const byte DarioZombie = 89;
         public const byte PromoGirl = 90;
         public const byte JillValentine1 = 91;
         public const byte CarlosOliveira2 = 92;
         public const byte JillValentine2 = 95;
+        public const byte ChiefIrons = 103;
     }
 }

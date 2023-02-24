@@ -137,7 +137,7 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 47, 84, 85 ]
+          "excludeTypes": [ 47, 84, 85, 87, 103 ]
         }
       ]
     },
@@ -188,7 +188,7 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 47, 84, 85 ]
+          "excludeTypes": [ 47, 84, 85, 87, 103 ]
         }
       ],
       "enemies": []
@@ -625,7 +625,7 @@
         },
         {
           "includeOffsets": [ 29256 ],
-          "excludeTypes": [ 47, 84, 85 ],
+          "excludeTypes": [ 47, 84, 85, 87, 103 ],
           "cutscene": 1
         }
       ],
@@ -894,7 +894,7 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 47, 84, 85 ]
+          "excludeTypes": [ 47, 84, 85, 87, 103 ]
         }
       ]
     },
@@ -969,7 +969,7 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 47, 84, 85 ]
+          "excludeTypes": [ 47, 84, 85, 87, 103 ]
         }
       ]
     },
@@ -1995,7 +1995,7 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 47, 84, 85 ]
+          "excludeTypes": [ 47, 84, 85, 87, 103 ]
         }
       ]
     },
