@@ -215,8 +215,7 @@ namespace IntelOrca.Biohazard
                     using (_logger.Progress.BeginTask(null, $"Converting '{src}'"))
                     {
                         using var stream = _fileRepo.GetStream(src);
-                        var builder = new WaveformBuilder();
-                        builder.Volume = ImportVolume;
+                        var builder = new WaveformBuilder(volume: ImportVolume);
                         if (_isWav)
                         {
                             // RE1 can't handle very large .wav files, limit tracks to 3 minutes

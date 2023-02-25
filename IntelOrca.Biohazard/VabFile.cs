@@ -39,19 +39,23 @@ namespace IntelOrca.Biohazard
             _tail = data.Skip(start).ToArray();
         }
 
-        public void SetSample(int index, byte[] data)
+        public void SetSampleFromADPCM(int index, byte[] data)
         {
             _samples[index] = data;
         }
 
-        public void SetSample(int index, string wavPath)
+        public void SetSampleFromPCM(int index, byte[] data)
+        {
+            var encoder = new ADPCMEncoder();
+            var adpcm = encoder.Encode(MemoryMarshal.Cast<byte, short>(data));
+            SetSampleFromADPCM(index, adpcm);
+        }
+
+        public void SetSampleFromWaveFile(int index, string wavPath)
         {
             var wav = File.ReadAllBytes(wavPath);
             var pcm = wav.Skip(0x2C).ToArray();
-
-            var encoder = new ADPCMEncoder();
-            var adpcm = encoder.Encode(MemoryMarshal.Cast<byte, short>(pcm));
-            SetSample(index, adpcm);
+            SetSampleFromPCM(index, pcm);
         }
 
         public void Write(string path)
