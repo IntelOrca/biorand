@@ -371,5 +371,24 @@ namespace IntelOrca.Biohazard.RE3
                     return None;
             }
         }
+
+        protected override void ReplaceTitleCardSound(FileRepository fileRepository, string sourcePath)
+        {
+            var filename = "DATA/SOUND/C_01.VB";
+            var vbSourcePath = fileRepository.GetDataPath(filename);
+            var vbSourceFile = fileRepository.GetBytes(vbSourcePath);
+            var vbTargetPath = fileRepository.GetModPath(filename);
+            Directory.CreateDirectory(Path.GetDirectoryName(vbTargetPath));
+
+            var waveBuilder = new WaveformBuilder(channels: 1);
+            waveBuilder.Append(sourcePath);
+            var pcmData = waveBuilder.GetPCM();
+            waveBuilder.Save(@"M:\temp\resampled.wav");
+
+            var vb = new VabFile(vbSourceFile);
+            vb.SetSampleFromPCM(5, pcmData);
+            vb.SetSampleFromPCM(6, pcmData);
+            vb.Write(vbTargetPath);
+        }
     }
 }

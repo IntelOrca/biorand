@@ -1076,7 +1076,7 @@ namespace IntelOrca.Biohazard
         }
     }
 
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 44)]
     public struct WaveHeader
     {
         public uint nRiffMagic;

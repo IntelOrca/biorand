@@ -645,28 +645,31 @@ namespace IntelOrca.Biohazard
 
         private void CreateTitleCardSounds(RandoConfig config, FileRepository fileRepository)
         {
-            // Title sound
-            var targetTitleCardSounds = TitleCardSoundFiles;
-            if (targetTitleCardSounds.Length != 0)
+            var titleSounds = DataManager
+                .GetFiles("title")
+                .Where(x => x.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase))
+                .Where(x => !Path.GetFileName(x).Equals("template.ogg", StringComparison.OrdinalIgnoreCase))
+                .ToArray();
+            if (titleSounds.Length != 0)
             {
-                var titleSounds = DataManager
-                    .GetFiles("title")
-                    .Where(x => x.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase))
-                    .Where(x => !Path.GetFileName(x).Equals("template.ogg", StringComparison.OrdinalIgnoreCase))
-                    .ToArray();
-                if (titleSounds.Length != 0)
-                {
-                    var rng = new Rng(config.Seed);
-                    var titleSound = rng.NextOf(titleSounds);
-                    var builder = new WaveformBuilder();
-                    builder.Append(titleSound);
+                var rng = new Rng(config.Seed);
+                var titleSound = rng.NextOf(titleSounds);
+                ReplaceTitleCardSound(fileRepository, titleSound);
+            }
+        }
 
-                    var coreDirectory = fileRepository.GetModPath("Common/Sound/core");
-                    foreach (var dst in targetTitleCardSounds)
-                    {
-                        Directory.CreateDirectory(Path.GetDirectoryName(dst));
-                        builder.Save(dst);
-                    }
+        protected virtual void ReplaceTitleCardSound(FileRepository fileRepository, string sourcePath)
+        {
+            var builder = new WaveformBuilder();
+            builder.Append(sourcePath);
+
+            var targetTitleCardSounds = TitleCardSoundFiles;
+            foreach (var dst in targetTitleCardSounds)
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(dst));
+                if (targetTitleCardSounds.Length != 0)
+                {
+                    builder.Save(dst);
                 }
             }
         }
