@@ -34,6 +34,20 @@ namespace IntelOrca.Biohazard.BioRand
 
         public MainWindow()
         {
+            // var timC = new TimCollectionFile(@"M:\temp\re3extracted\ROOM\EMD\EM52.TIM");
+            // var i = 0;
+            // foreach (var tim in timC.Tims)
+            // {
+            //     var dst = $@"M:\temp\re3play\EM52_{i:00}.png";
+            //     Directory.CreateDirectory(Path.GetDirectoryName(dst));
+            //     tim.ToBitmap().Save(dst);
+            //     i++;
+            // }
+            // var emdFile = new EmdFile(@"M:\temp\re3extracted\ROOM\EMD\EM52.EMD");
+            // emdFile.Export(@"M:\temp\re3play\EM52_model.obj");
+            var pldFile = new PldFile(@"M:\temp\re3extracted\DATA\PLD\PL0A.PLD");
+            pldFile.Export(@"M:\temp\re3play\PLD0A\PL0A");
+
             InitializeComponent();
             InitializeEvents();
             LoadSettings();
