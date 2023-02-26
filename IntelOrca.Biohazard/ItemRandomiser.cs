@@ -143,7 +143,7 @@ namespace IntelOrca.Biohazard
                     }
                 }
 
-                if (remaining >= 2)
+                if (_config.Game != 3 && remaining >= 2)
                 {
                     // Always give the player a knife
                     AddToInventoryCommon(CommonItemKind.Knife, 1);
