@@ -252,6 +252,8 @@ namespace IntelOrca.Biohazard.RE3
         protected override void SerialiseInventory(FileRepository fileRepository)
         {
             const uint AddressInventoryStart = 0x0052D20C;
+            const uint AddressInventoryHeavyLength = 0x00460BFD;
+            const uint AddressInventoryLightLength = 0x00460C00;
             // const uint AddressRefHard = 0x004609F3;
             const uint AddressRefEasy = 0x004609EB;
 
@@ -262,8 +264,15 @@ namespace IntelOrca.Biohazard.RE3
             if (inventoryX == null)
                 return;
 
-            var jillInventory = inventoryX.Entries.Take(8).ToArray();
-            var carlosInventory = inventoryX.Entries.Skip(8).Take(8).ToArray();
+            var jillInventory = inventoryX.Entries
+                .Take(8)
+                .Where(x => x.Type != 0)
+                .ToArray();
+            var carlosInventory = inventoryX.Entries
+                .Skip(8)
+                .Take(8)
+                .Where(x => x.Type != 0)
+                .ToArray();
             var inventories = new[] { jillInventory, carlosInventory };
 
             var bw = new BinaryWriter(ExePatch);
@@ -306,10 +315,20 @@ namespace IntelOrca.Biohazard.RE3
             bw.Write((uint)(backupPosition - baseAddress));
             bw.BaseStream.Position = backupPosition;
 
+            // Write heavy Jill num items
+            bw.Write(AddressInventoryHeavyLength);
+            bw.Write(1);
+            bw.Write((byte)((jillInventory.Length + 1) * 4));
+
             // Write easy address location
             bw.Write(AddressRefEasy);
             bw.Write(4);
             bw.Write(easyAddress);
+
+            // Write light Jill num items
+            bw.Write(AddressInventoryLightLength);
+            bw.Write(1);
+            bw.Write((byte)((jillInventory.Length + 1) * 4));
         }
 
         private byte GetInventoryQuantityStyle(byte type)
