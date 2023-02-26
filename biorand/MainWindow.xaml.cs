@@ -47,6 +47,7 @@ namespace IntelOrca.Biohazard.BioRand
             // emdFile.Export(@"M:\temp\re3play\EM52_model.obj");
             var pldFile = new PldFile(@"M:\temp\re3extracted\DATA\PLD\PL0A.PLD");
             pldFile.Export(@"M:\temp\re3play\PLD0A\PL0A");
+            pldFile.GetTim().ToBitmap().Save(@"M:\temp\re3play\PLD0A\PL0A.png");
 
             InitializeComponent();
             InitializeEvents();

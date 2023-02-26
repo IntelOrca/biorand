@@ -11,6 +11,7 @@ namespace IntelOrca.Biohazard
     public class PldFile
     {
         private const int CHUNK_MESH = 2;
+        private const int CHUNK_TIM = 4;
 
         private readonly byte[][] _chunks;
 
@@ -89,9 +90,16 @@ namespace IntelOrca.Biohazard
                 objects[i] = br.ReadStruct<ObjectDescriptor>();
             }
 
+            var objPath = path + $".obj";
+            var mtlPath = path + $".mtl";
+
             var sb = new StringBuilder();
+            sb.AppendLine($"mtllib {Path.GetFileName(mtlPath)}");
+            sb.AppendLine($"usemtl main");
+
             var objIndex = 0;
             var vIndex = 1;
+            var tvIndex = 1;
             foreach (var obj in objects)
             {
                 sb.AppendLine($"o part_{objIndex:00}");
@@ -134,17 +142,45 @@ namespace IntelOrca.Biohazard
                 }
                 foreach (var t in triangles)
                 {
-                    sb.AppendLine($"f {t.v2 + vIndex}//{t.v2 + vIndex} {t.v1 + vIndex}//{t.v1 + vIndex} {t.v0 + vIndex}//{t.v0 + vIndex}");
+                    var page = t.page & 0x0F;
+                    var offsetU = page * 128;
+                    sb.AppendLine($"vt {(offsetU + t.tu2) / 384.0} {1 - (t.tv2 / 256.0)}");
+                    sb.AppendLine($"vt {(offsetU + t.tu1) / 384.0} {1 - (t.tv1 / 256.0)}");
+                    sb.AppendLine($"vt {(offsetU + t.tu0) / 384.0} {1 - (t.tv0 / 256.0)}");
                 }
                 foreach (var t in quads)
                 {
-                    sb.AppendLine($"f {t.v2 + vIndex}//{t.v2 + vIndex} {t.v3 + vIndex}//{t.v3 + vIndex} {t.v1 + vIndex}//{t.v1 + vIndex} {t.v0 + vIndex}//{t.v0 + vIndex}");
+                    var page = t.page & 0x0F;
+                    var offsetU = page * 128;
+                    sb.AppendLine($"vt {(offsetU + t.tu2) / 384.0} {1 - (t.tv2 / 256.0)}");
+                    sb.AppendLine($"vt {(offsetU + t.tu3) / 384.0} {1 - (t.tv3 / 256.0)}");
+                    sb.AppendLine($"vt {(offsetU + t.tu1) / 384.0} {1 - (t.tv1 / 256.0)}");
+                    sb.AppendLine($"vt {(offsetU + t.tu0) / 384.0} {1 - (t.tv0 / 256.0)}");
+                }
+                foreach (var t in triangles)
+                {
+                    sb.AppendLine($"f {t.v2 + vIndex}/{tvIndex + 0}/{t.v2 + vIndex} {t.v1 + vIndex}/{tvIndex + 1}/{t.v1 + vIndex} {t.v0 + vIndex}/{tvIndex + 2}/{t.v0 + vIndex}");
+                    // sb.AppendLine($"f {t.v2 + vIndex}//{t.v2 + vIndex} {t.v1 + vIndex}//{t.v1 + vIndex} {t.v0 + vIndex}//{t.v0 + vIndex}");
+                    tvIndex += 3;
+                }
+                foreach (var t in quads)
+                {
+                    sb.AppendLine($"f {t.v2 + vIndex}/{tvIndex + 0}/{t.v2 + vIndex} {t.v3 + vIndex}/{tvIndex + 1}/{t.v3 + vIndex} {t.v1 + vIndex}/{tvIndex + 2}/{t.v1 + vIndex} {t.v0 + vIndex}/{tvIndex + 3}/{t.v0 + vIndex}");
+                    // sb.AppendLine($"f {t.v2 + vIndex}//{t.v2 + vIndex} {t.v3 + vIndex}//{t.v3 + vIndex} {t.v1 + vIndex}//{t.v1 + vIndex} {t.v0 + vIndex}//{t.v0 + vIndex}");
+                    tvIndex += 4;
                 }
 
                 objIndex++;
                 vIndex += obj.vtx_count;
             }
             File.WriteAllText(path + $".obj", sb.ToString());
+        }
+
+        public TimFile GetTim()
+        {
+            var meshChunk = _chunks[CHUNK_TIM];
+            var ms = new MemoryStream(meshChunk);
+            return new TimFile(ms);
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -180,7 +216,7 @@ namespace IntelOrca.Biohazard
             public byte tu0, tv0; /* u,v texture coordinates of vertex 0 */
             public byte dummy0, dummy1;
             public byte tu1, tv1; /* u,v texture coordinates of vertex 1 */
-            public byte dummy2, v0; /* v0: index for vertex and normal 0 */
+            public byte page, v0; /* v0: index for vertex and normal 0 */
             public byte tu2, tv2; /* u,v texture coordinates of vertex 2 */
             public byte v1, v2; /* v1,v2: index for vertex and normal 1,2 */
         }
@@ -188,10 +224,10 @@ namespace IntelOrca.Biohazard
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         private struct Quad
         {
-            public byte tu1, tv1; /* u,v texture coordinates of vertex 1 */
+            public byte tu0, tv0; /* u,v texture coordinates of vertex 1 */
             public byte dummy2, dummy3;
-            public byte dummy4, dummy5;
-            public byte dummy6, dummy7;
+            public byte tu1, tv1;
+            public byte page, dummy7;
             public byte tu2, tv2; /* u,v texture coordinates of vertex 2 */
             public byte v0, v1; /* v0,v1: index for vertex and normal 0,1 */
             public byte tu3, tv3; /* u,v texture coordinates of vertex 2 */
