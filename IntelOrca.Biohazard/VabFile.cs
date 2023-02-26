@@ -8,7 +8,7 @@ namespace IntelOrca.Biohazard
     /// <summary>
     /// Represents a .VB sound data file from Resident Evil 3.
     /// </summary>
-    internal class VabFile
+    public class VabFile
     {
         private readonly byte[] _head;
         private readonly byte[] _split;
