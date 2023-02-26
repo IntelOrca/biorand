@@ -166,40 +166,39 @@ namespace IntelOrca.Biohazard.RE3
 
                 ChangePlayerInventoryFace(config, actor, fileRepository);
 
-                // var allHurtFiles = DataManager.GetHurtFiles(actor)
-                //     .Where(x => x.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) || x.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
-                //     .ToArray();
-                // var hurtFiles = new string[4];
-                // foreach (var hurtFile in allHurtFiles)
-                // {
-                //     if (int.TryParse(Path.GetFileNameWithoutExtension(hurtFile), out var i))
-                //     {
-                //         if (i < hurtFiles.Length)
-                //         {
-                //             hurtFiles[i] = hurtFile;
-                //         }
-                //     }
-                // }
-                // if (hurtFiles.All(x => x != null))
-                // {
-                //     var corePath = fileRepository.GetModPath($"common/sound/core/core{config.Player:X2}.sap");
-                //     Directory.CreateDirectory(Path.GetDirectoryName(corePath));
-                //     for (int i = 0; i < hurtFiles.Length; i++)
-                //     {
-                //         var waveformBuilder = new WaveformBuilder();
-                //         waveformBuilder.Append(hurtFiles[i]);
-                //         if (i == 0)
-                //             waveformBuilder.Save(corePath, 0x0F);
-                //         else
-                //             waveformBuilder.SaveAppend(corePath);
-                //     }
-                //     {
-                //         var coreDeathPath = fileRepository.GetModPath($"common/sound/core/core{32 + config.Player:00}.sap");
-                //         var waveformBuilder = new WaveformBuilder();
-                //         waveformBuilder.Append(hurtFiles[3]);
-                //         waveformBuilder.Save(coreDeathPath);
-                //     }
-                // }
+                var allHurtFiles = DataManager.GetHurtFiles(actor)
+                    .Where(x => x.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) || x.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
+                    .ToArray();
+                var hurtFiles = new string[4];
+                foreach (var hurtFile in allHurtFiles)
+                {
+                    if (int.TryParse(Path.GetFileNameWithoutExtension(hurtFile), out var i))
+                    {
+                        if (i < hurtFiles.Length)
+                        {
+                            hurtFiles[i] = hurtFile;
+                        }
+                    }
+                }
+                if (hurtFiles.All(x => x != null))
+                {
+                    var filename = "DATA/SOUND/C_02.VB";
+                    var vbSourcePath = fileRepository.GetDataPath(filename);
+                    var vbSourceFile = fileRepository.GetBytes(vbSourcePath);
+                    var vbTargetPath = fileRepository.GetModPath(filename);
+                    Directory.CreateDirectory(Path.GetDirectoryName(vbTargetPath));
+
+                    var vb = new VabFile(vbSourceFile);
+                    var sampleRates = new[] { 16000, 16000, 8000, 11025 };
+                    for (int i = 0; i < hurtFiles.Length; i++)
+                    {
+                        var waveBuilder = new WaveformBuilder(channels: 1, sampleRates[i]);
+                        waveBuilder.Append(hurtFiles[i]);
+                        var pcmData = waveBuilder.GetPCM();
+                        vb.SetSampleFromPCM(7 + i, pcmData);
+                    }
+                    vb.Write(vbTargetPath);
+                }
             }
         }
 
