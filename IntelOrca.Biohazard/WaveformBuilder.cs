@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Numerics;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using NVorbis;
 
 namespace IntelOrca.Biohazard
@@ -254,6 +256,9 @@ namespace IntelOrca.Biohazard
                     var bw = new BinaryWriter(_stream);
                     if (header.nSamplesPerSec != _header.nSamplesPerSec)
                     {
+                        if (_header.nChannels != 1)
+                            throw new NotSupportedException("Resampling not yet supported for stero.");
+
                         var resampleStream = new MemoryStream();
                         bw = new BinaryWriter(resampleStream);
                     }
@@ -294,27 +299,6 @@ namespace IntelOrca.Biohazard
                         Resample(inStream, _stream, inSamples, factor);
                     }
                 }
-            }
-        }
-
-        private void Resample(Stream input, Stream output, int inSamples, double factor)
-        {
-            var br = new BinaryReader(input);
-            var bw = new BinaryWriter(output);
-            var outSamples = (int)(inSamples * factor);
-            var mu = 0.0;
-            var rate = 1 / factor;
-            for (int i = 0; i < outSamples; i++)
-            {
-                var x0 = br.ReadInt16();
-                var x1 = br.ReadInt16();
-                input.Position -= 4;
-                var v = Math.Round(x0 + (x1 - x0) * mu);
-                v = Math.Max(short.MinValue, Math.Min(v, short.MaxValue));
-                bw.Write((short)v);
-                mu += rate;
-                input.Position += (int)mu;
-                mu -= (int)mu;
             }
         }
 
@@ -400,6 +384,91 @@ namespace IntelOrca.Biohazard
                 result = (int)header.nDataLength;
             }
             return result;
+        }
+
+        private const int SINC_WINDOW_FXP = 15;
+
+        private void Resample(Stream input, Stream output, int inSamples, double factor)
+        {
+            var br = new BinaryReader(input);
+            var bw = new BinaryWriter(output);
+            var outSamples = (int)(inSamples * factor);
+            var rate = 1 / factor;
+            var src = MemoryMarshal.Cast<byte, short>(br.ReadBytes(inSamples * 2));
+            var dst = new short[outSamples];
+            ResampleSinc(src, inSamples, dst, outSamples, rate, factor);
+            for (int i = 0; i < outSamples; i++)
+            {
+                bw.Write(dst[i]);
+            }
+        }
+
+        /// <remarks>
+        /// Based on https://github.com/Aikku93/wav2vag/.
+        /// </remarks>
+        private static void ResampleSinc(ReadOnlySpan<short> src, int nInSamples, Span<short> dst, int nOutSamples, double rate, double ratio)
+        {
+            //! Generate the sinc sliding window
+            //! This window is NOT symmetric so we can't cheat :(
+            const int LP_FIR_ORDER = 33, LP_FIR_HALF_ORDER = LP_FIR_ORDER / 2; //! LP_FIR_ORDER must be odd
+            const int FRAC_BITS = 12, FRAC_SCALE = 1 << FRAC_BITS;
+            var sincWin = new Span<short>(new short[FRAC_SCALE * LP_FIR_ORDER]);
+            for (var n = 0; n < FRAC_SCALE; n++)
+            {
+                var win = sincWin.Slice(n * LP_FIR_ORDER);
+                GenerateSincWindow(win, -LP_FIR_HALF_ORDER, +LP_FIR_HALF_ORDER, n * (1.0 / FRAC_SCALE), LP_FIR_ORDER, (ratio < 1.0) ? ratio : 1.0);
+            }
+
+            //! Filter and then free the sinc window
+            int iSrc = 0;
+            double mu = 0.0;
+            for (var n = 0; n < nOutSamples; n++)
+            {
+                var winOffset = (int)(mu * FRAC_SCALE) * LP_FIR_ORDER + LP_FIR_HALF_ORDER;
+                int s = 0;
+                for (var k = -LP_FIR_HALF_ORDER; k <= LP_FIR_HALF_ORDER; k++)
+                {
+                    var srcValue = 0;
+                    var srcOffset = iSrc + k;
+                    if (srcOffset >= 0 && srcOffset < src.Length)
+                        srcValue = src[srcOffset];
+                    s += sincWin[winOffset + k] * srcValue;
+                }
+                s = (s + (1 << SINC_WINDOW_FXP) / 2 - ((s < 0) ? 1 : 0)) >> SINC_WINDOW_FXP;
+                dst[n] = Clip16(s);
+                mu += rate;
+                iSrc += (int)mu;
+                mu -= (int)mu;
+            }
+        }
+
+        private static void GenerateSincWindow(Span<short> dst, int nMin, int nMax, double xOfs, int order, double fc)
+        {
+            //! This is a Nuttall-windowed sinc window
+            var i = 0;
+            for (var n = nMin; n <= nMax; n++)
+            {
+                double sinc;
+                {
+                    double x = (n * fc - xOfs) * Math.PI;
+                    sinc = x != 0 ? (Math.Sin(x) / x) : 1.0;
+                }
+                double nuttall;
+                {
+                    double x = n / (double)order + 0.5;
+                    nuttall = 0.355768;
+                    nuttall -= 0.487396 * Math.Cos(x * 2.0 * Math.PI);
+                    nuttall += 0.144232 * Math.Cos(x * 4.0 * Math.PI);
+                    nuttall -= 0.012604 * Math.Cos(x * 6.0 * Math.PI);
+                }
+                var v = (int)Math.Round(sinc * fc * nuttall * (1 << SINC_WINDOW_FXP));
+                dst[i++] = Clip16(v);
+            }
+        }
+
+        private static short Clip16(int x)
+        {
+            return (short)Math.Max(short.MinValue, Math.Min(x, short.MaxValue));
         }
     }
 }
