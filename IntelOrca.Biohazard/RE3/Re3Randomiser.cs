@@ -380,10 +380,9 @@ namespace IntelOrca.Biohazard.RE3
             var vbTargetPath = fileRepository.GetModPath(filename);
             Directory.CreateDirectory(Path.GetDirectoryName(vbTargetPath));
 
-            var waveBuilder = new WaveformBuilder(channels: 1);
+            var waveBuilder = new WaveformBuilder(channels: 1, sampleRate: 32000);
             waveBuilder.Append(sourcePath);
             var pcmData = waveBuilder.GetPCM();
-            waveBuilder.Save(@"M:\temp\resampled.wav");
 
             var vb = new VabFile(vbSourceFile);
             vb.SetSampleFromPCM(5, pcmData);
