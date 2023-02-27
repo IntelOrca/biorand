@@ -15,6 +15,8 @@ namespace IntelOrca.Biohazard
 
         private readonly byte[][] _chunks;
 
+        protected override int NumPages => 3;
+
         public PldFile(string path)
         {
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -76,11 +78,17 @@ namespace IntelOrca.Biohazard
             }
         }
 
+        public void ImportModel(string path)
+        {
+            var data = ImportObj(path);
+            _chunks[CHUNK_MESH] = data;
+        }
+
         public void ExportModel(string path)
         {
             var meshChunk = _chunks[CHUNK_MESH];
             var ms = new MemoryStream(meshChunk);
-            ExportObj(path, ms, 3);
+            ExportObj(path, ms);
         }
 
         public TimFile GetTim()
