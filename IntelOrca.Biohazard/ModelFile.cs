@@ -1,16 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace IntelOrca.Biohazard
 {
     public abstract class ModelFile
     {
-        protected void ExportObj(string objPath, Stream stream, int numPages)
+        protected abstract int NumPages { get; }
+
+        protected unsafe byte[] ImportObj(string objPath)
         {
-            var textureWidth = numPages * 128.0;
+            var objFile = new WavefrontObjFile(objPath);
+            var meshBuilder = new MeshBuilder(objFile, NumPages);
+            meshBuilder.Import();
+            var data = meshBuilder.GetData();
+            return data;
+        }
+
+        protected void ExportObj(string objPath, Stream stream)
+        {
+            var textureWidth = NumPages * 128.0;
             var textureHeight = 256.0;
 
             var br = new BinaryReader(stream);
@@ -34,6 +47,7 @@ namespace IntelOrca.Biohazard
             sb.Clear();
             sb.AppendLine($"mtllib {Path.GetFileName(mtlPath)}");
             sb.AppendLine($"usemtl main");
+            sb.AppendLine($"s 1");
 
             var objIndex = 0;
             var vIndex = 1;
@@ -128,6 +142,173 @@ namespace IntelOrca.Biohazard
             }
             sb.Remove(sb.Length - 1, 1);
             sb.Append('\n');
+        }
+
+        private class MeshBuilder
+        {
+            private WavefrontObjFile _objFile;
+            private int _textureWidth;
+            private int _textureHeight;
+            private Stream _dataStream;
+
+            private List<ObjectDescriptor> _objects = new List<ObjectDescriptor>();
+            private Dictionary<int, byte> _positionMap = new Dictionary<int, byte>();
+            private List<Vertex> _positions = new List<Vertex>();
+            private List<Vertex> _normals = new List<Vertex>();
+            private List<Triangle> _triangles = new List<Triangle>();
+            private List<Quad> _quads = new List<Quad>();
+            private ObjectDescriptor _currentObject;
+
+            public MeshBuilder(WavefrontObjFile objFile, int numPages)
+            {
+                _objFile = objFile;
+                _dataStream = new MemoryStream();
+                _textureWidth = numPages * 128;
+                _textureHeight = 256;
+            }
+
+            public void Import()
+            {
+                foreach (var objGroup in _objFile.Objects)
+                {
+                    BeginObject();
+                    foreach (var face in objGroup.Triangles)
+                    {
+                        var triangle = new Triangle();
+                        triangle.v2 = AddVertex(face.a.Vertex);
+                        triangle.v1 = AddVertex(face.b.Vertex);
+                        triangle.v0 = AddVertex(face.c.Vertex);
+                        (triangle.page, triangle.tu2, triangle.tv2) = GetTextureOffset(face.a.Texture);
+                        (triangle.page, triangle.tu1, triangle.tv1) = GetTextureOffset(face.b.Texture);
+                        (triangle.page, triangle.tu0, triangle.tv0) = GetTextureOffset(face.c.Texture);
+                        triangle.page |= 0x80;
+                        triangle.dummy0 = (byte)(triangle.page * 64);
+                        triangle.dummy1 = 120;
+                        _triangles.Add(triangle);
+                    }
+                    foreach (var face in objGroup.Quads)
+                    {
+                        var quad = new Quad();
+                        quad.v2 = AddVertex(face.a.Vertex);
+                        quad.v3 = AddVertex(face.b.Vertex);
+                        quad.v1 = AddVertex(face.c.Vertex);
+                        quad.v0 = AddVertex(face.d.Vertex);
+                        (quad.page, quad.tu2, quad.tv2) = GetTextureOffset(face.a.Texture);
+                        (quad.page, quad.tu3, quad.tv3) = GetTextureOffset(face.b.Texture);
+                        (quad.page, quad.tu1, quad.tv1) = GetTextureOffset(face.c.Texture);
+                        (quad.page, quad.tu0, quad.tv0) = GetTextureOffset(face.d.Texture);
+                        quad.page |= 0x80;
+                        quad.dummy2 = (byte)(quad.page * 64);
+                        quad.dummy3 = 120;
+                        _quads.Add(quad);
+                    }
+                    EndObject();
+                }
+            }
+
+            private void BeginObject()
+            {
+                _currentObject = new ObjectDescriptor();
+                _positionMap.Clear();
+                _positions.Clear();
+                _normals.Clear();
+                _triangles.Clear();
+                _quads.Clear();
+            }
+
+            private void EndObject()
+            {
+                var dataBw = new BinaryWriter(_dataStream);
+                _currentObject.vtx_offset = (ushort)_dataStream.Position;
+                _currentObject.vtx_count = (ushort)_positions.Count;
+                foreach (var vertex in _positions)
+                {
+                    dataBw.Write(vertex);
+                }
+                _currentObject.nor_offset = (ushort)_dataStream.Position;
+                foreach (var vertex in _normals)
+                {
+                    dataBw.Write(vertex);
+                }
+                _currentObject.tri_offset = (ushort)_dataStream.Position;
+                _currentObject.tri_count = (ushort)_triangles.Count;
+                foreach (var t in _triangles)
+                {
+                    dataBw.Write(t);
+                }
+                _currentObject.quad_offset = (ushort)_dataStream.Position;
+                _currentObject.quad_count = (ushort)_quads.Count;
+                foreach (var q in _quads)
+                {
+                    dataBw.Write(q);
+                }
+                _objects.Add(_currentObject);
+            }
+
+            public unsafe byte[] GetData()
+            {
+                var objectDescriptorLength = (ushort)(_objects.Count * sizeof(ObjectDescriptor));
+
+                var ms = new MemoryStream();
+                var bw = new BinaryWriter(ms);
+
+                bw.Write((int)(8 + objectDescriptorLength + _dataStream.Length));
+                bw.Write((int)_objects.Count);
+
+                for (int i = 0; i < _objects.Count; i++)
+                {
+                    var obj = _objects[i];
+                    obj.vtx_offset += objectDescriptorLength;
+                    obj.nor_offset += objectDescriptorLength;
+                    obj.tri_offset += objectDescriptorLength;
+                    obj.quad_offset += objectDescriptorLength;
+                    bw.Write(obj);
+                }
+
+                _dataStream.Position = 0;
+                _dataStream.CopyTo(ms);
+                return ms.ToArray();
+            }
+
+            private byte AddVertex(int index)
+            {
+                if (_positionMap.TryGetValue(index, out var newIndex))
+                {
+                    return newIndex;
+                }
+
+                newIndex = (byte)_positions.Count;
+                _positionMap[index] = newIndex;
+
+                var position = _objFile.Vertices[index];
+                var normal = _objFile.Normals[index];
+                var newPosition = new Vertex()
+                {
+                    x = (short)(position.x * 1000),
+                    y = (short)(position.y * 1000),
+                    z = (short)(position.z * 1000)
+                };
+                // We should normalize the normal first
+                var newNormal = new Vertex()
+                {
+                    x = (short)(normal.x * 5000),
+                    y = (short)(normal.y * 5000),
+                    z = (short)(normal.z * 5000)
+                };
+                _positions.Add(newPosition);
+                _normals.Add(newNormal);
+                return newIndex;
+            }
+
+            private (byte, byte, byte) GetTextureOffset(int index)
+            {
+                var coord = _objFile.TextureCoordinates[index];
+                var u = (int)(coord.u * _textureWidth);
+                var v = (int)(1 - (coord.v * _textureHeight));
+                var page = (byte)(u / 128);
+                u &= 127;
+                return (page, (byte)u, (byte)v);
+            }
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]

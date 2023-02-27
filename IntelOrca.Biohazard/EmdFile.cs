@@ -10,6 +10,8 @@ namespace IntelOrca.Biohazard
 
         private readonly byte[][] _chunks;
 
+        protected override int NumPages => 2;
+
         public EmdFile(string path)
         {
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -75,7 +77,7 @@ namespace IntelOrca.Biohazard
         {
             var meshChunk = _chunks[CHUNK_MESH];
             var ms = new MemoryStream(meshChunk);
-            ExportObj(path, ms, 2);
+            ExportObj(path, ms);
         }
     }
 }

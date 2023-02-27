@@ -44,14 +44,19 @@ namespace IntelOrca.Biohazard.BioRand
             //     i++;
             // }
 
-            var emdFile = new EmdFile(@"M:\temp\re3extracted\ROOM\EMD\EM52.EMD");
-            var timFile = new TimFile(@"M:\temp\re3extracted\ROOM\EMD\EM52.TIM");
-            emdFile.Export(@"M:\temp\re3play\EM52\EM52.obj");
-            timFile.ToBitmap().Save(@"M:\temp\re3play\EM52\EM52.png");
+            // var emdFile = new EmdFile(@"M:\temp\re3extracted\ROOM\EMD\EM52.EMD");
+            // var timFile = new TimFile(@"M:\temp\re3extracted\ROOM\EMD\EM52.TIM");
+            // emdFile.Export(@"M:\temp\re3play\EM52\EM52.obj");
+            // timFile.ToBitmap().Save(@"M:\temp\re3play\EM52\EM52.png");
 
-            // var pldFile = new PldFile(@"M:\temp\re3extracted\DATA\PLD\PL0A.PLD");
-            // pldFile.ExportModel(@"M:\temp\re3play\PL0A\PL0A.obj");
-            // pldFile.GetTim().ToBitmap().Save(@"M:\temp\re3play\PL0A\PL0A.png");
+            var pldFile = new PldFile(@"M:\temp\re3extracted\DATA\PLD\PL0A.PLD");
+            pldFile.Save(@"M:\temp\re3play\PL0A\same.PLD");
+            pldFile.ExportModel(@"M:\temp\re3play\PL0A\PL0A.obj");
+            pldFile.GetTim().ToBitmap().Save(@"M:\temp\re3play\PL0A\PL0A.png");
+            pldFile.ImportModel(@"M:\temp\re3play\PL0A\blender.obj");
+            pldFile.ExportModel(@"M:\temp\re3play\PL0A\fresh.obj");
+            pldFile.Save(@"M:\temp\re3play\PL0A\fresh.PLD");
+            // var newObj = new WavefrontObjFile(@"M:\temp\re3play\EM52\blender.obj");
 
             InitializeComponent();
             InitializeEvents();
