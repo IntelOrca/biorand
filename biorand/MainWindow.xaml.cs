@@ -44,18 +44,36 @@ namespace IntelOrca.Biohazard.BioRand
             //     i++;
             // }
 
-            // var emdFile = new EmdFile(@"M:\temp\re3extracted\ROOM\EMD\EM52.EMD");
-            // var timFile = new TimFile(@"M:\temp\re3extracted\ROOM\EMD\EM52.TIM");
-            // emdFile.Export(@"M:\temp\re3play\EM52\EM52.obj");
-            // timFile.ToBitmap().Save(@"M:\temp\re3play\EM52\EM52.png");
+            Directory.CreateDirectory(@"F:\games\re3\mod_biorand\ROOM\EMD");
+            Directory.CreateDirectory(@"M:\temp\re3play\EM52");
+            Directory.CreateDirectory(@"M:\temp\re3play\EM67");
+            // var emdFile1 = new EmdFile(@"M:\temp\re3extracted\ROOM\EMD\EM51.EMD");
+            var emdIndex = "EM67";
+            // var emdIndex = "EM52";
+            var emdFile = new EmdFile($@"M:\temp\re3extracted\ROOM\EMD\{emdIndex}.EMD");
+            var timFile = new TimFile($@"M:\temp\re3extracted\ROOM\EMD\{emdIndex}.TIM");
+            // emdFile.Export13($@"M:\temp\re3play\{emdIndex}\{emdIndex}_13.obj");
+            emdFile.ExportObj($@"M:\temp\re3play\{emdIndex}\{emdIndex}.obj");
+            timFile.ToBitmap((x, y) => x / 128).Save($@"M:\temp\re3play\{emdIndex}\{emdIndex}.png");
+            // emdFile.SetMD2(emdFile1.GetMD2());
+            emdFile.ImportObj($@"M:\temp\re3play\{emdIndex}\blender.obj");
+            emdFile.Save(@"F:\games\re3\mod_biorand\ROOM\EMD\EM52.EMD");
+            File.Copy($@"M:\temp\re3extracted\ROOM\EMD\{emdIndex}.TIM", @"F:\games\re3\mod_biorand\ROOM\EMD\EM52.TIM", true);
 
-            var pldFile = new PldFile(@"M:\temp\re3extracted\DATA\PLD\PL0A.PLD");
-            pldFile.Save(@"M:\temp\re3play\PL0A\same.PLD");
-            pldFile.ExportModel(@"M:\temp\re3play\PL0A\PL0A.obj");
-            pldFile.GetTim().ToBitmap().Save(@"M:\temp\re3play\PL0A\PL0A.png");
-            pldFile.ImportModel(@"M:\temp\re3play\PL0A\blender.obj");
-            pldFile.ExportModel(@"M:\temp\re3play\PL0A\fresh.obj");
-            pldFile.Save(@"M:\temp\re3play\PL0A\fresh.PLD");
+            // var jillFile = new PldFile(@"M:\temp\re3extracted\DATA\PLD\PL08.PLD");
+            // var jillMD2 = jillFile.GetMD2();
+
+            // var pldFile = new PldFile(@"M:\temp\re3extracted\DATA\PLD\PL0A.PLD");
+            // Directory.CreateDirectory(@"M:\temp\re3play\PL0A");
+            // pldFile.Save(@"M:\temp\re3play\PL0A\same.PLD");
+            // pldFile.ExportModel(@"M:\temp\re3play\PL0A\PL0A.obj");
+            // pldFile.GetTim().ToBitmap().Save(@"M:\temp\re3play\PL0A\PL0A.png");
+            // pldFile.Tamper();
+            // pldFile.SetMD2(jillMD2);
+            // pldFile.ImportModel(@"M:\temp\re3play\PL0A\blender.obj");
+            // pldFile.ExportModel(@"M:\temp\re3play\PL0A\fresh.obj");
+            // pldFile.Save(@"M:\temp\re3play\PL0A\fresh.PLD");
+            // pldFile.Save(@"F:\games\re3\mod_biorand\DATA\PLD\PL00.PLD");
             // var newObj = new WavefrontObjFile(@"M:\temp\re3play\EM52\blender.obj");
 
             InitializeComponent();

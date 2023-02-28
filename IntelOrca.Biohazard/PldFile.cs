@@ -1,10 +1,6 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace IntelOrca.Biohazard
 {
@@ -78,17 +74,14 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        public void ImportModel(string path)
+        public override byte[] GetMd2()
         {
-            var data = ImportObj(path);
-            _chunks[CHUNK_MESH] = data;
+            return _chunks[CHUNK_MESH].ToArray();
         }
 
-        public void ExportModel(string path)
+        public override void SetMd2(byte[] value)
         {
-            var meshChunk = _chunks[CHUNK_MESH];
-            var ms = new MemoryStream(meshChunk);
-            ExportObj(path, ms);
+            _chunks[CHUNK_MESH] = value.ToArray();
         }
 
         public TimFile GetTim()
@@ -96,6 +89,13 @@ namespace IntelOrca.Biohazard
             var meshChunk = _chunks[CHUNK_TIM];
             var ms = new MemoryStream(meshChunk);
             return new TimFile(ms);
+        }
+
+        public void SetTim(TimFile value)
+        {
+            var ms = new MemoryStream();
+            value.Save(ms);
+            _chunks[CHUNK_TIM] = ms.ToArray();
         }
     }
 }

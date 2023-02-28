@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace IntelOrca.Biohazard
@@ -12,21 +11,26 @@ namespace IntelOrca.Biohazard
     {
         protected abstract int NumPages { get; }
 
-        protected unsafe byte[] ImportObj(string objPath)
+        public abstract byte[] GetMd2();
+        public abstract void SetMd2(byte[] value);
+
+        public void ImportObj(string objPath)
         {
             var objFile = new WavefrontObjFile(objPath);
             var meshBuilder = new MeshBuilder(objFile, NumPages);
             meshBuilder.Import();
             var data = meshBuilder.GetData();
-            return data;
+            SetMd2(data);
         }
 
-        protected void ExportObj(string objPath, Stream stream)
+        public void ExportObj(string objPath)
         {
             var textureWidth = NumPages * 128.0;
             var textureHeight = 256.0;
 
-            var br = new BinaryReader(stream);
+            var ed2 = GetMd2();
+            var ms = new MemoryStream(ed2);
+            var br = new BinaryReader(ms);
             var length = br.ReadInt32();
             var numObjects = br.ReadInt32();
             var objects = new ObjectDescriptor[numObjects];
@@ -47,7 +51,6 @@ namespace IntelOrca.Biohazard
             sb.Clear();
             sb.AppendLine($"mtllib {Path.GetFileName(mtlPath)}");
             sb.AppendLine($"usemtl main");
-            sb.AppendLine($"s 1");
 
             var objIndex = 0;
             var vIndex = 1;
@@ -55,28 +58,28 @@ namespace IntelOrca.Biohazard
             foreach (var obj in objects)
             {
                 sb.AppendLine($"o part_{objIndex:00}");
-                stream.Position = 8 + obj.vtx_offset;
+                ms.Position = 8 + obj.vtx_offset;
                 var vertices = new Vertex[obj.vtx_count];
                 for (int i = 0; i < obj.vtx_count; i++)
                 {
                     vertices[i] = br.ReadStruct<Vertex>();
                 }
 
-                stream.Position = 8 + obj.nor_offset;
+                ms.Position = 8 + obj.nor_offset;
                 var normals = new Vertex[obj.vtx_count];
                 for (int i = 0; i < obj.vtx_count; i++)
                 {
                     normals[i] = br.ReadStruct<Vertex>();
                 }
 
-                stream.Position = 8 + obj.tri_offset;
+                ms.Position = 8 + obj.tri_offset;
                 var triangles = new Triangle[obj.tri_count];
                 for (int i = 0; i < obj.tri_count; i++)
                 {
                     triangles[i] = br.ReadStruct<Triangle>();
                 }
 
-                stream.Position = 8 + obj.quad_offset;
+                ms.Position = 8 + obj.quad_offset;
                 var quads = new Quad[obj.quad_count];
                 for (int i = 0; i < obj.quad_count; i++)
                 {
@@ -89,11 +92,12 @@ namespace IntelOrca.Biohazard
                 }
                 foreach (var v in normals)
                 {
-                    var total = (double)Math.Abs(v.x) + Math.Abs(v.y) + Math.Abs(v.z);
-                    var x = v.x / total;
-                    var y = v.y / total;
-                    var z = v.z / total;
-                    AppendDataLine(sb, "vn", x, y, z);
+                    // var total = (double)Math.Abs(v.x) + Math.Abs(v.y) + Math.Abs(v.z);
+                    // var x = v.x / total;
+                    // var y = v.y / total;
+                    // var z = v.z / total;
+                    // AppendDataLine(sb, "vn", x, y, z);
+                    AppendDataLine(sb, "vn", v.x / 5000.0, v.y / 5000.0, v.z / 5000.0);
                 }
                 foreach (var t in triangles)
                 {
@@ -112,12 +116,14 @@ namespace IntelOrca.Biohazard
                     AppendDataLine(sb, "vt", (offsetU + t.tu1) / textureWidth, 1 - (t.tv1 / textureHeight));
                     AppendDataLine(sb, "vt", (offsetU + t.tu0) / textureWidth, 1 - (t.tv0 / textureHeight));
                 }
+                sb.AppendLine($"s 1");
                 foreach (var t in triangles)
                 {
                     sb.AppendLine($"f {t.v2 + vIndex}/{tvIndex + 0}/{t.v2 + vIndex} {t.v1 + vIndex}/{tvIndex + 1}/{t.v1 + vIndex} {t.v0 + vIndex}/{tvIndex + 2}/{t.v0 + vIndex}");
                     // sb.AppendLine($"f {t.v2 + vIndex}//{t.v2 + vIndex} {t.v1 + vIndex}//{t.v1 + vIndex} {t.v0 + vIndex}//{t.v0 + vIndex}");
                     tvIndex += 3;
                 }
+                sb.AppendLine($"s 1");
                 foreach (var t in quads)
                 {
                     sb.AppendLine($"f {t.v2 + vIndex}/{tvIndex + 0}/{t.v2 + vIndex} {t.v3 + vIndex}/{tvIndex + 1}/{t.v3 + vIndex} {t.v1 + vIndex}/{tvIndex + 2}/{t.v1 + vIndex} {t.v0 + vIndex}/{tvIndex + 3}/{t.v0 + vIndex}");
@@ -153,11 +159,13 @@ namespace IntelOrca.Biohazard
 
             private List<ObjectDescriptor> _objects = new List<ObjectDescriptor>();
             private Dictionary<int, byte> _positionMap = new Dictionary<int, byte>();
-            private List<Vertex> _positions = new List<Vertex>();
-            private List<Vertex> _normals = new List<Vertex>();
+            private Vertex[] _positions = new Vertex[256];
+            private Vertex[] _normals = new Vertex[256];
             private List<Triangle> _triangles = new List<Triangle>();
             private List<Quad> _quads = new List<Quad>();
             private ObjectDescriptor _currentObject;
+            private int _minVertexIndex;
+            private int _maxVertexIndex;
 
             public MeshBuilder(WavefrontObjFile objFile, int numPages)
             {
@@ -172,34 +180,50 @@ namespace IntelOrca.Biohazard
                 foreach (var objGroup in _objFile.Objects)
                 {
                     BeginObject();
+
+                    // Find lowest vertex index
+                    foreach (var face in objGroup.Triangles)
+                    {
+                        UpdateBaseVertex(face.a.Vertex);
+                        UpdateBaseVertex(face.b.Vertex);
+                        UpdateBaseVertex(face.c.Vertex);
+                    }
+                    foreach (var face in objGroup.Quads)
+                    {
+                        UpdateBaseVertex(face.a.Vertex);
+                        UpdateBaseVertex(face.b.Vertex);
+                        UpdateBaseVertex(face.c.Vertex);
+                        UpdateBaseVertex(face.d.Vertex);
+                    }
+
                     foreach (var face in objGroup.Triangles)
                     {
                         var triangle = new Triangle();
-                        triangle.v2 = AddVertex(face.a.Vertex);
-                        triangle.v1 = AddVertex(face.b.Vertex);
-                        triangle.v0 = AddVertex(face.c.Vertex);
+                        triangle.v2 = AddVertex(face.a.Vertex, face.a.Normal);
+                        triangle.v1 = AddVertex(face.b.Vertex, face.b.Normal);
+                        triangle.v0 = AddVertex(face.c.Vertex, face.c.Normal);
                         (triangle.page, triangle.tu2, triangle.tv2) = GetTextureOffset(face.a.Texture);
                         (triangle.page, triangle.tu1, triangle.tv1) = GetTextureOffset(face.b.Texture);
                         (triangle.page, triangle.tu0, triangle.tv0) = GetTextureOffset(face.c.Texture);
                         triangle.page |= 0x80;
                         triangle.dummy0 = (byte)(triangle.page * 64);
-                        triangle.dummy1 = 120;
+                        triangle.visible = 120;
                         _triangles.Add(triangle);
                     }
                     foreach (var face in objGroup.Quads)
                     {
                         var quad = new Quad();
-                        quad.v2 = AddVertex(face.a.Vertex);
-                        quad.v3 = AddVertex(face.b.Vertex);
-                        quad.v1 = AddVertex(face.c.Vertex);
-                        quad.v0 = AddVertex(face.d.Vertex);
+                        quad.v2 = AddVertex(face.a.Vertex, face.a.Normal);
+                        quad.v3 = AddVertex(face.b.Vertex, face.b.Normal);
+                        quad.v1 = AddVertex(face.c.Vertex, face.c.Normal);
+                        quad.v0 = AddVertex(face.d.Vertex, face.d.Normal);
                         (quad.page, quad.tu2, quad.tv2) = GetTextureOffset(face.a.Texture);
                         (quad.page, quad.tu3, quad.tv3) = GetTextureOffset(face.b.Texture);
                         (quad.page, quad.tu1, quad.tv1) = GetTextureOffset(face.c.Texture);
                         (quad.page, quad.tu0, quad.tv0) = GetTextureOffset(face.d.Texture);
                         quad.page |= 0x80;
                         quad.dummy2 = (byte)(quad.page * 64);
-                        quad.dummy3 = 120;
+                        quad.visible = 120;
                         _quads.Add(quad);
                     }
                     EndObject();
@@ -210,25 +234,27 @@ namespace IntelOrca.Biohazard
             {
                 _currentObject = new ObjectDescriptor();
                 _positionMap.Clear();
-                _positions.Clear();
-                _normals.Clear();
+                Array.Clear(_positions, 0, _positions.Length);
+                Array.Clear(_normals, 0, _normals.Length);
                 _triangles.Clear();
                 _quads.Clear();
+                _minVertexIndex = int.MaxValue;
+                _maxVertexIndex = 0;
             }
 
             private void EndObject()
             {
                 var dataBw = new BinaryWriter(_dataStream);
                 _currentObject.vtx_offset = (ushort)_dataStream.Position;
-                _currentObject.vtx_count = (ushort)_positions.Count;
-                foreach (var vertex in _positions)
+                _currentObject.vtx_count = (ushort)(_maxVertexIndex - _minVertexIndex + 1);
+                for (int i = 0; i < _currentObject.vtx_count; i++)
                 {
-                    dataBw.Write(vertex);
+                    dataBw.Write(_positions[i]);
                 }
                 _currentObject.nor_offset = (ushort)_dataStream.Position;
-                foreach (var vertex in _normals)
+                for (int i = 0; i < _currentObject.vtx_count; i++)
                 {
-                    dataBw.Write(vertex);
+                    dataBw.Write(_normals[i]);
                 }
                 _currentObject.tri_offset = (ushort)_dataStream.Position;
                 _currentObject.tri_count = (ushort)_triangles.Count;
@@ -270,18 +296,24 @@ namespace IntelOrca.Biohazard
                 return ms.ToArray();
             }
 
-            private byte AddVertex(int index)
+            private void UpdateBaseVertex(int index)
             {
-                if (_positionMap.TryGetValue(index, out var newIndex))
+                _minVertexIndex = Math.Min(_minVertexIndex, index);
+                _maxVertexIndex = Math.Max(_maxVertexIndex, index);
+            }
+
+            private byte AddVertex(int vertexIndex, int normalIndex)
+            {
+                if (_positionMap.TryGetValue(vertexIndex, out var newIndex))
                 {
                     return newIndex;
                 }
 
-                newIndex = (byte)_positions.Count;
-                _positionMap[index] = newIndex;
+                newIndex = (byte)(vertexIndex - _minVertexIndex);
+                _positionMap[vertexIndex] = newIndex;
 
-                var position = _objFile.Vertices[index];
-                var normal = _objFile.Normals[index];
+                var position = _objFile.Vertices[vertexIndex];
+                var normal = _objFile.Normals[normalIndex];
                 var newPosition = new Vertex()
                 {
                     x = (short)(position.x * 1000),
@@ -295,8 +327,8 @@ namespace IntelOrca.Biohazard
                     y = (short)(normal.y * 5000),
                     z = (short)(normal.z * 5000)
                 };
-                _positions.Add(newPosition);
-                _normals.Add(newNormal);
+                _positions[newIndex] = newPosition;
+                _normals[newIndex] = newNormal;
                 return newIndex;
             }
 
@@ -342,7 +374,7 @@ namespace IntelOrca.Biohazard
         protected struct Triangle
         {
             public byte tu0, tv0; /* u,v texture coordinates of vertex 0 */
-            public byte dummy0, dummy1;
+            public byte dummy0, visible;
             public byte tu1, tv1; /* u,v texture coordinates of vertex 1 */
             public byte page, v0; /* v0: index for vertex and normal 0 */
             public byte tu2, tv2; /* u,v texture coordinates of vertex 2 */
@@ -353,7 +385,7 @@ namespace IntelOrca.Biohazard
         protected struct Quad
         {
             public byte tu0, tv0; /* u,v texture coordinates of vertex 1 */
-            public byte dummy2, dummy3;
+            public byte dummy2, visible;
             public byte tu1, tv1;
             public byte page, dummy7;
             public byte tu2, tv2; /* u,v texture coordinates of vertex 2 */
