@@ -72,12 +72,13 @@ namespace IntelOrca.Emd
                     if (inputMd2Path != null)
                     {
                         // Import MD2
-                        modelFile.SetMd2(File.ReadAllBytes(inputMd2Path));
+                        modelFile.Md2 = new Md2(File.ReadAllBytes(inputMd2Path));
                     }
                     else if (inputObjPath != null)
                     {
                         // Import OBJ
-                        modelFile.ImportObj(inputObjPath);
+                        var objImporter = new ObjImporter();
+                        modelFile.Md2 = objImporter.ImportMd2(inputObjPath, modelFile.NumPages);
                     }
                     if (inputPngPath != null)
                     {
@@ -100,9 +101,10 @@ namespace IntelOrca.Emd
                 }
                 else
                 {
-                    modelFile.ExportObj(outputObjPath);
+                    var objExporter = new ObjExporter();
+                    objExporter.Export(modelFile.Md2, outputObjPath, modelFile.NumPages);
                     timFile?.ToBitmap((x, y) => x / 128).Save(outputPngPath);
-                    File.WriteAllBytes(outputMd2Path, modelFile.GetMd2());
+                    File.WriteAllBytes(outputMd2Path, modelFile.Md2.GetBytes());
                 }
                 return 0;
             }
