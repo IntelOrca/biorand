@@ -73,11 +73,14 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        public void Export(string path)
+        public override byte[] GetMd2()
         {
-            var meshChunk = _chunks[CHUNK_MESH];
-            var ms = new MemoryStream(meshChunk);
-            ExportObj(path, ms);
+            return _chunks[CHUNK_MESH].ToArray();
+        }
+
+        public override void SetMd2(byte[] value)
+        {
+            _chunks[CHUNK_MESH] = value.ToArray();
         }
     }
 }
