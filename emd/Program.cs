@@ -117,10 +117,43 @@ namespace IntelOrca.Emd
         {
             using (var bitmap = (Bitmap)Bitmap.FromFile(path))
             {
-                var timFile = new TimFile(bitmap.Width, bitmap.Height);
-                timFile.ImportBitmap(bitmap);
+                var timFile = new TimFile(bitmap.Width, bitmap.Height, 8);
+                var clutIndex = 0;
+                for (int x = 0; x < bitmap.Width; x += 128)
+                {
+                    var srcBounds = new Rectangle(x, 0, Math.Min(bitmap.Width - x, 128), bitmap.Height);
+                    var colours = GetColours(bitmap, srcBounds);
+                    timFile.SetPalette(clutIndex, colours);
+                    timFile.ImportBitmap(bitmap, srcBounds, x, 0, clutIndex);
+                    clutIndex++;
+                }
                 return timFile;
             }
+        }
+
+        private static ushort[] GetColours(Bitmap bitmap, Rectangle area)
+        {
+            var coloursList = new ushort[256];
+            var coloursIndex = 1;
+
+            var colours = new HashSet<ushort>();
+            for (int y = area.Top; y < area.Bottom; y++)
+            {
+                for (int x = area.Left; x < area.Right; x++)
+                {
+                    var c32 = bitmap.GetPixel(x, y);
+                    var c16 = TimFile.Convert32to16((uint)c32.ToArgb());
+                    if (colours.Add(c16))
+                    {
+                        coloursList[coloursIndex++] = c16;
+                        if (coloursIndex == 256)
+                        {
+                            return coloursList;
+                        }
+                    }
+                }
+            }
+            return coloursList;
         }
 
         private static string[] GetArguments(string[] args)
