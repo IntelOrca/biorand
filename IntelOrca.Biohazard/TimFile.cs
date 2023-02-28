@@ -176,7 +176,7 @@ namespace IntelOrca.Biohazard
                 case PaletteFormat8bpp:
                     {
                         var offset = (y * Width) + x;
-                        var p = _imageData[offset];
+                        var p = _imageData.Length > offset ? _imageData[offset] : 0;
                         return GetARGB(clutIndex, p);
                     }
                 case PaletteFormat16bpp:
