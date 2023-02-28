@@ -61,14 +61,43 @@ namespace IntelOrca.Biohazard
 
         public TimFile(int width, int height)
         {
+            // _magic = 16;
+            // _pixelFormat = PaletteFormat16bpp;
+            // _imageSize = ((uint)width * (uint)height * 2) + 12;
+            // _imageOrgX = 0;
+            // _imageOrgY = 0;
+            // _imageWidth = (ushort)width;
+            // _imageHeight = (ushort)height;
+            // _imageData = new byte[width * height * 2];
+
             _magic = 16;
-            _pixelFormat = PaletteFormat16bpp;
+            _pixelFormat = PaletteFormat8bpp;
             _imageSize = ((uint)width * (uint)height) + 12;
             _imageOrgX = 0;
             _imageOrgY = 0;
-            _imageWidth = (ushort)width;
+            _imageWidth = (ushort)(width / 2);
             _imageHeight = (ushort)height;
-            _imageData = new byte[width * height * 2];
+            _imageData = new byte[width * height];
+
+            _paletteOrgX = 0;
+            _paletteOrgY = 0;
+            _coloursPerClut = 256;
+            _numCluts = 3;
+            _clutSize = (uint)(_numCluts * _coloursPerClut * 2) + 12;
+            _clutData = new byte[_clutSize - 12];
+            for (int j = 0; j < _numCluts; j++)
+            {
+                for (int i = 0; i < 256; i++)
+                {
+                    var r = ((i & 0b00_000_111) >> 0) * 32;
+                    var g = ((i & 0b00_111_000) >> 3) * 32;
+                    var b = ((i & 0b11_000_000) >> 6) * 64;
+                    var argb = (uint)((r << 16) | (g << 8) | b);
+                    var c16 = Convert32to16(argb);
+                    _clutData[(j * 512) + (i * 2)] = (byte)(c16 & 0xFF);
+                    _clutData[(j * 512) + (i * 2) + 1] = (byte)(c16 >> 8);
+                }
+            }
         }
 
         public TimFile(string path)
@@ -132,12 +161,15 @@ namespace IntelOrca.Biohazard
             var bw = new BinaryWriter(stream);
             bw.Write(_magic);
             bw.Write(_pixelFormat);
-            bw.Write(_clutSize);
-            bw.Write(_paletteOrgX);
-            bw.Write(_paletteOrgY);
-            bw.Write(_coloursPerClut);
-            bw.Write(_numCluts);
-            bw.Write(_clutData);
+            if (_pixelFormat != PaletteFormat16bpp)
+            {
+                bw.Write(_clutSize);
+                bw.Write(_paletteOrgX);
+                bw.Write(_paletteOrgY);
+                bw.Write(_coloursPerClut);
+                bw.Write(_numCluts);
+                bw.Write(_clutData);
+            }
             bw.Write(_imageSize);
             bw.Write(_imageOrgX);
             bw.Write(_imageOrgY);
@@ -223,7 +255,7 @@ namespace IntelOrca.Biohazard
                         var offset = (y * Width * 2) + (x * 2);
                         var c16 = Convert32to16(p);
                         _imageData[offset + 0] = (byte)(c16 & 0xFF);
-                        _imageData[offset + 1] = (byte)(c16 << 8);
+                        _imageData[offset + 1] = (byte)(c16 >> 8);
                         break;
                     }
                 default:
