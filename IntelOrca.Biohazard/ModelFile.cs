@@ -8,11 +8,14 @@ namespace IntelOrca.Biohazard
     {
         private readonly byte[][] _chunks;
 
+        public BioVersion Version { get; }
+        protected abstract int Md1ChunkIndex { get; }
         protected abstract int Md2ChunkIndex { get; }
         public abstract int NumPages { get; }
 
-        public ModelFile(string path)
+        public ModelFile(BioVersion version, string path)
         {
+            Version = version;
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 var br = new BinaryReader(fs);
@@ -75,10 +78,36 @@ namespace IntelOrca.Biohazard
         protected byte[] GetChunk(int index) => _chunks[index];
         protected void SetChunk(int index, byte[] value) => _chunks[index] = value;
 
+        public Md1 Md1
+        {
+            get
+            {
+                if (Version != BioVersion.Biohazard2)
+                    throw new InvalidOperationException();
+                return new Md1(_chunks[Md1ChunkIndex]);
+            }
+            set
+            {
+                if (Version != BioVersion.Biohazard2)
+                    throw new InvalidOperationException();
+                _chunks[Md1ChunkIndex] = value.GetBytes();
+            }
+        }
+
         public Md2 Md2
         {
-            get => new Md2(_chunks[Md2ChunkIndex]);
-            set => _chunks[Md2ChunkIndex] = value.GetBytes();
+            get
+            {
+                if (Version != BioVersion.Biohazard3)
+                    throw new InvalidOperationException();
+                return new Md2(_chunks[Md2ChunkIndex]);
+            }
+            set
+            {
+                if (Version != BioVersion.Biohazard3)
+                    throw new InvalidOperationException();
+                _chunks[Md2ChunkIndex] = value.GetBytes();
+            }
         }
     }
 }

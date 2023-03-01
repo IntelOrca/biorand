@@ -18,6 +18,15 @@ namespace IntelOrca.Emd
                 if (inputPaths.Length == 0)
                     return PrintUsage();
 
+                var version = BioVersion.Biohazard3;
+                var versionArg = GetOption(args, "-v");
+                if (versionArg == "2")
+                    version = BioVersion.Biohazard2;
+                else if (versionArg == "3")
+                    version = BioVersion.Biohazard3;
+                else if (versionArg != null)
+                    return PrintUsage();
+
                 var outputPath = GetOption(args, "-o");
                 if (outputPath == null)
                 {
@@ -28,6 +37,7 @@ namespace IntelOrca.Emd
                 var outputPldPath = Path.ChangeExtension(outputPath, ".pld");
                 var outputObjPath = Path.ChangeExtension(outputPath, ".obj");
                 var outputPngPath = Path.ChangeExtension(outputPath, ".png");
+                var outputMd1Path = Path.ChangeExtension(outputPath, ".md1");
                 var outputMd2Path = Path.ChangeExtension(outputPath, ".md2");
                 var outputTimPath = Path.ChangeExtension(outputPath, ".tim");
 
@@ -37,9 +47,11 @@ namespace IntelOrca.Emd
                 if (inputEmdPath == null)
                     return PrintUsage();
 
+                var inputMd1Path = inputPaths.FirstOrDefault(x => x.EndsWith(".md1", StringComparison.OrdinalIgnoreCase));
                 var inputMd2Path = inputPaths.FirstOrDefault(x => x.EndsWith(".md2", StringComparison.OrdinalIgnoreCase));
                 var inputObjPath = inputPaths.FirstOrDefault(x => x.EndsWith(".obj", StringComparison.OrdinalIgnoreCase));
                 var inputPngPath = inputPaths.FirstOrDefault(x => x.EndsWith(".png", StringComparison.OrdinalIgnoreCase));
+                var inputTimPath = Path.ChangeExtension(inputEmdPath, ".tim");
 
                 var importing = inputMd2Path != null || inputObjPath != null || inputPngPath != null;
 
@@ -48,8 +60,7 @@ namespace IntelOrca.Emd
                 TimFile timFile = null;
                 if (inputEmdPath.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
                 {
-                    modelFile = new EmdFile(inputEmdPath);
-                    var inputTimPath = Path.ChangeExtension(inputEmdPath, ".tim");
+                    modelFile = new EmdFile(version, inputEmdPath);
                     if (File.Exists(inputTimPath))
                     {
                         timFile = new TimFile(inputTimPath);
@@ -57,7 +68,7 @@ namespace IntelOrca.Emd
                 }
                 else if (inputEmdPath.EndsWith(".pld", StringComparison.OrdinalIgnoreCase))
                 {
-                    var pldFile = new PldFile(inputEmdPath);
+                    var pldFile = new PldFile(version, inputEmdPath);
                     modelFile = pldFile;
                     timFile = pldFile.GetTim();
                 }
@@ -71,14 +82,20 @@ namespace IntelOrca.Emd
                 {
                     if (inputMd2Path != null)
                     {
-                        // Import MD2
-                        modelFile.Md2 = new Md2(File.ReadAllBytes(inputMd2Path));
+                        // Import MD1/MD2
+                        if (version == BioVersion.Biohazard2)
+                            modelFile.Md1 = new Md1(File.ReadAllBytes(inputMd1Path));
+                        else
+                            modelFile.Md2 = new Md2(File.ReadAllBytes(inputMd2Path));
                     }
                     else if (inputObjPath != null)
                     {
                         // Import OBJ
                         var objImporter = new ObjImporter();
-                        modelFile.Md2 = objImporter.ImportMd2(inputObjPath, modelFile.NumPages);
+                        if (version == BioVersion.Biohazard2)
+                            modelFile.Md1 = objImporter.ImportMd1(inputObjPath, modelFile.NumPages);
+                        else
+                            modelFile.Md2 = objImporter.ImportMd2(inputObjPath, modelFile.NumPages);
                     }
                     if (inputPngPath != null)
                     {
@@ -102,9 +119,19 @@ namespace IntelOrca.Emd
                 else
                 {
                     var objExporter = new ObjExporter();
-                    objExporter.Export(modelFile.Md2, outputObjPath, modelFile.NumPages);
+                    if (version == BioVersion.Biohazard2)
+                    {
+                        File.WriteAllBytes(outputMd1Path, modelFile.Md1.GetBytes());
+                        File.WriteAllBytes(outputMd2Path, modelFile.Md1.ToMd2().GetBytes());
+                        objExporter.Export(modelFile.Md1, outputObjPath, modelFile.NumPages);
+                        objExporter.Export(modelFile.Md1.ToMd2(), outputObjPath, modelFile.NumPages);
+                    }
+                    else
+                    {
+                        File.WriteAllBytes(outputMd2Path, modelFile.Md2.GetBytes());
+                        objExporter.Export(modelFile.Md2, outputObjPath, modelFile.NumPages);
+                    }
                     timFile?.ToBitmap((x, y) => x / 128).Save(outputPngPath);
-                    File.WriteAllBytes(outputMd2Path, modelFile.Md2.GetBytes());
                 }
                 return 0;
             }
@@ -192,9 +219,13 @@ namespace IntelOrca.Emd
         private static int PrintUsage()
         {
             Console.WriteLine("Resident Evil EMD import / export");
-            Console.WriteLine("usage: emd PL00.PLD");
-            Console.WriteLine("       emd EM52.EMD [-o EM52.obj]");
-            Console.WriteLine("       emd EM52.EMD my.obj my.png [-o custom.emd]");
+            Console.WriteLine("usage: emd [options] PL00.PLD");
+            Console.WriteLine("       emd [options] EM52.EMD [-o EM52.obj]");
+            Console.WriteLine("       emd [options] EM52.EMD my.obj my.png [-o custom.emd]");
+            Console.WriteLine();
+            Console.WriteLine("options:");
+            Console.WriteLine("    -v <version>     2 for RE2, 3 for RE3.");
+
             return 1;
         }
     }

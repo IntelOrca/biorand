@@ -55,6 +55,14 @@ namespace IntelOrca.Biohazard
             public short y;
             public short z;
             public short zero;
+
+            public Vector(short x, short y, short z)
+                : this()
+            {
+                this.x = x;
+                this.y = y;
+                this.z = z;
+            }
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
