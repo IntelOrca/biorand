@@ -7,11 +7,12 @@ namespace IntelOrca.Biohazard
         private const int CHUNK_MESH = 2;
         private const int CHUNK_TIM = 4;
 
+        protected override int Md1ChunkIndex => 0;
         protected override int Md2ChunkIndex => CHUNK_MESH;
         public override int NumPages => 3;
 
-        public PldFile(string path)
-            : base(path)
+        public PldFile(BioVersion version, string path)
+            : base(version, path)
         {
         }
 

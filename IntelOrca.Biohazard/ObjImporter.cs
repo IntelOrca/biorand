@@ -24,6 +24,11 @@ namespace IntelOrca.Biohazard
         private int _minVertexIndex;
         private int _maxVertexIndex;
 
+        public Md1 ImportMd1(string objPath, int numPages)
+        {
+            return new Md1(new byte[0]);
+        }
+
         public Md2 ImportMd2(string objPath, int numPages)
         {
             _objFile = new WavefrontObjFile(objPath);
