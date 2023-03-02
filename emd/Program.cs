@@ -124,7 +124,6 @@ namespace IntelOrca.Emd
                         File.WriteAllBytes(outputMd1Path, modelFile.Md1.GetBytes());
                         File.WriteAllBytes(outputMd2Path, modelFile.Md1.ToMd2().GetBytes());
                         objExporter.Export(modelFile.Md1, outputObjPath, modelFile.NumPages);
-                        objExporter.Export(modelFile.Md1.ToMd2(), outputObjPath, modelFile.NumPages);
                     }
                     else
                     {

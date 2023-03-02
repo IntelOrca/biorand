@@ -25,7 +25,7 @@ namespace IntelOrca.Biohazard
                 var numOffsets = br.ReadInt32();
 
                 // Read directory
-                fs.Position = directoryOffset;
+                fs.Position = fs.Length - (numOffsets * 4);
                 var offsets = new int[numOffsets + 1];
                 for (int i = 0; i < numOffsets; i++)
                 {

@@ -109,10 +109,10 @@ namespace IntelOrca.Biohazard
                     var quad = quadData[j];
                     var quadTexture = quadTextureData[j];
 
-                    normals[quad.v0] = normalData[quad.n0].ToMd2();
-                    normals[quad.v1] = normalData[quad.n1].ToMd2();
-                    normals[quad.v2] = normalData[quad.n2].ToMd2();
-                    normals[quad.v3] = normalData[quad.n3].ToMd2();
+                    normals[firstNormalIndex + quad.v0] = normalData[quad.n0].ToMd2();
+                    normals[firstNormalIndex + quad.v1] = normalData[quad.n1].ToMd2();
+                    normals[firstNormalIndex + quad.v2] = normalData[quad.n2].ToMd2();
+                    normals[firstNormalIndex + quad.v3] = normalData[quad.n3].ToMd2();
 
                     quads.Add(new Md2.Quad()
                     {
