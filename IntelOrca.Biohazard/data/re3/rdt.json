@@ -137,7 +137,7 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 47, 84, 85, 87, 103 ]
+          "excludeTypes": [ 91, 95, 103 ]
         }
       ]
     },
@@ -186,12 +186,12 @@
           "target": "106"
         }
       ],
+      "enemies": [],
       "npcs": [
         {
-          "excludeTypes": [ 47, 84, 85, 87, 103 ]
+          "excludeTypes": [ 91, 95 ]
         }
-      ],
-      "enemies": []
+      ]
     },
     "108": {
       "linkedRoom": "122",
@@ -625,7 +625,6 @@
         },
         {
           "includeOffsets": [ 29256 ],
-          "excludeTypes": [ 47, 84, 85, 87, 103 ],
           "cutscene": 1
         }
       ],
@@ -891,11 +890,6 @@
           "id": 9,
           "priority": "low"
         }
-      ],
-      "npcs": [
-        {
-          "excludeTypes": [ 47, 84, 85, 87, 103 ]
-        }
       ]
     },
     "210": {
@@ -965,11 +959,6 @@
         {
           "id": 11,
           "priority": "low"
-        }
-      ],
-      "npcs": [
-        {
-          "excludeTypes": [ 47, 84, 85, 87, 103 ]
         }
       ]
     },
@@ -1615,7 +1604,8 @@
       ],
       "npcs": [
         {
-          "playerActor": "carlos"
+          "playerActor": "carlos",
+          "excludeTypes": [ 85 ]
         }
       ]
     },
@@ -1991,11 +1981,6 @@
           "target": "509",
           "randomize": false,
           "requires": [ 112 ]
-        }
-      ],
-      "npcs": [
-        {
-          "excludeTypes": [ 47, 84, 85, 87, 103 ]
         }
       ]
     },

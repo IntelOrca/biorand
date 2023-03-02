@@ -59,6 +59,41 @@ namespace IntelOrca.Biohazard
 
         public int Height => _imageHeight;
 
+        public TimFile(int width, int height, int bpp)
+        {
+            if (bpp == 8)
+            {
+                _magic = 16;
+                _pixelFormat = PaletteFormat8bpp;
+                _imageSize = ((uint)width * (uint)height) + 12;
+                _imageOrgX = 0;
+                _imageOrgY = 0;
+                _imageWidth = (ushort)(width / 2);
+                _imageHeight = (ushort)height;
+                _imageData = new byte[width * height];
+
+                _paletteOrgX = 0;
+                _paletteOrgY = 0;
+                _coloursPerClut = 256;
+                ResizeCluts(1);
+            }
+            else if (bpp == 16)
+            {
+                _magic = 16;
+                _pixelFormat = PaletteFormat16bpp;
+                _imageSize = ((uint)width * (uint)height * 2) + 12;
+                _imageOrgX = 0;
+                _imageOrgY = 0;
+                _imageWidth = (ushort)width;
+                _imageHeight = (ushort)height;
+                _imageData = new byte[width * height * 2];
+            }
+            else
+            {
+                throw new ArgumentException("Bits per pixel must be 8 or 16", nameof(bpp));
+            }
+        }
+
         public TimFile(string path)
         {
             using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
@@ -120,12 +155,15 @@ namespace IntelOrca.Biohazard
             var bw = new BinaryWriter(stream);
             bw.Write(_magic);
             bw.Write(_pixelFormat);
-            bw.Write(_clutSize);
-            bw.Write(_paletteOrgX);
-            bw.Write(_paletteOrgY);
-            bw.Write(_coloursPerClut);
-            bw.Write(_numCluts);
-            bw.Write(_clutData);
+            if (_pixelFormat != PaletteFormat16bpp)
+            {
+                bw.Write(_clutSize);
+                bw.Write(_paletteOrgX);
+                bw.Write(_paletteOrgY);
+                bw.Write(_coloursPerClut);
+                bw.Write(_numCluts);
+                bw.Write(_clutData);
+            }
             bw.Write(_imageSize);
             bw.Write(_imageOrgX);
             bw.Write(_imageOrgY);
@@ -148,7 +186,7 @@ namespace IntelOrca.Biohazard
             return Convert16to32(c16);
         }
 
-        public uint GetPixel(int x, int y)
+        public uint GetPixel(int x, int y, int clutIndex = 0)
         {
             switch (_pixelFormat)
             {
@@ -159,13 +197,13 @@ namespace IntelOrca.Biohazard
                             return 0;
                         var b = _imageData[offset];
                         var p = (byte)((x & 1) == 0 ? b & 0x0F : b >> 4);
-                        return GetARGB(0, p);
+                        return GetARGB(clutIndex, p);
                     }
                 case PaletteFormat8bpp:
                     {
                         var offset = (y * Width) + x;
-                        var p = _imageData[offset];
-                        return GetARGB(0, p);
+                        var p = _imageData.Length > offset ? _imageData[offset] : 0;
+                        return GetARGB(clutIndex, p);
                     }
                 case PaletteFormat16bpp:
                     {
@@ -211,7 +249,7 @@ namespace IntelOrca.Biohazard
                         var offset = (y * Width * 2) + (x * 2);
                         var c16 = Convert32to16(p);
                         _imageData[offset + 0] = (byte)(c16 & 0xFF);
-                        _imageData[offset + 1] = (byte)(c16 << 8);
+                        _imageData[offset + 1] = (byte)(c16 >> 8);
                         break;
                     }
                 default:
@@ -219,7 +257,9 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        public uint[] GetPixels()
+        public uint[] GetPixels() => GetPixels((x, y) => 0);
+
+        public uint[] GetPixels(Func<int, int, int> getClutIndex)
         {
             var result = new uint[Width * Height];
             var index = 0;
@@ -227,7 +267,7 @@ namespace IntelOrca.Biohazard
             {
                 for (int x = 0; x < Width; x++)
                 {
-                    var p = GetPixel(x, y);
+                    var p = GetPixel(x, y, getClutIndex(x, y));
                     result[index] = p;
                     index++;
                 }
@@ -286,6 +326,33 @@ namespace IntelOrca.Biohazard
                     index++;
                 }
             }
+        }
+
+        public void SetPalette(int clutIndex, ushort[] colours)
+        {
+            for (int i = 0; i < colours.Length; i++)
+            {
+                SetPalette(clutIndex, i, colours[i]);
+            }
+        }
+
+        public void SetPalette(int clutIndex, int index, ushort c16)
+        {
+            if (_numCluts <= clutIndex)
+            {
+                ResizeCluts(clutIndex + 1);
+            }
+
+            var offset = (clutIndex * _coloursPerClut * 2) + (index * 2);
+            _clutData[offset + 0] = (byte)(c16 & 0xFF);
+            _clutData[offset + 1] = (byte)(c16 >> 8);
+        }
+
+        private void ResizeCluts(int count)
+        {
+            _clutSize = (uint)((count * _coloursPerClut * 2) + 12);
+            Array.Resize(ref _clutData, (int)(_clutSize - 12));
+            _numCluts = (ushort)count;
         }
 
         public static uint Convert16to32(ushort c16)
