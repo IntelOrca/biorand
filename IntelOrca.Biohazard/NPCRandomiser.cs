@@ -309,7 +309,7 @@ namespace IntelOrca.Biohazard
                 var dst = Path.Combine(enemyDirectory, $"EM1{id:X3}.EMD");
                 File.Copy(ec.EmPath, dst, true);
             }
-            else
+            else if (_config.Game == 2)
             {
                 var emdPath = Path.Combine(_modPath, $"pl{_config.Player}", $"emd{_config.Player}");
                 Directory.CreateDirectory(emdPath);
@@ -318,6 +318,18 @@ namespace IntelOrca.Biohazard
                 var dstEmd = Path.Combine(emdPath, $"EM{_config.Player}{id:X2}.EMD");
                 var srcTim = Path.ChangeExtension(ec.EmPath, ".tim");
                 var dstTim = Path.Combine(emdPath, $"EM{_config.Player}{id:X2}.TIM");
+                File.Copy(srcEmd, dstEmd, true);
+                File.Copy(srcTim, dstTim, true);
+            }
+            else if (_config.Game == 3)
+            {
+                var emdPath = Path.Combine(_modPath, "ROOM", "EMD");
+                Directory.CreateDirectory(emdPath);
+
+                var srcEmd = ec.EmPath;
+                var dstEmd = Path.Combine(emdPath, $"EM{id:X2}.EMD");
+                var srcTim = Path.ChangeExtension(ec.EmPath, ".tim");
+                var dstTim = Path.Combine(emdPath, $"EM{id:X2}.TIM");
                 File.Copy(srcEmd, dstEmd, true);
                 File.Copy(srcTim, dstTim, true);
             }

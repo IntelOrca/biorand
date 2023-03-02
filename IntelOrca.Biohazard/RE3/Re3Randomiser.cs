@@ -247,6 +247,24 @@ namespace IntelOrca.Biohazard.RE3
                 re3randomizer.AddArchives(dataPath, fileRepository);
                 npcRandomiser.AddToSelection(BioVersion.Biohazard3, fileRepository);
             }
+
+            var emdFolders = DataManager.GetDirectories(BiohazardVersion, $"emd");
+            foreach (var emdFolder in emdFolders)
+            {
+                var actor = Path.GetFileName(emdFolder);
+                var files = Directory.GetFiles(emdFolder);
+                foreach (var file in files)
+                {
+                    if (file.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var hex = Path.GetFileName(file).Substring(2, 2);
+                        if (int.TryParse(hex, System.Globalization.NumberStyles.HexNumber, null, out var result))
+                        {
+                            npcRandomiser.AddNPC((byte)result, file, actor);
+                        }
+                    }
+                }
+            }
         }
 
         protected override void SerialiseInventory(FileRepository fileRepository)
