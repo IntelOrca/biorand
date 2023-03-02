@@ -30,6 +30,21 @@ namespace IntelOrca.Biohazard
             return MemoryMarshal.Cast<byte, T>(data).Slice(0, count);
         }
 
+        public Md2Builder ToBuilder()
+        {
+            var builder = new Md2Builder();
+            foreach (var obj in Objects)
+            {
+                var part = new Md2Builder.Part();
+                part.Positions.AddRange(GetPositionData(obj).ToArray());
+                part.Normals.AddRange(GetNormalData(obj).ToArray());
+                part.Triangles.AddRange(GetTriangles(obj).ToArray());
+                part.Quads.AddRange(GetQuads(obj).ToArray());
+                builder.Parts.Add(part);
+            }
+            return builder;
+        }
+
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct ObjectDescriptor
         {
