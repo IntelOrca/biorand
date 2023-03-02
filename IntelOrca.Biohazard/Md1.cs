@@ -44,20 +44,13 @@ namespace IntelOrca.Biohazard
 
         public unsafe Md2 ToMd2()
         {
-            var numObjects = NumObjects / 2;
-            var objects = new Md2.ObjectDescriptor[numObjects];
-            var positions = new List<Md2.Vector>();
-            var normals = new List<Md2.Vector>();
-            var triangles = new List<Md2.Triangle>();
-            var quads = new List<Md2.Quad>();
+            var builder = new Md2Builder();
+            for (int i = 0; i < 15; i++)
+                builder.Parts.Add(new Md2Builder.Part());
 
-            for (int i = 0; i < NumObjects; i += 2)
+            for (int i = 0; i < 30; i += 2)
             {
-                // Take a note of current index of each array
-                var firstPositionIndex = positions.Count;
-                var firstNormalIndex = normals.Count;
-                var firstTriangleIndex = triangles.Count;
-                var firstQuadIndex = quads.Count;
+                var part = builder.Parts[g_partRemap[i / 2]];
 
                 // Get the triangle and quad objects
                 var objTriangle = Objects[i];
@@ -66,8 +59,8 @@ namespace IntelOrca.Biohazard
                 // Add positions and normal placeholders
                 foreach (var pos in GetPositionData(objTriangle))
                 {
-                    positions.Add(pos.ToMd2());
-                    normals.Add(new Md2.Vector());
+                    part.Positions.Add(pos.ToMd2());
+                    part.Normals.Add(new Md2.Vector());
                 }
 
                 var normalData = GetNormalData(objTriangle);
@@ -80,25 +73,25 @@ namespace IntelOrca.Biohazard
                 for (int j = 0; j < triangleData.Length; j++)
                 {
                     var triangle = triangleData[j];
-                    var trinagleTexture = triangleTextureData[j];
+                    var triangleTexture = triangleTextureData[j];
 
-                    normals[firstNormalIndex + triangle.v0] = normalData[triangle.n0].ToMd2();
-                    normals[firstNormalIndex + triangle.v1] = normalData[triangle.n1].ToMd2();
-                    normals[firstNormalIndex + triangle.v2] = normalData[triangle.n2].ToMd2();
+                    part.Normals[triangle.v0] = normalData[triangle.n0].ToMd2();
+                    part.Normals[triangle.v1] = normalData[triangle.n1].ToMd2();
+                    part.Normals[triangle.v2] = normalData[triangle.n2].ToMd2();
 
-                    triangles.Add(new Md2.Triangle()
+                    part.Triangles.Add(new Md2.Triangle()
                     {
                         v0 = (byte)triangle.v0,
                         v1 = (byte)triangle.v1,
                         v2 = (byte)triangle.v2,
-                        tu0 = trinagleTexture.u0,
-                        tu1 = trinagleTexture.u1,
-                        tu2 = trinagleTexture.u2,
-                        tv0 = trinagleTexture.v0,
-                        tv1 = trinagleTexture.v1,
-                        tv2 = trinagleTexture.v2,
-                        dummy0 = (byte)(trinagleTexture.page * 64),
-                        page = (byte)(0x80 | (trinagleTexture.page & 0x0F)),
+                        tu0 = triangleTexture.u0,
+                        tu1 = triangleTexture.u1,
+                        tu2 = triangleTexture.u2,
+                        tv0 = triangleTexture.v0,
+                        tv1 = triangleTexture.v1,
+                        tv2 = triangleTexture.v2,
+                        dummy0 = (byte)(triangleTexture.page * 64),
+                        page = (byte)(0x80 | (triangleTexture.page & 0x0F)),
                         visible = 120
                     });
                 }
@@ -109,12 +102,12 @@ namespace IntelOrca.Biohazard
                     var quad = quadData[j];
                     var quadTexture = quadTextureData[j];
 
-                    normals[firstNormalIndex + quad.v0] = normalData[quad.n0].ToMd2();
-                    normals[firstNormalIndex + quad.v1] = normalData[quad.n1].ToMd2();
-                    normals[firstNormalIndex + quad.v2] = normalData[quad.n2].ToMd2();
-                    normals[firstNormalIndex + quad.v3] = normalData[quad.n3].ToMd2();
+                    part.Normals[quad.v0] = normalData[quad.n0].ToMd2();
+                    part.Normals[quad.v1] = normalData[quad.n1].ToMd2();
+                    part.Normals[quad.v2] = normalData[quad.n2].ToMd2();
+                    part.Normals[quad.v3] = normalData[quad.n3].ToMd2();
 
-                    quads.Add(new Md2.Quad()
+                    part.Quads.Add(new Md2.Quad()
                     {
                         v0 = (byte)quad.v0,
                         v1 = (byte)quad.v1,
@@ -133,73 +126,15 @@ namespace IntelOrca.Biohazard
                         visible = 120
                     });
                 }
-
-                // Add object (offsets are just an index at the moment)
-                objects[g_partRemap[i / 2]] = new Md2.ObjectDescriptor()
-                {
-                    vtx_offset = (ushort)firstPositionIndex,
-                    nor_offset = (ushort)firstNormalIndex,
-                    vtx_count = (ushort)(positions.Count - firstPositionIndex),
-                    tri_offset = (ushort)firstTriangleIndex,
-                    quad_offset = (ushort)firstQuadIndex,
-                    tri_count = (ushort)(triangles.Count - firstTriangleIndex),
-                    quad_count = (ushort)(quads.Count - firstQuadIndex)
-                };
             }
-
-            // Serialise the data
-            if (positions.Count != normals.Count)
-                throw new Exception("Expected same number of normals as positions.");
 
             // Add extra part, if missing (hand with gun)
-            if (numObjects == 15)
+            if (builder.Parts.Count == 15)
             {
-                numObjects++;
-                Array.Resize(ref objects, numObjects);
-                var srcObject = objects[4];
-                objects[numObjects - 1] = objects[4];
-                ref var obj = ref objects[numObjects - 1];
-                obj.vtx_offset = (ushort)positions.Count;
-                obj.nor_offset = (ushort)normals.Count;
-                obj.tri_offset = (ushort)triangles.Count;
-                obj.quad_offset = (ushort)quads.Count;
-                positions.AddRange(positions.Skip(srcObject.vtx_offset).Take(srcObject.vtx_count).ToArray());
-                normals.AddRange(normals.Skip(srcObject.nor_offset).Take(srcObject.vtx_count).ToArray());
-                triangles.AddRange(triangles.Skip(srcObject.tri_offset).Take(srcObject.tri_count).ToArray());
-                quads.AddRange(quads.Skip(srcObject.quad_offset).Take(srcObject.quad_count).ToArray());
+                builder.Parts.Add(builder.Parts[4]);
             }
 
-            var vertexOffset = numObjects * sizeof(Md2.ObjectDescriptor);
-            var normalOffset = vertexOffset + (positions.Count * sizeof(Md2.Vector));
-            var triangleOffset = normalOffset + (normals.Count * sizeof(Md2.Vector));
-            var quadOffset = triangleOffset + (triangles.Count * sizeof(Md2.Triangle));
-
-            var ms = new MemoryStream();
-            var bw = new BinaryWriter(ms);
-            bw.Write(0);
-            bw.Write(numObjects);
-            for (int i = 0; i < numObjects; i++)
-            {
-                var md2Object = objects[i];
-                md2Object.vtx_offset = (ushort)(vertexOffset + (md2Object.vtx_offset * sizeof(Md2.Vector)));
-                md2Object.nor_offset = (ushort)(normalOffset + (md2Object.nor_offset * sizeof(Md2.Vector)));
-                md2Object.tri_offset = (ushort)(triangleOffset + (md2Object.tri_offset * sizeof(Md2.Triangle)));
-                md2Object.quad_offset = (ushort)(quadOffset + (md2Object.quad_offset * sizeof(Md2.Quad)));
-                bw.Write(md2Object);
-            }
-            foreach (var p in positions)
-                bw.Write(p);
-            foreach (var n in normals)
-                bw.Write(n);
-            foreach (var t in triangles)
-                bw.Write(t);
-            foreach (var q in quads)
-                bw.Write(q);
-
-            ms.Position = 0;
-            bw.Write((uint)ms.Length);
-
-            return new Md2(ms.ToArray());
+            return builder.ToMd2();
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
