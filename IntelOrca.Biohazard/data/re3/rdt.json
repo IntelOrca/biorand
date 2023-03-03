@@ -764,26 +764,32 @@
       "npcs": [
         {
           "includeOffsets": [ 20152 ],
+          "excludeTypes": [ 95 ],
           "cutscene": 0 // Nikolai (first greet)
         },
         {
           "includeOffsets": [ 20314 ],
+          "excludeTypes": [ 95 ],
           "cutscene": 1 // Mikhail (first greet)
         },
         {
           "includeOffsets": [ 20512, 20536 ],
+          "excludeTypes": [ 95 ],
           "cutscene": 2 // Carlos and Nikolai
         },
         {
           "includeOffsets": [ 20208 ],
+          "excludeTypes": [ 95 ],
           "cutscene": 4 // Carlos (ready to go)
         },
         {
           "includeOffsets": [ 20616 ],
+          "excludeTypes": [ 95 ],
           "cutscene": 5 // Carlos (it's looking good)
         },
         {
           "includeOffsets": [ 20286, 20652 ],
+          "excludeTypes": [ 95 ],
           "cutscene": 6
         }
       ]
