@@ -200,7 +200,7 @@ namespace IntelOrca.Biohazard
             {
                 var srcExtension = Path.GetExtension(src);
                 var dstExtension = Path.GetExtension(dst[0]);
-                if (string.Equals(srcExtension, dstExtension, StringComparison.OrdinalIgnoreCase))
+                if (ImportVolume == 1 && string.Equals(srcExtension, dstExtension, StringComparison.OrdinalIgnoreCase))
                 {
                     for (int i = 0; i < dst.Length; i++)
                     {
@@ -216,7 +216,7 @@ namespace IntelOrca.Biohazard
                     {
                         using var stream = _fileRepo.GetStream(src);
                         var builder = new WaveformBuilder(volume: ImportVolume);
-                        if (_isWav)
+                        if (_config.Game == 1)
                         {
                             // RE1 can't handle very large .wav files, limit tracks to 3 minutes
                             builder.Append(src, stream, 0, 2.5 * 60);

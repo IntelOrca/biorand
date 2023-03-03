@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using NVorbis;
 
 namespace IntelOrca.Biohazard
@@ -232,6 +230,15 @@ namespace IntelOrca.Biohazard
                 AppendWav(ms, start, end);
                 return;
             }
+            if (header.wBitsPerSample == 8)
+            {
+                input.Position = initialPosition;
+                var ms = new MemoryStream();
+                Convert8to16(ms, input);
+                ms.Position = 0;
+                AppendWav(ms, start, end);
+                return;
+            }
 
             if (header.nChannels != 1 && header.nChannels != 2)
                 throw new NotSupportedException("Only mono or stereo sound can be converted.");
@@ -384,6 +391,33 @@ namespace IntelOrca.Biohazard
                 result = (int)header.nDataLength;
             }
             return result;
+        }
+
+        private unsafe void Convert8to16(Stream output, Stream input)
+        {
+            var bw = new BinaryWriter(output);
+            var br = new BinaryReader(input);
+            var header = br.ReadStruct<WaveHeader>();
+            if (header.wBitsPerSample == 8)
+            {
+                header.wBitsPerSample = 16;
+                header.nDataLength *= 2;
+                header.nAvgBytesPerSec *= 2;
+                header.nBlockAlign *= 2;
+                header.nRiffLength = (uint)(header.nDataLength + sizeof(WaveHeader) - 8);
+                bw.Write(header);
+
+                var data = br.ReadBytes((int)header.nDataLength);
+                for (int i = 0; i < data.Length; i++)
+                {
+                    bw.Write((short)((data[i] - 128) * 256));
+                }
+            }
+            else
+            {
+                bw.Write(header);
+                input.CopyAmountTo(output, header.nDataLength);
+            }
         }
 
         private const int SINC_WINDOW_FXP = 15;

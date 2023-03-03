@@ -75,7 +75,6 @@ namespace IntelOrca.Biohazard.RE3
         public override void Generate(RandoConfig config, ReInstallConfig reConfig, IRandoProgress progress, FileRepository fileRepository)
         {
             _reInstallConfig = reConfig;
-            AddArchives(fileRepository.DataPath, fileRepository);
 
             if (config.RandomBgm)
             {
