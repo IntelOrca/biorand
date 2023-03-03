@@ -779,7 +779,7 @@ namespace IntelOrca.Biohazard
             else
             {
                 var builder = new WaveformBuilder();
-                builder.Append(srcPath);
+                builder.Append(srcPath, _fileRepository.GetStream(srcPath));
                 builder.Save(dstPath);
             }
         }

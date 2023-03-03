@@ -167,6 +167,12 @@ namespace IntelOrca.Biohazard
             var originalDataPath = GetDataPath(installPath);
             var modPath = Path.Combine(installPath, @"mod_biorand");
             var fileRepo = new FileRepository(originalDataPath, modPath);
+            if (reConfig!.IsEnabled(BioVersion.Biohazard3))
+            {
+                var dataPath = GetDataPath(reConfig.GetInstallPath(BioVersion.Biohazard3));
+                var re3randomizer = new Re3Randomiser(null);
+                re3randomizer.AddArchives(dataPath, fileRepo);
+            }
 
             using (progress.BeginTask(null, $"Clearing '{modPath}'"))
             {
@@ -222,10 +228,6 @@ namespace IntelOrca.Biohazard
                 if (enabledBgms.Contains("RE3", StringComparer.OrdinalIgnoreCase))
                 {
                     var r = new Re3Randomiser(BgCreator);
-                    if (BiohazardVersion != BioVersion.Biohazard3)
-                    {
-                        r.AddArchives(reConfig.GetInstallPath(BioVersion.Biohazard3), fileRepository);
-                    }
                     r.AddMusicSelection(bgmRandomizer, reConfig);
                 }
                 bgmRandomizer.AddCutomMusicToSelection(enabledBgms);

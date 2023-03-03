@@ -28,5 +28,17 @@ namespace IntelOrca.Biohazard.Tests
             Assert.Equal(0x27CB0, rdt10D.Length);
             Assert.Equal(0xDCA4BA45867EEAAD, fnv1a);
         }
+
+        [Fact]
+        public void GetFileContents_EM54()
+        {
+            var installPath = TestInfo.GetInstallPath(2);
+            var rofs9Path = Path.Combine(installPath, "rofs9.dat");
+            var rofs9 = new RE3Archive(rofs9Path);
+            var em54 = rofs9.GetFileContents(94);
+            var fnv1a = em54.CalculateFnv1a();
+            Assert.Equal(0x11C14, em54.Length);
+            Assert.Equal(0xA1924DD0AF65A3DC, fnv1a);
+        }
     }
 }
