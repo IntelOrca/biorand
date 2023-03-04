@@ -2262,7 +2262,7 @@
       "npcs": [
         {
           "includeOffsets": [ 3678, 3700, 3806 ],
-          "excludeTypes": [ 65, 67 ],
+          "excludeTypes": [ 65, 67, 90 ],
           "playerActor": "ada",
           "player": 0,
           "cutscene": 0
