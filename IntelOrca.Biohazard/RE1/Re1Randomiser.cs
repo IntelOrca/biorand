@@ -27,19 +27,11 @@ namespace IntelOrca.Biohazard.RE1
 
         public override bool ValidateGamePath(string path)
         {
-            return Directory.Exists(Path.Combine(path, "JPN", "STAGE1")) ||
-                Directory.Exists(Path.Combine(path, "STAGE1"));
+            var dataPath = FindDataPath(path);
+            return Directory.Exists(Path.Combine(dataPath, "STAGE1"));
         }
 
-        protected override string GetDataPath(string installPath)
-        {
-            var originalDataPath = Path.Combine(installPath, "JPN");
-            if (!Directory.Exists(originalDataPath))
-            {
-                originalDataPath = installPath;
-            }
-            return originalDataPath;
-        }
+        protected override string GetDataPath(string installPath) => FindDataPath(installPath);
 
         protected override RdtId[] GetRdtIds(string dataPath)
         {
@@ -293,5 +285,19 @@ namespace IntelOrca.Biohazard.RE1
         }
 
         internal override string BGMPath => "sound";
+
+        internal static string FindDataPath(string installPath)
+        {
+            var originalDataPath = Path.Combine(installPath, "JPN");
+            if (!Directory.Exists(originalDataPath))
+            {
+                originalDataPath = Path.Combine(installPath, "USA");
+                if (!Directory.Exists(originalDataPath))
+                {
+                    originalDataPath = installPath;
+                }
+            }
+            return originalDataPath;
+        }
     }
 }

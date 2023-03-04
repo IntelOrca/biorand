@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IntelOrca.Biohazard.RE1;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -192,8 +193,7 @@ namespace IntelOrca.Biohazard.RE2
         {
             if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard1))
             {
-                var dataPath = GetDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard1));
-                dataPath = Path.Combine(dataPath, "JPN");
+                var dataPath = Re1Randomiser.FindDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard1));
                 npcRandomiser.AddToSelection(BioVersion.Biohazard1, dataPath);
             }
 
