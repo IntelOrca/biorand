@@ -2684,7 +2684,13 @@
       "enemies": [
         {
           "nop": [ "0x1386-0x1404" ],
-          "randomPlacements": true
+          "randomPlacements": true,
+          "player": 0
+        },
+        {
+          "nop": [ "0x1386-0x13BC" ],
+          "randomPlacements": true,
+          "player": 1
         }
       ]
     },
