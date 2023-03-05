@@ -12,7 +12,7 @@
         ZombieGuy2,
         ZombieGuy3 = 30,
         ZombieRandom,
-        Cerebrus,
+        ZombieDog,
         Crow,
         LickerRed,
         Alligator,

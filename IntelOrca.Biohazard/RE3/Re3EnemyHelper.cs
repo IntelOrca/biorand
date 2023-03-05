@@ -28,15 +28,14 @@ namespace IntelOrca.Biohazard.RE3
 
         public SelectableEnemy[] GetSelectableEnemies() => new[]
         {
-            new SelectableEnemy("Zombie", "LightGray", _zombieTypes),
-            new SelectableEnemy("Cerberus", "Black", Re3EnemyIds.Cerberus),
-            new SelectableEnemy("Crow", "Black", Re3EnemyIds.Crow),
-            new SelectableEnemy("Hunter", "IndianRed", Re3EnemyIds.Hunter),
-            new SelectableEnemy("Brain Sucker", "DarkOliveGreen", new[] { Re3EnemyIds.BS23, Re3EnemyIds.BS28 }),
-            new SelectableEnemy("HunterGamma", "Black", Re3EnemyIds.HunterGamma),
-            new SelectableEnemy("Spider", "YellowGreen", Re3EnemyIds.Spider),
             new SelectableEnemy("Arms", "LightGray", Re3EnemyIds.Arm),
-            new SelectableEnemy("MiniWorm", "LightGray", Re3EnemyIds.MiniWorm),
+            new SelectableEnemy("Crow", "Black", Re3EnemyIds.Crow),
+            new SelectableEnemy("Mini Worm", "LightGray", Re3EnemyIds.MiniWorm),
+            new SelectableEnemy("Spider", "YellowGreen", Re3EnemyIds.Spider),
+            new SelectableEnemy("Zombie", "LightGray", _zombieTypes),
+            new SelectableEnemy("Hunter", "IndianRed", new[] { Re3EnemyIds.Hunter, Re3EnemyIds.HunterGamma }),
+            new SelectableEnemy("Brain Sucker", "DarkOliveGreen", new[] { Re3EnemyIds.BS23, Re3EnemyIds.BS28 }),
+            new SelectableEnemy("Zombie Dog", "Black", Re3EnemyIds.ZombieDog),
             new SelectableEnemy("Nemesis", "LightGray", Re3EnemyIds.Nemesis),
         };
 
@@ -74,7 +73,7 @@ namespace IntelOrca.Biohazard.RE3
                         enemy.State = rng.NextOf<byte>(0, 1, 2, 3, 4, 6);
                     enemy.SoundBank = GetZombieSoundBank(enemyType);
                     break;
-                case Re3EnemyIds.Cerberus:
+                case Re3EnemyIds.ZombieDog:
                     enemy.State = 0;
                     if (config.EnemyDifficulty >= 3)
                     {
@@ -150,7 +149,7 @@ namespace IntelOrca.Biohazard.RE3
                 case Re3EnemyIds.ZombieRpd2:
                 case Re3EnemyIds.ZombieGuy7:
                 case Re3EnemyIds.ZombieGuy8:
-                case Re3EnemyIds.Cerberus:
+                case Re3EnemyIds.ZombieDog:
                 case Re3EnemyIds.Hunter:
                 case Re3EnemyIds.BS23:
                 case Re3EnemyIds.Spider:
@@ -171,7 +170,7 @@ namespace IntelOrca.Biohazard.RE3
                 case Re3EnemyIds.Hunter:
                 case Re3EnemyIds.BS23:
                 case Re3EnemyIds.BS28:
-                case Re3EnemyIds.Cerberus:
+                case Re3EnemyIds.ZombieDog:
                 case Re3EnemyIds.Nemesis:
                     return true;
             }

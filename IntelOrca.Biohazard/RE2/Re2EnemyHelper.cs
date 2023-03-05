@@ -60,14 +60,14 @@ namespace IntelOrca.Biohazard.RE2
             {
                 exclude((byte)EnemyType.LickerRed);
                 exclude((byte)EnemyType.LickerGrey);
-                exclude((byte)EnemyType.Cerebrus);
+                exclude((byte)EnemyType.ZombieDog);
                 exclude((byte)EnemyType.Tyrant1);
             }
             else if (difficulty == "hard" && config.EnemyDifficulty < 3)
             {
                 exclude((byte)EnemyType.LickerRed);
                 exclude((byte)EnemyType.LickerGrey);
-                exclude((byte)EnemyType.Cerebrus);
+                exclude((byte)EnemyType.ZombieDog);
                 exclude((byte)EnemyType.Tyrant1);
             }
         }
@@ -94,7 +94,7 @@ namespace IntelOrca.Biohazard.RE2
                 case EnemyType.GiantMoth:
                 case EnemyType.LickerRed:
                 case EnemyType.LickerGrey:
-                case EnemyType.Cerebrus:
+                case EnemyType.ZombieDog:
                 case EnemyType.Ivy:
                 case EnemyType.IvyPurple:
                 case EnemyType.ZombieBrad:
@@ -126,7 +126,7 @@ namespace IntelOrca.Biohazard.RE2
                         enemy.State = rng.NextOf<byte>(0, 1, 2, 3, 4, 6);
                     enemy.SoundBank = GetZombieSoundBank(enemyType);
                     break;
-                case EnemyType.Cerebrus:
+                case EnemyType.ZombieDog:
                     enemy.State = 0;
                     if (config.EnemyDifficulty >= 3)
                     {
@@ -253,7 +253,7 @@ namespace IntelOrca.Biohazard.RE2
             {
                 case EnemyType.Birkin1:
                     return 1;
-                case EnemyType.Cerebrus:
+                case EnemyType.ZombieDog:
                 case EnemyType.GiantMoth:
                 case EnemyType.Ivy:
                 case EnemyType.IvyPurple:
@@ -276,7 +276,7 @@ namespace IntelOrca.Biohazard.RE2
             new SelectableEnemy("Moth", "DarkOliveGreen", new[] { (byte)EnemyType.GiantMoth }),
             new SelectableEnemy("Ivy", "SpringGreen", new[] { (byte)EnemyType.Ivy }),
             new SelectableEnemy("Licker", "IndianRed", new[] { (byte)EnemyType.LickerRed, (byte)EnemyType.LickerGrey }),
-            new SelectableEnemy("Cerberus", "Black", new[] { (byte)EnemyType.Cerebrus }),
+            new SelectableEnemy("Zombie Dog", "Black", new[] { (byte)EnemyType.ZombieDog }),
             new SelectableEnemy("Tyrant", "DarkGray", new[] { (byte)EnemyType.Tyrant1 }),
             new SelectableEnemy("Birkin", "IndianRed", new[] { (byte)EnemyType.Birkin1 }),
         };

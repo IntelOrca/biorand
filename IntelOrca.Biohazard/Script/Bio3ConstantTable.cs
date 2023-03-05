@@ -346,7 +346,7 @@ namespace IntelOrca.Biohazard.Script
             "Zombie (Guy 7)",
             "Zombie (Guy 8)",
 
-            "Cerberus",
+            "Zombie Dog",
             "Crow",
             "Hunter",
             "BS23",

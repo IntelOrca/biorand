@@ -18,7 +18,7 @@
         public const byte ZombieRpd2 = 29;
         public const byte ZombieGuy7 = 30;
         public const byte ZombieGuy8 = 31;
-        public const byte Cerberus = 32;
+        public const byte ZombieDog = 32;
         public const byte Crow = 33;
         public const byte Hunter = 34;
         public const byte BS23 = 35;
