@@ -190,12 +190,42 @@ namespace IntelOrca.Biohazard
             }
 
             using (progress.BeginTask(config.Player, $"Generating seed"))
+            {
+                PreGenerate(config);
                 Generate(config, reConfig, progress, fileRepo);
+            }
 
             using (progress.BeginTask(null, $"Writing manifest"))
             {
                 File.WriteAllText(Path.Combine(modPath, "manifest.txt"), "[MOD]\nName = BioRand: A Resident Evil Randomizer\nModule = biorand.dll\n");
                 File.WriteAllText(Path.Combine(modPath, "description.txt"), $"{Program.CurrentVersionInfo}\r\nSeed: {config}\r\n");
+            }
+        }
+
+        private void PreGenerate(RandoConfig config)
+        {
+            // Randomize player characters
+            if (config.ChangePlayer)
+            {
+                var rng = new Rng(config.Seed);
+                if (config.Player0 == 0)
+                {
+                    var length = GetPlayerCharacters(0).Length;
+                    config.Player0 = (byte)rng.Next(0, length);
+                }
+                else
+                {
+                    config.Player0--;
+                }
+                if (config.Player1 == 0)
+                {
+                    var length = GetPlayerCharacters(1).Length;
+                    config.Player1 = (byte)rng.Next(0, length);
+                }
+                else
+                {
+                    config.Player1--;
+                }
             }
         }
 

@@ -959,7 +959,9 @@ namespace IntelOrca.Biohazard.BioRand
                 var label = dropdownLabels[i];
                 var dropdown = dropdowns[i];
                 label.Text = $"{randomizer.GetPlayerName(i)} becomes:";
-                dropdown.ItemsSource = randomizer.GetPlayerCharacters(i);
+                var items = new List<string>() { "Random" };
+                items.AddRange(randomizer.GetPlayerCharacters(i));
+                dropdown.ItemsSource = items;
                 if (dropdown.SelectedIndex == -1)
                     dropdown.SelectedIndex = 0;
             }

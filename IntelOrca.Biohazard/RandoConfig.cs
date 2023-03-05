@@ -13,7 +13,7 @@ namespace IntelOrca.Biohazard
         };
 
         public const int MaxSeed = 0b11111_11111_11111_11111;
-        public const byte LatestVersion = 6;
+        public const byte LatestVersion = 7;
 
         public byte Version { get; set; } = LatestVersion;
         public byte Game { get; set; } = 2;
@@ -23,6 +23,7 @@ namespace IntelOrca.Biohazard
         // Flags
         public bool ProtectFromSoftLock { get; set; } = true;
         public bool ChangePlayer { get; set; }
+        public bool RandomPlayer { get; set; }
         public bool RandomDoors { get; set; }
         public bool RandomNPCs { get; set; } = true;
         public bool RandomEnemies { get; set; } = true;
@@ -85,6 +86,7 @@ namespace IntelOrca.Biohazard
             result.RatioAmmo = reader.ReadDigit();
             result.RatioHealth = reader.ReadDigit();
             result.RatioInkRibbons = reader.ReadDigit();
+            result.RatioGunpowder = reader.ReadDigit();
 
             result.AmmoQuantity = reader.ReadByte(3);
             result.EnemyDifficulty = reader.ReadByte(2);
@@ -97,8 +99,9 @@ namespace IntelOrca.Biohazard
             result.WeaponQuantity = reader.ReadByte(3);
             result.PrioritiseCutscenes = reader.ReadFlag();
 
-            result.Player0 = reader.ReadDigit();
-            result.Player1 = reader.ReadDigit();
+            result.Player0 = reader.ReadByte(6);
+            result.Player1 = reader.ReadByte(6);
+            reader.ReadByte(3);
 
             result.RandomInventory = reader.ReadFlag();
             result.RandomEnemyPlacement = reader.ReadFlag();
@@ -111,10 +114,8 @@ namespace IntelOrca.Biohazard
                 values.Add(reader.ReadByte(3));
             }
             result.EnemyRatios = values.ToArray();
-            result.EnabledNPCs = reader.ReadBooleanArray(50);
+            result.EnabledNPCs = reader.ReadBooleanArray(60);
             result.EnabledBGMs = reader.ReadBooleanArray(15);
-
-            result.RatioGunpowder = reader.ReadDigit();
 
             return result;
         }
@@ -155,6 +156,7 @@ namespace IntelOrca.Biohazard
             writer.WriteDigit(RatioAmmo);
             writer.WriteDigit(RatioHealth);
             writer.WriteDigit(RatioInkRibbons);
+            writer.WriteDigit(RatioGunpowder);
 
             writer.Write(3, AmmoQuantity);
             writer.Write(2, EnemyDifficulty);
@@ -167,8 +169,9 @@ namespace IntelOrca.Biohazard
             writer.Write(3, WeaponQuantity);
             writer.Write(PrioritiseCutscenes);
 
-            writer.WriteDigit(Player0);
-            writer.WriteDigit(Player1);
+            writer.Write(6, Player0);
+            writer.Write(6, Player1);
+            writer.Write(3, 0);
 
             writer.Write(RandomInventory);
             writer.Write(RandomEnemyPlacement);
@@ -186,10 +189,8 @@ namespace IntelOrca.Biohazard
                     writer.Write(3, 0);
                 }
             }
-            writer.WriteArray(50, EnabledNPCs);
+            writer.WriteArray(60, EnabledNPCs);
             writer.WriteArray(15, EnabledBGMs);
-
-            writer.WriteDigit(RatioGunpowder);
 
             return writer.ToString();
         }
