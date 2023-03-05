@@ -1019,6 +1019,7 @@ namespace IntelOrca.Biohazard.BioRand
                 var hyperlink = btn.Inlines.FirstInline as Hyperlink;
                 hyperlink.Inlines.Clear();
                 hyperlink.Inlines.Add($"{randomizer.GetPlayerName(i)} Log");
+                btn.Visibility = i == 1 && SelectedGame == 2 ? Visibility.Collapsed : Visibility.Visible;
             }
         }
 
