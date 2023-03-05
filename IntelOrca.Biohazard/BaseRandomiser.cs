@@ -517,7 +517,8 @@ namespace IntelOrca.Biohazard
             var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
                 "re1",
-                "re2"
+                "re2",
+                "re3"
             };
             result.AddRange(DataManager
                 .GetDirectoriesIn("bgm")

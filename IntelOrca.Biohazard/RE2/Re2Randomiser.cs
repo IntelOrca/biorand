@@ -99,6 +99,13 @@ namespace IntelOrca.Biohazard.RE2
             {
                 throw new BioRandUserException("RE2 installation must be enabled to randomize RE2.");
             }
+            if (config.RandomBgm && MusicAlbumSelected(config, "RE3"))
+            {
+                if (!reConfig.IsEnabled(BioVersion.Biohazard3))
+                {
+                    throw new BioRandUserException("RE3 installation must be enabled to use RE3 assets.");
+                }
+            }
 
             var po = new ParallelOptions();
 #if DEBUG
