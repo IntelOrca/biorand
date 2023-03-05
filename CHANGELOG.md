@@ -1,3 +1,21 @@
+BioRand v2.3.0 (2023-03-05)
+
+* [Feature] Add BGM context menu.
+* [Feature] Add prioritise cutscenes option.
+* [Feature] Add random player selection.
+* [Enhancement] Add more title voices
+* [Enhancement] Add music tracks from RE 1: Director's Cut.
+* [Enhancement] Enable music tracks from RE 3.
+* [Enhancement] RE 2, add Carlos, Jill, Mikhail, Murphy from RE 3 as playable characters.
+* [Enhancement] RE 2, add Carlos, Jill, Mikhail, Murphy, Tyrell from RE 3 as NPCs.
+* [Change] RE 1 and RE 3 save theme now retrieved from installed game.
+* [Change] Rename 'Cerberus' to 'Zombie Dog' for RE 2.
+* [Fix] Fix #225: RE 1 data not found when data folder name is USA
+* [Fix] Fix #251: RE 2, room 501, Claire, crash when using lighter in flare cannon
+* [Fix] Fix #253: RE 1, room 508, MO disk placed after door that requires it
+* [Fix] Fix #258: RE 2, room 404, crash due to EM05A
+* [Fix] Fix #261: RE 2, random BGM requires RE1 installation (#262)
+
 BioRand v2.2.2 (2023-02-10)
 
 * [Feature] RE 2, custom player inventory faces now use .png files.
