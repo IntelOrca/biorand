@@ -303,6 +303,8 @@ namespace IntelOrca.Biohazard.RE3
             return true;
         }
 
+        public bool HasGunPowder(RandoConfig config) => true;
+
         public bool IsItemDocument(byte type)
         {
             return type > Re3ItemIds.GameInstructionsA2;

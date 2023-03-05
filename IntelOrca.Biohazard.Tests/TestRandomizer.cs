@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.RE2;
+using IntelOrca.Biohazard.RE3;
 using Xunit;
 
 namespace IntelOrca.Biohazard.Tests
@@ -20,6 +21,11 @@ namespace IntelOrca.Biohazard.Tests
         {
             RandomizeEnemyPlacementsInner();
         }
+    }
+
+    public class TestRE3Rando : TestBaseRandomizer
+    {
+        public override byte Game => 3;
     }
 
     public abstract class TestBaseRandomizer
@@ -102,9 +108,17 @@ namespace IntelOrca.Biohazard.Tests
 
         private BaseRandomiser GetRandomizer()
         {
-            return Game == 1 ?
-                (BaseRandomiser)new Re1Randomiser(null) :
-                (BaseRandomiser)new Re2Randomiser(null);
+            switch (Game)
+            {
+                case 1:
+                    return new Re1Randomiser(null);
+                case 2:
+                    return new Re2Randomiser(null);
+                case 3:
+                    return new Re3Randomiser(null);
+                default:
+                    throw new Exception("Invalid game");
+            }
         }
 
         private RandoConfig GetBaseConfig()
@@ -137,16 +151,9 @@ namespace IntelOrca.Biohazard.Tests
             for (int i = 0; i < 10; i++)
                 config.EnabledNPCs[i] = i % 2 == 0;
 
-            if (config.Game == 2)
-            {
-                config.ChangePlayer = true;
-                config.Player0 = 0;
-                config.Player1 = 0;
-            }
-            else
-            {
-                config.ChangePlayer = false;
-            }
+            config.ChangePlayer = true;
+            config.Player0 = 0;
+            config.Player1 = 0;
 
             config.RandomBgm = false;
             config.EnabledBGMs = new bool[5];
@@ -160,8 +167,10 @@ namespace IntelOrca.Biohazard.Tests
             var reInstall = new ReInstallConfig();
             reInstall.SetInstallPath(0, TestInfo.GetInstallPath(0));
             reInstall.SetInstallPath(1, TestInfo.GetInstallPath(1));
+            reInstall.SetInstallPath(2, TestInfo.GetInstallPath(2));
             reInstall.SetEnabled(0, true);
             reInstall.SetEnabled(1, true);
+            reInstall.SetEnabled(2, true);
             return reInstall;
         }
 

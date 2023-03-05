@@ -21,6 +21,7 @@
         bool IsWeaponCompatible(byte player, byte item);
         WeaponKind GetWeaponKind(byte item);
         bool HasInkRibbons(RandoConfig config);
+        bool HasGunPowder(RandoConfig config);
         int[]? GetInventorySize(RandoConfig config);
     }
 }

@@ -717,7 +717,10 @@ namespace IntelOrca.Biohazard
             var numInk = (int)Math.Ceiling((_config.RatioInkRibbons / totalRatio) * shuffled.Count);
 
             var proportions = new List<(int, Rng.Table<byte>)>();
-            proportions.Add((numGunpowder, gunpowderTable));
+            if (_itemHelper.HasGunPowder(_config))
+            {
+                proportions.Add((numGunpowder, gunpowderTable));
+            }
             proportions.Add((numAmmo, ammoTable));
             proportions.Add((numHealth, healthTable));
             if (_itemHelper.HasInkRibbons(_config))

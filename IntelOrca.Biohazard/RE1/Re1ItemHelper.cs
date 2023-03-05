@@ -264,6 +264,8 @@ namespace IntelOrca.Biohazard.RE1
             return config.Player == 0;
         }
 
+        public bool HasGunPowder(RandoConfig config) => false;
+
         public int[] GetInventorySize(RandoConfig config)
         {
             if (config.Player == 0)
