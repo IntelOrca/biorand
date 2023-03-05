@@ -226,13 +226,13 @@ namespace IntelOrca.Biohazard
 
                     if (enemySpec.IncludeTypes != null)
                     {
-                        if (enemySpec.IncludeTypes.Contains(type))
-                            return true;
+                        if (!enemySpec.IncludeTypes.Contains(type))
+                            return false;
                     }
                     else if (enemySpec.ExcludeTypes != null)
                     {
-                        if (!enemySpec.ExcludeTypes.Contains(type))
-                            return true;
+                        if (enemySpec.ExcludeTypes.Contains(type))
+                            return false;
                     }
                     else
                     {
@@ -419,11 +419,6 @@ namespace IntelOrca.Biohazard
             {
                 enemiesToChange = GenerateRandomEnemies(rng, rdt, enemiesToChange, possibleTypes[0]);
             }
-
-            // _enemyHelper.ExcludeEnemies(_config, rdt, enemySpec.Difficulty ?? "", x => excludeTypes.Add(x));
-            // possibleTypes = possibleTypes
-            //     .Where(x => !excludeTypes.Contains(x))
-            //     .ToArray();
 
             if (possibleTypes.Length == 0)
                 return;

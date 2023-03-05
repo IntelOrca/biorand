@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace IntelOrca.Biohazard.RE2
 {
-    internal class Re2ItemHelper : IItemHelper
+    internal class Re3ItemHelper : IItemHelper
     {
         private const bool g_leonWeaponFix = true;
         private const bool g_claireWeaponFix = true;
@@ -362,6 +362,11 @@ namespace IntelOrca.Biohazard.RE2
                 return new int[] { 8 };
             else
                 return new int[] { 8 };
+        }
+
+        public byte[] GetWeaponGunpowder(byte weapon)
+        {
+            return new byte[0];
         }
     }
 }

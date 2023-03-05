@@ -35,6 +35,7 @@ namespace IntelOrca.Biohazard
         public bool RandomEnemyPlacement { get; set; }
         public bool AllowEnemiesAnyRoom { get; set; } = true;
         public byte EnemyQuantity { get; set; } = 2;
+        public bool PrioritiseCutscenes { get; set; } = true;
 
         // Numbers
         public byte Player0 { get; set; }
@@ -45,6 +46,7 @@ namespace IntelOrca.Biohazard
         public byte RatioAmmo { get; set; } = 16;
         public byte RatioHealth { get; set; } = 16;
         public byte RatioInkRibbons { get; set; } = 16;
+        public byte RatioGunpowder { get; set; } = 16;
         public byte AmmoQuantity { get; set; } = 4;
         public byte EnemyDifficulty { get; set; } = 2;
         public byte AreaCount { get; set; } = 3;
@@ -93,7 +95,7 @@ namespace IntelOrca.Biohazard
             result.Weapon0 = reader.ReadByte(3);
             result.Weapon1 = reader.ReadByte(3);
             result.WeaponQuantity = reader.ReadByte(3);
-            reader.ReadFlag();
+            result.PrioritiseCutscenes = reader.ReadFlag();
 
             result.Player0 = reader.ReadDigit();
             result.Player1 = reader.ReadDigit();
@@ -111,6 +113,8 @@ namespace IntelOrca.Biohazard
             result.EnemyRatios = values.ToArray();
             result.EnabledNPCs = reader.ReadBooleanArray(50);
             result.EnabledBGMs = reader.ReadBooleanArray(15);
+
+            result.RatioGunpowder = reader.ReadDigit();
 
             return result;
         }
@@ -161,7 +165,7 @@ namespace IntelOrca.Biohazard
             writer.Write(3, Weapon0);
             writer.Write(3, Weapon1);
             writer.Write(3, WeaponQuantity);
-            writer.Write(1, 0);
+            writer.Write(PrioritiseCutscenes);
 
             writer.WriteDigit(Player0);
             writer.WriteDigit(Player1);
@@ -184,6 +188,8 @@ namespace IntelOrca.Biohazard
             }
             writer.WriteArray(50, EnabledNPCs);
             writer.WriteArray(15, EnabledBGMs);
+
+            writer.WriteDigit(RatioGunpowder);
 
             return writer.ToString();
         }

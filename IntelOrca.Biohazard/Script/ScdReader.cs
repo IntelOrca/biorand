@@ -6,8 +6,6 @@ namespace IntelOrca.Biohazard.Script
 {
     public class ScdReader
     {
-        private IConstantTable _constantTable = new Bio1ConstantTable();
-
         public int BaseOffset { get; set; }
 
         public string Diassemble(ReadOnlyMemory<byte> data, BioVersion version, BioScriptKind kind, bool listing = false)
@@ -26,15 +24,26 @@ namespace IntelOrca.Biohazard.Script
         internal void ReadScript(Stream stream, int length, BioVersion version, BioScriptKind kind, BioScriptVisitor visitor)
         {
             var br = new BinaryReader(stream);
-            if (version == BioVersion.Biohazard1)
-                ReadScript1(br, length, kind, visitor);
-            else
-                ReadScript2(br, length, kind, visitor);
+            switch (version)
+            {
+                case BioVersion.Biohazard1:
+                    ReadScript1(br, length, kind, visitor);
+                    break;
+                case BioVersion.Biohazard2:
+                    ReadScript2(br, length, kind, visitor);
+                    break;
+                case BioVersion.Biohazard3:
+                    ReadScript3(br, length, kind, visitor);
+                    break;
+                default:
+                    throw new NotSupportedException();
+            }
         }
 
         private void ReadScript1(BinaryReader br, int length, BioScriptKind kind, BioScriptVisitor visitor)
         {
             var scriptEnd = kind == BioScriptKind.Event ? length : br.ReadUInt16();
+            var constantTable = new Bio1ConstantTable();
 
             visitor.VisitBeginScript(kind);
             visitor.VisitBeginSubroutine(0);
@@ -44,7 +53,7 @@ namespace IntelOrca.Biohazard.Script
                 {
                     var instructionPosition = (int)br.BaseStream.Position;
                     var opcode = br.ReadByte();
-                    var instructionSize = _constantTable.GetInstructionSize(opcode, br);
+                    var instructionSize = constantTable.GetInstructionSize(opcode, br);
                     if (instructionSize == 0)
                         break;
 
@@ -66,9 +75,24 @@ namespace IntelOrca.Biohazard.Script
 
         private void ReadScript2(BinaryReader br, int length, BioScriptKind kind, BioScriptVisitor visitor)
         {
+            ReadScript23(br, length, kind, visitor, BioVersion.Biohazard2, new Bio2ConstantTable());
+        }
+
+        private void ReadScript3(BinaryReader br, int length, BioScriptKind kind, BioScriptVisitor visitor)
+        {
+            ReadScript23(br, length, kind, visitor, BioVersion.Biohazard3, new Bio3ConstantTable());
+        }
+
+        private void ReadScript23(
+            BinaryReader br,
+            int length,
+            BioScriptKind kind,
+            BioScriptVisitor visitor,
+            BioVersion version,
+            IConstantTable constantTable)
+        {
             visitor.VisitBeginScript(kind);
 
-            var constantTable = new Bio2ConstantTable();
             var start = (int)br.BaseStream.Position;
             var functionOffsets = new List<int>();
             var firstFunctionOffset = br.ReadUInt16();
@@ -117,23 +141,47 @@ namespace IntelOrca.Biohazard.Script
 
                     if (i == numFunctions - 1)
                     {
-                        switch ((OpcodeV2)opcode)
+                        if (version == BioVersion.Biohazard2)
                         {
-                            case OpcodeV2.EvtEnd:
-                                if (instructionPosition >= functionEndMin && ifStack == 0)
-                                    isEnd = true;
-                                break;
-                            case OpcodeV2.IfelCk:
-                                functionEndMin = instructionPosition + BitConverter.ToUInt16(opcodeBytes, 2);
-                                ifStack++;
-                                break;
-                            case OpcodeV2.ElseCk:
-                                ifStack--;
-                                functionEndMin = instructionPosition + BitConverter.ToUInt16(opcodeBytes, 2);
-                                break;
-                            case OpcodeV2.EndIf:
-                                ifStack--;
-                                break;
+                            switch ((OpcodeV2)opcode)
+                            {
+                                case OpcodeV2.EvtEnd:
+                                    if (instructionPosition >= functionEndMin && ifStack == 0)
+                                        isEnd = true;
+                                    break;
+                                case OpcodeV2.IfelCk:
+                                    functionEndMin = instructionPosition + BitConverter.ToUInt16(opcodeBytes, 2);
+                                    ifStack++;
+                                    break;
+                                case OpcodeV2.ElseCk:
+                                    ifStack--;
+                                    functionEndMin = instructionPosition + BitConverter.ToUInt16(opcodeBytes, 2);
+                                    break;
+                                case OpcodeV2.EndIf:
+                                    ifStack--;
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            switch ((OpcodeV3)opcode)
+                            {
+                                case OpcodeV3.EvtEnd:
+                                    if (instructionPosition >= functionEndMin && ifStack == 0)
+                                        isEnd = true;
+                                    break;
+                                case OpcodeV3.IfelCk:
+                                    functionEndMin = instructionPosition + BitConverter.ToUInt16(opcodeBytes, 2);
+                                    ifStack++;
+                                    break;
+                                case OpcodeV3.ElseCk:
+                                    ifStack--;
+                                    functionEndMin = instructionPosition + BitConverter.ToUInt16(opcodeBytes, 2);
+                                    break;
+                                case OpcodeV3.EndIf:
+                                    ifStack--;
+                                    break;
+                            }
                         }
                     }
                 }

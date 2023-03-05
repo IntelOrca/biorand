@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using IntelOrca.Biohazard.RE3;
 using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard
@@ -25,6 +26,7 @@ namespace IntelOrca.Biohazard
         private HashSet<RdtItemId> _visitedItems = new HashSet<RdtItemId>();
 
         private List<RandomInventory.Entry> _startingWeapons = new List<RandomInventory.Entry>();
+        private List<byte> _availableGunpowder = new List<byte>();
 
         public ItemRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Rng random, IItemHelper itemHelper)
         {
@@ -141,34 +143,47 @@ namespace IntelOrca.Biohazard
                     }
                 }
 
-                if (remaining >= 2)
+                if (_config.Game != 3 && remaining >= 2)
                 {
                     // Always give the player a knife
                     AddToInventoryCommon(CommonItemKind.Knife, 1);
                 }
 
+                if (_config.Game == 3 && _config.RatioGunpowder != 0 && _availableGunpowder.Count != 0)
+                {
+                    // If gunpowder is enabled, give the player the reloading tool
+                    AddToInventory(Re3ItemIds.ReloadingTool, 255);
+                }
+
                 // Health items
                 if (_config.RatioHealth != 0)
                 {
-                    var healthItems = new[]
+                    if (_config.Game == 3 && _rng.NextProbability(50))
                     {
-                        CommonItemKind.FirstAid,
-                        CommonItemKind.HerbG,
-                        CommonItemKind.HerbGG,
-                        CommonItemKind.HerbGGG,
-                        CommonItemKind.HerbGR,
-                        CommonItemKind.HerbGB,
-                        CommonItemKind.HerbGGB,
-                        CommonItemKind.HerbGRB,
-                        CommonItemKind.HerbR,
-                        CommonItemKind.HerbB
-                    };
-                    healthItems = healthItems.Shuffle(_rng);
-                    for (int j = 0; j < 4; j++)
+                        AddToInventory(Re3ItemIds.FirstAidSprayBox, (byte)_rng.Next(1, 4));
+                    }
+                    else
                     {
-                        if (_rng.NextProbability(50))
+                        var healthItems = new[]
                         {
-                            AddToInventoryCommon(healthItems[j], 1);
+                            CommonItemKind.FirstAid,
+                            CommonItemKind.HerbG,
+                            CommonItemKind.HerbGG,
+                            CommonItemKind.HerbGGG,
+                            CommonItemKind.HerbGR,
+                            CommonItemKind.HerbGB,
+                            CommonItemKind.HerbGGB,
+                            CommonItemKind.HerbGRB,
+                            CommonItemKind.HerbR,
+                            CommonItemKind.HerbB
+                        };
+                        healthItems = healthItems.Shuffle(_rng);
+                        for (int j = 0; j < 4; j++)
+                        {
+                            if (_rng.NextProbability(50))
+                            {
+                                AddToInventoryCommon(healthItems[j], 1);
+                            }
                         }
                     }
                 }
@@ -178,6 +193,16 @@ namespace IntelOrca.Biohazard
                 {
                     if (_itemHelper.HasInkRibbons(_config) && _rng.NextProbability(50))
                         AddToInventoryCommon(CommonItemKind.InkRibbon, (byte)_rng.Next(1, 3));
+                }
+
+                if (_config.Game == 3 && _config.RatioGunpowder != 0 && _availableGunpowder.Count != 0)
+                {
+                    // If gunpowder is enabled, give the player some gunpowder
+                    for (int j = 0; j < 4; j++)
+                    {
+                        var gunpowder = _availableGunpowder[_rng.Next(0, _availableGunpowder.Count)];
+                        AddToInventory(gunpowder, 1);
+                    }
                 }
 
                 while (remaining > 0)
@@ -578,7 +603,7 @@ namespace IntelOrca.Biohazard
             {
                 _currentPool.Add(item);
                 if (g_debugLogging)
-                    _logger.WriteLine($"    Add {item} to current pool");
+                    _logger.WriteLine($"    Add {item.ToString(_itemHelper)} to current pool");
             }
 
             if (_currentPool.DistinctBy(x => x.RdtItemId).Count() != _currentPool.Count())
@@ -635,6 +660,7 @@ namespace IntelOrca.Biohazard
             }
 
             var ammoTypes = new HashSet<byte>();
+            var gunpowderTypes = new HashSet<byte>();
             foreach (var itemType in availableWeapons)
             {
                 // Spawn upgrade
@@ -650,9 +676,24 @@ namespace IntelOrca.Biohazard
                 {
                     ammoTypes.Add(ammoType);
                 }
+
+                // Add gunpowder types
+                var weaponGunpowderTypes = _itemHelper.GetWeaponGunpowder(itemType);
+                foreach (var gunpowderType in weaponGunpowderTypes)
+                {
+                    gunpowderTypes.Add(gunpowderType);
+                }
             }
+            _availableGunpowder.AddRange(gunpowderTypes);
 
             // Now everything else
+            var gunpowderTable = _rng.CreateProbabilityTable<byte>();
+            foreach (var gunpowderType in gunpowderTypes)
+            {
+                var probability = _itemHelper.GetItemProbability(gunpowderType);
+                gunpowderTable.Add(gunpowderType, probability);
+            }
+
             var ammoTable = _rng.CreateProbabilityTable<byte>();
             foreach (var ammoType in ammoTypes)
             {
@@ -669,12 +710,14 @@ namespace IntelOrca.Biohazard
             var inkTable = _rng.CreateProbabilityTable<byte>();
             inkTable.Add(_itemHelper.GetItemId(CommonItemKind.InkRibbon), 1);
 
-            var totalRatio = (double)_config.RatioAmmo + _config.RatioHealth + _config.RatioInkRibbons;
-            var numAmmo = (int)((_config.RatioAmmo / totalRatio) * shuffled.Count);
-            var numHealth = (int)((_config.RatioHealth / totalRatio) * shuffled.Count);
-            var numInk = (int)((_config.RatioInkRibbons / totalRatio) * shuffled.Count);
+            var totalRatio = (double)(_config.RatioGunpowder + _config.RatioAmmo + _config.RatioHealth + _config.RatioInkRibbons);
+            var numGunpowder = (int)Math.Ceiling((_config.RatioGunpowder / totalRatio) * shuffled.Count);
+            var numAmmo = (int)Math.Ceiling((_config.RatioAmmo / totalRatio) * shuffled.Count);
+            var numHealth = (int)Math.Ceiling((_config.RatioHealth / totalRatio) * shuffled.Count);
+            var numInk = (int)Math.Ceiling((_config.RatioInkRibbons / totalRatio) * shuffled.Count);
 
             var proportions = new List<(int, Rng.Table<byte>)>();
+            proportions.Add((numGunpowder, gunpowderTable));
             proportions.Add((numAmmo, ammoTable));
             proportions.Add((numHealth, healthTable));
             if (_itemHelper.HasInkRibbons(_config))

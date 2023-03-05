@@ -8,6 +8,7 @@ namespace IntelOrca.Biohazard.Script
     {
         private List<SubroutineAstNode> _subroutines = new List<SubroutineAstNode>();
         private Stack<IfAstNode> _ifStack = new Stack<IfAstNode>();
+        private Stack<SwitchAstNode> _switchStack = new Stack<SwitchAstNode>();
         private Stack<List<IScriptAstNode>> _statementStack = new Stack<List<IScriptAstNode>>();
         private bool _endOfSubroutine;
 
@@ -34,56 +35,94 @@ namespace IntelOrca.Biohazard.Script
             CheckEndIfElseStatement(opcode.Offset);
 
             var opcodeNode = new OpcodeAstNode(opcode);
-            if (Version == BioVersion.Biohazard1)
+            switch (Version)
             {
-                switch ((OpcodeV1)opcode.Opcode)
-                {
-                    case OpcodeV1.IfelCk:
-                        VisitIfOpcode(opcodeNode);
-                        break;
-                    case OpcodeV1.Ck:
-                    case OpcodeV1.Cmp6:
-                    case OpcodeV1.Cmp7:
-                    case OpcodeV1.TestItem:
-                    case OpcodeV1.TestPickup:
-                        VisitConditionOpcode(opcodeNode);
-                        break;
-                    case OpcodeV1.ElseCk:
-                        VisitElseOpcode(opcodeNode);
-                        break;
-                    case OpcodeV1.EndIf:
-                        VisitEndIfOpcode(opcodeNode);
-                        break;
-                    default:
-                        AddStatement(opcodeNode);
-                        break;
-                }
-            }
-            else
-            {
-                switch ((OpcodeV2)opcode.Opcode)
-                {
-                    case OpcodeV2.IfelCk:
-                        VisitIfOpcode(opcodeNode);
-                        break;
-                    case OpcodeV2.Ck:
-                    case OpcodeV2.Cmp:
-                    case OpcodeV2.MemberCmp:
-                        VisitConditionOpcode(opcodeNode);
-                        break;
-                    case OpcodeV2.ElseCk:
-                        VisitElseOpcode(opcodeNode);
-                        break;
-                    case OpcodeV2.EndIf:
-                        VisitEndIfOpcode(opcodeNode);
-                        break;
-                    case OpcodeV2.EvtEnd:
-                        VisitEndSubroutineOpcode(opcodeNode);
-                        break;
-                    default:
-                        AddStatement(opcodeNode);
-                        break;
-                }
+                case BioVersion.Biohazard1:
+                    switch ((OpcodeV1)opcode.Opcode)
+                    {
+                        case OpcodeV1.IfelCk:
+                            VisitIfOpcode(opcodeNode);
+                            break;
+                        case OpcodeV1.Ck:
+                        case OpcodeV1.Cmp6:
+                        case OpcodeV1.Cmp7:
+                        case OpcodeV1.TestItem:
+                        case OpcodeV1.TestPickup:
+                            VisitConditionOpcode(opcodeNode);
+                            break;
+                        case OpcodeV1.ElseCk:
+                            VisitElseOpcode(opcodeNode);
+                            break;
+                        case OpcodeV1.EndIf:
+                            VisitEndIfOpcode(opcodeNode);
+                            break;
+                        default:
+                            AddStatement(opcodeNode);
+                            break;
+                    }
+                    break;
+                case BioVersion.Biohazard2:
+                    switch ((OpcodeV2)opcode.Opcode)
+                    {
+                        case OpcodeV2.IfelCk:
+                            VisitIfOpcode(opcodeNode);
+                            break;
+                        case OpcodeV2.Ck:
+                        case OpcodeV2.Cmp:
+                        case OpcodeV2.MemberCmp:
+                            VisitConditionOpcode(opcodeNode);
+                            break;
+                        case OpcodeV2.ElseCk:
+                            VisitElseOpcode(opcodeNode);
+                            break;
+                        case OpcodeV2.EndIf:
+                            VisitEndIfOpcode(opcodeNode);
+                            break;
+                        case OpcodeV2.EvtEnd:
+                            VisitEndSubroutineOpcode(opcodeNode);
+                            break;
+                        default:
+                            AddStatement(opcodeNode);
+                            break;
+                    }
+                    break;
+                case BioVersion.Biohazard3:
+                    switch ((OpcodeV3)opcode.Opcode)
+                    {
+                        case OpcodeV3.Switch:
+                            VisitSwitchOpcode(opcodeNode);
+                            break;
+                        case OpcodeV3.Case:
+                        case OpcodeV3.Default:
+                            VisitCaseOpcode(opcodeNode);
+                            break;
+                        case OpcodeV3.Eswitch:
+                            VisitEswitchOpcode(opcodeNode);
+                            break;
+                        case OpcodeV3.IfelCk:
+                            VisitIfOpcode(opcodeNode);
+                            break;
+                        case OpcodeV3.Ck:
+                        case OpcodeV3.Cmp:
+                        case OpcodeV3.KeepItemCk:
+                        case OpcodeV3.KeyCk:
+                        case OpcodeV3.TrgCk:
+                            VisitConditionOpcode(opcodeNode);
+                            break;
+                        case OpcodeV3.ElseCk:
+                            VisitElseOpcode(opcodeNode);
+                            break;
+                        case OpcodeV3.EndIf:
+                            VisitEndIfOpcode(opcodeNode);
+                            break;
+                        case OpcodeV3.EvtEnd:
+                            VisitEndSubroutineOpcode(opcodeNode);
+                            break;
+                        default:
+                            AddStatement(opcodeNode);
+                            break;
+                    }
+                    break;
             }
         }
 
@@ -131,6 +170,48 @@ namespace IntelOrca.Biohazard.Script
             }
             ifNode.EndIf = opcodeNode;
             AddStatement(ifNode);
+        }
+
+        private void VisitSwitchOpcode(OpcodeAstNode opcodeNode)
+        {
+            var switchNode = new SwitchAstNode();
+            switchNode.Switch = opcodeNode;
+            _switchStack.Push(switchNode);
+            PushBasicBlock();
+        }
+
+        private void VisitCaseOpcode(OpcodeAstNode opcodeNode)
+        {
+            if (_switchStack.Count == 0)
+                return;
+
+            var switchNode = _switchStack.Peek();
+            if (switchNode.Cases.Count != 0)
+            {
+                var lastCase = switchNode.Cases[switchNode.Cases.Count - 1];
+                lastCase.Block = PopBasicBlock();
+            }
+            switchNode.Cases.Add(new CaseAstNode()
+            {
+                Case = opcodeNode
+            });
+            PushBasicBlock();
+        }
+
+        private void VisitEswitchOpcode(OpcodeAstNode opcodeNode)
+        {
+            if (_switchStack.Count == 0)
+                return;
+
+            var switchNode = _switchStack.Pop();
+            if (switchNode.Cases.Count != 0)
+            {
+                var lastCase = switchNode.Cases[switchNode.Cases.Count - 1];
+                lastCase.Block = PopBasicBlock();
+            }
+            PopBasicBlock();
+            switchNode.Eswitch = opcodeNode;
+            AddStatement(switchNode);
         }
 
         private void VisitEndSubroutineOpcode(OpcodeAstNode opcodeNode)
@@ -351,6 +432,38 @@ namespace IntelOrca.Biohazard.Script
 
             visitor.VisitEndIf(this);
             EndIf?.Visit(visitor);
+        }
+    }
+
+    internal class SwitchAstNode : IScriptAstNode
+    {
+        public OpcodeAstNode? Switch { get; set; }
+        public List<CaseAstNode> Cases { get; } = new List<CaseAstNode>();
+        public OpcodeAstNode? Eswitch { get; set; }
+
+        public void Visit(ScriptAstVisitor visitor)
+        {
+            visitor.VisitNode(this);
+            Switch?.Visit(visitor);
+            foreach (var c in Cases)
+            {
+                c.Visit(visitor);
+            }
+            Eswitch?.Visit(visitor);
+        }
+    }
+
+    internal class CaseAstNode : IScriptAstNode
+    {
+        public OpcodeAstNode? Case { get; set; }
+        public BasicBlockAstNode? Block { get; set; }
+        public bool IsDefault => Case?.Opcode.Opcode == (byte)OpcodeV3.Default;
+
+        public void Visit(ScriptAstVisitor visitor)
+        {
+            visitor.VisitNode(this);
+            Case?.Visit(visitor);
+            Block?.Visit(visitor);
         }
     }
 }

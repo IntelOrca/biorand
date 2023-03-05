@@ -94,8 +94,10 @@ namespace IntelOrca.Biohazard
         public string? Target { get; set; }
         public bool? Randomize { get; set; }
         public string? Lock { get; set; }
+        public int? LockId { get; set; }
         public bool NoReturn { get; set; }
         public bool NoUnlock { get; set; }
+        public bool IsBridgeEdge { get; set; }
         public ushort[]? Requires { get; set; }
         public string[]? RequiresRoom { get; set; }
         public bool? DoorRando { get; set; }
@@ -158,6 +160,7 @@ namespace IntelOrca.Biohazard
         public int Cutscene { get; set; }
         public string? PlayerActor { get; set; }
         public bool? EmrScale { get; set; }
+        public string? Use { get; set; }
     }
 
     public class DoorRandoSpec

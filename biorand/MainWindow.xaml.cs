@@ -16,6 +16,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.RE2;
+using IntelOrca.Biohazard.RE3;
 
 namespace IntelOrca.Biohazard.BioRand
 {
@@ -62,7 +63,7 @@ namespace IntelOrca.Biohazard.BioRand
                 gameLocation3.IsChecked = _settings.GameEnabled3;
             }
 
-            var seed = SelectedGame == 0 ? _settings.Seed1 : _settings.Seed2;
+            var seed = SelectedGame == 0 ? _settings.Seed1 : SelectedGame == 1 ? _settings.Seed2 : _settings.Seed3;
             if (seed == null)
             {
                 RandomizeSeed();
@@ -83,10 +84,18 @@ namespace IntelOrca.Biohazard.BioRand
             _settings.GameEnabled2 = gameLocation2.IsChecked == true;
             _settings.GameEnabled3 = gameLocation3.IsChecked == true;
 
-            if (SelectedGame == 0)
-                _settings.Seed1 = _config.ToString();
-            else
-                _settings.Seed2 = _config.ToString();
+            switch (SelectedGame)
+            {
+                case 0:
+                    _settings.Seed1 = _config.ToString();
+                    break;
+                case 1:
+                    _settings.Seed2 = _config.ToString();
+                    break;
+                case 2:
+                    _settings.Seed3 = _config.ToString();
+                    break;
+            }
             _settings.Save();
         }
 
@@ -192,6 +201,7 @@ namespace IntelOrca.Biohazard.BioRand
                 }
 
                 chkRngDoors.IsChecked = _config.RandomDoors;
+                chkPrioritiseCutscenes.IsChecked = _config.PrioritiseCutscenes;
                 chkProtectSoftLock.IsChecked = _config.ProtectFromSoftLock || _config.RandomDoors;
                 chkRngEnemies.IsChecked = _config.RandomEnemies;
                 chkRandomEnemyPlacements.IsChecked = _config.RandomEnemyPlacement;
@@ -209,6 +219,7 @@ namespace IntelOrca.Biohazard.BioRand
 
                 sliderEnemyDifficulty.Value = _config.EnemyDifficulty;
 
+                sliderGunpowder.Value = _config.RatioGunpowder;
                 sliderAmmo.Value = _config.RatioAmmo;
                 sliderHealth.Value = _config.RatioHealth;
                 sliderInkRibbons.Value = _config.RatioInkRibbons;
@@ -273,11 +284,12 @@ namespace IntelOrca.Biohazard.BioRand
         private void UpdateItemPie()
         {
             var keyItems = 1 / 8.0;
-            var totalRest = _config.RatioAmmo + _config.RatioHealth + _config.RatioInkRibbons;
+            var totalRest = _config.RatioGunpowder + _config.RatioAmmo + _config.RatioHealth + _config.RatioInkRibbons;
             if (totalRest == 0)
                 totalRest = 1;
 
             var remaining = (1 - keyItems) / totalRest;
+            var gunpowder = _config.RatioGunpowder * remaining;
             var ammo = _config.RatioAmmo * remaining;
             var health = _config.RatioHealth * remaining;
             var ink = _config.RatioInkRibbons * remaining;
@@ -288,6 +300,12 @@ namespace IntelOrca.Biohazard.BioRand
                 Name = "Keys",
                 Value = keyItems,
                 Color = Colors.LightBlue
+            });
+            pieItemRatios.Records.Add(new PieChart.Record()
+            {
+                Name = "Gunpowder",
+                Value = gunpowder,
+                Color = Colors.Gray
             });
             pieItemRatios.Records.Add(new PieChart.Record()
             {
@@ -365,6 +383,7 @@ namespace IntelOrca.Biohazard.BioRand
                 .ToArray();
 
             _config.RandomDoors = chkRngDoors.IsChecked == true;
+            _config.PrioritiseCutscenes = chkPrioritiseCutscenes.IsChecked == true;
             _config.ProtectFromSoftLock = chkProtectSoftLock.IsChecked == true || _config.RandomDoors;
 
             _config.RandomEnemies = chkRngEnemies.IsChecked == true;
@@ -382,6 +401,7 @@ namespace IntelOrca.Biohazard.BioRand
             _config.Weapon1 = (byte)dropdownWeapon1.SelectedIndex;
             _config.WeaponQuantity = (byte)sliderWeaponQuantity.Value;
 
+            _config.RatioGunpowder = (byte)sliderGunpowder.Value;
             _config.RatioAmmo = (byte)sliderAmmo.Value;
             _config.RatioHealth = (byte)sliderHealth.Value;
             _config.RatioInkRibbons = (byte)sliderInkRibbons.Value;
@@ -454,6 +474,7 @@ namespace IntelOrca.Biohazard.BioRand
             _config.Player1 = (byte)_random.Next(0, dropdownPlayer1.Items.Count);
             _config.EnemyDifficulty = (byte)_random.Next(0, 4);
             _config.AmmoQuantity = (byte)_random.Next(0, 8);
+            _config.RatioGunpowder = (byte)_random.Next(0, 32);
             _config.RatioAmmo = (byte)_random.Next(0, 32);
             _config.RatioHealth = (byte)_random.Next(0, 32);
             _config.RatioInkRibbons = (byte)_random.Next(0, 32);
@@ -492,7 +513,7 @@ namespace IntelOrca.Biohazard.BioRand
 
             if (_config.Game != (SelectedGame + 1))
             {
-                if (_config.Game == 1 || _config.Game == 2)
+                if (_config.Game >= 1 && _config.Game <= 3)
                     SelectedGame = _config.Game - 1;
                 else
                     _config.Game = (byte)(SelectedGame + 1);
@@ -571,6 +592,14 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 var r = GetRandomizer(1);
                 if (!ValidateGameData(r, _settings.GamePath2, "RE2"))
+                {
+                    return false;
+                }
+            }
+            if (_settings.GameEnabled3)
+            {
+                var r = GetRandomizer(2);
+                if (!ValidateGameData(r, _settings.GamePath3, "RE3"))
                 {
                     return false;
                 }
@@ -731,20 +760,28 @@ namespace IntelOrca.Biohazard.BioRand
         private void gameListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var index = gameListView.SelectedIndex;
-            if (index == 0)
-                _config = RandoConfig.FromString(_settings.Seed1);
-            else if (index == 1)
-                _config = RandoConfig.FromString(_settings.Seed2);
+            switch (index)
+            {
+                case 0:
+                    _config = RandoConfig.FromString(_settings.Seed1);
+                    break;
+                case 1:
+                    _config = RandoConfig.FromString(_settings.Seed2);
+                    break;
+                case 2:
+                    _config = RandoConfig.FromString(_settings.Seed3);
+                    break;
+            }
 
             using (SuspendEvents())
             {
-                if (index == 3)
+                if (index == 4)
                 {
                     panelInfo.Visibility = Visibility.Visible;
                     panelConfig.Visibility = Visibility.Hidden;
                     panelRando.Visibility = Visibility.Hidden;
                 }
-                else if (index == 2)
+                else if (index == 3)
                 {
                     panelInfo.Visibility = Visibility.Hidden;
                     panelConfig.Visibility = Visibility.Visible;
@@ -769,6 +806,15 @@ namespace IntelOrca.Biohazard.BioRand
                         chkEnemyRestrictedRooms.Visibility = Visibility.Visible;
                         sliderEnemyCount.Visibility = Visibility.Visible;
                     }
+                    if (index == 2)
+                    {
+                        sliderGunpowder.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        _config.RatioGunpowder = 0;
+                        sliderGunpowder.Visibility = Visibility.Collapsed;
+                    }
                     dropdownVariant.Visibility = index == 1 ?
                         Visibility.Visible :
                         Visibility.Hidden;
@@ -780,7 +826,7 @@ namespace IntelOrca.Biohazard.BioRand
                 }
             }
 
-            if (index >= 0 && index <= 1)
+            if (index >= 0 && index <= 2)
                 _config.Game = (byte)(index + 1);
             _settings.LastSelectedGame = index;
             _settings.Save();
@@ -803,6 +849,8 @@ namespace IntelOrca.Biohazard.BioRand
                     return new Re1Randomiser(new BiorandBgCreator());
                 case 1:
                     return new Re2Randomiser(new BiorandBgCreator());
+                case 2:
+                    return new Re3Randomiser(new BiorandBgCreator());
                 default:
                     return null;
             }
@@ -869,13 +917,13 @@ namespace IntelOrca.Biohazard.BioRand
             get
             {
                 var index = gameListView.SelectedIndex;
-                if (index > 1)
+                if (index > 2)
                     return null;
                 return index;
             }
             set
             {
-                gameListView.SelectedIndex = value ?? 2;
+                gameListView.SelectedIndex = value ?? 3;
             }
         }
 
@@ -891,12 +939,6 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void UpdatePlayerDropdowns()
         {
-            if (SelectedGame == 3)
-            {
-                chkPlayer.Visibility = Visibility.Collapsed;
-                return;
-            }
-
             var randomizer = GetRandomizer();
             chkPlayer.Visibility = Visibility.Visible;
 
@@ -910,6 +952,17 @@ namespace IntelOrca.Biohazard.BioRand
                 dropdown.ItemsSource = randomizer.GetPlayerCharacters(i);
                 if (dropdown.SelectedIndex == -1)
                     dropdown.SelectedIndex = 0;
+            }
+
+            if (SelectedGame == 2)
+            {
+                lblPlayer1.Visibility = Visibility.Collapsed;
+                dropdownPlayer1.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                lblPlayer1.Visibility = Visibility.Visible;
+                dropdownPlayer1.Visibility = Visibility.Visible;
             }
         }
 

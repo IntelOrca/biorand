@@ -213,7 +213,7 @@ namespace IntelOrca.Biohazard.RE1
             if (config.Player == 0)
                 return new byte[0];
             else
-                return new[] { (byte)ItemType.Beretta };
+                return new[] { Re1ItemIds.Beretta };
         }
 
         public byte[] GetWeapons(Rng rng, RandoConfig config)
@@ -270,6 +270,11 @@ namespace IntelOrca.Biohazard.RE1
                 return new int[] { 6, 2 }; // Rebecca needs at 4 spare slots for serum / v-jolt bottles
             else
                 return new int[] { 8 };
+        }
+
+        public byte[] GetWeaponGunpowder(byte weapon)
+        {
+            return new byte[0];
         }
     }
 }

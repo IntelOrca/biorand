@@ -17,6 +17,7 @@
         byte[] GetWeapons(Rng rng, RandoConfig config);
         byte[] GetDefaultWeapons(RandoConfig config);
         byte? GetWeaponUpgrade(byte weapon, Rng rng, RandoConfig config);
+        byte[] GetWeaponGunpowder(byte weapon);
         bool IsWeaponCompatible(byte player, byte item);
         WeaponKind GetWeaponKind(byte item);
         bool HasInkRibbons(RandoConfig config);
