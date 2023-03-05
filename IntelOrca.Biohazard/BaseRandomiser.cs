@@ -672,8 +672,9 @@ namespace IntelOrca.Biohazard
             builder.Append(sourcePath);
 
             var targetTitleCardSounds = TitleCardSoundFiles;
-            foreach (var dst in targetTitleCardSounds)
+            foreach (var filename in targetTitleCardSounds)
             {
+                var dst = fileRepository.GetModPath(filename);
                 Directory.CreateDirectory(Path.GetDirectoryName(dst));
                 if (targetTitleCardSounds.Length != 0)
                 {
