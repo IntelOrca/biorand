@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IntelOrca.Biohazard.RE1;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -78,11 +79,11 @@ namespace IntelOrca.Biohazard.RE3
 
             if (config.RandomBgm)
             {
-                if (MusicAlbumSelected("RE1") && !reConfig.IsEnabled(BioVersion.Biohazard1))
+                if (MusicAlbumSelected(config, "RE1") && !reConfig.IsEnabled(BioVersion.Biohazard1))
                 {
                     throw new BioRandUserException("RE1 installation must be enabled to use RE1 assets.");
                 }
-                if (MusicAlbumSelected("RE2") && !reConfig.IsEnabled(BioVersion.Biohazard2))
+                if (MusicAlbumSelected(config, "RE2") && !reConfig.IsEnabled(BioVersion.Biohazard2))
                 {
                     throw new BioRandUserException("RE2 installation must be enabled to use RE2 assets.");
                 }
@@ -224,8 +225,7 @@ namespace IntelOrca.Biohazard.RE3
         {
             if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard1))
             {
-                var dataPath = GetDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard1));
-                dataPath = Path.Combine(dataPath, "JPN");
+                var dataPath = Re1Randomiser.FindDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard1));
                 npcRandomiser.AddToSelection(BioVersion.Biohazard1, new FileRepository(dataPath));
             }
             if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard2))
