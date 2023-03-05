@@ -8,6 +8,7 @@ BioRand v2.3.0 (2023-03-05)
 * [Enhancement] Enable music tracks from RE 3.
 * [Enhancement] RE 2, add Carlos, Jill, Mikhail, Murphy from RE 3 as playable characters.
 * [Enhancement] RE 2, add Carlos, Jill, Mikhail, Murphy, Tyrell from RE 3 as NPCs.
+* [Enhancement] RE 2, room 112 (Library) now supports random enemy placement.
 * [Change] RE 1 and RE 3 save theme now retrieved from installed game.
 * [Change] Rename 'Cerberus' to 'Zombie Dog' for RE 2.
 * [Fix] Fix #225: RE 1 data not found when data folder name is USA

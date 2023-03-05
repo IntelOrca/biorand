@@ -472,7 +472,12 @@
           "target": "117"
         }
       ],
-      "enemies": []
+      "enemies": [
+        {
+          "nop": [ "0x2DEC-0x2E90" ],
+          "randomPlacements": true
+        }
+      ]
     },
     "113": {
       "doorRando": [

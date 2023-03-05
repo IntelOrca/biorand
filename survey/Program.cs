@@ -54,28 +54,6 @@ namespace IntelOrca.Biohazard.Survey
         {
             LoadJSON();
 
-            for (int i = 0; i < _enemyPositions.Count; i++)
-            {
-                var a = _enemyPositions[i];
-                var closestOtherEnemyDistance = int.MaxValue;
-                for (int j = 0; j < _enemyPositions.Count; j++)
-                {
-                    if (i == j)
-                        continue;
-
-                    var b = _enemyPositions[j];
-                    var dist = a.DistanceTo(b);
-                    if (dist == int.MaxValue)
-                        continue;
-
-                    if (dist < closestOtherEnemyDistance)
-                        closestOtherEnemyDistance = dist;
-                }
-                if (closestOtherEnemyDistance == int.MaxValue)
-                    continue;
-                Console.WriteLine("{1,12} {0}", a, closestOtherEnemyDistance);
-            }
-
             Console.CancelKeyPress += Console_CancelKeyPress;
             while (!_exit)
             {
@@ -88,6 +66,31 @@ namespace IntelOrca.Biohazard.Survey
 
                 Console.WriteLine("Waiting for RE 2 to start...");
                 Thread.Sleep(4000);
+            }
+        }
+
+        private static void PrintSimilarEntries()
+        {
+            for (int i = 0; i < _enemyPositions.Count; i++)
+            {
+                var a = _enemyPositions[i];
+                var closestOtherEnemyDistance = int.MaxValue;
+                for (int j = 0; j < _enemyPositions.Count; j++)
+                {
+                    if (i == j)
+                        continue;
+            
+                    var b = _enemyPositions[j];
+                    var dist = a.DistanceTo(b);
+                    if (dist == int.MaxValue)
+                        continue;
+            
+                    if (dist < closestOtherEnemyDistance)
+                        closestOtherEnemyDistance = dist;
+                }
+                if (closestOtherEnemyDistance == int.MaxValue)
+                    continue;
+                Console.WriteLine("{1,12} {0}", a, closestOtherEnemyDistance);
             }
         }
 
@@ -148,6 +151,13 @@ namespace IntelOrca.Biohazard.Survey
                 D = state.D,
                 F = state.Floor,
             };
+
+            var closeBy = _enemyPositions
+                .Where(x => x.IsVeryClose(pos))
+                .ToArray();
+            if (closeBy.Length != 0)
+                return;
+
             if (!_enemyPositions.Contains(pos))
             {
                 _enemyPositions.Add(pos);
@@ -307,7 +317,7 @@ namespace IntelOrca.Biohazard.Survey
 
             public int DistanceTo(GameState other) => DistanceTo(other.RtdId, other.X, other.Y, other.Z);
             public int DistanceTo(EnemyPosition other) => DistanceTo(other.Room, other.X, other.Y, other.Z);
-            public bool IsVeryClose(EnemyPosition other) => DistanceTo(other) <= 500;
+            public bool IsVeryClose(EnemyPosition other) => DistanceTo(other) <= 100;
 
             public override string ToString()
             {
