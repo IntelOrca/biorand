@@ -47,6 +47,10 @@ namespace IntelOrca.Biohazard.BioRand
             Title += $" - v{version.Major}.{version.Minor}.{version.Build}";
             SelectedGame = _settings.LastSelectedGame;
             versionLabel.Text = Program.CurrentVersionInfo;
+
+#if DISABLE_RE3
+            gameListView.Items.RemoveAt(2);
+#endif
         }
 
         private void LoadSettings()
@@ -759,7 +763,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void gameListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var index = gameListView.SelectedIndex;
+            var index = (gameListView.SelectedItem as GameMenuItem)?.Game;
             switch (index)
             {
                 case 0:
@@ -916,14 +920,20 @@ namespace IntelOrca.Biohazard.BioRand
         {
             get
             {
-                var index = gameListView.SelectedIndex;
+                var index = (gameListView.SelectedItem as GameMenuItem)?.Game;
                 if (index > 2)
                     return null;
                 return index;
             }
             set
             {
-                gameListView.SelectedIndex = value ?? 3;
+                foreach (GameMenuItem item in gameListView.Items)
+                {
+                    if (item.Game == value)
+                    {
+                        gameListView.SelectedItem = item;
+                    }
+                }
             }
         }
 
@@ -1224,6 +1234,7 @@ namespace IntelOrca.Biohazard.BioRand
     public class GameMenuItem
     {
         public ImageSource Image { get; set; }
+        public int Game { get; set; }
     }
 
     public class CheckBoxListItem : INotifyPropertyChanged

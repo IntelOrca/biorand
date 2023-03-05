@@ -45,11 +45,11 @@
                                Source="{Binding Image}" />
                     </DataTemplate>
                 </ListView.ItemTemplate>
-                <local:GameMenuItem Image="/resources/re1.png" />
-                <local:GameMenuItem Image="/resources/re2.png" />
-                <local:GameMenuItem Image="/resources/re3.png" />
-                <local:GameMenuItem Image="/resources/settings.png" />
-                <local:GameMenuItem Image="/resources/info.png" />
+                <local:GameMenuItem Game="0" Image="/resources/re1.png" />
+                <local:GameMenuItem Game="1" Image="/resources/re2.png" />
+                <local:GameMenuItem Game="2" Image="/resources/re3.png" />
+                <local:GameMenuItem Game="3" Image="/resources/settings.png" />
+                <local:GameMenuItem Game="4" Image="/resources/info.png" />
             </ListView>
             <Grid Grid.Column="1" Margin="4">
                 <StackPanel x:Name="panelInfo" Visibility="Hidden">
