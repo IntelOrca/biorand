@@ -10,8 +10,10 @@
 * **Leigi** - Chris (RE 5), Sheva, Ashley, Krauser models
 * **Rusty** - Ark, Kevin, Richard, William, Wesker (RE 5), and extra models
 * **StarringRole** - Rebecca model
-* **re_duke** - RDT information
+* **Komizo** - RE 2/3 remake models
+* **ncf** - RE 3 models
 * **HazNut** - a bugfix
+* **re_duke** - RDT information
 * **Classic RE Modding community discord**
 
 Special thanks to all **BioRand** streamers and bug reporters!

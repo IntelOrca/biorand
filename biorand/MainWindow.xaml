@@ -65,6 +65,9 @@
                         <TextBlock FontSize="16">Leigi - Chris (RE 5), Sheva, Ashley, Krauser models</TextBlock>
                         <TextBlock FontSize="16">Rusty - Ark, Kevin, Richard, William, Wesker (RE 5), and extra models</TextBlock>
                         <TextBlock FontSize="16">StarringRole - Rebecca pld/emd model</TextBlock>
+                        <TextBlock FontSize="16">Komizo - RE 2/3 remake models</TextBlock>
+                        <TextBlock FontSize="16">ncf - RE 3 models</TextBlock>
+                        <TextBlock FontSize="16">HazNut - a bugfix</TextBlock>
                         <TextBlock FontSize="16">re_duke - RDT information</TextBlock>
                         <TextBlock FontSize="16">Classic RE Modding community discord</TextBlock>
                     </StackPanel>
