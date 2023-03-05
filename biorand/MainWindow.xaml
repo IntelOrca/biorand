@@ -319,7 +319,7 @@
                                     <TextBlock Grid.Row="3">Note: Some rooms can only contain certain enemies.</TextBlock>
                                 </Grid>
                             </local:CheckGroupBox>
-                            <local:CheckGroupBox x:Name="chkRngChars" Grid.Column="0" Header="Randomize NPCs">
+                            <local:CheckGroupBox x:Name="chkRngChars" Grid.Column="0" MinWidth="150" Header="Randomize NPCs">
                                 <ListView x:Name="listNPCs">
                                     <ListView.ContextMenu>
                                         <ContextMenu>
@@ -347,6 +347,13 @@
                             </local:CheckGroupBox>
                             <local:CheckGroupBox x:Name="chkRngBgm" Grid.Column="1" Header="Randomize Music">
                                 <ListView x:Name="listBGMs">
+                                    <ListView.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Unselect All" Click="bgmContextUnselectAll_Click" />
+                                            <MenuItem Header="Select All" Click="bgmContextSelectAll_Click" />
+                                            <MenuItem Header="Random" Click="bgmContextRandom_Click" />
+                                        </ContextMenu>
+                                    </ListView.ContextMenu>
                                     <ListView.ItemContainerStyle>
                                         <Style TargetType="ListViewItem">
                                             <Setter Property="Focusable" Value="false" />

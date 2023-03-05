@@ -307,7 +307,7 @@ namespace IntelOrca.Biohazard.BioRand
             });
             pieItemRatios.Records.Add(new PieChart.Record()
             {
-                Name = "Gunpowder",
+                Name = "Gunp...",
                 Value = gunpowder,
                 Color = Colors.Gray
             });
@@ -817,7 +817,7 @@ namespace IntelOrca.Biohazard.BioRand
                     else
                     {
                         _config.RatioGunpowder = 0;
-                        sliderGunpowder.Visibility = Visibility.Collapsed;
+                        sliderGunpowder.Visibility = Visibility.Hidden;
                     }
                     dropdownVariant.Visibility = index == 1 ?
                         Visibility.Visible :
@@ -1078,9 +1078,52 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 var items = listNPCs.ItemsSource.Cast<CheckBoxListItem>();
                 var numItems = items.Count();
-                var numChecked = _random.Next(0, numItems);
+                var numChecked = _random.Next(1, numItems);
                 var checkedItems = items.Shuffle(_random).Take(numChecked).ToArray();
                 foreach (CheckBoxListItem item in listNPCs.ItemsSource)
+                {
+                    item.IsChecked = checkedItems.Contains(item);
+                }
+            }
+            UpdateConfig();
+            UpdateUi();
+        }
+
+        private void bgmContextUnselectAll_Click(object sender, RoutedEventArgs e)
+        {
+            using (SuspendEvents())
+            {
+                foreach (CheckBoxListItem item in listBGMs.ItemsSource)
+                {
+                    item.IsChecked = false;
+                }
+            }
+            UpdateConfig();
+            UpdateUi();
+        }
+
+        private void bgmContextSelectAll_Click(object sender, RoutedEventArgs e)
+        {
+            using (SuspendEvents())
+            {
+                foreach (CheckBoxListItem item in listBGMs.ItemsSource)
+                {
+                    item.IsChecked = true;
+                }
+            }
+            UpdateConfig();
+            UpdateUi();
+        }
+
+        private void bgmContextRandom_Click(object sender, RoutedEventArgs e)
+        {
+            using (SuspendEvents())
+            {
+                var items = listBGMs.ItemsSource.Cast<CheckBoxListItem>();
+                var numItems = items.Count();
+                var numChecked = _random.Next(1, numItems);
+                var checkedItems = items.Shuffle(_random).Take(numChecked).ToArray();
+                foreach (CheckBoxListItem item in listBGMs.ItemsSource)
                 {
                     item.IsChecked = checkedItems.Contains(item);
                 }
