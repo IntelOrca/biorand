@@ -104,6 +104,7 @@ namespace IntelOrca.Biohazard
                     }
             }
 
+            RE2Fixes();
             RE3Fixes();
             return graph;
         }
@@ -147,6 +148,7 @@ namespace IntelOrca.Biohazard
             FinishOffEndNodes(graph.End);
 
             FinalChecks(graph);
+            RE2Fixes();
             RE3Fixes();
             UnfixRE1Doors();
             UpdateLinkedRooms();
@@ -165,6 +167,17 @@ namespace IntelOrca.Biohazard
                 var bossDoor = rdt.Doors.Skip(1).First();
                 bossDoor.Id = 30;
             }
+        }
+
+        private void RE2Fixes()
+        {
+            // See https://github.com/IntelOrca/biorand/issues/265
+            var rdt = _gameData.GetRdt(new RdtId(0, 0x0D));
+            if (rdt == null || rdt.Version != BioVersion.Biohazard2 || _config.Player != 1)
+                return;
+
+            rdt.Nop(0x0894);
+            rdt.Nop(0x08BA);
         }
 
         private void RE3Fixes()
