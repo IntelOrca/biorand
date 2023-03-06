@@ -82,7 +82,7 @@
         SceBgmtblSet = 0x57,
         PlcRot,
         XaOn,
-        SceItemLost,
+        KeepItemCk = 0x5E,
         KageSet = 0x60,
         PlcStop = 0x66,
         AotSet4p,

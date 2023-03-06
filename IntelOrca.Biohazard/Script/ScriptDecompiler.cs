@@ -870,7 +870,12 @@ namespace IntelOrca.Biohazard.Script
             }
             if (!AssemblyFormat && _constructingBinaryExpression)
             {
+                if (_expressionCount > 0)
+                {
+                    _sb.Write(" && ");
+                }
                 _sb.WriteStandardExpression(opcodeName, parameters.ToArray());
+                _expressionCount++;
             }
             else
             {

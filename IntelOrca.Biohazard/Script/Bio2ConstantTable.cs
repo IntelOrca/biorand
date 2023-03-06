@@ -6,6 +6,7 @@ namespace IntelOrca.Biohazard.Script
     internal class Bio2ConstantTable : IConstantTable
     {
         private const byte SCE_EVENT = 5;
+        private const byte SCE_FLAG_CHG = 6;
 
         public byte? FindOpcode(string name)
         {
@@ -41,6 +42,10 @@ namespace IntelOrca.Biohazard.Script
                             br.BaseStream.Position += 3;
                             return GetConstant('g', br.ReadByte());
                         }
+                        else if (sce == SCE_FLAG_CHG)
+                        {
+                            return GetConstant('t', br.ReadByte());
+                        }
                     }
                     else if (pIndex == 6)
                     {
@@ -55,6 +60,16 @@ namespace IntelOrca.Biohazard.Script
                             }
                         }
                     }
+                    else if (pIndex == 7)
+                    {
+                        br.BaseStream.Position++;
+                        var sce = br.ReadByte();
+                        if (sce == SCE_FLAG_CHG)
+                        {
+                            br.BaseStream.Position += 5;
+                            return GetConstant('p', br.ReadByte());
+                        }
+                    }
                 }
                 else if (opcode == (byte)OpcodeV2.AotSet)
                 {
@@ -67,18 +82,33 @@ namespace IntelOrca.Biohazard.Script
                             br.BaseStream.Position += 13;
                             return GetConstant('g', br.ReadByte());
                         }
+                        else if (sce == SCE_FLAG_CHG)
+                        {
+                            br.BaseStream.Position += 13;
+                            return GetConstant('t', br.ReadByte());
+                        }
                     }
                     else if (pIndex == 12)
                     {
                         br.BaseStream.Position++;
                         var sce = br.ReadByte();
-                        if (sce == SCE_EVENT)
+                        if (sce == SCE_EVENT || sce == SCE_FLAG_CHG)
                         {
                             br.BaseStream.Position += 13;
                             if (br.ReadByte() == (byte)OpcodeV2.Gosub)
                             {
                                 return GetConstant('p', br.ReadByte());
                             }
+                        }
+                    }
+                    else if (pIndex == 13)
+                    {
+                        br.BaseStream.Position++;
+                        var sce = br.ReadByte();
+                        if (sce == SCE_FLAG_CHG)
+                        {
+                            br.BaseStream.Position += 15;
+                            return GetConstant('p', br.ReadByte());
                         }
                     }
                 }
@@ -247,6 +277,7 @@ namespace IntelOrca.Biohazard.Script
                 case OpcodeV2.Ck:
                 case OpcodeV2.Cmp:
                 case OpcodeV2.MemberCmp:
+                case OpcodeV2.KeepItemCk:
                     return true;
             }
             return false;
@@ -383,12 +414,12 @@ namespace IntelOrca.Biohazard.Script
             "plc_cnt",
             "sce_shake_on",
             "mizu_div_set",
-            "keep_item_ck",
+            "keep_item_ck:t",
             "xa_vol",
 
             "kage_set",
             "cut_be_set",
-            "sce_item_lost",
+            "sce_item_lost:t",
             "plc_gun_eff",
             "sce_espr_on2",
             "sce_espr_kill2",
