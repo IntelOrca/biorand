@@ -120,6 +120,11 @@
         {
           "target": "106"
         }
+      ],
+      "enemies": [
+        {
+          "keepAi": true
+        }
       ]
     },
     "105": {
@@ -778,8 +783,8 @@
           "cutscene": 2 // Carlos and Nikolai
         },
         {
-          "includeOffsets": [ 20208 ],
-          "excludeTypes": [ 95 ],
+          "includeOffsets": [ 20208, 20286 ],
+          "excludeTypes": [ 89, 95 ],
           "cutscene": 4 // Carlos (ready to go)
         },
         {
@@ -788,7 +793,7 @@
           "cutscene": 5 // Carlos (it's looking good)
         },
         {
-          "includeOffsets": [ 20286, 20652 ],
+          "includeOffsets": [ 20652 ],
           "excludeTypes": [ 95 ],
           "cutscene": 6
         }
@@ -1029,7 +1034,8 @@
           "id": 8,
           "priority": "low"
         }
-      ]
+      ],
+      "enemies": []
     },
     "215": {
       "doorRando": [
