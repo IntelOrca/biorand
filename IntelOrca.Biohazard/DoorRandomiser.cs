@@ -185,6 +185,7 @@ namespace IntelOrca.Biohazard
             if (_config.Game != 3)
                 return;
 
+            UnblockRpdDoor();
             FixRE3LockpickDoor();
             if (_config.RandomDoors)
             {
@@ -193,6 +194,18 @@ namespace IntelOrca.Biohazard
                 FixRE3PressOffice();
                 FixRE3TrainCrashExit();
             }
+        }
+
+        private void UnblockRpdDoor()
+        {
+            var rdt = _gameData.GetRdt(new RdtId(0, 0x11));
+            if (rdt == null)
+                return;
+
+            if (!_config.RandomItems)
+                return;
+
+            rdt.Nop(0x2CAE, 0x2CF8);
         }
 
         private void FixRE3LockpickDoor()

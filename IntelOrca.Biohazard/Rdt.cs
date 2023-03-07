@@ -156,17 +156,25 @@ namespace IntelOrca.Biohazard
 
         public void Nop(int offset)
         {
+            Nop(offset, offset);
+        }
+
+        public void Nop(int beginOffset, int endOffset)
+        {
             for (int i = 0; i < Opcodes.Length; i++)
             {
                 var opcode = Opcodes[i];
-                if (opcode.Offset == offset)
+                if (opcode.Offset >= beginOffset && opcode.Offset <= endOffset)
                 {
                     if (!(opcode is UnknownOpcode unk))
                     {
-                        unk = new UnknownOpcode(offset, 0, new byte[opcode.Length - 1]);
+                        unk = new UnknownOpcode(opcode.Offset, 0, new byte[opcode.Length - 1]);
                         Opcodes[i] = unk;
                     }
                     unk.NopOut(Version);
+                }
+                else if (opcode.Offset > endOffset)
+                {
                     break;
                 }
             }
