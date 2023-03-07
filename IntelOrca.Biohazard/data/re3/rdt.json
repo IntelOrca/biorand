@@ -142,7 +142,7 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 91, 95, 103 ]
+          "excludeTypes": [ 91, 103 ]
         }
       ]
     },
@@ -194,7 +194,7 @@
       "enemies": [],
       "npcs": [
         {
-          "excludeTypes": [ 91, 95 ]
+          "excludeTypes": [ 91 ]
         }
       ]
     },
@@ -787,32 +787,27 @@
       "npcs": [
         {
           "includeOffsets": [ 20152 ],
-          "excludeTypes": [ 95 ],
           "cutscene": 0 // Nikolai (first greet)
         },
         {
           "includeOffsets": [ 20314 ],
-          "excludeTypes": [ 95 ],
           "cutscene": 1 // Mikhail (first greet)
         },
         {
           "includeOffsets": [ 20512, 20536 ],
-          "excludeTypes": [ 95 ],
           "cutscene": 2 // Carlos and Nikolai
         },
         {
           "includeOffsets": [ 20208, 20286 ],
-          "excludeTypes": [ 89, 95 ],
+          "excludeTypes": [ 89 ],
           "cutscene": 4 // Carlos (ready to go)
         },
         {
           "includeOffsets": [ 20616 ],
-          "excludeTypes": [ 95 ],
           "cutscene": 5 // Carlos (it's looking good)
         },
         {
           "includeOffsets": [ 20652 ],
-          "excludeTypes": [ 95 ],
           "cutscene": 6
         }
       ]
@@ -1640,7 +1635,11 @@
       "npcs": [
         {
           "playerActor": "carlos",
-          "excludeTypes": [ 85 ]
+          "includeOffsets": [ 8446, 9248 ]
+        },
+        {
+          "playerActor": "carlos",
+          "includeOffsets": [ 9224 ]
         }
       ]
     },
