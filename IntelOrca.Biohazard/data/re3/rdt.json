@@ -394,7 +394,8 @@
       "doors": [
         {
           "target": "114",
-          "lock": "unblock"
+          "lock": "unblock",
+          "noUnlock": true
         },
         {
           "target": "119",
