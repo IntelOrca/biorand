@@ -187,6 +187,7 @@ namespace IntelOrca.Biohazard
 
             UnblockRpdDoor();
             FixRE3LockpickDoor();
+            UnblockWasteDisposalDoor();
             if (_config.RandomDoors)
             {
                 FixRE3HydrantAlley();
@@ -293,6 +294,32 @@ namespace IntelOrca.Biohazard
             {
                 CopyDoorTo(rdt, 5, 4);
             }
+        }
+
+        private void UnblockWasteDisposalDoor()
+        {
+            var rdt = _gameData.GetRdt(new RdtId(4, 0x09));
+            if (rdt == null)
+                return;
+
+            if (!_config.RandomItems)
+                return;
+
+            // 0: door
+            rdt.Nop(0x599A);
+            rdt.Nop(0x2876);
+
+            // 2: card reader
+            // rdt.Nop(0x2782);
+            // rdt.Nop(0x286C);
+
+            // 3
+            rdt.Nop(0x58EC);
+            rdt.Nop(0x2862);
+
+            // 4
+            rdt.Nop(0x5900);
+            rdt.Nop(0x2858);
         }
 
         private static void CopyDoorTo(Rdt rdt, int dstId, int srcId)
