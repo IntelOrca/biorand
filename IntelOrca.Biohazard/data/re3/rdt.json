@@ -690,8 +690,25 @@
       ],
       "items": [
         {
+          "id": 3,
+          "priority": "low"
+        },
+        {
+          "id": 4,
+          "priority": "low"
+        },
+        {
+          "id": 5,
+          "priority": "low"
+        },
+        {
           "id": 8,
           "requires": [ 80 ]
+        }
+      ],
+      "enemies": [
+        {
+          "keepAi": true
         }
       ]
     },
