@@ -98,6 +98,29 @@ namespace IntelOrca.Biohazard.RE3
             base.Generate(config, reConfig, progress, fileRepository);
         }
 
+        protected override void GenerateBGM(RandoConfig config, ReInstallConfig reConfig, IRandoProgress progress, FileRepository fileRepository)
+        {
+            base.GenerateBGM(config, reConfig, progress, fileRepository);
+
+            // Reset all tracks to have 0 loop start and end
+            var groups = new[] { 192, 135, 135 };
+            var startOffset = 0x518AE0;
+
+            var bw = new BinaryWriter(ExePatch);
+            foreach (var g in groups)
+            {
+                for (int i = 0; i < g; i += 3)
+                {
+                    bw.Write((uint)startOffset + 8);
+                    bw.Write((uint)8);
+                    bw.Write((uint)0);
+                    bw.Write((uint)0);
+
+                    startOffset += 16;
+                }
+            }
+        }
+
         public override string[] GetPlayerCharacters(int index)
         {
             var result = new List<string>();

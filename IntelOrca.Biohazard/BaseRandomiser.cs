@@ -238,42 +238,7 @@ namespace IntelOrca.Biohazard
 
             if (config.RandomBgm)
             {
-                using var logger = new RandoLogger(progress, fileRepository.GetModPath("log_bgm.txt"));
-                logger.WriteHeading(Program.CurrentVersionInfo);
-                logger.WriteLine($"Seed: {config}");
-
-                var bgmDirectory = fileRepository.GetModPath(BGMPath);
-                var bgmRandomizer = new BgmRandomiser(logger, config, fileRepository, bgmDirectory, GetBgmJson(), BiohazardVersion != BioVersion.Biohazard2, new Rng(config.Seed), DataManager);
-                var enabledBgms = GetSelectedAlbums(config);
-                if (enabledBgms.Contains("RE1", StringComparer.OrdinalIgnoreCase))
-                {
-                    var r = new Re1Randomiser(BgCreator);
-                    r.AddMusicSelection(bgmRandomizer, reConfig);
-                }
-                if (enabledBgms.Contains("RE2", StringComparer.OrdinalIgnoreCase))
-                {
-                    var r = new Re2Randomiser(BgCreator);
-                    r.AddMusicSelection(bgmRandomizer, reConfig);
-                }
-                if (enabledBgms.Contains("RE3", StringComparer.OrdinalIgnoreCase))
-                {
-                    var r = new Re3Randomiser(BgCreator);
-                    r.AddMusicSelection(bgmRandomizer, reConfig);
-                }
-                bgmRandomizer.AddCutomMusicToSelection(enabledBgms);
-
-                if (BiohazardVersion == BioVersion.Biohazard1)
-                {
-                    bgmRandomizer.ImportVolume = 0.25f;
-                }
-                else if (BiohazardVersion == BioVersion.Biohazard3)
-                {
-                    bgmRandomizer.ImportVolume = 0.75f;
-                }
-                using (progress.BeginTask(null, "Randomizing BGM"))
-                {
-                    bgmRandomizer.Randomise();
-                }
+                GenerateBGM(config, reConfig, progress, fileRepository);
             }
 
             using (progress.BeginTask(null, $"Creating backgrounds"))
@@ -387,6 +352,46 @@ namespace IntelOrca.Biohazard
             {
                 logger.WriteException(ex);
                 throw;
+            }
+        }
+
+        protected virtual void GenerateBGM(RandoConfig config, ReInstallConfig reConfig, IRandoProgress progress, FileRepository fileRepository)
+        {
+            using var logger = new RandoLogger(progress, fileRepository.GetModPath("log_bgm.txt"));
+            logger.WriteHeading(Program.CurrentVersionInfo);
+            logger.WriteLine($"Seed: {config}");
+
+            var bgmDirectory = fileRepository.GetModPath(BGMPath);
+            var bgmRandomizer = new BgmRandomiser(logger, config, fileRepository, bgmDirectory, GetBgmJson(), BiohazardVersion != BioVersion.Biohazard2, new Rng(config.Seed), DataManager);
+            var enabledBgms = GetSelectedAlbums(config);
+            if (enabledBgms.Contains("RE1", StringComparer.OrdinalIgnoreCase))
+            {
+                var r = new Re1Randomiser(BgCreator);
+                r.AddMusicSelection(bgmRandomizer, reConfig);
+            }
+            if (enabledBgms.Contains("RE2", StringComparer.OrdinalIgnoreCase))
+            {
+                var r = new Re2Randomiser(BgCreator);
+                r.AddMusicSelection(bgmRandomizer, reConfig);
+            }
+            if (enabledBgms.Contains("RE3", StringComparer.OrdinalIgnoreCase))
+            {
+                var r = new Re3Randomiser(BgCreator);
+                r.AddMusicSelection(bgmRandomizer, reConfig);
+            }
+            bgmRandomizer.AddCutomMusicToSelection(enabledBgms);
+
+            if (BiohazardVersion == BioVersion.Biohazard1)
+            {
+                bgmRandomizer.ImportVolume = 0.25f;
+            }
+            else if (BiohazardVersion == BioVersion.Biohazard3)
+            {
+                bgmRandomizer.ImportVolume = 0.75f;
+            }
+            using (progress.BeginTask(null, "Randomizing BGM"))
+            {
+                bgmRandomizer.Randomise();
             }
         }
 
