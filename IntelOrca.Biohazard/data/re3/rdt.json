@@ -2058,7 +2058,8 @@
           "target": "500"
         },
         {
-          "target": "50B"
+          "target": "50B",
+          "lock": "unblock"
         }
       ]
     },
