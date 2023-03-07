@@ -262,12 +262,14 @@ namespace IntelOrca.Biohazard
                 }
                 bgmRandomizer.AddCutomMusicToSelection(enabledBgms);
 
-                if (BiohazardVersion == BioVersion.Biohazard1 ||
-                    BiohazardVersion == BioVersion.Biohazard3)
+                if (BiohazardVersion == BioVersion.Biohazard1)
                 {
                     bgmRandomizer.ImportVolume = 0.25f;
                 }
-
+                else if (BiohazardVersion == BioVersion.Biohazard3)
+                {
+                    bgmRandomizer.ImportVolume = 0.75f;
+                }
                 using (progress.BeginTask(null, "Randomizing BGM"))
                 {
                     bgmRandomizer.Randomise();
