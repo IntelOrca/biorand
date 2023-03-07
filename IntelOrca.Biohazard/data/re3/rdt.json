@@ -1637,6 +1637,11 @@
       ]
     },
     "40A": {
+      "doorRando": [
+        {
+          "cutscene": true
+        }
+      ],
       "doors": [
         {
           "target": "409"
@@ -1657,6 +1662,11 @@
         {
           "id": 9,
           "priority": "low"
+        }
+      ],
+      "npcs": [
+        {
+          "playerActor": "carlos"
         }
       ]
     },
