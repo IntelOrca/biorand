@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace IntelOrca.Biohazard.RE3
 {
@@ -106,17 +107,21 @@ namespace IntelOrca.Biohazard.RE3
             var groups = new[] { 192, 135, 135 };
             var startOffset = 0x518AE0;
 
+            var trackIndex = 0;
             var bw = new BinaryWriter(ExePatch);
             foreach (var g in groups)
             {
                 for (int i = 0; i < g; i += 3)
                 {
-                    bw.Write((uint)startOffset + 8);
-                    bw.Write((uint)8);
-                    bw.Write((uint)0);
-                    bw.Write((uint)0);
-
-                    startOffset += 16;
+                    var trackName = g_trackOrder[trackIndex++];
+                    if (File.Exists(fileRepository.GetModPath($"DATA_A/SOUND/{trackName}.wav")))
+                    {
+                        bw.Write((uint)startOffset + 8);
+                        bw.Write((uint)8);
+                        bw.Write((uint)0);
+                        bw.Write((uint)0);
+                    }
+                    startOffset += 16 * 3;
                 }
             }
         }
@@ -447,5 +452,163 @@ namespace IntelOrca.Biohazard.RE3
             vb.SetSampleFromPCM(6, pcmData);
             vb.Write(vbTargetPath);
         }
+
+        private static readonly string[] g_trackOrder = new[]
+        {
+            "MAIN00",
+            "MAIN01",
+            "MAIN02",
+            "MAIN03",
+            "MAIN04",
+            "MAIN05",
+            "MAIN06",
+            "MAIN07",
+            "MAIN08",
+            "OTHER_00",
+            "MAIN0A",
+            "MAIN0B",
+            "MAIN0B",
+            "MAIN0D",
+            "MAIN0E",
+            "MAIN0F_0",
+            "SBB_17",
+            "MAIN11",
+            "MAIN05",
+            "MAIN13",
+            "MAIN14",
+            "MAIN0D",
+            "MAIN16_0",
+            "MAIN17",
+            "MAIN18",
+            "MAIN19",
+            "MAIN1A",
+            "MAIN1B",
+            "OTHER_00",
+            "MAIN1D",
+            "OTHER_00",
+            "OTHER_00",
+            "MAIN20_0",
+            "MAIN21",
+            "OTHER_00",
+            "MAIN23",
+            "MAIN24_0",
+            "OTHER_01",
+            "OTHER_00",
+            "OTHER_00",
+            "MAIN05",
+            "MAIN29",
+            "MAIN2A_0",
+            "MAIN2B_0",
+            "MAIN2C",
+            "MAIN2D",
+            "OTHER_01",
+            "OTHER_01",
+            "MAIN30_0",
+            "OTHER_00",
+            "MAIN32",
+            "MAIN33",
+            "MAIN34",
+            "MAIN35",
+            "MAIN36",
+            "MAIN37",
+            "MAIN38",
+            "MAIN39",
+            "MAIN3A",
+            "MAIN3B",
+            "MAIN3C",
+            "MAIN3D",
+            "MAIN3E",
+            "MAIN3F",
+            "SBB_00",
+            "SBB_02",
+            "SBB_03",
+            "SBB_05",
+            "MAIN0b",
+            "MAIN04",
+            "SBB_09",
+            "",
+            "OTHER_00",
+            "OTHER_01",
+            "SBB_0E",
+            "SBB_12",
+            "MAIN14",
+            "MAIN04",
+            "SBB_17",
+            "SBB_3F",
+            "SBB_1B",
+            "SBB_1C",
+            "SBB_33",
+            "SBB_27",
+            "SBB_20",
+            "OTHER_00",
+            "MAIN01",
+            "SBB_23",
+            "SBB_25",
+            "MAIN23",
+            "SBB_00",
+            "SBB_2A",
+            "SBB_44",
+            "SBB_1E_0",
+            "SBB_2E_0",
+            "SBB_1A",
+            "SBB_30",
+            "SBB_44",
+            "SBB_36",
+            "SBB_3D",
+            "SBB_31",
+            "SBB_39",
+            "SBB_35",
+            "SBB_3B",
+            "MAIN14",
+            "OTHER_01",
+            "SBB_41",
+            "SBB_10",
+            "OTHER_03",
+            "SBB_01",
+            "",
+            "MAIN21",
+            "SBB_06_0",
+            "",
+            "",
+            "SBB_0A",
+            "SBB_0C",
+            "",
+            "MAIN04",
+            "SBB_0F",
+            "",
+            "SBB_01",
+            "SBB_16",
+            "SBB_18",
+            "SBB_40",
+            "",
+            "SBB_1D",
+            "SBB_3A",
+            "SBB_11",
+            "",
+            "",
+            "",
+            "SBB_24",
+            "",
+            "",
+            "SBB_29",
+            "SBB_2B",
+            "SBB_01",
+            "SBB_1F",
+            "SBB_2F",
+            "",
+            "",
+            "SBB_29",
+            "",
+            "SBB_3E",
+            "SBB_38_1",
+            "SBB_37",
+            "SBB_34",
+            "SBB_3C",
+            "",
+            "",
+            "SBB_42",
+            "SBB_19",
+            "SBB_44"
+        };
     }
 }
