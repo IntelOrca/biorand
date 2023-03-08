@@ -158,6 +158,9 @@
       ],
       "doors": [
         {
+          "target": "104"
+        },
+        {
           "target": "105"
         },
         {
@@ -1232,7 +1235,15 @@
       // "linkedRoom": "317",
       "doors": [
         {
-          "target": "300"
+          "target": "300",
+          "entrance": {
+            "x": -8020,
+            "y": 0,
+            "z": -26317,
+            "d": 3072,
+            "floor": 0,
+            "cut": 3
+          }
         },
         {
           "target": "303"
@@ -1693,6 +1704,11 @@
         {
           "playerActor": "carlos",
           "includeOffsets": [ 9224 ]
+        }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 32 ]
         }
       ]
     },

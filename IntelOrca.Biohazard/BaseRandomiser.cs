@@ -154,6 +154,7 @@ namespace IntelOrca.Biohazard
 
         public void Generate(RandoConfig config, ReInstallConfig reConfig, IRandoProgress progress)
         {
+            config = config.Clone();
             if (config.Version < RandoConfig.LatestVersion)
             {
                 throw new BioRandVersionException($"This seed was generated with an older version of the randomizer and cannot be played.");

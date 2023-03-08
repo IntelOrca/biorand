@@ -8,6 +8,7 @@ namespace IntelOrca.Biohazard.Script
     {
         private const byte SCE_ITEM = 2;
         private const byte SCE_EVENT = 5;
+        private const byte SCE_FLAG_CHG = 6;
 
         public byte? FindOpcode(string name)
         {
@@ -95,18 +96,33 @@ namespace IntelOrca.Biohazard.Script
                             br.BaseStream.Position += 13;
                             return GetConstant('g', br.ReadByte());
                         }
+                        else if (sce == SCE_FLAG_CHG)
+                        {
+                            br.BaseStream.Position += 13;
+                            return GetConstant('t', br.ReadByte());
+                        }
                     }
                     else if (pIndex == 12)
                     {
                         br.BaseStream.Position++;
                         var sce = br.ReadByte();
-                        if (sce == SCE_EVENT)
+                        if (sce == SCE_EVENT || sce == SCE_FLAG_CHG)
                         {
                             br.BaseStream.Position += 13;
                             if (br.ReadByte() == (byte)OpcodeV3.Gosub)
                             {
                                 return GetConstant('p', br.ReadByte());
                             }
+                        }
+                    }
+                    else if (pIndex == 13)
+                    {
+                        br.BaseStream.Position++;
+                        var sce = br.ReadByte();
+                        if (sce == SCE_FLAG_CHG)
+                        {
+                            br.BaseStream.Position += 15;
+                            return GetConstant('p', br.ReadByte());
                         }
                     }
                 }

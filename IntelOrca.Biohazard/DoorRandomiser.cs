@@ -195,6 +195,7 @@ namespace IntelOrca.Biohazard
                 FixRE3Restuarant();
                 FixRE3PressOffice();
                 FixRE3TrainCrashExit();
+                FixRE3PianoRoom();
                 FixRE3Laboratory();
             }
         }
@@ -298,24 +299,39 @@ namespace IntelOrca.Biohazard
             }
         }
 
+        private void FixRE3PianoRoom()
+        {
+            var rdt = _gameData.GetRdt(new RdtId(2, 0x01));
+            if (rdt != null)
+            {
+                AddCutCorrection(rdt, 112, 3, 10);
+            }
+        }
+
         private void FixRE3Laboratory()
         {
             var rdt = _gameData.GetRdt(new RdtId(3, 0x0A));
             if (rdt != null)
             {
-                // if (bits[3][28] == 1)
-                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x06, new byte[] { 0x00, 0x0A, 0x00 }));
-                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x4C, new byte[] { 0x03, 0x5B, 0x01 }));
-
-                // cut_chg(11);
-                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x50, new byte[] { 11 }));
-
-                // cut_auto(1);
-                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x52, new byte[] { 1 }));
-
-                // endif
-                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x08, new byte[] { 0x00 }));
+                AddCutCorrection(rdt, 91, 3, 11);
             }
+        }
+
+        private void AddCutCorrection(Rdt rdt, byte flag3, byte originalCut, byte newCut)
+        {
+            // if (bits[3][flag3] == 1 && cut == originalCut)
+            rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x06, new byte[] { 0x00, 0x10, 0x00 }));
+            rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x4C, new byte[] { 0x03, flag3, 0x01 }));
+            rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x4E, new byte[] { 0x00, 0x1A, 0x00, originalCut, 0x00 }));
+
+            // cut_chg(11);
+            rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x50, new byte[] { newCut }));
+
+            // cut_auto(1);
+            rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x52, new byte[] { 1 }));
+
+            // endif
+            rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x08, new byte[] { 0x00 }));
         }
 
         private void FixRE3Train()
