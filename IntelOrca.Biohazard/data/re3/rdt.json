@@ -486,6 +486,32 @@
           "target": "11B"
         }
       ],
+      "items": [
+        {
+          "id": 4,
+          "priority": "low"
+        },
+        {
+          "id": 5,
+          "priority": "low"
+        },
+        {
+          "id": 6,
+          "priority": "low"
+        },
+        {
+          "id": 7,
+          "priority": "low"
+        },
+        {
+          "id": 8,
+          "priority": "low"
+        },
+        {
+          "id": 9,
+          "priority": "low"
+        }
+      ],
       "enemies": []
     },
     "123": {
@@ -623,6 +649,10 @@
       ],
       "items": [
         {
+          "id": 11,
+          "type": 0
+        },
+        {
           "id": 12,
           "requires": [ 79 ]
         }
@@ -667,7 +697,12 @@
         },
         {
           "target": "208",
-          "requires": [ 68, 69 ]
+          "requires": [ 68, 69 ],
+          "noUnlock": true
+        },
+        {
+          "target": "20F",
+          "lock": "side"
         },
         {
           "target": "210"
@@ -874,6 +909,16 @@
           "target": "20D",
           "requires": [ 60, 95 ],
           "noUnlock": true
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "priority": "low"
+        },
+        {
+          "id": 3,
+          "priority": "low"
         }
       ]
     },
@@ -1608,6 +1653,11 @@
           "type": 82,
           "priority": "fixed",
           "doorRando": false
+        },
+        {
+          "id": 9,
+          "requiresRoom": [ "407" ],
+          "doorRando": true
         }
       ]
     },
@@ -1842,12 +1892,28 @@
       "doors": [
         {
           "id": 2,
-          "target": "309"
+          "target": "309",
+          "entrance": {
+            "x": 1331,
+            "y": 0,
+            "z": -23080,
+            "d": 2480,
+            "floor": 0,
+            "cut": 0
+          }
         },
         {
           "target": "401",
           "requires": [ 114 ],
-          "doorRando": true
+          "doorRando": true,
+          "entrance": {
+            "x": 5462,
+            "y": 0,
+            "z": -7940,
+            "d": 929,
+            "floor": 0,
+            "cut": 1
+          }
         },
         {
           "target": "402"

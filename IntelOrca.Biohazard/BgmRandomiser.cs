@@ -9,6 +9,10 @@ namespace IntelOrca.Biohazard
 {
     internal class BgmRandomiser
     {
+        // Name prefix:
+        //   ! = use, but don't set
+        //   * = set, but don't use
+
         public const string TagBasement = "basement";
         public const string TagCalm = "calm";
         public const string TagClown = "clown";

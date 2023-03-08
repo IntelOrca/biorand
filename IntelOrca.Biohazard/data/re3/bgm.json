@@ -40,8 +40,6 @@
     "SBB_1A",
     "SBB_1C",
     "SBB_20",
-    "SBB_2A",
-    "SBB_2B",
     "SBB_30",
     "SBB_31",
     "SBB_33",
@@ -138,6 +136,8 @@
     "MAIN3B",
     "SBB_29",
     "SBB_37",
-    "SBB_3B"
+    "SBB_3B",
+    "*SBB_2A",
+    "*SBB_2B"
   ]
 }
