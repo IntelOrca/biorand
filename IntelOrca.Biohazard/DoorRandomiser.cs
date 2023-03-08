@@ -187,6 +187,7 @@ namespace IntelOrca.Biohazard
 
             UnblockRpdDoor();
             FixRE3LockpickDoor();
+            FixRE3Train();
             UnblockWasteDisposalDoor();
             if (_config.RandomDoors)
             {
@@ -314,6 +315,22 @@ namespace IntelOrca.Biohazard
 
                 // endif
                 rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x08, new byte[] { 0x00 }));
+            }
+        }
+
+        private void FixRE3Train()
+        {
+            var rdt = _gameData.GetRdt(new RdtId(1, 0x0C));
+            if (rdt == null)
+                return;
+
+            if (!_config.RandomItems)
+                return;
+
+            var elseIndex = Array.FindIndex(rdt.Opcodes, x => x.Offset == 0x4EE4);
+            if (elseIndex != -1)
+            {
+                rdt.Opcodes[elseIndex] = new UnknownOpcode(0x4EE4, (byte)OpcodeV3.EndIf, new byte[] { 0x00, 0x00 });
             }
         }
 

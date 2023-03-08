@@ -772,12 +772,12 @@
       "doors": [
         {
           "id": 0,
-          "target": "20B:1"
+          "target": "20B:1",
+          "lock": "unblock"
         },
         {
           "id": 1,
-          "target": "20B:2",
-          "lock": "unblock"
+          "target": "20B:2"
         },
         {
           "target": "215",
