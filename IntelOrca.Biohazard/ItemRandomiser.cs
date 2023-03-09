@@ -143,7 +143,9 @@ namespace IntelOrca.Biohazard
                     }
                 }
 
-                if (_config.Game != 3 && remaining >= 2)
+                // RE 3 doesn't need the knife as it is in the box by default,
+                // but if no weapon is given, the knife is required - otherwise the game crashes.
+                if ((_config.Game != 3 || entries.Count == 0) && remaining >= 2)
                 {
                     // Always give the player a knife
                     AddToInventoryCommon(CommonItemKind.Knife, 1);
