@@ -263,6 +263,11 @@ namespace IntelOrca.Biohazard
                 rdt.Nop(0x2DDA);
                 rdt.Nop(0x2DDD);
                 rdt.Nop(0x2DE0);
+
+                // NOP out Nemesis encounter (seems to break when we have the cut_replace at the top)
+                rdt.Nop(0x2E18);
+                rdt.Nop(0x2E30);
+                rdt.Nop(0x2E34);
             }
         }
 
