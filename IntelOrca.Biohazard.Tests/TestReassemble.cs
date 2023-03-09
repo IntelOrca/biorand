@@ -34,19 +34,22 @@ namespace IntelOrca.Biohazard.Tests
         {
             var installPath = TestInfo.GetInstallPath(2);
             var rofs = new RE3Archive(Path.Combine(installPath, "rofs13.dat"));
+            var fail = false;
             foreach (var file in rofs.Files)
             {
                 var fileName = Path.GetFileName(file);
                 var rdt = rofs.GetFileContents(file);
                 var rdtFile = new RdtFile(rdt, BioVersion.Biohazard3);
                 var sPath = Path.ChangeExtension(fileName, ".s");
-                AssertReassembleRdt(rdtFile, sPath);
+                fail |= AssertReassembleRdt(rdtFile, sPath);
             }
+            Assert.False(fail);
         }
 
         private void CheckRDTs(string rdtPath)
         {
             var rdts = Directory.GetFiles(rdtPath, "*.rdt");
+            var fail = false;
             foreach (var rdt in rdts)
             {
                 var rdtId = RdtId.Parse(rdt.Substring(rdt.Length - 8, 3));
@@ -59,11 +62,12 @@ namespace IntelOrca.Biohazard.Tests
 
                 var rdtFile = new RdtFile(rdt);
                 var sPath = Path.ChangeExtension(rdt, ".s");
-                AssertReassembleRdt(rdtFile, sPath);
+                fail |= AssertReassembleRdt(rdtFile, sPath);
             }
+            Assert.False(fail);
         }
 
-        private void AssertReassembleRdt(RdtFile rdtFile, string sPath)
+        private bool AssertReassembleRdt(RdtFile rdtFile, string sPath)
         {
             var diassembly = rdtFile.DisassembleScd();
 
@@ -99,7 +103,7 @@ namespace IntelOrca.Biohazard.Tests
                     }
                 }
             }
-            Assert.False(fail);
+            return fail;
         }
 
         private static int CompareByteArray(byte[] a, byte[] b)
