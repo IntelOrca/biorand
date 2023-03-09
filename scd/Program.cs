@@ -119,11 +119,11 @@ namespace IntelOrca.Scd
                             var result = scdAssembler.Assemble(rdtPath, s);
                             if (result == 0)
                             {
-                                if (scdAssembler.OutputInit != null)
+                                if (scdAssembler.OutputInit.Length != 0)
                                 {
                                     rdtFile.SetScd(BioScriptKind.Init, scdAssembler.OutputInit);
                                 }
-                                if (scdAssembler.OutputMain != null)
+                                if (scdAssembler.OutputMain.Length != 0)
                                 {
                                     rdtFile.SetScd(BioScriptKind.Main, scdAssembler.OutputMain);
                                 }

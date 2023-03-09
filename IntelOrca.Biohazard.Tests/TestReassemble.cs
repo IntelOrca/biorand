@@ -29,6 +29,21 @@ namespace IntelOrca.Biohazard.Tests
             CheckRDTs(Path.Combine(TestInfo.GetInstallPath(1), @"data\pl1\rdt"));
         }
 
+        [Fact]
+        public void RE3()
+        {
+            var installPath = TestInfo.GetInstallPath(2);
+            var rofs = new RE3Archive(Path.Combine(installPath, "rofs13.dat"));
+            foreach (var file in rofs.Files)
+            {
+                var fileName = Path.GetFileName(file);
+                var rdt = rofs.GetFileContents(file);
+                var rdtFile = new RdtFile(rdt, BioVersion.Biohazard3);
+                var sPath = Path.ChangeExtension(fileName, ".s");
+                AssertReassembleRdt(rdtFile, sPath);
+            }
+        }
+
         private void CheckRDTs(string rdtPath)
         {
             var rdts = Directory.GetFiles(rdtPath, "*.rdt");
@@ -43,40 +58,48 @@ namespace IntelOrca.Biohazard.Tests
                     continue;
 
                 var rdtFile = new RdtFile(rdt);
-                var diassembly = rdtFile.DisassembleScd();
                 var sPath = Path.ChangeExtension(rdt, ".s");
+                AssertReassembleRdt(rdtFile, sPath);
+            }
+        }
 
-                var scdAssembler = new ScdAssembler();
-                var err = scdAssembler.Assemble(sPath, diassembly);
-                var fail = false;
-                if (err != 0)
+        private void AssertReassembleRdt(RdtFile rdtFile, string sPath)
+        {
+            var diassembly = rdtFile.DisassembleScd();
+
+            var scdAssembler = new ScdAssembler();
+            var err = scdAssembler.Assemble(sPath, diassembly);
+            var fail = false;
+            if (err != 0)
+            {
+                foreach (var error in scdAssembler.Errors.Errors)
                 {
-                    foreach (var error in scdAssembler.Errors.Errors)
-                    {
-                        _output.WriteLine(error.ToString());
-                    }
+                    _output.WriteLine(error.ToString());
+                }
+                fail = true;
+            }
+            else
+            {
+                var scdInit = rdtFile.GetScd(BioScriptKind.Init);
+                var index = CompareByteArray(scdInit, scdAssembler.OutputInit);
+                if (index != -1)
+                {
+                    _output.WriteLine(".init differs at 0x{0:X2} for '{1}'", index, sPath);
                     fail = true;
                 }
-                else
-                {
-                    var scdInit = rdtFile.GetScd(BioScriptKind.Init);
-                    var index = CompareByteArray(scdInit, scdAssembler.OutputInit);
-                    if (index != -1)
-                    {
-                        _output.WriteLine(".init differs at 0x{0:X2} for '{1}'", index, rdt);
-                        fail = true;
-                    }
 
+                if (rdtFile.Version != BioVersion.Biohazard3)
+                {
                     var scdMain = rdtFile.GetScd(BioScriptKind.Main);
                     index = CompareByteArray(scdMain, scdAssembler.OutputMain);
                     if (index != -1)
                     {
-                        _output.WriteLine(".main differs at 0x{0:X2} for '{1}'", index, rdt);
+                        _output.WriteLine(".main differs at 0x{0:X2} for '{1}'", index, sPath);
                         fail = true;
                     }
                 }
-                Assert.False(fail);
             }
+            Assert.False(fail);
         }
 
         private static int CompareByteArray(byte[] a, byte[] b)

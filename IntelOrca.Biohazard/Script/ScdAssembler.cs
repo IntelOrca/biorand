@@ -95,7 +95,7 @@ namespace IntelOrca.Biohazard.Script
                     }
                     else
                     {
-                        if (!int.TryParse(token.Text, out var num) || (num != 1 && num != 2))
+                        if (!int.TryParse(token.Text, out var num) || num < 1 || num > 3)
                         {
                             EmitError(in token, ErrorCodes.InvalidScdVersionNumber);
                             _state = ParserState.SkipToNextLine;
@@ -103,12 +103,22 @@ namespace IntelOrca.Biohazard.Script
                         }
                         else
                         {
-                            _version = num == 1 ? BioVersion.Biohazard1 : BioVersion.Biohazard2;
+                            switch (num)
+                            {
+                                case 1:
+                                    _version = BioVersion.Biohazard1;
+                                    _constantTable = new Bio1ConstantTable();
+                                    break;
+                                case 2:
+                                    _version = BioVersion.Biohazard2;
+                                    _constantTable = new Bio2ConstantTable();
+                                    break;
+                                case 3:
+                                    _version = BioVersion.Biohazard3;
+                                    _constantTable = new Bio3ConstantTable();
+                                    break;
+                            }
                             _state = num == 1 ? ParserState.ExpectOpcode : ParserState.Default;
-                            if (_version == BioVersion.Biohazard1)
-                                _constantTable = new Bio1ConstantTable();
-                            else
-                                _constantTable = new Bio2ConstantTable();
                         }
                     }
                     break;

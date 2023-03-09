@@ -258,6 +258,8 @@ namespace IntelOrca.Biohazard.Script
                 return FindConstantValue(symbol, 'a');
             else if (symbol.StartsWith("WK_"))
                 return FindConstantValue(symbol, 'w');
+            else if (symbol.StartsWith("var_"))
+                return FindConstantValue(symbol, 'v');
 
             return null;
         }
