@@ -33,7 +33,7 @@ namespace IntelOrca.Biohazard.RE3
             new SelectableEnemy("Mini Worm", "LightGray", Re3EnemyIds.MiniWorm),
             new SelectableEnemy("Spider", "YellowGreen", Re3EnemyIds.Spider),
             new SelectableEnemy("Zombie", "LightGray", _zombieTypes),
-            new SelectableEnemy("Hunter", "IndianRed", new[] { Re3EnemyIds.Hunter, Re3EnemyIds.HunterGamma }),
+            new SelectableEnemy("Hunter", "IndianRed", new[] { Re3EnemyIds.Hunter }),
             new SelectableEnemy("Brain Sucker", "DarkOliveGreen", new[] { Re3EnemyIds.BS23, Re3EnemyIds.BS28 }),
             new SelectableEnemy("Zombie Dog", "Black", Re3EnemyIds.ZombieDog),
             new SelectableEnemy("Nemesis", "LightGray", Re3EnemyIds.Nemesis),

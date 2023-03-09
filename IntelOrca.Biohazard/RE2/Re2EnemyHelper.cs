@@ -5,7 +5,7 @@ using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.RE2
 {
-    internal class Re3EnemyHelper : IEnemyHelper
+    internal class Re2EnemyHelper : IEnemyHelper
     {
         private static readonly byte[] _zombieTypes = new byte[]
         {
@@ -21,7 +21,7 @@ namespace IntelOrca.Biohazard.RE2
             (byte)EnemyType.ZombieBrad
         };
 
-        public Re3EnemyHelper()
+        public Re2EnemyHelper()
         {
         }
 
