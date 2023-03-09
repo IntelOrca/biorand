@@ -44,6 +44,7 @@ namespace IntelOrca.Biohazard.Script
                         }
                         else if (sce == SCE_FLAG_CHG)
                         {
+                            br.BaseStream.Position += 3;
                             return GetConstant('t', br.ReadByte());
                         }
                     }

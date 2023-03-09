@@ -70,6 +70,11 @@ namespace IntelOrca.Biohazard.Script
                             br.BaseStream.Position += 3;
                             return GetConstant('g', br.ReadByte());
                         }
+                        else if (sce == SCE_FLAG_CHG)
+                        {
+                            br.BaseStream.Position += 3;
+                            return GetConstant('t', br.ReadByte());
+                        }
                     }
                     else if (pIndex == 6)
                     {
@@ -82,6 +87,16 @@ namespace IntelOrca.Biohazard.Script
                             {
                                 return GetConstant('p', br.ReadByte());
                             }
+                        }
+                    }
+                    else if (pIndex == 7)
+                    {
+                        br.BaseStream.Position++;
+                        var sce = br.ReadByte();
+                        if (sce == SCE_FLAG_CHG)
+                        {
+                            br.BaseStream.Position += 5;
+                            return GetConstant('p', br.ReadByte());
                         }
                     }
                 }
@@ -137,18 +152,33 @@ namespace IntelOrca.Biohazard.Script
                             br.BaseStream.Position += 21;
                             return GetConstant('g', br.ReadByte());
                         }
+                        else if (sce == SCE_FLAG_CHG)
+                        {
+                            br.BaseStream.Position += 21;
+                            return GetConstant('t', br.ReadByte());
+                        }
                     }
                     else if (pIndex == 16)
                     {
                         br.BaseStream.Position++;
                         var sce = br.ReadByte();
-                        if (sce == SCE_EVENT)
+                        if (sce == SCE_EVENT || sce == SCE_FLAG_CHG)
                         {
                             br.BaseStream.Position += 21;
                             if (br.ReadByte() == (byte)OpcodeV3.Gosub)
                             {
                                 return GetConstant('p', br.ReadByte());
                             }
+                        }
+                    }
+                    else if (pIndex == 17)
+                    {
+                        br.BaseStream.Position++;
+                        var sce = br.ReadByte();
+                        if (sce == SCE_FLAG_CHG)
+                        {
+                            br.BaseStream.Position += 23;
+                            return GetConstant('p', br.ReadByte());
                         }
                     }
                 }
