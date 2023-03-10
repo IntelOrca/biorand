@@ -249,22 +249,29 @@ namespace IntelOrca.Biohazard.RE2
 
         public int GetEnemyTypeLimit(RandoConfig config, byte type)
         {
+            byte[] limit;
             switch ((EnemyType)type)
             {
                 case EnemyType.Birkin1:
-                    return 1;
+                    limit = new byte[] { 1 };
+                    break;
                 case EnemyType.ZombieDog:
                 case EnemyType.GiantMoth:
                 case EnemyType.Ivy:
                 case EnemyType.IvyPurple:
-                    return 8;
+                    limit = new byte[] { 2, 4, 6, 8 };
+                    break;
                 case EnemyType.LickerRed:
                 case EnemyType.LickerGrey:
                 case EnemyType.Tyrant1:
-                    return 5;
+                    limit = new byte[] { 2, 3, 4, 6 };
+                    break;
                 default:
-                    return 16;
+                    limit = new byte[] { 16 };
+                    break;
             }
+            var index = Math.Min(limit.Length - 1, config.EnemyDifficulty);
+            return limit[index];
         }
 
         public SelectableEnemy[] GetSelectableEnemies() => new[]
