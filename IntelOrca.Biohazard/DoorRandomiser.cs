@@ -189,6 +189,7 @@ namespace IntelOrca.Biohazard
             FixRE3LockpickDoor();
             FixRE3Train();
             UnblockWasteDisposalDoor();
+            FixRE3TowerOutdoor();
             if (_config.RandomDoors)
             {
                 FixRE3HydrantAlley();
@@ -197,6 +198,7 @@ namespace IntelOrca.Biohazard
                 FixRE3TrainCrashExit();
                 FixRE3PianoRoom();
                 FixRE3Laboratory();
+                FixRE3CommsRoom();
             }
         }
 
@@ -322,6 +324,15 @@ namespace IntelOrca.Biohazard
             }
         }
 
+        private void FixRE3CommsRoom()
+        {
+            var rdt = _gameData.GetRdt(new RdtId(4, 0x0A));
+            if (rdt != null)
+            {
+                AddCutCorrection(rdt, 199, 11, 3);
+            }
+        }
+
         private void AddCutCorrection(Rdt rdt, byte flag3, byte originalCut, byte newCut)
         {
             // if (bits[3][flag3] == 1 && cut == originalCut)
@@ -379,6 +390,26 @@ namespace IntelOrca.Biohazard
             // 4
             rdt.Nop(0x5900);
             rdt.Nop(0x2858);
+        }
+
+        private void FixRE3TowerOutdoor()
+        {
+            var rdt = _gameData.GetRdt(new RdtId(2, 0x0B));
+            if (rdt == null)
+                return;
+
+            if (!_config.RandomItems)
+                return;
+
+            // Prevent Nemesis event from happening if clock puzzle is complete
+
+            // if (bits[3][158] == 1)
+            rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x06, new byte[] { 0x00, 0x0A, 0x00 }));
+            rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x4C, new byte[] { 3, 158, 1 }));
+            // bits[3][138] = 1
+            rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x4D, new byte[] { 3, 138, 1 }));
+            // endif
+            rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x08, new byte[] { 0x00 }));
         }
 
         private static void CopyDoorTo(Rdt rdt, int dstId, int srcId)

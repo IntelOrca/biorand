@@ -1335,6 +1335,12 @@
         {
           "target": "30A"
         }
+      ],
+      "items": [
+        {
+          "id": 5,
+          "type": 0
+        }
       ]
     },
     "305": {
@@ -1683,6 +1689,16 @@
         {
           "target": "405"
         }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "priority": "low"
+        },
+        {
+          "id": 4,
+          "priority": "low"
+        }
       ]
     },
     "408": {
@@ -1709,7 +1725,8 @@
         },
         {
           "playerActor": "carlos",
-          "includeOffsets": [ 9224 ]
+          "includeOffsets": [ 9224 ],
+          "excludeTypes": [ 91 ]
         }
       ],
       "enemies": [
@@ -1829,6 +1846,12 @@
           "target": "510",
           "requires": [ 125 ]
         }
+      ],
+      "items": [
+        {
+          "id": 13,
+          "type": 0
+        }
       ]
     },
     "410": {
@@ -1838,6 +1861,11 @@
         },
         {
           "target": "411"
+        }
+      ],
+      "enemies": [
+        {
+          "y": 0
         }
       ]
     },
@@ -1942,9 +1970,17 @@
         },
         {
           "target": "40C",
-          "requires": [ 81, 82, 123 ],
+          "requires": [ 123 ],
           "noReturn": true,
-          "doorRando": true
+          "doorRando": true,
+          "entrance": {
+            "x": 18553,
+            "y": -5400,
+            "z": 3029,
+            "d": 952,
+            "floor": 3,
+            "cut": 8
+          }
         }
       ]
     },
