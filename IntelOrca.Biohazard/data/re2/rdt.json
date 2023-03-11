@@ -2279,6 +2279,7 @@
         },
         {
           "includeOffsets": [ 3650 ],
+          "excludeTypes": [ 90 ],
           "player": 1
         },
         {
