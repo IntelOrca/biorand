@@ -186,6 +186,7 @@ namespace IntelOrca.Biohazard
                 return;
 
             UnblockRpdDoor();
+            FixRE3SalesOffice();
             FixRE3LockpickDoor();
             FixRE3Train();
             UnblockWasteDisposalDoor();
@@ -212,6 +213,18 @@ namespace IntelOrca.Biohazard
                 return;
 
             rdt.Nop(0x2CAE, 0x2CF8);
+        }
+
+        private void FixRE3SalesOffice()
+        {
+            var rdt = _gameData.GetRdt(new RdtId(0, 0x1B));
+            if (rdt == null)
+                return;
+
+            // Allow remote to be used after the door has been unlocked
+            rdt.Nop(0x4328);
+            rdt.Nop(0x49B0);
+            rdt.Nop(0x4B5A);
         }
 
         private void FixRE3LockpickDoor()

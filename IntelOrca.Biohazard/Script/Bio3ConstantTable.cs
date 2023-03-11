@@ -699,7 +699,7 @@ namespace IntelOrca.Biohazard.Script
             "memb_calc",
             "memb_calc2",
             "fade_set",
-            "work_set",
+            "work_set:wu",
             "spd_set",
             "add_spd",
             "add_aspd",

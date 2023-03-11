@@ -1875,7 +1875,8 @@
           "target": "410"
         },
         {
-          "target": "412"
+          "target": "412",
+          "requires": [ 124 ]
         }
       ],
       "enemies": [
@@ -2046,7 +2047,8 @@
         },
         {
           "target": "502",
-          "lock": "unblock"
+          "lock": "unblock",
+          "noUnlock": true
         }
       ],
       "items": [
