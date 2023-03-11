@@ -194,24 +194,44 @@ namespace IntelOrca.Biohazard
 
         public void Append(string path, Stream input, double start, double end)
         {
-            if (path.EndsWith(".sap", StringComparison.OrdinalIgnoreCase))
+            try
             {
-                input.Position += 8;
+                if (path.EndsWith(".sap", StringComparison.OrdinalIgnoreCase))
+                {
+                    input.Position += 8;
 
-                var ms = new MemoryStream();
-                var decoder = new MSADPCMDecoder();
-                decoder.Convert(input, ms);
+                    var br = new BinaryReader(input);
+                    var magic = br.ReadUInt32();
+                    input.Position -= 4;
+                    if (magic == 0x5367674F) // OGG
+                    {
+                        using (var ss = new SlicedStream(input, 8, input.Length - 8))
+                        {
+                            AppendOgg(ss, start, end);
+                        }
+                    }
+                    else
+                    {
+                        var ms = new MemoryStream();
+                        var decoder = new MSADPCMDecoder();
+                        decoder.Convert(input, ms);
 
-                ms.Position = 0;
-                AppendWav(ms, start, end);
+                        ms.Position = 0;
+                        AppendWav(ms, start, end);
+                    }
+                }
+                else if (path.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase))
+                {
+                    AppendOgg(input, start, end);
+                }
+                else
+                {
+                    AppendWav(input, start, end);
+                }
             }
-            else if (path.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase))
+            catch (Exception ex)
             {
-                AppendOgg(input, start, end);
-            }
-            else
-            {
-                AppendWav(input, start, end);
+                throw new BioRandUserException($"Unable to process '{path}'. {ex.Message}");
             }
         }
 

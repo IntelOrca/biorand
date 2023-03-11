@@ -891,26 +891,50 @@ namespace IntelOrca.Biohazard
 
         private static double GetVoiceLengthInner(string path, FileRepository fileRepository)
         {
-            if (path.EndsWith(".sap", StringComparison.OrdinalIgnoreCase))
+            try
             {
-                var decoder = new MSADPCMDecoder();
-                return decoder.GetLength(path);
-            }
-            else if (path.EndsWith(".ogg"))
-            {
-                using (var vorbis = new VorbisReader(path))
+                if (path.EndsWith(".sap", StringComparison.OrdinalIgnoreCase))
                 {
-                    return vorbis.TotalTime.TotalSeconds;
+                    using (var fs = fileRepository.GetStream(path))
+                    {
+                        fs.Position = 8;
+                        var br = new BinaryReader(fs);
+                        var magic = br.ReadUInt32();
+                        fs.Position -= 4;
+                        if (magic == 0x5367674F) // OGG
+                        {
+                            using (var vorbis = new VorbisReader(new SlicedStream(fs, 8, fs.Length - 8), closeOnDispose: false))
+                            {
+                                return vorbis.TotalTime.TotalSeconds;
+                            }
+                        }
+                        else
+                        {
+                            var decoder = new MSADPCMDecoder();
+                            return decoder.GetLength(fs);
+                        }
+                    }
+                }
+                else if (path.EndsWith(".ogg"))
+                {
+                    using (var vorbis = new VorbisReader(path))
+                    {
+                        return vorbis.TotalTime.TotalSeconds;
+                    }
+                }
+                else
+                {
+                    using (var fs = fileRepository.GetStream(path))
+                    {
+                        var br = new BinaryReader(fs);
+                        var header = br.ReadStruct<WaveHeader>();
+                        return header.nDataLength / (double)header.nAvgBytesPerSec;
+                    }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                using (var fs = fileRepository.GetStream(path))
-                {
-                    var br = new BinaryReader(fs);
-                    var header = br.ReadStruct<WaveHeader>();
-                    return header.nDataLength / (double)header.nAvgBytesPerSec;
-                }
+                throw new BioRandUserException($"Unable to process '{path}'. {ex.Message}");
             }
         }
     }
