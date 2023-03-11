@@ -281,7 +281,90 @@
     "10F": {
       "doors": [
         {
-          "target": "106"
+          "target": "106",
+          "entrance": {
+            "x": -14453,
+            "y": 0,
+            "z": -19824,
+            "d": -500,
+            "floor": 0,
+            "cut": 0
+          }
+        },
+        {
+          "create": true,
+          "id": 6,
+          "texture": 62,
+          "target": "10F",
+          "doorRando": true,
+          "entrance": {
+            "x": -18661,
+            "y": 0,
+            "z": -12729,
+            "d": 512,
+            "floor": 0,
+            "cut": 1
+          }
+        },
+        {
+          "create": true,
+          "id": 7,
+          "texture": 62,
+          "target": "10F",
+          "doorRando": true,
+          "entrance": {
+            "x": -17210,
+            "y": 0,
+            "z": -11245,
+            "d": 512,
+            "floor": 0,
+            "cut": 1
+          }
+        },
+        {
+          "create": true,
+          "id": 8,
+          "texture": 62,
+          "target": "10F",
+          "doorRando": true,
+          "entrance": {
+            "x": -15490,
+            "y": 0,
+            "z": -9551,
+            "d": 512,
+            "floor": 0,
+            "cut": 1
+          }
+        },
+        {
+          "create": true,
+          "id": 9,
+          "texture": 62,
+          "target": "10F",
+          "doorRando": true,
+          "entrance": {
+            "x": -14430,
+            "y": 0,
+            "z": -9275,
+            "d": 1280,
+            "floor": 0,
+            "cut": 1
+          }
+        },
+        {
+          "create": true,
+          "id": 10,
+          "texture": 62,
+          "target": "10F",
+          "doorRando": true,
+          "entrance": {
+            "x": -12916,
+            "y": 0,
+            "z": -10825,
+            "d": 1536,
+            "floor": 0,
+            "cut": 1
+          }
         }
       ]
     },
@@ -629,6 +712,21 @@
         },
         {
           "target": "21B"
+        },
+        {
+          "create": true,
+          "texture": 59,
+          "target": "201",
+          "id": 11,
+          "doorRando": true,
+          "entrance": {
+            "x": 1949,
+            "y": -16200,
+            "z": -3884,
+            "d": 0,
+            "floor": 9,
+            "cut": 3
+          }
         }
       ]
     },
@@ -1532,19 +1630,28 @@
     },
     "309": {
       "linkedRoom": "315",
+      "doorRando": [
+        {
+          "nop": [ "0x2A6C-0x2A7C", "0x2B0E-0x2B22", "0x33F2", "0x3472" ]
+        }
+      ],
       "doors": [
         {
-          "target": "307"
+          "id": 1,
+          "target": "308"
         },
         {
+          "id": 0,
           "target": "417",
           "noReturn": true,
-          "doorRando": false
-        },
-        {
-          "target": "417",
-          "lock": "always",
-          "doorRando": true
+          "entrance": {
+            "x": -28040,
+            "y": 0,
+            "z": -22548,
+            "d": 77,
+            "floor": 0,
+            "cut": 4
+          }
         }
       ],
       "items": [
@@ -1872,7 +1979,7 @@
     "40B": {
       "doors": [
         {
-          "target": "409"
+          "target": "40A"
         }
       ],
       "items": [
