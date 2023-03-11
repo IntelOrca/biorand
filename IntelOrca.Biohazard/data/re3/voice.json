@@ -60,7 +60,7 @@
     "DATA_A/VOICE/M20CC150.WAV": { "rdt": "20C", "cutscene": 2, "actor": "carlos" },
     "DATA_A/VOICE/M20CC160.WAV": { "rdt": "20C", "cutscene": 2, "actor": "nikolai" },
     "DATA_A/VOICE/M20CC170.WAV": { "rdt": "20C", "cutscene": 2, "actor": "carlos", "condition": "@jill", "nameClipped": { "start": 0.4 } },
-    "DATA_A/VOICE/M20CD010.WAV": { "rdt": "20C", "cutscene": 3, "actor": "mikhail" },
+    "DATA_A/VOICE/M20CD010.WAV": { "rdt": "20C", "cutscene": 1, "actor": "mikhail" },
     "DATA_A/VOICE/M20CE010.WAV": { "rdt": "20C", "cutscene": 3, "actor": "mikhail" },
     "DATA_A/VOICE/M20CE020.WAV": { "rdt": "20C", "cutscene": 3, "actor": "mikhail" },
     "DATA_A/VOICE/M20CE030.WAV": { "rdt": "20C", "cutscene": 3, "actor": "jill.re3" },
