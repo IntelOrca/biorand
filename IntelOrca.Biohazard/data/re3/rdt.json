@@ -835,7 +835,7 @@
           "cutscene": 1 // Mikhail (first greet)
         },
         {
-          "includeOffsets": [ 20512, 20536 ],
+          "includeOffsets": [ 20512, 20536, 20560 ],
           "cutscene": 2 // Carlos and Nikolai
         },
         {

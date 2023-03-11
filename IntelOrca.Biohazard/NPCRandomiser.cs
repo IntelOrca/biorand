@@ -493,6 +493,7 @@ namespace IntelOrca.Biohazard
                 {
                     supportedNpcs = selectedNpcs;
                 }
+                supportedNpcs = supportedNpcs.Distinct().ToArray();
 
                 foreach (var enemyGroup in rdt.Enemies.GroupBy(x => x.Type))
                 {

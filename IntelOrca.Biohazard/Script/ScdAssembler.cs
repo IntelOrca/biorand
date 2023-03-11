@@ -1102,7 +1102,7 @@ namespace IntelOrca.Biohazard.Script
                 "'{0}' is not a known or valid operator.",
                 "Expected procedure name.",
                 "Expected SCD version number.",
-                "Invalid SCD version number. Only version 1 and 2 are supported.",
+                "Invalid SCD version number. Only version 1, 2, and 3 are supported.",
                 "SCD version already specified.",
                 "Procedures are not valid in SCD version 1.",
                 "SCD type already specified.",
