@@ -14,6 +14,7 @@ namespace IntelOrca.Biohazard.RE3
                 case Re3EnemyIds.MikhailViktor:
                     return "mikhail";
                 case Re3EnemyIds.NikolaiZinoviev:
+                case Re3EnemyIds.NikolaiDead:
                     return "nikolai";
                 case Re3EnemyIds.BradVickers:
                 case Re3EnemyIds.BradZombie:
@@ -94,7 +95,8 @@ namespace IntelOrca.Biohazard.RE3
                         Re3EnemyIds.DarioZombie,
                         Re3EnemyIds.PromoGirl,
                         Re3EnemyIds.JillValentine1,
-                        Re3EnemyIds.ChiefIrons
+                        Re3EnemyIds.ChiefIrons,
+                        Re3EnemyIds.NikolaiDead
                     };
                 default:
                     return new[] { id };

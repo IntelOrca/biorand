@@ -2,7 +2,7 @@
 
 namespace IntelOrca.Biohazard.RE2
 {
-    internal class Re3NpcHelper : INpcHelper
+    internal class Re2NpcHelper : INpcHelper
     {
         public string GetNpcName(byte type)
         {

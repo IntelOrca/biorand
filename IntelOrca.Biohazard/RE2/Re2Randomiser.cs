@@ -17,9 +17,9 @@ namespace IntelOrca.Biohazard.RE2
         private ReInstallConfig? _reInstallConfig;
 
         protected override BioVersion BiohazardVersion => BioVersion.Biohazard2;
-        internal override IItemHelper ItemHelper { get; } = new Re3ItemHelper();
+        internal override IItemHelper ItemHelper { get; } = new Re2ItemHelper();
         internal override IEnemyHelper EnemyHelper { get; } = new Re2EnemyHelper();
-        internal override INpcHelper NpcHelper { get; } = new Re3NpcHelper();
+        internal override INpcHelper NpcHelper { get; } = new Re2NpcHelper();
 
         public Re2Randomiser(IBgCreator? bgCreator) : base(bgCreator)
         {

@@ -47,6 +47,7 @@
         public const byte JillValentine1 = 91;
         public const byte CarlosOliveira2 = 92;
         public const byte JillValentine2 = 95;
+        public const byte NikolaiDead = 96;
         public const byte ChiefIrons = 103;
     }
 }
