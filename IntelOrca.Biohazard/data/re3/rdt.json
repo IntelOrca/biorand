@@ -16,6 +16,12 @@
         {
           "target": "101"
         }
+      ],
+      "items": [
+        {
+          "id": 7,
+          "type": 0
+        }
       ]
     },
     "101": {
@@ -328,6 +334,12 @@
         {
           "target": "113"
         }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "priority": "low"
+        }
       ]
     },
     "113": {
@@ -365,6 +377,16 @@
         {
           "target": "118"
         }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "priority": "low"
+        },
+        {
+          "id": 5,
+          "priority": "low"
+        }
       ]
     },
     "115": {
@@ -391,6 +413,12 @@
       "doors": [
         {
           "target": "115"
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "priority": "low"
         }
       ]
     },
@@ -835,6 +863,20 @@
           "randomize": false
         }
       ],
+      "items": [
+        {
+          "id": 4,
+          "priority": "low"
+        },
+        {
+          "id": 5,
+          "priority": "low"
+        },
+        {
+          "id": 17,
+          "priority": "low"
+        }
+      ],
       "npcs": [
         {
           "includeOffsets": [ 20152 ],
@@ -1138,6 +1180,12 @@
         //   "noReturn": true
         // }
       ],
+      "items": [
+        {
+          "id": 7,
+          "priority": "low"
+        }
+      ],
       "npcs": [
         {
           "includeOffsets": [ 19226 ],
@@ -1175,6 +1223,18 @@
         {
           "id": 2,
           "requires": [ 60 ]
+        },
+        {
+          "id": 5,
+          "priority": "low"
+        },
+        {
+          "id": 6,
+          "priority": "low"
+        },
+        {
+          "id": 9,
+          "priority": "low"
         }
       ]
     },
@@ -1478,7 +1538,13 @@
         },
         {
           "target": "417",
-          "noReturn": true
+          "noReturn": true,
+          "doorRando": false
+        },
+        {
+          "target": "417",
+          "lock": "always",
+          "doorRando": true
         }
       ],
       "items": [
@@ -1487,6 +1553,10 @@
         //   "id": 4,
         //   "requires": [ 70, 71, 72 ]
         // }
+        {
+          "id": 3,
+          "type": 0
+        }
       ]
     },
     "30A": {
