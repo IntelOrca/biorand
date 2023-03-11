@@ -47,10 +47,6 @@ namespace IntelOrca.Biohazard.BioRand
             Title += $" - v{version.Major}.{version.Minor}.{version.Build}";
             SelectedGame = _settings.LastSelectedGame;
             versionLabel.Text = Program.CurrentVersionInfo;
-
-#if DISABLE_RE3
-            gameListView.Items.RemoveAt(2);
-#endif
         }
 
         private void LoadSettings()
