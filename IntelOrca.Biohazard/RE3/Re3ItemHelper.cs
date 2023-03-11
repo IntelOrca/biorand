@@ -163,9 +163,9 @@ namespace IntelOrca.Biohazard.RE3
                     return 3;
                 case Re3ItemIds.HandgunSigpro:
                 case Re3ItemIds.HandgunSigproEnhanced:
-                    return 1;
                 case Re3ItemIds.HandgunBeretta:
                 case Re3ItemIds.HandgunBerettaEnhanced:
+                case Re3ItemIds.HangunEagle:
                     return 15;
                 case Re3ItemIds.ShotgunBenelli:
                 case Re3ItemIds.ShotgunBenelliEnhanced:
@@ -179,8 +179,6 @@ namespace IntelOrca.Biohazard.RE3
                     return 6;
                 case Re3ItemIds.RocketLauncher:
                     return 4;
-                case Re3ItemIds.HangunEagle:
-                    return 15;
                 case Re3ItemIds.RifleM4A1Manual:
                 case Re3ItemIds.RifleM4A1Auto:
                     return 100;
