@@ -1,3 +1,14 @@
+BioRand v3.0.0 (2023-03-12)
+
+* [Feature] Resident Evil 3 randomizer now implemented.
+* [Enhancement] Add support for RE 2 HQ sound pack.
+* [Fix] #265: RE 2, room 10D, Claire crash when entering room.
+* [Fix] #273: RE 2, room 404, Claire, NPC EM5A crashes the game.
+* [Fix] RE 2, adjust enemy limit for certain types based on difficulty.
+* [Fix] RE 2, crash when using Claire's handgun as Carlos, Mikhail, or Murphy.
+* [Fix] RE 2, room 409, cutscene crash due to Sherry NPC.
+* [Fix] RE 2, room 501, using lighter crashes the game.
+
 BioRand v2.3.0 (2023-03-05)
 
 * [Feature] Add BGM context menu.
@@ -11,11 +22,11 @@ BioRand v2.3.0 (2023-03-05)
 * [Enhancement] RE 2, room 112 (Library) now supports random enemy placement.
 * [Change] RE 1 and RE 3 save theme now retrieved from installed game.
 * [Change] Rename 'Cerberus' to 'Zombie Dog' for RE 2.
-* [Fix] Fix #225: RE 1 data not found when data folder name is USA
-* [Fix] Fix #251: RE 2, room 501, Claire, crash when using lighter in flare cannon
-* [Fix] Fix #253: RE 1, room 508, MO disk placed after door that requires it
-* [Fix] Fix #258: RE 2, room 404, crash due to EM05A
-* [Fix] Fix #261: RE 2, random BGM requires RE1 installation (#262)
+* [Fix] #225: RE 1 data not found when data folder name is USA
+* [Fix] #251: RE 2, room 501, Claire, crash when using lighter in flare cannon
+* [Fix] #253: RE 1, room 508, MO disk placed after door that requires it
+* [Fix] #258: RE 2, room 404, crash due to EM05A
+* [Fix] #261: RE 2, random BGM requires RE1 installation (#262)
 
 BioRand v2.2.2 (2023-02-10)
 
@@ -284,15 +295,15 @@ BioRand v2.0.1 (2022-12-17)
 
 BioRand v2.0.0 (2022-12-17)
 
-* Annette, Ben, Brad, Hunk, Irons, Kendo, Marvin are now playable characters.
-* Barry, Chris, Enrico, Jill, Rebecca, Richard, and Wesker are now playable characters.
-* Barry, Chris, Enrico, Jill, Rebecca, Richard, and Wesker  can now be NPCs (requires RE1 game data).
-* Beretta now available for all male and female playable charactes.
-* Bowgun, Colt, Grenade Launcher, and Sparkshot are now available for all male playable characters.
-* Resident Evil 1 door randomizer now implemented.
-* Boss music tracks now shuffled separately from danger music tracks.
-* Additional music tracks from RE 2 remake added.
-* Music tracks can now be shuffled between Resident Evil 1 and 2.
+* [Feature] Annette, Ben, Brad, Hunk, Irons, Kendo, Marvin are now playable characters.
+* [Feature] Barry, Chris, Enrico, Jill, Rebecca, Richard, and Wesker are now playable characters.
+* [Feature] Barry, Chris, Enrico, Jill, Rebecca, Richard, and Wesker  can now be NPCs (requires RE1 game data).
+* [Feature] Beretta now available for all male and female playable charactes.
+* [Feature] Bowgun, Colt, Grenade Launcher, and Sparkshot are now available for all male playable characters.
+* [Feature] Resident Evil 1 door randomizer now implemented.
+* [Feature] Boss music tracks now shuffled separately from danger music tracks.
+* [Feature] Additional music tracks from RE 2 remake added.
+* [Feature] Music tracks can now be shuffled between Resident Evil 1 and 2.
 * [Fix] #61: "You Unlocked It" Freeze at ventilation shaft.
 * [Fix] #64: Room 200 rando assumed ladder was down.
 * [Fix] #66: Room 216 Softlock possible when NPC is Claire or Ben.
@@ -411,8 +422,8 @@ BioRand v1.1.0 (2022-11-18)
 
 BioRand v1.0.1 (2022-11-06)
 
-* Fix generation for game structures that do not contain a data directory.
+* [Fix] Generation for game structures that do not contain a data directory.
 
 BioRand 1.0.0 (2022-11-03)
 
-* First release of BioRand, with initial support for Resident Evil 2.
+* [Feature] First release of BioRand, with initial support for Resident Evil 2.
