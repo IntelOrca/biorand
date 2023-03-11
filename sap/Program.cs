@@ -13,9 +13,10 @@ namespace IntelOrca.Scd
             {
                 var extractPath = GetOption(args, "-x");
                 var outputPath = GetOption(args, "-o");
+                var sampleRates = GetOption(args, "-r");
                 if (extractPath != null)
                 {
-                    return Extract(extractPath, outputPath);
+                    return Extract(extractPath, outputPath, sampleRates);
                 }
                 else if (args.Length != 0)
                 {
@@ -26,9 +27,10 @@ namespace IntelOrca.Scd
                     else
                     {
                         var path = args[0];
-                        if (path.EndsWith(".sap", StringComparison.OrdinalIgnoreCase))
+                        if (path.EndsWith(".sap", StringComparison.OrdinalIgnoreCase) ||
+                            path.EndsWith(".vb", StringComparison.OrdinalIgnoreCase))
                         {
-                            return Extract(path, outputPath);
+                            return Extract(path, outputPath, sampleRates);
                         }
                         else if (path.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
                         {
@@ -45,7 +47,7 @@ namespace IntelOrca.Scd
             }
         }
 
-        private static int Extract(string extractPath, string outputPath)
+        private static int Extract(string extractPath, string outputPath, string sampleRates = null)
         {
             if (!File.Exists(extractPath))
             {
@@ -53,18 +55,37 @@ namespace IntelOrca.Scd
                 return 1;
             }
 
-            var sapFile = new SapFile(extractPath);
             if (outputPath == null)
             {
                 outputPath = Environment.CurrentDirectory;
             }
             var fileNameFormat = Path.Combine(outputPath, Path.GetFileNameWithoutExtension(extractPath) + ".{0:00}.wav");
-
             Directory.CreateDirectory(outputPath);
-            for (int i = 0; i < sapFile.WavFiles.Count; i++)
+
+            if (extractPath.EndsWith(".sap", StringComparison.OrdinalIgnoreCase))
             {
-                var wavPath = string.Format(fileNameFormat, i);
-                File.WriteAllBytes(wavPath, sapFile.WavFiles[i]);
+                var sapFile = new SapFile(extractPath);
+                for (int i = 0; i < sapFile.WavFiles.Count; i++)
+                {
+                    var wavPath = string.Format(fileNameFormat, i);
+                    File.WriteAllBytes(wavPath, sapFile.WavFiles[i]);
+                }
+            }
+            else if (extractPath.EndsWith(".vb", StringComparison.OrdinalIgnoreCase))
+            {
+                var sampleRate = 22050;
+                var sampleRateSplit = sampleRates?.Split(',') ?? Array.Empty<string>();
+                var vabFile = new VabFile(extractPath);
+                for (int i = 0; i < vabFile.SampleCount; i++)
+                {
+                    if (sampleRateSplit.Length > i && int.TryParse(sampleRateSplit[i].Trim(), out var r))
+                    {
+                        sampleRate = r;
+                    }
+
+                    var wavPath = string.Format(fileNameFormat, i);
+                    File.WriteAllBytes(wavPath, vabFile.GetSampleAsPCM(i, sampleRate));
+                }
             }
             return 0;
         }

@@ -184,7 +184,7 @@ namespace IntelOrca.Biohazard
             var wavFile = sapFile.WavFiles[sapIndex];
             var sapStream = new MemoryStream(wavFile);
             var wavStream = new MemoryStream();
-            var decoder = new ADPCMDecoder();
+            var decoder = new MSADPCMDecoder();
             decoder.Convert(sapStream, wavStream);
             wavStream.Position = 0;
             AppendWav(wavStream, start, end);
@@ -199,7 +199,7 @@ namespace IntelOrca.Biohazard
                 input.Position += 8;
 
                 var ms = new MemoryStream();
-                var decoder = new ADPCMDecoder();
+                var decoder = new MSADPCMDecoder();
                 decoder.Convert(input, ms);
 
                 ms.Position = 0;
@@ -224,7 +224,7 @@ namespace IntelOrca.Biohazard
             {
                 input.Position = initialPosition;
                 var ms = new MemoryStream();
-                var decoder = new ADPCMDecoder();
+                var decoder = new MSADPCMDecoder();
                 decoder.Convert(input, ms);
                 ms.Position = 0;
                 AppendWav(ms, start, end);

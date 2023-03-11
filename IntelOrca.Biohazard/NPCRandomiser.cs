@@ -893,7 +893,7 @@ namespace IntelOrca.Biohazard
         {
             if (path.EndsWith(".sap", StringComparison.OrdinalIgnoreCase))
             {
-                var decoder = new ADPCMDecoder();
+                var decoder = new MSADPCMDecoder();
                 return decoder.GetLength(path);
             }
             else if (path.EndsWith(".ogg"))
@@ -1092,6 +1092,11 @@ namespace IntelOrca.Biohazard
     [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 44)]
     public struct WaveHeader
     {
+        public const uint RiffMagic = 0x46464952;
+        public const uint WaveMagic = 0x45564157;
+        public const uint FmtMagic = 0x20746D66;
+        public const uint DataMagic = 0x61746164;
+
         public uint nRiffMagic;
         public uint nRiffLength;
         public uint nWaveMagic;

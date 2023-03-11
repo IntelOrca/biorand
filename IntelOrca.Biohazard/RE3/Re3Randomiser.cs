@@ -217,11 +217,12 @@ namespace IntelOrca.Biohazard.RE3
                     Directory.CreateDirectory(Path.GetDirectoryName(vbTargetPath));
 
                     var vb = new VabFile(vbSourceFile);
-                    var sampleRates = new[] { 16000, 16000, 8000, 11025 };
-                    for (int i = 0; i < hurtFiles.Length; i++)
+                    var hurtIndex = new[] { 0, 1, 3, 2, 0 };
+                    var sampleRates = new[] { 16000, 16000, 8000, 12000, 16000 };
+                    for (int i = 0; i < hurtIndex.Length; i++)
                     {
                         var waveBuilder = new WaveformBuilder(channels: 1, sampleRates[i]);
-                        waveBuilder.Append(hurtFiles[i]);
+                        waveBuilder.Append(hurtFiles[hurtIndex[i]]);
                         var pcmData = waveBuilder.GetPCM();
                         vb.SetSampleFromPCM(7 + i, pcmData);
                     }

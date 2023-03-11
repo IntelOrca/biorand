@@ -15,6 +15,8 @@ namespace IntelOrca.Biohazard
         private readonly byte[] _tail;
         private readonly List<byte[]> _samples = new List<byte[]>();
 
+        public int SampleCount => _samples.Count;
+
         public VabFile(string path)
             : this(File.ReadAllBytes(path))
         {
@@ -39,6 +41,14 @@ namespace IntelOrca.Biohazard
             _tail = data.Skip(start).ToArray();
         }
 
+        public byte[] GetSampleAsADPCM(int index) => _samples[index];
+
+        public byte[] GetSampleAsPCM(int index, int sampleRate)
+        {
+            var decoder = new PSXADPCMDecoder();
+            return decoder.Decode(GetSampleAsADPCM(index), sampleRate);
+        }
+
         public void SetSampleFromADPCM(int index, byte[] data)
         {
             _samples[index] = data;
@@ -46,7 +56,7 @@ namespace IntelOrca.Biohazard
 
         public void SetSampleFromPCM(int index, byte[] data)
         {
-            var encoder = new ADPCMEncoder();
+            var encoder = new PSXADPCMEncoder();
             var adpcm = encoder.Encode(MemoryMarshal.Cast<byte, short>(data));
             SetSampleFromADPCM(index, adpcm);
         }

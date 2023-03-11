@@ -9,7 +9,7 @@ namespace IntelOrca.Biohazard
     /// <remarks>
     /// Based on https://github.com/Aikku93/wav2vag/.
     /// </remarks>
-    public unsafe class ADPCMEncoder
+    public unsafe class PSXADPCMEncoder
     {
         private const int SPUADPCM_FRAME_LEN = 28;
 

@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace IntelOrca.Biohazard
 {
-    public class ADPCMDecoder
+    public class MSADPCMDecoder
     {
         private const uint g_riffMagic = 0x46464952;
         private const uint g_waveMagic = 0x45564157;
