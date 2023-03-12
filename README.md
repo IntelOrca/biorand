@@ -4,21 +4,21 @@
 </a>
 A new randomizer for the classic Resident Evil games for PC. Supports sophisticated key item placement, randomized non-key items, randomized enemies, randomized NPCs with matching random voices and random background music. All highly configurable and easy to share seeds and configurations.
 
-The randomizer currently only supports the Sourcenext port of Resident Evil 1 and Resident Evil 2 with the Classic REbirth patch.
+The randomizer currently only supports the Sourcenext port of all three classic Resident Evil games with the Classic REbirth patch.
 <br clear="right"/>
 
 ## How to use
 
 1. Download the latest release from https://github.com/IntelOrca/biorand/releases.
 2. Extract all the files to a directory of your choice.
-3. Run `biorand.exe`, press the settings icon on the left and set your RE1 and RE2 game directory. If browsing, select `bio.exe`, `bio2 1.10.exe` or `bio2.exe` file.
+3. Run `biorand.exe`, press the settings icon on the left and set your RE 1, RE 2, and RE 3 game directory. If browsing, select `bio.exe`, `bio2 1.10.exe` or `bio2.exe` file.
 4. Configure your settings, click `seed` for a random seed and then click generate.
-5. Run RE1 or RE2 and select the mod: "BioRand: A Resident Evil Randomizer" from the list.
+5. Run RE 1, RE 2, or RE 3 and select the mod: "BioRand: A Resident Evil Randomizer" from the list.
 6. If you want to play a new seed or configuration, simply update the settings and click generate again.
 
 It is recommended that you enable the in-game debug menu in case you need to reset the room if there is a soft lock (such as a cutscene getting stuck). To enable the debug menu, press F1 while on the REbirth launcher, and then press F5 in the game to access it. This will also allow you to, in desperate circumstances, give yourself a key you need, or cheat for ammo and health.
 
-The mod will generate a sub directory called `mod_biorand` in your RE2 installation folder. In this sub directory will be two log files: `log_pl0.txt` and `log_pl1.txt` for Leon and Claire respectively. These log files can be used to find out which doors got connected to which doors and where items got placed which may help you diagnose issues or provide a hint if you are stuck or lost.
+The mod will generate a sub directory called `mod_biorand` in your RE installation folder. In this sub directory will be two log files: `log_pl0.txt` and `log_pl1.txt` for Leon and Claire respectively. These log files can be used to find out which doors got connected to which doors and where items got placed which may help you diagnose issues or provide a hint if you are stuck or lost.
 
 A `.dgml` file for both Leon and Claire is also generated which is a directed graph of the map. A DGML file can be converted to an image using third party software such as Visual Studio (+ DGML editor component).
 
@@ -86,7 +86,7 @@ Some enemies are not randomized to prevent crashes.
 
 ### Player Character
 
-Swap the character you play with any supported character that comes with **BioRand**. Characters from RE1, will need an RE1 game installation in order to use their voice lines.
+Swap the character you play with any supported character that comes with **BioRand**. Characters from RE 1, will need an RE 1 game installation in order to use their voice lines. The same applies for RE 2, and RE 3.
 
 ### Character, voice randomization
 
