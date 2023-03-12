@@ -94,7 +94,6 @@ namespace IntelOrca.Biohazard.RE3
                         Re3EnemyIds.BradZombie,
                         Re3EnemyIds.DarioZombie,
                         Re3EnemyIds.PromoGirl,
-                        Re3EnemyIds.JillValentine1,
                         Re3EnemyIds.ChiefIrons,
                         Re3EnemyIds.NikolaiDead
                     };
@@ -116,7 +115,6 @@ namespace IntelOrca.Biohazard.RE3
                 case Re3EnemyIds.BradZombie:
                 case Re3EnemyIds.DarioZombie:
                 case Re3EnemyIds.PromoGirl:
-                case Re3EnemyIds.JillValentine1:
                 case Re3EnemyIds.ChiefIrons:
                     return true;
                 default:
