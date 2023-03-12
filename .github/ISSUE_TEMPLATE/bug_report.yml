@@ -28,6 +28,7 @@ body:
         - RE 2 (Claire B)
         - RE 2 (Claire A)
         - RE 2 (Leon B)
+        - RE 3 (Jill)
     validations:
       required: true
   - type: textarea
@@ -41,5 +42,7 @@ body:
         F6 in-game to display the room number you are currently in, but if you
         can't find it - say something such as "RPD, West 1F box room with licker
         window" or "Sewer room where you place the medals".
+        If possible, please also upload the most recent saved game before the
+        bug happened.
     validations:
       required: true
