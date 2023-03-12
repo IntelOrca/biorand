@@ -131,7 +131,7 @@ namespace IntelOrca.Biohazard.RE3
                 case Re3ItemIds.GunpowderAC:
                 case Re3ItemIds.GunpowderBC:
                 case Re3ItemIds.GunpowderCC:
-                    return 0.5;
+                    return 0.25;
                 case Re3ItemIds.GunpowderAAA:
                 case Re3ItemIds.GunpowderAAB:
                 case Re3ItemIds.GunpowderBBA:

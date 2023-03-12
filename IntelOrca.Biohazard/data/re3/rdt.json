@@ -177,6 +177,7 @@
           "create": true,
           "texture": 29,
           "target": "10F",
+          "requires": [ 128 ],
           "id": 9,
           "lock": "0x80",
           "lockId": 129,
@@ -757,6 +758,12 @@
         },
         {
           "target": "205"
+        }
+      ],
+      "items": [
+        {
+          "id": 14,
+          "type": 0
         }
       ]
     },
@@ -2389,6 +2396,7 @@
       "npcs": [
         {
           "includeOffsets": [ 12636 ],
+          "excludeTypes": [ 87 ],
           "cutscene": 0
         },
         {
