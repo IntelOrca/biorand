@@ -926,9 +926,8 @@ namespace IntelOrca.Biohazard
                 {
                     using (var fs = fileRepository.GetStream(path))
                     {
-                        var br = new BinaryReader(fs);
-                        var header = br.ReadStruct<WaveHeader>();
-                        return header.nDataLength / (double)header.nAvgBytesPerSec;
+                        var decoder = new MSADPCMDecoder();
+                        return decoder.GetLength(fs);
                     }
                 }
             }
