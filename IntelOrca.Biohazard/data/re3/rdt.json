@@ -459,7 +459,8 @@
           "target": "117"
         },
         {
-          "target": "118"
+          "target": "118",
+          "noUnlock": true
         }
       ],
       "items": [
