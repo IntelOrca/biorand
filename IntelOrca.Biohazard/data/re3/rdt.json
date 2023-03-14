@@ -207,7 +207,7 @@
       "enemies": [],
       "npcs": [
         {
-          "excludeTypes": [ 47, 91 ]
+          "excludeTypes": [ 47, 91, 95 ]
         }
       ]
     },

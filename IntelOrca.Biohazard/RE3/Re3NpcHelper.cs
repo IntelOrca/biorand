@@ -41,24 +41,6 @@ namespace IntelOrca.Biohazard.RE3
             }
         }
 
-        public byte[] GetDefaultIncludeTypes(Rdt rdt)
-        {
-            var defaultIncludeTypes = new byte[] {
-                Re3EnemyIds.MarvinBranagh1,
-                Re3EnemyIds.MarvinBranagh2,
-                Re3EnemyIds.NikolaiZinoviev,
-                Re3EnemyIds.BradVickers,
-                Re3EnemyIds.TyrellPatrick,
-                Re3EnemyIds.PromoGirl,
-                Re3EnemyIds.CarlosOliveira1,
-                Re3EnemyIds.CarlosOliveira2,
-                Re3EnemyIds.JillValentine1,
-                Re3EnemyIds.JillValentine2,
-                Re3EnemyIds.ChiefIrons
-            };
-            return defaultIncludeTypes;
-        }
-
         public string GetNpcName(byte type)
         {
             var name = new Bio3ConstantTable().GetEnemyName(type);
@@ -75,6 +57,24 @@ namespace IntelOrca.Biohazard.RE3
         public bool IsNpc(byte type)
         {
             return type >= Re3EnemyIds.CarlosOliveira1 || type == Re3EnemyIds.MarvinBranagh1;
+        }
+
+        public byte[] GetDefaultIncludeTypes(Rdt rdt)
+        {
+            var defaultIncludeTypes = new byte[] {
+                Re3EnemyIds.MarvinBranagh1,
+                Re3EnemyIds.MarvinBranagh2,
+                Re3EnemyIds.NikolaiZinoviev,
+                Re3EnemyIds.BradVickers,
+                Re3EnemyIds.TyrellPatrick,
+                Re3EnemyIds.PromoGirl,
+                Re3EnemyIds.CarlosOliveira1,
+                Re3EnemyIds.CarlosOliveira2,
+                Re3EnemyIds.JillValentine1,
+                Re3EnemyIds.JillValentine2,
+                Re3EnemyIds.ChiefIrons
+            };
+            return defaultIncludeTypes;
         }
 
         public byte[] GetSlots(RandoConfig config, byte id)
@@ -94,10 +94,12 @@ namespace IntelOrca.Biohazard.RE3
                         Re3EnemyIds.BradZombie,
                         Re3EnemyIds.DarioZombie,
                         Re3EnemyIds.PromoGirl,
-                        Re3EnemyIds.ChiefIrons,
-                        Re3EnemyIds.NikolaiDead
+                        Re3EnemyIds.JillValentine1,
+                        Re3EnemyIds.JillValentine2,
+                        Re3EnemyIds.NikolaiDead,
+                        Re3EnemyIds.ChiefIrons
                     };
-                default:
+            default:
                     return new[] { id };
             }
         }
@@ -115,6 +117,7 @@ namespace IntelOrca.Biohazard.RE3
                 case Re3EnemyIds.BradZombie:
                 case Re3EnemyIds.DarioZombie:
                 case Re3EnemyIds.PromoGirl:
+                case Re3EnemyIds.JillValentine2:
                 case Re3EnemyIds.ChiefIrons:
                     return true;
                 default:
