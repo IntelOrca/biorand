@@ -386,7 +386,7 @@ namespace IntelOrca.Biohazard.RE3
             const byte Green = 0 << 2;
             const byte Red = 1 << 2;
             const byte Orange = 2 << 2;
-            const byte Blue = 2 << 2;
+            const byte Blue = 3 << 2;
             const byte Automatic = 0b10000;
 
             switch (type)
@@ -413,12 +413,13 @@ namespace IntelOrca.Biohazard.RE3
                 case Re3ItemIds.ShotgunBenelliEnhanced:
                 case Re3ItemIds.MineThrowerEnhanced:
                 case Re3ItemIds.FlameRounds:
-                case Re3ItemIds.RifleAmmo:
                 case Re3ItemIds.HandgunEnhancedAmmo:
                 case Re3ItemIds.ShotgunEnhancedAmmo:
                     return Red | Digit;
+                case Re3ItemIds.RifleAmmo:
+                    return Red | Percent;
                 case Re3ItemIds.RifleM4A1Manual:
-                    return Automatic | Green | Percent;
+                    return Green | Percent;
                 case Re3ItemIds.RifleM4A1Auto:
                     return Automatic | Red | Percent;
                 case Re3ItemIds.GrenadeLauncherAcid:

@@ -249,7 +249,7 @@ namespace IntelOrca.Biohazard.RE3
                 Re3ItemIds.RocketLauncher,
                 rng.NextOf(Re3ItemIds.MineThrower, Re3ItemIds.MineThrowerEnhanced),
                 Re3ItemIds.HangunEagle,
-                rng.NextOf(Re3ItemIds.RifleM4A1Manual, Re3ItemIds.RifleM4A1Auto),
+                Re3ItemIds.RifleM4A1Auto,
                 Re3ItemIds.ShotgunM37
             };
         }
