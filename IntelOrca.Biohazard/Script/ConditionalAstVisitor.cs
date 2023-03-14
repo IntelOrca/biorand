@@ -97,6 +97,10 @@ namespace IntelOrca.Biohazard.Script
             {
                 VisitSubroutine(gosubOp.Index);
             }
+            else if (node.Opcode is EvtExecOpcode execOp)
+            {
+                VisitSubroutine(execOp.BackgroundOperand);
+            }
         }
 
         internal class ScriptCondition

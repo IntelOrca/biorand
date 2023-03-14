@@ -4,6 +4,7 @@
     {
         Nop = 0x00,
         EvtEnd = 0x01,
+        EvtExec = 0x04,
         IfelCk = 0x06,
         ElseCk = 0x07,
         EndIf = 0x08,

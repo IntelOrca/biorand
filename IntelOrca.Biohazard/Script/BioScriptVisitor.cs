@@ -66,6 +66,7 @@ namespace IntelOrca.Biohazard.Script
                 case BioVersion.Biohazard2:
                     return (OpcodeV2)opcode switch
                     {
+                        OpcodeV2.EvtExec => EvtExecOpcode.Read(br, offset),
                         OpcodeV2.ElseCk => ElseCkOpcode.Read(br, offset),
                         OpcodeV2.Gosub => GosubOpcode.Read(br, offset),
                         OpcodeV2.Ck => CkOpcode.Read(br, offset),
@@ -85,6 +86,7 @@ namespace IntelOrca.Biohazard.Script
                 case BioVersion.Biohazard3:
                     return (OpcodeV3)opcode switch
                     {
+                        OpcodeV3.EvtExec => EvtExecOpcode.Read(br, offset),
                         OpcodeV3.ElseCk => ElseCkOpcode.Read(br, offset),
                         OpcodeV3.Gosub => GosubOpcode.Read(br, offset),
                         OpcodeV3.Ck => CkOpcode.Read(br, offset),
