@@ -1618,6 +1618,11 @@
           "id": 5,
           "priority": "low"
         }
+      ],
+      "npcs": [
+        {
+          "includeTypes": [ 81, 92 ]
+        }
       ]
     },
     "308": {
