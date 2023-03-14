@@ -339,6 +339,7 @@ namespace IntelOrca.Biohazard
         private void RandomizeRooms(Rng rng)
         {
             _logger.WriteHeading("Randomizing Characters, Voices:");
+            _uniqueSamples = _uniqueSamples.OrderBy(x => x.SortString).ToList();
             _pool.AddRange(_uniqueSamples.Shuffle(rng.NextFork()));
             foreach (var rdt in _gameData.Rdts)
             {
@@ -984,6 +985,8 @@ namespace IntelOrca.Biohazard
         public VoiceSampleReplacement? Replacement { get; set; }
 
         public string? PathWithSapIndex => SapIndex == null ? Path : $"{Path}#{SapIndex}";
+
+        public string SortString => $"{BasePath}/{PathWithSapIndex}:{Start}-{End}";
 
         public VoiceSample CreateSlice(VoiceSampleSplit sub, double start, double end)
         {
