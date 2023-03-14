@@ -893,6 +893,7 @@
       ],
       "enemies": [
         {
+          "nop": [ "0x4734", "0x474C" ],
           "keepAi": true
         }
       ]
