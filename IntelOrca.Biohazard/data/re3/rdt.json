@@ -1776,6 +1776,13 @@
         }
       ]
     },
+    "310": {
+      "npcs": [
+        {
+          "playerActor": "carlos"
+        }
+      ]
+    },
     "314": {
       "enemies": [
         {
