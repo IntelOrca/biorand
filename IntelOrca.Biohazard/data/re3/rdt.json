@@ -129,7 +129,6 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 40 ],
           "keepAi": true
         }
       ]
@@ -1445,11 +1444,6 @@
           "target": "302",
           "requires": [ 120 ],
           "doorRando": true
-        }
-      ],
-      "enemies": [
-        {
-          "excludeTypes": [ 40 ]
         }
       ]
     },

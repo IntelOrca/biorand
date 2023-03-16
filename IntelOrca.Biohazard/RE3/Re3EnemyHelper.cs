@@ -33,8 +33,8 @@ namespace IntelOrca.Biohazard.RE3
             new SelectableEnemy("Mini Worm", "LightGray", Re3EnemyIds.MiniWorm),
             new SelectableEnemy("Spider", "YellowGreen", Re3EnemyIds.Spider),
             new SelectableEnemy("Zombie", "LightGray", _zombieTypes),
-            new SelectableEnemy("Hunter", "IndianRed", new[] { Re3EnemyIds.Hunter }),
-            new SelectableEnemy("Brain Sucker", "DarkOliveGreen", new[] { Re3EnemyIds.BS23, Re3EnemyIds.BS28 }),
+            new SelectableEnemy("Hunter", "IndianRed", Re3EnemyIds.Hunter),
+            new SelectableEnemy("Brain Sucker", "DarkOliveGreen", Re3EnemyIds.BS23),
             new SelectableEnemy("Zombie Dog", "Black", Re3EnemyIds.ZombieDog),
             new SelectableEnemy("Nemesis", "LightGray", Re3EnemyIds.Nemesis),
         };
@@ -169,7 +169,6 @@ namespace IntelOrca.Biohazard.RE3
             {
                 case Re3EnemyIds.Hunter:
                 case Re3EnemyIds.BS23:
-                case Re3EnemyIds.BS28:
                 case Re3EnemyIds.ZombieDog:
                 case Re3EnemyIds.Nemesis:
                     return true;
