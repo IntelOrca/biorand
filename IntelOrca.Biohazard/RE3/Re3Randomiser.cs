@@ -439,20 +439,26 @@ namespace IntelOrca.Biohazard.RE3
 
         protected override void ReplaceTitleCardSound(FileRepository fileRepository, string sourcePath)
         {
-            var filename = "DATA/SOUND/C_01.VB";
-            var vbSourcePath = fileRepository.GetDataPath(filename);
-            var vbSourceFile = fileRepository.GetBytes(vbSourcePath);
-            var vbTargetPath = fileRepository.GetModPath(filename);
-            Directory.CreateDirectory(Path.GetDirectoryName(vbTargetPath));
+            var filenames = new[] {
+                "DATA/SOUND/C_00.VB",
+                "DATA/SOUND/C_01.VB"
+            };
+            foreach (var filename in filenames)
+            {
+                var vbSourcePath = fileRepository.GetDataPath(filename);
+                var vbSourceFile = fileRepository.GetBytes(vbSourcePath);
+                var vbTargetPath = fileRepository.GetModPath(filename);
+                Directory.CreateDirectory(Path.GetDirectoryName(vbTargetPath));
 
-            var waveBuilder = new WaveformBuilder(channels: 1, sampleRate: 32000);
-            waveBuilder.Append(sourcePath);
-            var pcmData = waveBuilder.GetPCM();
+                var waveBuilder = new WaveformBuilder(channels: 1, sampleRate: 32000);
+                waveBuilder.Append(sourcePath);
+                var pcmData = waveBuilder.GetPCM();
 
-            var vb = new VabFile(vbSourceFile);
-            vb.SetSampleFromPCM(5, pcmData);
-            vb.SetSampleFromPCM(6, pcmData);
-            vb.Write(vbTargetPath);
+                var vb = new VabFile(vbSourceFile);
+                vb.SetSampleFromPCM(5, pcmData);
+                vb.SetSampleFromPCM(6, pcmData);
+                vb.Write(vbTargetPath);
+            }
         }
 
         private static readonly string[] g_trackOrder = new[]
