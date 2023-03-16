@@ -597,7 +597,12 @@
           "cutscene": 0
         },
         {
-          "includeOffsets": [ 20662, 20714, 20784 ],
+          "includeOffsets": [ 20662 ],
+          "includeTypes": [ 81, 92 ],
+          "cutscene": 1
+        },
+        {
+          "includeOffsets": [ 20714, 20784 ],
           "cutscene": 1
         },
         {
