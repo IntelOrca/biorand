@@ -30,7 +30,7 @@ namespace IntelOrca.Biohazard.RE3
         {
             new SelectableEnemy("Arms", "LightGray", Re3EnemyIds.Arm),
             new SelectableEnemy("Crow", "Black", Re3EnemyIds.Crow),
-            new SelectableEnemy("Mini Worm", "LightGray", Re3EnemyIds.MiniWorm),
+            new SelectableEnemy("Sliding Worm", "LightGray", Re3EnemyIds.SlidingWorm),
             new SelectableEnemy("Spider", "YellowGreen", Re3EnemyIds.Spider),
             new SelectableEnemy("Zombie", "LightGray", _zombieTypes),
             new SelectableEnemy("Hunter", "IndianRed", Re3EnemyIds.Hunter),
@@ -117,7 +117,7 @@ namespace IntelOrca.Biohazard.RE3
                     enemy.State = 0;
                     enemy.SoundBank = 31;
                     break;
-                case Re3EnemyIds.MiniWorm:
+                case Re3EnemyIds.SlidingWorm:
                     enemy.State = 0;
                     enemy.SoundBank = 49;
                     break;

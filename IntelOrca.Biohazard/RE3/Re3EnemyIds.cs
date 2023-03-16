@@ -29,8 +29,8 @@
         public const byte BS28 = 40;
         public const byte Arm = 45;
         public const byte MarvinBranagh1 = 47;
-        public const byte GiantWorm = 48;
-        public const byte MiniWorm = 50;
+        public const byte GraveDigger = 48;
+        public const byte SlidingWorm = 50;
         public const byte Nemesis = 52;
         public const byte Nemesis3 = 54;
         public const byte CarlosOliveira1 = 80;

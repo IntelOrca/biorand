@@ -137,7 +137,7 @@ namespace IntelOrca.Biohazard
             {
                 pool.AddRange(areaSuperNodes[i]);
                 var bridgeNode = i == numAreas - 1 ? graph.End : bridgeSuperNodes[i][0];
-                _logger.WriteLine($"Creating area from {beginNode} to {bridgeNode}:");
+                _logger.WriteLine($"Creating segment from {beginNode} to {bridgeNode}:");
                 CreateArea(beginNode, bridgeNode, pool);
                 beginNode = bridgeNode;
                 if (i < numAreas - 1)

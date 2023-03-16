@@ -411,9 +411,9 @@ namespace IntelOrca.Biohazard.Script
             "",
             "Marvin Branagh 1",
 
-            "Giant Worm",
+            "Grave Digger",
             "",
-            "Mini Worm",
+            "Sliding Worm",
             "",
             "Nemesis",
             "",
