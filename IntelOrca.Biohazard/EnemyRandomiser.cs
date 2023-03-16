@@ -234,10 +234,7 @@ namespace IntelOrca.Biohazard
                         if (enemySpec.ExcludeTypes.Contains(type))
                             return false;
                     }
-                    else
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
             return false;

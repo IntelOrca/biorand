@@ -129,6 +129,7 @@
       ],
       "enemies": [
         {
+          "excludeTypes": [ 40 ],
           "keepAi": true
         }
       ]
