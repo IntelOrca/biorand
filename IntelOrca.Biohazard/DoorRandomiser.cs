@@ -200,6 +200,7 @@ namespace IntelOrca.Biohazard
                 FixRE3PianoRoom();
                 FixRE3Laboratory();
                 FixRE3CommsRoom();
+                FixRE3Rain();
             }
         }
 
@@ -343,6 +344,29 @@ namespace IntelOrca.Biohazard
             if (rdt != null)
             {
                 AddCutCorrection(rdt, 199, 11, 3);
+            }
+        }
+
+        private void FixRE3Rain()
+        {
+            // Rain often crashes for me
+            var rainRooms = new[]
+            {
+                0x00, 0x0C, 0x0D, 0x0E, 0x0F, 0x11, 0x17
+            };
+            foreach (var rainRoom in rainRooms)
+            {
+                var rdt = _gameData.GetRdt(new RdtId(3, rainRoom));
+                if (rdt != null)
+                {
+                    var rainOpcodes = rdt.Opcodes
+                        .Where(x => x.Opcode == (byte)OpcodeV3.RainSet)
+                        .ToArray();
+                    foreach (var opcode in rainOpcodes)
+                    {
+                        rdt.Nop(opcode.Offset);
+                    }
+                }
             }
         }
 

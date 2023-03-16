@@ -30,6 +30,7 @@
         Ck = 0x4C,
         Set3 = 0x4D,
         Cmp = 0x4E,
+        RainSet = 0x5C,
         AotSet = 0x63,
         AotSet4p = 0x64,
         DoorAotSe = 0x61,
