@@ -15,7 +15,7 @@ namespace IntelOrca.Biohazard.Script.Opcodes
             return new EvtExecOpcode()
             {
                 Offset = offset,
-                Length = 2,
+                Length = 4,
 
                 Opcode = br.ReadByte(),
                 Unknown = br.ReadByte(),
