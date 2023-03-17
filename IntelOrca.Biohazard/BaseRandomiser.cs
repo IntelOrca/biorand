@@ -327,7 +327,12 @@ namespace IntelOrca.Biohazard
                     using (progress.BeginTask(config.Player, "Randomizing NPCs"))
                     {
                         var npcRandomiser = new NPCRandomiser(BiohazardVersion, logger, fileRepository, config, fileRepository.DataPath, fileRepository.ModPath, gameData, map, randomNpcs, NpcHelper, DataManager, playerActor);
-                        npcRandomiser.SelectedActors.AddRange(GetSelectedActors(config));
+                        var selectedActors = GetSelectedActors(config);
+                        if (selectedActors.Length == 0)
+                        {
+                            throw new BioRandUserException("No NPCs selected.");
+                        }
+                        npcRandomiser.SelectedActors.AddRange(selectedActors);
                         RandomizeNPCs(config, npcRandomiser);
                         npcRandomiser.Randomise();
                     }
@@ -365,6 +370,10 @@ namespace IntelOrca.Biohazard
             var bgmDirectory = fileRepository.GetModPath(BGMPath);
             var bgmRandomizer = new BgmRandomiser(logger, config, fileRepository, bgmDirectory, GetBgmJson(), BiohazardVersion != BioVersion.Biohazard2, new Rng(config.Seed), DataManager);
             var enabledBgms = GetSelectedAlbums(config);
+            if (enabledBgms.Length == 0)
+            {
+                throw new BioRandUserException("No music albums selected.");
+            }
             if (enabledBgms.Contains("RE1", StringComparer.OrdinalIgnoreCase))
             {
                 var r = new Re1Randomiser(BgCreator);
