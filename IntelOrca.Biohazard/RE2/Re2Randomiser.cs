@@ -408,5 +408,13 @@ namespace IntelOrca.Biohazard.RE2
                 bw.Write(b);
             }
         }
+
+        public override string GetGameExecutablePath(string folderPath)
+        {
+            if (string.IsNullOrEmpty(folderPath))
+                return folderPath;
+
+            return Path.Combine(folderPath, "bio2.exe"); //sourcenext
+        }
     }
 }

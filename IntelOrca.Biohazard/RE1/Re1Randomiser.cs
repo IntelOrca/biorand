@@ -304,5 +304,10 @@ namespace IntelOrca.Biohazard.RE1
             }
             return originalDataPath;
         }
+
+        public override string GetGameExecutablePath(string folderPath)
+        {
+            return folderPath; //todo (need to install the game, I don't remember the exe name)
+        }
     }
 }

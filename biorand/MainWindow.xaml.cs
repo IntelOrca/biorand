@@ -234,6 +234,11 @@ namespace IntelOrca.Biohazard.BioRand
                 seedQrCode.Seed = null;
                 seedQrCode.Seed = _config;
 
+                btnBootRE.Content = $"Boot RE{_config.Game}";
+                btnBootRE.IsEnabled = Directory.Exists(GetGameLocation());
+                var gameExecutablePath = GetRandomizer()?.GetGameExecutablePath(GetGameLocation());
+                btnBootRE.ToolTip = $"Start the '{Path.GetFileName(gameExecutablePath)}' executable.";
+
                 UpdateHints();
             }
             UpdateEnabledUi();
@@ -1264,6 +1269,29 @@ namespace IntelOrca.Biohazard.BioRand
                 {
                     _parent.EndTask(_eventId);
                 }
+            }
+        }
+
+        private void btnBootRE_Click(object sender, RoutedEventArgs e)
+        {
+            var executableDirectory = GetGameLocation();
+            var executablePath = GetRandomizer()?.GetGameExecutablePath(executableDirectory);
+
+            if (!File.Exists(executablePath))
+            {
+                MessageBox.Show($"Unable to start the game.{Environment.NewLine}{Environment.NewLine}The path '{executablePath}' does not exists.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                var processStartInfo = new ProcessStartInfo() { WorkingDirectory = executableDirectory, FileName = Path.GetFileName(executablePath) };
+                Process.Start(processStartInfo);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Unable to start the game.{Environment.NewLine}{Environment.NewLine}{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
         }
     }
