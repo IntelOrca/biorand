@@ -1,3 +1,27 @@
+BioRand v3.0.1 (2023-03-17)
+
+* [Feature] RE 1, add playable characters: Enrico and Richard
+* [Feature] RE 3, add NPCs: Carlos (RE3R) and Jill (RE3R)
+* [Feature] RE 3, add Mikhail (RE3R) and Nikolai (RE3R) NPCs
+* [Fix] Fix #275: RE 3, room 107, crash due to Jill 2 NPC
+* [Fix] Fix #277: RE 3, room 105, crash due to bad NPC
+* [Fix] Fix #279: RE 3, room 40C, crash on entering room
+* [Fix] Fix #280: RE 3, room 11B, Carlos cutscene crash
+* [Fix] Fix #285: RE 3, room 104, crash when killing brain sucker
+* [Fix] Fix #286: RE 3, room 118, crash when killing brain sucker
+* [Fix] Fix #294: RE 3, room 307, crash due to Carlos NPC change
+* [Fix] Fix #295: RE 3, room 209, crash when car door bursts open
+* [Fix] Fix inventory colour of rifle and ink ribbons
+* [Fix] Fix RE 3, title card sound clip for JPN
+* [Fix] Fix RE 3, crash when opening first door
+* [Fix] Fix RE 3, room 208, zombie window climb cutscene crashes game
+* [Fix] Fix RE 3, room 209, gunpowder not randomized
+* [Fix] Fix RE 3, room 20A, grave digger triggered crash
+* [Fix] Fix RE 3, room 504, cutscene crash
+* [Fix] Fix room 300, 310, Jill / Carlos voices not correct
+* [Fix] Fix voice randomizer was not deterministic
+* [Fix] Fix Carlos RE3R face
+
 BioRand v3.0.0 (2023-03-12)
 
 * [Feature] Resident Evil 3 randomizer now implemented.
