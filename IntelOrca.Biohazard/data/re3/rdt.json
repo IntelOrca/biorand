@@ -111,6 +111,11 @@
           "id": 12,
           "priority": "low"
         }
+      ],
+      "enemies": [
+        {
+          "nop": [ 24010 ]
+        }
       ]
     },
     "104": {
@@ -645,6 +650,18 @@
         }
       ],
       "enemies": []
+    },
+    "11E": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "enemies": [
+        {
+          "nop": [ 23986 ]
+        }
+      ]
     },
     "123": {
       "linkedRoom": "109",
