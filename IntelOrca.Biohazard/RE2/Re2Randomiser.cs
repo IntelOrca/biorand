@@ -414,7 +414,7 @@ namespace IntelOrca.Biohazard.RE2
             if (string.IsNullOrEmpty(folderPath))
                 return folderPath;
 
-            return Path.Combine(folderPath, "bio2.exe"); //sourcenext
+            return Path.Combine(folderPath, "bio2.exe");
         }
     }
 }
