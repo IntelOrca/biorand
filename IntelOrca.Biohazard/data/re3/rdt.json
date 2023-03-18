@@ -830,6 +830,7 @@
       "npcs": [
         {
           "includeOffsets": [ 29716 ],
+          "excludeTypes": [ 47 ],
           "cutscene": 0
         },
         {

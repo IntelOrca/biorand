@@ -194,6 +194,7 @@ namespace IntelOrca.Biohazard
             if (_config.RandomDoors)
             {
                 FixRE3HydrantAlley();
+                FixRE3RestuarantFront();
                 FixRE3Restuarant();
                 FixRE3PressOffice();
                 FixRE3TrainCrashExit();
@@ -284,6 +285,15 @@ namespace IntelOrca.Biohazard
                 rdt.Nop(0x2E18);
                 rdt.Nop(0x2E30);
                 rdt.Nop(0x2E34);
+            }
+        }
+
+        private void FixRE3RestuarantFront()
+        {
+            var rdt = _gameData.GetRdt(new RdtId(1, 0x05));
+            if (rdt != null)
+            {
+                CopyDoorTo(rdt, 3, 2);
             }
         }
 
