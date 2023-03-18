@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Xml;
 using IntelOrca.Biohazard.RE1;
+using IntelOrca.Biohazard.RE3;
 using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
 
@@ -478,32 +479,38 @@ namespace IntelOrca.Biohazard
                     enemyId++;
                 }
 
-                var newEnemy = new SceEmSetOpcode()
-                {
-                    Length = 22,
-                    Opcode = (byte)OpcodeV2.SceEmSet,
-                    Unk01 = 0,
-                    Id = enemyId,
-                    Type = (byte)EnemyType.ZombieRandom,
-                    State = 0,
-                    Ai = 0,
-                    Floor = (byte)ep.F,
-                    SoundBank = 9,
-                    Texture = 0,
-                    KillId = GetNextKillId(),
-                    X = (short)ep.X,
-                    Y = (short)ep.Y,
-                    Z = (short)ep.Z,
-                    D = (short)ep.D,
-                    Animation = 0,
-                    Unk15 = 0
-                };
+                var newEnemy = CreateEnemy(enemyId, ep);
                 rdt.AdditionalOpcodes.Add(newEnemy);
                 enemies.Add(newEnemy);
                 enemyId++;
                 killId++;
             }
             return enemies.ToArray();
+        }
+
+        private SceEmSetOpcode CreateEnemy(byte id, EnemyPosition ep)
+        {
+            var enemy = new SceEmSetOpcode()
+            {
+                Length = 22,
+                Opcode = _config.Game == 2 ? (byte)OpcodeV2.SceEmSet : (byte)OpcodeV3.SceEmSet,
+                Unk01 = 0,
+                Id = id,
+                Type = _config.Game == 2 ? (byte)EnemyType.ZombieRandom : Re3EnemyIds.ZombieDog,
+                State = 0,
+                Ai = 0,
+                Floor = (byte)ep.F,
+                SoundBank = _config.Game == 2 ? 9 : 32,
+                Texture = 0,
+                KillId = GetNextKillId(),
+                X = (short)ep.X,
+                Y = (short)ep.Y,
+                Z = (short)ep.Z,
+                D = (short)ep.D,
+                Animation = 0,
+                Unk15 = 0
+            };
+            return enemy;
         }
 
         private static void PrintAllEnemies(GameData gameData)

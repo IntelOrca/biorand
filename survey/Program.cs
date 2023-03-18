@@ -10,7 +10,7 @@ namespace IntelOrca.Biohazard.Survey
         [DllImport("kernel32.dll")]
         private extern static bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, IntPtr lpBuffer, IntPtr nSize, out IntPtr lpNumberOfBytesRead);
 
-        private static string _jsonPath = @"M:\git\rer\IntelOrca.Biohazard\data\re2\enemy.json";
+        private static string _jsonPath = @"M:\git\rer\IntelOrca.Biohazard\data\re3\enemy.json";
 
         private static bool _exit;
         private static byte[] _buffer = new byte[64];
@@ -63,8 +63,13 @@ namespace IntelOrca.Biohazard.Survey
                 {
                     Spy(p);
                 }
+                p = pAll.FirstOrDefault(x => x.ProcessName.StartsWith("BIOHAZARD(R) 3"));
+                if (p != null)
+                {
+                    Spy(p);
+                }
 
-                Console.WriteLine("Waiting for RE 2 to start...");
+                Console.WriteLine("Waiting for RE 2 or RE 3 to start...");
                 Thread.Sleep(4000);
             }
         }
@@ -189,23 +194,46 @@ namespace IntelOrca.Biohazard.Survey
         {
             var buffer = _buffer;
 
-            ReadMemory(p, 0x00988604, buffer, 0, 2);
-            gameState.Key = BitConverter.ToUInt16(buffer, 0);
+            if (p.ProcessName.StartsWith("bio2"))
+            {
+                ReadMemory(p, 0x00988604, buffer, 0, 2);
+                gameState.Key = BitConverter.ToUInt16(buffer, 0);
 
-            ReadMemory(p, 0x0098890C, buffer, 0, 10);
-            gameState.X = BitConverter.ToInt16(buffer, 0);
-            gameState.Y = BitConverter.ToInt16(buffer, 2);
-            gameState.Z = BitConverter.ToInt16(buffer, 4);
-            gameState.D = BitConverter.ToInt16(buffer, 8);
+                ReadMemory(p, 0x0098890C, buffer, 0, 10);
+                gameState.X = BitConverter.ToInt16(buffer, 0);
+                gameState.Y = BitConverter.ToInt16(buffer, 2);
+                gameState.Z = BitConverter.ToInt16(buffer, 4);
+                gameState.D = BitConverter.ToInt16(buffer, 8);
 
-            ReadMemory(p, 0x00989FF6, buffer, 0, 1);
-            gameState.Floor = buffer[0];
+                ReadMemory(p, 0x00989FF6, buffer, 0, 1);
+                gameState.Floor = buffer[0];
 
-            ReadMemory(p, 0x0098EB14, buffer, 0, 10);
-            gameState.Stage = buffer[0];
-            gameState.Room = buffer[2];
-            gameState.Cut = buffer[4];
-            gameState.LastCut = buffer[6];
+                ReadMemory(p, 0x0098EB14, buffer, 0, 10);
+                gameState.Stage = buffer[0];
+                gameState.Room = buffer[2];
+                gameState.Cut = buffer[4];
+                gameState.LastCut = buffer[6];
+            }
+            else
+            {
+                ReadMemory(p, 0x00A61C84, buffer, 0, 2);
+                gameState.Key = BitConverter.ToUInt16(buffer, 0);
+
+                ReadMemory(p, 0x00A62494, buffer, 0, 10);
+                gameState.X = BitConverter.ToInt16(buffer, 0);
+                gameState.Y = BitConverter.ToInt16(buffer, 2);
+                gameState.Z = BitConverter.ToInt16(buffer, 4);
+                gameState.D = BitConverter.ToInt16(buffer, 8);
+
+                ReadMemory(p, 0x00A6201D, buffer, 0, 1);
+                gameState.Floor = buffer[0];
+
+                ReadMemory(p, 0x00A673C6, buffer, 0, 10);
+                gameState.Stage = buffer[0];
+                gameState.Room = buffer[2];
+                gameState.Cut = buffer[4];
+                gameState.LastCut = buffer[6];
+            }
         }
 
         private unsafe static bool ReadMemory(Process process, int address, byte[] buffer, int offset, int length)

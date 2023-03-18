@@ -23,7 +23,26 @@ namespace IntelOrca.Biohazard.RE3
 
         public int GetEnemyTypeLimit(RandoConfig config, byte type)
         {
-            throw new NotImplementedException();
+            byte[] limit;
+            switch (type)
+            {
+                case Re3EnemyIds.ZombieDog:
+                case Re3EnemyIds.BS23:
+                case Re3EnemyIds.BS28:
+                    limit = new byte[] { 2, 4, 6, 8 };
+                    break;
+                case Re3EnemyIds.Hunter:
+                case Re3EnemyIds.HunterGamma:
+                case Re3EnemyIds.Nemesis:
+                case Re3EnemyIds.Nemesis3:
+                    limit = new byte[] { 2, 3, 4, 6 };
+                    break;
+                default:
+                    limit = new byte[] { 16 };
+                    break;
+            }
+            var index = Math.Min(limit.Length - 1, config.EnemyDifficulty);
+            return limit[index];
         }
 
         public SelectableEnemy[] GetSelectableEnemies() => new[]
@@ -46,7 +65,16 @@ namespace IntelOrca.Biohazard.RE3
 
         public bool IsUniqueEnemyType(byte type)
         {
-            throw new NotImplementedException();
+            switch (type)
+            {
+                case Re3EnemyIds.GraveDigger:
+                case Re3EnemyIds.HunterGamma:
+                case Re3EnemyIds.Nemesis:
+                case Re3EnemyIds.Nemesis3:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         public void SetEnemy(RandoConfig config, Rng rng, SceEmSetOpcode enemy, MapRoomEnemies enemySpec, byte enemyType)

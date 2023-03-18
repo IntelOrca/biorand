@@ -399,6 +399,12 @@
           "id": 2,
           "priority": "low"
         }
+      ],
+      "enemies": [
+        {
+          "nop": [ "0x0FF6", "0x1044-0x108E" ],
+          "randomPlacements": true
+        }
       ]
     },
     "111": {
