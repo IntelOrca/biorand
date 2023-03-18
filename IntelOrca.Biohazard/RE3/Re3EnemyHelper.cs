@@ -41,7 +41,7 @@ namespace IntelOrca.Biohazard.RE3
 
         public bool IsEnemy(byte type)
         {
-            return type < Re3EnemyIds.CarlosOliveira1;
+            return type != Re3EnemyIds.MarvinBranagh1 && type < Re3EnemyIds.CarlosOliveira1;
         }
 
         public bool IsUniqueEnemyType(byte type)
