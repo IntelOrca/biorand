@@ -31,6 +31,13 @@ body:
         - RE 3 (Jill)
     validations:
       required: true
+  - type: input
+    id: player
+    attributes:
+      label: Player Character
+      description: The character you were playing as, e.g. Chris (RE5) or Carlos (RE3R).
+    validations:
+      required: true
   - type: textarea
     id: description
     attributes:

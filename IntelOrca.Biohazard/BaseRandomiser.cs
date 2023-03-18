@@ -212,20 +212,12 @@ namespace IntelOrca.Biohazard
                 if (config.Player0 == 0)
                 {
                     var length = GetPlayerCharacters(0).Length;
-                    config.Player0 = (byte)rng.Next(0, length);
-                }
-                else
-                {
-                    config.Player0--;
+                    config.Player0 = (byte)(1 + rng.Next(0, length));
                 }
                 if (config.Player1 == 0)
                 {
                     var length = GetPlayerCharacters(1).Length;
-                    config.Player1 = (byte)rng.Next(0, length);
-                }
-                else
-                {
-                    config.Player1--;
+                    config.Player1 = (byte)(1 + rng.Next(0, length));
                 }
             }
         }
@@ -520,7 +512,7 @@ namespace IntelOrca.Biohazard
             if (!config.ChangePlayer)
                 return GetPlayerName(player).ToLower();
 
-            var pldIndex = player == 0 ? config.Player0 : config.Player1;
+            var pldIndex = (player == 0 ? config.Player0 : config.Player1) - 1;
             var pldPath = DataManager.GetDirectories(BiohazardVersion, $"pld{player}")
                 .Skip(pldIndex)
                 .FirstOrDefault();

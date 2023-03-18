@@ -151,7 +151,7 @@ namespace IntelOrca.Biohazard.RE3
             var actor = "jill.re3";
             if (config.ChangePlayer)
             {
-                var pldIndex = config.Player == 0 ? config.Player0 : config.Player1;
+                var pldIndex = (config.Player == 0 ? config.Player0 : config.Player1) - 1;
                 var pldPath = DataManager.GetDirectories(BiohazardVersion, $"pld{config.Player}")
                     .Skip(pldIndex)
                     .FirstOrDefault();
