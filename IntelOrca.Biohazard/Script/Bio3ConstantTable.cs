@@ -201,7 +201,12 @@ namespace IntelOrca.Biohazard.Script
                     else if (value == 0)
                         return "UNLOCKED";
                     else
-                        return GetItemName((byte)value);
+                    {
+                        var itemName = GetItemName((byte)value);
+                        if (itemName == "ITEM_UNKNOWN")
+                            return null;
+                        return itemName;
+                    }
                 case 'c':
                     if (value < g_comparators.Length)
                         return g_comparators[value];
@@ -649,7 +654,7 @@ namespace IntelOrca.Biohazard.Script
             "case:uuuuu",
             "default",
             "eswitch",
-            "goto:uuu~",
+            "goto:uuu@",
             "gosub",
             "return",
             "break",

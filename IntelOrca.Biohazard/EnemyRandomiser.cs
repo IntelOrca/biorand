@@ -500,7 +500,7 @@ namespace IntelOrca.Biohazard
                 State = 0,
                 Ai = 0,
                 Floor = (byte)ep.F,
-                SoundBank = _config.Game == 2 ? 9 : 32,
+                SoundBank = (byte)(_config.Game == 2 ? 9 : 32),
                 Texture = 0,
                 KillId = GetNextKillId(),
                 X = (short)ep.X,
