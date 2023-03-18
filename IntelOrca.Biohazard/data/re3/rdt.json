@@ -1474,7 +1474,8 @@
           "requires": [ 120 ],
           "doorRando": true
         }
-      ]
+      ],
+      "enemies": []
     },
     "302": {
       "doorRando": [
