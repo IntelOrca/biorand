@@ -7,11 +7,12 @@
              mc:Ignorable="d"
              x:Name="gameLocationBox"
              d:DesignWidth="400">
-    <local:CheckGroupBox x:Name="groupBox" Header="{Binding Header, ElementName=gameLocationBox}">
+    <local:CheckGroupBox x:Name="groupBox" Header="{Binding Header, ElementName=gameLocationBox}" OnCheckedChanged="groupBox_OnCheckedChanged">
         <StackPanel>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
+                    <ColumnDefinition Width="125" />
                     <ColumnDefinition Width="30" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
@@ -24,7 +25,9 @@
                          Margin="4,4,2,4"
                          Text="{Binding Location, ElementName=gameLocationBox}"
                          LostFocus="txtGameDataLocation_LostFocus" />
-                <Button Grid.Column="1" Grid.Row="0" Margin="2,4,4,4" Click="btnBrowse_Click">...</Button>
+                <ComboBox x:Name="cbExecutables" Margin="4,4,2,4" Grid.Row="0" Grid.Column="1" SelectionChanged="cbExecutables_SelectionChanged" />
+                <Button Grid.Column="2" Grid.Row="0" Margin="2,4,4,4" Click="btnBrowse_Click">...</Button>
+
                 <TextBlock Grid.Column="0"
                            Grid.ColumnSpan="2"
                            Grid.Row="1"

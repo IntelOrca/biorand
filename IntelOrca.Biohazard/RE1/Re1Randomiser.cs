@@ -304,13 +304,5 @@ namespace IntelOrca.Biohazard.RE1
             }
             return originalDataPath;
         }
-
-        public override string GetGameExecutablePath(string folderPath)
-        {
-            if (string.IsNullOrEmpty(folderPath))
-                return folderPath;
-
-            return Path.Combine(folderPath, "Biohazard.exe");
-        }
     }
 }

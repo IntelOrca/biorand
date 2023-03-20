@@ -461,14 +461,6 @@ namespace IntelOrca.Biohazard.RE3
             }
         }
 
-        public override string GetGameExecutablePath(string folderPath)
-        {
-            if (string.IsNullOrEmpty(folderPath))
-                return folderPath;
-
-            return Path.Combine(folderPath, "BIOHAZARD(R) 3 PC.exe");
-        }
-
         private static readonly string[] g_trackOrder = new[]
         {
             "MAIN00",

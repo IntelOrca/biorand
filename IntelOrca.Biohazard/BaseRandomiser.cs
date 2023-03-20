@@ -25,8 +25,6 @@ namespace IntelOrca.Biohazard
 
         public abstract bool ValidateGamePath(string path);
 
-        public abstract string GetGameExecutablePath(string folderPath);
-
         protected abstract string GetDataPath(string installPath);
         protected abstract RdtId[] GetRdtIds(string dataPath);
         protected abstract string GetRdtPath(string dataPath, RdtId rdtId, int player);

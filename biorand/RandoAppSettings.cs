@@ -20,6 +20,10 @@ namespace IntelOrca.Biohazard.BioRand
         public bool GameEnabled2 { get; set; }
         public bool GameEnabled3 { get; set; }
 
+        public string GameExecutable1 { get; set; }
+        public string GameExecutable2 { get; set; }
+        public string GameExecutable3 { get; set; }
+
         public static string GetSettingsPath()
         {
             return Path.Combine(GetSettingsDirectory(), "settings.json");
