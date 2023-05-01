@@ -136,7 +136,7 @@ namespace IntelOrca.Biohazard.BioRand
             InvokeChanges();
         }
 
-        private void groupBox_OnCheckedChanged(object sender, EventArgs e)
+        private void groupBox_OnCheckedChanged(object sender, RoutedEventArgs e)
         {
             InvokeChanges();
         }
