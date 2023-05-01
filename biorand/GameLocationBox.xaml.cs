@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -21,6 +24,11 @@ namespace IntelOrca.Biohazard.BioRand
         public static readonly DependencyProperty LocationProperty =
             DependencyProperty.Register(nameof(Location), typeof(string), typeof(GameLocationBox));
 
+        /// <summary>
+        /// Flag to know if the settings are completely loaded. Used to avoid triggering a save when we are loading the configs.
+        /// </summary>
+        public bool IsSettingsLoaded { get; set; }
+
         public string Header
         {
             get => (string)GetValue(HeaderProperty);
@@ -39,25 +47,32 @@ namespace IntelOrca.Biohazard.BioRand
             set => groupBox.IsChecked = value;
         }
 
+        public string SelectedExecutable
+        {
+            get => cbExecutables.SelectedItem?.ToString();
+        }
+
         public GameLocationBox()
         {
             InitializeComponent();
         }
 
-        private void btnBrowse_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Load the executables(exe) from the selected game directoy and set the default selection. 
+        /// </summary>
+        /// <param name="directory">The Windows directory of the Biohazard game</param>
+        /// <param name="selection">The Exe name including the extension</param>
+        public void SetExecutableList(string directory, string selection)
         {
-            var dialog = new OpenFileDialog();
-            dialog.Title = "Select Resident Evil 2 / Biohazard Game Location";
-            if (Directory.Exists(txtGameDataLocation.Text))
-                dialog.InitialDirectory = txtGameDataLocation.Text;
-            dialog.Filter = "Executable Files (*.exe)|*.exe";
-            dialog.CheckFileExists = false;
-            dialog.CheckPathExists = false;
-            var window = Window.GetWindow(this);
-            if (dialog.ShowDialog(window) == true)
+            if (!Directory.Exists(directory))
+                return;
+
+            cbExecutables.Items.Clear();
+            foreach (var executable in Directory.GetFiles(directory, "*.exe"))
             {
-                ValidatePath(dialog.FileName);
+                cbExecutables.Items.Add(Path.GetFileName(executable));
             }
+            cbExecutables.SelectedItem = selection;
         }
 
         private void ValidatePath(string path)
@@ -85,12 +100,45 @@ namespace IntelOrca.Biohazard.BioRand
             }
 
             Location = path;
-            Changed?.Invoke(this, EventArgs.Empty);
+            InvokeChanges();
+        }
+
+        private void InvokeChanges()
+        {
+            if (IsSettingsLoaded)
+                Changed?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void btnBrowse_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog();
+            dialog.Title = $"Select {Header} / Biohazard Game Location";
+            if (Directory.Exists(txtGameDataLocation.Text))
+                dialog.InitialDirectory = txtGameDataLocation.Text;
+            dialog.Filter = "Executable Files (*.exe)|*.exe";
+            dialog.CheckFileExists = false;
+            dialog.CheckPathExists = false;
+            var window = Window.GetWindow(this);
+            if (dialog.ShowDialog(window) == true)
+            {
+                ValidatePath(dialog.FileName);
+                SetExecutableList(Path.GetDirectoryName(dialog.FileName), Path.GetFileName(dialog.FileName));
+            }
         }
 
         private void txtGameDataLocation_LostFocus(object sender, RoutedEventArgs e)
         {
             ValidatePath(txtGameDataLocation.Text);
+        }
+
+        private void cbExecutables_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            InvokeChanges();
+        }
+
+        private void groupBox_OnCheckedChanged(object sender, RoutedEventArgs e)
+        {
+            InvokeChanges();
         }
     }
 

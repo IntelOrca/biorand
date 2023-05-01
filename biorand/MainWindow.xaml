@@ -59,6 +59,7 @@
                         <TextBlock FontSize="16">Kashup - testing, models, textures, voices</TextBlock>
                         <TextBlock FontSize="16">Snipz - testing, animations, models, voices</TextBlock>
                         <TextBlock FontSize="16">Shannon - testing</TextBlock>
+                        <TextBlock FontSize="16">PMCDC - UI enhancements</TextBlock>
                         <TextBlock FontSize="16">ALSOP - Kendo texture</TextBlock>
                         <TextBlock FontSize="16">AndrewC - Barry, Enrico, Jill, and extra models</TextBlock>
                         <TextBlock FontSize="16">Komizo - misc.</TextBlock>
@@ -118,6 +119,7 @@
                                         <ColumnDefinition />
                                         <ColumnDefinition Width="80" />
                                         <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="100" />
                                     </Grid.ColumnDefinitions>
                                     <ComboBox x:Name="dropdownVariant" Grid.Column="0" Margin="4" SelectedIndex="0">
                                         <ComboBoxItem Content="Leon A / Claire B" />
@@ -127,6 +129,7 @@
                                     <Button Grid.Column="2" Margin="4" Click="btnGenerate_Click"
                                             Background="#FFA8FFA8"
                                             Foreground="Black">Generate</Button>
+                                    <Button x:Name="btnStartRE" Grid.Column="3" Margin="4" Click="btnStartRE_Click">Start RE</Button>
                                 </Grid>
                                 <Grid>
                                     <Grid.ColumnDefinitions>

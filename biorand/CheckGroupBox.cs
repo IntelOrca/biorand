@@ -8,6 +8,7 @@ namespace IntelOrca.Biohazard.BioRand
     {
         public EventHandler<RoutedEventArgs> Unchecked;
         public EventHandler<RoutedEventArgs> Checked;
+        public event EventHandler<RoutedEventArgs> OnCheckedChanged;
 
         public static readonly DependencyProperty ActualHeaderProperty =
             DependencyProperty.Register(nameof(ActualHeader), typeof(string), typeof(CheckGroupBox), new PropertyMetadata());
@@ -46,6 +47,7 @@ namespace IntelOrca.Biohazard.BioRand
                     instance.Checked?.Invoke(instance, new RoutedEventArgs());
                 if (newValue == false)
                     instance.Unchecked?.Invoke(instance, new RoutedEventArgs());
+                instance.OnCheckedChanged?.Invoke(instance, new RoutedEventArgs());
             }
         }
 

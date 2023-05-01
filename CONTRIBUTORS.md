@@ -4,6 +4,7 @@
 * **Kashup** - testing, models, textures, voices
 * **Snipz** -  testing, animations, models, voices
 * **Shannon** - testing
+* **PMCDC** - UI enhancements
 * **ALSOP** - Kendo texture
 * **AndrewC** - Barry, Enrico, Jill, and extra models
 * **Komizo** - Misc.

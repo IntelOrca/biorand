@@ -61,6 +61,14 @@ namespace IntelOrca.Biohazard.BioRand
                 gameLocation1.IsChecked = _settings.GameEnabled1;
                 gameLocation2.IsChecked = _settings.GameEnabled2;
                 gameLocation3.IsChecked = _settings.GameEnabled3;
+
+                gameLocation1.SetExecutableList(_settings.GamePath1, _settings.GameExecutable1);
+                gameLocation2.SetExecutableList(_settings.GamePath2, _settings.GameExecutable2);
+                gameLocation3.SetExecutableList(_settings.GamePath3, _settings.GameExecutable3);
+
+                gameLocation1.IsSettingsLoaded = true;
+                gameLocation2.IsSettingsLoaded = true;
+                gameLocation3.IsSettingsLoaded = true;
             }
 
             var seed = SelectedGame == 0 ? _settings.Seed1 : SelectedGame == 1 ? _settings.Seed2 : _settings.Seed3;
@@ -84,6 +92,10 @@ namespace IntelOrca.Biohazard.BioRand
             _settings.GameEnabled2 = gameLocation2.IsChecked == true;
             _settings.GameEnabled3 = gameLocation3.IsChecked == true;
 
+            _settings.GameExecutable1 = gameLocation1.SelectedExecutable;
+            _settings.GameExecutable2 = gameLocation2.SelectedExecutable;
+            _settings.GameExecutable3 = gameLocation3.SelectedExecutable;
+
             switch (SelectedGame)
             {
                 case 0:
@@ -103,6 +115,9 @@ namespace IntelOrca.Biohazard.BioRand
         {
             foreach (var control in GetAllControls(this))
             {
+                if (IsControlFromPanelConfig(control)) //Avoid subscribing on changes from the GameLocation settings panel. This will prevent the UpdateConfig() call that could crash if the rando configs were not loaded.
+                    continue;
+
                 if (control is CheckBox cb)
                 {
                     cb.Unchecked += OnCheckBoxChanged;
@@ -122,6 +137,17 @@ namespace IntelOrca.Biohazard.BioRand
                     comboBox.SelectionChanged += ComboBox_SelectionChanged;
                 }
             }
+        }
+
+        private bool IsControlFromPanelConfig(FrameworkElement control)
+        {
+            if (control is StackPanel && ((StackPanel)control).Name == nameof(panelConfig))
+                return true;
+
+            if (control.Parent != null && control.Parent is FrameworkElement)
+                return IsControlFromPanelConfig((FrameworkElement)control.Parent);
+
+            return false;
         }
 
         private void OnCheckBoxChanged(object sender, RoutedEventArgs e)
@@ -233,6 +259,14 @@ namespace IntelOrca.Biohazard.BioRand
                 txtSeed.Text = _config.ToString();
                 seedQrCode.Seed = null;
                 seedQrCode.Seed = _config;
+
+                btnStartRE.Content = $"Start RE{_config.Game}";
+                var gameLocationPath = GetGameLocation();
+                var gameExecutableName = GetGameExecutable();
+                btnStartRE.IsEnabled = !string.IsNullOrEmpty(gameLocationPath) 
+                                        && !string.IsNullOrEmpty(gameExecutableName) 
+                                        && File.Exists(Path.Combine(gameLocationPath, gameExecutableName));
+                btnStartRE.ToolTip = $"Start the '{Path.GetFileName(gameExecutableName)}' executable.";
 
                 UpdateHints();
             }
@@ -871,6 +905,21 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
+        private string GetGameExecutable()
+        {
+            switch (SelectedGame)
+            {
+                case 0:
+                    return _settings.GameExecutable1;
+                case 1:
+                    return _settings.GameExecutable2;
+                case 2:
+                    return _settings.GameExecutable3;
+                default:
+                    return null;
+            }
+        }
+
         private void gameLocation_Validate(object sender, PathValidateEventArgs e)
         {
             if (!Directory.Exists(e.Path))
@@ -1264,6 +1313,29 @@ namespace IntelOrca.Biohazard.BioRand
                 {
                     _parent.EndTask(_eventId);
                 }
+            }
+        }
+
+        private void btnStartRE_Click(object sender, RoutedEventArgs e)
+        {
+            var executableDirectory = GetGameLocation();
+            var executablePath = Path.Combine(GetGameLocation(), GetGameExecutable());
+
+            if (!File.Exists(executablePath))
+            {
+                MessageBox.Show($"Unable to start the game.{Environment.NewLine}{Environment.NewLine}The path '{executablePath}' does not exists.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                var processStartInfo = new ProcessStartInfo() { WorkingDirectory = executableDirectory, FileName = Path.GetFileName(executablePath) };
+                Process.Start(processStartInfo);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Unable to start the game.{Environment.NewLine}{Environment.NewLine}{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
         }
     }
