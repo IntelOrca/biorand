@@ -3442,6 +3442,7 @@
       ],
       "enemies": [
         {
+          "excludeTypes": [ 58 ],
           "player": 1
         }
       ]
