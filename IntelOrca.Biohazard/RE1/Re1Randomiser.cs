@@ -270,13 +270,17 @@ namespace IntelOrca.Biohazard.RE1
         {
             var doc = new XmlDocument();
             var root = doc.CreateElement("Init");
+            var player = 0;
             foreach (var inventory in Inventories.Reverse<RandomInventory?>())
             {
                 var playerNode = doc.CreateElement("Player");
                 if (inventory != null)
                 {
-                    foreach (var entry in inventory.Entries)
+                    var maxItems = player == 0 ? 6 + 6 : 8;
+                    var entries = inventory.Entries;
+                    for (int i = 0; i < maxItems; i++)
                     {
+                        var entry = entries.Length > i ? entries[i] : new RandomInventory.Entry();
                         var entryNode = doc.CreateElement("Entry");
                         entryNode.SetAttribute("id", entry.Type.ToString());
                         entryNode.SetAttribute("count", entry.Count.ToString());
@@ -284,6 +288,7 @@ namespace IntelOrca.Biohazard.RE1
                     }
                 }
                 root.AppendChild(playerNode);
+                player++;
             }
             doc.AppendChild(root);
             doc.Save(fileRepository.GetModPath("init.xml"));
