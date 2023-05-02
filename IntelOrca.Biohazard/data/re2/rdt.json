@@ -175,6 +175,11 @@
         {
           "target": "108"
         }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 58 ]
+        }
       ]
     },
     "108": {
