@@ -730,7 +730,7 @@ namespace IntelOrca.Biohazard
                 proportions.Add((numInk, inkTable));
             }
             proportions = proportions
-                .Where(x => x.Item1 != 0)
+                .Where(x => x.Item1 != 0 && !x.Item2.IsEmpty)
                 .OrderBy(x => x.Item1)
                 .ToList();
             if (proportions.Count > 0)
