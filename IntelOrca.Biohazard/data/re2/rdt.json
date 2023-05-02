@@ -162,7 +162,20 @@
           "doorRando": false
         },
         {
+          "nop": [ 3536, 3558 ],
+          "randomPlacements": false,
+          "doorRando": true,
+          "player": 0
+        },
+        {
+          "nop": [ 3586, 3608 ],
+          "randomPlacements": false,
+          "doorRando": true,
+          "player": 1
+        },
+        {
           "restricted": true,
+          "randomPlacements": true,
           "doorRando": true
         }
       ]
