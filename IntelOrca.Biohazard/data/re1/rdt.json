@@ -982,13 +982,19 @@
       "enemies": []
     },
     "302": {
+      "doorRando": [
+        {
+          "nop": [ "0x18DA2", "0x18DE0" ]
+        }
+      ],
       "doors": [
         {
           "target": "300",
           "randomize": false,
           "requires": [ 39 ],
           "lock": "unblock",
-          "noUnlock": true
+          "noUnlock": true,
+          "doorRando": false
         },
         {
           "target": "301",

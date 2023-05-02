@@ -78,6 +78,9 @@ namespace IntelOrca.Biohazard.RE1
             switch (item)
             {
                 case Re1ItemIds.Battery:
+                    // In door rando, we disable the lift in room 302
+                    if (config.RandomDoors)
+                        return 1;
                     return 2;
                 case Re1ItemIds.SmallKey:
                     return config.RandomDoors ? 1 : 5;
