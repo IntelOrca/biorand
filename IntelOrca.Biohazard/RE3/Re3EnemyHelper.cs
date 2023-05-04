@@ -151,7 +151,7 @@ namespace IntelOrca.Biohazard.RE3
                     break;
                 case Re3EnemyIds.Nemesis:
                 case Re3EnemyIds.Nemesis3:
-                    enemy.State = 0;
+                    enemy.State = rng.NextOf<byte>(0, 1);
                     enemy.SoundBank = 54;
                     break;
             }
