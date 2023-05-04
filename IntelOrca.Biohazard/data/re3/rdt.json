@@ -1164,6 +1164,11 @@
           "id": 9,
           "priority": "low"
         }
+      ],
+      "npcs": [
+        {
+          "excludeTypes": [ 47 ]
+        }
       ]
     },
     "210": {
