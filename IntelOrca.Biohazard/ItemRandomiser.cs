@@ -837,7 +837,7 @@ namespace IntelOrca.Biohazard
                 var entry = shufflePool[i];
                 entry.Type = shuffled[i].Type;
                 entry.Amount = shuffled[i].Amount;
-                _logger.WriteLine($"    Swapped {shufflePool[i]} with {shuffled[i]}");
+                _logger.WriteLine($"    Swapped {shufflePool[i].ToString(_itemHelper)} with {shuffled[i].ToString(_itemHelper)}");
                 _definedPool.Add(entry);
             }
             _shufflePool.Clear();

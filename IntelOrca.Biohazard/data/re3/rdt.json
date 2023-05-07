@@ -2043,6 +2043,11 @@
         {
           "playerActor": "carlos"
         }
+      ],
+      "enemies": [
+        {
+          "includeTypes": [ 34 ]
+        }
       ]
     },
     "40B": {
