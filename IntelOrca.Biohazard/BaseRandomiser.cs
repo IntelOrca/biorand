@@ -224,7 +224,7 @@ namespace IntelOrca.Biohazard
 
         public virtual void Generate(RandoConfig config, ReInstallConfig reConfig, IRandoProgress progress, FileRepository fileRepository)
         {
-            if (config.RandomItems && config.RandomInventory)
+            if (config.RandomItems && config.RandomInventory && !config.ShuffleItems)
             {
                 SerialiseInventory(fileRepository);
             }
@@ -291,7 +291,7 @@ namespace IntelOrca.Biohazard
                         {
                             itemRando.RandomiseItems(graph);
                         }
-                        if (config.RandomInventory)
+                        if (config.RandomInventory && !config.ShuffleItems)
                         {
                             SetInventory(config.Player, itemRando.RandomizeStartInventory());
                         }

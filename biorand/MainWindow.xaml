@@ -203,64 +203,78 @@
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Grid.Column="0">
-                                            <CheckBox x:Name="chkIncludeDocuments" ToolTip="When checked, documents will become potential key items or anything else. This includes photos developed in the dark room.">Include documents</CheckBox>
-                                            <CheckBox x:Name="chkAlternativeRoute" ToolTip="When checked, key items will be placed in any order. For example the spade key may be placed in the basement and the heart key in the main hall.">Allow alternative routes</CheckBox>
-                                            <CheckBox x:Name="chkProtectSoftLock" ToolTip="When checked, prevents lab keys from spawning in the police station.">Safe key placement</CheckBox>
-                                            <CheckBox x:Name="chkShuffleItems" ToolTip="When checked, keeps original items and quantities, but shuffles them.">Shuffle default items</CheckBox>
-                                            <local:RandoSlider x:Name="sliderWeaponQuantity"
-                                                               Heading="Number of weapons"
-                                                               LowText="1"
-                                                               HighText="All"
-                                                               Maximum="7"
-                                                               ToolTip="Total number of weapons that will appear in the seed." />
-                                            <local:RandoSlider x:Name="sliderAmmoQuantity"
-                                                               Heading="Ammo average quantity"
-                                                               LowText="None"
-                                                               HighText="High"
-                                                               Maximum="7"
-                                                               ToolTip="Average quantity of ammunition per ammunition pick up.&#xa;Highest setting will allow a maximum of 60 handgun bullets in a pickup, or 30 shotgun shells." />
+                                            <CheckBox x:Name="chkIncludeDocuments" ToolTip="When checked, documents will be replaced with key items, or anything else. For RE 2, this includes photos developed in the dark room.">Include documents</CheckBox>
+                                            <CheckBox x:Name="chkAlternativeRoute" ToolTip="When checked, key items will be placed in any order. For example, in RE 2, the spade key may be placed in the basement and the heart key in the main hall.">Allow alternative routes</CheckBox>
                                         </StackPanel>
                                         <StackPanel Grid.Column="2">
-                                            <CheckBox x:Name="chkRandomInventory" ToolTip="When checked, your initial inventory will be random.">Random inventory</CheckBox>
-                                            <TextBlock>Weapon 1:</TextBlock>
-                                            <ComboBox x:Name="dropdownWeapon0">
-                                                <ComboBoxItem>None</ComboBoxItem>
-                                                <ComboBoxItem>Random</ComboBoxItem>
-                                                <ComboBoxItem>Sidearm</ComboBoxItem>
-                                                <ComboBoxItem>Primary</ComboBoxItem>
-                                                <ComboBoxItem>Powerful</ComboBoxItem>
-                                            </ComboBox>
-                                            <TextBlock>Weapon 2:</TextBlock>
-                                            <ComboBox x:Name="dropdownWeapon1">
-                                                <ComboBoxItem>None</ComboBoxItem>
-                                                <ComboBoxItem>Random</ComboBoxItem>
-                                                <ComboBoxItem>Sidearm</ComboBoxItem>
-                                                <ComboBoxItem>Primary</ComboBoxItem>
-                                                <ComboBoxItem>Powerful</ComboBoxItem>
-                                            </ComboBox>
+                                            <CheckBox x:Name="chkProtectSoftLock" ToolTip="When checked, restricts keys to the area they are required. For example, in RE 2, lab keys will not appear in the police station.">Safe key placement</CheckBox>
                                         </StackPanel>
                                     </Grid>
-                                    <TextBlock Margin="0,8,0,4">Item Pickup Distribution</TextBlock>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition />
-                                            <ColumnDefinition Width="8"/>
-                                            <ColumnDefinition />
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Grid.Column="0" Grid.ColumnSpan="2">
-                                            <local:PieChart x:Name="pieItemRatios" Width="120" />
+                                    <local:CheckGroupBox x:Name="chkCustomItemPool" Header="Custom item pool" ToolTip="When not checked, shuffles the vanilla pool of items. If checked, all items are replaced with random pickups.">
+                                        <StackPanel>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="8" />
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0">
+                                                    <local:RandoSlider x:Name="sliderWeaponQuantity"
+                                                                       Heading="Number of weapons"
+                                                                       LowText="1"
+                                                                       HighText="All"
+                                                                       Maximum="7"
+                                                                       ToolTip="Total number of weapons that will appear in the seed." />
+                                                    <local:RandoSlider x:Name="sliderAmmoQuantity"
+                                                                       Heading="Ammo average quantity"
+                                                                       LowText="None"
+                                                                       HighText="High"
+                                                                       Maximum="7"
+                                                                       ToolTip="Average quantity of ammunition per ammunition pick up.&#xa;Highest setting will allow a maximum of 60 handgun bullets in a pickup, or 30 shotgun shells." />
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2">
+                                                    <CheckBox x:Name="chkRandomInventory" ToolTip="When checked, your initial inventory will be random.">Random inventory</CheckBox>
+                                                    <TextBlock>Weapon 1:</TextBlock>
+                                                    <ComboBox x:Name="dropdownWeapon0">
+                                                        <ComboBoxItem>None</ComboBoxItem>
+                                                        <ComboBoxItem>Random</ComboBoxItem>
+                                                        <ComboBoxItem>Sidearm</ComboBoxItem>
+                                                        <ComboBoxItem>Primary</ComboBoxItem>
+                                                        <ComboBoxItem>Powerful</ComboBoxItem>
+                                                    </ComboBox>
+                                                    <TextBlock>Weapon 2:</TextBlock>
+                                                    <ComboBox x:Name="dropdownWeapon1">
+                                                        <ComboBoxItem>None</ComboBoxItem>
+                                                        <ComboBoxItem>Random</ComboBoxItem>
+                                                        <ComboBoxItem>Sidearm</ComboBoxItem>
+                                                        <ComboBoxItem>Primary</ComboBoxItem>
+                                                        <ComboBoxItem>Powerful</ComboBoxItem>
+                                                    </ComboBox>
+                                                </StackPanel>
+                                            </Grid>
+                                            <TextBlock Margin="0,8,0,4">Item Pickup Distribution</TextBlock>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="8"/>
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" Grid.ColumnSpan="2">
+                                                    <local:PieChart x:Name="pieItemRatios" Width="120" />
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2">
+                                                    <local:RandoSlider x:Name="sliderGunpowder" Heading="Gunpowder probability" LowText="None" HighText="High"
+                                                                    ToolTip="Probability of non-key items being gunpowder." />
+                                                    <local:RandoSlider x:Name="sliderAmmo" Heading="Ammo probability" LowText="None" HighText="High"
+                                                                    ToolTip="Probability of non-key items being ammunition." />
+                                                    <local:RandoSlider x:Name="sliderHealth" Heading="Health probability" LowText="None" HighText="High"
+                                                                    ToolTip="Probability of non-key items being health." />
+                                                    <local:RandoSlider x:Name="sliderInkRibbons" Heading="Ink Ribbon probability" LowText="None" HighText="High"
+                                                                    ToolTip="Probability of non-key items being ink ribbons." />
+                                                </StackPanel>
+                                            </Grid>
                                         </StackPanel>
-                                        <StackPanel Grid.Column="2" x:Name="panelItemSliders">
-                                            <local:RandoSlider x:Name="sliderGunpowder" Heading="Gunpowder probability" LowText="None" HighText="High"
-                                                            ToolTip="Probability of non-key items being gunpowder." />
-                                            <local:RandoSlider x:Name="sliderAmmo" Heading="Ammo probability" LowText="None" HighText="High"
-                                                            ToolTip="Probability of non-key items being ammunition." />
-                                            <local:RandoSlider x:Name="sliderHealth" Heading="Health probability" LowText="None" HighText="High"
-                                                            ToolTip="Probability of non-key items being health." />
-                                            <local:RandoSlider x:Name="sliderInkRibbons" Heading="Ink Ribbon probability" LowText="None" HighText="High"
-                                                            ToolTip="Probability of non-key items being ink ribbons." />
-                                        </StackPanel>
-                                    </Grid>
+                                    </local:CheckGroupBox>
                                 </StackPanel>
                             </local:CheckGroupBox>
                         </StackPanel>

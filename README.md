@@ -71,12 +71,20 @@ BioRand pretends there are two more points-of-no-return:
 * The door leading to the sewers
 * The cable car transporting you from the sewers to the marshaling yard.
 
+### Custom item pool
+If not enabled, all the items found in the base game are just shuffled. This means you will find the same number of ink ribbons, handgun ammo, herbs etc.
+If enabled, the game will replace every item pickup with a random item type and quantity.
+
+### Random inventory
+
+Enabling random inventory will change your starting loadout. You can configure up to two weapons that you start off with. The rest of your inventory will contain a random selection of gunpowder, ammo, health, and ink ribbons. In RE 3, you will only be given the reloading tool if there is gunpowder available in the seed. The knife is always provided except in RE 3, where that is by default found in your item box.
+
 ### Non-key item randomization
 
 Each compatible weapon is randomly placed. Some may not be placed at all.
 Only ammo for weapons that are placed in the game will be placed. You will not find ammo for a weapon that you will never pick up.
-The ratio of ammo, health and ink ribbons can be adjusted. Setting the ratio to 0 will ensure that items of that kind are never placed.
-The average quantity of ammo found in each location can be adjusted.
+The ratio of gun powder, ammo, health and ink ribbons can be adjusted. Setting the ratio to 0 will ensure that items of that kind are never placed.
+The average quantity of ammo found in each location can be adjusted. Lowest setting will typically give you one bullet per ammo pickup, where as the highest setting will allow a maximum of 60 handgun bullets in a pickup, or 30 shotgun shells.
 
 ### Enemy randomization
 

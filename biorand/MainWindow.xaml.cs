@@ -234,7 +234,7 @@ namespace IntelOrca.Biohazard.BioRand
                 chkEnemyRestrictedRooms.IsChecked = _config.AllowEnemiesAnyRoom;
                 sliderEnemyCount.Value = _config.EnemyQuantity;
                 chkRngItems.IsChecked = _config.RandomItems || _config.RandomDoors;
-                chkShuffleItems.IsChecked = _config.ShuffleItems && !_config.RandomDoors;
+                chkCustomItemPool.IsChecked = !_config.ShuffleItems || _config.RandomDoors;
                 chkAlternativeRoute.IsChecked = _config.AlternativeRoutes && !_config.RandomDoors;
                 chkIncludeDocuments.IsChecked = _config.IncludeDocuments;
                 chkRandomInventory.IsChecked = _config.RandomInventory;
@@ -427,7 +427,7 @@ namespace IntelOrca.Biohazard.BioRand
 
             _config.RandomItems = chkRngItems.IsChecked == true || _config.RandomDoors;
             _config.RandomEnemyPlacement = chkRandomEnemyPlacements.IsChecked == true;
-            _config.ShuffleItems = chkShuffleItems.IsChecked == true && !_config.RandomDoors;
+            _config.ShuffleItems = chkCustomItemPool.IsChecked != true && !_config.RandomDoors;
             _config.AlternativeRoutes = chkAlternativeRoute.IsChecked == true && !_config.RandomDoors;
             _config.IncludeDocuments = chkIncludeDocuments.IsChecked == true;
             _config.RandomInventory = chkRandomInventory.IsChecked == true;
@@ -453,8 +453,6 @@ namespace IntelOrca.Biohazard.BioRand
         {
             dropdownWeapon0.IsEnabled = chkRandomInventory.IsChecked == true;
             dropdownWeapon1.IsEnabled = chkRandomInventory.IsChecked == true;
-            panelItemSliders.IsEnabled = chkShuffleItems.IsChecked != true;
-            chkShuffleItems.IsEnabled = chkRngDoors.IsChecked != true;
             chkAlternativeRoute.IsEnabled = chkRngDoors.IsChecked != true;
             chkProtectSoftLock.IsEnabled = chkRngDoors.IsChecked != true;
             chkEnemyRestrictedRooms.IsEnabled = chkRandomEnemyPlacements.IsChecked == true;

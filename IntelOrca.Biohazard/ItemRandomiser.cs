@@ -641,7 +641,7 @@ namespace IntelOrca.Biohazard
 
             var numWeapons = Math.Max(1, _config.WeaponQuantity * weaponPool.Count / 7);
 
-            if (_config.RandomInventory)
+            if (_config.RandomInventory && !_config.ShuffleItems)
             {
                 RandomizeInventory(weaponPool, availableWeapons);
             }
@@ -819,7 +819,7 @@ namespace IntelOrca.Biohazard
         {
             _logger.WriteLine("Shuffling non-key items:");
 
-            if (_config.RandomInventory)
+            if (_config.RandomInventory && !_config.ShuffleItems)
             {
                 var weaponPool = _itemHelper
                     .GetWeapons(_rng, _config)
