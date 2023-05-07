@@ -780,6 +780,11 @@
           "id": 2,
           "priority": "low"
         }
+      ],
+      "enemies": [
+        {
+          "nop": [ "0x1B0A-0x1B22", "0x1BB0", "0x1D2E", "0x1D3A" ]
+        }
       ]
     },
     "203": {
