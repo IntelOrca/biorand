@@ -291,7 +291,20 @@
       ],
       "enemies": [
         {
-          "scenario": 0
+          "nop": [ "0x1922", "0x1A1C", "0x1A24", "0x1D20-0x1D38" ],
+          "excludeOffsets": [ 6446, 6492 ],
+          "randomPlacements": false,
+          "player": 0
+        },
+        {
+          "nop": [ "0x18CA", "0x19C4", "0x19CC", "0x1CC8-0x1CE0" ],
+          "excludeOffsets": [ 6358, 6404 ],
+          "randomPlacements": false,
+          "player": 1
+        },
+        {
+          "nop": [ "0x191E-0x19A7", "0x1A18-0x1A7D" ],
+          "randomPlacements": true
         }
       ]
     },
