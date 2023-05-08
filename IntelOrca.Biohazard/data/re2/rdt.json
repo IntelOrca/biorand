@@ -972,7 +972,13 @@
           "target": "207"
         }
       ],
-      "enemies": []
+      "enemies": [
+        {
+          "nop": [ "0x1940-0x1C09", "0x1CBA-0x1D35" ],
+          "excludeTypes": [ 42, 46, 57, 58 ],
+          "randomPlacements": true
+        }
+      ]
     },
     "206": {
       "doors": [
