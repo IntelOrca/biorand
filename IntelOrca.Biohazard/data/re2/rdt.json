@@ -701,7 +701,12 @@
         {
           "includeTypes": [ 23, 31 ],
           "keepState": true,
-          "keepAi": true
+          "keepAi": true,
+          "randomPlacements": false
+        },
+        {
+          "nop": [ "0xC5E-0xCB4", "0xCB8-0xD21" ],
+          "randomPlacements": true
         }
       ]
     },
