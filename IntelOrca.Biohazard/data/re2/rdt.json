@@ -1306,7 +1306,12 @@
           "target": "307"
         }
       ],
-      "enemies": []
+      "enemies": [
+        {
+          "nop": [ "0x8C2" ],
+          "randomPlacements": true
+        }
+      ]
     },
     "213": {
       "doors": [
