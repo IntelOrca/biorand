@@ -127,9 +127,7 @@
       ],
       "enemies": [
         {
-          "includeTypes": [ 16, 18, 19, 21, 22, 23, 24, 30, 31 ],
-          "keepState": true,
-          "keepAi": true
+          "nop": [ "0x129E-0x13A7" ]
         }
       ]
     },
