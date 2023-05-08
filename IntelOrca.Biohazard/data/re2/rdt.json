@@ -3774,7 +3774,12 @@
       "enemies": [
         {
           "excludeOffsets": [ 8072, 8128, 8208, 8264, 8312, 8334 ],
-          "keepPositions": true
+          "keepPositions": true,
+          "randomPlacements": false
+        },
+        {
+          "nop": [ "0x1F76-0x2077" ],
+          "randomPlacements": true
         }
       ]
     },
