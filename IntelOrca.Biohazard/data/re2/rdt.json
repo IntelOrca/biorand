@@ -931,10 +931,18 @@
         {
           "excludeOffsets": [ 6836, 7422, 7490 ],
           "excludeTypes": [ 34, 36, 42, 47, 57, 58 ],
+          "keepPositions": true,
+          "randomPlacements": false,
           "scenario": 0
         },
         {
-          "excludeOffsets": [ 6836, 7422, 7490 ],
+          "nop": [ "0x1CEA" ],
+          "excludeOffsets": [ 6836 ],
+          "randomPlacements": true,
+          "scenario": 0
+        },
+        {
+          "excludeOffsets": [ 6836 ],
           "scenario": 1
         }
       ]
