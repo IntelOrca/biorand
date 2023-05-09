@@ -110,13 +110,9 @@ namespace IntelOrca.Biohazard.RE2
             return type > (byte)ItemType.PlatformKey;
         }
 
-        public byte[] GetInitialItems(RandoConfig config)
+        public byte[] GetInitialKeyItems(RandoConfig config)
         {
-            if (config.Player == 0)
-            {
-                return new[] { (byte)ItemType.Lighter };
-            }
-            return new byte[0];
+            return new[] { (byte)(config.Player == 0 ? ItemType.Lighter : ItemType.SmallKey) };
         }
 
         public byte[] GetDefaultWeapons(RandoConfig config)

@@ -64,7 +64,7 @@ namespace IntelOrca.Biohazard.RE1
                 type != Re1ItemIds.MiniGun;
         }
 
-        public byte[] GetInitialItems(RandoConfig config)
+        public byte[] GetInitialKeyItems(RandoConfig config)
         {
             // Jill has the lockpick which can open sword key doors
             if (config.Player == 1)

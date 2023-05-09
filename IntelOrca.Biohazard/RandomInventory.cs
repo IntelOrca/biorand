@@ -3,10 +3,12 @@
     internal class RandomInventory
     {
         public Entry[] Entries { get; }
+        public Entry? Special { get; }
 
-        public RandomInventory(Entry[] entries)
+        public RandomInventory(Entry[] entries, Entry? special)
         {
             Entries = entries;
+            Special = special;
         }
 
         public struct Entry

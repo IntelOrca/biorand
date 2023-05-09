@@ -110,7 +110,7 @@ static BYTE LoadGameHookCallback(LPVOID buffer, LPCSTR filename, DWORD bytes)
 
 		auto src = *player == 0 ? AddressInventoryLeon : AddressInventoryClaire;
 		auto dst = item0;
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 11; i++)
 		{
 			*dst++ = *src++;
 			*dst++ = *src++;

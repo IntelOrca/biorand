@@ -21,10 +21,12 @@ namespace IntelOrca.Biohazard
         private List<ItemPoolEntry> _shufflePool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _definedPool = new List<ItemPoolEntry>();
         private HashSet<KeyRequirement> _requiredItems = new HashSet<KeyRequirement>();
+        private HashSet<ushort> _startKeyItems = new HashSet<ushort>();
         private HashSet<ushort> _haveItems = new HashSet<ushort>();
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
         private HashSet<RdtItemId> _visitedItems = new HashSet<RdtItemId>();
 
+        private byte? _specialItem;
         private List<RandomInventory.Entry> _startingWeapons = new List<RandomInventory.Entry>();
         private List<byte> _availableGunpowder = new List<byte>();
 
@@ -48,6 +50,7 @@ namespace IntelOrca.Biohazard
             _logger.WriteLine("Placing key items:");
 
             var checkpoint = graph.Start;
+            RandomizeSpecialItem();
             ClearItems();
             _visitedRooms.Clear();
 
@@ -98,6 +101,35 @@ namespace IntelOrca.Biohazard
             PatchDesk();
         }
 
+        private void RandomizeSpecialItem()
+        {
+            // Only RE 2 has a special inventory item
+            if (_config.Game == 2 && _config.RandomInventory && !_config.ShuffleItems)
+            {
+                if (_rng.Next(0, 4) == 0)
+                {
+                    _specialItem = (byte)_rng.NextOf(new[] {
+                        ItemType.Lighter,
+                        ItemType.Lockpick,
+                    });
+                    _startKeyItems.Add(_specialItem.Value);
+                }
+                else
+                {
+                    // Reserve for weapon
+                    _specialItem = 0;
+                }
+            }
+            else
+            {
+                _specialItem = null;
+                foreach (var item in _itemHelper.GetInitialKeyItems(_config))
+                {
+                    _startKeyItems.Add(item);
+                }
+            }
+        }
+
         public RandomInventory? RandomizeStartInventory()
         {
             var size = _itemHelper.GetInventorySize(_config);
@@ -105,11 +137,39 @@ namespace IntelOrca.Biohazard
                 return null;
 
             var entries = new List<RandomInventory.Entry>();
+            var specialEntry = (RandomInventory.Entry?)null;
             int remaining;
             for (int i = 0; i < size.Length; i++)
             {
                 _logger.WriteHeading($"Randomizing Inventory {i}:");
+
+                // Special item
+                if (i == 0 && _specialItem.HasValue)
+                {
+                    var possibleItems = _startingWeapons
+                        .Select(x => x.Type)
+                        .Where(x => _itemHelper.GetItemSize(x) <= 1)
+                        .ToArray();
+                    if (possibleItems.Length == 0 || _rng.NextProbability(25))
+                    {
+                        _specialItem = _itemHelper.GetItemId(CommonItemKind.Knife);
+                    }
+                    else
+                    {
+                        _specialItem = _rng.NextOf(possibleItems);
+                    }
+                }
+
                 remaining = size[i];
+
+                // RE 3 doesn't need the knife as it is in the box by default,
+                // but if no weapon is given, the knife is required - otherwise the game crashes.
+                // This is the case for RE 2 as well
+                if (_config.Game != 3 || _startingWeapons.Count == 0)
+                {
+                    // Always give the player a knife
+                    AddToInventoryCommon(CommonItemKind.Knife, 1);
+                }
 
                 if (remaining >= 3 || _rng.NextProbability(75))
                 {
@@ -141,14 +201,6 @@ namespace IntelOrca.Biohazard
                         if (remaining <= 1)
                             break;
                     }
-                }
-
-                // RE 3 doesn't need the knife as it is in the box by default,
-                // but if no weapon is given, the knife is required - otherwise the game crashes.
-                if ((_config.Game != 3 || entries.Count == 0) && remaining >= 2)
-                {
-                    // Always give the player a knife
-                    AddToInventoryCommon(CommonItemKind.Knife, 1);
                 }
 
                 if (_config.Game == 3 && _config.RatioGunpowder != 0 && _availableGunpowder.Count != 0)
@@ -213,7 +265,7 @@ namespace IntelOrca.Biohazard
                     remaining--;
                 }
             }
-            return new RandomInventory(entries.ToArray());
+            return new RandomInventory(entries.ToArray(), specialEntry);
 
             void AddToInventoryCommon(CommonItemKind commonType, byte count)
             {
@@ -223,21 +275,29 @@ namespace IntelOrca.Biohazard
 
             void AddToInventory(byte type, byte count)
             {
-                var size = _itemHelper.GetItemSize(type);
-                if (remaining >= size)
+                if (specialEntry == null && _specialItem == type)
                 {
-                    if (size == 2)
+                    specialEntry = new RandomInventory.Entry(type, count, 0);
+                    _logger.WriteLine($"Adding {_itemHelper.GetItemName(type)} x{count} as special item");
+                }
+                else
+                {
+                    var size = _itemHelper.GetItemSize(type);
+                    if (remaining >= size)
                     {
-                        // Double items must be placed at the top of the inventory
-                        entries.Insert(0, new RandomInventory.Entry(type, count, 1));
-                        entries.Insert(1, new RandomInventory.Entry(type, count, 2));
+                        if (size == 2)
+                        {
+                            // Double items must be placed at the top of the inventory
+                            entries.Insert(0, new RandomInventory.Entry(type, count, 1));
+                            entries.Insert(1, new RandomInventory.Entry(type, count, 2));
+                        }
+                        else
+                        {
+                            entries.Add(new RandomInventory.Entry(type, count, 0));
+                        }
+                        _logger.WriteLine($"Adding {_itemHelper.GetItemName(type)} x{count}");
+                        remaining -= size;
                     }
-                    else
-                    {
-                        entries.Add(new RandomInventory.Entry(type, count, 0));
-                    }
-                    _logger.WriteLine($"Adding {_itemHelper.GetItemName(type)} x{count}");
-                    remaining -= size;
                 }
             }
         }
@@ -254,10 +314,7 @@ namespace IntelOrca.Biohazard
         {
             // Leon starts with a lighter
             _haveItems.Clear();
-            foreach (var item in _itemHelper.GetInitialItems(_config))
-            {
-                _haveItems.Add(item);
-            }
+            _haveItems.AddRange(_startKeyItems);
         }
 
         private PlayNode Search(PlayNode start)
@@ -493,78 +550,86 @@ namespace IntelOrca.Biohazard
 
             if (!_config.RandomDoors)
             {
-                // Find original location of key item
-                var futureItem = false;
-                var originalIndex = _currentPool.FindIndex(x => x.Type == req);
-                if (originalIndex == -1 && alternativeRoute)
+                // HACK for RE 2, Leon has lighter from start, Claire has lockpick instead of small keys
+                if (_config.Game == 2 && ((_config.Player == 0 && req == (byte)ItemType.Lighter) || (_config.Player == 1 && req == (byte)ItemType.SmallKey)))
                 {
-                    var t = FindKeyInLaterArea(req);
-                    if (t != null)
+                    itemEntry.Amount = 1;
+                }
+                else
+                {
+                    // Find original location of key item
+                    var futureItem = false;
+                    var originalIndex = _currentPool.FindIndex(x => x.Type == req);
+                    if (originalIndex == -1 && alternativeRoute)
                     {
-                        var (futureNode, itemIndex) = t.Value;
-                        if (g_debugLogging)
+                        var t = FindKeyInLaterArea(req);
+                        if (t != null)
                         {
-                            _logger.WriteLine($"        Found key as future item ({futureNode.Items[itemIndex]})");
-                        }
-
-                        // Change room item to the item we are going to replace
-                        var id = futureNode.Items[itemIndex].Id;
-                        var kc = futureNode.Items[itemIndex].Amount;
-                        futureNode.Items[itemIndex].Type = itemEntry.Type;
-                        futureNode.Items[itemIndex].Amount = itemEntry.Amount;
-                        itemEntry.Amount = kc;
-                        futureItem = true;
-
-                        // Change if in required items pool
-                        foreach (var ri in _requiredItems.ToArray())
-                        {
-                            if (ri.Item.HasValue)
+                            var (futureNode, itemIndex) = t.Value;
+                            if (g_debugLogging)
                             {
-                                var reqItem = ri.Item.Value;
-                                if (reqItem.RdtId == futureNode.RdtId && reqItem.Id == id)
+                                _logger.WriteLine($"        Found key as future item ({futureNode.Items[itemIndex]})");
+                            }
+
+                            // Change room item to the item we are going to replace
+                            var id = futureNode.Items[itemIndex].Id;
+                            var kc = futureNode.Items[itemIndex].Amount;
+                            futureNode.Items[itemIndex].Type = itemEntry.Type;
+                            futureNode.Items[itemIndex].Amount = itemEntry.Amount;
+                            itemEntry.Amount = kc;
+                            futureItem = true;
+
+                            // Change if in required items pool
+                            foreach (var ri in _requiredItems.ToArray())
+                            {
+                                if (ri.Item.HasValue)
                                 {
-                                    reqItem.Type = itemEntry.Type;
-                                    reqItem.Amount = itemEntry.Amount;
-                                    _requiredItems.Remove(ri);
-                                    _requiredItems.Add(ri.WithItem(reqItem));
+                                    var reqItem = ri.Item.Value;
+                                    if (reqItem.RdtId == futureNode.RdtId && reqItem.Id == id)
+                                    {
+                                        reqItem.Type = itemEntry.Type;
+                                        reqItem.Amount = itemEntry.Amount;
+                                        _requiredItems.Remove(ri);
+                                        _requiredItems.Add(ri.WithItem(reqItem));
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                if (!futureItem)
-                {
-                    if (originalIndex == -1)
+                    if (!futureItem)
                     {
-                        // Check original key was in a previous checkpoint area (edge case for Weapon Box Key)
-                        var shuffleIndex = _shufflePool.FindIndex(x => x.Type == req);
-                        if (shuffleIndex != -1)
+                        if (originalIndex == -1)
                         {
-                            var item = _shufflePool[shuffleIndex];
-                            _shufflePool.RemoveAt(shuffleIndex);
-                            _currentPool.Add(item);
-                            originalIndex = _currentPool.Count - 1;
+                            // Check original key was in a previous checkpoint area (edge case for Weapon Box Key)
+                            var shuffleIndex = _shufflePool.FindIndex(x => x.Type == req);
+                            if (shuffleIndex != -1)
+                            {
+                                var item = _shufflePool[shuffleIndex];
+                                _shufflePool.RemoveAt(shuffleIndex);
+                                _currentPool.Add(item);
+                                originalIndex = _currentPool.Count - 1;
+                            }
                         }
-                    }
-                    if (originalIndex == -1)
-                    {
-                        return false;
-                    }
+                        if (originalIndex == -1)
+                        {
+                            return false;
+                        }
 
-                    // Check original key can actually be moved
-                    var originalItemEntry = _currentPool[originalIndex];
-                    if (originalItemEntry.Priority == ItemPriority.Fixed)
-                    {
-                        index = originalIndex;
-                        itemEntry = originalItemEntry;
-                    }
+                        // Check original key can actually be moved
+                        var originalItemEntry = _currentPool[originalIndex];
+                        if (originalItemEntry.Priority == ItemPriority.Fixed)
+                        {
+                            index = originalIndex;
+                            itemEntry = originalItemEntry;
+                        }
 
-                    // Change original key item to the item we are going to replace
-                    var keyCount = originalItemEntry.Amount;
-                    originalItemEntry.Type = itemEntry.Type;
-                    originalItemEntry.Amount = itemEntry.Amount;
-                    _currentPool[originalIndex] = originalItemEntry;
-                    itemEntry.Amount = keyCount;
+                        // Change original key item to the item we are going to replace
+                        var keyCount = originalItemEntry.Amount;
+                        originalItemEntry.Type = itemEntry.Type;
+                        originalItemEntry.Amount = itemEntry.Amount;
+                        _currentPool[originalIndex] = originalItemEntry;
+                        itemEntry.Amount = keyCount;
+                    }
                 }
             }
             else

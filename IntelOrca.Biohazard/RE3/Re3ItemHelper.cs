@@ -52,7 +52,7 @@ namespace IntelOrca.Biohazard.RE3
             return new[] { Re3ItemIds.HandgunBeretta };
         }
 
-        public byte[] GetInitialItems(RandoConfig config)
+        public byte[] GetInitialKeyItems(RandoConfig config)
         {
             return new byte[0];
         }

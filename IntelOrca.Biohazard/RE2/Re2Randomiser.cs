@@ -374,13 +374,27 @@ namespace IntelOrca.Biohazard.RE2
 
                 var offset = inventoryAddress[i];
                 bw.Write(offset);
-                bw.Write(inventory.Entries.Length * 3);
-                foreach (var entry in inventory.Entries)
+                bw.Write(0);
+
+                var dataPosition = bw.BaseStream.Position;
+                for (int j = 0; j < 11; j++)
                 {
+                    var entry = new RandomInventory.Entry();
+                    if (j < inventory.Entries.Length)
+                        entry = inventory.Entries[j];
+                    else if (j == 10 && inventory.Special.HasValue)
+                        entry = inventory.Special.Value;
+
                     bw.Write((byte)entry.Type);
                     bw.Write((byte)entry.Count);
                     bw.Write((byte)entry.Part);
                 }
+
+                var dataLength = (uint)(bw.BaseStream.Position - dataPosition);
+                var backup = bw.BaseStream.Position;
+                bw.BaseStream.Position = dataPosition - 4;
+                bw.Write(dataLength);
+                bw.BaseStream.Position = backup;
             }
         }
 
