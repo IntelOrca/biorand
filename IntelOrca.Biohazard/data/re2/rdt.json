@@ -304,7 +304,13 @@
         },
         {
           "nop": [ "0x191E-0x19A7", "0x1A18-0x1A7D" ],
-          "randomPlacements": true
+          "randomPlacements": true,
+          "player": 0
+        },
+        {
+          "nop": [ "0x18C6-0x194F", "0x19C0-0x1A25" ],
+          "randomPlacements": true,
+          "player": 1
         }
       ]
     },
