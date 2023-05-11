@@ -2422,16 +2422,19 @@
       ],
       "enemies": [
         {
+          "excludeTypes": [ 58 ],
           "y": 0,
           "randomPlacements": false
         },
         {
+          "excludeTypes": [ 58 ],
           "y": 0,
           "keepPositions": true,
           "randomPlacements": true,
           "doorRando": false
         },
         {
+          "excludeTypes": [ 58 ],
           "randomPlacements": true,
           "doorRando": true
         }
