@@ -361,8 +361,13 @@ namespace IntelOrca.Biohazard.RE2
                 AddressInventoryLeon,
                 AddressInventoryClaire
             };
+            var specialAddresses = new[]
+            {
+                new uint[] { 0x400000 + 0x00102248, 0x400000 + 0x00101C84 },
+                new uint[] { 0x400000 + 0x0010223F },
+            };
 
-            var bw = new BinaryWriter(ExePatch);
+            var bw = new PatchWriter(ExePatch);
             for (int i = 0; i < inventoryAddress.Length; i++)
             {
                 if (Inventories.Count <= i)
@@ -373,10 +378,7 @@ namespace IntelOrca.Biohazard.RE2
                     continue;
 
                 var offset = inventoryAddress[i];
-                bw.Write(offset);
-                bw.Write(0);
-
-                var dataPosition = bw.BaseStream.Position;
+                bw.Begin(offset);
                 for (int j = 0; j < 11; j++)
                 {
                     var entry = new RandomInventory.Entry();
@@ -389,12 +391,17 @@ namespace IntelOrca.Biohazard.RE2
                     bw.Write((byte)entry.Count);
                     bw.Write((byte)entry.Part);
                 }
+                bw.End();
 
-                var dataLength = (uint)(bw.BaseStream.Position - dataPosition);
-                var backup = bw.BaseStream.Position;
-                bw.BaseStream.Position = dataPosition - 4;
-                bw.Write(dataLength);
-                bw.BaseStream.Position = backup;
+                if (inventory.Special is RandomInventory.Entry specialEntry)
+                {
+                    foreach (var address in specialAddresses[i])
+                    {
+                        bw.Begin(address);
+                        bw.Write(specialEntry.Type);
+                        bw.End();
+                    }
+                }
             }
         }
 
