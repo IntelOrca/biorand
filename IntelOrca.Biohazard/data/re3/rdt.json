@@ -162,7 +162,7 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 47, 91, 103 ]
+          "excludeTypes": [ 47, 91, 95, 103 ]
         }
       ]
     },
