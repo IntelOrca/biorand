@@ -49,9 +49,9 @@ namespace IntelOrca.Biohazard.RE3
                 .Replace("_", " ");
         }
 
-        public string GetPlayerActor(int player)
+        public string[] GetPlayerActors(int player)
         {
-            return "jill.re3";
+            return new[] { "jill.re3", "carlos" };
         }
 
         public bool IsNpc(byte type)

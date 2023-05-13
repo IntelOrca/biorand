@@ -311,14 +311,14 @@ namespace IntelOrca.Biohazard
                     }
                 }
 
-                string? playerActor;
+                string[]? playerActors;
                 using (progress.BeginTask(config.Player, $"Changing player character"))
-                    playerActor = ChangePlayerCharacters(config, logger, gameData, fileRepository);
+                    playerActors = ChangePlayerCharacters(config, logger, gameData, fileRepository);
                 if (config.RandomNPCs)
                 {
                     using (progress.BeginTask(config.Player, "Randomizing NPCs"))
                     {
-                        var npcRandomiser = new NPCRandomiser(BiohazardVersion, logger, fileRepository, config, fileRepository.DataPath, fileRepository.ModPath, gameData, map, randomNpcs, NpcHelper, DataManager, playerActor);
+                        var npcRandomiser = new NPCRandomiser(BiohazardVersion, logger, fileRepository, config, fileRepository.DataPath, fileRepository.ModPath, gameData, map, randomNpcs, NpcHelper, DataManager, playerActors);
                         var selectedActors = GetSelectedActors(config);
                         if (selectedActors.Length == 0)
                         {
@@ -399,7 +399,7 @@ namespace IntelOrca.Biohazard
 
         protected virtual string[] TitleCardSoundFiles { get; } = new string[0];
 
-        internal virtual string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, FileRepository fileRepository)
+        internal virtual string[]? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, FileRepository fileRepository)
         {
             return null;
         }

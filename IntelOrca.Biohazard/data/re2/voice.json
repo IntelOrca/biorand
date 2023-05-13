@@ -479,7 +479,7 @@
     "pl1/voice/stage4/v038.sap": { "rdt": "408", "player": 1, "actor": "annette" },
     "pl1/voice/stage4/v039.sap": { "rdt": "408", "player": 1, "actor": "claire" },
     "pl1/voice/stage4/v040.sap": { "rdt": "40A", "player": 1, "actor": "claire", "condition": "@sherry" },
-    "pl1/voice/stage4/v041.sap": { "rdt": "40C", "player": 1, "actor": "sherry" },
+    "pl1/voice/stage4/v041.sap": { "rdt": "40C", "player": 1, "actor": "sherry", "kind": "death" },
     "pl1/voice/stage4/v042.sap": { "rdt": "40C", "player": 1, "actor": "sherry", "condition": "@claire", "nameClipped": { "start": 2.5 } },
     "pl1/voice/stage4/v043.sap": { "rdt": "40E", "player": 1, "actor": "claire", "condition": "@sherry", "nameClipped": { "start": 0.9 } },
     "pl1/voice/stage4/v044.sap": { "rdt": "40E", "player": 1, "actor": "sherry" },

@@ -146,9 +146,10 @@ namespace IntelOrca.Biohazard.RE3
                 "marvin", "irons" };
         }
 
-        internal override string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, FileRepository fileRepository)
+        internal override string[] ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, FileRepository fileRepository)
         {
             var actor = "jill.re3";
+            var partner = "carlos";
             if (config.ChangePlayer)
             {
                 var pldIndex = (config.Player == 0 ? config.Player0 : config.Player1) - 1;
@@ -158,7 +159,7 @@ namespace IntelOrca.Biohazard.RE3
                 actor = Path.GetFileName(pldPath);
                 SwapPlayerCharacter(config, logger, actor, fileRepository);
             }
-            return actor;
+            return new[] { actor, partner };
         }
 
         private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, string actor, FileRepository fileRepository)

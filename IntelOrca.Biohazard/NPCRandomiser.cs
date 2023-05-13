@@ -31,11 +31,11 @@ namespace IntelOrca.Biohazard
         private readonly HashSet<VoiceSample> _randomized = new HashSet<VoiceSample>();
         private readonly INpcHelper _npcHelper;
         private readonly DataManager _dataManager;
+        private readonly string[] _playerActors;
+        private readonly string[] _originalPlayerActor;
 
         private VoiceSample[] _voiceSamples = new VoiceSample[0];
         private List<VoiceSample> _uniqueSamples = new List<VoiceSample>();
-        private string? _playerActor;
-        private string? _originalPlayerActor;
         private Dictionary<byte, string> _extraNpcMap = new Dictionary<byte, string>();
         private List<ExternalCharacter> _emds = new List<ExternalCharacter>();
 
@@ -53,7 +53,7 @@ namespace IntelOrca.Biohazard
             Rng random,
             INpcHelper npcHelper,
             DataManager dataManager,
-            string? playerActor)
+            string[]? playerActors)
         {
             _version = version;
             _logger = logger;
@@ -67,8 +67,8 @@ namespace IntelOrca.Biohazard
             _npcHelper = npcHelper;
             _dataManager = dataManager;
             _voiceSamples = AddToSelection(version, fileRepository);
-            _originalPlayerActor = _npcHelper.GetPlayerActor(config.Player);
-            _playerActor = playerActor ?? _originalPlayerActor;
+            _originalPlayerActor = _npcHelper.GetPlayerActors(config.Player);
+            _playerActors = playerActors ?? _originalPlayerActor;
 
             using (_logger.Progress.BeginTask(config.Player, "Scanning voices"))
             {
@@ -360,7 +360,7 @@ namespace IntelOrca.Biohazard
             {
                 // Make it rare for player to also be an NPC
                 defaultIncludeTypes = defaultIncludeTypes
-                    .Where(x => GetActor(x) != _playerActor)
+                    .Where(x => GetActor(x) != _playerActors[0])
                     .ToArray();
             }
             if (_extraNpcMap.Count != 0)
@@ -383,15 +383,15 @@ namespace IntelOrca.Biohazard
             foreach (var cutscene in npcs.GroupBy(x => x.Cutscene))
             {
                 var actorToNewActorMap = RandomizeCharacters(rdt, npcRng, defaultIncludeTypes, cutscene.ToArray(), offsetToTypeMap, idToTypeMap);
-                var pc = cutscene.First().PlayerActor ?? _originalPlayerActor!;
-                if (pc == _originalPlayerActor || _config.RandomDoors)
+                var pc = cutscene.First().PlayerActor ?? _originalPlayerActor[0]!;
+                if (pc == _originalPlayerActor[0] || _config.RandomDoors)
                 {
-                    actorToNewActorMap[pc] = _playerActor!;
-                    pc = _playerActor;
+                    actorToNewActorMap[pc] = _playerActors[0]!;
+                    pc = _playerActors[0];
                 }
                 else
                 {
-                    actorToNewActorMap[pc] = pc;
+                    actorToNewActorMap[pc] = _playerActors[1];
                 }
                 RandomizeVoices(rdt, voiceRng, cutscene.Key, pc!, actorToNewActorMap);
                 if (actorToNewActorMap.Count != 1)

@@ -37,9 +37,9 @@ namespace IntelOrca.Biohazard.RE1
             };
         }
 
-        public string GetPlayerActor(int player)
+        public string[] GetPlayerActors(int player)
         {
-            return player == 0 ? "chris" : "jill";
+            return player == 0 ? new[] { "chris", "rebecca" } : new[] { "jill", "barry" };
         }
 
         public bool IsNpc(byte type) => type >= Re1EnemyIds.ChrisStars;

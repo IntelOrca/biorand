@@ -2583,6 +2583,11 @@
         {
           "target": "40F"
         }
+      ],
+      "npcs": [
+        {
+          "playerActor": "sherry"
+        }
       ]
     },
     "40D": {

@@ -9,9 +9,9 @@ namespace IntelOrca.Biohazard.RE2
             return ((EnemyType)type).ToString();
         }
 
-        public string GetPlayerActor(int player)
+        public string[] GetPlayerActors(int player)
         {
-            return player == 0 ? "leon" : "claire";
+            return player == 0 ? new[] { "leon", "ada" } : new[] { "claire", "sherry" };
         }
 
         public byte[] GetDefaultIncludeTypes(Rdt rdt)

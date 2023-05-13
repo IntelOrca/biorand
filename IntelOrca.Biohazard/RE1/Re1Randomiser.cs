@@ -127,9 +127,10 @@ namespace IntelOrca.Biohazard.RE1
                 "sound/EVIL01.WAV"
             };
 
-        internal override string? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, FileRepository fileRepository)
+        internal override string[] ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, FileRepository fileRepository)
         {
             var actor = config.Player == 0 ? "chris" : "jill";
+            var partner = config.Player == 0 ? "rebecca" : "barry";
             if (config.ChangePlayer)
             {
                 var pldIndex = (config.Player == 0 ? config.Player0 : config.Player1) - 1;
@@ -139,7 +140,7 @@ namespace IntelOrca.Biohazard.RE1
                 actor = Path.GetFileName(pldPath);
                 SwapPlayerCharacter(config, logger, actor, fileRepository);
             }
-            return actor;
+            return new[] { actor, partner };
         }
 
         private void ChangePlayerInventoryFace(RandoConfig config, FileRepository fileRepository)
