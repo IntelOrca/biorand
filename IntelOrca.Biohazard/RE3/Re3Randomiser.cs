@@ -126,6 +126,36 @@ namespace IntelOrca.Biohazard.RE3
             }
         }
 
+        private string[] GetEnabledPartners(RandoConfig config)
+        {
+            var enabledPLDs = GetAllPLDs().Intersect(GetEnabledNPCs(config)).ToArray();
+            return enabledPLDs;
+        }
+
+        private string[] GetAllPLDs()
+        {
+            var pldFiles0 = DataManager
+                .GetDirectories(BiohazardVersion, $"pld0")
+                .Select(x => Path.GetFileName(x))
+                .ToArray();
+            return pldFiles0.OrderBy(x => x).ToArray();
+        }
+
+        private string[] GetEnabledNPCs(RandoConfig config)
+        {
+            var result = new List<string>();
+            var allNPCs = GetNPCs();
+            var enabledNPCs = config.EnabledNPCs;
+            for (int i = 0; i < allNPCs.Length; i++)
+            {
+                if (enabledNPCs.Length > i && enabledNPCs[i])
+                {
+                    result.Add(allNPCs[i]);
+                }
+            }
+            return result.ToArray();
+        }
+
         public override string[] GetPlayerCharacters(int index)
         {
             var result = new List<string>();
@@ -152,26 +182,34 @@ namespace IntelOrca.Biohazard.RE3
             var partner = "carlos";
             if (config.ChangePlayer)
             {
+                // Change main
                 var pldIndex = (config.Player == 0 ? config.Player0 : config.Player1) - 1;
                 var pldPath = DataManager.GetDirectories(BiohazardVersion, $"pld{config.Player}")
                     .Skip(pldIndex)
                     .FirstOrDefault();
                 actor = Path.GetFileName(pldPath);
-                SwapPlayerCharacter(config, logger, actor, fileRepository);
+                SwapPlayerCharacter(config, logger, fileRepository, 0, "C_02.VB", actor);
+
+                // Change partner
+                var rng = new Rng(config.Seed + config.Player);
+                var enabledPLDs = GetEnabledPartners(config);
+                if (enabledPLDs.Length != 0)
+                {
+                    partner = rng.NextOf(enabledPLDs);
+                    SwapPlayerCharacter(config, logger, fileRepository, 8, "C_08.VB", partner);
+                }
             }
             return new[] { actor, partner };
         }
 
-        private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, string actor, FileRepository fileRepository)
+        private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, FileRepository fileRepository,
+            int pldIndex, string soundFileName, string actor)
         {
-            var originalPlayerActor = "jill.re3";
+            var originalPlayerActor = pldIndex == 0 ? "jill.re3" : "carlos";
             var srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld0\\{actor}");
 
-            if (originalPlayerActor != actor)
-            {
-                logger.WriteHeading("Randomizing Player:");
-                logger.WriteLine($"{originalPlayerActor} becomes {actor}");
-            }
+            logger.WriteHeading($"Randomizing Player PL{pldIndex:X2}:");
+            logger.WriteLine($"{originalPlayerActor} becomes {actor}");
 
             var targetPldDir = fileRepository.GetModPath($"DATA/PLD");
             Directory.CreateDirectory(targetPldDir);
@@ -179,21 +217,31 @@ namespace IntelOrca.Biohazard.RE3
             foreach (var pldPath in pldFiles)
             {
                 var pldFile = Path.GetFileName(pldPath);
-                File.Copy(pldPath, Path.Combine(targetPldDir, pldFile), true);
+                if (pldFile.Length > 4 &&
+                    (pldFile.EndsWith("pld", StringComparison.OrdinalIgnoreCase) ||
+                     pldFile.EndsWith("plw", StringComparison.OrdinalIgnoreCase)))
+                {
+                    pldFile = $"PL{pldIndex:X2}{pldFile.Substring(4)}";
+                    File.Copy(pldPath, Path.Combine(targetPldDir, pldFile), true);
+                }
             }
 
             // Replace other PLDs
             if (actor != originalPlayerActor)
             {
-                var numbers = new[] { 1, 2, 3, 4, 5, 6, 7 };
-                var src = Path.Combine(targetPldDir, $"pl{config.Player:X2}.pld");
-                foreach (var n in numbers)
+                if (pldIndex == 0)
                 {
-                    var dst = Path.Combine(targetPldDir, $"pl{n:X2}.pld");
-                    File.Copy(src, dst, true);
+                    var numbers = new[] { 1, 2, 3, 4, 5, 6, 7 };
+                    var src = Path.Combine(targetPldDir, $"pl{config.Player:X2}.pld");
+                    foreach (var n in numbers)
+                    {
+                        var dst = Path.Combine(targetPldDir, $"pl{n:X2}.pld");
+                        File.Copy(src, dst, true);
+                    }
                 }
 
-                ChangePlayerInventoryFace(config, actor, fileRepository);
+                var faceIndex = pldIndex == 0 ? 0 : 1;
+                ChangePlayerInventoryFace(config, fileRepository, faceIndex, actor);
 
                 var allHurtFiles = DataManager.GetHurtFiles(actor)
                     .Where(x => x.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) || x.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
@@ -211,7 +259,7 @@ namespace IntelOrca.Biohazard.RE3
                 }
                 if (hurtFiles.All(x => x != null))
                 {
-                    var filename = "DATA/SOUND/C_02.VB";
+                    var filename = $"DATA/SOUND/{soundFileName}";
                     var vbSourcePath = fileRepository.GetDataPath(filename);
                     var vbSourceFile = fileRepository.GetBytes(vbSourcePath);
                     var vbTargetPath = fileRepository.GetModPath(filename);
@@ -232,7 +280,7 @@ namespace IntelOrca.Biohazard.RE3
             }
         }
 
-        private void ChangePlayerInventoryFace(RandoConfig config, string actor, FileRepository fileRepository)
+        private void ChangePlayerInventoryFace(RandoConfig config, FileRepository fileRepository, int faceIndex, string actor)
         {
             if (BgCreator == null)
                 return;
@@ -244,10 +292,16 @@ namespace IntelOrca.Biohazard.RE3
             var filename = Path.Combine("DATA_J", "ETC2", "STMAIN0J.TIM");
             var inputTimPath = fileRepository.GetDataPath(filename);
             var outputTimPath = fileRepository.GetModPath(filename);
+            if (File.Exists(outputTimPath))
+                inputTimPath = outputTimPath;
             Directory.CreateDirectory(Path.GetDirectoryName(outputTimPath!));
 
-            var tim = new TimFile(fileRepository.GetStream(inputTimPath));
-            BgCreator.DrawImage(tim, facePath, 0, 192, 2);
+            TimFile tim;
+            using (var inputStream = fileRepository.GetStream(inputTimPath))
+            {
+                tim = new TimFile(inputStream);
+            }
+            BgCreator.DrawImage(tim, facePath, faceIndex * 40, 192, faceIndex == 0 ? 2 : 3);
             tim.Save(outputTimPath);
         }
 

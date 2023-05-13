@@ -146,6 +146,8 @@ namespace IntelOrca.Biohazard.RE2
         internal override string[] ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, FileRepository fileRepository)
         {
             var actor = config.Player == 0 ? "leon" : "claire";
+            var partner = config.Player == 0 ? "ada" : "sherry";
+
             var pldIndex = config.Player == 0 ? 0 : 1;
             var hurtSoundIndex = config.Player == 0 ? 0 : 1;
             var deathSoundIndex = config.Player == 0 ? 32 : 33;
@@ -184,17 +186,16 @@ namespace IntelOrca.Biohazard.RE2
 
             // Change partner
             var rng = new Rng(config.Seed + config.Player);
-            var enabledPLDs = GetAllPLDs().Intersect(GetEnabledNPCs(config)).ToArray();
-            var targetActor = GetPlayerCharacters(0)[1];
+            var enabledPLDs = GetEnabledPartners(config);
             if (enabledPLDs.Length != 0)
             {
-                targetActor = rng.NextOf(enabledPLDs);
+                partner = rng.NextOf(enabledPLDs);
                 pldIndex = config.Player == 0 ? 0x0E : 0x0F;
                 hurtSoundIndex = config.Player == 0 ? 14 : 15;
                 deathSoundIndex = config.Player == 0 ? 37 : 38;
-                ReplacePlayer(config, logger, fileRepository, pldIndex, hurtSoundIndex, deathSoundIndex, targetActor);
+                ReplacePlayer(config, logger, fileRepository, pldIndex, hurtSoundIndex, deathSoundIndex, partner);
             }
-            return new[] { actor, targetActor };
+            return new[] { actor, partner };
         }
 
         internal static void ScaleEmrY(RandoLogger logger, Rdt rdt, EmrFlags flags, bool inverse)
@@ -251,14 +252,20 @@ namespace IntelOrca.Biohazard.RE2
 
         internal override string BGMPath => @"Common\Sound\BGM";
 
+        private string[] GetEnabledPartners(RandoConfig config)
+        {
+            var enabledPLDs = GetAllPLDs().Intersect(GetEnabledNPCs(config)).ToArray();
+            return enabledPLDs;
+        }
+
         private string[] GetAllPLDs()
         {
             var pldFiles0 = DataManager
-                .GetDirectories(BiohazardVersion, $"pld{0}")
+                .GetDirectories(BiohazardVersion, $"pld0")
                 .Select(x => Path.GetFileName(x))
                 .ToArray();
             var pldFiles1 = DataManager
-                .GetDirectories(BiohazardVersion, $"pld{1}")
+                .GetDirectories(BiohazardVersion, $"pld1")
                 .Select(x => Path.GetFileName(x))
                 .ToArray();
             return pldFiles0.Union(pldFiles1).OrderBy(x => x).ToArray();
