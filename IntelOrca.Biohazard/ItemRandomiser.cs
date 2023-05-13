@@ -203,6 +203,13 @@ namespace IntelOrca.Biohazard
                     }
                 }
 
+                // If we still don't have a weapon in slot 1, just make it a knife,
+                // otherwise the game will crash
+                if (entries.Count == 0)
+                {
+                    AddToInventoryCommon(CommonItemKind.Knife, 1);
+                }
+
                 if (_config.Game == 3 && _config.RatioGunpowder != 0 && _availableGunpowder.Count != 0)
                 {
                     // If gunpowder is enabled, give the player the reloading tool
