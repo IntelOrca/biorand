@@ -561,6 +561,7 @@
       "npcs": [
         {
           "includeOffsets": [ 4040, 4074 ],
+          "excludeTypes": [ 65, 67 ],
           "player": 0,
           "scenario": 1
         },
