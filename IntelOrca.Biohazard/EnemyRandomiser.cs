@@ -79,7 +79,7 @@ namespace IntelOrca.Biohazard
                 {
                     // Exclude IDs which belong to special enemies like tyrants or bosses
                     killIds = rdt.Enemies
-                        .Where(x => _enemyHelper.IsUniqueEnemyType(x.Type))
+                        .Where(x => !_enemyHelper.IsEnemy(x.Type) || _enemyHelper.IsUniqueEnemyType(x.Type))
                         .Select(x => x.KillId)
                         .ToArray();
                 }
@@ -87,7 +87,6 @@ namespace IntelOrca.Biohazard
                 {
                     // Exclude IDs which belong to static enemy rooms
                     killIds = rdt.Enemies
-                        .Where(x => _enemyHelper.IsEnemy(x.Type))
                         .Select(x => x.KillId)
                         .ToArray();
                 }
