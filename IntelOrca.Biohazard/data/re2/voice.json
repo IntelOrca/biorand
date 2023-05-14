@@ -428,7 +428,7 @@
     "pl1/voice/stage3/v037.sap": { "rdt": "307", "player": 1, "cutscene": 2, "actor": "claire" },
     "pl1/voice/stage3/v038.sap": { "rdt": "307", "player": 1, "cutscene": 2, "actor": "leon", "kind": "radio" },
     "pl1/voice/stage3/v039.sap": { "rdt": "307", "player": 1, "cutscene": 2, "actor": "claire" },
-    "pl1/voice/stage3/v040.sap": { "rdt": "307", "player": 1, "cutscene": 1, "actor": "claire", "condition": "@sherry" },
+    "pl1/voice/stage3/v040.sap": { "rdt": "307", "player": 1, "cutscene": 0, "actor": "claire", "condition": "@sherry" },
 
     "pl1/voice/stage3/v041.sap": { "rdt": "308", "player": 1, "actor": "irons" },
     "pl1/voice/stage3/v042.sap": { "rdt": "308", "player": 1, "actor": "irons" },
