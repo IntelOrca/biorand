@@ -1816,7 +1816,6 @@
         },
         {
           "includeOffsets": [ 2698 ],
-          "includeTypes": [ 69, 79 ],
           "player": 1
         }
       ],
@@ -1855,7 +1854,6 @@
       ],
       "npcs": [
         {
-          "includeTypes": [ 69, 79 ],
           "player": 1
         }
       ]
@@ -1878,7 +1876,6 @@
       ],
       "npcs": [
         {
-          "includeTypes": [ 69, 79 ],
           "player": 1
         }
       ],
@@ -2201,7 +2198,6 @@
       ],
       "npcs": [
         {
-          "includeTypes": [ 69, 79 ],
           "player": 1
         }
       ]
@@ -2363,7 +2359,6 @@
         },
         {
           "includeOffsets": [ 5460 ],
-          "includeTypes": [ 69, 79 ],
           "player": 1
         }
       ]
@@ -2409,8 +2404,7 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 65, 67 ],
-          "player": 0
+          "excludeTypes": [ 65, 67 ]
         }
       ]
     },
@@ -2444,11 +2438,6 @@
           "excludeTypes": [ 58 ],
           "randomPlacements": true,
           "doorRando": true
-        }
-      ],
-      "npcs": [
-        {
-          "player": 0
         }
       ]
     },
@@ -2521,6 +2510,9 @@
           "includeOffsets": [ 9260, 9286 ],
           "cutscene": 1,
           "player": 0
+        },
+        {
+          "player": 1
         }
       ],
       "enemies": [
@@ -2552,7 +2544,6 @@
           "player": 0
         },
         {
-          "includeTypes": [ 69, 79 ],
           "player": 1
         }
       ],
@@ -2565,11 +2556,6 @@
         },
         {
           "target": "409"
-        }
-      ],
-      "npcs": [
-        {
-          "player": 0
         }
       ]
     },
@@ -2597,11 +2583,6 @@
         },
         {
           "target": "40E"
-        }
-      ],
-      "npcs": [
-        {
-          "player": 0
         }
       ],
       "enemies": [
@@ -2648,7 +2629,6 @@
           "player": 0
         },
         {
-          "includeTypes": [ 69, 79 ],
           "player": 1
         }
       ],
@@ -2708,7 +2688,6 @@
           "player": 0
         },
         {
-          "includeTypes": [ 69, 79 ],
           "player": 1
         }
       ]
@@ -2765,15 +2744,6 @@
         {
           "id": 2,
           "requires": [ 47 ]
-        }
-      ],
-      "npcs": [
-        {
-          "player": 0
-        },
-        {
-          "includeTypes": [ 69, 79 ],
-          "player": 1
         }
       ],
       "enemies": [
@@ -2860,15 +2830,6 @@
           "scenario": 1
         }
       ],
-      "npcs": [
-        {
-          "player": 0
-        },
-        {
-          "includeTypes": [ 69, 79 ],
-          "player": 1
-        }
-      ],
       "enemies": [
         {
           "restricted": true
@@ -2896,7 +2857,6 @@
           "player": 0
         },
         {
-          "includeTypes": [ 69, 79 ],
           "player": 1
         }
       ],
@@ -3271,7 +3231,6 @@
       ],
       "npcs": [
         {
-          "includeTypes": [ 69, 79 ],
           "player": 1
         }
       ],
@@ -3367,8 +3326,7 @@
           "excludeTypes": [ 90 ]
         },
         {
-          "includeOffsets": [ 11100, 11246, 12056 ],
-          "includeTypes": [ 79 ]
+          "includeOffsets": [ 11100, 11246, 12056 ]
         }
       ],
       "enemies": [

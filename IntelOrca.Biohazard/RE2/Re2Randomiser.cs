@@ -127,6 +127,7 @@ namespace IntelOrca.Biohazard.RE2
             }
 
             FixClaireWeapons();
+            DisableWaitForSherry();
 
             // tmoji.bin
             var src = DataManager.GetPath(BiohazardVersion, "tmoji.bin");
@@ -524,6 +525,15 @@ namespace IntelOrca.Biohazard.RE2
                 bw.Write(1);
                 bw.Write(b);
             }
+        }
+
+        private void DisableWaitForSherry()
+        {
+            // Disable (you must wait for Sherry)
+            var bw = new PatchWriter(ExePatch);
+            bw.Begin(0x400000 + 0xE9490);
+            bw.Write((byte)0xEB);
+            bw.End();
         }
     }
 }
