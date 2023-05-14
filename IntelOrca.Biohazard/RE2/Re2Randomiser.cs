@@ -490,6 +490,13 @@ namespace IntelOrca.Biohazard.RE2
                         bw.Write(specialEntry.Type);
                         bw.End();
                     }
+
+                    // Set weapon type to none when switching back from partner
+                    bw.Begin(0x400000 + 0x1021FF);
+                    bw.Write((byte)0xB1);
+                    bw.Write((byte)0x80);
+                    bw.Write((byte)0x90);
+                    bw.End();
                 }
             }
         }
