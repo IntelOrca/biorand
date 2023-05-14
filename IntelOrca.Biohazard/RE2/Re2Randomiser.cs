@@ -268,7 +268,7 @@ namespace IntelOrca.Biohazard.RE2
                 .GetDirectories(BiohazardVersion, $"pld1")
                 .Select(x => Path.GetFileName(x))
                 .ToArray();
-            return pldFiles0.Union(pldFiles1).OrderBy(x => x).ToArray();
+            return pldFiles1.OrderBy(x => x).ToArray();
         }
 
         private string[] GetEnabledNPCs(RandoConfig config)
