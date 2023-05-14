@@ -1454,6 +1454,7 @@
           "player": 0
         },
         {
+          "excludeTypes": [ 58 ],
           "player": 1
         }
       ]
