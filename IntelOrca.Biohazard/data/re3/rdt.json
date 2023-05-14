@@ -1053,6 +1053,10 @@
           "cutscene": 2 // Carlos and Nikolai
         },
         {
+          "includeOffsets": [ 20314 ],
+          "cutscene": 3 // Mikhail (second greet)
+        },
+        {
           "includeOffsets": [ 20208, 20286 ],
           "excludeTypes": [ 89 ],
           "cutscene": 4 // Carlos (ready to go)
