@@ -248,6 +248,7 @@ namespace IntelOrca.Biohazard
 
         private void FixRE3BarricadeAlley()
         {
+            // Force barricade alley door to go to 2nd hydrant alley
             var rdt = _gameData.GetRdt(new RdtId(0, 0x08));
             if (rdt != null)
             {
@@ -256,6 +257,13 @@ namespace IntelOrca.Biohazard
                 {
                     door.Target = new RdtId(0, 0x23);
                 }
+            }
+
+            // Force hydrant alley save to go to 2nd hydrant alley
+            rdt = _gameData.GetRdt(new RdtId(0, 0x0C));
+            if (rdt != null)
+            {
+                rdt.Nop(0x42A, 0x452);
             }
         }
 
