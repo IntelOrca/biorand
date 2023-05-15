@@ -1,26 +1,79 @@
+BioRand v3.0.2 (2023-05-16)
+
+* [Feature] Add button to UI for starting the game.
+* [Feature] RE 2, disable 'must wait for Sherry' prompt and allow more other NPCs in place of Sherry.
+* [Feature] RE 2, randomize lighter/lockpick inventory item.
+* [Feature] RE 2, randomize partner (Ada/Sherry) character.
+* [Feature] RE 3, randomize partner (Carlos) character.
+* [Enhancement] RE 3, randomize between rocket and no rocket Nemesis.
+* [Enhancement] RE 2, room 100, 104, 105, 10B, 119, 204, 205, 212, 216, enable random enemy placement.
+* [Change] Improve UI for shuffle default items.
+* [Change] Remove a couple of short riffs from RE 1 BGM pool.
+* [Fix] #141: RE 1, room 302 battery lift can corrupt inventory.
+* [Fix] #257: RE 2, room 60C, crash possibly due to moths.
+* [Fix] #284: RE 3, room 109, fire comes back.
+* [Fix] #300: RE 3, room 109, firehose cannot be used.
+* [Fix] #303: RE 3, room 103, fix crash if car door bursts open.
+* [Fix] #304: RE 3, room 101, crash if NPC is EM2F.
+* [Fix] #305: RE 3, room 107, crash if NPC is EM67.
+* [Fix] #306: RE 2, Leon A, player changes to Ada in door rando.
+* [Fix] #307: RE 2, room 107, crash possibly due to moths.
+* [Fix] #311: RE 1, crash when playing Rebecca due to invalid inventory.
+* [Fix] #312: RE 3, room 205, restaurant door not linked.
+* [Fix] #313: RE 3, room 402, bomb can detonate in door rando.
+* [Fix] #314: RE 3, room 301, enemy change crashes game.
+* [Fix] #315: RE 3, room 110, Nemesis crash in certain situations.
+* [Fix] #320: RE 3, room 106, crash when Nemesis performs attack.
+* [Fix] #328: RE 3, room 21A, crash when enemies are dogs.
+* [Fix] #331: RE 2, room 501, crash possibly caused by moths.
+* [Fix] #336: RE 3, room 20F, crash after Nemesis encounter.
+* [Fix] #337: RE 3, room 20B, crash during Mikhail cutscene.
+* [Fix] #343: RE 2, failed to generate seed when no ammo types are available.
+* [Fix] #346: RE 3, room 102, crash when girl is killed.
+* [Fix] #349: RE 2, room 106, out of bounds enemies active in door rando.
+* [Fix] #350: RE 3, room 202, crash when car door bursts open.
+* [Fix] #350: RE 3, room 204, crash on Nemesis cutscene.
+* [Fix] #351: RE 3, room 40A, crash when shooting explosive.
+* [Fix] #354: RE 2, room 10B, Claire A with random enemy placement crash.
+* [Fix] #355: RE 3, room 105, crash when Brad is changed to Jill.
+* [Fix] #357: RE 2, room 113, Leon B, Sherry to Ada can cause softlock.
+* [Fix] #358: RE 2, crash when first inventory slot is not a weapon.
+* [Fix] #359: RE 3, room 20E, cutscene plays with enemies in room.
+* [Fix] #360: RE 2, room 21A, crash potentially caused by moths.
+* [Fix] #361: RE 2, room 202, crash due to shared enemy ID for Marvin.
+* [Fix] RE 2, room 202, 408, 409, 605, moths potentially crash game.
+* [Fix] RE 2, room 307, last Claire line in first Sherry cutscene.
+* [Fix] RE 2, room 407, moths potentially crash game.
+* [Fix] RE 2, room 603, unable to push box past arm enemy.
+* [Fix] RE 2, room 607, Sherry voice clips not correct actor.
+* [Fix] RE 3, room 112, enemy sounds are incorrect.
+* [Fix] RE 3, room 20C, Mikhail 2nd cutscene crashes.
+* [Fix] Incorrect seed in log when using random player.
+* [Fix] Randomization of various RE 2 voice clips.
+
 BioRand v3.0.1 (2023-03-17)
 
 * [Feature] RE 1, add playable characters: Enrico and Richard
 * [Feature] RE 3, add NPCs: Carlos (RE3R) and Jill (RE3R)
 * [Feature] RE 3, add Mikhail (RE3R) and Nikolai (RE3R) NPCs
-* [Fix] Fix #275: RE 3, room 107, crash due to Jill 2 NPC
-* [Fix] Fix #277: RE 3, room 105, crash due to bad NPC
-* [Fix] Fix #279: RE 3, room 40C, crash on entering room
-* [Fix] Fix #280: RE 3, room 11B, Carlos cutscene crash
-* [Fix] Fix #285: RE 3, room 104, crash when killing brain sucker
-* [Fix] Fix #286: RE 3, room 118, crash when killing brain sucker
-* [Fix] Fix #294: RE 3, room 307, crash due to Carlos NPC change
-* [Fix] Fix #295: RE 3, room 209, crash when car door bursts open
-* [Fix] Fix inventory colour of rifle and ink ribbons
-* [Fix] Fix RE 3, title card sound clip for JPN
-* [Fix] Fix RE 3, crash when opening first door
-* [Fix] Fix RE 3, room 208, zombie window climb cutscene crashes game
-* [Fix] Fix RE 3, room 209, gunpowder not randomized
-* [Fix] Fix RE 3, room 20A, grave digger triggered crash
-* [Fix] Fix RE 3, room 504, cutscene crash
-* [Fix] Fix room 300, 310, Jill / Carlos voices not correct
-* [Fix] Fix voice randomizer was not deterministic
-* [Fix] Fix Carlos RE3R face
+* [Fix] #275: RE 3, room 107, crash due to Jill 2 NPC
+* [Fix] #277: RE 3, room 105, crash due to bad NPC
+* [Fix] #279: RE 3, room 40C, crash on entering room
+* [Fix] #280: RE 3, room 11B, Carlos cutscene crash
+* [Fix] #285: RE 3, room 104, crash when killing brain sucker
+* [Fix] #286: RE 3, room 118, crash when killing brain sucker
+* [Fix] #294: RE 3, room 307, crash due to Carlos NPC change
+* [Fix] #295: RE 3, room 209, crash when car door bursts open
+* [Fix] inventory colour of rifle and ink ribbons
+* [Fix] RE 3, title card sound clip for JPN
+* [Fix] RE 3, crash when opening first door
+* [Fix] RE 3, room 208, zombie window climb cutscene crashes game
+* [Fix] RE 3, room 209, gunpowder not randomized
+* [Fix] RE 3, room 20A, grave digger triggered crash
+* [Fix] RE 3, room 504, cutscene crash
+* [Fix] room 300, 310, Jill / Carlos voices not correct
+* [Fix] voice randomizer was not deterministic
+* [Fix] Carlos RE3R face
 
 BioRand v3.0.0 (2023-03-12)
 
