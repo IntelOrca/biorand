@@ -9,6 +9,7 @@ BioRand v3.0.2 (2023-05-16)
 * [Enhancement] RE 2, room 100, 104, 105, 10B, 119, 204, 205, 212, 216, enable random enemy placement.
 * [Change] Improve UI for shuffle default items.
 * [Change] Remove a couple of short riffs from RE 1 BGM pool.
+* [Change] Remove a few short riffs from RE 3 BGM pool.
 * [Fix] #141: RE 1, room 302 battery lift can corrupt inventory.
 * [Fix] #257: RE 2, room 60C, crash possibly due to moths.
 * [Fix] #284: RE 3, room 109, fire comes back.

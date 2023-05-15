@@ -119,20 +119,20 @@
     "SBB_10",
     "SBB_19",
     "SBB_24",
-    "SBB_25"
+    "*SBB_25"
   ],
   "danger": [
     "MAIN04",
     "SBB_01", // NEMESIS ENCOUNTER
     "SBB_0C",
     "SBB_23",
-    "SBB_3A",
-    "SBB_3C",
-    "SBB_40"
+    "*SBB_3A",
+    "*SBB_3C",
+    "*SBB_40"
     // "SBB_09", // too short?
   ],
   "boss": [
-    "MAIN39",
+    "*MAIN39",
     "MAIN3B",
     "SBB_29",
     "SBB_37",
