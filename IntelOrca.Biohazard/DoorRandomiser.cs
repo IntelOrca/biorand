@@ -204,6 +204,10 @@ namespace IntelOrca.Biohazard
                 FixRE3CommsRoom();
                 FixRE3Rain();
             }
+            else
+            {
+                FixRE3BarricadeAlley();
+            }
         }
 
         private void UnblockRpdDoor()
@@ -239,6 +243,19 @@ namespace IntelOrca.Biohazard
                 var lockpickDoor1 = rdt1.Doors.First(x => x.Id == 2);
                 var lockpickDoor2 = rdt2.Doors.First(x => x.Id == 2);
                 CopyDoorTo(lockpickDoor1, lockpickDoor2);
+            }
+        }
+
+        private void FixRE3BarricadeAlley()
+        {
+            var rdt = _gameData.GetRdt(new RdtId(0, 0x08));
+            if (rdt != null)
+            {
+                var door = rdt.Doors.FirstOrDefault(x => x.Id == 5);
+                if (door != null)
+                {
+                    door.Target = new RdtId(0, 0x23);
+                }
             }
         }
 
