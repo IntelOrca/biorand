@@ -188,6 +188,7 @@ namespace IntelOrca.Biohazard
             UnblockRpdDoor();
             FixRE3SalesOffice();
             FixRE3LockpickDoor();
+            FixStagla();
             FixRE3Train();
             UnblockWasteDisposalDoor();
             FixRE3TowerOutdoor();
@@ -243,6 +244,15 @@ namespace IntelOrca.Biohazard
                 var lockpickDoor1 = rdt1.Doors.First(x => x.Id == 2);
                 var lockpickDoor2 = rdt2.Doors.First(x => x.Id == 2);
                 CopyDoorTo(lockpickDoor1, lockpickDoor2);
+            }
+        }
+
+        private void FixStagla()
+        {
+            var rdt = _gameData.GetRdt(new RdtId(1, 0x0E));
+            if (rdt != null)
+            {
+                rdt.Nop(0x2BB6);
             }
         }
 
