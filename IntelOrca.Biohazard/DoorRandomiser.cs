@@ -1624,6 +1624,10 @@ namespace IntelOrca.Biohazard
                 if (exit.RequiresRoom.Length != 0)
                     return false;
 
+                // Don't connect to a door with a no unlock on the other side (in case we need to lock the door)
+                if (exit.NoUnlock)
+                    return false;
+
                 // HACK need to connect to one-way door
                 if (exit.Parent.RdtId.Stage == 6 && exit.Parent.RdtId.Room == 0)
                     return true;
