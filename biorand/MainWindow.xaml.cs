@@ -47,6 +47,8 @@ namespace IntelOrca.Biohazard.BioRand
             Title += $" - v{version.Major}.{version.Minor}.{version.Build}";
             SelectedGame = _settings.LastSelectedGame;
             versionLabel.Text = Program.CurrentVersionInfo;
+
+            MessageBox.Show("This is work in progress branch and is not ready for testing yet. Please download a build for the 'master' branch instead.");
         }
 
         private void LoadSettings()

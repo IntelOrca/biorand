@@ -853,7 +853,7 @@ namespace IntelOrca.Biohazard.Script
                 {
                     ReadChar();
                     c = PeekChar();
-                } while (c != char.MinValue && char.IsWhiteSpace(c));
+                } while (c != char.MinValue && c != '\n' && c != '\r' && char.IsWhiteSpace(c));
                 return true;
             }
 

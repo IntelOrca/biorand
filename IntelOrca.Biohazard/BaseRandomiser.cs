@@ -250,6 +250,7 @@ namespace IntelOrca.Biohazard
             var randomItems = new Rng(baseSeed + 2);
             var randomEnemies = new Rng(baseSeed + 3);
             var randomNpcs = new Rng(baseSeed + 4);
+            var randomCutscenes = new Rng(baseSeed + 5);
 
             // In RE1, room sounds are not in the RDT, so enemies must be same for both players
             if (BiohazardVersion == BioVersion.Biohazard1)
@@ -301,6 +302,11 @@ namespace IntelOrca.Biohazard
                     {
                         graph.GenerateDgml(dgmlPath, ItemHelper);
                     }
+                }
+
+                {
+                    var cutscene = new CutsceneRandomiser(logger, DataManager, config, gameData, map, randomCutscenes, EnemyHelper, NpcHelper);
+                    cutscene.Randomise(graph);
                 }
 
                 if (config.RandomEnemies)

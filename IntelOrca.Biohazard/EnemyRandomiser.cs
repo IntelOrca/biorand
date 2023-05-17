@@ -109,38 +109,7 @@ namespace IntelOrca.Biohazard
             if (graph == null || graph.Start == null)
                 return _gameData.Rdts;
 
-            var visited = new HashSet<PlayNode>();
-            var q = new Queue<PlayNode>();
-            q.Enqueue(graph.Start);
-            while (q.Count > 0)
-            {
-                var node = q.Dequeue();
-                if (visited.Add(node))
-                {
-                    foreach (var e in node.Edges)
-                    {
-                        if (e.Node != null)
-                        {
-                            q.Enqueue(e.Node);
-                        }
-                    }
-                }
-            }
-
-            var result = visited
-                .Select(x => _gameData.GetRdt(x.RdtId)!)
-                .ToHashSet();
-
-            // Add linked RDTs as well
-            foreach (var v in visited)
-            {
-                if (v.LinkedRdtId != null)
-                {
-                    result.Add(_gameData.GetRdt(v.LinkedRdtId.Value)!);
-                }
-            }
-
-            return result.ToArray();
+            return graph.GetAccessibleRdts(_gameData);
         }
 
         private void RandomizeRooms(Rdt[] rdts)
