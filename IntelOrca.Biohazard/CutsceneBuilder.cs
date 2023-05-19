@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace IntelOrca.Biohazard
@@ -14,6 +16,9 @@ namespace IntelOrca.Biohazard
         private Stack<int> _labelStack = new Stack<int>();
         private bool _else;
         private int _plotFlagIndex;
+        private int _genericProcIndex;
+        private bool _ifPlotTriggered;
+        private bool _hasPlotTrigger;
 
         public override string ToString() => _sb.ToString();
 
@@ -31,21 +36,28 @@ namespace IntelOrca.Biohazard
             EndProcedure();
         }
 
-        public void BeginPlot()
+        public int BeginPlot()
         {
             BeginProcedure($"plot_{_plotCount}");
             _plotFlagIndex = CreateFlag();
             _plotCount++;
+            _ifPlotTriggered = false;
+            _hasPlotTrigger = false;
+            return _plotFlagIndex;
         }
 
-        public void PlotActivated()
+        public void IfPlotTriggered()
         {
             BeginIf();
             CheckFlag(4, _plotFlagIndex);
+            _ifPlotTriggered = true;
         }
 
-        public void PlotTriggerLoop()
+        public void ElseBeginTriggerThread()
         {
+            if (!_ifPlotTriggered)
+                throw new InvalidOperationException("Plot not activated");
+
             var plotLoopName = $"plot_loop_{_plotCount - 1}";
 
             Else();
@@ -54,26 +66,45 @@ namespace IntelOrca.Biohazard
             EndProcedure();
 
             BeginProcedure(plotLoopName);
+
+            _hasPlotTrigger = true;
         }
 
         public void EndPlot()
         {
-            SetFlag(4, _plotFlagIndex);
+            if (_hasPlotTrigger)
+            {
+                SetFlag(4, _plotFlagIndex);
+            }
+            else if (_ifPlotTriggered)
+            {
+                Else();
+                SetFlag(4, _plotFlagIndex);
+                EndIf();
+            }
             EndProcedure();
         }
 
-        public int AddEnemy()
+        public void Event(REPosition pos, int size, string proc)
         {
-            AppendLine("sce_em_set", 0, _enemyCount, "ENEMY_ZOMBIERANDOM", 6, 128, 0, 3, 0, 255, -32000, -10000, -32000, 0, 0, 0);
-            _enemyCount++;
-            return _enemyCount - 1;
+            AppendLine("aot_set", 20, "SCE_EVENT", "SAT_PL | SAT_MANUAL | SAT_FRONT", 0, 0, pos.X - (size / 2), pos.Z - (size / 2), size, size, 255, 0, "I_GOSUB", proc, 0, 0);
         }
 
-        public int AddNPC()
+        public int[] AllocateEnemies(int count)
         {
-            AppendLine("sce_em_set", 0, _enemyCount, "ENEMY_CLAIREREDFIELD", 0, 64, 0, 0, 0, 255, -32000, -10000, -32000, 0, 0, 0);
-            _enemyCount++;
-            return _enemyCount - 1;
+            var start = _enemyCount;
+            _enemyCount += count;
+            return Enumerable.Range(start, count).ToArray();
+        }
+
+        public void Enemy(int id, REPosition position, int pose, int state)
+        {
+            AppendLine("sce_em_set", 0, id, "ENEMY_ZOMBIERANDOM", pose, state, position.Y / -1800, 3, 0, 255, position.X, position.Y, position.Z, position.D, 0, 0);
+        }
+
+        public void Ally(int id, REPosition position)
+        {
+            AppendLine("sce_em_set", 0, id, "ENEMY_CLAIREREDFIELD", 0, 64, position.Y / -1800, 3, 0, 255, position.X, position.Y, position.Z, position.D, 0, 0);
         }
 
         public void MoveEnemy(int id, REPosition pos)
@@ -83,9 +114,8 @@ namespace IntelOrca.Biohazard
             AppendLine("dir_set", 0, 0, pos.D, 0);
         }
 
-        public void SpawnEnemy(int id, REPosition pos)
+        public void ActivateEnemy(int id)
         {
-            MoveEnemy(id, pos);
             AppendLine("work_set", "WK_ENEMY", id);
             AppendLine("member_copy", 16, 7);
             AppendLine("calc", 0, "OP_AND", 16, "0x7FFF");
@@ -103,6 +133,11 @@ namespace IntelOrca.Biohazard
         {
             WorkOnEnemy(id);
             AppendLine("plc_dest", 0, run ? 5 : 4, 32, pos.X, pos.Z);
+        }
+
+        public void SetEnemyNeck(int id)
+        {
+            AppendLine("plc_neck", 5, 1, 0, 0, 148, 206);
         }
 
         public void WorkOnEnemy(int id)
@@ -150,6 +185,11 @@ namespace IntelOrca.Biohazard
         public void CutRevert()
         {
             AppendLine("cut_old");
+            CutAuto();
+        }
+
+        public void CutAuto()
+        {
             AppendLine("cut_auto", 1);
         }
 
@@ -206,6 +246,15 @@ namespace IntelOrca.Biohazard
         {
             BeginLoop(6);
             AppendLine("cmp", 0, 26, "CMP_NE", id);
+            AppendLine("evt_next");
+            AppendLine("nop");
+            EndLoop();
+        }
+
+        public void WaitForPlot(int id)
+        {
+            BeginLoop(4);
+            CheckFlag(4, id, false);
             AppendLine("evt_next");
             AppendLine("nop");
             EndLoop();
@@ -289,6 +338,12 @@ namespace IntelOrca.Biohazard
         public void Call(string procedureName)
         {
             AppendLine("gosub", procedureName);
+        }
+
+        public string AllocateProcedure()
+        {
+            _genericProcIndex++;
+            return $"xproc_{_genericProcIndex}";
         }
 
         public string LabelName(int index) => $"label_{index}";

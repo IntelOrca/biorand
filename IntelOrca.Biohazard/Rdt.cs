@@ -24,7 +24,7 @@ namespace IntelOrca.Biohazard
         public ScriptAst? Ast { get; set; }
         public List<KeyValuePair<int, byte>> Patches { get; } = new List<KeyValuePair<int, byte>>();
         public List<OpcodeBase> AdditionalOpcodes { get; } = new List<OpcodeBase>();
-        public string CustomAdditionalScript { get; set; }
+        public string? CustomAdditionalScript { get; set; }
 
         public IEnumerable<OpcodeBase> AllOpcodes => Opcodes.Concat(AdditionalOpcodes);
         public IEnumerable<IDoorAotSetOpcode> Doors => AllOpcodes.OfType<IDoorAotSetOpcode>();
@@ -409,7 +409,7 @@ namespace IntelOrca.Biohazard
             {
                 index++;
             }
-            while (index < s.Length && s[index] == '\n' || s[index] == '\r')
+            while (index < s.Length && (s[index] == '\n' || s[index] == '\r'))
             {
                 index++;
             }
