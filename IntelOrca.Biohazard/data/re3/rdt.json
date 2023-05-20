@@ -2072,7 +2072,8 @@
       ],
       "npcs": [
         {
-          "playerActor": "carlos"
+          "playerActor": "carlos",
+          "excludeTypes": [ 47, 87 ]
         }
       ],
       "enemies": [
