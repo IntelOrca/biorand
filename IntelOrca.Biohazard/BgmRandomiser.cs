@@ -13,6 +13,10 @@ namespace IntelOrca.Biohazard
         //   ! = use, but don't set
         //   * = set, but don't use
 
+        private const char CharUseNoSet = '!';
+        private const char CharSetNoUse = '*';
+        private const char CharVolume = '@';
+
         public const string TagBasement = "basement";
         public const string TagCalm = "calm";
         public const string TagClown = "clown";
@@ -60,10 +64,11 @@ namespace IntelOrca.Biohazard
             _dataManager = dataManager;
         }
 
-        public void AddToSelection(string bgmJson, string bgmSubDirectory, string extension)
+        public void AddToSelection(string bgmJson, string bgmSubDirectory, string extension, double volume)
         {
             var bgmList = GetBgmList(bgmJson);
             bgmList.MakeFullPath(bgmSubDirectory, extension);
+            bgmList.SetVolume(volume);
             _srcBgmList.Union(bgmList);
         }
 
@@ -218,8 +223,16 @@ namespace IntelOrca.Biohazard
                 {
                     using (_logger.Progress.BeginTask(null, $"Converting '{src}'"))
                     {
+                        var volumeSep = src.IndexOf(CharVolume);
+                        var volume = ImportVolume;
+                        if (volumeSep != -1)
+                        {
+                            volume *= float.Parse(src.Substring(volumeSep + 1));
+                            src = src.Substring(0, volumeSep);
+                        }
+
                         using var stream = _fileRepo.GetStream(src);
-                        var builder = new WaveformBuilder(volume: ImportVolume);
+                        var builder = new WaveformBuilder(volume: volume);
                         if (_config.Game == 1)
                         {
                             // RE1 can't handle very large .wav files, limit tracks to 3 minutes
@@ -313,16 +326,35 @@ namespace IntelOrca.Biohazard
                         var name = list[i];
                         if (name.Length > 0)
                         {
-                            if (name[0] == '*')
+                            if (name[0] == CharSetNoUse)
                             {
                                 list[i] = "";
                             }
                             else
                             {
-                                if (name[0] == '!')
+                                if (name[0] == CharUseNoSet)
                                     name = name.Substring(1);
                                 list[i] = Path.Combine(bgmSubDirectory, name) + extension;
                             }
+                        }
+                    }
+                }
+            }
+
+            public void SetVolume(double volume)
+            {
+                if (volume == 1)
+                    return;
+
+                foreach (var kvp in _samples)
+                {
+                    var list = kvp.Value;
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        var name = list[i];
+                        if (name.Length > 0)
+                        {
+                            list[i] = name + CharVolume + volume.ToString("0.00");
                         }
                     }
                 }

@@ -67,11 +67,11 @@ namespace IntelOrca.Biohazard.RE3
             return Path.Combine(dataPath, "DATA_J", "RDT", $"R{rdtId}.RDT");
         }
 
-        internal void AddMusicSelection(BgmRandomiser bgmRandomizer, ReInstallConfig reConfig)
+        internal void AddMusicSelection(BgmRandomiser bgmRandomizer, ReInstallConfig reConfig, double volume)
         {
             var dataPath = GetDataPath(reConfig.GetInstallPath(BiohazardVersion));
             var srcBgmDirectory = Path.Combine(dataPath, BGMPath);
-            bgmRandomizer.AddToSelection(GetBgmJson(), srcBgmDirectory, ".WAV");
+            bgmRandomizer.AddToSelection(GetBgmJson(), srcBgmDirectory, ".WAV", volume);
         }
 
         public override void Generate(RandoConfig config, ReInstallConfig reConfig, IRandoProgress progress, FileRepository fileRepository)

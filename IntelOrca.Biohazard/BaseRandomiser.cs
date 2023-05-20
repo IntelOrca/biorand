@@ -369,28 +369,25 @@ namespace IntelOrca.Biohazard
             if (enabledBgms.Contains("RE1", StringComparer.OrdinalIgnoreCase))
             {
                 var r = new Re1Randomiser(BgCreator);
-                r.AddMusicSelection(bgmRandomizer, reConfig);
+                r.AddMusicSelection(bgmRandomizer, reConfig, 1.0);
             }
             if (enabledBgms.Contains("RE2", StringComparer.OrdinalIgnoreCase))
             {
                 var r = new Re2Randomiser(BgCreator);
-                r.AddMusicSelection(bgmRandomizer, reConfig);
+                r.AddMusicSelection(bgmRandomizer, reConfig, 1.0);
             }
             if (enabledBgms.Contains("RE3", StringComparer.OrdinalIgnoreCase))
             {
                 var r = new Re3Randomiser(BgCreator);
-                r.AddMusicSelection(bgmRandomizer, reConfig);
+                r.AddMusicSelection(bgmRandomizer, reConfig, 0.75);
             }
-            bgmRandomizer.AddCutomMusicToSelection(enabledBgms);
 
             if (BiohazardVersion == BioVersion.Biohazard1)
-            {
-                bgmRandomizer.ImportVolume = 0.25f;
-            }
-            else if (BiohazardVersion == BioVersion.Biohazard3)
-            {
                 bgmRandomizer.ImportVolume = 0.75f;
-            }
+            if (BiohazardVersion == BioVersion.Biohazard3)
+                bgmRandomizer.ImportVolume = 0.5f;
+            bgmRandomizer.AddCutomMusicToSelection(enabledBgms);
+
             using (progress.BeginTask(null, "Randomizing BGM"))
             {
                 bgmRandomizer.Randomise();

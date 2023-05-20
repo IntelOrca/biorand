@@ -244,11 +244,11 @@ namespace IntelOrca.Biohazard.RE2
             }
         }
 
-        internal void AddMusicSelection(BgmRandomiser bgmRandomizer, ReInstallConfig reConfig)
+        internal void AddMusicSelection(BgmRandomiser bgmRandomizer, ReInstallConfig reConfig, double volume)
         {
             var dataPath = GetDataPath(reConfig.GetInstallPath(BiohazardVersion));
             var srcBgmDirectory = Path.Combine(dataPath, BGMPath);
-            bgmRandomizer.AddToSelection(GetBgmJson(), srcBgmDirectory, ".sap");
+            bgmRandomizer.AddToSelection(GetBgmJson(), srcBgmDirectory, ".sap", volume);
         }
 
         internal override string BGMPath => @"Common\Sound\BGM";

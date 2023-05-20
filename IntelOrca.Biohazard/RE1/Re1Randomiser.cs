@@ -260,11 +260,11 @@ namespace IntelOrca.Biohazard.RE1
             }
         }
 
-        internal void AddMusicSelection(BgmRandomiser bgmRandomizer, ReInstallConfig reConfig)
+        internal void AddMusicSelection(BgmRandomiser bgmRandomizer, ReInstallConfig reConfig, double volume)
         {
             var dataPath = GetDataPath(reConfig.GetInstallPath(BiohazardVersion));
             var srcBgmDirectory = Path.Combine(dataPath, BGMPath);
-            bgmRandomizer.AddToSelection(GetBgmJson(), srcBgmDirectory, ".wav");
+            bgmRandomizer.AddToSelection(GetBgmJson(), srcBgmDirectory, ".wav", volume);
         }
 
         protected override void SerialiseInventory(FileRepository fileRepository)
