@@ -8,7 +8,7 @@
         bool IsOptionalItem(RandoConfig config, byte type);
         bool IsItemTypeDiscardable(byte type);
         bool IsItemInfinite(byte type);
-        bool IsItemDocument(byte type);
+        ItemAttribute GetItemAttributes(byte item);
         byte[] GetInitialKeyItems(RandoConfig config);
         int GetItemQuantity(RandoConfig config, byte item);
         byte[] GetAmmoTypeForWeapon(byte type);

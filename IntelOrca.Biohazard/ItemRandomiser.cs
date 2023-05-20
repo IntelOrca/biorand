@@ -432,7 +432,7 @@ namespace IntelOrca.Biohazard
             return true;
         }
 
-        private int? FindNewKeyItemLocation(int type, bool includeLowPriority)
+        private int? FindNewKeyItemLocation(int type, bool includeLowPriority, bool includeKeyItems)
         {
             var randomOrder = Enumerable.Range(0, _currentPool.Count).Shuffle(_rng).ToArray();
             var bestI = (int?)null;
@@ -446,6 +446,9 @@ namespace IntelOrca.Biohazard
                     continue;
 
                 if (!HasAllRequiredItems(item.Requires))
+                    continue;
+
+                if (!includeKeyItems && (_itemHelper.GetItemAttributes((byte)item.Type) & ItemAttribute.Key) != 0)
                     continue;
 
                 if (item.Type == type)
@@ -541,11 +544,19 @@ namespace IntelOrca.Biohazard
 
         private bool PlaceKeyItem(ushort req, bool alternativeRoute)
         {
+            // HACK for RE 2, Leon has lighter from start, Claire has lockpick instead of small keys
+            //      this means it won't exist anywhere in the game when adding it in
+            var noOriginalItemLocation = false;
+            if (_config.Game == 2 && ((_config.Player == 0 && req == (byte)ItemType.Lighter) || (_config.Player == 1 && req == (byte)ItemType.SmallKey)))
+            {
+                noOriginalItemLocation = true;
+            }
+
             // Get a new location for the key item
-            var index = FindNewKeyItemLocation(req, false);
+            var index = FindNewKeyItemLocation(req, includeLowPriority: false, includeKeyItems: !noOriginalItemLocation);
             if (index == null)
             {
-                index = FindNewKeyItemLocation(req, true);
+                index = FindNewKeyItemLocation(req, includeLowPriority: true, includeKeyItems: false);
                 if (index == null)
                 {
                     throw new Exception("Run out of free item slots");
@@ -557,8 +568,7 @@ namespace IntelOrca.Biohazard
 
             if (!_config.RandomDoors)
             {
-                // HACK for RE 2, Leon has lighter from start, Claire has lockpick instead of small keys
-                if (_config.Game == 2 && ((_config.Player == 0 && req == (byte)ItemType.Lighter) || (_config.Player == 1 && req == (byte)ItemType.SmallKey)))
+                if (noOriginalItemLocation)
                 {
                     itemEntry.Amount = 1;
                 }

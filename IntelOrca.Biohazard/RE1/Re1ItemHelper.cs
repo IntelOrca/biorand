@@ -57,11 +57,101 @@ namespace IntelOrca.Biohazard.RE1
             }
         }
 
-        public bool IsItemDocument(byte type)
+        public ItemAttribute GetItemAttributes(byte item)
         {
-            return type > Re1ItemIds.HerbGGB &&
-                type != Re1ItemIds.Uzi &&
-                type != Re1ItemIds.MiniGun;
+            switch (item)
+            {
+                case Re1ItemIds.Nothing:
+                    return 0;
+                case Re1ItemIds.CombatKnife:
+                case Re1ItemIds.Beretta:
+                case Re1ItemIds.Shotgun:
+                case Re1ItemIds.DumDumColt:
+                case Re1ItemIds.ColtPython:
+                    return ItemAttribute.Weapon;
+                case Re1ItemIds.FlameThrower:
+                    return ItemAttribute.Weapon | ItemAttribute.Key;
+                case Re1ItemIds.BazookaAcid:
+                case Re1ItemIds.BazookaExplosive:
+                case Re1ItemIds.BazookaFlame:
+                case Re1ItemIds.RocketLauncher:
+                    return ItemAttribute.Weapon;
+                case Re1ItemIds.Clip:
+                case Re1ItemIds.Shells:
+                case Re1ItemIds.DumDumRounds:
+                case Re1ItemIds.MagnumRounds:
+                case Re1ItemIds.FlameThrowerFuel:
+                case Re1ItemIds.ExplosiveRounds:
+                case Re1ItemIds.AcidRounds:
+                case Re1ItemIds.FlameRounds:
+                    return ItemAttribute.Ammo;
+                case Re1ItemIds.EmptyBottle:
+                case Re1ItemIds.Water:
+                case Re1ItemIds.UmbNo2:
+                case Re1ItemIds.UmbNo4:
+                case Re1ItemIds.UmbNo7:
+                case Re1ItemIds.UmbNo13:
+                case Re1ItemIds.Yellow6:
+                case Re1ItemIds.NP003:
+                case Re1ItemIds.VJolt:
+                case Re1ItemIds.BrokenShotgun:
+                case Re1ItemIds.SquareCrank:
+                case Re1ItemIds.HexCrank:
+                case Re1ItemIds.WoodEmblem:
+                case Re1ItemIds.GoldEmblem:
+                case Re1ItemIds.BlueJewel:
+                case Re1ItemIds.RedJewel:
+                case Re1ItemIds.MusicNotes:
+                case Re1ItemIds.WolfMedal:
+                case Re1ItemIds.EagleMedal:
+                case Re1ItemIds.Chemical:
+                case Re1ItemIds.Battery:
+                case Re1ItemIds.MODisk:
+                case Re1ItemIds.WindCrest:
+                case Re1ItemIds.Flare:
+                case Re1ItemIds.Slides:
+                case Re1ItemIds.MoonCrest:
+                case Re1ItemIds.StarCrest:
+                case Re1ItemIds.SunCrest:
+                    return ItemAttribute.Key;
+                case Re1ItemIds.InkRibbon:
+                    return ItemAttribute.InkRibbon;
+                case Re1ItemIds.Lighter:
+                case Re1ItemIds.LockPick:
+                case Re1ItemIds.CanOfOil:
+                case Re1ItemIds.SwordKey:
+                case Re1ItemIds.ArmorKey:
+                case Re1ItemIds.SheildKey:
+                case Re1ItemIds.HelmetKey:
+                case Re1ItemIds.MasterKey:
+                case Re1ItemIds.SpecialKey:
+                case Re1ItemIds.DormKey002:
+                case Re1ItemIds.DormKey003:
+                case Re1ItemIds.ControlRoomKey:
+                case Re1ItemIds.PowerRoomKey:
+                case Re1ItemIds.SmallKey:
+                case Re1ItemIds.RedBook:
+                case Re1ItemIds.DoomBook2:
+                case Re1ItemIds.DoomBook1:
+                    return ItemAttribute.Key;
+                case Re1ItemIds.FAidSpray:
+                case Re1ItemIds.Serum:
+                case Re1ItemIds.HerbR:
+                case Re1ItemIds.HerbG:
+                case Re1ItemIds.HerbB:
+                case Re1ItemIds.HerbGR:
+                case Re1ItemIds.HerbGG:
+                case Re1ItemIds.HerbGB:
+                case Re1ItemIds.HerbGRB:
+                case Re1ItemIds.HerbGGG:
+                case Re1ItemIds.HerbGGB:
+                    return ItemAttribute.Heal;
+                case Re1ItemIds.Uzi:
+                case Re1ItemIds.MiniGun:
+                    return ItemAttribute.Weapon;
+                default:
+                    return ItemAttribute.Document;
+            }
         }
 
         public byte[] GetInitialKeyItems(RandoConfig config)

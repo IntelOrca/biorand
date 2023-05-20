@@ -105,9 +105,127 @@ namespace IntelOrca.Biohazard.RE2
             return false;
         }
 
-        public bool IsItemDocument(byte type)
+        public ItemAttribute GetItemAttributes(byte item)
         {
-            return type > (byte)ItemType.PlatformKey;
+            switch ((ItemType)item)
+            {
+                case ItemType.None:
+                    return 0;
+                case ItemType.Knife:
+                case ItemType.HandgunLeon:
+                case ItemType.HandgunClaire:
+                case ItemType.CustomHandgun:
+                case ItemType.Magnum:
+                case ItemType.CustomMagnum:
+                case ItemType.Shotgun:
+                case ItemType.CustomShotgun:
+                case ItemType.GrenadeLauncherExplosive:
+                case ItemType.GrenadeLauncherFlame:
+                case ItemType.GrenadeLauncherAcid:
+                case ItemType.Bowgun:
+                case ItemType.ColtSAA:
+                case ItemType.Sparkshot:
+                case ItemType.SMG:
+                case ItemType.Flamethrower:
+                case ItemType.RocketLauncher:
+                case ItemType.GatlingGun:
+                case ItemType.Beretta:
+                    return ItemAttribute.Weapon;
+                case ItemType.HandgunAmmo:
+                case ItemType.ShotgunAmmo:
+                case ItemType.MagnumAmmo:
+                case ItemType.FuelTank:
+                case ItemType.ExplosiveRounds:
+                case ItemType.FlameRounds:
+                case ItemType.AcidRounds:
+                case ItemType.SMGAmmo:
+                case ItemType.SparkshotAmmo:
+                case ItemType.BowgunAmmo:
+                    return ItemAttribute.Ammo;
+                case ItemType.InkRibbon:
+                    return ItemAttribute.InkRibbon;
+                case ItemType.SmallKey:
+                    return ItemAttribute.Key;
+                case ItemType.HandgunParts:
+                case ItemType.MagnumParts:
+                case ItemType.ShotgunParts:
+                    return ItemAttribute.Weapon;
+                case ItemType.FAidSpray:
+                    return ItemAttribute.Heal;
+                case ItemType.AntivirusBomb:
+                case ItemType.ChemicalACw32:
+                    return ItemAttribute.Key;
+                case ItemType.HerbG:
+                case ItemType.HerbR:
+                case ItemType.HerbB:
+                case ItemType.HerbGG:
+                case ItemType.HerbGR:
+                case ItemType.HerbGB:
+                case ItemType.HerbGGG:
+                case ItemType.HerbGGB:
+                case ItemType.HerbGRB:
+                    return ItemAttribute.Heal;
+                case ItemType.Lighter:
+                case ItemType.Lockpick:
+                    return ItemAttribute.Key;
+                case ItemType.PhotoSherry:
+                    return 0;
+                case ItemType.ValveHandle:
+                case ItemType.RedJewel:
+                case ItemType.RedCard:
+                case ItemType.BlueCard:
+                case ItemType.SerpentStone:
+                case ItemType.JaguarStone:
+                case ItemType.JaguarStoneL:
+                case ItemType.JaguarStoneR:
+                case ItemType.EagleStone:
+                case ItemType.BishopPlug:
+                case ItemType.RookPlug:
+                case ItemType.KnightPlug:
+                case ItemType.KingPlug:
+                case ItemType.WeaponBoxKey:
+                case ItemType.Detonator:
+                case ItemType.C4:
+                case ItemType.C4Detonator:
+                case ItemType.Crank:
+                case ItemType.FilmA:
+                case ItemType.FilmB:
+                case ItemType.FilmC:
+                case ItemType.UnicornMedal:
+                case ItemType.EagleMedal:
+                case ItemType.WolfMedal:
+                case ItemType.Cog:
+                case ItemType.ManholeOpener:
+                case ItemType.MainFuse:
+                case ItemType.FuseCase:
+                case ItemType.Vaccine:
+                case ItemType.VaccineCart:
+                case ItemType.FilmD:
+                case ItemType.VaccineBase:
+                case ItemType.GVirus:
+                case ItemType.SpecialKey:
+                case ItemType.JointPlugBlue:
+                case ItemType.JointPlugRed:
+                case ItemType.Cord:
+                    return ItemAttribute.Key;
+                case ItemType.PhotoAda:
+                    return 0;
+                case ItemType.CabinKey:
+                case ItemType.SpadeKey:
+                case ItemType.DiamondKey:
+                case ItemType.HeartKey:
+                case ItemType.ClubKey:
+                case ItemType.DownKey:
+                case ItemType.UpKey:
+                case ItemType.PowerRoomKey:
+                case ItemType.MODisk:
+                case ItemType.UmbrellaKeyCard:
+                case ItemType.MasterKey:
+                case ItemType.PlatformKey:
+                    return ItemAttribute.Key;
+                default:
+                    return ItemAttribute.Document;
+            }
         }
 
         public byte[] GetInitialKeyItems(RandoConfig config)

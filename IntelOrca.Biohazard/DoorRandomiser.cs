@@ -1325,7 +1325,7 @@ namespace IntelOrca.Biohazard
             var rdt = _gameData.GetRdt(rdtId)!;
             var items = rdt.EnumerateOpcodes<IItemAotSetOpcode>(_config)
                 .DistinctBy(x => x.Id)
-                .Where(x => _config.IncludeDocuments || !_itemHelper.IsItemDocument((byte)x.Type))
+                .Where(x => _config.IncludeDocuments || (_itemHelper.GetItemAttributes((byte)x.Type) & ItemAttribute.Document) == 0)
                 .Select(x => new ItemPoolEntry()
                 {
                     RdtId = rdt.RdtId,
