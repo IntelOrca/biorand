@@ -117,7 +117,7 @@ namespace IntelOrca.Biohazard
                 else
                 {
                     // Reserve for weapon
-                    _specialItem = 0;
+                    _specialItem = null;
                 }
             }
             else
@@ -144,7 +144,7 @@ namespace IntelOrca.Biohazard
                 _logger.WriteHeading($"Randomizing Inventory {i}:");
 
                 // Special item
-                if (i == 0 && _specialItem.HasValue)
+                if (i == 0 && !_specialItem.HasValue)
                 {
                     var possibleItems = _startingWeapons
                         .Select(x => x.Type)
