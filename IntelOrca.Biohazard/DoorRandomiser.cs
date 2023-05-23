@@ -160,7 +160,7 @@ namespace IntelOrca.Biohazard
             if (_config.Game != 3)
                 return;
 
-            // For 30B, change boos door to id 30 so we can separate it from the normal door
+            // For 30B, change boss door to id 30 so we can separate it from the normal door
             var rdt = _gameData.GetRdt(new RdtId(2, 0x0B));
             if (rdt != null)
             {
@@ -491,6 +491,20 @@ namespace IntelOrca.Biohazard
             rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x4C, new byte[] { 3, 158, 1 }));
             // bits[3][138] = 1
             rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x4D, new byte[] { 3, 138, 1 }));
+            // endif
+            rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x08, new byte[] { 0x00 }));
+
+            if (!_config.RandomDoors)
+                return;
+
+            // Fix camera angle if Nemesis event has happened
+            // if (bits[3][162] == 1)
+            rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x06, new byte[] { 0x00, 0x0A, 0x00 }));
+            rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x4C, new byte[] { 3, 162, 1 }));
+            // cut_chg(21);
+            rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x50, new byte[] { 21 }));
+            // cut_auto(1);
+            rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x52, new byte[] { 1 }));
             // endif
             rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x08, new byte[] { 0x00 }));
         }
