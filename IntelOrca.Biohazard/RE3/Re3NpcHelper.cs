@@ -94,8 +94,6 @@ namespace IntelOrca.Biohazard.RE3
                         Re3EnemyIds.BradZombie,
                         Re3EnemyIds.DarioZombie,
                         Re3EnemyIds.PromoGirl,
-                        Re3EnemyIds.JillValentine1,
-                        Re3EnemyIds.JillValentine2,
                         Re3EnemyIds.NikolaiDead,
                         Re3EnemyIds.ChiefIrons
                     };
