@@ -835,7 +835,7 @@ namespace IntelOrca.Biohazard
                 .ToList();
             if (_config.PrioritiseCutscenes)
             {
-                boxNodes = _nodesLeft
+                boxNodes = boxNodes
                     .OrderBy(x => x.HasCutscene ? 0 : 1)
                     .ToList();
             }
