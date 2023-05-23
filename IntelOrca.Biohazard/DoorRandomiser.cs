@@ -193,6 +193,7 @@ namespace IntelOrca.Biohazard
             UnblockWasteDisposalDoor();
             FixRE3TowerOutdoor();
             FixNemesisFlag();
+            FixWarehouseAlley();
             if (_config.RandomDoors)
             {
                 FixRE3HydrantAlley();
@@ -517,6 +518,15 @@ namespace IntelOrca.Biohazard
                 // bits[1][0] = 0
                 rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x4D, new byte[] { 0x01, 0x00, 0x00 }));
             }
+        }
+
+        private void FixWarehouseAlley()
+        {
+            var rdt = _gameData.GetRdt(new RdtId(0, 0x1D));
+            if (rdt == null)
+                return;
+
+            rdt.Nop(0x0AA0);
         }
 
         private static void CopyDoorTo(Rdt rdt, int dstId, int srcId)
