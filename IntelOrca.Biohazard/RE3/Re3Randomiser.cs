@@ -12,6 +12,7 @@ namespace IntelOrca.Biohazard.RE3
         private ReInstallConfig? _reInstallConfig;
 
         protected override BioVersion BiohazardVersion => BioVersion.Biohazard3;
+        internal override IDoorHelper DoorHelper => new Re3DoorHelper();
         internal override IItemHelper ItemHelper => new Re3ItemHelper();
         internal override IEnemyHelper EnemyHelper => new Re3EnemyHelper();
         internal override INpcHelper NpcHelper => new Re3NpcHelper();

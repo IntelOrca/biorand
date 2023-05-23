@@ -10,6 +10,7 @@ namespace IntelOrca.Biohazard.RE1
     public class Re1Randomiser : BaseRandomiser
     {
         protected override BioVersion BiohazardVersion => BioVersion.Biohazard1;
+        internal override IDoorHelper DoorHelper { get; } = new Re1DoorHelper();
         internal override IItemHelper ItemHelper { get; } = new Re1ItemHelper();
         internal override IEnemyHelper EnemyHelper { get; } = new Re1EnemyHelper();
         internal override INpcHelper NpcHelper { get; } = new Re1NpcHelper();

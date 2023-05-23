@@ -17,6 +17,7 @@ namespace IntelOrca.Biohazard.RE2
         private ReInstallConfig? _reInstallConfig;
 
         protected override BioVersion BiohazardVersion => BioVersion.Biohazard2;
+        internal override IDoorHelper DoorHelper { get; } = new Re2DoorHelper();
         internal override IItemHelper ItemHelper { get; } = new Re2ItemHelper();
         internal override IEnemyHelper EnemyHelper { get; } = new Re2EnemyHelper();
         internal override INpcHelper NpcHelper { get; } = new Re2NpcHelper();

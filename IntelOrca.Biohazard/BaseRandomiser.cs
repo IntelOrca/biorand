@@ -19,6 +19,7 @@ namespace IntelOrca.Biohazard
         internal List<RandomInventory?> Inventories { get; } = new List<RandomInventory?>();
 
         protected abstract BioVersion BiohazardVersion { get; }
+        internal abstract IDoorHelper DoorHelper { get; }
         internal abstract IItemHelper ItemHelper { get; }
         internal abstract IEnemyHelper EnemyHelper { get; }
         internal abstract INpcHelper NpcHelper { get; }
@@ -277,7 +278,7 @@ namespace IntelOrca.Biohazard
                 if (config.RandomDoors || config.RandomItems)
                 {
                     var dgmlPath = fileRepository.GetModPath($"graph_pl{config.Player}.dgml");
-                    var doorRando = new DoorRandomiser(logger, config, gameData, map, randomDoors, ItemHelper);
+                    var doorRando = new DoorRandomiser(logger, config, gameData, map, randomDoors, DoorHelper, ItemHelper);
                     var itemRando = new ItemRandomiser(logger, config, gameData, randomItems, ItemHelper);
                     using (progress.BeginTask(config.Player, "Randomizing doors"))
                     {
