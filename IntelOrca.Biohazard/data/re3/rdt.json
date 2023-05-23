@@ -155,7 +155,8 @@
           "target": "106"
         },
         {
-          "target": "107"
+          "target": "107",
+          "lock": "unblock"
         },
         {
           "target": "108"
@@ -163,9 +164,10 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 47, 91, 95, 103 ]
+          "excludeTypes": [ 47, 91, 95, 96, 103 ]
         }
-      ]
+      ],
+      "enemies": []
     },
     "106": {
       "linkedRoom": "121",
