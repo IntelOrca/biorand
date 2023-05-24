@@ -675,7 +675,18 @@ namespace IntelOrca.Biohazard
             }
 
             if (!refillPool)
-                return null;
+            {
+                if (kind == "scream")
+                {
+                    // Try find a death sound instead
+                    return GetRandomVoice(rng, actor, "death", actors, maxLength, true);
+                }
+                else if (kind != null)
+                {
+                    // Fallback to any kind of voice
+                    return GetRandomVoice(rng, actor, null, actors, maxLength, true);
+                }
+            }
 
             // Do not add lines that are already in the pool.
             // Otherwise we can end up with many duplicates in a row

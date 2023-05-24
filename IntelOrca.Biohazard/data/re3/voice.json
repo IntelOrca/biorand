@@ -1,6 +1,6 @@
 {
     "DATA_A/VOICE/M11A_010.WAV": { "rdt": "11A", "cutscene": 0, "actor": "carlos", "kind": "radio" },
-    "DATA_A/VOICE/M11BA010.WAV": { "rdt": "11B", "cutscene": 0, "actor": "murphy" },
+    "DATA_A/VOICE/M11BA010.WAV": { "rdt": "11B", "cutscene": 0, "actor": "murphy", "kind": "doom" },
     "DATA_A/VOICE/M11BA020.WAV": { "rdt": "11B", "cutscene": 0, "actor": "jill.re3" },
     "DATA_A/VOICE/M11BA030.WAV": { "rdt": "11B", "cutscene": 0, "actor": "nikolai" },
     "DATA_A/VOICE/M11BA040.WAV": { "rdt": "11B", "cutscene": 0, "actor": "nikolai" },
@@ -168,7 +168,7 @@
     "DATA_A/VOICE/M40B_050.WAV": { "rdt": "40A", "actor": "tyrell" },
     "DATA_A/VOICE/M40B_060.WAV": { "rdt": "40A", "actor": "tyrell" },
     "DATA_A/VOICE/M40B_070.WAV": { "rdt": "40A", "actor": "carlos", "condition": "!nikolai" },
-    "DATA_A/VOICE/M40B_080.WAV": { "rdt": "40A", "actor": "tyrell", "kind": "death" },
+    "DATA_A/VOICE/M40B_080.WAV": { "rdt": "40A", "actor": "tyrell", "kind": "scream" },
     "DATA_A/VOICE/M50AA010.WAV": { "rdt": "50A", "actor": "carlos", "condition": "@jill", "kind": "radio" },
     "DATA_A/VOICE/M50AA020.WAV": { "rdt": "50A", "actor": "carlos", "kind": "radio" },
     "DATA_A/VOICE/M50AB010.WAV": { "rdt": "50A", "actor": "jill.re3" },
