@@ -864,6 +864,7 @@
         },
         {
           "includeOffsets": [ 29256 ],
+          "excludeTypes": [ 47 ],
           "cutscene": 1
         }
       ],
