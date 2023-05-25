@@ -26,6 +26,7 @@ namespace IntelOrca.Biohazard.RE3
             UnblockRpdDoor();
             FixRE3SalesOffice();
             FixRE3LockpickDoor();
+            FixPressStreet();
             FixStagla();
             FixRE3Train();
             UnblockWasteDisposalDoor();
@@ -82,6 +83,15 @@ namespace IntelOrca.Biohazard.RE3
                     var lockpickDoor1 = rdt1.Doors.First(x => x.Id == 2);
                     var lockpickDoor2 = rdt2.Doors.First(x => x.Id == 2);
                     CopyDoorTo(lockpickDoor1, lockpickDoor2);
+                }
+            }
+
+            void FixPressStreet()
+            {
+                var rdt = gameData.GetRdt(new RdtId(1, 0x07));
+                if (rdt != null)
+                {
+                    AddCutCorrection(rdt, 143, 0, 10);
                 }
             }
 
@@ -261,7 +271,7 @@ namespace IntelOrca.Biohazard.RE3
                 rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x4C, new byte[] { 0x03, flag3, 0x01 }));
                 rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x4E, new byte[] { 0x00, 0x1A, 0x00, originalCut, 0x00 }));
 
-                // cut_chg(11);
+                // cut_chg(newCut);
                 rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x50, new byte[] { newCut }));
 
                 // cut_auto(1);
@@ -336,15 +346,7 @@ namespace IntelOrca.Biohazard.RE3
                     return;
 
                 // Fix camera angle if Nemesis event has happened
-                // if (bits[3][162] == 1)
-                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x06, new byte[] { 0x00, 0x0A, 0x00 }));
-                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x4C, new byte[] { 3, 162, 1 }));
-                // cut_chg(21);
-                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x50, new byte[] { 21 }));
-                // cut_auto(1);
-                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x52, new byte[] { 1 }));
-                // endif
-                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x08, new byte[] { 0x00 }));
+                AddCutCorrection(rdt, 162, 0, 21);
             }
 
             void FixNemesisFlag()
@@ -367,7 +369,7 @@ namespace IntelOrca.Biohazard.RE3
             }
         }
 
-        static void CopyDoorTo(Rdt rdt, int dstId, int srcId)
+        private static void CopyDoorTo(Rdt rdt, int dstId, int srcId)
         {
             var src = rdt.Doors.First(x => x.Id == srcId);
             foreach (var dst in rdt.Doors.Where(x => x.Id == dstId))
@@ -382,7 +384,7 @@ namespace IntelOrca.Biohazard.RE3
             }
         }
 
-        static void CopyDoorTo(IDoorAotSetOpcode dst, IDoorAotSetOpcode src)
+        private static void CopyDoorTo(IDoorAotSetOpcode dst, IDoorAotSetOpcode src)
         {
             dst.Target = src.Target;
             dst.NextX = src.NextX;
