@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -28,6 +29,7 @@ namespace IntelOrca.Biohazard
         private int _lastPlotId;
         private Action? _extra;
         private PointOfInterest[] _poi = new PointOfInterest[0];
+        private int[] _allKnownCuts;
         private REPosition[] _enemyPositions = new REPosition[0];
 
         public CutsceneRandomiser(RandoLogger logger, DataManager dataManager, RandoConfig config, GameData gameData, Map map, Rng rng, IEnemyHelper enemyHelper, INpcHelper npcHelper)
@@ -80,6 +82,8 @@ namespace IntelOrca.Biohazard
             _rdtId = rdt.RdtId;
             _lastPlotId = -1;
             _poi = info.Poi ?? new PointOfInterest[0];
+            _allKnownCuts = _poi.SelectMany(x => x.AllCuts).ToArray();
+            TidyPoi();
             // ChainRandomPlot(PlotKind.MeetStaticNPC);
             // ChainRandomPlot(PlotKind.EnemyWalksIn);
             // ChainRandomPlot(PlotKind.EnemyGetsUp);
@@ -112,6 +116,17 @@ namespace IntelOrca.Biohazard
 
             cb.End();
             rdt.CustomAdditionalScript = cb.ToString();
+        }
+
+        private void TidyPoi()
+        {
+            foreach (var poi in _poi)
+            {
+                poi.Edges ??= _poi
+                    .Where(x => x.Edges?.Contains(poi.Id) == true)
+                    .Select(x => x.Id)
+                    .ToArray();
+            }
         }
 
         private void ChainRandomPlot()
@@ -159,7 +174,7 @@ namespace IntelOrca.Biohazard
             _lastPlotId = _plotId;
         }
 
-        private void AddTriggers(int[]? notCuts)
+        private PointOfInterest? AddTriggers(int[]? notCuts)
         {
             if (_lastPlotId != -1)
             {
@@ -186,18 +201,19 @@ namespace IntelOrca.Biohazard
                 LogTrigger($"wait {sleepTime} seconds");
             }
 
+            _cb.WaitForPlotUnlock();
+
             if (justSleep)
-                return;
+                return null;
 
             // Random cut
-            var cut = _poi
-                .Select(x => x.Cut)
-                .Distinct()
-                .Where(x => !notCuts.Contains(x))
+            var triggerPoi = _poi
+                .Where(x => x.Kind == "trigger" && !notCuts.Contains(x.Cut))
                 .Shuffle(_rng)
                 .FirstOrDefault();
-            LogTrigger($"cut {cut}");
-            _cb.WaitForTriggerCut(cut);
+            LogTrigger($"cut {triggerPoi.Cut}");
+            _cb.WaitForTriggerCut(triggerPoi.Cut);
+            return triggerPoi;
         }
 
         private void LogTrigger(string s) => _logger.WriteLine($"      [trigger] {s}");
@@ -247,11 +263,13 @@ namespace IntelOrca.Biohazard
             AddTriggers(new int[0]);
 
             // Wake up enemies incrementally
+            _cb.LockPlot();
             foreach (var eid in enemyIds)
             {
                 _cb.Sleep(_rng.Next(5, 15));
                 _cb.ActivateEnemy(eid);
             }
+            _cb.UnlockPlot();
             LogAction($"{enemyIds.Length}x enemy wake up");
         }
 
@@ -282,6 +300,7 @@ namespace IntelOrca.Biohazard
             AddTriggers(door.Cuts);
 
             // Move enemies into position and cut to them
+            _cb.LockPlot();
             DoDoorOpenCloseCut(door);
             _cb.BeginCutsceneMode();
             foreach (var eid in enemyIds)
@@ -293,21 +312,26 @@ namespace IntelOrca.Biohazard
             _cb.Sleep(60);
             _cb.CutRevert();
             _cb.EndCutsceneMode();
+            _cb.UnlockPlot();
         }
 
         private void DoNPCWalksIn()
         {
             var npcId = _cb.AllocateEnemies(1).FirstOrDefault();
             var door = GetRandomDoor();
-            var meetup = _poi.FirstOrDefault(x => x.Kind == "meet")!;
-            var meetA = new REPosition(meetup.X + 1000, meetup.Y, meetup.Z, meetup.D);
-            var meetB = new REPosition(meetup.X - 1000, meetup.Y, meetup.Z, meetup.D);
+            var meetup = _poi.Where(x => x.Kind == "meet").Shuffle(_rng).FirstOrDefault();
+            var meetA = new REPosition(meetup.X + 1000, meetup.Y, meetup.Z, 2000);
+            var meetB = new REPosition(meetup.X - 1000, meetup.Y, meetup.Z, 0);
 
             _cb.IfPlotTriggered();
             _cb.ElseBeginTriggerThread();
             _cb.Ally(npcId, REPosition.OutOfBounds.WithY(door.Position.Y));
 
-            AddTriggers(door.Cuts);
+            var triggerCut = AddTriggers(door.Cuts);
+            if (triggerCut == null)
+                throw new Exception("Cutscene not supported for non-cut triggers.");
+
+            _cb.LockPlot();
 
             // Mark the cutscene as done in case it softlocks
             _cb.SetFlag(4, _plotId);
@@ -315,28 +339,84 @@ namespace IntelOrca.Biohazard
             DoDoorOpenCloseCut(door);
             _cb.BeginCutsceneMode();
             _cb.MoveEnemy(npcId, door.Position);
-            _cb.SetEnemyNeck(npcId);
             _cb.PlayVoice(21);
             _cb.Sleep(30);
             LogAction($"NPC walk in");
 
-            _cb.CutChange(meetup.Cut);
-            _cb.SetEnemyDestination(-1, meetA, true);
-            _cb.SetEnemyDestination(npcId, meetB, true);
-            _cb.WaitForEnemyTravel(-1);
-            LogAction($"player & NPC travel to cut {meetup.Cut}");
+            _cb.CutRevert();
 
+            IntelliTravelTo(npcId, door, meetup, meetB, run: true);
+            IntelliTravelTo(-1, triggerCut, meetup, meetA, run: true);
+
+            LogAction($"Focus on {meetup}");
+            if (meetup.CloseCut != null)
+                _cb.CutChange(meetup.CloseCut.Value);
+            else
+                _cb.CutChange(meetup.Cut);
             LongConversation();
+            _cb.CutChange(meetup.Cut);
 
-            _cb.SetEnemyDestination(npcId, door.Position, true);
-            _cb.WaitForEnemyTravel(-1);
-            LogAction($"NPC travel");
+            IntelliTravelTo(npcId, meetup, door, null, run: true);
 
             _cb.MoveEnemy(npcId, REPosition.OutOfBounds);
-            DoDoorOpenClose(door);
+            _cb.StopEnemy(npcId);
+
+            DoDoorOpenCloseCutAway(door, meetup.Cut);
             _cb.ReleaseEnemyControl(-1);
             _cb.CutAuto();
             _cb.EndCutsceneMode();
+            _cb.UnlockPlot();
+        }
+
+        private void DoDoorOpenCloseCutAway(PointOfInterest door, int currentCut)
+        {
+            var cuts = door.AllCuts;
+            var needsCut = cuts.Contains(currentCut) == true;
+            if (needsCut)
+            {
+                var cut = _allKnownCuts.Except(cuts).Shuffle(_rng).FirstOrDefault();
+                _cb.CutChange(cut);
+                LogAction($"door away cut {cut}");
+            }
+            else
+            {
+                LogAction($"door");
+            }
+            DoDoorOpenClose(door);
+            _cb.CutRevert();
+        }
+
+        private void IntelliTravelTo(int enemyId, PointOfInterest from, PointOfInterest destination, REPosition? overrideDestination, bool run)
+        {
+            var route = GetTravelRoute(from, destination);
+            foreach (var poi in route)
+            {
+                if (overrideDestination != null && poi == destination)
+                    break;
+
+                _cb.SetEnemyDestination(enemyId, poi.Position, run);
+                _cb.WaitForEnemyTravel(enemyId);
+                _cb.Sleep(2);
+                if (enemyId == -1)
+                    _cb.CutChange(poi.Cut);
+                LogAction($"{GetCharLogName(enemyId)} travel to {poi}");
+            }
+            if (overrideDestination != null)
+            {
+                _cb.SetEnemyDestination(enemyId, overrideDestination.Value, run);
+                _cb.WaitForEnemyTravel(enemyId);
+                _cb.MoveEnemy(enemyId, overrideDestination.Value);
+                LogAction($"{GetCharLogName(enemyId)} travel to {overrideDestination}");
+            }
+            else
+            {
+                _cb.MoveEnemy(enemyId, destination.Position);
+            }
+        }
+
+        private string GetCharLogName(int enemyId)
+        {
+            return enemyId == -1 ? "player" : $"npc {enemyId}";
         }
 
         private void DoStaticNPC()
@@ -395,6 +475,7 @@ namespace IntelOrca.Biohazard
 
         private void DoDoorOpenCloseCut(PointOfInterest door)
         {
+            _cb.SetFlag(2, 7, true);
             DoDoorOpenClose(door);
             _cb.CutChange(door.Cut);
             LogAction($"door cut {door.Cut}");
@@ -406,6 +487,66 @@ namespace IntelOrca.Biohazard
                 .Where(x => x.Kind == "door" || x.Kind == "stairs")
                 .Shuffle(_rng)
                 .FirstOrDefault();
+        }
+
+        private PointOfInterest? FindPoi(int id)
+        {
+            return _poi.FirstOrDefault(x => x.Id == id);
+        }
+
+        private PointOfInterest[] GetEdges(PointOfInterest poi)
+        {
+            var edges = poi.Edges;
+            if (edges == null)
+                return new PointOfInterest[0];
+
+            return edges
+                .Select(x => FindPoi(x))
+                .Where(x => x != null)
+                .Select(x => x!)
+                .ToArray();
+        }
+
+        private PointOfInterest[] GetTravelRoute(PointOfInterest from, PointOfInterest destination)
+        {
+            var prev = new Dictionary<PointOfInterest, PointOfInterest>();
+            var q = new Queue<PointOfInterest>();
+            q.Enqueue(from);
+
+            var found = false;
+            while (!found && q.Count != 0)
+            {
+                var curr = q.Dequeue();
+                var edges = GetEdges(curr);
+                foreach (var edge in edges)
+                {
+                    if (!prev.ContainsKey(edge))
+                    {
+                        prev[edge] = curr;
+                        if (edge == destination)
+                        {
+                            found = true;
+                            break;
+                        }
+                        q.Enqueue(edge);
+                    }
+                }
+            }
+
+            if (!found)
+            {
+                // throw new Exception("Failed to find POI route from source to destination.");
+                return new[] { destination };
+            }
+
+            var route = new List<PointOfInterest>();
+            var poi = destination;
+            while (poi != from)
+            {
+                route.Add(poi);
+                poi = prev[poi];
+            }
+            return ((IEnumerable<PointOfInterest>)route).Reverse().ToArray();
         }
 
         private void LoadCutsceneRoomInfo()
@@ -455,6 +596,8 @@ namespace IntelOrca.Biohazard
         public REPosition WithY(int y) => new REPosition(X, y, Z, D);
 
         public static REPosition OutOfBounds { get; } = new REPosition(-32000, 0, -32000);
+
+        public override string ToString() => $"({X},{Y},{Z},{D})";
     }
 
     public class CutsceneRoomInfo
@@ -464,15 +607,33 @@ namespace IntelOrca.Biohazard
 
     public class PointOfInterest
     {
+        public int Id { get; set; }
         public string? Kind { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
         public int Z { get; set; }
         public int D { get; set; }
         public int Cut { get; set; }
+        public int? CloseCut { get; set; }
         public int[]? Cuts { get; set; }
+        public int[]? Edges { get; set; }
 
         public REPosition Position => new REPosition(X, Y, Z, D);
+
+        public int[] AllCuts
+        {
+            get
+            {
+                var cuts = new List<int> { Cut };
+                if (Cuts != null)
+                    cuts.AddRange(Cuts);
+                if (CloseCut != null)
+                    cuts.Add(CloseCut.Value);
+                return cuts.ToArray();
+            }
+        }
+
+        public override string ToString() => $"Id = {Id} Kind = {Kind} Cut = {Cut} Position = {Position}";
     }
 
     public enum PlotKind

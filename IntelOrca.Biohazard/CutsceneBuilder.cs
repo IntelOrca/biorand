@@ -29,6 +29,7 @@ namespace IntelOrca.Biohazard
         public void End()
         {
             BeginProcedure("biorand_custom");
+            UnlockPlot();
             for (int i = 0; i < _plotCount; i++)
             {
                 Call($"plot_{i}");
@@ -109,14 +110,14 @@ namespace IntelOrca.Biohazard
 
         public void MoveEnemy(int id, REPosition pos)
         {
-            AppendLine("work_set", "WK_ENEMY", id);
+            WorkOnEnemy(id);
             AppendLine("pos_set", 0, pos.X, pos.Y, pos.Z);
             AppendLine("dir_set", 0, 0, pos.D, 0);
         }
 
         public void ActivateEnemy(int id)
         {
-            AppendLine("work_set", "WK_ENEMY", id);
+            WorkOnEnemy(id);
             AppendLine("member_copy", 16, 7);
             AppendLine("calc", 0, "OP_AND", 16, "0x7FFF");
             AppendLine("member_set2", 7, 16);
@@ -132,7 +133,7 @@ namespace IntelOrca.Biohazard
         public void SetEnemyDestination(int id, REPosition pos, bool run = false)
         {
             WorkOnEnemy(id);
-            AppendLine("plc_dest", 0, run ? 5 : 4, 32, pos.X, pos.Z);
+            AppendLine("plc_dest", 0, run ? 5 : 4, id == -1 ? 32 : 33, pos.X, pos.Z);
         }
 
         public void SetEnemyNeck(int id)
@@ -154,7 +155,7 @@ namespace IntelOrca.Biohazard
 
         public void WaitForEnemyTravel(int id)
         {
-            BeginLoop(4);
+            BeginWhileLoop(4);
             CheckFlag(5, id == -1 ? 32 : 33, false);
             AppendLine("evt_next");
             AppendLine("nop");
@@ -165,6 +166,12 @@ namespace IntelOrca.Biohazard
         {
             WorkOnEnemy(id);
             AppendLine("plc_ret");
+        }
+
+        public void StopEnemy(int id)
+        {
+            WorkOnEnemy(id);
+            AppendLine("plc_stop");
         }
 
         public void PlayDoorSoundOpen(REPosition pos)
@@ -244,7 +251,7 @@ namespace IntelOrca.Biohazard
 
         public void WaitForTriggerCut(int id)
         {
-            BeginLoop(6);
+            BeginWhileLoop(6);
             AppendLine("cmp", 0, 26, "CMP_NE", id);
             AppendLine("evt_next");
             AppendLine("nop");
@@ -253,11 +260,30 @@ namespace IntelOrca.Biohazard
 
         public void WaitForPlot(int id)
         {
-            BeginLoop(4);
+            BeginWhileLoop(4);
             CheckFlag(4, id, false);
             AppendLine("evt_next");
             AppendLine("nop");
             EndLoop();
+        }
+
+        public void WaitForPlotUnlock()
+        {
+            BeginWhileLoop(4);
+            CheckFlag(4, 15, true);
+            AppendLine("evt_next");
+            AppendLine("nop");
+            EndLoop();
+        }
+
+        public void LockPlot()
+        {
+            SetFlag(4, 15);
+        }
+
+        public void UnlockPlot()
+        {
+            SetFlag(4, 15, false);
         }
 
         public void EndTrigger()
@@ -265,7 +291,7 @@ namespace IntelOrca.Biohazard
             EndIf();
         }
 
-        public void BeginLoop(int conditionLength)
+        public void BeginWhileLoop(int conditionLength)
         {
             AppendLine("while", conditionLength, LabelName(CreateLabel()));
         }
