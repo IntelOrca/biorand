@@ -23,6 +23,7 @@ BioRand v3.0.3 (2023-05-26)
 * [Fix] #396: RE 3, room 207, camera lock when re-entering after panic event.
 * [Fix] #397: RE 3, room 21A, crash if the dogs are damaged by explosive barrel.
 * [Fix] #399: RE 3, room 40B, camera angle stuck after draining the fish tanks.
+* [Fix] #400: RE 3, room 11B, glitches if entered after room 11C cutscene.
 
 BioRand v3.0.2 (2023-05-16)
 

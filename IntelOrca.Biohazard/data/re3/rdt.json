@@ -598,7 +598,8 @@
     "11B": {
       "doorRando": [
         {
-          "cutscene": true
+          "cutscene": true,
+          "nop": [ "0x41AE-0x41C8", "0x42BE", "0x4DFC", "0x512C" ]
         }
       ],
       "doors": [
