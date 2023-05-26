@@ -8,7 +8,11 @@ namespace IntelOrca.Biohazard
 {
     public class CutsceneBuilder
     {
-        private StringBuilder _sb = new StringBuilder();
+        private StringBuilder _sb;
+        private StringBuilder _sbMain = new StringBuilder();
+        private StringBuilder _sbSub = new StringBuilder();
+        private string? _subProcedureName;
+
         private int _enemyCount;
         private int _labelCount;
         private int _flagCount = 16;
@@ -21,6 +25,11 @@ namespace IntelOrca.Biohazard
         private bool _hasPlotTrigger;
 
         public override string ToString() => _sb.ToString();
+
+        public CutsceneBuilder()
+        {
+            _sb = _sbMain;
+        }
 
         public void Begin()
         {
@@ -62,7 +71,7 @@ namespace IntelOrca.Biohazard
             var plotLoopName = $"plot_loop_{_plotCount - 1}";
 
             Else();
-            AppendLine("evt_exec", 255, "I_GOSUB", plotLoopName);
+            CallThread(plotLoopName);
             EndIf();
             EndProcedure();
 
@@ -88,7 +97,7 @@ namespace IntelOrca.Biohazard
 
         public void Event(REPosition pos, int size, string proc)
         {
-            AppendLine("aot_set", 20, "SCE_EVENT", "SAT_PL | SAT_MANUAL | SAT_FRONT", 0, 0, pos.X - (size / 2), pos.Z - (size / 2), size, size, 255, 0, "I_GOSUB", proc, 0, 0);
+            AppendLine("aot_set", 20, "SCE_EVENT", "SAT_PL | SAT_MANUAL | SAT_FRONT", pos.Floor, 0, pos.X - (size / 2), pos.Z - (size / 2), size, size, 255, 0, "I_GOSUB", proc, 0, 0);
         }
 
         public int[] AllocateEnemies(int count)
@@ -100,12 +109,12 @@ namespace IntelOrca.Biohazard
 
         public void Enemy(int id, REPosition position, int pose, int state)
         {
-            AppendLine("sce_em_set", 0, id, "ENEMY_ZOMBIERANDOM", pose, state, position.Y / -1800, 3, 0, 255, position.X, position.Y, position.Z, position.D, 0, 0);
+            AppendLine("sce_em_set", 0, id, "ENEMY_ZOMBIERANDOM", pose, state, position.Floor, 3, 0, 255, position.X, position.Y, position.Z, position.D, 0, 0);
         }
 
         public void Ally(int id, REPosition position)
         {
-            AppendLine("sce_em_set", 0, id, "ENEMY_CLAIREREDFIELD", 0, 64, position.Y / -1800, 3, 0, 255, position.X, position.Y, position.Z, position.D, 0, 0);
+            AppendLine("sce_em_set", 0, id, "ENEMY_CLAIREREDFIELD", 0, 64, position.Floor, 3, 0, 255, position.X, position.Y, position.Z, position.D, 0, 0);
         }
 
         public void MoveEnemy(int id, REPosition pos)
@@ -258,19 +267,17 @@ namespace IntelOrca.Biohazard
             EndLoop();
         }
 
-        public void WaitForPlot(int id)
-        {
-            BeginWhileLoop(4);
-            CheckFlag(4, id, false);
-            AppendLine("evt_next");
-            AppendLine("nop");
-            EndLoop();
-        }
+        public void WaitForPlot(int id) => WaitForFlag(id);
 
         public void WaitForPlotUnlock()
         {
+            WaitForFlag(15, false);
+        }
+
+        public void WaitForFlag(int flag, bool value = true)
+        {
             BeginWhileLoop(4);
-            CheckFlag(4, 15, true);
+            CheckFlag(4, flag, !value);
             AppendLine("evt_next");
             AppendLine("nop");
             EndLoop();
@@ -359,11 +366,46 @@ namespace IntelOrca.Biohazard
         public void EndProcedure()
         {
             AppendLine("evt_end", 0);
+
+            if (_subProcedureName == null && _sbSub.Length != 0)
+            {
+                _sbMain.Append(_sbSub.ToString());
+                _sbSub.Clear();
+            }
         }
 
         public void Call(string procedureName)
         {
             AppendLine("gosub", procedureName);
+        }
+
+        public void CallThread(string procedureName)
+        {
+            AppendLine("evt_exec", 255, "I_GOSUB", procedureName);
+        }
+
+        public string BeginSubProcedure()
+        {
+            if (_subProcedureName != null)
+                throw new InvalidOperationException("Already in a sub procedure");
+
+            _sb = _sbSub;
+            _subProcedureName = AllocateProcedure();
+            BeginProcedure(_subProcedureName);
+            return _subProcedureName;
+        }
+
+        public string EndSubProcedure()
+        {
+            var subProcedureName = _subProcedureName;
+            if (subProcedureName == null)
+                throw new InvalidOperationException("Not in a sub procedure");
+
+            EndProcedure();
+
+            _sb = _sbMain;
+            _subProcedureName = null;
+            return subProcedureName;
         }
 
         public string AllocateProcedure()

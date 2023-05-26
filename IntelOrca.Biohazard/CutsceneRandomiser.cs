@@ -27,9 +27,8 @@ namespace IntelOrca.Biohazard
         private List<PlotKind> _plots = new List<PlotKind>();
         private int _plotId;
         private int _lastPlotId;
-        private Action? _extra;
         private PointOfInterest[] _poi = new PointOfInterest[0];
-        private int[] _allKnownCuts;
+        private int[] _allKnownCuts = new int[0];
         private REPosition[] _enemyPositions = new REPosition[0];
 
         public CutsceneRandomiser(RandoLogger logger, DataManager dataManager, RandoConfig config, GameData gameData, Map map, Rng rng, IEnemyHelper enemyHelper, INpcHelper npcHelper)
@@ -84,12 +83,12 @@ namespace IntelOrca.Biohazard
             _poi = info.Poi ?? new PointOfInterest[0];
             _allKnownCuts = _poi.SelectMany(x => x.AllCuts).ToArray();
             TidyPoi();
-            // ChainRandomPlot(PlotKind.MeetStaticNPC);
+            ChainRandomPlot(PlotKind.MeetStaticNPC);
             // ChainRandomPlot(PlotKind.EnemyWalksIn);
             // ChainRandomPlot(PlotKind.EnemyGetsUp);
-            ChainRandomPlot(PlotKind.MeetWalkInNPC);
-            ChainRandomPlot(PlotKind.EnemyWalksIn);
-            ChainRandomPlot(PlotKind.EnemyWalksIn);
+            // ChainRandomPlot(PlotKind.MeetWalkInNPC);
+            // ChainRandomPlot(PlotKind.EnemyWalksIn);
+            // ChainRandomPlot(PlotKind.EnemyWalksIn);
 
 #if false
             var triggerPoi = triggers[1]; // pois.Select(x => (int?)x.Cut).Shuffle(_rng).FirstOrDefault();
@@ -144,7 +143,6 @@ namespace IntelOrca.Biohazard
 
         private void ChainRandomPlot(PlotKind kind)
         {
-            _extra = null;
             _plotId = _cb.BeginPlot();
 
             _logger.WriteLine($"    [plot] #{_plotId}: {kind}");
@@ -170,7 +168,6 @@ namespace IntelOrca.Biohazard
             }
 
             _cb.EndPlot();
-            _extra?.Invoke();
             _lastPlotId = _plotId;
         }
 
@@ -345,8 +342,11 @@ namespace IntelOrca.Biohazard
 
             _cb.CutRevert();
 
-            IntelliTravelTo(npcId, door, meetup, meetB, run: true);
-            IntelliTravelTo(-1, triggerCut, meetup, meetA, run: true);
+            IntelliTravelTo(100, npcId, door, meetup, meetB, run: true);
+            IntelliTravelTo(101, -1, triggerCut, meetup, meetA, run: true);
+
+            _cb.WaitForFlag(100);
+            _cb.WaitForFlag(101);
 
             LogAction($"Focus on {meetup}");
             if (meetup.CloseCut != null)
@@ -356,7 +356,8 @@ namespace IntelOrca.Biohazard
             LongConversation();
             _cb.CutChange(meetup.Cut);
 
-            IntelliTravelTo(npcId, meetup, door, null, run: true);
+            IntelliTravelTo(100, npcId, meetup, door, null, run: true);
+            _cb.WaitForFlag(100);
 
             _cb.MoveEnemy(npcId, REPosition.OutOfBounds);
             _cb.StopEnemy(npcId);
@@ -386,8 +387,10 @@ namespace IntelOrca.Biohazard
             _cb.CutRevert();
         }
 
-        private void IntelliTravelTo(int enemyId, PointOfInterest from, PointOfInterest destination, REPosition? overrideDestination, bool run)
+        private void IntelliTravelTo(int flag, int enemyId, PointOfInterest from, PointOfInterest destination, REPosition? overrideDestination, bool run)
         {
+            _cb.SetFlag(4, flag, false);
+            _cb.BeginSubProcedure();
             var route = GetTravelRoute(from, destination);
             foreach (var poi in route)
             {
@@ -412,6 +415,9 @@ namespace IntelOrca.Biohazard
             {
                 _cb.MoveEnemy(enemyId, destination.Position);
             }
+            _cb.SetFlag(4, flag);
+            var subName = _cb.EndSubProcedure();
+            _cb.CallThread(subName);
         }
 
         private string GetCharLogName(int enemyId)
@@ -423,25 +429,25 @@ namespace IntelOrca.Biohazard
         {
             var npcId = _cb.AllocateEnemies(1).FirstOrDefault();
             var meetup = _poi.FirstOrDefault(x => x.Kind == "meet")!;
-            var eventProc = _cb.AllocateProcedure();
+
+            _cb.BeginSubProcedure();
+            _cb.BeginCutsceneMode();
+            _cb.BeginIf();
+            _cb.CheckFlag(4, _plotId);
+            _cb.PlayVoice(21);
+            _cb.Else();
+            if (meetup.CloseCut != null)
+                _cb.CutChange(meetup.CloseCut.Value);
+            LongConversation();
+            if (meetup.CloseCut != null)
+                _cb.CutRevert();
+            _cb.SetFlag(4, _plotId);
+            _cb.EndIf();
+            _cb.EndCutsceneMode();
+            var eventProc = _cb.EndSubProcedure();
 
             _cb.Ally(npcId, meetup.Position);
             _cb.Event(meetup.Position, 2000, eventProc);
-
-            _extra = () =>
-            {
-                _cb.BeginProcedure(eventProc);
-                _cb.BeginCutsceneMode();
-                _cb.BeginIf();
-                _cb.CheckFlag(4, _plotId);
-                _cb.PlayVoice(21);
-                _cb.Else();
-                LongConversation();
-                _cb.SetFlag(4, _plotId);
-                _cb.EndIf();
-                _cb.EndCutsceneMode();
-                _cb.EndProcedure();
-            };
         }
 
         private void LongConversation()
@@ -583,6 +589,8 @@ namespace IntelOrca.Biohazard
         public int Y { get; }
         public int Z { get; }
         public int D { get; }
+
+        public int Floor => Y / -1800;
 
         public REPosition(int x, int y, int z) : this(x, y, z, 0) { }
         public REPosition(int x, int y, int z, int d)
