@@ -62,13 +62,15 @@ namespace IntelOrca.Biohazard
             if (!_cutsceneRoomInfoMap.TryGetValue(rdt.RdtId, out var info))
                 return;
 
+            _logger.WriteLine($"  {rdt}:");
+
+            ClearEnemies(rdt);
+
             _enemyPositions = _allEnemyPositions
                 .Where(x => x.RdtId == rdt.RdtId)
                 .Select(p => new REPosition(p.X, p.Y, p.Z, p.D))
                 .Shuffle(_rng)
                 .ToArray();
-
-            _logger.WriteLine($"  {rdt}:");
 
             var doors = info.Poi?.Where(x => x.Kind == "door").ToArray() ?? new PointOfInterest[0];
             var triggers = info.Poi?.Where(x => x.Kind == "trigger").ToArray() ?? new PointOfInterest[0];
@@ -83,12 +85,12 @@ namespace IntelOrca.Biohazard
             _poi = info.Poi ?? new PointOfInterest[0];
             _allKnownCuts = _poi.SelectMany(x => x.AllCuts).ToArray();
             TidyPoi();
-            ChainRandomPlot(PlotKind.MeetStaticNPC);
+            // ChainRandomPlot(PlotKind.MeetStaticNPC);
             // ChainRandomPlot(PlotKind.EnemyWalksIn);
             // ChainRandomPlot(PlotKind.EnemyGetsUp);
-            // ChainRandomPlot(PlotKind.MeetWalkInNPC);
-            // ChainRandomPlot(PlotKind.EnemyWalksIn);
-            // ChainRandomPlot(PlotKind.EnemyWalksIn);
+            ChainRandomPlot(PlotKind.MeetWalkInNPC);
+            ChainRandomPlot(PlotKind.EnemyWalksIn);
+            ChainRandomPlot(PlotKind.EnemyWalksIn);
 
 #if false
             var triggerPoi = triggers[1]; // pois.Select(x => (int?)x.Cut).Shuffle(_rng).FirstOrDefault();
@@ -117,6 +119,50 @@ namespace IntelOrca.Biohazard
             rdt.CustomAdditionalScript = cb.ToString();
         }
 
+        private void ClearEnemies(Rdt rdt)
+        {
+            var room = _map.GetRoom(rdt.RdtId);
+            if (room?.Enemies != null)
+            {
+                var enemySpecs = room.Enemies
+                    .Where(IsEnemySpecValid)
+                    .ToArray();
+
+                foreach (var enemySpec in enemySpecs)
+                {
+                    if (enemySpec.Nop != null)
+                    {
+                        var nopArray = Map.ParseNopArray(enemySpec.Nop, rdt);
+                        foreach (var offset in nopArray)
+                        {
+                            rdt.Nop(offset);
+                            _logger.WriteLine($"    {rdt.RdtId} (0x{offset:X2}) opcode removed");
+                        }
+                    }
+                }
+            }
+        }
+
+        private bool IsEnemySpecValid(MapRoomEnemies enemySpec)
+        {
+            if (enemySpec.Player != null && enemySpec.Player != _config.Player)
+                return false;
+
+            if (enemySpec.Scenario != null && enemySpec.Scenario != _config.Scenario)
+                return false;
+
+            if (enemySpec.RandomPlacements != null && enemySpec.RandomPlacements == false)
+                return false;
+
+            if (enemySpec.Restricted != null && enemySpec.Restricted != true)
+                return false;
+
+            if (enemySpec.DoorRando != null && enemySpec.DoorRando != _config.RandomDoors)
+                return false;
+
+            return true;
+        }
+
         private void TidyPoi()
         {
             foreach (var poi in _poi)
@@ -143,6 +189,9 @@ namespace IntelOrca.Biohazard
 
         private void ChainRandomPlot(PlotKind kind)
         {
+            if (!IsPlotCompatible(kind))
+                return;
+
             _plotId = _cb.BeginPlot();
 
             _logger.WriteLine($"    [plot] #{_plotId}: {kind}");
@@ -169,6 +218,23 @@ namespace IntelOrca.Biohazard
 
             _cb.EndPlot();
             _lastPlotId = _plotId;
+        }
+
+        private bool IsPlotCompatible(PlotKind kind)
+        {
+            switch (kind)
+            {
+                case PlotKind.EnemyOnReturn:
+                case PlotKind.EnemyGetsUp:
+                case PlotKind.EnemyWalksIn:
+                    return true;
+                case PlotKind.MeetWalkInNPC:
+                    return _poi.Any(x => x.Kind == "meet");
+                case PlotKind.MeetStaticNPC:
+                    return _poi.Any(x => x.Kind == "meet" || x.Kind == "npc");
+                default:
+                    return true;
+            }
         }
 
         private PointOfInterest? AddTriggers(int[]? notCuts)
@@ -428,7 +494,7 @@ namespace IntelOrca.Biohazard
         private void DoStaticNPC()
         {
             var npcId = _cb.AllocateEnemies(1).FirstOrDefault();
-            var meetup = _poi.FirstOrDefault(x => x.Kind == "meet")!;
+            var meetup = _poi.FirstOrDefault(x => x.Kind == "meet" || x.Kind == "npc")!;
 
             _cb.BeginSubProcedure();
             _cb.BeginCutsceneMode();
