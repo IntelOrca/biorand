@@ -2,6 +2,8 @@
 {
     internal class Re2DoorHelper : IDoorHelper
     {
+        public byte[] GetReservedLockIds() => new byte[0];
+
         public void Begin(RandoConfig config, GameData gameData, Map map)
         {
         }

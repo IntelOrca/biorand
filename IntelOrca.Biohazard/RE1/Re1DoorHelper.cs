@@ -4,6 +4,8 @@ namespace IntelOrca.Biohazard.RE1
 {
     internal class Re1DoorHelper : IDoorHelper
     {
+        public byte[] GetReservedLockIds() => new byte[0];
+
         public void Begin(RandoConfig config, GameData gameData, Map map)
         {
             if (!config.RandomDoors)

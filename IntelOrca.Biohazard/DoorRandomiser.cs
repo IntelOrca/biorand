@@ -27,7 +27,7 @@ namespace IntelOrca.Biohazard
         private PlayEdge? _keyRichEdge;
         private int _keyRichEdgeScore;
         private bool _boxRoomReached;
-        private byte _lockId = 128;
+        private Queue<byte> _lockIds = new Queue<byte>();
         private List<PlayNode> _nodesLeft = new List<PlayNode>();
 
         private static readonly ConnectConstraint[] g_strictConstraints = new ConnectConstraint[]
@@ -116,6 +116,12 @@ namespace IntelOrca.Biohazard
             _logger.WriteHeading("Creating Random Room Graph:");
             _doorHelper.Begin(_config, _gameData, _map);
             _allNodes = CreateNodes();
+            _lockIds = Enumerable
+                .Range(0, 125)
+                .Select(x => (byte)x)
+                .Except(_doorHelper.GetReservedLockIds())
+                .Select(x => (byte)(x + 128))
+                .ToQueue();
 
             // Create start and end
             var graph = new PlayGraph();
@@ -616,6 +622,16 @@ namespace IntelOrca.Biohazard
                 isAlwaysLocked = true;
             }
 
+            byte lockId = 0;
+            if (isLocked)
+            {
+                lockId = GetNextLockId();
+                if (lockId == 0)
+                {
+                    isLocked = false;
+                }
+            }
+
             // Do not rewrite last room comparisons if edge is the same
             // this breaks rooms like 401 (South Office) when a door is unconnected
             var noCompareRewrite = aEdge == bEdge;
@@ -632,13 +648,13 @@ namespace IntelOrca.Biohazard
                 }
                 if (isAlwaysLocked)
                 {
-                    aEdge.LockId = _lockId;
-                    aRdt.SetDoorLock(aDoorId, _lockId);
+                    aEdge.LockId = lockId;
+                    aRdt.SetDoorLock(aDoorId, lockId);
                 }
                 else if (isLocked)
                 {
-                    aEdge.LockId = _lockId;
-                    aRdt.EnsureDoorUnlock(aDoorId, _lockId);
+                    aEdge.LockId = lockId;
+                    aRdt.EnsureDoorUnlock(aDoorId, lockId);
                 }
             }
 
@@ -657,8 +673,8 @@ namespace IntelOrca.Biohazard
                     if (isLocked)
                     {
                         bEdge.Lock = LockKind.Side;
-                        bEdge.LockId = _lockId;
-                        bRdt.SetDoorLock(bDoorId, _lockId);
+                        bEdge.LockId = lockId;
+                        bRdt.SetDoorLock(bDoorId, lockId);
                     }
                     else if (b.Category != DoorRandoCategory.Static)
                     {
@@ -669,12 +685,15 @@ namespace IntelOrca.Biohazard
                 }
             }
 
-            if (isLocked)
-            {
-                _lockId++;
-            }
-
             _logger.WriteLine($"    Connected {GetEdgeString(a, aEdge)} to {GetEdgeString(b, bEdge)}");
+        }
+
+        private byte GetNextLockId()
+        {
+            if (_lockIds.Count == 0)
+                return 0;
+
+            return _lockIds.Dequeue();
         }
 
         private void LockDoor(PlayEdge edge)
@@ -688,9 +707,13 @@ namespace IntelOrca.Biohazard
                 return;
             }
 
-            var doorId = edge.DoorId.Value;
-            var rdt = _gameData.GetRdt(edge.Parent.RdtId)!;
-            rdt.SetDoorLock(doorId, _lockId++);
+            var lockId = GetNextLockId();
+            if (lockId != 0)
+            {
+                var doorId = edge.DoorId.Value;
+                var rdt = _gameData.GetRdt(edge.Parent.RdtId)!;
+                rdt.SetDoorLock(doorId, lockId);
+            }
         }
 
         private string GetEdgeString(PlayNode node, PlayEdge edge)

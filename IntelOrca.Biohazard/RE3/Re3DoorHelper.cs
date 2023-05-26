@@ -8,6 +8,11 @@ namespace IntelOrca.Biohazard.RE3
 {
     internal class Re3DoorHelper : IDoorHelper
     {
+        public byte[] GetReservedLockIds()
+        {
+            return new byte[] { 0, 1, 3, 9, 10, 12, 13, 14, 16, 17, 19, 20, 21, 25, 26, 29, 32, 33, 34, 35 };
+        }
+
         public void Begin(RandoConfig config, GameData gameData, Map map)
         {
             if (!config.RandomDoors)
