@@ -1438,6 +1438,7 @@
         {
           "nop": [ 8110, 8186 ],
           "excludeOffsets": [ 8234 ],
+          "excludeTypes": [ 32 ],
           "y": 0
         }
       ],
