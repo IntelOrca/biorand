@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
@@ -32,9 +33,9 @@ namespace IntelOrca.Biohazard.RE3
             FixTowerOutdoor();
             FixNemesisFlag();
             FixWarehouseAlley();
+            FixHydrantAlley();
             if (config.RandomDoors)
             {
-                FixHydrantAlley();
                 FixRestuarantFront();
                 FixRestuarant();
                 FixPressStreet();
@@ -107,6 +108,9 @@ namespace IntelOrca.Biohazard.RE3
 
             void FixBarricadeAlley()
             {
+                if (!config.RandomItems)
+                    return;
+
                 // Force barricade alley door to go to 2nd hydrant alley
                 var rdt = gameData.GetRdt(new RdtId(0, 0x08));
                 if (rdt != null)
@@ -123,6 +127,63 @@ namespace IntelOrca.Biohazard.RE3
                 if (rdt != null)
                 {
                     rdt.Nop(0x42A, 0x452);
+                }
+
+                // Force RPD street 1 to go to 2nd hydrant alley
+                rdt = gameData.GetRdt(new RdtId(0, 0x0A));
+                if (rdt != null)
+                {
+                    var door = rdt.Doors.FirstOrDefault(x => x.Id == 0);
+                    if (door != null)
+                    {
+                        door.Target = new RdtId(0, 0x23);
+                    }
+                }
+
+                // Make the doors of the hydrant alley go to day or night rooms
+                var dayRdt = gameData.GetRdt(new RdtId(0, 0x09));
+                rdt = gameData.GetRdt(new RdtId(0, 0x23));
+                if (dayRdt != null && rdt != null)
+                {
+                    var doors = rdt.Doors.ToArray();
+                    var door122 = (DoorAotSeOpcode)rdt.Doors.First(x => x.Target == new RdtId(0, 0x22));
+                    var door124 = (DoorAotSeOpcode)rdt.Doors.First(x => x.Target == new RdtId(0, 0x24));
+
+                    var door108 = (DoorAotSeOpcode)dayRdt.Doors.First(x => x.Target == new RdtId(0, 0x08));
+                    var door10A = (DoorAotSeOpcode)dayRdt.Doors.First(x => x.Target == new RdtId(0, 0x0A));
+
+                    // if (bits[3][9] == 1)
+                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x06, new byte[] { 0x00, 0x48, 0x00 }));
+                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x4C, new byte[] { 0x03, 0x09, 0x01 }));
+                    rdt.AdditionalOpcodes.Add(door122);
+                    rdt.AdditionalOpcodes.Add(door124);
+                    // else
+                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x07, new byte[] { 0x00, 0x44, 0x00 }));
+                    rdt.AdditionalOpcodes.Add(door108);
+                    rdt.AdditionalOpcodes.Add(door10A);
+
+                    // Remove original door opcodes
+                    rdt.Nop(door122.Offset);
+                    rdt.Nop(door124.Offset);
+                }
+
+                // Parasite alley needs to go to day or night RPD street
+                rdt = gameData.GetRdt(new RdtId(1, 0x1A));
+                if (rdt != null)
+                {
+                    var door124 = (DoorAotSeOpcode)rdt.Doors.First(x => x.Id == 0);
+                    var door10A = CopyDoor(door124, new RdtId(0, 0x0A));
+
+                    // if (bits[3][9] == 1)
+                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x06, new byte[] { 0x00, 0x28, 0x00 }));
+                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x4C, new byte[] { 0x03, 0x09, 0x01 }));
+                    rdt.AdditionalOpcodes.Add(door124);
+                    // else
+                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x07, new byte[] { 0x00, 0x24, 0x00 }));
+                    rdt.AdditionalOpcodes.Add(door10A);
+
+                    // Remove original door
+                    rdt.Nop(door124.Offset);
                 }
             }
 
@@ -406,6 +467,17 @@ namespace IntelOrca.Biohazard.RE3
             dst.NextCamera = src.NextCamera;
             dst.LockId = src.LockId;
             dst.LockType = src.LockType;
+        }
+
+        private static OpcodeBase CopyDoor(DoorAotSeOpcode src, RdtId newTarget)
+        {
+            var ms = new MemoryStream();
+            var bw = new BinaryWriter(ms);
+            src.Write(bw);
+            ms.Position = 0;
+            var result = DoorAotSeOpcode.Read(new BinaryReader(ms), 0);
+            result.Target = newTarget;
+            return result;
         }
     }
 }
