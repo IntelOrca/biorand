@@ -24,30 +24,31 @@ namespace IntelOrca.Biohazard.RE3
         public void End(RandoConfig config, GameData gameData, Map map)
         {
             UnblockRpdDoor();
-            FixRE3SalesOffice();
-            FixRE3LockpickDoor();
-            FixPressStreet();
+            FixSalesOffice();
+            FixLockpickDoor();
             FixStagla();
-            FixRE3Train();
+            FixTrain();
             UnblockWasteDisposalDoor();
-            FixRE3TowerOutdoor();
+            FixTowerOutdoor();
             FixNemesisFlag();
             FixWarehouseAlley();
             if (config.RandomDoors)
             {
-                FixRE3HydrantAlley();
-                FixRE3RestuarantFront();
-                FixRE3Restuarant();
-                FixRE3PressOffice();
-                FixRE3TrainCrashExit();
-                FixRE3PianoRoom();
-                FixRE3Laboratory();
-                FixRE3CommsRoom();
-                FixRE3Rain();
+                FixHydrantAlley();
+                FixRestuarantFront();
+                FixRestuarant();
+                FixPressStreet();
+                FixPressOffice();
+                FixTrainCrashExit();
+                FixPianoRoom();
+                FixLaboratory();
+                FixSynthesisRoom();
+                FixCommsRoom();
+                FixRain();
             }
             else
             {
-                FixRE3BarricadeAlley();
+                FixBarricadeAlley();
             }
 
             void UnblockRpdDoor()
@@ -62,7 +63,7 @@ namespace IntelOrca.Biohazard.RE3
                 rdt.Nop(0x2CAE, 0x2CF8);
             }
 
-            void FixRE3SalesOffice()
+            void FixSalesOffice()
             {
                 var rdt = gameData.GetRdt(new RdtId(0, 0x1B));
                 if (rdt == null)
@@ -74,7 +75,7 @@ namespace IntelOrca.Biohazard.RE3
                 rdt.Nop(0x4B5A);
             }
 
-            void FixRE3LockpickDoor()
+            void FixLockpickDoor()
             {
                 var rdt1 = gameData.GetRdt(new RdtId(0, 0x0A));
                 var rdt2 = gameData.GetRdt(new RdtId(0, 0x24));
@@ -104,7 +105,7 @@ namespace IntelOrca.Biohazard.RE3
                 }
             }
 
-            void FixRE3BarricadeAlley()
+            void FixBarricadeAlley()
             {
                 // Force barricade alley door to go to 2nd hydrant alley
                 var rdt = gameData.GetRdt(new RdtId(0, 0x08));
@@ -125,7 +126,7 @@ namespace IntelOrca.Biohazard.RE3
                 }
             }
 
-            void FixRE3HydrantAlley()
+            void FixHydrantAlley()
             {
                 var rdt = gameData.GetRdt(new RdtId(0, 0x23));
                 if (rdt != null)
@@ -172,7 +173,7 @@ namespace IntelOrca.Biohazard.RE3
                 }
             }
 
-            void FixRE3RestuarantFront()
+            void FixRestuarantFront()
             {
                 var rdt = gameData.GetRdt(new RdtId(1, 0x05));
                 if (rdt != null)
@@ -181,7 +182,7 @@ namespace IntelOrca.Biohazard.RE3
                 }
             }
 
-            void FixRE3Restuarant()
+            void FixRestuarant()
             {
                 var rdt = gameData.GetRdt(new RdtId(1, 0x11));
                 if (rdt != null)
@@ -190,7 +191,7 @@ namespace IntelOrca.Biohazard.RE3
                 }
             }
 
-            void FixRE3PressOffice()
+            void FixPressOffice()
             {
                 var rdt = gameData.GetRdt(new RdtId(1, 0x0F));
                 if (rdt != null)
@@ -205,7 +206,7 @@ namespace IntelOrca.Biohazard.RE3
                 }
             }
 
-            void FixRE3TrainCrashExit()
+            void FixTrainCrashExit()
             {
                 var rdt = gameData.GetRdt(new RdtId(1, 0x15));
                 if (rdt != null)
@@ -214,7 +215,7 @@ namespace IntelOrca.Biohazard.RE3
                 }
             }
 
-            void FixRE3PianoRoom()
+            void FixPianoRoom()
             {
                 var rdt = gameData.GetRdt(new RdtId(2, 0x01));
                 if (rdt != null)
@@ -223,7 +224,7 @@ namespace IntelOrca.Biohazard.RE3
                 }
             }
 
-            void FixRE3Laboratory()
+            void FixLaboratory()
             {
                 var rdt = gameData.GetRdt(new RdtId(3, 0x0A));
                 if (rdt != null)
@@ -232,7 +233,7 @@ namespace IntelOrca.Biohazard.RE3
                 }
             }
 
-            void FixRE3CommsRoom()
+            void FixCommsRoom()
             {
                 var rdt = gameData.GetRdt(new RdtId(4, 0x0A));
                 if (rdt != null)
@@ -241,13 +242,13 @@ namespace IntelOrca.Biohazard.RE3
                 }
             }
 
-            void FixRE3Rain()
+            void FixRain()
             {
                 // Rain often crashes for me
                 var rainRooms = new[]
                 {
-                0x00, 0x0C, 0x0D, 0x0E, 0x0F, 0x11, 0x17
-            };
+                    0x00, 0x0C, 0x0D, 0x0E, 0x0F, 0x11, 0x17
+                };
                 foreach (var rainRoom in rainRooms)
                 {
                     var rdt = gameData.GetRdt(new RdtId(3, rainRoom));
@@ -281,7 +282,7 @@ namespace IntelOrca.Biohazard.RE3
                 rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x08, new byte[] { 0x00 }));
             }
 
-            void FixRE3Train()
+            void FixTrain()
             {
                 var rdt = gameData.GetRdt(new RdtId(1, 0x0C));
                 if (rdt == null)
@@ -323,7 +324,7 @@ namespace IntelOrca.Biohazard.RE3
                 rdt.Nop(0x2858);
             }
 
-            void FixRE3TowerOutdoor()
+            void FixTowerOutdoor()
             {
                 var rdt = gameData.GetRdt(new RdtId(2, 0x0B));
                 if (rdt == null)
@@ -366,6 +367,16 @@ namespace IntelOrca.Biohazard.RE3
                     return;
 
                 rdt.Nop(0x0AA0);
+            }
+
+            void FixSynthesisRoom()
+            {
+                var rdt = gameData.GetRdt(new RdtId(3, 0x0B));
+                if (rdt == null)
+                    return;
+
+                AddCutCorrection(rdt, 179, 1, 11);
+                AddCutCorrection(rdt, 180, 11, 16);
             }
         }
 
