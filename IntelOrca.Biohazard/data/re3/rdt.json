@@ -1748,14 +1748,33 @@
         }
       ],
       "items": [
-        // Randomizing the cystal balls is not simple
-        // {
-        //   "id": 4,
-        //   "requires": [ 70, 71, 72 ]
-        // }
         {
           "id": 3,
           "type": 0
+        },
+        {
+          "id": 4,
+          "requires": [ 70, 71, 72 ]
+        },
+
+        // Fake items representing the crystal balls
+        {
+          "offset": 12334,
+          "id": 200,
+          "type": 70,
+          "amount": 1
+        },
+        {
+          "offset": 12440,
+          "id": 201,
+          "type": 71,
+          "amount": 1
+        },
+        {
+          "offset": 12546,
+          "id": 202,
+          "type": 72,
+          "amount": 1
         }
       ]
     },

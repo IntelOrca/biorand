@@ -139,6 +139,21 @@ namespace IntelOrca.Biohazard
             }
         }
 
+        public void SetItemAt(int offset, ushort type, ushort amount)
+        {
+            var opcode = Opcodes.FirstOrDefault(x => x.Offset == offset);
+            if (opcode is IItemAotSetOpcode item)
+            {
+                item.Type = type;
+                item.Amount = amount;
+            }
+            else if (opcode is AotResetOpcode reset)
+            {
+                reset.Data0 = type;
+                reset.Data1 = amount;
+            }
+        }
+
         public void SetEnemy(byte id, EnemyType type, byte state, byte ai, byte soundBank, byte texture)
         {
             foreach (var enemy in Enemies)

@@ -991,7 +991,10 @@ namespace IntelOrca.Biohazard
                             }
                         }
                     }
-                    rdt.SetItem(entry.Id, entry.Type, entry.Amount);
+                    if (entry.Offset == 0)
+                        rdt.SetItem(entry.Id, entry.Type, entry.Amount);
+                    else
+                        rdt.SetItemAt(entry.Offset, entry.Type, entry.Amount);
                 }
             }
         }

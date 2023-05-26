@@ -985,6 +985,7 @@ namespace IntelOrca.Biohazard
                         items = items.Concat(new[] {
                                 new ItemPoolEntry() {
                                     RdtId = rdtId,
+                                    Offset = correctedItem.Offset,
                                     Id = correctedItem.Id,
                                     Type = (ushort)(correctedItem.Type ?? 0),
                                     Amount = correctedItem.Amount ?? 1,
@@ -1018,6 +1019,7 @@ namespace IntelOrca.Biohazard
                         items = items.Concat(new[] {
                                 new ItemPoolEntry() {
                                     RdtId = rdtId,
+                                    Offset = correctedItem.Offset,
                                     Id = correctedItem.Id,
                                     Type = (ushort)(correctedItem.Type ?? 0),
                                     Amount = correctedItem.Amount ?? 1,

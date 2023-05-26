@@ -117,6 +117,7 @@ namespace IntelOrca.Biohazard
 
     public class MapRoomItem
     {
+        public int Offset { get; set; }
         public byte Id { get; set; }
         public int? Type { get; set; }
         public ushort? Amount { get; set; }
