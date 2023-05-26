@@ -1,3 +1,29 @@
+BioRand v3.0.3 (2023-05-26)
+
+* [Enhancement] Use targeted voice lines for NPCs that about to die.
+* [Enhancement] Add some extra calm CV:X music.
+* [Enhancement] RE 3, room 309, randomize crystal ball items.
+* [Change] Improve BGM volume for RE 1 and RE 3.
+* [Fix] RE 3, restore day/night cycle around hydrant room and first Nemesis encounter.
+* [Fix] #363: RE 3, room 405, locked elevator door causes softlock.
+* [Fix] #364: RE 3, room 203, cutscene does not work with different enemies.
+* [Fix] #367: RE 3, room 103, crash caused by car door event.
+* [Fix] #368: RE 2, unable to find key item to swap.
+* [Fix] #369: RE 3, room 104, Zombie has bugged animation.
+* [Fix] #372: RE 3, room 40A, crash when re-entering room.
+* [Fix] #376: RE 3, room 30B, camera stuck after Nemesis encounter.
+* [Fix] #378: RE 3, Jill model not replaced.
+* [Fix] #379: RE 3, room 209, crash due to car door enemy.
+* [Fix] #380: RE 3, room 105, crash due to NPC.
+* [Fix] #381: RE 3, room 11D, crash.
+* [Fix] #383: RE 3, room 500, enemies out of bounds.
+* [Fix] #384: Segment created without a box room when prioritise cutscenes enabled.
+* [Fix] #385: RE 2, Leon B, softlock because lighter not placed.
+* [Fix] #391: RE 3, room 205, crash due to NPC.
+* [Fix] #396: RE 3, room 207, camera lock when re-entering after panic event.
+* [Fix] #397: RE 3, room 21A, crash if the dogs are damaged by explosive barrel.
+* [Fix] #399: RE 3, room 40B, camera angle stuck after draining the fish tanks.
+
 BioRand v3.0.2 (2023-05-16)
 
 * [Feature] Add button to UI for starting the game.
