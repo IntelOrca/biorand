@@ -1,10 +1,10 @@
 BioRand v3.0.4 (2023-05-27)
 
 * [Fix] RE 1, NPC randomization.
-* [Fix] #403: RE 3, crash due to no weapon in inventory slot 0.
-* [Fix] #404: RE 3, room 506, softlock due to no facility key.
 * [Fix] #374: RE 3, room 108, door sometimes unlocked without using key.
 * [Fix] #400: RE 3, room 11B, glitches if entered after room 11C cutscene.
+* [Fix] #403: RE 3, crash due to no weapon in inventory slot 0.
+* [Fix] #404: RE 3, room 506, softlock due to no facility key.
 
 BioRand v3.0.3 (2023-05-26)
 
