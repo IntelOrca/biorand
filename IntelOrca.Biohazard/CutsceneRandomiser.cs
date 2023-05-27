@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
-using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard
 {
@@ -20,11 +17,11 @@ namespace IntelOrca.Biohazard
         private readonly INpcHelper _npcHelper;
         private readonly Dictionary<RdtId, CutsceneRoomInfo> _cutsceneRoomInfoMap = new Dictionary<RdtId, CutsceneRoomInfo>();
         private EnemyPosition[] _allEnemyPositions = new EnemyPosition[0];
+        private Plot[] _registeredPlots = new Plot[0];
 
         // Current room
         private CutsceneBuilder _cb = new CutsceneBuilder();
         private RdtId _rdtId;
-        private List<PlotKind> _plots = new List<PlotKind>();
         private int _plotId;
         private int _lastPlotId;
         private PointOfInterest[] _poi = new PointOfInterest[0];
@@ -44,6 +41,7 @@ namespace IntelOrca.Biohazard
 
             LoadCutsceneRoomInfo();
             ReadEnemyPlacements();
+            InitialisePlots();
         }
 
         public void Randomise(PlayGraph? graph)
@@ -72,9 +70,9 @@ namespace IntelOrca.Biohazard
                 .Shuffle(_rng)
                 .ToArray();
 
-            var doors = info.Poi?.Where(x => x.Kind == "door").ToArray() ?? new PointOfInterest[0];
-            var triggers = info.Poi?.Where(x => x.Kind == "trigger").ToArray() ?? new PointOfInterest[0];
-            var meets = info.Poi?.Where(x => x.Kind == "meet").ToArray() ?? new PointOfInterest[0];
+            var doors = info.Poi?.Where(x => x.Kind == PoiKind.Door).ToArray() ?? new PointOfInterest[0];
+            var triggers = info.Poi?.Where(x => x.Kind == PoiKind.Trigger).ToArray() ?? new PointOfInterest[0];
+            var meets = info.Poi?.Where(x => x.Kind == PoiKind.Meet).ToArray() ?? new PointOfInterest[0];
 
             var cb = new CutsceneBuilder();
             cb.Begin();
@@ -85,35 +83,16 @@ namespace IntelOrca.Biohazard
             _poi = info.Poi ?? new PointOfInterest[0];
             _allKnownCuts = _poi.SelectMany(x => x.AllCuts).ToArray();
             TidyPoi();
-            // ChainRandomPlot(PlotKind.MeetStaticNPC);
-            // ChainRandomPlot(PlotKind.EnemyWalksIn);
-            // ChainRandomPlot(PlotKind.EnemyGetsUp);
-            ChainRandomPlot(PlotKind.MeetWalkInNPC);
-            ChainRandomPlot(PlotKind.EnemyWalksIn);
-            ChainRandomPlot(PlotKind.EnemyWalksIn);
 
-#if false
-            var triggerPoi = triggers[1]; // pois.Select(x => (int?)x.Cut).Shuffle(_rng).FirstOrDefault();
-            var meetPoi = meets[0];
+            // ChainRandomPlot<EnemyChangePlot>();
 
-            // Trigger camera
-            var triggerCut = (int?)triggerPoi.Cut;
-            if (triggerCut != null)
-            {
-                // Random door, not in the cut
-                var randomDoor = doors
-                    .Where(x => !x.Cuts.Contains(triggerCut.Value))
-                    .Shuffle(_rng)
-                    .FirstOrDefault();
-                if (randomDoor != null)
-                {
-                    // New plot: enemy enters when cut is triggered
-                    // var plot0id = CreateNPCEntranceExitEvent(cb, triggerPoi, randomDoor, meetPoi);
-                    // var plot1id = CreateEnemyEntranceEvent(cb, plot0id, randomDoor);
-                    // DoZombieWakeUp(cb, rdt.RdtId);
-                }
-            }
-#endif
+            // ChainRandomPlot<AllyStaticPlot>();
+            // ChainRandomPlot<EnemyWakeUpPlot>();
+            // ChainRandomPlot<EnemyWalksInPlot>();
+
+            ChainRandomPlot<AllyWalksInPlot>();
+            ChainRandomPlot<EnemyWalksInPlot>();
+            ChainRandomPlot<EnemyWalksInPlot>();
 
             cb.End();
             rdt.CustomAdditionalScript = cb.ToString();
@@ -176,449 +155,27 @@ namespace IntelOrca.Biohazard
 
         private void ChainRandomPlot()
         {
-            var plotKinds = Enum.GetValues(typeof(PlotKind))
-                .Cast<PlotKind>()
-                .Shuffle(_rng)
-                .ToArray();
-
-            foreach (var plotKind in plotKinds)
+            foreach (var plot in _registeredPlots)
             {
-                ChainRandomPlot(plotKind);
+                ChainRandomPlot(plot);
             }
         }
 
-        private void ChainRandomPlot(PlotKind kind)
+        private void ChainRandomPlot<T>() where T : Plot
         {
-            if (!IsPlotCompatible(kind))
+            var plot = _registeredPlots.FirstOrDefault(x => x.GetType() == typeof(T));
+            if (plot == null)
+                throw new ArgumentException("Unknown plot");
+
+            ChainRandomPlot(plot);
+        }
+
+        private void ChainRandomPlot(Plot plot)
+        {
+            if (!plot.IsCompatible())
                 return;
 
-            _plotId = _cb.BeginPlot();
-
-            _logger.WriteLine($"    [plot] #{_plotId}: {kind}");
-            switch (kind)
-            {
-                case PlotKind.EnemyOnReturn:
-                    DoEnemyOnReturn();
-                    break;
-                case PlotKind.EnemyGetsUp:
-                    DoZombieWakeUp();
-                    break;
-                case PlotKind.EnemyWalksIn:
-                    DoEnemyWalksIn();
-                    break;
-                case PlotKind.MeetWalkInNPC:
-                    DoNPCWalksIn();
-                    break;
-                case PlotKind.MeetStaticNPC:
-                    DoStaticNPC();
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            _cb.EndPlot();
-            _lastPlotId = _plotId;
-        }
-
-        private bool IsPlotCompatible(PlotKind kind)
-        {
-            switch (kind)
-            {
-                case PlotKind.EnemyOnReturn:
-                case PlotKind.EnemyGetsUp:
-                case PlotKind.EnemyWalksIn:
-                    return true;
-                case PlotKind.MeetWalkInNPC:
-                    return _poi.Any(x => x.Kind == "meet");
-                case PlotKind.MeetStaticNPC:
-                    return _poi.Any(x => x.Kind == "meet" || x.Kind == "npc");
-                default:
-                    return true;
-            }
-        }
-
-        private PointOfInterest? AddTriggers(int[]? notCuts)
-        {
-            if (_lastPlotId != -1)
-            {
-                LogTrigger($"after plot {_lastPlotId}");
-                _cb.WaitForPlot(_lastPlotId);
-            }
-
-            var sleepTime = _rng.Next(0, 10);
-            var justSleep = false;
-            if (notCuts == null || notCuts.Length == 0)
-            {
-                if (_rng.NextProbability(50))
-                {
-                    // Just a sleep trigger
-                    sleepTime = _rng.Next(5, 30);
-                    justSleep = true;
-                }
-            }
-
-            // Sleep trigger
-            if (sleepTime != 0)
-            {
-                _cb.Sleep(30 * sleepTime);
-                LogTrigger($"wait {sleepTime} seconds");
-            }
-
-            _cb.WaitForPlotUnlock();
-
-            if (justSleep)
-                return null;
-
-            // Random cut
-            var triggerPoi = _poi
-                .Where(x => x.Kind == "trigger" && !notCuts.Contains(x.Cut))
-                .Shuffle(_rng)
-                .FirstOrDefault();
-            LogTrigger($"cut {triggerPoi.Cut}");
-            _cb.WaitForTriggerCut(triggerPoi.Cut);
-            return triggerPoi;
-        }
-
-        private void LogTrigger(string s) => _logger.WriteLine($"      [trigger] {s}");
-        private void LogAction(string s) => _logger.WriteLine($"      [action] {s}");
-
-        private void DoEnemyOnReturn()
-        {
-            var numPlacements = _rng.Next(6, 12);
-            var placements = _enemyPositions
-                .Take(numPlacements)
-                .ToArray();
-            var enemyIds = _cb.AllocateEnemies(placements.Length);
-
-            _cb.IfPlotTriggered();
-            LogTrigger("re-enter room");
-            for (int i = 0; i < enemyIds.Length; i++)
-            {
-                _cb.Enemy(enemyIds[i], _enemyPositions[i], 6, 0);
-            }
-            LogAction($"{enemyIds.Length}x enemy");
-        }
-
-        private void DoZombieWakeUp()
-        {
-            var numPlacements = _rng.Next(6, 12);
-            var placements = _enemyPositions
-                .Take(numPlacements)
-                .ToArray();
-            var enemyIds = _cb.AllocateEnemies(placements.Length);
-
-            _cb.IfPlotTriggered();
-            // Setup enemies in woken up positions
-            for (int i = 0; i < placements.Length; i++)
-            {
-                _cb.Enemy(enemyIds[i], placements[i], _rng.NextOf(0, 6), 0);
-            }
-
-            _cb.ElseBeginTriggerThread();
-
-            // Setup initial enemy positions
-            for (int i = 0; i < placements.Length; i++)
-            {
-                _cb.Enemy(enemyIds[i], placements[i], 4, 128);
-            }
-
-            // Wait for triggers
-            AddTriggers(new int[0]);
-
-            // Wake up enemies incrementally
-            _cb.LockPlot();
-            foreach (var eid in enemyIds)
-            {
-                _cb.Sleep(_rng.Next(5, 15));
-                _cb.ActivateEnemy(eid);
-            }
-            _cb.UnlockPlot();
-            LogAction($"{enemyIds.Length}x enemy wake up");
-        }
-
-        private void DoEnemyWalksIn()
-        {
-            var door = GetRandomDoor();
-            var enemyIds = _cb.AllocateEnemies(_rng.Next(1, 5));
-
-            _cb.IfPlotTriggered();
-            for (int i = 0; i < enemyIds.Length; i++)
-            {
-                int eid = enemyIds[i];
-                var pos = door.Position;
-                if (_enemyPositions.Length != 0)
-                {
-                    pos = _enemyPositions[i % _enemyPositions.Length];
-                }
-                _cb.Enemy(eid, pos, 6, 0);
-            }
-
-            _cb.ElseBeginTriggerThread();
-
-            foreach (var eid in enemyIds)
-            {
-                _cb.Enemy(eid, REPosition.OutOfBounds.WithY(door.Position.Y), 6, 128);
-            }
-
-            AddTriggers(door.Cuts);
-
-            // Move enemies into position and cut to them
-            _cb.LockPlot();
-            DoDoorOpenCloseCut(door);
-            _cb.BeginCutsceneMode();
-            foreach (var eid in enemyIds)
-            {
-                _cb.MoveEnemy(eid, door.Position);
-                _cb.ActivateEnemy(eid);
-            }
-            LogAction($"{enemyIds.Length}x enemy walk in");
-            _cb.Sleep(60);
-            _cb.CutRevert();
-            _cb.EndCutsceneMode();
-            _cb.UnlockPlot();
-        }
-
-        private void DoNPCWalksIn()
-        {
-            var npcId = _cb.AllocateEnemies(1).FirstOrDefault();
-            var door = GetRandomDoor();
-            var meetup = _poi.Where(x => x.Kind == "meet").Shuffle(_rng).FirstOrDefault();
-            var meetA = new REPosition(meetup.X + 1000, meetup.Y, meetup.Z, 2000);
-            var meetB = new REPosition(meetup.X - 1000, meetup.Y, meetup.Z, 0);
-
-            _cb.IfPlotTriggered();
-            _cb.ElseBeginTriggerThread();
-            _cb.Ally(npcId, REPosition.OutOfBounds.WithY(door.Position.Y));
-
-            var triggerCut = AddTriggers(door.Cuts);
-            if (triggerCut == null)
-                throw new Exception("Cutscene not supported for non-cut triggers.");
-
-            _cb.LockPlot();
-
-            // Mark the cutscene as done in case it softlocks
-            _cb.SetFlag(4, _plotId);
-
-            DoDoorOpenCloseCut(door);
-            _cb.BeginCutsceneMode();
-            _cb.MoveEnemy(npcId, door.Position);
-            _cb.PlayVoice(21);
-            _cb.Sleep(30);
-            LogAction($"NPC walk in");
-
-            _cb.CutRevert();
-
-            IntelliTravelTo(100, npcId, door, meetup, meetB, run: true);
-            IntelliTravelTo(101, -1, triggerCut, meetup, meetA, run: true);
-
-            _cb.WaitForFlag(100);
-            _cb.WaitForFlag(101);
-
-            LogAction($"Focus on {meetup}");
-            if (meetup.CloseCut != null)
-                _cb.CutChange(meetup.CloseCut.Value);
-            else
-                _cb.CutChange(meetup.Cut);
-            LongConversation();
-            _cb.CutChange(meetup.Cut);
-
-            IntelliTravelTo(100, npcId, meetup, door, null, run: true);
-            _cb.WaitForFlag(100);
-
-            _cb.MoveEnemy(npcId, REPosition.OutOfBounds);
-            _cb.StopEnemy(npcId);
-
-            DoDoorOpenCloseCutAway(door, meetup.Cut);
-            _cb.ReleaseEnemyControl(-1);
-            _cb.CutAuto();
-            _cb.EndCutsceneMode();
-            _cb.UnlockPlot();
-        }
-
-        private void DoDoorOpenCloseCutAway(PointOfInterest door, int currentCut)
-        {
-            var cuts = door.AllCuts;
-            var needsCut = cuts.Contains(currentCut) == true;
-            if (needsCut)
-            {
-                var cut = _allKnownCuts.Except(cuts).Shuffle(_rng).FirstOrDefault();
-                _cb.CutChange(cut);
-                LogAction($"door away cut {cut}");
-            }
-            else
-            {
-                LogAction($"door");
-            }
-            DoDoorOpenClose(door);
-            _cb.CutRevert();
-        }
-
-        private void IntelliTravelTo(int flag, int enemyId, PointOfInterest from, PointOfInterest destination, REPosition? overrideDestination, bool run)
-        {
-            _cb.SetFlag(4, flag, false);
-            _cb.BeginSubProcedure();
-            var route = GetTravelRoute(from, destination);
-            foreach (var poi in route)
-            {
-                if (overrideDestination != null && poi == destination)
-                    break;
-
-                _cb.SetEnemyDestination(enemyId, poi.Position, run);
-                _cb.WaitForEnemyTravel(enemyId);
-                _cb.Sleep(2);
-                if (enemyId == -1)
-                    _cb.CutChange(poi.Cut);
-                LogAction($"{GetCharLogName(enemyId)} travel to {poi}");
-            }
-            if (overrideDestination != null)
-            {
-                _cb.SetEnemyDestination(enemyId, overrideDestination.Value, run);
-                _cb.WaitForEnemyTravel(enemyId);
-                _cb.MoveEnemy(enemyId, overrideDestination.Value);
-                LogAction($"{GetCharLogName(enemyId)} travel to {overrideDestination}");
-            }
-            else
-            {
-                _cb.MoveEnemy(enemyId, destination.Position);
-            }
-            _cb.SetFlag(4, flag);
-            var subName = _cb.EndSubProcedure();
-            _cb.CallThread(subName);
-        }
-
-        private string GetCharLogName(int enemyId)
-        {
-            return enemyId == -1 ? "player" : $"npc {enemyId}";
-        }
-
-        private void DoStaticNPC()
-        {
-            var npcId = _cb.AllocateEnemies(1).FirstOrDefault();
-            var meetup = _poi.FirstOrDefault(x => x.Kind == "meet" || x.Kind == "npc")!;
-
-            _cb.BeginSubProcedure();
-            _cb.BeginCutsceneMode();
-            _cb.BeginIf();
-            _cb.CheckFlag(4, _plotId);
-            _cb.PlayVoice(21);
-            _cb.Else();
-            if (meetup.CloseCut != null)
-                _cb.CutChange(meetup.CloseCut.Value);
-            LongConversation();
-            if (meetup.CloseCut != null)
-                _cb.CutRevert();
-            _cb.SetFlag(4, _plotId);
-            _cb.EndIf();
-            _cb.EndCutsceneMode();
-            var eventProc = _cb.EndSubProcedure();
-
-            _cb.Ally(npcId, meetup.Position);
-            _cb.Event(meetup.Position, 2000, eventProc);
-        }
-
-        private void LongConversation()
-        {
-            _cb.FadeOutMusic();
-            _cb.Sleep(60);
-            for (int i = 0; i < 2; i++)
-            {
-                _cb.PlayVoice(_rng.Next(0, 30));
-                _cb.Sleep(15);
-            }
-            _cb.Sleep(60);
-            _cb.ResumeMusic();
-            LogAction($"conversation");
-        }
-
-        private void DoDoorOpenClose(PointOfInterest door)
-        {
-            var pos = door.Position;
-            if (door.Kind == "door")
-            {
-                _cb.PlayDoorSoundOpen(pos);
-                _cb.Sleep(30);
-                _cb.PlayDoorSoundClose(pos);
-            }
-            else
-            {
-                _cb.Sleep(30);
-            }
-        }
-
-        private void DoDoorOpenCloseCut(PointOfInterest door)
-        {
-            _cb.SetFlag(2, 7, true);
-            DoDoorOpenClose(door);
-            _cb.CutChange(door.Cut);
-            LogAction($"door cut {door.Cut}");
-        }
-
-        private PointOfInterest GetRandomDoor()
-        {
-            return _poi
-                .Where(x => x.Kind == "door" || x.Kind == "stairs")
-                .Shuffle(_rng)
-                .FirstOrDefault();
-        }
-
-        private PointOfInterest? FindPoi(int id)
-        {
-            return _poi.FirstOrDefault(x => x.Id == id);
-        }
-
-        private PointOfInterest[] GetEdges(PointOfInterest poi)
-        {
-            var edges = poi.Edges;
-            if (edges == null)
-                return new PointOfInterest[0];
-
-            return edges
-                .Select(x => FindPoi(x))
-                .Where(x => x != null)
-                .Select(x => x!)
-                .ToArray();
-        }
-
-        private PointOfInterest[] GetTravelRoute(PointOfInterest from, PointOfInterest destination)
-        {
-            var prev = new Dictionary<PointOfInterest, PointOfInterest>();
-            var q = new Queue<PointOfInterest>();
-            q.Enqueue(from);
-
-            var found = false;
-            while (!found && q.Count != 0)
-            {
-                var curr = q.Dequeue();
-                var edges = GetEdges(curr);
-                foreach (var edge in edges)
-                {
-                    if (!prev.ContainsKey(edge))
-                    {
-                        prev[edge] = curr;
-                        if (edge == destination)
-                        {
-                            found = true;
-                            break;
-                        }
-                        q.Enqueue(edge);
-                    }
-                }
-            }
-
-            if (!found)
-            {
-                // throw new Exception("Failed to find POI route from source to destination.");
-                return new[] { destination };
-            }
-
-            var route = new List<PointOfInterest>();
-            var poi = destination;
-            while (poi != from)
-            {
-                route.Add(poi);
-                poi = prev[poi];
-            }
-            return ((IEnumerable<PointOfInterest>)route).Reverse().ToArray();
+            plot.Create();
         }
 
         private void LoadCutsceneRoomInfo()
@@ -646,6 +203,468 @@ namespace IntelOrca.Biohazard
                 ReadCommentHandling = JsonCommentHandling.Skip,
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             })!;
+        }
+
+        private void InitialisePlots()
+        {
+            _registeredPlots = new Plot[]
+            {
+                new EnemyChangePlot(),
+                new EnemyWakeUpPlot(),
+                new EnemyWalksInPlot(),
+                new AllyStaticPlot(),
+                new AllyWalksInPlot()
+            };
+            foreach (var plot in _registeredPlots)
+            {
+                plot.Cr = this;
+            }
+        }
+
+        private abstract class Plot
+        {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+            public CutsceneRandomiser Cr { get; set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
+            public CutsceneBuilder Builder => Cr._cb;
+            public Rng Rng => Cr._rng;
+            public RandoLogger Logger => Cr._logger;
+
+            public bool IsCompatible() => Check();
+
+            public void Create()
+            {
+                Cr._plotId = Builder.BeginPlot();
+
+                Logger.WriteLine($"    [plot] #{Cr._plotId}: {GetType().Name}");
+                Build();
+                Builder.EndPlot();
+                Cr._lastPlotId = Cr._plotId;
+            }
+
+            protected virtual bool Check()
+            {
+                return true;
+            }
+
+            protected virtual void Build()
+            {
+            }
+
+            protected PointOfInterest? AddTriggers(int[]? notCuts)
+            {
+                if (Cr._lastPlotId != -1)
+                {
+                    LogTrigger($"after plot {Cr._lastPlotId}");
+                    Builder.WaitForPlot(Cr._lastPlotId);
+                }
+
+                var sleepTime = Rng.Next(0, 10);
+                var justSleep = false;
+                if (notCuts == null || notCuts.Length == 0)
+                {
+                    if (Rng.NextProbability(50))
+                    {
+                        // Just a sleep trigger
+                        sleepTime = Rng.Next(5, 30);
+                        justSleep = true;
+                    }
+                }
+
+                // Sleep trigger
+                if (sleepTime != 0)
+                {
+                    Builder.Sleep(30 * sleepTime);
+                    LogTrigger($"wait {sleepTime} seconds");
+                }
+
+                Builder.WaitForPlotUnlock();
+
+                if (justSleep)
+                    return null;
+
+                // Random cut
+                var triggerPoi = GetRandomPoi(x => x.Kind == PoiKind.Trigger && !notCuts.Contains(x.Cut));
+                if (triggerPoi == null)
+                    throw new Exception("Unable to find cut trigger");
+
+                LogTrigger($"cut {triggerPoi.Cut}");
+                Builder.WaitForTriggerCut(triggerPoi.Cut);
+                return triggerPoi;
+            }
+
+            protected void DoDoorOpenCloseCutAway(PointOfInterest door, int currentCut)
+            {
+                var cuts = door.AllCuts;
+                var needsCut = cuts.Contains(currentCut) == true;
+                if (needsCut)
+                {
+                    var cut = Cr._allKnownCuts.Except(cuts).Shuffle(Rng).FirstOrDefault();
+                    Builder.CutChange(cut);
+                    LogAction($"door away cut {cut}");
+                }
+                else
+                {
+                    LogAction($"door");
+                }
+                DoDoorOpenClose(door);
+                Builder.CutRevert();
+            }
+
+            protected void DoDoorOpenClose(PointOfInterest door)
+            {
+                var pos = door.Position;
+                if (door.Kind == "door")
+                {
+                    Builder.PlayDoorSoundOpen(pos);
+                    Builder.Sleep(30);
+                    Builder.PlayDoorSoundClose(pos);
+                }
+                else
+                {
+                    Builder.Sleep(30);
+                }
+            }
+
+            protected void DoDoorOpenCloseCut(PointOfInterest door)
+            {
+                Builder.SetFlag(2, 7, true);
+                DoDoorOpenClose(door);
+                Builder.CutChange(door.Cut);
+                LogAction($"door cut {door.Cut}");
+            }
+
+            protected void IntelliTravelTo(int flag, int enemyId, PointOfInterest from, PointOfInterest destination, REPosition? overrideDestination, bool run)
+            {
+                Builder.SetFlag(4, flag, false);
+                Builder.BeginSubProcedure();
+                var route = GetTravelRoute(from, destination);
+                foreach (var poi in route)
+                {
+                    if (overrideDestination != null && poi == destination)
+                        break;
+
+                    Builder.SetEnemyDestination(enemyId, poi.Position, run);
+                    Builder.WaitForEnemyTravel(enemyId);
+                    Builder.Sleep(2);
+                    if (enemyId == -1)
+                        Builder.CutChange(poi.Cut);
+                    LogAction($"{GetCharLogName(enemyId)} travel to {poi}");
+                }
+                if (overrideDestination != null)
+                {
+                    Builder.SetEnemyDestination(enemyId, overrideDestination.Value, run);
+                    Builder.WaitForEnemyTravel(enemyId);
+                    Builder.MoveEnemy(enemyId, overrideDestination.Value);
+                    LogAction($"{GetCharLogName(enemyId)} travel to {overrideDestination}");
+                }
+                else
+                {
+                    Builder.MoveEnemy(enemyId, destination.Position);
+                }
+                Builder.SetFlag(4, flag);
+                var subName = Builder.EndSubProcedure();
+                Builder.CallThread(subName);
+            }
+
+            private PointOfInterest[] GetTravelRoute(PointOfInterest from, PointOfInterest destination)
+            {
+                var prev = new Dictionary<PointOfInterest, PointOfInterest>();
+                var q = new Queue<PointOfInterest>();
+                q.Enqueue(from);
+
+                var found = false;
+                while (!found && q.Count != 0)
+                {
+                    var curr = q.Dequeue();
+                    var edges = GetEdges(curr);
+                    foreach (var edge in edges)
+                    {
+                        if (!prev.ContainsKey(edge))
+                        {
+                            prev[edge] = curr;
+                            if (edge == destination)
+                            {
+                                found = true;
+                                break;
+                            }
+                            q.Enqueue(edge);
+                        }
+                    }
+                }
+
+                if (!found)
+                {
+                    // throw new Exception("Failed to find POI route from source to destination.");
+                    return new[] { destination };
+                }
+
+                var route = new List<PointOfInterest>();
+                var poi = destination;
+                while (poi != from)
+                {
+                    route.Add(poi);
+                    poi = prev[poi];
+                }
+                return ((IEnumerable<PointOfInterest>)route).Reverse().ToArray();
+            }
+
+            private PointOfInterest[] GetEdges(PointOfInterest poi)
+            {
+                var edges = poi.Edges;
+                if (edges == null)
+                    return new PointOfInterest[0];
+
+                return edges
+                    .Select(x => FindPoi(x))
+                    .Where(x => x != null)
+                    .Select(x => x!)
+                    .ToArray();
+            }
+
+            protected void LongConversation()
+            {
+                Builder.FadeOutMusic();
+                Builder.Sleep(60);
+                for (int i = 0; i < 2; i++)
+                {
+                    Builder.PlayVoice(Rng.Next(0, 30));
+                    Builder.Sleep(15);
+                }
+                Builder.Sleep(60);
+                Builder.ResumeMusic();
+                LogAction($"conversation");
+            }
+
+            protected PointOfInterest? GetRandomDoor()
+            {
+                return GetRandomPoi(x => x.Kind == PoiKind.Door || x.Kind == PoiKind.Stairs);
+            }
+
+            protected PointOfInterest? GetRandomPoi(Predicate<PointOfInterest> predicate)
+            {
+                return Cr._poi
+                    .Where(x => predicate(x))
+                    .Shuffle(Rng)
+                    .FirstOrDefault();
+            }
+
+            private PointOfInterest? FindPoi(int id)
+            {
+                return Cr._poi.FirstOrDefault(x => x.Id == id);
+            }
+
+            private string GetCharLogName(int enemyId)
+            {
+                return enemyId == -1 ? "player" : $"npc {enemyId}";
+            }
+
+            protected void LogTrigger(string s) => Logger.WriteLine($"      [trigger] {s}");
+            protected void LogAction(string s) => Logger.WriteLine($"      [action] {s}");
+        }
+
+        private class EnemyChangePlot : Plot
+        {
+            protected override void Build()
+            {
+                var numPlacements = Rng.Next(6, 12);
+                var placements = Cr._enemyPositions
+                    .Take(numPlacements)
+                    .ToArray();
+                var enemyIds = Builder.AllocateEnemies(placements.Length);
+
+                Builder.IfPlotTriggered();
+                LogTrigger("re-enter room");
+                for (int i = 0; i < enemyIds.Length; i++)
+                {
+                    Builder.Enemy(enemyIds[i], Cr._enemyPositions[i], 6, 0);
+                }
+                LogAction($"{enemyIds.Length}x enemy");
+            }
+        }
+
+        private class EnemyWakeUpPlot : Plot
+        {
+            protected override void Build()
+            {
+                var numPlacements = Rng.Next(6, 12);
+                var placements = Cr._enemyPositions
+                    .Take(numPlacements)
+                    .ToArray();
+                var enemyIds = Builder.AllocateEnemies(placements.Length);
+
+                Builder.IfPlotTriggered();
+                // Setup enemies in woken up positions
+                for (int i = 0; i < placements.Length; i++)
+                {
+                    Builder.Enemy(enemyIds[i], placements[i], Rng.NextOf(0, 6), 0);
+                }
+
+                Builder.ElseBeginTriggerThread();
+
+                // Setup initial enemy positions
+                for (int i = 0; i < placements.Length; i++)
+                {
+                    Builder.Enemy(enemyIds[i], placements[i], 4, 128);
+                }
+
+                // Wait for triggers
+                AddTriggers(new int[0]);
+
+                // Wake up enemies incrementally
+                Builder.LockPlot();
+                foreach (var eid in enemyIds)
+                {
+                    Builder.Sleep(Rng.Next(5, 15));
+                    Builder.ActivateEnemy(eid);
+                }
+                Builder.UnlockPlot();
+                LogAction($"{enemyIds.Length}x enemy wake up");
+            }
+        }
+
+        private class EnemyWalksInPlot : Plot
+        {
+            protected override void Build()
+            {
+                var door = GetRandomDoor()!;
+                var enemyIds = Builder.AllocateEnemies(Rng.Next(1, 5));
+
+                Builder.IfPlotTriggered();
+                for (int i = 0; i < enemyIds.Length; i++)
+                {
+                    int eid = enemyIds[i];
+                    var pos = door.Position;
+                    if (Cr._enemyPositions.Length != 0)
+                    {
+                        pos = Cr._enemyPositions[i % Cr._enemyPositions.Length];
+                    }
+                    Builder.Enemy(eid, pos, 6, 0);
+                }
+
+                Builder.ElseBeginTriggerThread();
+
+                foreach (var eid in enemyIds)
+                {
+                    Builder.Enemy(eid, REPosition.OutOfBounds.WithY(door.Position.Y), 6, 128);
+                }
+
+                AddTriggers(door.Cuts);
+
+                // Move enemies into position and cut to them
+                Builder.LockPlot();
+                DoDoorOpenCloseCut(door);
+                Builder.BeginCutsceneMode();
+                foreach (var eid in enemyIds)
+                {
+                    Builder.MoveEnemy(eid, door.Position);
+                    Builder.ActivateEnemy(eid);
+                }
+                LogAction($"{enemyIds.Length}x enemy walk in");
+                Builder.Sleep(60);
+                Builder.CutRevert();
+                Builder.EndCutsceneMode();
+                Builder.UnlockPlot();
+            }
+        }
+
+        private class AllyStaticPlot : Plot
+        {
+            protected override bool Check()
+            {
+                return GetRandomPoi(x => x.Kind == PoiKind.Meet || x.Kind == PoiKind.Npc) != null;
+            }
+
+            protected override void Build()
+            {
+                var npcId = Builder.AllocateEnemies(1).FirstOrDefault();
+                var meetup = GetRandomPoi(x => x.Kind == PoiKind.Meet || x.Kind == PoiKind.Npc)!;
+
+                Builder.BeginSubProcedure();
+                Builder.BeginCutsceneMode();
+                Builder.BeginIf();
+                Builder.CheckFlag(4, Cr._plotId);
+                Builder.PlayVoice(21);
+                Builder.Else();
+                if (meetup.CloseCut != null)
+                    Builder.CutChange(meetup.CloseCut.Value);
+                LongConversation();
+                if (meetup.CloseCut != null)
+                    Builder.CutRevert();
+                Builder.SetFlag(4, Cr._plotId);
+                Builder.EndIf();
+                Builder.EndCutsceneMode();
+                var eventProc = Builder.EndSubProcedure();
+
+                Builder.Ally(npcId, meetup.Position);
+                Builder.Event(meetup.Position, 2000, eventProc);
+            }
+        }
+
+        private class AllyWalksInPlot : Plot
+        {
+            protected override bool Check()
+            {
+                return GetRandomPoi(x => x.Kind == PoiKind.Meet) != null;
+            }
+
+            protected override void Build()
+            {
+                var npcId = Builder.AllocateEnemies(1).FirstOrDefault();
+                var door = GetRandomDoor()!;
+                var meetup = GetRandomPoi(x => x.Kind == PoiKind.Meet)!;
+                var meetA = new REPosition(meetup.X + 1000, meetup.Y, meetup.Z, 2000);
+                var meetB = new REPosition(meetup.X - 1000, meetup.Y, meetup.Z, 0);
+
+                Builder.IfPlotTriggered();
+                Builder.ElseBeginTriggerThread();
+                Builder.Ally(npcId, REPosition.OutOfBounds.WithY(door.Position.Y));
+
+                var triggerCut = AddTriggers(door.Cuts);
+                if (triggerCut == null)
+                    throw new Exception("Cutscene not supported for non-cut triggers.");
+
+                Builder.LockPlot();
+
+                // Mark the cutscene as done in case it softlocks
+                Builder.SetFlag(4, Cr._plotId);
+
+                DoDoorOpenCloseCut(door);
+                Builder.BeginCutsceneMode();
+                Builder.MoveEnemy(npcId, door.Position);
+                Builder.PlayVoice(21);
+                Builder.Sleep(30);
+                LogAction($"NPC walk in");
+
+                Builder.CutRevert();
+
+                IntelliTravelTo(100, npcId, door, meetup, meetB, run: true);
+                IntelliTravelTo(101, -1, triggerCut, meetup, meetA, run: true);
+
+                Builder.WaitForFlag(100);
+                Builder.WaitForFlag(101);
+
+                LogAction($"Focus on {meetup}");
+                if (meetup.CloseCut != null)
+                    Builder.CutChange(meetup.CloseCut.Value);
+                else
+                    Builder.CutChange(meetup.Cut);
+                LongConversation();
+                Builder.CutChange(meetup.Cut);
+
+                IntelliTravelTo(100, npcId, meetup, door, null, run: true);
+                Builder.WaitForFlag(100);
+
+                Builder.MoveEnemy(npcId, REPosition.OutOfBounds);
+                Builder.StopEnemy(npcId);
+
+                DoDoorOpenCloseCutAway(door, meetup.Cut);
+                Builder.ReleaseEnemyControl(-1);
+                Builder.CutAuto();
+                Builder.EndCutsceneMode();
+                Builder.UnlockPlot();
+            }
         }
     }
 
@@ -710,12 +729,13 @@ namespace IntelOrca.Biohazard
         public override string ToString() => $"Id = {Id} Kind = {Kind} Cut = {Cut} Position = {Position}";
     }
 
-    public enum PlotKind
+    public static class PoiKind
     {
-        MeetWalkInNPC,
-        MeetStaticNPC,
-        EnemyWalksIn,
-        EnemyGetsUp,
-        EnemyOnReturn,
+        public static string Trigger = "trigger";
+        public static string Door = "door";
+        public static string Stairs = "stairs";
+        public static string Waypoint = "waypoint";
+        public static string Meet = "meet";
+        public static string Npc = "npc";
     }
 }
