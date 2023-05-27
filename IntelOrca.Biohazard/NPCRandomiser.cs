@@ -686,6 +686,10 @@ namespace IntelOrca.Biohazard
                     // Fallback to any kind of voice
                     return GetRandomVoice(rng, actor, null, actors, maxLength, true);
                 }
+                else
+                {
+                    return null;
+                }
             }
 
             // Do not add lines that are already in the pool.
