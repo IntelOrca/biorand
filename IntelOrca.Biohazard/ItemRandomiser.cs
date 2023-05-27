@@ -122,7 +122,7 @@ namespace IntelOrca.Biohazard
             }
             else
             {
-                _specialItem = null;
+                _specialItem = 0;
                 foreach (var item in _itemHelper.GetInitialKeyItems(_config))
                 {
                     _startKeyItems.Add(item);
