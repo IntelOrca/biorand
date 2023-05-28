@@ -41,20 +41,33 @@ namespace IntelOrca.Biohazard.RE3
             FixHydrantAlley();
             if (config.RandomDoors)
             {
+                FixConditionalCuts();
                 FixRestuarantFront();
                 FixRestuarant();
-                FixPressStreet();
                 FixPressOffice();
                 FixTrainCrashExit();
-                FixPianoRoom();
-                FixLaboratory();
-                FixSynthesisRoom();
-                FixCommsRoom();
                 FixRain();
             }
             else
             {
                 FixBarricadeAlley();
+            }
+
+            void FixConditionalCuts()
+            {
+                // Sales office alley
+                AddCutCorrectionFor(new RdtId(0, 0x0B), 99, 0, 4);
+                // Press street
+                AddCutCorrectionFor(new RdtId(1, 0x07), 143, 0, 10);
+                // Piano room
+                AddCutCorrectionFor(new RdtId(2, 0x01), 112, 3, 10);
+                // Laboratory
+                AddCutCorrectionFor(new RdtId(3, 0x0A), 91, 3, 11);
+                // SynthesisRoom
+                AddCutCorrectionFor(new RdtId(3, 0x0B), 179, 1, 11);
+                AddCutCorrectionFor(new RdtId(3, 0x0B), 180, 11, 16);
+                // CommsRoom
+                AddCutCorrectionFor(new RdtId(4, 0x0A), 199, 11, 3);
             }
 
             void UnblockRpdDoor()
@@ -90,15 +103,6 @@ namespace IntelOrca.Biohazard.RE3
                     var lockpickDoor1 = rdt1.Doors.First(x => x.Id == 2);
                     var lockpickDoor2 = rdt2.Doors.First(x => x.Id == 2);
                     CopyDoorTo(lockpickDoor1, lockpickDoor2);
-                }
-            }
-
-            void FixPressStreet()
-            {
-                var rdt = gameData.GetRdt(new RdtId(1, 0x07));
-                if (rdt != null)
-                {
-                    AddCutCorrection(rdt, 143, 0, 10);
                 }
             }
 
@@ -281,33 +285,6 @@ namespace IntelOrca.Biohazard.RE3
                 }
             }
 
-            void FixPianoRoom()
-            {
-                var rdt = gameData.GetRdt(new RdtId(2, 0x01));
-                if (rdt != null)
-                {
-                    AddCutCorrection(rdt, 112, 3, 10);
-                }
-            }
-
-            void FixLaboratory()
-            {
-                var rdt = gameData.GetRdt(new RdtId(3, 0x0A));
-                if (rdt != null)
-                {
-                    AddCutCorrection(rdt, 91, 3, 11);
-                }
-            }
-
-            void FixCommsRoom()
-            {
-                var rdt = gameData.GetRdt(new RdtId(4, 0x0A));
-                if (rdt != null)
-                {
-                    AddCutCorrection(rdt, 199, 11, 3);
-                }
-            }
-
             void FixRain()
             {
                 // Rain often crashes for me
@@ -328,6 +305,15 @@ namespace IntelOrca.Biohazard.RE3
                             rdt.Nop(opcode.Offset);
                         }
                     }
+                }
+            }
+
+            void AddCutCorrectionFor(RdtId rdtId, byte flag3, byte originalCut, byte newCut)
+            {
+                var rdt = gameData.GetRdt(rdtId);
+                if (rdt != null)
+                {
+                    AddCutCorrection(rdt, flag3, originalCut, newCut);
                 }
             }
 
@@ -433,16 +419,6 @@ namespace IntelOrca.Biohazard.RE3
                     return;
 
                 rdt.Nop(0x0AA0);
-            }
-
-            void FixSynthesisRoom()
-            {
-                var rdt = gameData.GetRdt(new RdtId(3, 0x0B));
-                if (rdt == null)
-                    return;
-
-                AddCutCorrection(rdt, 179, 1, 11);
-                AddCutCorrection(rdt, 180, 11, 16);
             }
         }
 
