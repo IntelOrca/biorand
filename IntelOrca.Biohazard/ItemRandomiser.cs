@@ -123,7 +123,15 @@ namespace IntelOrca.Biohazard
                             var rdt = _gameData.GetRdt(new RdtId(3, 0x01));
                             if (rdt != null)
                             {
+                                // Fix messages and small key check to be lockpick related
+                                var msg = rdt.Opcodes.FirstOrDefault(x => x.Offset == 0x2786) as UnknownOpcode;
+                                if (msg != null)
+                                {
+                                    msg.Data[1]--;
+                                }
                                 rdt.Nop(0x276C);
+                                rdt.Nop(0x27AA);
+                                rdt.Nop(0x27A2, 0x27B4);
                             }
                         }
                     }

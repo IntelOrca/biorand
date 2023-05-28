@@ -6,7 +6,7 @@ namespace IntelOrca.Biohazard.Script.Opcodes
     [DebuggerDisplay("{Opcode} Offset = {Offset}  Length = {Length}")]
     internal class UnknownOpcode : OpcodeBase
     {
-        private byte[] _data;
+        public byte[] Data { get; }
 
         public UnknownOpcode(int offset, byte opcode, byte[] operands)
         {
@@ -14,7 +14,7 @@ namespace IntelOrca.Biohazard.Script.Opcodes
             Length = 1 + operands.Length;
 
             Opcode = opcode;
-            _data = operands;
+            Data = operands;
         }
 
         public static UnknownOpcode Read(BinaryReader br, int offset, int length)
@@ -27,16 +27,16 @@ namespace IntelOrca.Biohazard.Script.Opcodes
         public override void Write(BinaryWriter bw)
         {
             bw.Write(Opcode);
-            bw.Write(_data);
+            bw.Write(Data);
         }
 
         public void NopOut(BioVersion version)
         {
             var code = version == BioVersion.Biohazard1 ? (byte)OpcodeV1.Nop : (byte)OpcodeV2.Nop;
             Opcode = code;
-            for (int i = 0; i < _data.Length; i++)
+            for (int i = 0; i < Data.Length; i++)
             {
-                _data[i] = code;
+                Data[i] = code;
             }
         }
     }
