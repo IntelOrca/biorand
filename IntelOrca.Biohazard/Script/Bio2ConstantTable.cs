@@ -460,7 +460,7 @@ namespace IntelOrca.Biohazard.Script
             "",
             "poison_ck",
             "poison_clr",
-            "sce_item_ck_lost",
+            "sce_item_ck_lost:tu",
             "",
             "nop_8a",
             "nop_8b",

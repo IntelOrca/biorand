@@ -109,10 +109,24 @@ namespace IntelOrca.Biohazard
                 if (_rng.Next(0, 4) == 0)
                 {
                     _specialItem = (byte)_rng.NextOf(new[] {
+                        ItemType.GVirus,
                         ItemType.Lighter,
                         ItemType.Lockpick,
                     });
                     _startKeyItems.Add(_specialItem.Value);
+                    if (_specialItem.Value == (byte)ItemType.Lockpick)
+                    {
+                        _startKeyItems.Add((byte)ItemType.SmallKey);
+                        if (_config.Player == 0)
+                        {
+                            // Remove small key check for sewer door
+                            var rdt = _gameData.GetRdt(new RdtId(3, 0x01));
+                            if (rdt != null)
+                            {
+                                rdt.Nop(0x276C);
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -144,23 +158,29 @@ namespace IntelOrca.Biohazard
                 _logger.WriteHeading($"Randomizing Inventory {i}:");
 
                 // Special item
-                if (i == 0 && !_specialItem.HasValue)
+                remaining = size[i];
+                if (i == 0)
                 {
-                    var possibleItems = _startingWeapons
-                        .Select(x => x.Type)
-                        .Where(x => _itemHelper.GetItemSize(x) <= 1)
-                        .ToArray();
-                    if (possibleItems.Length == 0 || _rng.NextProbability(25))
+                    if (_specialItem.HasValue)
                     {
-                        _specialItem = _itemHelper.GetItemId(CommonItemKind.Knife);
+                        AddToInventory(_specialItem.Value, 1);
                     }
                     else
                     {
-                        _specialItem = _rng.NextOf(possibleItems);
+                        var possibleItems = _startingWeapons
+                            .Select(x => x.Type)
+                            .Where(x => _itemHelper.GetItemSize(x) <= 1)
+                            .ToArray();
+                        if (possibleItems.Length == 0 || _rng.NextProbability(25))
+                        {
+                            _specialItem = _itemHelper.GetItemId(CommonItemKind.Knife);
+                        }
+                        else
+                        {
+                            _specialItem = _rng.NextOf(possibleItems);
+                        }
                     }
                 }
-
-                remaining = size[i];
 
                 // RE 3 doesn't need the knife as it is in the box by default,
                 // but if no weapon is given, the knife is required - otherwise the game crashes.
