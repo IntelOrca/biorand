@@ -72,6 +72,36 @@ namespace IntelOrca.Biohazard
 
         public int EventScriptCount => _eventScripts.Count;
 
+        public BioString[] GetTexts(int language)
+        {
+            var chunkIndex = language == 0 ? 13 : 14;
+            var offset = _offsets[chunkIndex];
+            var length = _lengths[chunkIndex];
+            var ms = new MemoryStream(Data);
+            ms.Position = offset;
+            var br = new BinaryReader(ms);
+            var firstOffset = br.ReadUInt16();
+            var numTexts = firstOffset / 2;
+            var textOffsets = new ushort[numTexts];
+            var textLengths = new ushort[numTexts];
+            textOffsets[0] = firstOffset;
+            for (int i = 1; i < numTexts; i++)
+            {
+                textOffsets[i] = br.ReadUInt16();
+                textLengths[i - 1] = (ushort)(textOffsets[i] - textOffsets[i - 1]);
+            }
+            textLengths[numTexts - 1] = (ushort)(length - textOffsets[0]);
+
+            var result = new List<BioString>();
+            for (int i = 0; i < numTexts; i++)
+            {
+                ms.Position = offset + textOffsets[i];
+                var text = br.ReadBytes(textLengths[i]);
+                result.Add(new BioString(text));
+            }
+            return result.ToArray();
+        }
+
         public byte[] GetScd(BioScriptKind kind, int scriptIndex = 0)
         {
             var index = GetScdChunkIndex(kind);
