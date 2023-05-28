@@ -144,23 +144,29 @@ namespace IntelOrca.Biohazard
                 _logger.WriteHeading($"Randomizing Inventory {i}:");
 
                 // Special item
-                if (i == 0 && !_specialItem.HasValue)
+                remaining = size[i];
+                if (i == 0)
                 {
-                    var possibleItems = _startingWeapons
-                        .Select(x => x.Type)
-                        .Where(x => _itemHelper.GetItemSize(x) <= 1)
-                        .ToArray();
-                    if (possibleItems.Length == 0 || _rng.NextProbability(25))
+                    if (_specialItem.HasValue)
                     {
-                        _specialItem = _itemHelper.GetItemId(CommonItemKind.Knife);
+                        AddToInventory(_specialItem.Value, 1);
                     }
                     else
                     {
-                        _specialItem = _rng.NextOf(possibleItems);
+                        var possibleItems = _startingWeapons
+                            .Select(x => x.Type)
+                            .Where(x => _itemHelper.GetItemSize(x) <= 1)
+                            .ToArray();
+                        if (possibleItems.Length == 0 || _rng.NextProbability(25))
+                        {
+                            _specialItem = _itemHelper.GetItemId(CommonItemKind.Knife);
+                        }
+                        else
+                        {
+                            _specialItem = _rng.NextOf(possibleItems);
+                        }
                     }
                 }
-
-                remaining = size[i];
 
                 // RE 3 doesn't need the knife as it is in the box by default,
                 // but if no weapon is given, the knife is required - otherwise the game crashes.
