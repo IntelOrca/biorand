@@ -68,7 +68,9 @@ namespace IntelOrca.Biohazard
             stream.Position = 4;
             bw.Write((uint)(stream.Length - 8));
             stream.Position = 40;
-            bw.Write((uint)(stream.Length - 44));
+            var correctLength = ((uint)(stream.Length - 44) / _header.nBlockAlign) * _header.nBlockAlign;
+            bw.Write(correctLength);
+            stream.SetLength(44 + correctLength);
             stream.Position = stream.Length;
             _finished = true;
         }
