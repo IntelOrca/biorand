@@ -2431,7 +2431,8 @@
           "target": "500"
         },
         {
-          "target": "507"
+          "target": "507",
+          "noUnlock": true
         },
         {
           "target": "508",
