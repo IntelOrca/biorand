@@ -335,7 +335,7 @@ namespace IntelOrca.Biohazard
                 LogAction($"door cut {door.Cut}");
             }
 
-            protected void IntelliTravelTo(int flag, int enemyId, PointOfInterest from, PointOfInterest destination, REPosition? overrideDestination, bool run)
+            protected void IntelliTravelTo(int flag, int enemyId, PointOfInterest from, PointOfInterest destination, REPosition? overrideDestination, PlcDestKind kind, bool cutFollow = false)
             {
                 Builder.SetFlag(4, flag, false);
                 Builder.BeginSubProcedure();
@@ -345,16 +345,16 @@ namespace IntelOrca.Biohazard
                     if (overrideDestination != null && poi == destination)
                         break;
 
-                    Builder.SetEnemyDestination(enemyId, poi.Position, run);
+                    Builder.SetEnemyDestination(enemyId, poi.Position, kind);
                     Builder.WaitForEnemyTravel(enemyId);
                     Builder.Sleep(2);
-                    if (enemyId == -1)
+                    if (cutFollow)
                         Builder.CutChange(poi.Cut);
                     LogAction($"{GetCharLogName(enemyId)} travel to {poi}");
                 }
                 if (overrideDestination != null)
                 {
-                    Builder.SetEnemyDestination(enemyId, overrideDestination.Value, run);
+                    Builder.SetEnemyDestination(enemyId, overrideDestination.Value, kind);
                     Builder.WaitForEnemyTravel(enemyId);
                     Builder.MoveEnemy(enemyId, overrideDestination.Value);
                     LogAction($"{GetCharLogName(enemyId)} travel to {overrideDestination}");
@@ -611,17 +611,27 @@ namespace IntelOrca.Biohazard
 
             protected override void Build()
             {
-                var npcId = Builder.AllocateEnemies(1).FirstOrDefault();
-                var door = GetRandomDoor()!;
+                var numAllys = Rng.Next(0, 3);
+                numAllys = 3;
+                var allyIds = Builder.AllocateEnemies(numAllys);
+                var entranceDoors = Enumerable.Range(0, numAllys).Select(x => GetRandomDoor()!).ToArray();
+                var exitDoors = Enumerable.Range(0, numAllys).Select(x => GetRandomDoor()!).ToArray();
+
                 var meetup = GetRandomPoi(x => x.Kind == PoiKind.Meet)!;
                 var meetA = new REPosition(meetup.X + 1000, meetup.Y, meetup.Z, 2000);
                 var meetB = new REPosition(meetup.X - 1000, meetup.Y, meetup.Z, 0);
+                var meetC = new REPosition(meetup.X, meetup.Y, meetup.Z + 1000, 1000);
+                var meetD = new REPosition(meetup.X, meetup.Y, meetup.Z - 1000, 3000);
+                var allyMeets = new[] { meetB, meetC, meetD };
 
                 Builder.IfPlotTriggered();
                 Builder.ElseBeginTriggerThread();
-                Builder.Ally(npcId, REPosition.OutOfBounds.WithY(door.Position.Y));
+                for (var i = 0; i < numAllys; i++)
+                {
+                    Builder.Ally(allyIds[i], REPosition.OutOfBounds.WithY(entranceDoors[i].Position.Y));
+                }
 
-                var triggerCut = AddTriggers(door.Cuts);
+                var triggerCut = AddTriggers(entranceDoors[0].Cuts);
                 if (triggerCut == null)
                     throw new Exception("Cutscene not supported for non-cut triggers.");
 
@@ -630,36 +640,60 @@ namespace IntelOrca.Biohazard
                 // Mark the cutscene as done in case it softlocks
                 Builder.SetFlag(4, Cr._plotId);
 
-                DoDoorOpenCloseCut(door);
+                DoDoorOpenCloseCut(entranceDoors[0]);
                 Builder.BeginCutsceneMode();
-                Builder.MoveEnemy(npcId, door.Position);
-                Builder.PlayVoice(21);
+                Builder.MoveEnemy(allyIds[0], entranceDoors[0].Position);
+                if (Rng.NextProbability(50))
+                {
+                    Builder.PlayVoice(21);
+                }
                 Builder.Sleep(30);
-                LogAction($"NPC walk in");
+                LogAction($"Ally walk in");
 
                 Builder.CutRevert();
 
-                IntelliTravelTo(100, npcId, door, meetup, meetB, run: true);
-                IntelliTravelTo(101, -1, triggerCut, meetup, meetA, run: true);
-
+                IntelliTravelTo(100, -1, triggerCut, meetup, meetA, PlcDestKind.Run, cutFollow: true);
+                IntelliTravelTo(101, allyIds[0], entranceDoors[0], meetup, allyMeets[0], PlcDestKind.Run);
                 Builder.WaitForFlag(100);
                 Builder.WaitForFlag(101);
 
                 LogAction($"Focus on {meetup}");
-                if (meetup.CloseCut != null)
-                    Builder.CutChange(meetup.CloseCut.Value);
-                else
-                    Builder.CutChange(meetup.Cut);
+                var meetCut = meetup.CloseCut ?? meetup.Cut;
+                Builder.CutChange(meetCut);
                 LongConversation();
-                Builder.CutChange(meetup.Cut);
 
-                IntelliTravelTo(100, npcId, meetup, door, null, run: true);
+                for (var i = 1; i < numAllys; i++)
+                {
+                    // Another ally walks in
+                    Builder.MoveEnemy(allyIds[i], entranceDoors[i].Position);
+                    DoDoorOpenCloseCutAway(entranceDoors[i], meetCut);
+                    Builder.Sleep(15);
+                    LogAction($"NPC walk in");
+                    IntelliTravelTo(100, allyIds[i], entranceDoors[i], meetup, allyMeets[i], PlcDestKind.Run, cutFollow: true);
+                    Builder.WaitForFlag(100);
+
+                    LogAction($"Focus on {meetup}");
+                    Builder.CutChange(meetCut);
+                    LongConversation();
+                }
+
+                if (Rng.NextProbability(50))
+                {
+                    // Backstep
+                    Builder.PlayVoiceAsync(Rng.Next(0, 15));
+                    var backstepPos = new REPosition(meetup.X - 2500, meetup.Y, meetup.Z, 0);
+                    Builder.SetEnemyDestination(allyIds[0], backstepPos, PlcDestKind.Backstep);
+                    Builder.WaitForEnemyTravel(allyIds[0]);
+                    Builder.Sleep(2);
+                }
+
+                IntelliTravelTo(100, allyIds[0], meetup, exitDoors[0], exitDoors[0].Position.Reverse(), PlcDestKind.Run);
                 Builder.WaitForFlag(100);
 
-                Builder.MoveEnemy(npcId, REPosition.OutOfBounds);
-                Builder.StopEnemy(npcId);
+                Builder.MoveEnemy(allyIds[0], REPosition.OutOfBounds);
+                Builder.StopEnemy(allyIds[0]);
 
-                DoDoorOpenCloseCutAway(door, meetup.Cut);
+                DoDoorOpenCloseCutAway(exitDoors[0], meetup.Cut);
                 Builder.ReleaseEnemyControl(-1);
                 Builder.CutAuto();
                 Builder.EndCutsceneMode();
@@ -688,7 +722,12 @@ namespace IntelOrca.Biohazard
 
         public REPosition WithY(int y) => new REPosition(X, y, Z, D);
 
-        public static REPosition OutOfBounds { get; } = new REPosition(-32000, 0, -32000);
+        public REPosition Reverse()
+        {
+            return new REPosition(X, Y, Z, (D + 2000) % 4000);
+        }
+
+        public static REPosition OutOfBounds { get; } = new REPosition(-32000, -10000, -32000);
 
         public override string ToString() => $"({X},{Y},{Z},{D})";
     }

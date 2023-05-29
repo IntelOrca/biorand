@@ -139,10 +139,15 @@ namespace IntelOrca.Biohazard
             AppendLine("wsleeping");
         }
 
-        public void SetEnemyDestination(int id, REPosition pos, bool run = false)
+        public void PlayVoiceAsync(int id)
+        {
+            AppendLine("xa_on", 0, id);
+        }
+
+        public void SetEnemyDestination(int id, REPosition pos, PlcDestKind kind)
         {
             WorkOnEnemy(id);
-            AppendLine("plc_dest", 0, run ? 5 : 4, id == -1 ? 32 : 33, pos.X, pos.Z);
+            AppendLine("plc_dest", 0, (byte)kind, id == -1 ? 32 : 33, pos.X, pos.Z);
         }
 
         public void SetEnemyNeck(int id)
@@ -422,5 +427,12 @@ namespace IntelOrca.Biohazard
         {
             _sb.AppendLine(string.Format("    {0,-24}{1}", instruction, string.Join(", ", parameters)));
         }
+    }
+
+    public enum PlcDestKind
+    {
+        Walk = 4,
+        Run = 5,
+        Backstep = 8
     }
 }
