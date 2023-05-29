@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Xml;
 using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.RE3;
@@ -125,9 +126,21 @@ namespace IntelOrca.Biohazard
                     }
                 }
             }
-            return visited
+
+            var result = visited
                 .Select(x => _gameData.GetRdt(x.RdtId)!)
-                .ToArray();
+                .ToHashSet();
+
+            // Add linked RDTs as well
+            foreach (var v in visited)
+            {
+                if (v.LinkedRdtId != null)
+                {
+                    result.Add(_gameData.GetRdt(v.LinkedRdtId.Value)!);
+                }
+            }
+
+            return result.ToArray();
         }
 
         private void RandomizeRooms(Rdt[] rdts)
@@ -144,6 +157,7 @@ namespace IntelOrca.Biohazard
                 var numEmptyRdts = Enumerable.Range(0, enemyRdts.Count)
                     .Count(x => _rng.Next(0, maxQuantity) == 0);
                 numEmptyRdts = Math.Min(numEmptyRdts, enemyRdts.Count);
+                numEmptyRdts = 0;
 
                 var numRdtsCleared = 0;
                 for (int i = enemyRdts.Count - 1; i >= 0; i--)
@@ -414,7 +428,7 @@ namespace IntelOrca.Biohazard
 
             if (_config.RandomEnemyPlacement && !enemySpec.KeepPositions)
             {
-                enemiesToChange = GenerateRandomEnemies(rng, rdt, enemiesToChange, possibleTypes[0]);
+                enemiesToChange = GenerateRandomEnemies(rng, rdt, enemySpec, enemiesToChange, possibleTypes[0]);
             }
 
             if (possibleTypes.Length == 0)
@@ -442,7 +456,7 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private SceEmSetOpcode[] GenerateRandomEnemies(Rng rng, Rdt rdt, SceEmSetOpcode[] currentEnemies, byte enemyType)
+        private SceEmSetOpcode[] GenerateRandomEnemies(Rng rng, Rdt rdt, MapRoomEnemies enemySpec, SceEmSetOpcode[] currentEnemies, byte enemyType)
         {
             var relevantPlacements = _enemyPositions
                 .Where(x => x.RdtId == rdt.RdtId)
@@ -471,6 +485,8 @@ namespace IntelOrca.Biohazard
             var enemies = new List<SceEmSetOpcode>();
             byte enemyId = 0;
             byte killId = 0;
+
+            var firstEnemyOpcodeIndex = rdt.AdditionalOpcodes.Count;
             foreach (var ep in relevantPlacements)
             {
                 while (usedIds.Contains(enemyId))
@@ -484,6 +500,9 @@ namespace IntelOrca.Biohazard
                 enemyId++;
                 killId++;
             }
+
+            InsertConditions(rdt, firstEnemyOpcodeIndex, rdt.AdditionalOpcodes.Count - firstEnemyOpcodeIndex, enemySpec.Condition);
+
             return enemies.ToArray();
         }
 
@@ -510,6 +529,59 @@ namespace IntelOrca.Biohazard
                 Unk15 = 0
             };
             return enemy;
+        }
+
+        private void InsertConditions(Rdt rdt, int opcodeIndex, int numOpcodes, string? condition)
+        {
+            if (string.IsNullOrEmpty(condition))
+                return;
+
+            if (_config.Game != 3)
+                throw new NotSupportedException("Enemy conditions not supported for this game");
+
+            var conditions = condition!
+                .Replace("&&", "&")
+                .Split('&')
+                .Select(x => x.Trim())
+                .ToArray();
+
+            var ckOpcodes = new List<OpcodeBase>();
+            foreach (var c in conditions)
+            {
+                var m = Regex.Match(c, "(!?)(\\d+):(\\d+)");
+                if (m.Success)
+                {
+                    var value = m.Groups[1].Value == "!" ? (byte)0 : (byte)1;
+                    var left = byte.Parse(m.Groups[2].Value);
+                    var right = byte.Parse(m.Groups[3].Value);
+                    ckOpcodes.Add(new UnknownOpcode(0, (byte)OpcodeV3.Ck, new byte[] { left, right, value }));
+                }
+                else
+                {
+                    m = Regex.Match(c, "\\$(\\d+)\\s*(!=|==)\\s*(\\d+)");
+                    if (m.Success)
+                    {
+                        var var = byte.Parse(m.Groups[1].Value);
+                        var op = m.Groups[2].Value == "==" ? (byte)0 : (byte)5;
+                        var value = byte.Parse(m.Groups[3].Value);
+                        ckOpcodes.Add(new UnknownOpcode(0, (byte)OpcodeV3.Cmp, new byte[] { 0x00, var, op, (byte)value, 0x00 }));
+                    }
+                }
+            }
+
+            var ifSize = ckOpcodes.Sum(x => x.Length) + (numOpcodes * 24) + 2;
+
+            // Insert endif opcodes
+            rdt.AdditionalOpcodes.Insert(opcodeIndex + numOpcodes, new UnknownOpcode(0, (byte)OpcodeV3.EndIf, new byte[] { 0 }));
+
+            // Insert if opcodes
+            rdt.AdditionalOpcodes.Insert(opcodeIndex + 0, new UnknownOpcode(0, (byte)OpcodeV3.IfelCk, new byte[] { 0x00, (byte)(ifSize & 0xFF), (byte)(ifSize >> 8) }));
+
+            // Insert ck opcodes
+            for (var i = 0; i < ckOpcodes.Count; i++)
+            {
+                rdt.AdditionalOpcodes.Insert(opcodeIndex + 1 + i, ckOpcodes[i]);
+            }
         }
 
         private static void PrintAllEnemies(GameData gameData)

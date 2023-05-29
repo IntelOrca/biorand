@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace IntelOrca.Biohazard
 {
-    public struct RdtId : IEquatable<RdtId>
+    public struct RdtId : IEquatable<RdtId>, IComparable<RdtId>
     {
         public int Stage { get; }
         public int Room { get; }
@@ -23,6 +23,15 @@ namespace IntelOrca.Biohazard
             hash = hash * 23 + Stage;
             hash = hash * 23 + Room;
             return hash;
+        }
+
+        public int CompareTo(RdtId other)
+        {
+            if (Stage < other.Stage)
+                return -1;
+            if (Stage > other.Stage)
+                return 1;
+            return Room - other.Room;
         }
 
         public static bool operator ==(RdtId left, RdtId right) => left.Equals(right);

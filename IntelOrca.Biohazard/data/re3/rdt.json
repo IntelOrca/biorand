@@ -74,6 +74,11 @@
           "includeOffsets": [ 26632 ],
           "cutscene": 1
         }
+      ],
+      "enemies": [
+        {
+          "condition": "3:11"
+        }
       ]
     },
     "102": {
@@ -218,7 +223,12 @@
           "target": "106"
         }
       ],
-      "enemies": [],
+      "enemies": [
+        {
+          "condition": "3:0",
+          "excludeOffsets": [ 7448 ]
+        }
+      ],
       "npcs": [
         {
           "excludeTypes": [ 47, 91, 95, 103 ]
@@ -247,6 +257,13 @@
       ],
       "enemies": []
     },
+    "10A": {
+      "enemies": [
+        {
+          "condition": "$39 != 1"
+        }
+      ]
+    },
     "10B": {
       "doors": [
         {
@@ -254,6 +271,11 @@
         },
         {
           "target": "11B"
+        }
+      ],
+      "enemies": [
+        {
+          "condition": "$39 != 5"
         }
       ]
     },
@@ -266,6 +288,11 @@
       "doors": [
         {
           "target": "123"
+        }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 52 ]
         }
       ]
     },
@@ -287,11 +314,7 @@
           "target": "10B"
         }
       ],
-      "enemies": [
-        {
-          "randomPlacements": true
-        }
-      ]
+      "enemies": []
     },
     "10F": {
       "doors": [
@@ -407,12 +430,6 @@
           "id": 2,
           "priority": "low"
         }
-      ],
-      "enemies": [
-        {
-          "nop": [ "0x0FF6", "0x1044-0x108E" ],
-          "randomPlacements": true
-        }
       ]
     },
     "111": {
@@ -444,6 +461,11 @@
           "id": 3,
           "priority": "low"
         }
+      ],
+      "enemies": [
+        {
+          "condition": "$39 != 2"
+        }
       ]
     },
     "113": {
@@ -464,6 +486,11 @@
         {
           "id": 3,
           "requires": [ 114 ]
+        }
+      ],
+      "enemies": [
+        {
+          "condition": "!3:3"
         }
       ]
     },
@@ -492,6 +519,11 @@
           "id": 5,
           "priority": "low"
         }
+      ],
+      "enemies": [
+        {
+          "condition": "!3:25 && $39 != 2"
+        }
       ]
     },
     "115": {
@@ -511,6 +543,11 @@
         {
           "id": 3,
           "priority": "low"
+        }
+      ],
+      "enemies": [
+        {
+          "condition": "!3:3"
         }
       ]
     },
@@ -536,6 +573,11 @@
       "doors": [
         {
           "target": "114"
+        }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 52 ]
         }
       ]
     },
@@ -565,6 +607,11 @@
             "cut": 3
           }
         }
+      ],
+      "enemies": [
+        {
+          "condition": "!3:3"
+        }
       ]
     },
     "119": {
@@ -585,6 +632,11 @@
         {
           "id": 7,
           "priority": "low"
+        }
+      ],
+      "enemies": [
+        {
+          "condition": "!3:3"
         }
       ]
     },
@@ -678,6 +730,27 @@
         }
       ]
     },
+    "120": {
+      "enemies": [
+        {
+          "condition": "$39 != 5"
+        }
+      ]
+    },
+    "121": {
+      "enemies": [
+        {
+          "condition": "$39 != 5"
+        }
+      ]
+    },
+    "122": {
+      "enemies": [
+        {
+          "condition": "$39 != 5"
+        }
+      ]
+    },
     "123": {
       "linkedRoom": "109",
       "doors": [
@@ -727,6 +800,11 @@
         {
           "target": "21A",
           "requires": [ 114 ]
+        }
+      ],
+      "enemies": [
+        {
+          "condition": "$39 != 5"
         }
       ]
     },
