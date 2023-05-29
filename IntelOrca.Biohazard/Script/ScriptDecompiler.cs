@@ -370,8 +370,10 @@ namespace IntelOrca.Biohazard.Script
                     {
                         br.ReadByte();
                         var blockLen = br.ReadUInt16();
-                        sb.WriteLine($"while (");
-                        _sb.OpenBlock();
+                        sb.Write($"while (");
+                        // _sb.OpenBlock();
+                        _constructingBinaryExpression = true;
+                        _expressionCount = 0;
                         break;
                     }
                 case OpcodeV2.Ewhile:
