@@ -539,6 +539,14 @@ namespace IntelOrca.Biohazard
             if (_config.Game != 3)
                 throw new NotSupportedException("Enemy conditions not supported for this game");
 
+            var negated = false;
+            var negatedMatch = Regex.Match(condition!, "!\\((.*)\\)");
+            if (negatedMatch.Success)
+            {
+                negated = true;
+                condition = negatedMatch.Groups[1].Value;
+            }
+
             var conditions = condition!
                 .Replace("&&", "&")
                 .Split('&')
@@ -569,10 +577,22 @@ namespace IntelOrca.Biohazard
                 }
             }
 
-            var ifSize = ckOpcodes.Sum(x => x.Length) + (numOpcodes * 24) + 2;
+            var ifSize = ckOpcodes.Sum(x => x.Length);
+            if (negated)
+            {
+                ifSize += 4;
+                var elseSize = (numOpcodes * 24) + 4;
 
-            // Insert endif opcodes
-            rdt.AdditionalOpcodes.Insert(opcodeIndex + numOpcodes, new UnknownOpcode(0, (byte)OpcodeV3.EndIf, new byte[] { 0 }));
+                // Insert else opcodes
+                rdt.AdditionalOpcodes.Insert(opcodeIndex, new UnknownOpcode(0, (byte)OpcodeV3.ElseCk, new byte[] { 0, (byte)(elseSize & 0xFF), (byte)(elseSize >> 8) }));
+            }
+            else
+            {
+                ifSize += (numOpcodes * 24) + 2;
+
+                // Insert endif opcodes
+                rdt.AdditionalOpcodes.Insert(opcodeIndex + numOpcodes, new UnknownOpcode(0, (byte)OpcodeV3.EndIf, new byte[] { 0 }));
+            }
 
             // Insert if opcodes
             rdt.AdditionalOpcodes.Insert(opcodeIndex + 0, new UnknownOpcode(0, (byte)OpcodeV3.IfelCk, new byte[] { 0x00, (byte)(ifSize & 0xFF), (byte)(ifSize >> 8) }));

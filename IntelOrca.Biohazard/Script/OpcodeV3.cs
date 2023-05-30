@@ -27,6 +27,7 @@
         Calc = 0x20,
         EvtCut = 0x22,
         DoorCk = 0x27,
+        MembCmp = 0x43,
         Ck = 0x4C,
         Set3 = 0x4D,
         Cmp = 0x4E,
