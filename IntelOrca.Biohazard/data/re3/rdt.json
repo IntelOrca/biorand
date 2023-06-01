@@ -2123,7 +2123,13 @@
           "target": "403"
         }
       ],
-      "enemies": []
+      "enemies": [
+        {
+          "condition": "!(8:39 && 8:54)",
+          "nop": [ "0x27A4" ],
+          "randomPlacements": true
+        }
+      ]
     },
     "403": {
       "doors": [
@@ -2209,6 +2215,12 @@
           "id": 4,
           "priority": "low"
         }
+      ],
+      "enemies": [
+        {
+          "nop": [ "0x0E78" ],
+          "randomPlacements": true
+        }
       ]
     },
     "408": {
@@ -2241,6 +2253,7 @@
       ],
       "enemies": [
         {
+          "condition": "!(!3:91 && !3:90)",
           "excludeTypes": [ 32 ]
         }
       ]
@@ -2296,6 +2309,7 @@
       ],
       "enemies": [
         {
+          "condition": "!(!3:90 && !3:91)",
           "includeTypes": [ 34 ]
         }
       ]
@@ -2332,6 +2346,12 @@
           "target": "40E",
           "noUnlock": true
         }
+      ],
+      "enemies": [
+        {
+          "nop": [ "0x3CFC" ],
+          "randomPlacements": true
+        }
       ]
     },
     "40D": {
@@ -2353,6 +2373,12 @@
         },
         {
           "target": "40F"
+        }
+      ],
+      "enemies": [
+        {
+          "nop": [ "0x1FB2" ],
+          "randomPlacements": true
         }
       ]
     },
@@ -2384,7 +2410,12 @@
       ],
       "enemies": [
         {
-          "y": 0
+          "y": 0,
+          "randomPlacements": false
+        },
+        {
+          "nop": [ "0x201C" ],
+          "randomPlacements": true
         }
       ]
     },
@@ -2400,6 +2431,7 @@
       ],
       "enemies": [
         {
+          "nop": [ "0x33D2" ],
           "randomPlacements": true
         }
       ]
@@ -2422,6 +2454,11 @@
           "target": "414",
           "requires": [ 61, 65, 66 ],
           "noUnlock": true
+        }
+      ],
+      "enemies": [
+        {
+          "condition": "!(3:111 && !3:77)"
         }
       ]
     },
