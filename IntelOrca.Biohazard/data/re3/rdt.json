@@ -1684,7 +1684,13 @@
           "doorRando": true
         }
       ],
-      "enemies": []
+      "enemies": [
+        {
+          "condition": "$39 != 9",
+          "nop": [ "0x2F84" ],
+          "randomPlacements": true
+        }
+      ]
     },
     "302": {
       "doorRando": [
@@ -1717,6 +1723,11 @@
         {
           "excludeTypes": [ 47 ]
         }
+      ],
+      "enemies": [
+        {
+          "condition": "$39 != 9 && 3:167"
+        }
       ]
     },
     "303": {
@@ -1732,6 +1743,12 @@
         {
           "target": "304",
           "lock": "side"
+        }
+      ],
+      "enemies": [
+        {
+          "condition": "$39 != 9",
+          "nop": [ "0x3562-0x3602" ]
         }
       ]
     },
@@ -1756,6 +1773,11 @@
         {
           "id": 5,
           "type": 0
+        }
+      ],
+      "enemies": [
+        {
+          "condition": "$39 != 9"
         }
       ]
     },
@@ -1794,7 +1816,12 @@
           "priority": "low"
         }
       ],
-      "enemies": []
+      "enemies": [
+        {
+          "nop": [ "0x2322" ],
+          "randomPlacements": true
+        }
+      ]
     },
     "306": {
       "linkedRoom": "312",
@@ -1858,6 +1885,11 @@
         {
           "includeTypes": [ 81, 92 ]
         }
+      ],
+      "enemies": [
+        {
+          "condition": "$39 != 9 && $39 != 10 && !3:41"
+        }
       ]
     },
     "308": {
@@ -1872,6 +1904,7 @@
       ],
       "enemies": [
         {
+          "condition": "$39 != 10",
           "y": 0
         }
       ]
@@ -1944,6 +1977,7 @@
       ],
       "enemies": [
         {
+          "condition": "$39 != 9",
           "y": 0
         }
       ]
@@ -1977,6 +2011,11 @@
           "requires": [ 76, 77 ],
           "isBridgeEdge": true,
           "randomize": false
+        }
+      ],
+      "enemies": [
+        {
+          "condition": "$39 != 9 && 3:138"
         }
       ]
     },
