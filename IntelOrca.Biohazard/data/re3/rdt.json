@@ -2575,12 +2575,6 @@
           "target": "510"
         }
       ],
-      "enemies": [
-        {
-          "nop": [ "0x20DC", "0x2128", "0x2186", "0x21D2" ],
-          "y": 0
-        }
-      ],
       "items": [
         {
           "id": 4,
@@ -2589,6 +2583,13 @@
         {
           "id": 5,
           "requires": [ 96 ]
+        }
+      ],
+      "enemies": [
+        {
+          "condition": "!(!3:235 && 3:88 && !8:42)",
+          "nop": [ "0x20DC", "0x2128", "0x2186", "0x21D2" ],
+          "y": 0
         }
       ]
     },
@@ -2632,6 +2633,11 @@
         {
           "id": 13,
           "priority": "low"
+        }
+      ],
+      "enemies": [
+        {
+          "condition": "!(!3:89 && !3:88)"
         }
       ]
     },
@@ -2680,14 +2686,21 @@
           "target": "505"
         }
       ],
-      "enemies": [
-        {
-          "excludeOffsets": [ 7890, 7914, 7938, 7962, 7986 ]
-        }
-      ],
       "npcs": [
         {
           "includeTypes": [ 81, 92 ]
+        }
+      ],
+      "enemies": [
+        {
+          "excludeOffsets": [ 7890, 7914, 7938, 7962, 7986 ],
+          "randomPlacements": false
+        },
+        {
+          "condition": "!(3:88 && !3:98)",
+          "excludeOffsets": [ 7890, 7914, 7938, 7962, 7986 ],
+          "nop": [ "0x1FF0-0x2080" ],
+          "randomPlacements": true
         }
       ]
     },
@@ -2779,6 +2792,11 @@
           "includeOffsets": [ 12662 ],
           "cutscene": 1
         }
+      ],
+      "enemies": [
+        {
+          "condition": "!(!3:88 && !3:182)"
+        }
       ]
     },
     "509": {
@@ -2829,6 +2847,12 @@
           "target": "50D",
           "randomize": false,
           "noReturn": true
+        }
+      ],
+      "enemies": [
+        {
+          "nop": [ "0x11BE-0x1236" ],
+          "randomPlacements": true
         }
       ]
     },
