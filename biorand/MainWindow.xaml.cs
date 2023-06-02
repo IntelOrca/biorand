@@ -824,7 +824,7 @@ namespace IntelOrca.Biohazard.BioRand
                     panelInfo.Visibility = Visibility.Hidden;
                     panelConfig.Visibility = Visibility.Hidden;
                     panelRando.Visibility = Visibility.Visible;
-                    if (index == 0 || index == 2)
+                    if (index == 0)
                     {
                         chkRandomEnemyPlacements.Visibility = Visibility.Hidden;
                         chkEnemyRestrictedRooms.Visibility = Visibility.Hidden;
