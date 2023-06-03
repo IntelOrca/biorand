@@ -527,7 +527,7 @@ namespace IntelOrca.Biohazard
             // Order by most key rich edge first
             unfinishedEdges = unfinishedEdges
                 .Shuffle(_rng)
-                .OrderByDescending(x => x.Parent.DoorRandoAllRequiredItems.Length + x.Requires.Length)
+                .OrderByDescending(x => x.Parent.DoorRandoAllRequiredItems.Length + x.Requires.Length + x.RequiresRoom.Length)
                 .ToArray();
 
             foreach (var exit in endNode.Edges.Shuffle(_rng))
@@ -827,7 +827,7 @@ namespace IntelOrca.Biohazard
                             else
                                 _numUnlockedEdges++;
 
-                            var keyRichScore = edge.Parent.DoorRandoAllRequiredItems.Length + edge.Requires.Length;
+                            var keyRichScore = edge.Parent.DoorRandoAllRequiredItems.Length + edge.Requires.Length + edge.RequiresRoom.Length;
                             if (keyRichScore > _keyRichEdgeScore)
                             {
                                 _keyRichEdge = edge;

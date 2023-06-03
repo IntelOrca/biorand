@@ -345,6 +345,8 @@ namespace IntelOrca.Biohazard.Script
                 case OpcodeV3.KeyCk:
                 case OpcodeV3.TrgCk:
                 case OpcodeV3.DoorCk:
+                case OpcodeV3.EvalBgmTblCk:
+                case OpcodeV3.ItemGetCk:
                 case OpcodeV3.MembCmp:
                     return true;
             }

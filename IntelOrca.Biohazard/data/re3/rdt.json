@@ -2731,7 +2731,9 @@
         },
         {
           "target": "508",
-          "requiresRoom": [ "502", "506" ]
+          "requires": [ 111 ],
+          "requiresRoom": [ "502", "506" ],
+          "noUnlock": true
         }
       ]
     },
@@ -2794,6 +2796,7 @@
           "target": "505"
         }
       ],
+      "requires": [ 111 ],
       "items": [
         {
           "id": 1,

@@ -27,6 +27,8 @@
         Calc = 0x20,
         EvtCut = 0x22,
         DoorCk = 0x27,
+        EvalBgmTblCk = 0x35,
+        ItemGetCk = 0x36,
         MembCmp = 0x43,
         Ck = 0x4C,
         Set3 = 0x4D,
