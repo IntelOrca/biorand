@@ -76,10 +76,10 @@ namespace IntelOrca.Biohazard.RE3
                 if (rdt == null)
                     return;
 
-                if (!config.RandomItems)
-                    return;
-
-                rdt.Nop(0x2CAE, 0x2CF8);
+                if (config.RandomDoors)
+                    rdt.Nop(0x2CAE, 0x2CF8);
+                else if (config.RandomItems)
+                    rdt.Nop(0x2CB6, 0x2CD2);
             }
 
             void FixSalesOffice()
