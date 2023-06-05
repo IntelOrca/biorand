@@ -1188,6 +1188,7 @@
         },
         {
           "includeOffsets": [ 20616 ],
+          "excludeTypes": [ 47, 87 ],
           "cutscene": 5 // Carlos (it's looking good)
         },
         {
