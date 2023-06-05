@@ -2079,12 +2079,7 @@
         }
       ],
       "requires": [ 76, 77 ],
-      "enemies": [
-        {
-          "excludeTypes": [ 52 ],
-          "restricted": true
-        }
-      ]
+      "enemies": [] // Enemies cause colour glitches
     },
     "30D": {
       "doorRando": [
