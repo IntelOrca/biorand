@@ -1765,7 +1765,13 @@
           "randomize": false
         },
         {
-          "target": "301"
+          "target": "301",
+          "doorRando": false
+        },
+        {
+          "target": "301",
+          "lock": "side",
+          "doorRando": true
         },
         {
           "target": "304",
@@ -1775,7 +1781,7 @@
       "enemies": [
         {
           "condition": "$39 != 9",
-          "nop": [ "0x3562-0x3602" ]
+          "nop": [ "0x357C-0x35AE", "0x35F6", "0x35FC" ]
         }
       ]
     },
