@@ -1,3 +1,24 @@
+BioRand v3.0.5 (2023-06-10)
+
+* [Feature] RE 2, Leon can now be given the lockpick.
+* [Feature] RE 3, enable random enemy placements.
+* [Fix] #269: RE 2, Wesker (RE 1) does not have hurt texture.
+* [Fix] #278: RE 3, some cutscenes freeze.
+* [Fix] #398: RE 3, room 405, Kendo graphical glitches or crash.
+* [Fix] #406: RE 3, room 213, glitched enemies after electrocution.
+* [Fix] #408: RE 3, room 10B, camera angle locked.
+* [Fix] #409: RE 3, room 40D, camera stuck due to incorrect entrance.
+* [Fix] #413: RE 3, room 503, softlock due to locked elevator door.
+* [Fix] #415: RE 2, ligher / lockpick is not given to player at start of game.
+* [Fix] #427: RE 3, room 20C, NPC softlock after ready to go cutscene.
+* [Fix] #428: RE 3, room 317, NPC change crashes game.
+* [Fix] #429: RE 3, room 303, softlock when random enemy placement enabled.
+* [Fix] #430: RE 2, Claire B, non-Sherry NPCs get stuck entering room for cutscene.
+* [Fix] #431: RE 3, Kevin's model crashes the game.
+* [Fix] RE 2, Murphy, Piers, and Tyrell do not have hurt textures.
+* [Fix] RE 3, room 111, fix leave day / night cycle.
+* [Fix] RE 3, water sample was never placed.
+
 BioRand v3.0.4 (2023-05-27)
 
 * [Fix] RE 1, NPC randomization.
