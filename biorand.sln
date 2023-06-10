@@ -22,6 +22,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "survey", "survey\survey.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "emd", "emd\emd.csproj", "{F152C646-1363-4FCB-B926-CA6BBCC27385}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "emdui", "emdui\emdui.csproj", "{FCCFCBB9-1E8F-46B6-BC5F-2F23994A561E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -128,6 +130,18 @@ Global
 		{F152C646-1363-4FCB-B926-CA6BBCC27385}.Release|x64.Build.0 = Release|Any CPU
 		{F152C646-1363-4FCB-B926-CA6BBCC27385}.Release|x86.ActiveCfg = Release|Any CPU
 		{F152C646-1363-4FCB-B926-CA6BBCC27385}.Release|x86.Build.0 = Release|Any CPU
+		{FCCFCBB9-1E8F-46B6-BC5F-2F23994A561E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCCFCBB9-1E8F-46B6-BC5F-2F23994A561E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCCFCBB9-1E8F-46B6-BC5F-2F23994A561E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FCCFCBB9-1E8F-46B6-BC5F-2F23994A561E}.Debug|x64.Build.0 = Debug|Any CPU
+		{FCCFCBB9-1E8F-46B6-BC5F-2F23994A561E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FCCFCBB9-1E8F-46B6-BC5F-2F23994A561E}.Debug|x86.Build.0 = Debug|Any CPU
+		{FCCFCBB9-1E8F-46B6-BC5F-2F23994A561E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCCFCBB9-1E8F-46B6-BC5F-2F23994A561E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCCFCBB9-1E8F-46B6-BC5F-2F23994A561E}.Release|x64.ActiveCfg = Release|Any CPU
+		{FCCFCBB9-1E8F-46B6-BC5F-2F23994A561E}.Release|x64.Build.0 = Release|Any CPU
+		{FCCFCBB9-1E8F-46B6-BC5F-2F23994A561E}.Release|x86.ActiveCfg = Release|Any CPU
+		{FCCFCBB9-1E8F-46B6-BC5F-2F23994A561E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

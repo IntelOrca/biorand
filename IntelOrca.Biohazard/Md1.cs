@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using static IntelOrca.Biohazard.Md1;
-using static IntelOrca.Biohazard.Md2;
 
 namespace IntelOrca.Biohazard
 {
