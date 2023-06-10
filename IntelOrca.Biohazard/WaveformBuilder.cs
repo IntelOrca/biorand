@@ -64,13 +64,20 @@ namespace IntelOrca.Biohazard
         private void Finish()
         {
             var stream = _stream;
+
+            // Clamp or expand the stream to the correct length (if waveform is not expected length)
+            var correctLength = ((uint)(stream.Length - 44) / _header.nBlockAlign) * _header.nBlockAlign;
+            stream.SetLength(44 + correctLength);
+
+            // Write RIFF length
             var bw = new BinaryWriter(stream);
             stream.Position = 4;
             bw.Write((uint)(stream.Length - 8));
+
+            // WRITE data length
             stream.Position = 40;
-            var correctLength = ((uint)(stream.Length - 44) / _header.nBlockAlign) * _header.nBlockAlign;
             bw.Write(correctLength);
-            stream.SetLength(44 + correctLength);
+
             stream.Position = stream.Length;
             _finished = true;
         }
