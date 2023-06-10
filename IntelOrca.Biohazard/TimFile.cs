@@ -315,6 +315,20 @@ namespace IntelOrca.Biohazard
             }
         }
 
+        public void ImportPixels(uint[] data, Func<int, int ,int> getClutIndex)
+        {
+            var index = 0;
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    var clutIndex = getClutIndex(x, y);
+                    SetPixel(x, y, clutIndex, data[index]);
+                    index++;
+                }
+            }
+        }
+
         public unsafe void ImportPixels(int x, int y, int width, int height, uint[] data, int clutIndex)
         {
             var index = 0;
@@ -353,6 +367,24 @@ namespace IntelOrca.Biohazard
             _clutSize = (uint)((count * _coloursPerClut * 2) + 12);
             Array.Resize(ref _clutData, (int)(_clutSize - 12));
             _numCluts = (ushort)count;
+        }
+
+        public void ResizeImage(int width, int height)
+        {
+            _imageWidth =
+                _pixelFormat switch
+                {
+                    PaletteFormat4bpp => (ushort)(width / 4),
+                    PaletteFormat8bpp => (ushort)(width / 2),
+                    PaletteFormat16bpp => (ushort)width,
+                    _ => throw new NotSupportedException(),
+                };
+            _imageHeight = (ushort)height;
+
+            var bufferSize = width * height;
+            if (_pixelFormat != PaletteFormat4bpp)
+                bufferSize *= 2;
+            _imageData = new byte[bufferSize];
         }
 
         public static uint Convert16to32(ushort c16)
