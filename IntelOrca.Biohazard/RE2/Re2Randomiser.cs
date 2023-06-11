@@ -156,7 +156,7 @@ namespace IntelOrca.Biohazard.RE2
             if (config.ChangePlayer)
             {
                 var selectedPldIndex = (config.Player == 0 ? config.Player0 : config.Player1) - 1;
-                var pldPath = DataManager.GetDirectories(BiohazardVersion, $"pld{config.Player}")
+                var pldPath = DataManager.GetDirectories(BiohazardVersion, "pld")
                     .Skip(selectedPldIndex)
                     .FirstOrDefault();
                 actor = Path.GetFileName(pldPath);
@@ -177,12 +177,14 @@ namespace IntelOrca.Biohazard.RE2
             ReplacePlayer(config, logger, fileRepository, pldIndex, hurtSoundIndex, deathSoundIndex, actor);
 
             // Some characters like Sherry need new enemy animations
-            var emdFiles = DataManager.GetFiles(BiohazardVersion, $"pld{config.Player}/{actor}/emd{config.Player}");
+            var emdFiles = DataManager.GetFiles(BiohazardVersion, $"pld/{actor}/emd");
             var emdFolder = fileRepository.GetModPath($"pl{config.Player}/emd{config.Player}");
             Directory.CreateDirectory(emdFolder);
             foreach (var src in emdFiles)
             {
-                var dst = Path.Combine(emdFolder, Path.GetFileName(src));
+                var dstFileName = Path.GetFileName(src);
+                dstFileName = $"em{config.Player}{dstFileName.Substring(3)}";
+                var dst = Path.Combine(emdFolder, dstFileName);
                 File.Copy(src, dst, true);
             }
 
@@ -262,15 +264,11 @@ namespace IntelOrca.Biohazard.RE2
 
         private string[] GetAllPLDs()
         {
-            var pldFiles0 = DataManager
-                .GetDirectories(BiohazardVersion, $"pld0")
+            var pldFiles = DataManager
+                .GetDirectories(BiohazardVersion, $"pld")
                 .Select(x => Path.GetFileName(x))
                 .ToArray();
-            var pldFiles1 = DataManager
-                .GetDirectories(BiohazardVersion, $"pld1")
-                .Select(x => Path.GetFileName(x))
-                .ToArray();
-            return pldFiles1.OrderBy(x => x).ToArray();
+            return pldFiles.OrderBy(x => x).ToArray();
         }
 
         private string[] GetEnabledNPCs(RandoConfig config)
@@ -292,7 +290,7 @@ namespace IntelOrca.Biohazard.RE2
         {
             var result = new List<string>();
             var pldFiles = DataManager
-                .GetDirectories(BiohazardVersion, $"pld{index}")
+                .GetDirectories(BiohazardVersion, "pld")
                 .ToArray();
             foreach (var pldPath in pldFiles)
             {
@@ -317,13 +315,8 @@ namespace IntelOrca.Biohazard.RE2
             };
 
             var originalPlayerActor = originalPLDs[pldIndex];
-            var srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld0\\{actor}");
+            var srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld\\{actor}");
             var basePldIndex = 0;
-            if (!Directory.Exists(srcPldDir))
-            {
-                srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld1\\{actor}");
-                basePldIndex = 1;
-            }
 
             logger.WriteHeading($"Randomizing Player PL{pldIndex:X2}:");
             logger.WriteLine($"{originalPlayerActor} becomes {actor}");
@@ -417,11 +410,7 @@ namespace IntelOrca.Biohazard.RE2
             if (BgCreator == null)
                 return;
 
-            var srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld0\\{actor}");
-            if (!Directory.Exists(srcPldDir))
-            {
-                srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld1\\{actor}");
-            }
+            var srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld\\{actor}");
             var facePath = DataManager.GetPath(BiohazardVersion, Path.Combine(srcPldDir, "face.png"));
             if (!File.Exists(facePath))
                 return;
