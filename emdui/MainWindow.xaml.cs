@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
+using System.Windows.Media.TextFormatting;
 using IntelOrca.Biohazard;
 using Microsoft.Win32;
 
@@ -33,28 +34,6 @@ namespace emdui
 
         private void Work()
         {
-            var dirPath = @"M:\git\rer\IntelOrca.Biohazard\data\re2\pld0";
-            var directories = Directory.GetDirectories(dirPath);
-            foreach (var dir in directories)
-            {
-                var pldPath = Path.Combine(dir, "PL00.PLD");
-                var pldFile = new PldFile(BioVersion.Biohazard2, pldPath);
-                if (pldFile.Md1.NumObjects >= 19 * 2)
-                    continue;
-
-                var md1Builder = pldFile.Md1.ToBuilder();
-                while (md1Builder.Parts.Count != 19)
-                {
-                    var part = new Md1Builder.Part();
-                    part.Positions.Add(new Md1.Vector());
-                    part.Normals.Add(new Md1.Vector());
-                    part.Triangles.Add(new Md1.Triangle());
-                    part.TriangleTextures.Add(new Md1.TriangleTexture());
-                    md1Builder.Parts.Add(part);
-                }
-                pldFile.Md1 = md1Builder.ToMd1();
-                pldFile.Save(pldPath);
-            }
         }
 
         private void LoadModel(string path)
@@ -113,15 +92,21 @@ namespace emdui
             if (selectedObject < 0 || selectedObject >= _md1.NumObjects)
                 return;
 
+            // var textureWidth = (double)_timImage.PixelWidth;
+            var textureWidth = (double)_timImage.PixelWidth;
+            var textureHeight = (double)_timImage.PixelHeight;
             var mesh = new MeshGeometry3D();
             {
                 var objTriangles = _md1.Objects[selectedObject * 2];
                 var dataTriangles = _md1.GetTriangles(objTriangles);
+                var dataTriangleTextures = _md1.GetTriangleTextures(objTriangles);
                 var dataPositions = _md1.GetPositionData(objTriangles);
                 var dataNormals = _md1.GetNormalData(objTriangles);
                 for (var i = 0; i < dataTriangles.Length; i++)
                 {
                     var triangle = dataTriangles[i];
+                    var texture = dataTriangleTextures[i];
+
                     mesh.Positions.Add(dataPositions[triangle.v0].ToPoint3D());
                     mesh.Positions.Add(dataPositions[triangle.v1].ToPoint3D());
                     mesh.Positions.Add(dataPositions[triangle.v2].ToPoint3D());
@@ -129,6 +114,12 @@ namespace emdui
                     mesh.Normals.Add(dataNormals[triangle.n0].ToVector3D());
                     mesh.Normals.Add(dataNormals[triangle.n1].ToVector3D());
                     mesh.Normals.Add(dataNormals[triangle.n2].ToVector3D());
+
+                    var page = texture.page & 0x0F;
+                    var offsetU = page * 128;
+                    mesh.TextureCoordinates.Add(new Point((offsetU + texture.u0) / textureWidth, (texture.v0 / textureHeight)));
+                    mesh.TextureCoordinates.Add(new Point((offsetU + texture.u1) / textureWidth, (texture.v1 / textureHeight)));
+                    mesh.TextureCoordinates.Add(new Point((offsetU + texture.u2) / textureWidth, (texture.v2 / textureHeight)));
                 }
             }
             {
@@ -136,9 +127,11 @@ namespace emdui
                 var dataQuads = _md1.GetQuads(objQuads);
                 var dataPositions = _md1.GetPositionData(objQuads);
                 var dataNormals = _md1.GetNormalData(objQuads);
+                var dataQuadTextures = _md1.GetQuadTextures(objQuads);
                 for (var i = 0; i < dataQuads.Length; i++)
                 {
                     var quad = dataQuads[i];
+                    var texture = dataQuadTextures[i];
                     mesh.Positions.Add(dataPositions[quad.v0].ToPoint3D());
                     mesh.Positions.Add(dataPositions[quad.v1].ToPoint3D());
                     mesh.Positions.Add(dataPositions[quad.v2].ToPoint3D());
@@ -152,13 +145,26 @@ namespace emdui
                     mesh.Normals.Add(dataNormals[quad.n0].ToVector3D());
                     mesh.Normals.Add(dataNormals[quad.n2].ToVector3D());
                     mesh.Normals.Add(dataNormals[quad.n3].ToVector3D());
+
+                    var page = texture.page & 0x0F;
+                    var offsetU = page * 128;
+                    mesh.TextureCoordinates.Add(new Point((offsetU + texture.u0) / textureWidth, (texture.v0 / textureHeight)));
+                    mesh.TextureCoordinates.Add(new Point((offsetU + texture.u1) / textureWidth, (texture.v1 / textureHeight)));
+                    mesh.TextureCoordinates.Add(new Point((offsetU + texture.u2) / textureWidth, (texture.v2 / textureHeight)));
+                    mesh.TextureCoordinates.Add(new Point((offsetU + texture.u0) / textureWidth, (texture.v0 / textureHeight)));
+                    mesh.TextureCoordinates.Add(new Point((offsetU + texture.u2) / textureWidth, (texture.v2 / textureHeight)));
+                    mesh.TextureCoordinates.Add(new Point((offsetU + texture.u3) / textureWidth, (texture.v3 / textureHeight)));
                 }
             }
 
             var model = new GeometryModel3D();
             model.Geometry = mesh;
             model.Material = new DiffuseMaterial(System.Windows.Media.Brushes.Red);
-            // model.Material = new EmissiveMaterial(System.Windows.Media.Brushes.Red);
+            ((DiffuseMaterial)model.Material).Brush = new ImageBrush(_timImage)
+            {
+                TileMode = TileMode.Tile,
+                ViewportUnits = BrushMappingMode.Absolute
+            };
 
             var modelVisual = new ModelVisual3D();
             modelVisual.Content = model;
