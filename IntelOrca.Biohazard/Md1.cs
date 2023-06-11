@@ -37,6 +37,30 @@ namespace IntelOrca.Biohazard
             return MemoryMarshal.Cast<byte, T>(data).Slice(0, count);
         }
 
+        public Md1Builder ToBuilder()
+        {
+            var builder = new Md1Builder();
+            for (var i = 0; i < NumObjects; i += 2)
+            {
+                var objTriangles = Objects[i];
+                var objQuads = Objects[i + 1];
+
+                var part = new Md1Builder.Part();
+                part.Triangles.Positions.AddRange(GetPositionData(objTriangles).ToArray());
+                part.Triangles.Normals.AddRange(GetNormalData(objTriangles).ToArray());
+                part.Triangles.Triangles.AddRange(GetTriangles(objTriangles).ToArray());
+                part.Triangles.TriangleTextures.AddRange(GetTriangleTextures(objTriangles).ToArray());
+
+                part.Quads.Positions.AddRange(GetPositionData(objQuads).ToArray());
+                part.Quads.Normals.AddRange(GetNormalData(objQuads).ToArray());
+                part.Quads.Quads.AddRange(GetQuads(objQuads).ToArray());
+                part.Quads.QuadTextures.AddRange(GetQuadTextures(objQuads).ToArray());
+
+                builder.Parts.Add(part);
+            }
+            return builder;
+        }
+
         private static readonly int[] g_partRemap = new[]
         {
             0, 8, 9, 10, 11, 12, 13, 14, 1, 2, 3, 4, 5, 6, 7
