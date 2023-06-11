@@ -4,11 +4,17 @@ namespace IntelOrca.Biohazard
 {
     public class PldFile : ModelFile
     {
-        private const int CHUNK_MESH = 2;
-        private const int CHUNK_TIM = 4;
+        private const int RE2_CHUNK_EDD = 0;
+        private const int RE2_CHUNK_EMR = 1;
+        private const int RE2_CHUNK_MD1 = 2;
+        private const int RE2_CHUNK_TIM = 3;
 
-        protected override int Md1ChunkIndex => CHUNK_MESH;
-        protected override int Md2ChunkIndex => CHUNK_MESH;
+        private const int RE3_CHUNK_MD2 = 2;
+        private const int RE3_CHUNK_TIM = 4;
+
+        protected override int Md1ChunkIndex => RE2_CHUNK_MD1;
+        protected override int Md2ChunkIndex => RE3_CHUNK_MD2;
+        private int TimChunkIndex => Version == BioVersion.Biohazard2 ? RE2_CHUNK_TIM : RE3_CHUNK_TIM;
         public override int NumPages => 3;
 
         public PldFile(BioVersion version, string path)
@@ -18,7 +24,7 @@ namespace IntelOrca.Biohazard
 
         public TimFile GetTim()
         {
-            var meshChunk = GetChunk(CHUNK_TIM);
+            var meshChunk = GetChunk(TimChunkIndex);
             var ms = new MemoryStream(meshChunk);
             return new TimFile(ms);
         }
@@ -27,7 +33,7 @@ namespace IntelOrca.Biohazard
         {
             var ms = new MemoryStream();
             value.Save(ms);
-            SetChunk(CHUNK_TIM, ms.ToArray());
+            SetChunk(TimChunkIndex, ms.ToArray());
         }
     }
 }

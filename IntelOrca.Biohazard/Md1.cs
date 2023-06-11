@@ -45,16 +45,18 @@ namespace IntelOrca.Biohazard
                 var objTriangles = Objects[i];
                 var objQuads = Objects[i + 1];
 
-                var part = new Md1Builder.Part();
-                part.Triangles.Positions.AddRange(GetPositionData(objTriangles).ToArray());
-                part.Triangles.Normals.AddRange(GetNormalData(objTriangles).ToArray());
-                part.Triangles.Triangles.AddRange(GetTriangles(objTriangles).ToArray());
-                part.Triangles.TriangleTextures.AddRange(GetTriangleTextures(objTriangles).ToArray());
+                Debug.Assert(objTriangles.vtx_offset == objQuads.vtx_offset);
+                Debug.Assert(objTriangles.vtx_count == objQuads.vtx_count);
+                Debug.Assert(objTriangles.nor_offset == objQuads.nor_offset);
+                Debug.Assert(objTriangles.nor_count == objQuads.nor_count);
 
-                part.Quads.Positions.AddRange(GetPositionData(objQuads).ToArray());
-                part.Quads.Normals.AddRange(GetNormalData(objQuads).ToArray());
-                part.Quads.Quads.AddRange(GetQuads(objQuads).ToArray());
-                part.Quads.QuadTextures.AddRange(GetQuadTextures(objQuads).ToArray());
+                var part = new Md1Builder.Part();
+                part.Positions.AddRange(GetPositionData(objTriangles).ToArray());
+                part.Normals.AddRange(GetNormalData(objTriangles).ToArray());
+                part.Triangles.AddRange(GetTriangles(objTriangles).ToArray());
+                part.TriangleTextures.AddRange(GetTriangleTextures(objTriangles).ToArray());
+                part.Quads.AddRange(GetQuads(objQuads).ToArray());
+                part.QuadTextures.AddRange(GetQuadTextures(objQuads).ToArray());
 
                 builder.Parts.Add(part);
             }

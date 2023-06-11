@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using static IntelOrca.Biohazard.Md1;
 
 namespace IntelOrca.Biohazard
@@ -14,71 +15,71 @@ namespace IntelOrca.Biohazard
             var objects = new List<ObjectDescriptor>();
             var positions = new List<Vector>();
             var normals = new List<Vector>();
-            var triangles = new List<Triangle>();
-            var triangleTextures = new List<TriangleTexture>();
-            var quads = new List<Quad>();
-            var quadTextures = new List<QuadTexture>();
+            var primitives = new List<object>();
+            var textures = new List<object>();
+
+            var vertexSize = 0;
+            var normalSize = 0;
+            var primitiveSize = 0;
+            var textureSize = 0;
             foreach (var part in Parts)
             {
-                // Take a note of current index of each array
-                var firstPositionIndex = positions.Count;
-                var firstNormalIndex = normals.Count;
-                var firstPrimitiveIndex = triangles.Count;
-                var firstPrimitiveTextureIndex = triangleTextures.Count;
-
                 // Add positions and normal placeholders
-                positions.AddRange(part.Triangles.Positions);
-                normals.AddRange(part.Triangles.Normals);
-                triangles.AddRange(part.Triangles.Triangles);
-                triangleTextures.AddRange(part.Triangles.TriangleTextures);
+                positions.AddRange(part.Positions);
+                normals.AddRange(part.Normals);
+                primitives.AddRange(part.Triangles.Cast<object>());
+                textures.AddRange(part.TriangleTextures.Cast<object>());
 
-                // Add object (offsets are just an index at the moment)
+                // Add objects (offsets are just an index at the moment)
                 objects.Add(new ObjectDescriptor()
                 {
-                    vtx_offset = (ushort)firstPositionIndex,
-                    vtx_count = (ushort)(positions.Count - firstPositionIndex),
-                    nor_offset = (ushort)firstNormalIndex,
-                    nor_count = (ushort)(normals.Count - firstPositionIndex),
-                    pri_offset = (ushort)firstPrimitiveIndex,
-                    pri_count = (ushort)(triangles.Count - firstPrimitiveIndex),
-                    tex_offset = (ushort)firstPrimitiveTextureIndex
+                    vtx_offset = (ushort)vertexSize,
+                    vtx_count = (ushort)part.Positions.Count,
+                    nor_offset = (ushort)normalSize,
+                    nor_count = (ushort)part.Normals.Count,
+                    pri_offset = (ushort)primitiveSize,
+                    pri_count = (ushort)part.Triangles.Count,
+                    tex_offset = (ushort)textureSize
                 });
 
-                // Take a note of current index of each array
-                firstPositionIndex = positions.Count;
-                firstNormalIndex = normals.Count;
-                firstPrimitiveIndex = quads.Count;
-                firstPrimitiveTextureIndex = quadTextures.Count;
+                // The original files did not increase primitive size until after the quad object
+                // if there are no quads
+                if (part.Quads.Count != 0)
+                {
+                    primitiveSize += part.Triangles.Count * sizeof(Triangle);
+                }
+                textureSize += part.Triangles.Count * sizeof(TriangleTexture);
 
-                // Add positions and normal placeholders
-                positions.AddRange(part.Quads.Positions);
-                normals.AddRange(part.Quads.Normals);
-                quads.AddRange(part.Quads.Quads);
-                quadTextures.AddRange(part.Quads.QuadTextures);
+                primitives.AddRange(part.Quads.Cast<object>());
+                textures.AddRange(part.QuadTextures.Cast<object>());
 
-                // Add object (offsets are just an index at the moment)
                 objects.Add(new ObjectDescriptor()
                 {
-                    vtx_offset = (ushort)firstPositionIndex,
-                    vtx_count = (ushort)(positions.Count - firstPositionIndex),
-                    nor_offset = (ushort)firstNormalIndex,
-                    nor_count = (ushort)(normals.Count - firstPositionIndex),
-                    pri_offset = (ushort)firstPrimitiveIndex,
-                    pri_count = (ushort)(quads.Count - firstPrimitiveIndex),
-                    tex_offset = (ushort)firstPrimitiveTextureIndex
+                    vtx_offset = vertexSize,
+                    vtx_count = part.Positions.Count,
+                    nor_offset = normalSize,
+                    nor_count = part.Normals.Count,
+                    pri_offset = primitiveSize,
+                    pri_count = part.Quads.Count,
+                    tex_offset = textureSize
                 });
+
+                if (part.Quads.Count == 0)
+                {
+                    primitiveSize += part.Triangles.Count * sizeof(Triangle);
+                }
+                primitiveSize += part.Quads.Count * sizeof(Quad);
+                textureSize += part.Quads.Count * sizeof(QuadTexture);
+
+                vertexSize += part.Positions.Count * sizeof(Vector);
+                normalSize += part.Normals.Count * sizeof(Vector);
             }
 
             // Serialise the data
-            if (positions.Count != normals.Count)
-                throw new Exception("Expected same number of normals as positions.");
-
             var vertexOffset = objects.Count * sizeof(ObjectDescriptor);
-            var normalOffset = vertexOffset + (positions.Count * sizeof(Vector));
-            var triangleOffset = normalOffset + (normals.Count * sizeof(Vector));
-            var triangleTextureOffset = triangleOffset + (triangles.Count * sizeof(Triangle));
-            var quadOffset = triangleTextureOffset + (triangleTextures.Count * sizeof(TriangleTexture));
-            var quadTextureOffset = quadOffset + (quads.Count * sizeof(Quad));
+            var normalOffset = vertexOffset + vertexSize;
+            var primitiveOffset = normalOffset + normalSize;
+            var textureOffset = primitiveOffset + primitiveSize;
 
             var ms = new MemoryStream();
             var bw = new BinaryWriter(ms);
@@ -88,57 +89,45 @@ namespace IntelOrca.Biohazard
             for (int i = 0; i < objects.Count; i++)
             {
                 var md1Object = objects[i];
-                md1Object.vtx_offset = (ushort)(vertexOffset + (md1Object.vtx_offset * sizeof(Vector)));
-                md1Object.nor_offset = (ushort)(normalOffset + (md1Object.nor_offset * sizeof(Vector)));
-                if ((i & 1) == 0)
-                {
-                    md1Object.pri_offset = (ushort)(triangleOffset + (md1Object.pri_offset * sizeof(Triangle)));
-                    md1Object.tex_offset = (ushort)(triangleTextureOffset + (md1Object.tex_offset * sizeof(TriangleTexture)));
-                }
-                else
-                {
-                    md1Object.pri_offset = (ushort)(quadOffset + (md1Object.pri_offset * sizeof(Quad)));
-                    md1Object.tex_offset = (ushort)(quadTextureOffset + (md1Object.tex_offset * sizeof(QuadTexture)));
-                }
+                md1Object.vtx_offset += vertexOffset;
+                md1Object.nor_offset += normalOffset;
+                md1Object.pri_offset += primitiveOffset;
+                md1Object.tex_offset += textureOffset;
                 bw.Write(md1Object);
             }
             foreach (var p in positions)
                 bw.Write(p);
             foreach (var n in normals)
                 bw.Write(n);
-            foreach (var t in triangles)
-                bw.Write(t);
-            foreach (var tt in triangleTextures)
-                bw.Write(tt);
-            foreach (var q in quads)
-                bw.Write(q);
-            foreach (var qt in quadTextures)
-                bw.Write(qt);
+            foreach (var p in primitives)
+            {
+                if (p is Triangle t)
+                    bw.Write(t);
+                else if (p is Quad q)
+                    bw.Write(q);
+            }
 
             ms.Position = 0;
             bw.Write((uint)ms.Length);
+            ms.Position = ms.Length;
+
+            foreach (var t in textures)
+            {
+                if (t is TriangleTexture tt)
+                    bw.Write(tt);
+                else if (t is QuadTexture qt)
+                    bw.Write(qt);
+            }
 
             return new Md1(ms.ToArray());
         }
 
         public class Part
         {
-            public PartTriangles Triangles { get; set; } = new PartTriangles();
-            public PartQuads Quads { get; set; } = new PartQuads();
-        }
-
-        public class PartTriangles
-        {
             public List<Vector> Positions { get; } = new List<Vector>();
             public List<Vector> Normals { get; } = new List<Vector>();
             public List<Triangle> Triangles { get; } = new List<Triangle>();
             public List<TriangleTexture> TriangleTextures { get; } = new List<TriangleTexture>();
-        }
-
-        public class PartQuads
-        {
-            public List<Vector> Positions { get; } = new List<Vector>();
-            public List<Vector> Normals { get; } = new List<Vector>();
             public List<Quad> Quads { get; } = new List<Quad>();
             public List<QuadTexture> QuadTextures { get; } = new List<QuadTexture>();
         }
