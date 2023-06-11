@@ -30,9 +30,16 @@
                 </Grid.ColumnDefinitions>
                 <ListBox Grid.Column="0" x:Name="listObjects" SelectionChanged="listObjects_SelectionChanged" Width="100" />
                 <ListBox Grid.Column="1" x:Name="listPrimitives" SelectionChanged="listPrimitives_SelectionChanged" Width="100" />
-                <TextBox Grid.Column="2" x:Name="textPrimitive" IsReadOnly="True" HorizontalContentAlignment="Stretch" />
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBox Grid.Row="0" x:Name="textPrimitive" IsReadOnly="True" HorizontalContentAlignment="Stretch" />
+                    <Viewport3D Grid.Row="1" Name="myViewport" />
+                </Grid>
             </Grid>
-            <Image Grid.Row="1" x:Name="timImage" Loaded="timImage_Loaded" />
+            <Image Grid.Row="1" x:Name="timImage" Loaded="mainWindow_Loaded" />
         </Grid>
     </DockPanel>
 </Window>

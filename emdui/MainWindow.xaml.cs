@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using IntelOrca.Biohazard;
 using Microsoft.Win32;
 
@@ -18,7 +19,7 @@ namespace emdui
     public partial class MainWindow : Window
     {
         private string _path;
-        private EmdFile _emdFile;
+        private ModelFile _modelFile;
         private TimFile _timFile;
 
         private Md1 _md1;
@@ -27,17 +28,64 @@ namespace emdui
         public MainWindow()
         {
             InitializeComponent();
+            Work();
         }
 
-        private void LoadEmd(string path)
+        private void Work()
+        {
+            var dirPath = @"M:\git\rer\IntelOrca.Biohazard\data\re2\pld0";
+            var directories = Directory.GetDirectories(dirPath);
+            foreach (var dir in directories)
+            {
+                var pldPath = Path.Combine(dir, "PL00.PLD");
+                var pldFile = new PldFile(BioVersion.Biohazard2, pldPath);
+                if (pldFile.Md1.NumObjects >= 19 * 2)
+                    continue;
+
+                var md1Builder = pldFile.Md1.ToBuilder();
+                while (md1Builder.Parts.Count != 19)
+                {
+                    var part = new Md1Builder.Part();
+                    part.Positions.Add(new Md1.Vector());
+                    part.Normals.Add(new Md1.Vector());
+                    part.Triangles.Add(new Md1.Triangle());
+                    part.TriangleTextures.Add(new Md1.TriangleTexture());
+                    md1Builder.Parts.Add(part);
+                }
+                pldFile.Md1 = md1Builder.ToMd1();
+                pldFile.Save(pldPath);
+            }
+        }
+
+        private void LoadModel(string path)
         {
             _path = path;
-            _emdFile = new EmdFile(BioVersion.Biohazard2, _path);
+            if (path.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
+            {
+                _modelFile = new EmdFile(BioVersion.Biohazard2, _path);
+                if (path.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
+                {
+                    var timPath = Path.ChangeExtension(path, ".tim");
+                    if (File.Exists(timPath))
+                    {
+                        LoadTim(timPath);
+                    }
+                }
+            }
+            else
+            {
+                var pldFile = new PldFile(BioVersion.Biohazard2, _path);
+                _modelFile = pldFile;
+                _timFile = pldFile.GetTim();
+                RefreshTimImage();
+            }
 
-            _md1 = _emdFile.Md1;
+            _md1 = _modelFile.Md1;
             listObjects.ItemsSource = Enumerable.Range(0, _md1.NumObjects / 2)
                 .Select(x => $"Object {x}")
                 .ToArray();
+
+            RefreshModelView();
         }
 
         private void LoadTim(string path)
@@ -55,26 +103,102 @@ namespace emdui
             timImage.Source = _timImage = BitmapSource.Create(_timFile.Width, _timFile.Height, 96, 96, PixelFormats.Bgra32, null, pixels, _timFile.Width * 4);
         }
 
-        private void timImage_Loaded(object sender, RoutedEventArgs e)
+        private void RefreshModelView()
         {
-            LoadTim(@"M:\git\rer\IntelOrca.Biohazard\data\re2\emd\wesker\em050.tim");
-            LoadEmd(@"M:\git\rer\IntelOrca.Biohazard\data\re2\emd\wesker\em050.emd");
+            // var camera = myViewport.Camera;
+            var children = myViewport.Children;
+            children.Clear();
+
+            var selectedObject = listObjects.SelectedIndex;
+            if (selectedObject < 0 || selectedObject >= _md1.NumObjects)
+                return;
+
+            var mesh = new MeshGeometry3D();
+            {
+                var objTriangles = _md1.Objects[selectedObject * 2];
+                var dataTriangles = _md1.GetTriangles(objTriangles);
+                var dataPositions = _md1.GetPositionData(objTriangles);
+                var dataNormals = _md1.GetNormalData(objTriangles);
+                for (var i = 0; i < dataTriangles.Length; i++)
+                {
+                    var triangle = dataTriangles[i];
+                    mesh.Positions.Add(dataPositions[triangle.v0].ToPoint3D());
+                    mesh.Positions.Add(dataPositions[triangle.v1].ToPoint3D());
+                    mesh.Positions.Add(dataPositions[triangle.v2].ToPoint3D());
+
+                    mesh.Normals.Add(dataNormals[triangle.n0].ToVector3D());
+                    mesh.Normals.Add(dataNormals[triangle.n1].ToVector3D());
+                    mesh.Normals.Add(dataNormals[triangle.n2].ToVector3D());
+                }
+            }
+            {
+                var objQuads = _md1.Objects[(selectedObject * 2) + 1];
+                var dataQuads = _md1.GetQuads(objQuads);
+                var dataPositions = _md1.GetPositionData(objQuads);
+                var dataNormals = _md1.GetNormalData(objQuads);
+                for (var i = 0; i < dataQuads.Length; i++)
+                {
+                    var quad = dataQuads[i];
+                    mesh.Positions.Add(dataPositions[quad.v0].ToPoint3D());
+                    mesh.Positions.Add(dataPositions[quad.v1].ToPoint3D());
+                    mesh.Positions.Add(dataPositions[quad.v2].ToPoint3D());
+                    mesh.Positions.Add(dataPositions[quad.v3].ToPoint3D());
+                    mesh.Positions.Add(dataPositions[quad.v2].ToPoint3D());
+                    mesh.Positions.Add(dataPositions[quad.v1].ToPoint3D());
+
+                    mesh.Normals.Add(dataNormals[quad.n0].ToVector3D());
+                    mesh.Normals.Add(dataNormals[quad.n1].ToVector3D());
+                    mesh.Normals.Add(dataNormals[quad.n2].ToVector3D());
+                    mesh.Normals.Add(dataNormals[quad.n0].ToVector3D());
+                    mesh.Normals.Add(dataNormals[quad.n2].ToVector3D());
+                    mesh.Normals.Add(dataNormals[quad.n3].ToVector3D());
+                }
+            }
+
+            var model = new GeometryModel3D();
+            model.Geometry = mesh;
+            model.Material = new DiffuseMaterial(System.Windows.Media.Brushes.Red);
+            // model.Material = new EmissiveMaterial(System.Windows.Media.Brushes.Red);
+
+            var modelVisual = new ModelVisual3D();
+            modelVisual.Content = model;
+            children.Add(modelVisual);
+
+            // myViewport.Camera = new PerspectiveCamera(
+            //     new Point3D(0, 0, 500),
+            //     new Vector3D(),
+            //     new Vector3D(0, 1, 0),
+            //     70);
+
+            var camera = new OrthographicCamera(
+                new Point3D(-1000, 0, 0),
+                new Vector3D(1, 0, 0),
+                new Vector3D(0, -1, 0),
+                5000);
+            camera.FarPlaneDistance = 5000;
+            camera.NearPlaneDistance = 1;
+            // var camera = myViewport.Camera as PerspectiveCamera;
+            // camera.Position = new Point3D(0, 0, -20);
+            // camera.LookDirection = new Vector3D(0, 0, 1);
+            myViewport.Camera = camera;
+
+            myViewport.Children.Add(
+                new ModelVisual3D() { Content = new AmbientLight(Colors.White) });
+        }
+
+        private void mainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            LoadModel(@"M:\git\rer\IntelOrca.Biohazard\data\re2\pld1\alyssa\pl01.pld");
         }
 
         private void menuOpen_Click(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog();
             openFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_path);
-            openFileDialog.Filter = "TIM Files (*.tim)|*.tim";
+            openFileDialog.Filter = "EMD/PLD Files (*.emd;*.pld)|*.emd;*.pld";
             if (openFileDialog.ShowDialog() == true)
             {
-                LoadTim(openFileDialog.FileName);
-
-                var emdPath = Path.ChangeExtension(openFileDialog.FileName, ".emd");
-                if (File.Exists(emdPath))
-                {
-                    LoadEmd(emdPath);
-                }
+                LoadModel(openFileDialog.FileName);
             }
         }
 
@@ -152,6 +276,7 @@ namespace emdui
 
                 listPrimitives.ItemsSource = items;
             }
+            RefreshModelView();
         }
 
         private void listPrimitives_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -171,17 +296,26 @@ namespace emdui
                 {
                     var tri = triangles[priIndex];
                     var triTex = triangleTextures[priIndex];
+                    var positionData = _md1.GetPositionData(objTri);
+                    var v0 = positionData[tri.v0];
+                    var v1 = positionData[tri.v1];
+                    var v2 = positionData[tri.v2];
                     textPrimitive.Text = string.Join("\n", new[] {
-                        "u0 = " + triTex.u0,
-                        "v0 = " + triTex.v0,
-                        "clutId = " + triTex.clutId,
-                        "u1 = " + triTex.u1,
-                        "v1 = " + triTex.v1,
-                        "page = " + triTex.page,
-                        "u2 = " + triTex.u2,
-                        "v2 = " + triTex.v2,
-                        "zero = " + triTex.zero
+                        $"v0 = ({v0.x}, {v0.y}, {v0.z})",
+                        $"v1 = ({v1.x}, {v1.y}, {v1.z})",
+                        $"v2 = ({v2.x}, {v2.y}, {v2.z})"
                     });
+                    // textPrimitive.Text = string.Join("\n", new[] {
+                    //     "u0 = " + triTex.u0,
+                    //     "v0 = " + triTex.v0,
+                    //     "clutId = " + triTex.clutId,
+                    //     "u1 = " + triTex.u1,
+                    //     "v1 = " + triTex.v1,
+                    //     "page = " + triTex.page,
+                    //     "u2 = " + triTex.u2,
+                    //     "v2 = " + triTex.v2,
+                    //     "zero = " + triTex.zero
+                    // });
                 }
                 else if (priIndex >= triangles.Length && priIndex < triangles.Length + quads.Length)
                 {
@@ -200,5 +334,11 @@ namespace emdui
                 }
             }
         }
+    }
+
+    internal static class Md1Extensions
+    {
+        public static Point3D ToPoint3D(this Md1.Vector v) => new Point3D(v.x, v.y, v.z);
+        public static Vector3D ToVector3D(this Md1.Vector v) => new Vector3D(v.x, v.y, v.z);
     }
 }
