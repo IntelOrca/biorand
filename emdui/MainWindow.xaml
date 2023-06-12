@@ -15,6 +15,11 @@
             <MenuItem Header="Texture">
                 <MenuItem Header="Import" Click="menuImportTim_Click" />
                 <MenuItem Header="Export" Click="menuExportTim_Click" />
+                <Separator />
+                <MenuItem Header="Copy Page 0 to Page 2" Click="menuCopyPage_Click" />
+            </MenuItem>
+            <MenuItem Header="Model">
+                <MenuItem Header="Add Dummy Object" Click="menuAddDummyObject_Click" />
             </MenuItem>
         </Menu>
         <Grid DockPanel.Dock="Bottom">

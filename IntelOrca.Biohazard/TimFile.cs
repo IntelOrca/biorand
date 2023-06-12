@@ -342,6 +342,16 @@ namespace IntelOrca.Biohazard
             }
         }
 
+        public ushort[] GetPalette(int clutIndex)
+        {
+            var result = new ushort[_coloursPerClut];
+            for (var i = 0; i < _coloursPerClut; i++)
+            {
+                result[i] = GetCLUTEntry(clutIndex, i);
+            }
+            return result;
+        }
+
         public void SetPalette(int clutIndex, ushort[] colours)
         {
             for (int i = 0; i < colours.Length; i++)
