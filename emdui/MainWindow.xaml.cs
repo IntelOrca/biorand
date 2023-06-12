@@ -42,13 +42,10 @@ namespace emdui
             if (path.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
             {
                 _modelFile = new EmdFile(BioVersion.Biohazard2, _path);
-                if (path.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
+                var timPath = Path.ChangeExtension(path, ".tim");
+                if (File.Exists(timPath))
                 {
-                    var timPath = Path.ChangeExtension(path, ".tim");
-                    if (File.Exists(timPath))
-                    {
-                        LoadTim(timPath);
-                    }
+                    LoadTim(timPath);
                 }
             }
             else
@@ -60,18 +57,34 @@ namespace emdui
             }
 
             _md1 = _modelFile.Md1;
-            listObjects.ItemsSource = Enumerable.Range(0, _md1.NumObjects / 2)
-                .Select(x => $"Object {x}")
-                .ToArray();
+            RefreshObjects();
+        }
 
-            RefreshModelView();
+        private void SaveModel(string path)
+        {
+            _path = path;
+
+            if (path.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
+            {
+                _modelFile.Save(_path);
+                var timPath = Path.ChangeExtension(path, ".tim");
+                SaveTim(timPath);
+            }
+            else
+            {
+                _modelFile.Save(_path);
+            }
         }
 
         private void LoadTim(string path)
         {
-            _path = path;
-            _timFile = new TimFile(_path);
+            _timFile = new TimFile(path);
             RefreshTimImage();
+        }
+
+        private void SaveTim(string path)
+        {
+            _timFile.Save(path);
         }
 
         private void RefreshTimImage()
@@ -80,6 +93,24 @@ namespace emdui
             timImage.Width = _timFile.Width;
             timImage.Height = _timFile.Height;
             timImage.Source = _timImage = BitmapSource.Create(_timFile.Width, _timFile.Height, 96, 96, PixelFormats.Bgra32, null, pixels, _timFile.Width * 4);
+        }
+
+        private void RefreshObjects()
+        {
+            var selectedIndex = listObjects.SelectedIndex;
+            listObjects.ItemsSource = Enumerable.Range(0, _md1.NumObjects / 2)
+                .Select(x => $"Object {x}")
+                .ToArray();
+
+            if (selectedIndex >= 0 && selectedIndex < listObjects.Items.Count)
+            {
+                listObjects.SelectedIndex = selectedIndex;
+            }
+            else
+            {
+                listObjects.SelectedIndex = 0;
+            }
+            RefreshModelView();
         }
 
         private void RefreshModelView()
@@ -135,25 +166,26 @@ namespace emdui
                     mesh.Positions.Add(dataPositions[quad.v0].ToPoint3D());
                     mesh.Positions.Add(dataPositions[quad.v1].ToPoint3D());
                     mesh.Positions.Add(dataPositions[quad.v2].ToPoint3D());
-                    mesh.Positions.Add(dataPositions[quad.v3].ToPoint3D());
-                    mesh.Positions.Add(dataPositions[quad.v2].ToPoint3D());
-                    mesh.Positions.Add(dataPositions[quad.v1].ToPoint3D());
 
                     mesh.Normals.Add(dataNormals[quad.n0].ToVector3D());
                     mesh.Normals.Add(dataNormals[quad.n1].ToVector3D());
                     mesh.Normals.Add(dataNormals[quad.n2].ToVector3D());
-                    mesh.Normals.Add(dataNormals[quad.n0].ToVector3D());
-                    mesh.Normals.Add(dataNormals[quad.n2].ToVector3D());
-                    mesh.Normals.Add(dataNormals[quad.n3].ToVector3D());
 
                     var page = texture.page & 0x0F;
                     var offsetU = page * 128;
                     mesh.TextureCoordinates.Add(new Point((offsetU + texture.u0) / textureWidth, (texture.v0 / textureHeight)));
                     mesh.TextureCoordinates.Add(new Point((offsetU + texture.u1) / textureWidth, (texture.v1 / textureHeight)));
                     mesh.TextureCoordinates.Add(new Point((offsetU + texture.u2) / textureWidth, (texture.v2 / textureHeight)));
-                    mesh.TextureCoordinates.Add(new Point((offsetU + texture.u0) / textureWidth, (texture.v0 / textureHeight)));
-                    mesh.TextureCoordinates.Add(new Point((offsetU + texture.u2) / textureWidth, (texture.v2 / textureHeight)));
+
+                    mesh.Positions.Add(dataPositions[quad.v3].ToPoint3D());
+                    mesh.Positions.Add(dataPositions[quad.v2].ToPoint3D());
+                    mesh.Positions.Add(dataPositions[quad.v1].ToPoint3D());
+                    mesh.Normals.Add(dataNormals[quad.n3].ToVector3D());
+                    mesh.Normals.Add(dataNormals[quad.n2].ToVector3D());
+                    mesh.Normals.Add(dataNormals[quad.n1].ToVector3D());
                     mesh.TextureCoordinates.Add(new Point((offsetU + texture.u3) / textureWidth, (texture.v3 / textureHeight)));
+                    mesh.TextureCoordinates.Add(new Point((offsetU + texture.u2) / textureWidth, (texture.v2 / textureHeight)));
+                    mesh.TextureCoordinates.Add(new Point((offsetU + texture.u1) / textureWidth, (texture.v1 / textureHeight)));
                 }
             }
 
@@ -194,7 +226,7 @@ namespace emdui
 
         private void mainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            LoadModel(@"M:\git\rer\IntelOrca.Biohazard\data\re2\pld1\alyssa\pl01.pld");
+            LoadModel(@"M:\git\rer\IntelOrca.Biohazard\data\re2\pld0\wesker.re1r\pl00.pld");
         }
 
         private void menuOpen_Click(object sender, RoutedEventArgs e)
@@ -212,10 +244,18 @@ namespace emdui
         {
             var saveFileDialog = new SaveFileDialog();
             saveFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_path);
-            saveFileDialog.Filter = "TIM Files (*.tim)|*.tim";
+            if (_modelFile is PldFile)
+            {
+                saveFileDialog.Filter = "PLD Files (*.pld)|*.pld";
+            }
+            else
+            {
+                saveFileDialog.Filter = "EMD Files (*.emd)|*.emd";
+            }
+            saveFileDialog.FileName = _path;
             if (saveFileDialog.ShowDialog() == true)
             {
-                _timFile.Save(saveFileDialog.FileName);
+                SaveModel(saveFileDialog.FileName);
             }
         }
 
@@ -227,7 +267,7 @@ namespace emdui
             if (openFileDialog.ShowDialog() == true)
             {
                 _timFile = ImportTimFile16(openFileDialog.FileName);
-                RefreshTimImage();
+                UpdateTimFile();
             }
         }
 
@@ -339,6 +379,49 @@ namespace emdui
                     });
                 }
             }
+        }
+
+        private void menuAddDummyObject_Click(object sender, RoutedEventArgs e)
+        {
+            var md1Builder = _md1.ToBuilder();
+
+            var part = new Md1Builder.Part();
+            part.Positions.Add(new Md1.Vector());
+            part.Normals.Add(new Md1.Vector());
+            part.Triangles.Add(new Md1.Triangle());
+            part.TriangleTextures.Add(new Md1.TriangleTexture());
+            md1Builder.Parts.Add(part);
+            _md1 = md1Builder.ToMd1();
+            _modelFile.Md1 = _md1;
+            RefreshObjects();
+        }
+
+        private void menuCopyPage_Click(object sender, RoutedEventArgs e)
+        {
+            if (_timFile.Width < 3 * 128)
+            {
+                _timFile.ResizeImage(3 * 128, _timFile.Height);
+            }
+            _timFile.SetPalette(2, _timFile.GetPalette(0));
+
+            for (int x = 0; x < 128; x++)
+            {
+                for (int y = 0; y < _timFile.Height; y++)
+                {
+                    var p = _timFile.GetPixel(x, y, 0);
+                    _timFile.SetPixel(256 + x, y, 2, p);
+                }
+            }
+            UpdateTimFile();
+        }
+
+        private void UpdateTimFile()
+        {
+            if (_modelFile is PldFile pld)
+            {
+                pld.SetTim(_timFile);
+            }
+            RefreshTimImage();
         }
     }
 
