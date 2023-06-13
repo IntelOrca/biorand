@@ -78,6 +78,8 @@ namespace IntelOrca.Biohazard
                 this.y = y;
                 this.z = z;
             }
+
+            public Md1.Vector ToMd1() => new Md1.Vector(x, y, z);
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]

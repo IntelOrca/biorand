@@ -179,6 +179,14 @@ namespace IntelOrca.Biohazard
             public short z;
             public short zero;
 
+            public Vector(short x, short y, short z)
+                : this()
+            {
+                this.x = x;
+                this.y = y;
+                this.z = z;
+            }
+
             public Md2.Vector ToMd2() => new Md2.Vector(x, y, z);
         }
 

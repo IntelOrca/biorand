@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
-using System.Windows.Media.TextFormatting;
 using IntelOrca.Biohazard;
 using Microsoft.Win32;
 
@@ -23,8 +22,14 @@ namespace emdui
         private ModelFile _modelFile;
         private TimFile _timFile;
 
+        private Emr _emr;
         private Md1 _md1;
         private BitmapSource _timImage;
+
+        private Point3D _cameraLookAt = new Point3D(0, -1000, 0);
+        private double _cameraZoom = 10000;
+        private double _cameraAngleH;
+        private double _cameraAngleV;
 
         public MainWindow()
         {
@@ -52,12 +57,13 @@ namespace emdui
             {
                 var pldFile = new PldFile(BioVersion.Biohazard2, _path);
                 _modelFile = pldFile;
+                _emr = pldFile.GetEmr();
                 _timFile = pldFile.GetTim();
                 RefreshTimImage();
             }
 
             _md1 = _modelFile.Md1;
-            RefreshObjects();
+            RefreshParts();
         }
 
         private void SaveModel(string path)
@@ -76,6 +82,57 @@ namespace emdui
             }
         }
 
+        private void ImportModel(string path)
+        {
+            var numPages = _timFile.Width / 128;
+            var objImporter = new ObjImporter();
+            _md1 = objImporter.ImportMd1(path, numPages, GetFinalPosition);
+            _modelFile.Md1 = _md1;
+
+            RefreshModelView();
+        }
+
+        private void ExportModel(string path)
+        {
+            var numPages = _timFile.Width / 128;
+            var objExporter = new ObjExporter();
+            objExporter.Export(_md1, path, numPages, GetFinalPosition);
+
+            var timPath = Path.ChangeExtension(path, ".png");
+            ExportTim(timPath);
+        }
+
+        private Md1.Vector GetFinalPosition(int targetPartIndex)
+        {
+            var emr = _emr;
+            if (targetPartIndex < 0 || targetPartIndex >= emr.NumParts)
+                return new Md1.Vector();
+
+            var positions = new Md1.Vector[emr.NumParts];
+
+            var stack = new Stack<byte>();
+            stack.Push(0);
+
+            while (stack.Count != 0)
+            {
+                var partIndex = stack.Pop();
+                var pos = positions[partIndex];
+                var rel = emr.GetRelativePosition(partIndex);
+                pos.x += rel.x;
+                pos.y += rel.y;
+                pos.z += rel.z;
+                positions[partIndex] = pos;
+                var children = emr.GetArmatureParts(partIndex);
+                foreach (var child in children)
+                {
+                    positions[child] = pos;
+                    stack.Push(child);
+                }
+            }
+
+            return positions[targetPartIndex];
+        }
+
         private void LoadTim(string path)
         {
             _timFile = new TimFile(path);
@@ -87,6 +144,16 @@ namespace emdui
             _timFile.Save(path);
         }
 
+        private void ExportTim(string path)
+        {
+            var bitmapEncoder = new PngBitmapEncoder();
+            bitmapEncoder.Frames.Add(BitmapFrame.Create(_timImage));
+            using (var fs = new FileStream(path, FileMode.Create, FileAccess.Write))
+            {
+                bitmapEncoder.Save(fs);
+            }
+        }
+
         private void RefreshTimImage()
         {
             var pixels = _timFile.GetPixels((x, y) => x / 128);
@@ -95,20 +162,20 @@ namespace emdui
             timImage.Source = _timImage = BitmapSource.Create(_timFile.Width, _timFile.Height, 96, 96, PixelFormats.Bgra32, null, pixels, _timFile.Width * 4);
         }
 
-        private void RefreshObjects()
+        private void RefreshParts()
         {
-            var selectedIndex = listObjects.SelectedIndex;
-            listObjects.ItemsSource = Enumerable.Range(0, _md1.NumObjects / 2)
+            var selectedIndex = listParts.SelectedIndex;
+            listParts.ItemsSource = Enumerable.Range(0, _md1.NumObjects / 2)
                 .Select(x => $"Object {x}")
                 .ToArray();
 
-            if (selectedIndex >= 0 && selectedIndex < listObjects.Items.Count)
+            if (selectedIndex >= 0 && selectedIndex < listParts.Items.Count)
             {
-                listObjects.SelectedIndex = selectedIndex;
+                listParts.SelectedIndex = selectedIndex;
             }
             else
             {
-                listObjects.SelectedIndex = 0;
+                listParts.SelectedIndex = 0;
             }
             RefreshModelView();
         }
@@ -119,16 +186,81 @@ namespace emdui
             var children = myViewport.Children;
             children.Clear();
 
-            var selectedObject = listObjects.SelectedIndex;
-            if (selectedObject < 0 || selectedObject >= _md1.NumObjects)
+            var selectedPart = listParts.SelectedIndex;
+            if (selectedPart < 0 || selectedPart >= _md1.NumObjects)
                 return;
 
-            // var textureWidth = (double)_timImage.PixelWidth;
+            // var numParts = _md1.NumObjects / 2;
+            // for (var i = 0; i < numParts; i++)
+            // {
+            //     var model = CreateModelFromPart(i);
+            // 
+            //     if (_emr.NumParts > i)
+            //     {
+            //         var armature = _emr.GetArmature(i);
+            //         var armatureParts = _emr.GetArmatureParts(i);
+            //         var relativeOffset = _emr.GetRelativePosition(i);
+            //         var dataPoints = _emr.DataPoints;
+            //         model.Transform = new TranslateTransform3D(relativeOffset.x, relativeOffset.y, relativeOffset.z);
+            //     }
+            // 
+            //     modelGroup.Children.Add(model);
+            // }
+
+            var modelVisual = new ModelVisual3D();
+            modelVisual.Content = CreateModelFromArmature(0);
+            children.Add(modelVisual);
+
+            var camera = new PerspectiveCamera(
+                new Point3D(-5000, 0, 0),
+                new Vector3D(1, 0, 0),
+                new Vector3D(0, -1, 0),
+                70);
+
+            // var camera = new OrthographicCamera(
+            //     new Point3D(-1000, 0, 0),
+            //     new Vector3D(1, 0, 0),
+            //     new Vector3D(0, -1, 0),
+            //     5000);
+            // camera.FarPlaneDistance = 5000;
+            // camera.NearPlaneDistance = 1;
+
+            myViewport.Camera = camera;
+
+            myViewport.Children.Add(
+                new ModelVisual3D() { Content = new AmbientLight(Colors.White) });
+
+            UpdateCamera();
+        }
+
+        private Model3DGroup CreateModelFromArmature(int partIndex)
+        {
+            var armature = new Model3DGroup();
+            var armatureMesh = CreateModelFromPart(partIndex);
+            armature.Children.Add(armatureMesh);
+
+            // Children
+            var subParts = _emr.GetArmatureParts(partIndex);
+            foreach (var subPart in subParts)
+            {
+                var subPartMesh = CreateModelFromArmature(subPart);
+                armature.Children.Add(subPartMesh);
+            }
+
+            var relativePosition = _emr.GetRelativePosition(partIndex);
+            armature.Transform = new TranslateTransform3D(relativePosition.x, relativePosition.y, relativePosition.z);
+            return armature;
+        }
+
+        private GeometryModel3D CreateModelFromPart(int partIndex)
+        {
             var textureWidth = (double)_timImage.PixelWidth;
             var textureHeight = (double)_timImage.PixelHeight;
             var mesh = new MeshGeometry3D();
+
+            // Triangles
             {
-                var objTriangles = _md1.Objects[selectedObject * 2];
+                var objTriangles = _md1.Objects[partIndex * 2];
                 var dataTriangles = _md1.GetTriangles(objTriangles);
                 var dataTriangleTextures = _md1.GetTriangleTextures(objTriangles);
                 var dataPositions = _md1.GetPositionData(objTriangles);
@@ -153,8 +285,10 @@ namespace emdui
                     mesh.TextureCoordinates.Add(new Point((offsetU + texture.u2) / textureWidth, (texture.v2 / textureHeight)));
                 }
             }
+
+            // Quads
             {
-                var objQuads = _md1.Objects[(selectedObject * 2) + 1];
+                var objQuads = _md1.Objects[(partIndex * 2) + 1];
                 var dataQuads = _md1.GetQuads(objQuads);
                 var dataPositions = _md1.GetPositionData(objQuads);
                 var dataNormals = _md1.GetNormalData(objQuads);
@@ -189,44 +323,23 @@ namespace emdui
                 }
             }
 
-            var model = new GeometryModel3D();
-            model.Geometry = mesh;
-            model.Material = new DiffuseMaterial(System.Windows.Media.Brushes.Red);
-            ((DiffuseMaterial)model.Material).Brush = new ImageBrush(_timImage)
+            var material = new DiffuseMaterial(System.Windows.Media.Brushes.Red);
+            material.Brush = new ImageBrush(_timImage)
             {
                 TileMode = TileMode.Tile,
                 ViewportUnits = BrushMappingMode.Absolute
             };
 
-            var modelVisual = new ModelVisual3D();
-            modelVisual.Content = model;
-            children.Add(modelVisual);
-
-            // myViewport.Camera = new PerspectiveCamera(
-            //     new Point3D(0, 0, 500),
-            //     new Vector3D(),
-            //     new Vector3D(0, 1, 0),
-            //     70);
-
-            var camera = new OrthographicCamera(
-                new Point3D(-1000, 0, 0),
-                new Vector3D(1, 0, 0),
-                new Vector3D(0, -1, 0),
-                5000);
-            camera.FarPlaneDistance = 5000;
-            camera.NearPlaneDistance = 1;
-            // var camera = myViewport.Camera as PerspectiveCamera;
-            // camera.Position = new Point3D(0, 0, -20);
-            // camera.LookDirection = new Vector3D(0, 0, 1);
-            myViewport.Camera = camera;
-
-            myViewport.Children.Add(
-                new ModelVisual3D() { Content = new AmbientLight(Colors.White) });
+            var model = new GeometryModel3D();
+            model.Geometry = mesh;
+            model.BackMaterial = material;
+            model.Material = new DiffuseMaterial(Brushes.Yellow);
+            return model;
         }
 
         private void mainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            LoadModel(@"M:\git\rer\IntelOrca.Biohazard\data\re2\pld0\wesker.re1r\pl00.pld");
+            LoadModel(@"M:\git\rer\IntelOrca.Biohazard\data\re2\pld0\barry\pl00.pld");
         }
 
         private void menuOpen_Click(object sender, RoutedEventArgs e)
@@ -295,18 +408,13 @@ namespace emdui
             saveFileDialog.Filter = "PNG (*.png)|*.png";
             if (saveFileDialog.ShowDialog() == true)
             {
-                var bitmapEncoder = new PngBitmapEncoder();
-                bitmapEncoder.Frames.Add(BitmapFrame.Create(_timImage));
-                using (var fs = new FileStream(saveFileDialog.FileName, FileMode.Create, FileAccess.Write))
-                {
-                    bitmapEncoder.Save(fs);
-                }
+                ExportTim(saveFileDialog.FileName);
             }
         }
 
-        private void listObjects_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void listParts_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var selectedIndex = listObjects.SelectedIndex * 2;
+            var selectedIndex = listParts.SelectedIndex * 2;
             if (selectedIndex >= 0 && selectedIndex < _md1.NumObjects)
             {
                 var objTri = _md1.Objects[selectedIndex + 0];
@@ -327,7 +435,7 @@ namespace emdui
 
         private void listPrimitives_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var objIndex = listObjects.SelectedIndex * 2;
+            var objIndex = listParts.SelectedIndex * 2;
             if (objIndex >= 0 && objIndex < _md1.NumObjects)
             {
                 var objTri = _md1.Objects[objIndex + 0];
@@ -381,7 +489,7 @@ namespace emdui
             }
         }
 
-        private void menuAddDummyObject_Click(object sender, RoutedEventArgs e)
+        private void menuAddDummyPart_Click(object sender, RoutedEventArgs e)
         {
             var md1Builder = _md1.ToBuilder();
 
@@ -393,7 +501,7 @@ namespace emdui
             md1Builder.Parts.Add(part);
             _md1 = md1Builder.ToMd1();
             _modelFile.Md1 = _md1;
-            RefreshObjects();
+            RefreshParts();
         }
 
         private void menuCopyPage_Click(object sender, RoutedEventArgs e)
@@ -422,6 +530,139 @@ namespace emdui
                 pld.SetTim(_timFile);
             }
             RefreshTimImage();
+        }
+
+        private Point _cameraPointerStartPosition;
+        private Point3D _cameraStartPosition;
+        private double _cameraStartWidth;
+        private double _startCameraAngleH;
+        private double _startCameraAngleV;
+
+        private void myViewport_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (myViewport.Camera is PerspectiveCamera pcamera)
+            {
+                _cameraPointerStartPosition = e.GetPosition(myViewport);
+                if (e.LeftButton == MouseButtonState.Pressed)
+                {
+                    _startCameraAngleH = _cameraAngleH;
+                    _startCameraAngleV = _cameraAngleV;
+                }
+                if (e.MiddleButton == MouseButtonState.Pressed)
+                {
+                    _cameraStartPosition = _cameraLookAt;
+                }
+            }
+            else if (myViewport.Camera is OrthographicCamera camera)
+            {
+                _cameraPointerStartPosition = e.GetPosition(myViewport);
+                _cameraStartPosition = camera.Position;
+                _cameraStartWidth = camera.Width;
+            }
+        }
+
+        private void myViewport_MouseMove(object sender, MouseEventArgs e)
+        {
+            var position = e.GetPosition(myViewport);
+            var diff = position - _cameraPointerStartPosition;
+
+            if (myViewport.Camera is OrthographicCamera camera)
+            {
+                if (e.MouseDevice.MiddleButton == MouseButtonState.Pressed)
+                {
+                    var newCameraPosition = _cameraStartPosition;
+                    newCameraPosition.Z += diff.X * 6;
+                    newCameraPosition.Y -= diff.Y * 6;
+                    camera.Position = newCameraPosition;
+                }
+            }
+            else if (myViewport.Camera is PerspectiveCamera pcamera)
+            {
+                if (e.MouseDevice.LeftButton == MouseButtonState.Pressed)
+                {
+                    _cameraAngleH = _startCameraAngleH + (diff.X / 100);
+                    _cameraAngleV = _startCameraAngleV + (diff.Y / 100);
+                    UpdateCamera();
+                }
+                if (e.MouseDevice.MiddleButton == MouseButtonState.Pressed)
+                {
+                    var newCameraPosition = _cameraStartPosition;
+                    newCameraPosition.Z += diff.X * 6;
+                    newCameraPosition.Y -= diff.Y * 6;
+                    _cameraLookAt = newCameraPosition;
+                    UpdateCamera();
+                }
+            }
+        }
+
+        public static void Rotate(PerspectiveCamera camera, Vector3D axis, double angle)
+        {
+            var matrix3D = new Matrix3D();
+            matrix3D.RotateAt(new Quaternion(axis, angle), camera.Position);
+            camera.LookDirection *= matrix3D;
+        }
+
+        private void myViewport_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (myViewport.Camera is OrthographicCamera camera)
+            {
+                camera.Width = Math.Max(2000, camera.Width - e.Delta * 4);
+            }
+            else if (myViewport.Camera is PerspectiveCamera pcamera)
+            {
+                _cameraZoom = Math.Max(1000, _cameraZoom - (e.Delta * 10));
+                UpdateCamera();
+            }
+        }
+
+        private void UpdateCamera()
+        {
+            if (myViewport.Camera is PerspectiveCamera camera)
+            {
+                // var rx = _cameraZoom * (Math.Cos(_cameraAngleH) - Math.Sin(_cameraAngleV));
+                // var ry = _cameraZoom * Math.Sin(_cameraAngleV);
+                // var rz = _cameraZoom * Math.Sin(_cameraAngleH);
+
+                var hoizontalVector = new Vector3D(
+                    Math.Cos(_cameraAngleH),
+                    0,
+                    Math.Sin(_cameraAngleH));
+                var verticalVector = new Vector3D(
+                    Math.Cos(_cameraAngleV),
+                    -Math.Sin(_cameraAngleV),
+                    0);
+
+                var merged = hoizontalVector + verticalVector;
+                merged.Normalize();
+                var position = merged * _cameraZoom;
+                camera.Position = new Point3D(position.X, position.Y, position.Z);
+
+                var look = _cameraLookAt - camera.Position;
+                look.Normalize();
+                camera.LookDirection = look;
+            }
+        }
+
+        private void menuExportModel_Click(object sender, RoutedEventArgs e)
+        {
+            var saveFileDialog = new SaveFileDialog();
+            saveFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_path);
+            saveFileDialog.Filter = "Wavefront .obj Files (*.obj)|*.obj";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                ExportModel(saveFileDialog.FileName);
+            }
+        }
+
+        private void menuImportModel_Click(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog();
+            openFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_path);
+            openFileDialog.Filter = "Wavefront .obj Files (*.obj)|*.obj";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                ImportModel(openFileDialog.FileName);
+            }
         }
     }
 

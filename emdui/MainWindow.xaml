@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:emdui"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="emdui" Height="720" Width="1280">
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
@@ -19,7 +19,10 @@
                 <MenuItem Header="Copy Page 0 to Page 2" Click="menuCopyPage_Click" />
             </MenuItem>
             <MenuItem Header="Model">
-                <MenuItem Header="Add Dummy Object" Click="menuAddDummyObject_Click" />
+                <MenuItem Header="Import" Click="menuImportModel_Click" />
+                <MenuItem Header="Export" Click="menuExportModel_Click" />
+                <Separator />
+                <MenuItem Header="Add Dummy Object" Click="menuAddDummyPart_Click" />
             </MenuItem>
         </Menu>
         <Grid DockPanel.Dock="Bottom">
@@ -33,7 +36,7 @@
                     <ColumnDefinition Width="100" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <ListBox Grid.Column="0" x:Name="listObjects" SelectionChanged="listObjects_SelectionChanged" Width="100" />
+                <ListBox Grid.Column="0" x:Name="listParts" SelectionChanged="listParts_SelectionChanged" Width="100" />
                 <ListBox Grid.Column="1" x:Name="listPrimitives" SelectionChanged="listPrimitives_SelectionChanged" Width="100" />
                 <Grid Grid.Column="2">
                     <Grid.RowDefinitions>
@@ -41,7 +44,13 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <TextBox Grid.Row="0" x:Name="textPrimitive" IsReadOnly="True" HorizontalContentAlignment="Stretch" />
-                    <Viewport3D Grid.Row="1" Name="myViewport" />
+                    <Border Background="#FF9797FF"
+                            Grid.Row="1"
+                            PreviewMouseDown="myViewport_MouseDown"
+                            PreviewMouseMove="myViewport_MouseMove"
+                            PreviewMouseWheel="myViewport_PreviewMouseWheel">
+                        <Viewport3D Name="myViewport" />
+                    </Border>
                 </Grid>
             </Grid>
             <Image Grid.Row="1" x:Name="timImage" Loaded="mainWindow_Loaded" />

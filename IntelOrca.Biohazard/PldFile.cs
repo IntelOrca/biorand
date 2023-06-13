@@ -22,6 +22,11 @@ namespace IntelOrca.Biohazard
         {
         }
 
+        public Emr GetEmr()
+        {
+            return new Emr(GetChunk(RE2_CHUNK_EMR));
+        }
+
         public TimFile GetTim()
         {
             var meshChunk = GetChunk(TimChunkIndex);
