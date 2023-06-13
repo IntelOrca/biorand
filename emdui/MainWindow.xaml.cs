@@ -35,34 +35,10 @@ namespace emdui
         {
         }
 
-        private ModelFile LoadModelFile(string path)
-        {
-            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
-            {
-                var br = new BinaryReader(fs);
-                var directoryOffset = br.ReadInt32();
-                var numOffsets = br.ReadInt32();
-                fs.Close();
-                switch (numOffsets)
-                {
-                    case 4:
-                        return new PldFile(BioVersion.Biohazard2, path);
-                    case 5:
-                        return new PldFile(BioVersion.Biohazard3, path);
-                    case 8:
-                        return new EmdFile(BioVersion.Biohazard2, path);
-                    case 15:
-                        return new EmdFile(BioVersion.Biohazard3, path);
-                    default:
-                        return null;
-                }
-            }
-        }
-
         private void LoadModel(string path)
         {
             _path = path;
-            _modelFile = LoadModelFile(path);
+            _modelFile = ModelFile.FromFile(path);
             if (_modelFile is EmdFile emdFile)
             {
                 var timPath = Path.ChangeExtension(path, ".tim");
@@ -99,9 +75,67 @@ namespace emdui
 
         private void ImportModel(string path)
         {
-            var numPages = _timFile.Width / 128;
-            var objImporter = new ObjImporter();
-            _modelFile.Md1 = objImporter.ImportMd1(path, numPages, GetFinalPosition);
+            if (path.EndsWith(".obj", StringComparison.CurrentCultureIgnoreCase))
+            {
+                var numPages = _timFile.Width / 128;
+                var objImporter = new ObjImporter();
+                _modelFile.Md1 = objImporter.ImportMd1(path, numPages, GetFinalPosition);
+            }
+            else
+            {
+                var modelFile = ModelFile.FromFile(path);
+                if (modelFile.Version == BioVersion.Biohazard2)
+                {
+                    if (_modelFile.Version == BioVersion.Biohazard2)
+                    {
+                        _modelFile.Md1 = modelFile.Md1;
+                    }
+                    else
+                    {
+                        _modelFile.Md2 = modelFile.Md1.ToMd2();
+
+                        var map2to3 = new[]
+                        {
+                            0, 8, 9, 10, 11, 12, 13, 14, 1, 2, 3, 4, 5, 6, 7
+                        };
+                        var emr = modelFile.GetEmr(0);
+                        var emrBuilder = _modelFile.GetEmr(0).ToBuilder();
+                        for (var i = 0; i < map2to3.Length; i++)
+                        {
+                            var srcPartIndex = i;
+                            var dstPartIndex = map2to3[i];
+                            var src = emr.GetRelativePosition(srcPartIndex);
+                            emrBuilder.RelativePositions[dstPartIndex] = src;
+                        }
+                        _modelFile.SetEmr(0, emrBuilder.ToEmr());
+                    }
+                }
+                else
+                {
+                    if (_modelFile.Version == BioVersion.Biohazard2)
+                    {
+                        _modelFile.Md1 = modelFile.Md2.ToMd1();
+                    }
+                    else
+                    {
+                        _modelFile.Md2 = modelFile.Md2;
+                    }
+                }
+
+                if (modelFile is PldFile pldFile)
+                {
+                    _timFile = pldFile.GetTim();
+                }
+                else
+                {
+                    var timPath = Path.ChangeExtension(path, ".tim");
+                    if (File.Exists(timPath))
+                    {
+                        _timFile = new TimFile(timPath);
+                    }
+                }
+                RefreshTimImage();
+            }
             RefreshModelView();
         }
 
@@ -193,7 +227,8 @@ namespace emdui
             "upper arm (left)", "forearm (left)", "hand (left)",
             "waist",
             "thigh (right)", "calf (right)", "foot (right)",
-            "thigh (left)", "calf (left)", "foot (left)"
+            "thigh (left)", "calf (left)", "foot (left)",
+            "hand with gun"
         };
 
         private string GetPartName(int partIndex)
@@ -549,11 +584,37 @@ namespace emdui
         {
             var openFileDialog = new OpenFileDialog();
             openFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_path);
-            openFileDialog.Filter = "Wavefront .obj Files (*.obj)|*.obj";
+            openFileDialog.Filter = "All Supported Files (*.emd;*.pld;*.obj)|*.emd;*.pld;*.obj";
+            openFileDialog.Filter += "|EMD/PLD Files (*.emd;*.pld)|*.emd;*.pld";
+            openFileDialog.Filter += "|Wavefront .obj Files (*.obj)|*.obj";
             if (openFileDialog.ShowDialog() == true)
             {
                 ImportModel(openFileDialog.FileName);
             }
+        }
+
+        private void menuAutoHandWithGun_Click(object sender, RoutedEventArgs e)
+        {
+            if (_modelFile.Version != BioVersion.Biohazard3 ||
+                _modelFile is PldFile)
+            {
+                MessageBox.Show("This feature is for RE 3 EMDs only", "Not applicable", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var builder = _modelFile.Md2.ToBuilder();
+            if (builder.Parts.Count < 16)
+            {
+                var part = new Md2Builder.Part();
+                part.Positions.Add(new Md2.Vector());
+                part.Normals.Add(new Md2.Vector());
+                part.Triangles.Add(new Md2.Triangle());
+                builder.Parts.Add(part);
+            }
+            builder.Parts[15] = builder.Parts[4];
+            _modelFile.Md2 = builder.ToMd2();
+            RefreshModelView();
+            RefreshStatusBar();
         }
     }
 }

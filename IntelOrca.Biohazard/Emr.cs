@@ -15,10 +15,10 @@ namespace IntelOrca.Biohazard
 
         public byte[] GetBytes() => _data;
 
-        public int ArmatureOffset => BitConverter.ToInt16(_data, 0);
-        public int KeyFrameOffset => BitConverter.ToInt16(_data, 2);
-        public int NumParts => BitConverter.ToInt16(_data, 4);
-        public int KeyFrameSize => BitConverter.ToInt16(_data, 6);
+        public ushort ArmatureOffset => BitConverter.ToUInt16(_data, 0);
+        public ushort KeyFrameOffset => BitConverter.ToUInt16(_data, 2);
+        public ushort NumParts => BitConverter.ToUInt16(_data, 4);
+        public ushort KeyFrameSize => BitConverter.ToUInt16(_data, 6);
 
         public Vector GetRelativePosition(int partIndex)
         {
@@ -56,7 +56,17 @@ namespace IntelOrca.Biohazard
             return GetSpan<byte>(offset, armature.count);
         }
 
-        public Span<DataPoint> DataPoints
+        public Span<byte> KeyFrameData
+        {
+            get
+            {
+                var offset = KeyFrameOffset;
+                var count = _data.Length - offset;
+                return GetSpan<byte>(offset, count);
+            }
+        }
+
+        public Span<KeyFrame> KeyFrames
         {
             get
             {
@@ -65,7 +75,7 @@ namespace IntelOrca.Biohazard
 
                 var offset = KeyFrameOffset;
                 var count = (_data.Length - offset) / KeyFrameSize;
-                return GetSpan<DataPoint>(offset, count);
+                return GetSpan<KeyFrame>(offset, count);
             }
         }
 
@@ -73,6 +83,23 @@ namespace IntelOrca.Biohazard
         {
             var data = new Span<byte>(_data, offset, _data.Length - offset);
             return MemoryMarshal.Cast<byte, T>(data).Slice(0, count);
+        }
+
+        public EmrBuilder ToBuilder()
+        {
+            var builder = new EmrBuilder();
+            var numParts = NumParts;
+            for (var i = 0; i < numParts; i++)
+            {
+                builder.RelativePositions.Add(GetRelativePosition(i));
+            }
+            for (var i = 0; i < numParts; i++)
+            {
+                builder.Armatures.Add(GetArmatureParts(i).ToArray());
+            }
+            builder.KeyFrameData = KeyFrameData.ToArray();
+            builder.KeyFrameSize = KeyFrameSize;
+            return builder;
         }
 
         [DebuggerDisplay("({x}, {y}, {z})")]
@@ -91,7 +118,7 @@ namespace IntelOrca.Biohazard
 
         [DebuggerDisplay("offset = {offset} speed = {speed}")]
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public unsafe struct DataPoint
+        public unsafe struct KeyFrame
         {
             public Vector offset;
             public Vector speed;

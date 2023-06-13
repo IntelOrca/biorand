@@ -23,6 +23,7 @@
                 <MenuItem Header="Export" Click="menuExportModel_Click" />
                 <Separator />
                 <MenuItem Header="Add Dummy Object" Click="menuAddDummyPart_Click" />
+                <MenuItem Header="Auto create hand with gun" Click="menuAutoHandWithGun_Click" />
             </MenuItem>
         </Menu>
         <StatusBar DockPanel.Dock="Bottom">
