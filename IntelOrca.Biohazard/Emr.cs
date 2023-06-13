@@ -15,10 +15,10 @@ namespace IntelOrca.Biohazard
 
         public byte[] GetBytes() => _data;
 
-        public int Unk0 => BitConverter.ToInt16(_data, 0);
-        public int DataOffset => BitConverter.ToInt16(_data, 2);
+        public int ArmatureOffset => BitConverter.ToInt16(_data, 0);
+        public int KeyFrameOffset => BitConverter.ToInt16(_data, 2);
         public int NumParts => BitConverter.ToInt16(_data, 4);
-        public int DataWidth => BitConverter.ToInt16(_data, 6);
+        public int KeyFrameSize => BitConverter.ToInt16(_data, 6);
 
         public Vector GetRelativePosition(int partIndex)
         {
@@ -40,7 +40,7 @@ namespace IntelOrca.Biohazard
             if (partIndex < 0 || partIndex >= NumParts)
                 throw new ArgumentOutOfRangeException(nameof(partIndex));
 
-            var offset = Unk0 + (partIndex * 4);
+            var offset = ArmatureOffset + (partIndex * 4);
             var values = GetSpan<short>(offset, 2);
             return new Armature()
             {
@@ -52,7 +52,7 @@ namespace IntelOrca.Biohazard
         public Span<byte> GetArmatureParts(int partIndex)
         {
             var armature = GetArmature(partIndex);
-            var offset = Unk0 + armature.offset;
+            var offset = ArmatureOffset + armature.offset;
             return GetSpan<byte>(offset, armature.count);
         }
 
@@ -60,11 +60,11 @@ namespace IntelOrca.Biohazard
         {
             get
             {
-                if (DataWidth != 80)
+                if (KeyFrameSize != 80)
                     throw new InvalidOperationException("Invalid data width");
 
-                var offset = DataOffset;
-                var count = (_data.Length - offset) / DataWidth;
+                var offset = KeyFrameOffset;
+                var count = (_data.Length - offset) / KeyFrameSize;
                 return GetSpan<DataPoint>(offset, count);
             }
         }
