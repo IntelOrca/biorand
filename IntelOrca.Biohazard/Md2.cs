@@ -45,6 +45,11 @@ namespace IntelOrca.Biohazard
             return builder;
         }
 
+        public Md1 ToMd1()
+        {
+            throw new NotImplementedException();
+        }
+
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct ObjectDescriptor
         {

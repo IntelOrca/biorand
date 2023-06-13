@@ -111,5 +111,30 @@ namespace IntelOrca.Biohazard
         }
 
         public abstract Emr GetEmr(int index);
+        public abstract void SetEmr(int index, Emr emr);
+
+        public static ModelFile? FromFile(string path)
+        {
+            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                var br = new BinaryReader(fs);
+                var directoryOffset = br.ReadInt32();
+                var numOffsets = br.ReadInt32();
+                fs.Close();
+                switch (numOffsets)
+                {
+                    case 4:
+                        return new PldFile(BioVersion.Biohazard2, path);
+                    case 5:
+                        return new PldFile(BioVersion.Biohazard3, path);
+                    case 8:
+                        return new EmdFile(BioVersion.Biohazard2, path);
+                    case 15:
+                        return new EmdFile(BioVersion.Biohazard3, path);
+                    default:
+                        throw new InvalidDataException("Unsupported file type");
+                }
+            }
+        }
     }
 }

@@ -10,6 +10,7 @@ namespace IntelOrca.Biohazard
         private const int RE2_CHUNK_MD1 = 2;
         private const int RE2_CHUNK_TIM = 3;
 
+        private const int RE3_CHUNK_EMR = 1;
         private const int RE3_CHUNK_MD2 = 2;
         private const int RE3_CHUNK_TIM = 4;
 
@@ -23,12 +24,22 @@ namespace IntelOrca.Biohazard
         {
         }
 
-        public override Emr GetEmr(int index)
+        private int GetEmrChunkIndex(int index)
         {
-            if (index < 0 || index > 2)
+            if (index != 0)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
-            return new Emr(GetChunk(RE2_CHUNK_EMR));
+            return Version == BioVersion.Biohazard2 ? RE2_CHUNK_EMR : RE3_CHUNK_EMR;
+        }
+
+        public override Emr GetEmr(int index)
+        {
+            return new Emr(GetChunk(GetEmrChunkIndex(index)));
+        }
+
+        public override void SetEmr(int index, Emr emr)
+        {
+            SetChunk(GetEmrChunkIndex(index), emr.GetBytes());
         }
 
         public TimFile GetTim()
