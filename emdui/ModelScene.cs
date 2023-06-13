@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
+using emdui.Extensions;
 using IntelOrca.Biohazard;
 
 namespace emdui
@@ -53,10 +54,10 @@ namespace emdui
             _highlightedModel = model3d;
         }
 
-        public void GenerateFrom(ModelFile modelFile, BitmapSource texture)
+        public void GenerateFrom(ModelFile modelFile, TimFile timFile)
         {
             _modelFile = modelFile;
-            _texture = texture;
+            _texture = timFile.ToBitmap();
 
             if (_modelFile.Version == BioVersion.Biohazard2)
             {
