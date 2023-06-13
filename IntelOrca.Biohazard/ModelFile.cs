@@ -109,5 +109,7 @@ namespace IntelOrca.Biohazard
                 _chunks[Md2ChunkIndex] = value.GetBytes();
             }
         }
+
+        public abstract Emr GetEmr(int index);
     }
 }

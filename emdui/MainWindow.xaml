@@ -25,7 +25,11 @@
                 <MenuItem Header="Add Dummy Object" Click="menuAddDummyPart_Click" />
             </MenuItem>
         </Menu>
-        <Grid DockPanel.Dock="Bottom">
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem x:Name="fileTypeLabel">RE 2 .PLD Model</StatusBarItem>
+            <StatusBarItem x:Name="numPartsLabel">0 parts</StatusBarItem>
+        </StatusBar>
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
@@ -67,13 +71,14 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <TextBox Grid.Row="0" x:Name="textPrimitive" IsReadOnly="True" HorizontalContentAlignment="Stretch" />
-                    <Border Background="#FF9797FF"
-                            Grid.Row="1"
-                            PreviewMouseDown="myViewport_MouseDown"
-                            PreviewMouseMove="myViewport_MouseMove"
-                            PreviewMouseWheel="myViewport_PreviewMouseWheel">
-                        <Viewport3D Name="myViewport" />
-                    </Border>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <local:SceneViewport Grid.Column="0" x:Name="viewport0" />
+                        <local:SceneViewport Grid.Column="1" x:Name="viewport1" />
+                    </Grid>
                 </Grid>
             </Grid>
             <Image Grid.Row="1" x:Name="timImage" Loaded="mainWindow_Loaded" />
