@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using static IntelOrca.Biohazard.Md2;
 
@@ -24,9 +25,103 @@ namespace IntelOrca.Biohazard
         private int _minVertexIndex;
         private int _maxVertexIndex;
 
-        public Md1 ImportMd1(string objPath, int numPages)
+        public Md1 ImportMd1(string objPath, int numPages, Func<int, Md1.Vector>? translate = null)
         {
-            return new Md1(new byte[0]);
+            _objFile = new WavefrontObjFile(objPath);
+            _dataStream = new MemoryStream();
+            _textureWidth = numPages * 128;
+            _textureHeight = 256;
+
+            var md1Builder = new Md1Builder();
+            foreach (var objGroup in _objFile.Objects)
+            {
+                var part = new Md1Builder.Part();
+
+                BeginObject();
+
+                // Find lowest vertex index
+                foreach (var face in objGroup.Triangles)
+                {
+                    UpdateBaseVertex(face.a.Vertex);
+                    UpdateBaseVertex(face.b.Vertex);
+                    UpdateBaseVertex(face.c.Vertex);
+                }
+                foreach (var face in objGroup.Quads)
+                {
+                    UpdateBaseVertex(face.a.Vertex);
+                    UpdateBaseVertex(face.b.Vertex);
+                    UpdateBaseVertex(face.c.Vertex);
+                    UpdateBaseVertex(face.d.Vertex);
+                }
+
+                foreach (var face in objGroup.Triangles)
+                {
+                    var triangle = new Md1.Triangle();
+                    var triangleTexture = new Md1.TriangleTexture();
+                    triangle.v2 = AddVertex(face.a.Vertex, face.a.Normal);
+                    triangle.v1 = AddVertex(face.b.Vertex, face.b.Normal);
+                    triangle.v0 = AddVertex(face.c.Vertex, face.c.Normal);
+                    triangle.n2 = triangle.v2;
+                    triangle.n1 = triangle.v1;
+                    triangle.n0 = triangle.v0;
+                    (triangleTexture.page, triangleTexture.u2, triangleTexture.v2) = GetTextureOffset(face.a.Texture);
+                    (triangleTexture.page, triangleTexture.u1, triangleTexture.v1) = GetTextureOffset(face.b.Texture);
+                    (triangleTexture.page, triangleTexture.u0, triangleTexture.v0) = GetTextureOffset(face.c.Texture);
+                    triangleTexture.page |= 0x80;
+
+                    part.Triangles.Add(triangle);
+                    part.TriangleTextures.Add(triangleTexture);
+                }
+                foreach (var face in objGroup.Quads)
+                {
+                    var quad = new Md1.Quad();
+                    var quadTexture = new Md1.QuadTexture();
+                    quad.v2 = AddVertex(face.a.Vertex, face.a.Normal);
+                    quad.v3 = AddVertex(face.b.Vertex, face.b.Normal);
+                    quad.v1 = AddVertex(face.c.Vertex, face.c.Normal);
+                    quad.v0 = AddVertex(face.d.Vertex, face.d.Normal);
+                    quad.n2 = quad.v2;
+                    quad.n3 = quad.v3;
+                    quad.n1 = quad.v1;
+                    quad.n0 = quad.v0;
+                    (quadTexture.page, quadTexture.u2, quadTexture.v2) = GetTextureOffset(face.a.Texture);
+                    (quadTexture.page, quadTexture.u3, quadTexture.v3) = GetTextureOffset(face.b.Texture);
+                    (quadTexture.page, quadTexture.u1, quadTexture.v1) = GetTextureOffset(face.c.Texture);
+                    (quadTexture.page, quadTexture.u0, quadTexture.v0) = GetTextureOffset(face.d.Texture);
+                    quadTexture.page |= 0x80;
+
+                    part.Quads.Add(quad);
+                    part.QuadTextures.Add(quadTexture);
+                }
+                EndObject();
+
+                if (_currentObject.vtx_count == 0)
+                {
+                    part.Positions.Add(new Md1.Vector());
+                    part.Normals.Add(new Md1.Vector());
+                    part.Triangles.Add(new Md1.Triangle());
+                    part.TriangleTextures.Add(new Md1.TriangleTexture());
+                }
+                else
+                {
+                    var origin = translate == null ? new Md1.Vector() : translate(md1Builder.Parts.Count);
+                    for (int i = 0; i < _currentObject.vtx_count; i++)
+                    {
+                        var pos = _positions[i].ToMd1();
+                        pos.x -= origin.x;
+                        pos.y -= origin.y;
+                        pos.z -= origin.z;
+                        part.Positions.Add(pos);
+                    }
+                    for (int i = 0; i < _currentObject.vtx_count; i++)
+                    {
+                        part.Normals.Add(_normals[i].ToMd1());
+                    }
+                }
+
+                md1Builder.Parts.Add(part);
+            }
+            return md1Builder.ToMd1();
         }
 
         public Md2 ImportMd2(string objPath, int numPages)
@@ -39,7 +134,7 @@ namespace IntelOrca.Biohazard
             return new Md2(GetData());
         }
 
-        public void Import()
+        private void Import()
         {
             foreach (var objGroup in _objFile.Objects)
             {
@@ -111,6 +206,8 @@ namespace IntelOrca.Biohazard
             var dataBw = new BinaryWriter(_dataStream);
             _currentObject.vtx_offset = (ushort)_dataStream.Position;
             _currentObject.vtx_count = (ushort)(_maxVertexIndex - _minVertexIndex + 1);
+            if (_minVertexIndex == int.MaxValue)
+                _currentObject.vtx_count = 0;
             for (int i = 0; i < _currentObject.vtx_count; i++)
             {
                 dataBw.Write(_positions[i]);

@@ -531,16 +531,6 @@ namespace IntelOrca.Biohazard
         }
     }
 
-    internal class Emr
-    {
-        public EmrFlags Flags { get; }
-
-        public Emr(EmrFlags flags)
-        {
-            Flags = flags;
-        }
-    }
-
     [DebuggerDisplay("Start = {Start} Length = {Length}")]
     internal struct Range : IEquatable<Range>
     {

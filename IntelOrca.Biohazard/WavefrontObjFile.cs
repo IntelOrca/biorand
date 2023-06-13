@@ -39,6 +39,7 @@ namespace IntelOrca.Biohazard
                             Objects.Add(currentObject);
                         }
                         currentObject = new ObjectGroup();
+                        currentObject.Name = parts[1];
                         break;
                     case "v":
                         Vertices.Add(new Vertex(double.Parse(parts[1]), double.Parse(parts[2]), double.Parse(parts[3])));
@@ -76,6 +77,7 @@ namespace IntelOrca.Biohazard
             {
                 Objects.Add(currentObject);
             }
+            Objects.Sort(new Comparison<ObjectGroup>((a, b) => a.Name.CompareTo(b.Name)));
         }
 
         private FaceVertex ParseFaceVertex(string component)
@@ -129,9 +131,10 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        [DebuggerDisplay("Triangles = {Triangles.Count} Quads = {Quads.Count}")]
+        [DebuggerDisplay("Name = {Name} Triangles = {Triangles.Count} Quads = {Quads.Count}")]
         public class ObjectGroup
         {
+            public string Name { get; set; } = "";
             public List<Triangle> Triangles { get; } = new List<Triangle>();
             public List<Quad> Quads { get; } = new List<Quad>();
         }

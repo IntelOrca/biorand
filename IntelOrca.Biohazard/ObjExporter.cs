@@ -40,7 +40,7 @@ namespace IntelOrca.Biohazard
             File.WriteAllText(_objPath!, _sb.ToString());
         }
 
-        public void Export(Md1 md1, string objPath, int numPages)
+        public void Export(Md1 md1, string objPath, int numPages, Func<int, Md1.Vector>? partTranslate = null)
         {
             Begin(objPath, numPages);
 
@@ -50,11 +50,13 @@ namespace IntelOrca.Biohazard
             var tvIndex = 1;
             foreach (var obj in md1.Objects)
             {
+                var translate = partTranslate == null ? new Md1.Vector() : partTranslate(objIndex / 2);
+
                 if ((objIndex & 1) == 0)
                     AppendLine($"o part_{objIndex / 2:00}");
                 foreach (var v in md1.GetPositionData(obj))
                 {
-                    AppendDataLine("v", v.x / 1000.0, v.y / 1000.0, v.z / 1000.0);
+                    AppendDataLine("v", (translate.x + v.x) / 1000.0, (translate.y + v.y) / 1000.0, (translate.z + v.z) / 1000.0);
                 }
                 foreach (var v in md1.GetNormalData(obj))
                 {
