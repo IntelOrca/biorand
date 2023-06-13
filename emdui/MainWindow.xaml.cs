@@ -46,7 +46,9 @@ namespace emdui
             _path = path;
             if (path.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
             {
-                _modelFile = new EmdFile(BioVersion.Biohazard2, _path);
+                var emdFile = new EmdFile(BioVersion.Biohazard2, _path);
+                _modelFile = emdFile;
+                _emr = emdFile.GetEmr(0);
                 var timPath = Path.ChangeExtension(path, ".tim");
                 if (File.Exists(timPath))
                 {
@@ -162,53 +164,98 @@ namespace emdui
             timImage.Source = _timImage = BitmapSource.Create(_timFile.Width, _timFile.Height, 96, 96, PixelFormats.Bgra32, null, pixels, _timFile.Width * 4);
         }
 
+        private string[] g_partNamesRe2 = new string[]
+        {
+            "chest", "waist",
+            "thigh (right)", "calf (right)", "foot (right)",
+            "thigh (left)", "calf (left)", "foot (left)",
+            "head",
+            "upper arm (right)", "forearm (right)", "hand (right)",
+            "upper arm (left)", "forearm (left)", "hand (left)",
+            "ponytail (A)", "ponytail (B)", "ponytail (C)", "ponytail (D)"
+        };
+
+        private string GetPartName(int partIndex)
+        {
+            if (g_partNamesRe2.Length > partIndex)
+                return g_partNamesRe2[partIndex];
+            return $"part {partIndex}";
+        }
+
         private void RefreshParts()
         {
-            var selectedIndex = listParts.SelectedIndex;
-            listParts.ItemsSource = Enumerable.Range(0, _md1.NumObjects / 2)
-                .Select(x => $"Object {x}")
-                .ToArray();
+            var emr = _emr;
+            var rootPartIndex = 0;
 
-            if (selectedIndex >= 0 && selectedIndex < listParts.Items.Count)
+            var items = new TreeViewItem[emr.NumParts];
+            var parent = new TreeViewItem[emr.NumParts];
+            var stack = new Stack<byte>();
+            stack.Push((byte)rootPartIndex);
+            while (stack.Count != 0)
             {
-                listParts.SelectedIndex = selectedIndex;
+                var partIndex = stack.Pop();
+                items[partIndex] = new TreeViewItem()
+                {
+                    Header = GetPartName(partIndex),
+                    Tag = (int)partIndex,
+                    IsExpanded = true
+                };
+                if (parent[partIndex] is TreeViewItem parentItem)
+                {
+                    parentItem.Items.Add(items[partIndex]);
+                }
+
+                var children = emr.GetArmatureParts(partIndex);
+                foreach (var child in children)
+                {
+                    parent[child] = items[partIndex];
+                    stack.Push(child);
+                }
             }
-            else
+
+            var root = new TreeViewItem();
+            root.Header = "Skeleton";
+            root.IsExpanded = true;
+
+            root.Items.Add(items[rootPartIndex]);
+            for (int i = 0; i < _md1.NumObjects; i += 2)
             {
-                listParts.SelectedIndex = 0;
+                var partIndex = i / 2;
+                if (partIndex >= items.Length || items[partIndex] == null)
+                {
+                    root.Items.Add(new TreeViewItem()
+                    {
+                        Header = GetPartName(partIndex),
+                        Tag = (int)partIndex,
+                        IsExpanded = true
+                    });
+                }
             }
+
+            treeParts.Items.Clear();
+            treeParts.Items.Add(root);
+
             RefreshModelView();
         }
 
         private void RefreshModelView()
         {
+            var partIndex = GetSelectedPartIndex();
+            if (partIndex != -1 && partIndex < _emr.NumParts)
+            {
+                var pos = _emr.GetRelativePosition(partIndex);
+                partXTextBox.Text = pos.x.ToString();
+                partYTextBox.Text = pos.y.ToString();
+                partZTextBox.Text = pos.z.ToString();
+            }
+
             // var camera = myViewport.Camera;
             var children = myViewport.Children;
             children.Clear();
 
-            var selectedPart = listParts.SelectedIndex;
-            if (selectedPart < 0 || selectedPart >= _md1.NumObjects)
-                return;
-
-            // var numParts = _md1.NumObjects / 2;
-            // for (var i = 0; i < numParts; i++)
-            // {
-            //     var model = CreateModelFromPart(i);
-            // 
-            //     if (_emr.NumParts > i)
-            //     {
-            //         var armature = _emr.GetArmature(i);
-            //         var armatureParts = _emr.GetArmatureParts(i);
-            //         var relativeOffset = _emr.GetRelativePosition(i);
-            //         var dataPoints = _emr.DataPoints;
-            //         model.Transform = new TranslateTransform3D(relativeOffset.x, relativeOffset.y, relativeOffset.z);
-            //     }
-            // 
-            //     modelGroup.Children.Add(model);
-            // }
-
             var modelVisual = new ModelVisual3D();
-            modelVisual.Content = CreateModelFromArmature(0);
+            modelVisual.Content = CreateModel();
+
             children.Add(modelVisual);
 
             var camera = new PerspectiveCamera(
@@ -231,6 +278,44 @@ namespace emdui
                 new ModelVisual3D() { Content = new AmbientLight(Colors.White) });
 
             UpdateCamera();
+        }
+
+        private Model3DGroup CreateModel()
+        {
+            var rootGroup = new Model3DGroup();
+            var main = CreateModelFromArmature(0);
+            rootGroup.Children.Add(main);
+            var mainParts = GetAllArmatureParts(0);
+            for (var i = 0; i < _md1.NumObjects; i += 2)
+            {
+                var partIndex = i / 2;
+                if (!mainParts.Contains(partIndex))
+                {
+                    var model = CreateModelFromPart(partIndex);
+                    rootGroup.Children.Add(model);
+                }
+            }
+            return rootGroup;
+        }
+
+        private int[] GetAllArmatureParts(int rootPartIndex)
+        {
+            var emr = _emr;
+            var parts = new List<int>();
+            var stack = new Stack<byte>();
+            stack.Push((byte)rootPartIndex);
+            while (stack.Count != 0)
+            {
+                var partIndex = stack.Pop();
+                parts.Add(partIndex);
+
+                var children = emr.GetArmatureParts(partIndex);
+                foreach (var child in children)
+                {
+                    stack.Push(child);
+                }
+            }
+            return parts.ToArray();
         }
 
         private Model3DGroup CreateModelFromArmature(int partIndex)
@@ -329,17 +414,55 @@ namespace emdui
                 TileMode = TileMode.Tile,
                 ViewportUnits = BrushMappingMode.Absolute
             };
+            if (GetSelectedPartIndex() == partIndex)
+            {
+                material.AmbientColor = Colors.Blue;
+            }
 
             var model = new GeometryModel3D();
             model.Geometry = mesh;
             model.BackMaterial = material;
-            model.Material = new DiffuseMaterial(Brushes.Yellow);
+            model.Material = material;
+            // model.Material = new DiffuseMaterial(Brushes.Yellow);
             return model;
+        }
+
+        private void RefreshPrimitives()
+        {
+            var selectedIndex = GetSelectedPartIndex() * 2;
+            if (selectedIndex >= 0 && selectedIndex < _md1.NumObjects)
+            {
+                var objTri = _md1.Objects[selectedIndex + 0];
+                var objQuad = _md1.Objects[selectedIndex + 1];
+                var triangles = _md1.GetTriangles(objTri);
+                var quads = _md1.GetQuads(objQuad);
+
+                var items = new List<string>();
+                for (int i = 0; i < triangles.Length; i++)
+                    items.Add($"Triangle {i}");
+                for (int i = 0; i < quads.Length; i++)
+                    items.Add($"Quad {i}");
+
+                listPrimitives.ItemsSource = items;
+            }
+        }
+
+        private int GetSelectedPartIndex()
+        {
+            if (treeParts.SelectedItem is TreeViewItem item)
+            {
+                if (item.Tag is int partIndex)
+                {
+                    return partIndex;
+                }
+            }
+            return -1;
         }
 
         private void mainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            LoadModel(@"M:\git\rer\IntelOrca.Biohazard\data\re2\pld0\barry\pl00.pld");
+            // LoadModel(@"M:\git\rer\IntelOrca.Biohazard\data\re2\pld0\barry\pl00.pld");
+            LoadModel(@"F:\games\re2\data\Pl0\emd0\em03e.emd");
         }
 
         private void menuOpen_Click(object sender, RoutedEventArgs e)
@@ -412,30 +535,14 @@ namespace emdui
             }
         }
 
-        private void listParts_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void treeParts_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            var selectedIndex = listParts.SelectedIndex * 2;
-            if (selectedIndex >= 0 && selectedIndex < _md1.NumObjects)
-            {
-                var objTri = _md1.Objects[selectedIndex + 0];
-                var objQuad = _md1.Objects[selectedIndex + 1];
-                var triangles = _md1.GetTriangles(objTri);
-                var quads = _md1.GetQuads(objQuad);
-
-                var items = new List<string>();
-                for (int i = 0; i < triangles.Length; i++)
-                    items.Add($"Triangle {i}");
-                for (int i = 0; i < quads.Length; i++)
-                    items.Add($"Quad {i}");
-
-                listPrimitives.ItemsSource = items;
-            }
             RefreshModelView();
         }
 
         private void listPrimitives_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var objIndex = listParts.SelectedIndex * 2;
+            var objIndex = GetSelectedPartIndex() * 2;
             if (objIndex >= 0 && objIndex < _md1.NumObjects)
             {
                 var objTri = _md1.Objects[objIndex + 0];
