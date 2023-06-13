@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:emdui"
         mc:Ignorable="d"
-        Title="emdui" Height="720" Width="1280">
+        Title="emdui" Height="720" Width="1280"
+        Loaded="mainWindow_Loaded">
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
@@ -82,7 +83,7 @@
                     </Grid>
                 </Grid>
             </Grid>
-            <Image Grid.Row="1" x:Name="timImage" Loaded="mainWindow_Loaded" />
+            <local:TimView Grid.Row="1" x:Name="timImage" TimUpdated="timImage_TimUpdated" />
         </Grid>
     </DockPanel>
 </Window>

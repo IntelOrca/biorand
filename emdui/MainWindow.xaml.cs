@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
+using emdui.Extensions;
 using IntelOrca.Biohazard;
 using Microsoft.Win32;
 
@@ -19,8 +20,6 @@ namespace emdui
         private string _path;
         private ModelFile _modelFile;
         private TimFile _timFile;
-
-        private BitmapSource _timImage;
         private ModelScene _scene;
 
         public MainWindow()
@@ -35,6 +34,14 @@ namespace emdui
         {
         }
 
+        private void SetTimFile(TimFile timFile)
+        {
+            _timFile = timFile;
+            if (_modelFile is PldFile pldFile)
+                pldFile.SetTim(timFile);
+            RefreshTimImage();
+        }
+
         private void LoadModel(string path)
         {
             _path = path;
@@ -44,7 +51,8 @@ namespace emdui
                 var timPath = Path.ChangeExtension(path, ".tim");
                 if (File.Exists(timPath))
                 {
-                    LoadTim(timPath);
+                    _timFile = new TimFile(timPath);
+                    RefreshTimImage();
                 }
             }
             else if (_modelFile is PldFile pldFile)
@@ -124,17 +132,16 @@ namespace emdui
 
                 if (modelFile is PldFile pldFile)
                 {
-                    _timFile = pldFile.GetTim();
+                    SetTimFile(pldFile.GetTim());
                 }
                 else
                 {
                     var timPath = Path.ChangeExtension(path, ".tim");
                     if (File.Exists(timPath))
                     {
-                        _timFile = new TimFile(timPath);
+                        SetTimFile(new TimFile(timPath));
                     }
                 }
-                RefreshTimImage();
             }
             RefreshModelView();
         }
@@ -180,33 +187,38 @@ namespace emdui
             return positions[targetPartIndex];
         }
 
-        private void LoadTim(string path)
-        {
-            _timFile = new TimFile(path);
-            RefreshTimImage();
-        }
-
         private void SaveTim(string path)
         {
             _timFile.Save(path);
         }
 
+        private void ImportTim(string path)
+        {
+            if (path.EndsWith(".tim", StringComparison.OrdinalIgnoreCase))
+            {
+                SetTimFile(new TimFile(path));
+            }
+            else
+            {
+                SetTimFile(ImportTimFile16(path));
+            }
+        }
+
         private void ExportTim(string path)
         {
-            var bitmapEncoder = new PngBitmapEncoder();
-            bitmapEncoder.Frames.Add(BitmapFrame.Create(_timImage));
-            using (var fs = new FileStream(path, FileMode.Create, FileAccess.Write))
+            if (path.EndsWith(".tim", StringComparison.OrdinalIgnoreCase))
             {
-                bitmapEncoder.Save(fs);
+                _timFile.Save(path);
+            }
+            else
+            {
+                _timFile.ToBitmap().Save(path);
             }
         }
 
         private void RefreshTimImage()
         {
-            var pixels = _timFile.GetPixels((x, y) => x / 128);
-            timImage.Width = _timFile.Width;
-            timImage.Height = _timFile.Height;
-            timImage.Source = _timImage = BitmapSource.Create(_timFile.Width, _timFile.Height, 96, 96, PixelFormats.Bgra32, null, pixels, _timFile.Width * 4);
+            timImage.Tim = _timFile;
         }
 
         private string[] g_partNamesRe2 = new string[]
@@ -318,7 +330,7 @@ namespace emdui
         private void RefreshModelView()
         {
             _scene = new ModelScene();
-            _scene.GenerateFrom(_modelFile, _timImage);
+            _scene.GenerateFrom(_modelFile, _timFile);
             viewport0.Scene = _scene;
             viewport1.Scene = _scene;
 
@@ -426,11 +438,12 @@ namespace emdui
         {
             var openFileDialog = new OpenFileDialog();
             openFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_path);
-            openFileDialog.Filter = "PNG (*.png)|*.png";
+            openFileDialog.Filter = "All Supported Files (*.png;*.tim)|*.png;*tim";
+            openFileDialog.Filter += "|PNG (*.png)|*.png";
+            openFileDialog.Filter += "|TIM (*.tim)|*.tim";
             if (openFileDialog.ShowDialog() == true)
             {
-                _timFile = ImportTimFile16(openFileDialog.FileName);
-                UpdateTimFile();
+                ImportTim(openFileDialog.FileName);
             }
         }
 
@@ -456,6 +469,7 @@ namespace emdui
             var saveFileDialog = new SaveFileDialog();
             saveFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_path);
             saveFileDialog.Filter = "PNG (*.png)|*.png";
+            saveFileDialog.Filter += "|TIM (*.tim)|*.tim";
             if (saveFileDialog.ShowDialog() == true)
             {
                 ExportTim(saveFileDialog.FileName);
@@ -557,16 +571,7 @@ namespace emdui
                     _timFile.SetPixel(256 + x, y, 2, p);
                 }
             }
-            UpdateTimFile();
-        }
-
-        private void UpdateTimFile()
-        {
-            if (_modelFile is PldFile pld)
-            {
-                pld.SetTim(_timFile);
-            }
-            RefreshTimImage();
+            SetTimFile(_timFile);
         }
 
         private void menuExportModel_Click(object sender, RoutedEventArgs e)
@@ -615,6 +620,11 @@ namespace emdui
             _modelFile.Md2 = builder.ToMd2();
             RefreshModelView();
             RefreshStatusBar();
+        }
+
+        private void timImage_TimUpdated(object sender, EventArgs e)
+        {
+            SetTimFile(timImage.Tim);
         }
     }
 }

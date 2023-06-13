@@ -186,36 +186,85 @@ namespace IntelOrca.Biohazard
             return Convert16to32(c16);
         }
 
+        public ushort GetRawPixel(int x, int y)
+        {
+            switch (_pixelFormat)
+            {
+                case PaletteFormat4bpp:
+                {
+                    var offset = (y * _imageWidth * 2) + (x / 2);
+                    if (offset >= _imageData.Length)
+                        return 0;
+                    var b = _imageData[offset];
+                    var p = (byte)((x & 1) == 0 ? b & 0x0F : b >> 4);
+                    return p;
+                }
+                case PaletteFormat8bpp:
+                {
+                    var offset = (y * Width) + x;
+                    var p = _imageData.Length > offset ? _imageData[offset] : 0;
+                    return (ushort)p;
+                }
+                case PaletteFormat16bpp:
+                {
+                    var offset = (y * Width * 2) + (x * 2);
+                    if (offset + 1 >= _imageData.Length)
+                        return 0;
+
+                    var p0 = _imageData[offset + 0];
+                    var p1 = _imageData[offset + 1];
+                    var c16 = (ushort)(p0 | (p1 << 8));
+                    return c16;
+                }
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
+
         public uint GetPixel(int x, int y, int clutIndex = 0)
         {
             switch (_pixelFormat)
             {
                 case PaletteFormat4bpp:
-                    {
-                        var offset = (y * _imageWidth * 2) + (x / 2);
-                        if (offset >= _imageData.Length)
-                            return 0;
-                        var b = _imageData[offset];
-                        var p = (byte)((x & 1) == 0 ? b & 0x0F : b >> 4);
-                        return GetARGB(clutIndex, p);
-                    }
                 case PaletteFormat8bpp:
-                    {
-                        var offset = (y * Width) + x;
-                        var p = _imageData.Length > offset ? _imageData[offset] : 0;
-                        return GetARGB(clutIndex, p);
-                    }
+                    return GetARGB(clutIndex, GetRawPixel(x, y));
                 case PaletteFormat16bpp:
-                    {
-                        var offset = (y * Width * 2) + (x * 2);
-                        if (offset + 1 >= _imageData.Length)
-                            return 0;
+                    return Convert16to32(GetRawPixel(x, y));
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
 
-                        var p0 = _imageData[offset + 0];
-                        var p1 = _imageData[offset + 1];
-                        var c16 = (ushort)(p0 | (p1 << 8));
-                        return Convert16to32(c16);
-                    }
+        public void SetRawPixel(int x, int y, byte value) => SetRawPixel(x, y, (ushort)value);
+
+        public void SetRawPixel(int x, int y, ushort value)
+        {
+            switch (_pixelFormat)
+            {
+                case PaletteFormat4bpp:
+                {
+                    var offset = (y * _imageWidth * 2) + (x / 2);
+                    var b = _imageData[offset];
+                    if ((x & 1) == 0)
+                        b = (byte)((b & 0xF0) | (value & 0x0F));
+                    else
+                        b = (byte)((b & 0x0F) | ((value & 0x0F) << 4));
+                    _imageData[offset] = b;
+                    break;
+                }
+                case PaletteFormat8bpp:
+                {
+                    var offset = (y * Width) + x;
+                    _imageData[offset] = (byte)(value & 0xFF);
+                    break;
+                }
+                case PaletteFormat16bpp:
+                {
+                    var offset = (y * Width * 2) + (x * 2);
+                    _imageData[offset + 0] = (byte)(value & 0xFF);
+                    _imageData[offset + 1] = (byte)(value >> 8);
+                    break;
+                }
                 default:
                     throw new InvalidOperationException();
             }
@@ -226,32 +275,14 @@ namespace IntelOrca.Biohazard
             switch (_pixelFormat)
             {
                 case PaletteFormat4bpp:
-                    {
-                        var offset = (y * _imageWidth * 2) + (x / 2);
-                        var c8 = ImportPixel(clutIndex, p);
-                        var b = _imageData[offset];
-                        if ((x & 1) == 0)
-                            b = (byte)((b & 0xF0) | c8);
-                        else
-                            b = (byte)((b & 0x0F) | (c8 << 4));
-                        _imageData[offset] = b;
-                        break;
-                    }
+                    SetRawPixel(x, y, ImportPixel(clutIndex, p));
+                    break;
                 case PaletteFormat8bpp:
-                    {
-                        var offset = (y * Width) + x;
-                        var c8 = ImportPixel(clutIndex, p);
-                        _imageData[offset] = c8;
-                        break;
-                    }
+                    SetRawPixel(x, y, ImportPixel(clutIndex, p));
+                    break;
                 case PaletteFormat16bpp:
-                    {
-                        var offset = (y * Width * 2) + (x * 2);
-                        var c16 = Convert32to16(p);
-                        _imageData[offset + 0] = (byte)(c16 & 0xFF);
-                        _imageData[offset + 1] = (byte)(c16 >> 8);
-                        break;
-                    }
+                    SetRawPixel(x, y, Convert32to16(p));
+                    break;
                 default:
                     throw new InvalidOperationException();
             }
@@ -381,6 +412,10 @@ namespace IntelOrca.Biohazard
 
         public void ResizeImage(int width, int height)
         {
+            var oldImageData = _imageData;
+            var oldImageHeight = Height;
+            var oldImagePitch = oldImageData.Length / oldImageHeight;
+
             _imageWidth =
                 _pixelFormat switch
                 {
@@ -390,11 +425,23 @@ namespace IntelOrca.Biohazard
                     _ => throw new NotSupportedException(),
                 };
             _imageHeight = (ushort)height;
+            _imageSize = ((uint)width * (uint)height * 2) + 12;
 
             var bufferSize = width * height;
-            if (_pixelFormat != PaletteFormat4bpp)
+            if (_pixelFormat == PaletteFormat16bpp)
                 bufferSize *= 2;
+
             _imageData = new byte[bufferSize];
+
+            var newImagePitch = bufferSize / height;
+            var copyWidth = Math.Min(oldImagePitch, newImagePitch);
+            var copyHeight = Math.Min(oldImageHeight, height);
+            for (var y = 0; y < copyHeight; y++)
+            {
+                var src = oldImagePitch * y;
+                var dst = newImagePitch * y;
+                Array.Copy(oldImageData, src, _imageData, dst, copyWidth);
+            }
         }
 
         public static uint Convert16to32(ushort c16)
