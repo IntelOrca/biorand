@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace IntelOrca.Biohazard
 {
-    public class Md1
+    public sealed class Md1
     {
         private byte[] _data;
 

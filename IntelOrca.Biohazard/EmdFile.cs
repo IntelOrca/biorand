@@ -13,9 +13,16 @@ namespace IntelOrca.Biohazard
         {
         }
 
-        public Emr GetEmr(int index)
+        public override Emr GetEmr(int index)
         {
-            return new Emr(GetChunk(2 + (index * 2)));
+            if (index < 0 || index > 2)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
+            var offset = 2;
+            if (Version == BioVersion.Biohazard3)
+                offset = 3;
+
+            return new Emr(GetChunk(offset + (index * 2)));
         }
     }
 }

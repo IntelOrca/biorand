@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace IntelOrca.Biohazard
 {
@@ -22,8 +23,11 @@ namespace IntelOrca.Biohazard
         {
         }
 
-        public Emr GetEmr()
+        public override Emr GetEmr(int index)
         {
+            if (index < 0 || index > 2)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
             return new Emr(GetChunk(RE2_CHUNK_EMR));
         }
 
