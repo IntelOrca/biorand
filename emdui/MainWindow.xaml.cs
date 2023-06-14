@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -61,6 +62,20 @@ namespace emdui
                 _timFile = pldFile.GetTim();
                 RefreshTimImage();
             }
+
+            var directoryName = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            if (Regex.IsMatch(fileName, "PL[0-9][0-9].PLD", RegexOptions.IgnoreCase))
+            {
+                var plwFileName = $"{fileName.Substring(0, 4)}W02.PLW";
+                var plwPath = Path.Combine(directoryName, plwFileName);
+                if (File.Exists(plwPath))
+                {
+                    // var plw = ModelFile.FromFile(plwPath) as PlwFile;
+                    // plw.Tim.ToBitmap().Save(@"C:\Users\Ted\Desktop\plw.png");
+                }
+            }
+
             RefreshParts();
             RefreshStatusBar();
         }
@@ -401,7 +416,8 @@ namespace emdui
         private void mainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             // LoadModel(@"M:\git\rer\IntelOrca.Biohazard\data\re2\pld0\barry\pl00.pld");
-            LoadModel(@"M:\git\rer\IntelOrca.Biohazard\data\re3\emd\ark\em50.emd");
+            // LoadModel(@"M:\git\rer\IntelOrca.Biohazard\data\re3\pld0\hunk\PL00.PLD");
+            LoadModel(@"M:\git\rer\IntelOrca.Biohazard\data\re2\pld0\chris\PL00.PLD");
         }
 
         private void menuOpen_Click(object sender, RoutedEventArgs e)
