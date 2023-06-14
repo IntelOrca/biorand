@@ -212,7 +212,34 @@ namespace emdui
             }
 
             var relativePosition = _emr.GetRelativePosition(partIndex);
-            armature.Transform = new TranslateTransform3D(relativePosition.x, relativePosition.y, relativePosition.z);
+
+            var transformGroup = new Transform3DGroup();
+            /*
+            var keyFrame = _emr.KeyFrames[0];
+            var angles = new List<Emr.Vector>();
+            for (int i = 0; i < 68 / 3; i++)
+            {
+                angles.Add(keyFrame.GetAngle(i));
+            }
+            if (partIndex == 9)
+            {
+                // transformGroup.Children.Add(new RotateTransform3D(
+                //     new AxisAngleRotation3D(new Vector3D(0, 0, 1), -45)));
+                // transformGroup.Children.Add(new RotateTransform3D(
+                //     new AxisAngleRotation3D(new Vector3D(1, 0, 0), -30)));
+
+                transformGroup.Children.Add(new RotateTransform3D(
+                    new AxisAngleRotation3D(new Vector3D(1, 0, 0), (angles[partIndex].x / 4096.0) * 360)));
+                transformGroup.Children.Add(new RotateTransform3D(
+                    new AxisAngleRotation3D(new Vector3D(0, 1, 0), (angles[partIndex].y / 4096.0) * 360)));
+                transformGroup.Children.Add(new RotateTransform3D(
+                    new AxisAngleRotation3D(new Vector3D(0, 0, 1), (angles[partIndex].z / 4096.0) * 360)));
+            }
+            */
+
+            transformGroup.Children.Add(new TranslateTransform3D(relativePosition.x, relativePosition.y, relativePosition.z));
+            armature.Transform = transformGroup;
+
             return armature;
         }
 

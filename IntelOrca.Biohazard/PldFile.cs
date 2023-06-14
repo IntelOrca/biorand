@@ -10,8 +10,10 @@ namespace IntelOrca.Biohazard
         private const int RE2_CHUNK_MD1 = 2;
         private const int RE2_CHUNK_TIM = 3;
 
+        private const int RE3_CHUNK_EDD = 0;
         private const int RE3_CHUNK_EMR = 1;
         private const int RE3_CHUNK_MD2 = 2;
+        private const int RE3_CHUNK_DAT = 3;
         private const int RE3_CHUNK_TIM = 4;
 
         protected override int Md1ChunkIndex => RE2_CHUNK_MD1;
@@ -22,6 +24,24 @@ namespace IntelOrca.Biohazard
         public PldFile(BioVersion version, string path)
             : base(version, path)
         {
+        }
+
+        private int GetEddChunkIndex(int index)
+        {
+            if (index != 0)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
+            return Version == BioVersion.Biohazard2 ? RE2_CHUNK_EDD : RE3_CHUNK_EDD;
+        }
+
+        public override Edd GetEdd(int index)
+        {
+            return new Edd(GetChunk(GetEddChunkIndex(index)));
+        }
+
+        public override void SetEdd(int index, Edd edd)
+        {
+            SetChunk(GetEddChunkIndex(index), edd.GetBytes());
         }
 
         private int GetEmrChunkIndex(int index)

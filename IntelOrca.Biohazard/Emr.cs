@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
@@ -123,6 +124,44 @@ namespace IntelOrca.Biohazard
             public Vector offset;
             public Vector speed;
             public fixed byte angles[68];
+
+            public Vector GetAngle(int i)
+            {
+                var offset = i * 3;
+                fixed (byte* ptr = &angles[offset])
+                {
+                    var x = Read12(ptr, 0);
+                    var y = Read12(ptr, 1);
+                    var z = Read12(ptr, 2);
+                    return new Vector()
+                    {
+                        x = x,
+                        y = y,
+                        z = z
+                    };
+                }
+            }
+
+            static short Read12(byte* array, int index)
+            {
+                short val = 0;
+                switch (index & 1)
+                {
+                    case 0: /* XX and -X */
+                        val = (short)(array[index] | (array[index + 1] << 8));
+                        break;
+                    case 1: /* Y- and YY */
+                        val = (short)((array[index] >> 4) | (array[index + 1] << 4));
+                        break;
+                }
+                val &= 0xFFF;
+                if ((val & (1 << 11)) != 0)
+                {
+                    val = (short)(val | 0xF000);
+                }
+
+                return val;
+            }
         }
     }
 }

@@ -13,6 +13,25 @@ namespace IntelOrca.Biohazard
         {
         }
 
+        private int GetEddChunkIndex(int index)
+        {
+            if (index < 0 || index > 2)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
+            var offset = 1;
+            return offset + (index * 2);
+        }
+
+        public override Edd GetEdd(int index)
+        {
+            return new Edd(GetChunk(GetEddChunkIndex(index)));
+        }
+
+        public override void SetEdd(int index, Edd edd)
+        {
+            SetChunk(GetEddChunkIndex(index), edd.GetBytes());
+        }
+
         private int GetEmrChunkIndex(int index)
         {
             if (index < 0 || index > 2)

@@ -19,6 +19,22 @@ namespace IntelOrca.Biohazard
         protected override int Md1ChunkIndex => RE2_CHUNK_MD1;
         protected override int Md2ChunkIndex => 0;
 
+        public override Edd GetEdd(int index)
+        {
+            if (index != 0)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
+            return new Edd(GetChunk(RE2_CHUNK_EDD));
+        }
+
+        public override void SetEdd(int index, Edd edd)
+        {
+            if (index != 0)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
+            SetChunk(RE2_CHUNK_EDD, edd.GetBytes());
+        }
+
         public override Emr GetEmr(int index)
         {
             if (index != 0)

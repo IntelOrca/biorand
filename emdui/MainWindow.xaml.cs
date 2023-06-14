@@ -112,6 +112,7 @@ namespace emdui
                     if (_modelFile.Version == BioVersion.Biohazard2)
                     {
                         _modelFile.Md1 = modelFile.Md1;
+                        _modelFile.SetEmr(0, modelFile.GetEmr(0));
                     }
                     else
                     {

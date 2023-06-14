@@ -446,6 +446,10 @@ namespace IntelOrca.Biohazard
 
         public static uint Convert16to32(ushort c16)
         {
+            // Transparent
+            if (c16 == 0)
+                return 0;
+
             // 0BBB_BBGG_GGGR_RRRR
             var r = ((c16 >> 0) & 0b11111) * 8;
             var g = ((c16 >> 5) & 0b11111) * 8;

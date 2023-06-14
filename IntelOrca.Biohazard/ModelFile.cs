@@ -110,6 +110,9 @@ namespace IntelOrca.Biohazard
             }
         }
 
+        public abstract Edd GetEdd(int index);
+        public abstract void SetEdd(int index, Edd emr);
+
         public abstract Emr GetEmr(int index);
         public abstract void SetEmr(int index, Emr emr);
 
