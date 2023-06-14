@@ -124,11 +124,15 @@ namespace IntelOrca.Biohazard
                 switch (numOffsets)
                 {
                     case 4:
+                        if (path.EndsWith(".plw", StringComparison.OrdinalIgnoreCase))
+                            return new PlwFile(BioVersion.Biohazard2, path);
                         return new PldFile(BioVersion.Biohazard2, path);
                     case 5:
                         return new PldFile(BioVersion.Biohazard3, path);
                     case 8:
                         return new EmdFile(BioVersion.Biohazard2, path);
+                    case 9:
+                        return new PlwFile(BioVersion.Biohazard3, path);
                     case 15:
                         return new EmdFile(BioVersion.Biohazard3, path);
                     default:
