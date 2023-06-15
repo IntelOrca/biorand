@@ -38,7 +38,9 @@
                 <Separator />
                 <MenuItem Header="Delete Page" Click="DeletePage_Click" />
                 <MenuItem Header="Copy Page" Click="CopyPage_Click" />
-                <MenuItem Header="Paste Page" Click="PastePaste_Click" />
+                <MenuItem Header="Paste Page" Click="PastePage_Click" />
+                <Separator />
+                <MenuItem Header="Fix colours" Click="FixColours_Click" />
             </ContextMenu>
         </Grid.ContextMenu>
         <Image x:Name="image" HorizontalAlignment="Left" />

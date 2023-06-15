@@ -237,7 +237,7 @@ namespace emdui
             }
         }
 
-        private void PastePaste_Click(object sender, RoutedEventArgs e)
+        private void PastePage_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -255,6 +255,49 @@ namespace emdui
                     for (var x = 0; x < 128; x++)
                     {
                         _timFile.SetRawPixel(xStart + x, y, pixels[(y * 128) + x]);
+                    }
+                }
+                RefreshAndRaiseTimEvent();
+            }
+            catch
+            {
+            }
+        }
+
+        private void FixColours_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var numPages = _timFile.Width / 128;
+                if (numPages <= _selectedPage)
+                    return;
+
+                var palette = _timFile.GetPalette(_selectedPage);
+                var targetPalette = new byte[palette.Length];
+                for (var i = 0; i < palette.Length; i++)
+                {
+                    if (i >= 240)
+                    {
+                        var oldValue = TimFile.Convert16to32(palette[i]);
+                        targetPalette[i] = _timFile.ImportPixel(_selectedPage, 0, 240, oldValue);
+                    }
+                    else
+                    {
+                        targetPalette[i] = (byte)i;
+                    }
+                }
+
+                var xStart = _selectedPage * 128;
+                for (var y = 0; y < _timFile.Height; y++)
+                {
+                    for (var x = 0; x < 128; x++)
+                    {
+                        var p = _timFile.GetRawPixel(xStart + x, y);
+                        if (p > 239)
+                        {
+                            var newP = targetPalette[p];
+                            _timFile.SetRawPixel(xStart + x, y, newP);
+                        }
                     }
                 }
                 RefreshAndRaiseTimEvent();
