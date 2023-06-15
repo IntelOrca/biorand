@@ -26,6 +26,12 @@ namespace IntelOrca.Biohazard.Tests
     public class TestRE3Rando : TestBaseRandomizer
     {
         public override byte Game => 3;
+
+        [Fact]
+        public void RandomizeEnemyPlacements()
+        {
+            RandomizeEnemyPlacementsInner();
+        }
     }
 
     public abstract class TestBaseRandomizer
