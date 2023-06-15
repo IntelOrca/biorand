@@ -306,15 +306,20 @@ namespace IntelOrca.Biohazard
             return result;
         }
 
-        private byte ImportPixel(int clutIndex, uint p)
+        public byte ImportPixel(int clutIndex, uint p) => ImportPixel(clutIndex, 0, _coloursPerClut, p);
+
+        public byte ImportPixel(int clutIndex, int min, int max, uint p)
         {
+            min = Math.Max(min, 0);
+            max = Math.Min(max, _coloursPerClut);
+
             var r = (byte)((p >> 16) & 0xFF);
             var g = (byte)((p >> 8) & 0xFF);
             var b = (byte)((p >> 0) & 0xFF);
 
             var bestIndex = -1;
             var bestTotal = int.MaxValue;
-            for (int i = 0; i < _coloursPerClut; i++)
+            for (int i = min; i < max; i++)
             {
                 var entry = GetARGB(clutIndex, i);
                 var entryR = (byte)((entry >> 16) & 0xFF);

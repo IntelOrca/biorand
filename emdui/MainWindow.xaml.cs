@@ -143,6 +143,14 @@ namespace emdui
                     else
                     {
                         _modelFile.Md2 = modelFile.Md2;
+
+                        var emr = modelFile.GetEmr(0);
+                        var emrBuilder = _modelFile.GetEmr(0).ToBuilder();
+                        for (var i = 0; i < 15; i++)
+                        {
+                            emrBuilder.RelativePositions[i] = emr.GetRelativePosition(i);
+                        }
+                        _modelFile.SetEmr(0, emrBuilder.ToEmr());
                     }
                 }
 
