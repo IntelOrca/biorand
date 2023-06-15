@@ -742,7 +742,7 @@
       "enemies": [
         {
           "condition": "$39 != 5",
-          "nop": [ "0x608A", "0x606A" ],
+          "nop": [ "0x608A", "0x606A", "0x6414", "0x64D0" ],
           "randomPlacements": true
         }
       ]
