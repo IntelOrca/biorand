@@ -118,7 +118,8 @@
           "target": "104:1"
         },
         {
-          "target": "105",
+          "id": 3,
+          "target": "120",
           "lock": "side"
         }
       ],
@@ -157,25 +158,9 @@
       ]
     },
     "105": {
-      "linkedRoom": "120",
-      "doors": [
+      "doorRando": [
         {
-          "target": "103"
-        },
-        {
-          "target": "106"
-        },
-        {
-          "target": "107",
-          "lock": "unblock"
-        },
-        {
-          "target": "108"
-        }
-      ],
-      "npcs": [
-        {
-          "excludeTypes": [ 47, 91, 95, 96, 103 ]
+          "category": "exclude"
         }
       ],
       "enemies": []
@@ -192,7 +177,8 @@
           "target": "104"
         },
         {
-          "target": "105"
+          "id": 2,
+          "target": "120"
         },
         {
           "target": "107",
@@ -223,7 +209,8 @@
     "107": {
       "doors": [
         {
-          "target": "105"
+          "id": 0,
+          "target": "120"
         },
         {
           "target": "106"
@@ -245,7 +232,8 @@
       "linkedRoom": "122",
       "doors": [
         {
-          "target": "105"
+          "id": 0,
+          "target": "120"
         },
         {
           "id": 5,
@@ -750,6 +738,101 @@
       ]
     },
     "120": {
+      "linkedRoom": "105",
+      "doors": [
+        {
+          "id": 0,
+          "target": "103",
+          "entrance": {
+            "x": 16504,
+            "y": -3600,
+            "z": -11315,
+            "d": 2520,
+            "floor": 2,
+            "cut": 0
+          }
+        },
+        {
+          "id": 2,
+          "target": "106",
+          "entrance": {
+            "x": -22416,
+            "y": -3600,
+            "z": -1567,
+            "d": 0,
+            "floor": 2,
+            "cut": 10
+          }
+        },
+        {
+          "id": 3,
+          "target": "107",
+          "lock": "unblock",
+          "entrance": {
+            "x": -11800,
+            "y": -1800,
+            "z": -25000,
+            "d": 2560,
+            "floor": 1,
+            "cut": 15
+          }
+        },
+        {
+          "id": 1,
+          "target": "108",
+          "entrance": {
+            "x": 6454,
+            "y": -3600,
+            "z": 22439,
+            "d": 1024,
+            "floor": 2,
+            "cut": 6
+          }
+        }
+      ],
+      "items": [
+        {
+          "id": 8
+        },
+        {
+          "id": 18,
+          "priority": "low",
+          "requires": [ 43 ],
+          "doorRando": false
+        },
+        {
+          "id": 19,
+          "priority": "low",
+          "requires": [ 43 ],
+          "doorRando": false
+        },
+        {
+          "id": 20,
+          "priority": "low",
+          "requires": [ 43 ],
+          "doorRando": false
+        },
+        {
+          "id": 18,
+          "requires": [ 43 ],
+          "doorRando": true
+        },
+        {
+          "id": 19,
+          "requires": [ 43 ],
+          "doorRando": true
+        },
+        {
+          "id": 20,
+          "requires": [ 43 ],
+          "doorRando": true
+        }
+      ],
+      "npcs": [
+        {
+          "excludeTypes": [ 47, 91, 95, 96, 103 ]
+        }
+      ],
       "enemies": [
         {
           "condition": "$39 != 5",
