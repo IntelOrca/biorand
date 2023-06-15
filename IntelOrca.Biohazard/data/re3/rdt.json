@@ -25,7 +25,7 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 52 ],
+          "excludeTypes": [ 32, 52 ],
           "restricted": true
         }
       ]
@@ -452,6 +452,11 @@
         {
           "target": "112"
         }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 32 ]
+        }
       ]
     },
     "112": {
@@ -497,7 +502,8 @@
       ],
       "enemies": [
         {
-          "condition": "!3:3"
+          "condition": "!3:3",
+          "excludeTypes": [ 32 ]
         }
       ]
     },
@@ -584,7 +590,7 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 52 ],
+          "excludeTypes": [ 32, 52 ],
           "restricted": true
         }
       ]
@@ -652,6 +658,11 @@
       "doors": [
         {
           "target": "119"
+        }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 32 ]
         }
       ]
     },
@@ -1449,8 +1460,18 @@
       "enemies": [
         {
           "excludeOffsets": [
-            1984, 2008, 2032, 2056, 2080, 2104,
-            2342, 2366, 2390, 2414, 2438, 2462
+            1984,
+            2008,
+            2032,
+            2056,
+            2080,
+            2104,
+            2342,
+            2366,
+            2390,
+            2414,
+            2438,
+            2462
           ]
         }
       ]
@@ -1637,7 +1658,7 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 52 ],
+          "excludeTypes": [ 32, 52 ],
           "restricted": true
         }
       ]
@@ -1680,7 +1701,7 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 52 ],
+          "excludeTypes": [ 32, 52 ],
           "restricted": true
         }
       ]
@@ -2005,6 +2026,11 @@
           "type": 72,
           "amount": 1
         }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 32 ]
+        }
       ]
     },
     "30A": {
@@ -2158,7 +2184,7 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 52 ],
+          "excludeTypes": [ 32, 52 ],
           "restricted": true
         }
       ]
@@ -2430,6 +2456,11 @@
           "target": "410",
           "lock": "unblock"
         }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 32 ]
+        }
       ]
     },
     "40E": {
@@ -2525,7 +2556,8 @@
       ],
       "enemies": [
         {
-          "condition": "!(3:111 && !3:77)"
+          "condition": "!(3:111 && !3:77)",
+          "excludeTypes": [ 32 ]
         }
       ]
     },
@@ -2537,7 +2569,7 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 52 ],
+          "excludeTypes": [ 32, 52 ],
           "restricted": true
         }
       ]
@@ -2546,6 +2578,11 @@
       "doors": [
         {
           "target": "412"
+        }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 32 ]
         }
       ]
     },
@@ -2735,6 +2772,11 @@
           "id": 17,
           "requires": [ 127 ]
         }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 32 ]
+        }
       ]
     },
     "503": {
@@ -2797,7 +2839,7 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 52 ],
+          "excludeTypes": [ 32, 52 ],
           "restricted": true
         }
       ]
@@ -2843,6 +2885,11 @@
           "id": 8,
           "requires": [ 126 ]
         }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 32 ]
+        }
       ]
     },
     "507": {
@@ -2879,7 +2926,8 @@
       ],
       "enemies": [
         {
-          "condition": "!(!3:88 && !3:182)"
+          "condition": "!(!3:88 && !3:182)",
+          "excludeTypes": [ 32 ]
         }
       ]
     },
@@ -2936,6 +2984,7 @@
       "enemies": [
         {
           "nop": [ "0x11BE-0x1236" ],
+          "excludeTypes": [ 32 ],
           "randomPlacements": true
         }
       ]
