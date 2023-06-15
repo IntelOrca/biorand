@@ -4,11 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
+using IntelOrca.Biohazard.RE3;
 
 namespace IntelOrca.Biohazard.RE1
 {
     public class Re1Randomiser : BaseRandomiser
     {
+        private ReInstallConfig? _reInstallConfig;
+
         protected override BioVersion BiohazardVersion => BioVersion.Biohazard1;
         internal override IDoorHelper DoorHelper { get; } = new Re1DoorHelper();
         internal override IItemHelper ItemHelper { get; } = new Re1ItemHelper();
@@ -86,6 +89,8 @@ namespace IntelOrca.Biohazard.RE1
 
         public override void Generate(RandoConfig config, ReInstallConfig reConfig, IRandoProgress progress, FileRepository fileRepository)
         {
+            _reInstallConfig = reConfig;
+
             if (!reConfig.IsEnabled(BioVersion.Biohazard1))
             {
                 throw new BioRandUserException("RE1 installation must be enabled to randomize RE1.");
@@ -242,6 +247,25 @@ namespace IntelOrca.Biohazard.RE1
 
         internal override void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser)
         {
+            if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard2))
+            {
+                var dataPath = GetDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard2));
+                // HACK should be helper function from RE 2 randomizer
+                if (Directory.Exists(Path.Combine(dataPath, "data", "pl0", "rdt")))
+                {
+                    dataPath = Path.Combine(dataPath, "data");
+                }
+                npcRandomiser.AddToSelection(BioVersion.Biohazard2, new FileRepository(dataPath));
+            }
+            if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard3))
+            {
+                var dataPath = GetDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard3));
+                var fileRepository = new FileRepository(dataPath);
+                var re3randomizer = new Re3Randomiser(null);
+                re3randomizer.AddArchives(dataPath, fileRepository);
+                npcRandomiser.AddToSelection(BioVersion.Biohazard3, fileRepository);
+            }
+
             var emdFolders = DataManager.GetDirectories(BiohazardVersion, $"emd");
             foreach (var emdFolder in emdFolders)
             {

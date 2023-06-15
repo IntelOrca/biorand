@@ -266,7 +266,10 @@ namespace IntelOrca.Biohazard
                 if (gSelected.Length == 0)
                     continue;
 
-                var slots = _npcHelper.GetSlots(_config, g.Key);
+                var slots = _npcHelper
+                    .GetSlots(_config, g.Key)
+                    .Except(_extraNpcMap.Keys)
+                    .ToArray();
                 var spare = slots
                     .Where(x => _npcHelper.IsSpareSlot(x))
                     .ToQueue();
@@ -356,16 +359,16 @@ namespace IntelOrca.Biohazard
                 .Shuffle(rng)
                 .DistinctBy(x => _npcHelper.GetActor(x))
                 .ToArray();
+            if (_extraNpcMap.Count != 0)
+            {
+                defaultIncludeTypes = defaultIncludeTypes.Concat(_extraNpcMap.Keys).ToArray();
+            }
             if (rng.Next(0, 8) != 0)
             {
                 // Make it rare for player to also be an NPC
                 defaultIncludeTypes = defaultIncludeTypes
                     .Where(x => GetActor(x) != _playerActors[0])
                     .ToArray();
-            }
-            if (_extraNpcMap.Count != 0)
-            {
-                defaultIncludeTypes = defaultIncludeTypes.Concat(_extraNpcMap.Keys).ToArray();
             }
 
             var room = _map.GetRoom(rdt.RdtId);
