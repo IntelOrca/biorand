@@ -216,18 +216,6 @@ namespace emdui
             _timFile.Save(path);
         }
 
-        private void ImportTim(string path)
-        {
-            if (path.EndsWith(".tim", StringComparison.OrdinalIgnoreCase))
-            {
-                SetTimFile(new TimFile(path));
-            }
-            else
-            {
-                SetTimFile(ImportTimFile16(path));
-            }
-        }
-
         private void ExportTim(string path)
         {
             if (path.EndsWith(".tim", StringComparison.OrdinalIgnoreCase))
@@ -461,48 +449,6 @@ namespace emdui
             }
         }
 
-        private void menuImportTim_Click(object sender, RoutedEventArgs e)
-        {
-            var openFileDialog = new OpenFileDialog();
-            openFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_path);
-            openFileDialog.Filter = "All Supported Files (*.png;*.tim)|*.png;*tim";
-            openFileDialog.Filter += "|PNG (*.png)|*.png";
-            openFileDialog.Filter += "|TIM (*.tim)|*.tim";
-            if (openFileDialog.ShowDialog() == true)
-            {
-                ImportTim(openFileDialog.FileName);
-            }
-        }
-
-        private TimFile ImportTimFile16(string path)
-        {
-            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
-            {
-                var bitmapDecoder = new PngBitmapDecoder(fs, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-                var frame = bitmapDecoder.Frames[0];
-                var convertedFrame = new FormatConvertedBitmap(frame, PixelFormats.Bgr32, null, 0);
-
-                // var timFile = new TimFile(convertedFrame.PixelWidth, convertedFrame.PixelHeight, 16);
-                var timFile = _timFile;
-                var pixels = new uint[timFile.Width * timFile.Height];
-                convertedFrame.CopyPixels(pixels, timFile.Width * 4, 0);
-                timFile.ImportPixels(pixels, (x, y) => x / 128);
-                return timFile;
-            }
-        }
-
-        private void menuExportTim_Click(object sender, RoutedEventArgs e)
-        {
-            var saveFileDialog = new SaveFileDialog();
-            saveFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_path);
-            saveFileDialog.Filter = "PNG (*.png)|*.png";
-            saveFileDialog.Filter += "|TIM (*.tim)|*.tim";
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                ExportTim(saveFileDialog.FileName);
-            }
-        }
-
         private void treeParts_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             RefreshHighlightedPart();
@@ -652,6 +598,7 @@ namespace emdui
         private void timImage_TimUpdated(object sender, EventArgs e)
         {
             SetTimFile(timImage.Tim);
+            RefreshModelView();
         }
     }
 }
