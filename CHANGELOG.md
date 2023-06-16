@@ -1,3 +1,16 @@
+BioRand v3.0.6 (2023-06-16)
+
+* [Feature] RE 1, add Leon, Leon (RE2R), Claire, and Regina as playable characters.
+* [Feature] RE 1, add Leon, and Claire as NPCs.
+* [Feature] RE 2, add Leon (RE4), and Wesker (RE1R) as playable characters and NPCs.
+* [Feature] RE 3, add Barry, Billy, Brad, Chris (RE 5), Hunk, Jake, Kevin, Krauser, Leon, Leon (RE 4), Rebecca, Richard, Wesker (CV), Wesker (RE1R), William as playable characters.
+* [Feature] RE 3, add Kevin, Leon, and Wesker (RE1R) as NPCs.
+* [Fix] #433: RE 3, room 120, crank not placed.
+* [Fix] #434: RE 3, killing dogs in some rooms can crash the game.
+* [Fix] #437: RE 3, room 120, crash when random enemy placement is enabled.
+* [Fix] RE 3, Rebecca NPC is distorted.
+* [Fix] RE 3, Jill NPC is distorted.
+
 BioRand v3.0.5 (2023-06-10)
 
 * [Feature] RE 2, Leon can now be given the lockpick.
