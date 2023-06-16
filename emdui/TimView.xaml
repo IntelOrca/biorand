@@ -33,8 +33,11 @@
         </Grid.Background>
         <Grid.ContextMenu>
             <ContextMenu>
-                <MenuItem Header="Import Page" Click="ImportPage_Click" />
-                <MenuItem Header="Export Page" Click="ExportPage_Click" />
+                <MenuItem Header="Import..." Click="Import_Click" />
+                <MenuItem Header="Export..." Click="Export_Click" />
+                <Separator />
+                <MenuItem Header="Import Page..." Click="ImportPage_Click" />
+                <MenuItem Header="Export Page..." Click="ExportPage_Click" />
                 <Separator />
                 <MenuItem Header="Delete Page" Click="DeletePage_Click" />
                 <MenuItem Header="Copy Page" Click="CopyPage_Click" />

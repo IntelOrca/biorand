@@ -1,8 +1,11 @@
 ﻿using System;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using emdui.Extensions;
 using IntelOrca.Biohazard;
 using Microsoft.Win32;
@@ -134,6 +137,70 @@ namespace emdui
             return timFile;
         }
 
+        private BitmapSource ImportBitmap(string path)
+        {
+            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                var bitmapDecoder = BitmapDecoder.Create(fs, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                var frame = bitmapDecoder.Frames[0];
+                return frame;
+            }
+        }
+
+        private void Import_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var openFileDialog = new OpenFileDialog();
+                openFileDialog.Filter = "All Supported Files (*.png;*.tim)|*.png;*tim";
+                openFileDialog.Filter += "|PNG (*.png)|*.png";
+                openFileDialog.Filter += "|TIM (*.tim)|*.tim";
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    var path = openFileDialog.FileName;
+                    if (path.EndsWith(".tim", StringComparison.OrdinalIgnoreCase))
+                    {
+                        _timFile = new TimFile(path);
+                    }
+                    else
+                    {
+                        _timFile = ImportBitmap(path).ToTimFile();
+                    }
+                }
+                RefreshAndRaiseTimEvent();
+            }
+            catch (Exception ex)
+            {
+                ex.ShowMessageBox(this);
+            }
+        }
+
+        private void Export_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "PNG (*.png)|*.png";
+                saveFileDialog.Filter += "|TIM (*.tim)|*.tim";
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    var path = saveFileDialog.FileName;
+                    if (path.EndsWith(".tim", StringComparison.OrdinalIgnoreCase))
+                    {
+                        _timFile.Save(path);
+                    }
+                    else
+                    {
+                        ImportPage(_selectedPage, ImportBitmap(path).ToTimFile());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.ShowMessageBox(this);
+            }
+        }
+
         private void ImportPage_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -152,12 +219,13 @@ namespace emdui
                     }
                     else
                     {
-                        MessageBox.Show("Not yet implemented");
+                        ImportPage(_selectedPage, ImportBitmap(path).ToTimFile());
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                ex.ShowMessageBox(this);
             }
         }
 
@@ -186,8 +254,9 @@ namespace emdui
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                ex.ShowMessageBox(this);
             }
         }
 
@@ -232,8 +301,9 @@ namespace emdui
                 }
                 Clipboard.SetData(PageClipboardObject.Format, new PageClipboardObject(palette, pixels));
             }
-            catch
+            catch (Exception ex)
             {
+                ex.ShowMessageBox(this);
             }
         }
 
@@ -259,8 +329,9 @@ namespace emdui
                 }
                 RefreshAndRaiseTimEvent();
             }
-            catch
+            catch (Exception ex)
             {
+                ex.ShowMessageBox(this);
             }
         }
 
@@ -302,8 +373,9 @@ namespace emdui
                 }
                 RefreshAndRaiseTimEvent();
             }
-            catch
+            catch (Exception ex)
             {
+                ex.ShowMessageBox(this);
             }
         }
 
