@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
@@ -103,6 +102,14 @@ namespace IntelOrca.Biohazard
             return builder;
         }
 
+        public Emr WithKeyframes(Emr emr)
+        {
+            var builder = ToBuilder();
+            builder.KeyFrameSize = emr.KeyFrameSize;
+            builder.KeyFrameData = emr.KeyFrameData.ToArray();
+            return builder.ToEmr();
+        }
+
         [DebuggerDisplay("({x}, {y}, {z})")]
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct Vector
@@ -127,12 +134,20 @@ namespace IntelOrca.Biohazard
 
             public Vector GetAngle(int i)
             {
-                var offset = i * 3;
-                fixed (byte* ptr = &angles[offset])
+                fixed (byte* ptr = angles)
                 {
-                    var x = Read12(ptr, 0);
-                    var y = Read12(ptr, 1);
-                    var z = Read12(ptr, 2);
+                    var nibble = i * 9;
+                    var byteIndex = nibble / 2;
+                    var src = ptr + byteIndex;
+
+                    // Read 3 nibbles
+                    var x = ReadAngle(ref src, ref nibble);
+                    var y = ReadAngle(ref src, ref nibble);
+                    var z = ReadAngle(ref src, ref nibble);
+
+                    // var x = Read12(ptr, 0);
+                    // var y = Read12(ptr, 1);
+                    // var z = Read12(ptr, 2);
                     return new Vector()
                     {
                         x = x,
@@ -142,7 +157,31 @@ namespace IntelOrca.Biohazard
                 }
             }
 
-            static short Read12(byte* array, int index)
+            private static short ReadAngle(ref byte* src, ref int nibble)
+            {
+                var a = ReadNibble(ref src, ref nibble);
+                var b = ReadNibble(ref src, ref nibble);
+                var c = ReadNibble(ref src, ref nibble);
+                return (short)((c << 8) | (b << 4) | a);
+            }
+
+            private static byte ReadNibble(ref byte* src, ref int nibble)
+            {
+                byte value;
+                if ((nibble & 1) == 0)
+                {
+                    value = (byte)(*src & 0x0F);
+                }
+                else
+                {
+                    value = (byte)(*src >> 4);
+                    src++;
+                }
+                nibble++;
+                return value;
+            }
+
+            private static short Read12(byte* array, int index)
             {
                 short val = 0;
                 switch (index & 1)
