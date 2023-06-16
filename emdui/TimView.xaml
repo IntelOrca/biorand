@@ -47,6 +47,7 @@
             </ContextMenu>
         </Grid.ContextMenu>
         <Image x:Name="image" HorizontalAlignment="Left" />
+        <Grid x:Name="primitiveContainer" />
         <Grid x:Name="selectionContainer">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
