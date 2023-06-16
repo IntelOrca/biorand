@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using emdui.Extensions;
 using IntelOrca.Biohazard;
 using Microsoft.Win32;
@@ -21,6 +22,7 @@ namespace emdui
 
         private TimFile _timFile;
         private int _selectedPage;
+        private UVPrimitive[] _primitives;
 
         public TimFile Tim
         {
@@ -48,6 +50,19 @@ namespace emdui
             }
         }
 
+        public UVPrimitive[] Primitives
+        {
+            get => _primitives;
+            set
+            {
+                if (_primitives != value)
+                {
+                    _primitives = value;
+                    RefreshPrimitives();
+                }
+            }
+        }
+
         public TimView()
         {
             InitializeComponent();
@@ -64,7 +79,31 @@ namespace emdui
             }
         }
 
-        public void RefreshImage()
+        private void RefreshPrimitives()
+        {
+            primitiveContainer.Children.Clear();
+
+            if (_primitives == null)
+                return;
+
+            foreach (var p in _primitives)
+            {
+                var offset = p.Page * 128;
+                var polygon = new Polygon();
+                polygon.Stroke = Brushes.Lime;
+                polygon.StrokeThickness = 1;
+                polygon.Points.Add(new Point(p.U0 + offset, p.V0));
+                polygon.Points.Add(new Point(p.U1 + offset, p.V1));
+                if (p.IsQuad)
+                {
+                    polygon.Points.Add(new Point(p.U3 + offset, p.V3));
+                }
+                polygon.Points.Add(new Point(p.U2 + offset, p.V2));
+                primitiveContainer.Children.Add(polygon);
+            }
+        }
+
+        private void RefreshImage()
         {
             image.Width = _timFile.Width;
             image.Height = _timFile.Height;
@@ -392,6 +431,20 @@ namespace emdui
                 Palette = palette;
                 Pixels = pixels;
             }
+        }
+
+        public struct UVPrimitive
+        {
+            public bool IsQuad { get; set; }
+            public byte Page { get; set; }
+            public byte U0 { get; set; }
+            public byte V0 { get; set; }
+            public byte U1 { get; set; }
+            public byte V1 { get; set; }
+            public byte U2 { get; set; }
+            public byte V2 { get; set; }
+            public byte U3 { get; set; }
+            public byte V3 { get; set; }
         }
     }
 }
