@@ -105,6 +105,9 @@ namespace emdui
 
         private void RefreshImage()
         {
+            if (_timFile == null)
+                return;
+
             image.Width = _timFile.Width;
             image.Height = _timFile.Height;
             image.Source = _timFile.ToBitmap();
@@ -230,7 +233,7 @@ namespace emdui
                     }
                     else
                     {
-                        ImportPage(_selectedPage, ImportBitmap(path).ToTimFile());
+                        _timFile.ToBitmap().Save(path);
                     }
                 }
             }

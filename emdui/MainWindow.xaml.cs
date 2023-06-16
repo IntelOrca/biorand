@@ -4,9 +4,8 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
+using System.Windows.Threading;
 using emdui.Extensions;
 using IntelOrca.Biohazard;
 using Microsoft.Win32;
@@ -21,7 +20,15 @@ namespace emdui
         private string _path;
         private ModelFile _modelFile;
         private TimFile _timFile;
+        private PlwFile _plwFile;
+        private Edd _edd;
+        private Emr _emr;
+
         private ModelScene _scene;
+        private DispatcherTimer _timer;
+
+        private int _animationIndex;
+        private double _time;
 
         public MainWindow()
         {
@@ -29,6 +36,50 @@ namespace emdui
             Work();
             // viewport0.SetCameraOrthographic(new Vector3D(-1, 0, 0));
             viewport1.SetCameraOrthographic(new Vector3D(0, 0, 1));
+            _timer = new DispatcherTimer(DispatcherPriority.Render);
+            _timer.Interval = TimeSpan.FromMilliseconds(40);
+            _timer.Tick += _timer_Tick;
+            _timer.IsEnabled = true;
+        }
+
+        private void _timer_Tick(object sender, EventArgs e)
+        {
+            if (_modelFile == null)
+                return;
+
+            var edd = _edd;
+
+            if (animationDropdown.Items.Count != edd.AnimationCount)
+            {
+                animationDropdown.Items.Clear();
+                for (var i = 0; i < edd.AnimationCount; i++)
+                {
+                    animationDropdown.Items.Add($"Animation {i}");
+                }
+            }
+
+            if (_animationIndex != animationDropdown.SelectedIndex)
+            {
+                if (animationDropdown.SelectedIndex == -1)
+                {
+                    animationDropdown.SelectedIndex = 0;
+                }
+                _animationIndex = animationDropdown.SelectedIndex;
+            }
+
+            var frames = edd.GetFrames(_animationIndex);
+            while (_time >= frames.Length)
+            {
+                _time -= frames.Length;
+            }
+
+            var animationKeyframe = (int)_time;
+            var emrKeyframeIndex = frames[animationKeyframe].Index;
+
+            timeTextBlock.Text = _time.ToString("0.00");
+            _scene.SetKeyframe(emrKeyframeIndex);
+
+            _time++;
         }
 
         private void Work()
@@ -63,16 +114,41 @@ namespace emdui
                 RefreshTimImage();
             }
 
+            _edd = _modelFile.GetEdd(0);
+            _emr = _modelFile.GetEmr(0);
+
             var directoryName = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             if (Regex.IsMatch(fileName, "PL[0-9][0-9].PLD", RegexOptions.IgnoreCase))
             {
-                var plwFileName = $"{fileName.Substring(0, 4)}W02.PLW";
+                var plwFileName = $"{fileName.Substring(0, 4)}W07.PLW";
                 var plwPath = Path.Combine(directoryName, plwFileName);
                 if (File.Exists(plwPath))
                 {
-                    // var plw = ModelFile.FromFile(plwPath) as PlwFile;
-                    // plw.Tim.ToBitmap().Save(@"C:\Users\Ted\Desktop\plw.png");
+                    _plwFile = ModelFile.FromFile(plwPath) as PlwFile;
+                    _edd = _plwFile.GetEdd(0);
+                    _emr = _emr.WithKeyframes(_plwFile.GetEmr(0));
+
+                    var plwbuilder = _plwFile.Md1.ToBuilder();
+
+                    var md1 = _modelFile.Md1;
+                    var builder = md1.ToBuilder();
+
+                    builder.Parts[11] = plwbuilder.Parts[0];
+
+                    _modelFile.Md1 = builder.ToMd1();
+
+                    var tim = _timFile;
+                    var plwtim = _plwFile.Tim;
+                    for (var y = 0; y < 32; y++)
+                    {
+                        for (var x = 0; x < 56; x++)
+                        {
+                            var p = plwtim.GetPixel(x, y);
+                            tim.SetPixel(200 + x, 224 + y, 1, p);
+                        }
+                    }
+                    RefreshTimImage();
                 }
             }
 
@@ -182,7 +258,7 @@ namespace emdui
 
         private Md1.Vector GetFinalPosition(int targetPartIndex)
         {
-            var emr = _modelFile.GetEmr(0);
+            var emr = _emr;
             if (targetPartIndex < 0 || targetPartIndex >= emr.NumParts)
                 return new Md1.Vector();
 
@@ -230,6 +306,7 @@ namespace emdui
 
         private void RefreshTimImage()
         {
+            timImage.Tim = null;
             timImage.Tim = _timFile;
         }
 
@@ -279,7 +356,7 @@ namespace emdui
 
         private void RefreshParts()
         {
-            var emr = _modelFile.GetEmr(0);
+            var emr = _emr;
             var numParts = GetNumParts();
             var rootPartIndex = 0;
 
@@ -342,7 +419,7 @@ namespace emdui
         private void RefreshModelView()
         {
             _scene = new ModelScene();
-            _scene.GenerateFrom(_modelFile, _timFile);
+            _scene.GenerateFrom(_modelFile, _emr, _timFile);
             viewport0.Scene = _scene;
             viewport1.Scene = _scene;
 
@@ -407,7 +484,7 @@ namespace emdui
 
         private void RefreshRelativePositionTextBoxes()
         {
-            var emr = _modelFile.GetEmr(0);
+            var emr = _emr;
             var partIndex = GetSelectedPartIndex();
             if (partIndex != -1 && partIndex < emr.NumParts)
             {
@@ -526,11 +603,11 @@ namespace emdui
                     var v0 = positionData[tri.v0];
                     var v1 = positionData[tri.v1];
                     var v2 = positionData[tri.v2];
-                    textPrimitive.Text = string.Join("\n", new[] {
-                        $"v0 = ({v0.x}, {v0.y}, {v0.z})",
-                        $"v1 = ({v1.x}, {v1.y}, {v1.z})",
-                        $"v2 = ({v2.x}, {v2.y}, {v2.z})"
-                    });
+                    // textPrimitive.Text = string.Join("\n", new[] {
+                    //     $"v0 = ({v0.x}, {v0.y}, {v0.z})",
+                    //     $"v1 = ({v1.x}, {v1.y}, {v1.z})",
+                    //     $"v2 = ({v2.x}, {v2.y}, {v2.z})"
+                    // });
                     // textPrimitive.Text = string.Join("\n", new[] {
                     //     "u0 = " + triTex.u0,
                     //     "v0 = " + triTex.v0,
@@ -547,16 +624,16 @@ namespace emdui
                 {
                     priIndex -= triangles.Length;
                     var quad = quads[priIndex];
-                    textPrimitive.Text = string.Join("\n", new[] {
-                        quad.n0,
-                        quad.v0,
-                        quad.n1,
-                        quad.v1,
-                        quad.n2,
-                        quad.v2,
-                        quad.n3,
-                        quad.v3
-                    });
+                    // textPrimitive.Text = string.Join("\n", new[] {
+                    //     quad.n0,
+                    //     quad.v0,
+                    //     quad.n1,
+                    //     quad.v1,
+                    //     quad.n2,
+                    //     quad.v2,
+                    //     quad.n3,
+                    //     quad.v3
+                    // });
                 }
             }
         }

@@ -15,6 +15,7 @@ namespace emdui
         private ModelFile _modelFile;
         private BitmapSource _texture;
         private Model3DGroup _root;
+        private Model3DGroup[] _armature;
         private GeometryModel3D[] _model3d;
         private GeometryModel3D _highlightedModel;
 
@@ -22,6 +23,17 @@ namespace emdui
         private Md2 _md2;
         private Emr _emr;
         private int _numParts;
+
+        public void SetKeyframe(int keyframeIndex)
+        {
+            for (var i = 0; i < _armature.Length; i++)
+            {
+                if (_armature[i] is Model3DGroup armature)
+                {
+                    armature.Transform = GetTransformation(i, keyframeIndex);
+                }
+            }
+        }
 
         public ModelVisual3D CreateVisual3d()
         {
@@ -54,9 +66,10 @@ namespace emdui
             _highlightedModel = model3d;
         }
 
-        public void GenerateFrom(ModelFile modelFile, TimFile timFile)
+        public void GenerateFrom(ModelFile modelFile, Emr emr, TimFile timFile)
         {
             _modelFile = modelFile;
+            _emr = emr;
             _texture = timFile.ToBitmap();
 
             if (_modelFile.Version == BioVersion.Biohazard2)
@@ -71,9 +84,9 @@ namespace emdui
                 _md2 = _modelFile.Md2;
                 _numParts = _md2.NumObjects;
             }
-            _emr = _modelFile.GetEmr(0);
 
             _model3d = new GeometryModel3D[_numParts];
+            _armature = new Model3DGroup[_numParts];
             _root = CreateModel();
         }
 
@@ -211,36 +224,42 @@ namespace emdui
                 armature.Children.Add(subPartMesh);
             }
 
-            var relativePosition = _emr.GetRelativePosition(partIndex);
+            armature.Transform = GetTransformation(partIndex, 0);
+            _armature[partIndex] = armature;
+            return armature;
+        }
+
+        private Transform3D GetTransformation(int partIndex, int keyFrameIndex)
+        {
+            var emr = _emr;
+            var relativePosition = emr.GetRelativePosition(partIndex);
 
             var transformGroup = new Transform3DGroup();
-            /*
-            var keyFrame = _emr.KeyFrames[0];
+            var keyFrame = emr.KeyFrames[keyFrameIndex];
+            if (partIndex == 0)
+            {
+                relativePosition = keyFrame.offset;
+            }
+
             var angles = new List<Emr.Vector>();
             for (int i = 0; i < 68 / 3; i++)
             {
                 angles.Add(keyFrame.GetAngle(i));
             }
-            if (partIndex == 9)
-            {
-                // transformGroup.Children.Add(new RotateTransform3D(
-                //     new AxisAngleRotation3D(new Vector3D(0, 0, 1), -45)));
-                // transformGroup.Children.Add(new RotateTransform3D(
-                //     new AxisAngleRotation3D(new Vector3D(1, 0, 0), -30)));
+            var angleIndex = partIndex;
+            var rx = (angles[angleIndex].x / 4096.0) * 360;
+            var ry = (angles[angleIndex].y / 4096.0) * 360;
+            var rz = (angles[angleIndex].z / 4096.0) * 360;
 
-                transformGroup.Children.Add(new RotateTransform3D(
-                    new AxisAngleRotation3D(new Vector3D(1, 0, 0), (angles[partIndex].x / 4096.0) * 360)));
-                transformGroup.Children.Add(new RotateTransform3D(
-                    new AxisAngleRotation3D(new Vector3D(0, 1, 0), (angles[partIndex].y / 4096.0) * 360)));
-                transformGroup.Children.Add(new RotateTransform3D(
-                    new AxisAngleRotation3D(new Vector3D(0, 0, 1), (angles[partIndex].z / 4096.0) * 360)));
-            }
-            */
+            transformGroup.Children.Add(new RotateTransform3D(
+                new AxisAngleRotation3D(new Vector3D(0, 0, 1), rz)));
+            transformGroup.Children.Add(new RotateTransform3D(
+                new AxisAngleRotation3D(new Vector3D(0, 1, 0), ry)));
+            transformGroup.Children.Add(new RotateTransform3D(
+                new AxisAngleRotation3D(new Vector3D(1, 0, 0), rx)));
 
             transformGroup.Children.Add(new TranslateTransform3D(relativePosition.x, relativePosition.y, relativePosition.z));
-            armature.Transform = transformGroup;
-
-            return armature;
+            return transformGroup;
         }
 
         private GeometryModel3D CreateModelFromPart(int partIndex)
