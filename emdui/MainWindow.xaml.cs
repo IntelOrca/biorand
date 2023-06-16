@@ -424,9 +424,11 @@ namespace emdui
 
         private void mainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+#if DEBUG
             // LoadModel(@"M:\git\rer\IntelOrca.Biohazard\data\re2\pld0\barry\pl00.pld");
             // LoadModel(@"M:\git\rer\IntelOrca.Biohazard\data\re3\pld0\hunk\PL00.PLD");
             LoadModel(@"M:\git\rer\IntelOrca.Biohazard\data\re2\pld0\chris\PL00.PLD");
+#endif
         }
 
         private void menuOpen_Click(object sender, RoutedEventArgs e)
