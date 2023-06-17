@@ -51,10 +51,13 @@ namespace emdui
         public void Show(Action<string> callback)
         {
             var dialog = _saving ? (FileDialog)new SaveFileDialog() : new OpenFileDialog();
-            if (Path.IsPathRooted(_defaultFileName))
-                dialog.FileName = _defaultFileName;
-            else
-                dialog.FileName = Path.Combine(dialog.InitialDirectory, _defaultFileName);
+            if (_defaultFileName != null)
+            {
+                if (Path.IsPathRooted(_defaultFileName))
+                    dialog.FileName = _defaultFileName;
+                else
+                    dialog.FileName = Path.Combine(dialog.InitialDirectory, _defaultFileName);
+            }
             dialog.Filter = string.Join("|", _extensions
                 .Select(x => $"{GetExtensionName(x)} ({x})|{x}"));
 

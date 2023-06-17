@@ -351,7 +351,7 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        public void ImportPixels(uint[] data, Func<int, int ,int> getClutIndex)
+        public void ImportPixels(uint[] data, Func<int, int, int> getClutIndex)
         {
             var index = 0;
             for (int y = 0; y < Height; y++)
@@ -408,7 +408,7 @@ namespace IntelOrca.Biohazard
             _clutData[offset + 1] = (byte)(c16 >> 8);
         }
 
-        private void ResizeCluts(int count)
+        public void ResizeCluts(int count)
         {
             _clutSize = (uint)((count * _coloursPerClut * 2) + 12);
             Array.Resize(ref _clutData, (int)(_clutSize - 12));

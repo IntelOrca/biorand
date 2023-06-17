@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using IntelOrca.Biohazard;
 
@@ -65,12 +66,19 @@ namespace emdui
 
         private void LoadWeapons(string pldPath)
         {
+            var pldFileName = Path.GetFileName(pldPath);
+            if (!Regex.IsMatch(pldFileName, "PL[0-9A-F][0-9A-F].PLD", RegexOptions.IgnoreCase))
+                return;
+
+            var pldFileNameWithoutExtension = Path.GetFileNameWithoutExtension(pldFileName);
+            var plwRegex = new Regex(pldFileNameWithoutExtension + "W[0-9A-F][0-9A-F].PLW", RegexOptions.IgnoreCase);
+
             var directory = Path.GetDirectoryName(pldPath);
             var files = Directory.GetFiles(directory);
             foreach (var plwPath in files)
             {
                 var plwFileName = Path.GetFileName(plwPath);
-                if (Regex.IsMatch(plwFileName, "PL[0-9A-F][0-9A-F]W[0-9A-F][0-9A-F].PLW", RegexOptions.IgnoreCase))
+                if (plwRegex.IsMatch(plwFileName))
                 {
                     LoadWeapon(plwPath);
                 }
@@ -85,32 +93,47 @@ namespace emdui
 
             var plwFileName = Path.GetFileName(path);
             _projectFiles.Add(new ProjectFile(ProjectFileKind.Plw, plwFileName, plwFile));
+        }
 
-            /*
-            _edd = _plwFile.GetEdd(0);
-            _emr = _emr.WithKeyframes(_plwFile.GetEmr(0));
-
-            var plwbuilder = _plwFile.Md1.ToBuilder();
-
-            var md1 = _modelFile.Md1;
-            var builder = md1.ToBuilder();
-
-            builder.Parts[11] = plwbuilder.Parts[0];
-
-            _modelFile.Md1 = builder.ToMd1();
-
-            var tim = _timFile;
-            var plwtim = _plwFile.Tim;
-            for (var y = 0; y < 32; y++)
+        public TimFile MainTexture
+        {
+            get
             {
-                for (var x = 0; x < 56; x++)
-                {
-                    var p = plwtim.GetPixel(x, y);
-                    tim.SetPixel(200 + x, 224 + y, 1, p);
-                }
+                if (MainModel is PldFile pldFile)
+                    return pldFile.Tim;
+                else if (MainModel is PlwFile plwFile)
+                    return plwFile.Tim;
+                else if (MainModel is EmdFile emdFile)
+                    return _projectFiles.FirstOrDefault(x => x.Kind == ProjectFileKind.Tim).Content as TimFile;
+                else
+                    return null;
             }
-            RefreshTimImage();
-            */
+        }
+
+        public void Save() => Save(MainPath);
+
+        public void Save(string path)
+        {
+            var oldExtension = Path.GetExtension(MainPath);
+            var newExtension = Path.GetExtension(path);
+            if (!string.Equals(oldExtension, newExtension, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new Exception("Must save in the same format that was loaded.");
+            }
+
+            _projectFiles[0].Filename = Path.GetFileName(path);
+
+            var directory = Path.GetDirectoryName(path);
+            foreach (var projectFile in _projectFiles)
+            {
+                var projectFilePath = Path.Combine(directory, projectFile.Filename);
+                projectFile.Save(projectFilePath);
+
+                // TEMP
+                break;
+            }
+
+            MainPath = path;
         }
     }
 
@@ -125,6 +148,14 @@ namespace emdui
             Kind = kind;
             Filename = filename;
             Content = content;
+        }
+
+        public void Save(string path)
+        {
+            if (Content is ModelFile modelFile)
+                modelFile.Save(path);
+            else if (Content is TimFile timFile)
+                timFile.Save(path);
         }
 
         public override string ToString() => Filename;

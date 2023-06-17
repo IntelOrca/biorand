@@ -35,13 +35,13 @@ namespace emdui
             }
         }
 
-        private TreeViewItem CreateItem(object parent, object item)
+        private TreeViewItem CreateItem(ItemsControl parent, object item, int insertIndex = -1)
         {
             var tvItem = new TreeViewItem();
-            if (parent is TreeView tv)
-                tv.Items.Add(tvItem);
-            else if (parent is TreeViewItem tvi)
-                tvi.Items.Add(tvItem);
+            if (insertIndex == -1)
+                parent.Items.Add(tvItem);
+            else
+                parent.Items.Insert(insertIndex, tvItem);
 
             tvItem.Tag = item;
             if (item is ProjectFile projectFile)
@@ -51,7 +51,10 @@ namespace emdui
                 {
                     CreateItem(tvItem, modelFile.GetEdd(0));
                     CreateItem(tvItem, modelFile.GetEmr(0));
-                    CreateItem(tvItem, modelFile.Md1);
+                    if (modelFile.Version == BioVersion.Biohazard2)
+                        CreateItem(tvItem, modelFile.Md1);
+                    else
+                        CreateItem(tvItem, modelFile.Md2);
                     if (modelFile is PldFile pldFile)
                     {
                         CreateItem(tvItem, pldFile.GetTim());
@@ -71,6 +74,15 @@ namespace emdui
                     CreateItem(tvItem, new Part(i));
                 }
             }
+            else if (item is Md2 md2)
+            {
+                tvItem.Header = new ProjectTreeViewItemHeader(GetImage("IconMD1"), "MD2");
+                var numParts = md2.NumObjects;
+                for (var i = 0; i < numParts; i++)
+                {
+                    CreateItem(tvItem, new Part(i));
+                }
+            }
             else if (item is Edd edd)
             {
                 tvItem.Header = new ProjectTreeViewItemHeader(GetImage("IconEDD"), "EDD");
@@ -82,7 +94,10 @@ namespace emdui
             else if (item is Emr emr)
             {
                 tvItem.Header = new ProjectTreeViewItemHeader(GetImage("IconEMR"), "EMR");
-                CreateItem(tvItem, new Armature(emr, 0));
+                if (!(GetParentModel(parent) is PlwFile))
+                {
+                    CreateItem(tvItem, new Armature(emr, 0));
+                }
             }
             else if (item is TimFile tim)
             {
@@ -131,6 +146,29 @@ namespace emdui
             return source as TreeViewItem;
         }
 
+        private ProjectFile GetProjectFile(ItemsControl itemsControl)
+        {
+            var tvi = itemsControl;
+            while (tvi != null)
+            {
+                if (tvi.Tag is ProjectFile projectFile)
+                {
+                    return projectFile;
+                }
+                tvi = tvi.Parent as ItemsControl;
+            }
+            return null;
+        }
+
+        private ModelFile GetParentModel(ItemsControl treeViewItem)
+        {
+            if (GetProjectFile(treeViewItem) is ProjectFile projectFile)
+            {
+                return projectFile.Content as ModelFile;
+            }
+            return null;
+        }
+
         private object GetSelectedItem()
         {
             if (treeView.SelectedItem is TreeViewItem tvi)
@@ -142,16 +180,12 @@ namespace emdui
 
         private ProjectFile GetSelectedProjectFile()
         {
-            var tvi = treeView.SelectedItem as TreeViewItem;
-            while (tvi != null)
-            {
-                if (tvi.Tag is ProjectFile projectFile)
-                {
-                    return projectFile;
-                }
-                tvi = tvi.Parent as TreeViewItem;
-            }
-            return null;
+            return GetProjectFile(treeView.SelectedItem as ItemsControl);
+        }
+
+        private ModelFile GetSelectedModel()
+        {
+            return GetSelectedProjectFile()?.Content as ModelFile;
         }
 
         private void treeView_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -195,12 +229,24 @@ namespace emdui
             {
                 if (projectFile.Content is PldFile pldFile)
                 {
-                    var builder = pldFile.Md1.ToBuilder();
-                    var partMd1 = builder.Parts[part.Index];
-                    builder.Parts.Clear();
-                    builder.Parts.Add(partMd1);
-                    var singleMd1 = builder.ToMd1();
-                    MainWindow.LoadIsolatedModel(singleMd1, pldFile.Tim);
+                    if (_project.Version == BioVersion.Biohazard2)
+                    {
+                        var builder = pldFile.Md1.ToBuilder();
+                        var partMd1 = builder.Parts[part.Index];
+                        builder.Parts.Clear();
+                        builder.Parts.Add(partMd1);
+                        var singleMd1 = builder.ToMd1();
+                        MainWindow.LoadIsolatedModel(singleMd1, pldFile.Tim);
+                    }
+                    else
+                    {
+                        var builder = pldFile.Md2.ToBuilder();
+                        var partMd2 = builder.Parts[part.Index];
+                        builder.Parts.Clear();
+                        builder.Parts.Add(partMd2);
+                        var singleMd2 = builder.ToMd2();
+                        MainWindow.LoadIsolatedModel(singleMd2, pldFile.Tim);
+                    }
                     e.Handled = true;
                 }
                 else if (projectFile.Content is PlwFile plwFile)
@@ -228,7 +274,7 @@ namespace emdui
                     }
                 }
             }
-            else if (item is Md1 || item is Emr || item is Armature)
+            else if (item is Md1 || item is Md2 || item is Emr || item is Armature)
             {
                 if (projectFile.Content is PldFile pldFile)
                 {
@@ -243,30 +289,70 @@ namespace emdui
             var projectFile = GetSelectedProjectFile();
             var item = GetSelectedItem();
             var dialog = CommonFileDialog.Open();
-            if (item is Edd edd)
+            if (projectFile.Content is ModelFile model)
             {
-                dialog
-                    .AddExtension("*.edd")
-                    .Show(path => File.ReadAllBytes(path));
-            }
-            else if (item is Emr emr)
-            {
-                dialog
-                    .AddExtension("*.emr")
-                    .Show(path => File.ReadAllBytes(path));
-            }
-            else if (item is Md1 md1)
-            {
-                dialog
-                    .AddExtension("*.md1")
-                    .Show(path => File.ReadAllBytes(path));
-            }
-            else if (item is TimFile tim)
-            {
-                dialog
-                    .AddExtension("*.png")
-                    .AddExtension("*.tim")
-                    .Show(path => { });
+                if (item is Edd edd)
+                {
+                    dialog
+                        .AddExtension("*.edd")
+                        .Show(path =>
+                        {
+                            model.SetEdd(0, new Edd(File.ReadAllBytes(path)));
+                        });
+                }
+                else if (item is Emr emr)
+                {
+                    dialog
+                        .AddExtension("*.emr")
+                        .Show(path =>
+                        {
+                            model.SetEmr(0, new Emr(File.ReadAllBytes(path)));
+                        });
+                }
+                else if (item is Md1 md1)
+                {
+                    dialog
+                        .AddExtension("*.md1")
+                        .Show(path =>
+                        {
+                            if (model is PldFile pld)
+                            {
+                                model.Md1 = new Md1(File.ReadAllBytes(path));
+                                MainWindow.LoadModel(model, pld.Tim);
+                            }
+                        });
+                }
+                else if (item is Md2 md2)
+                {
+                    dialog
+                        .AddExtension("*.md2")
+                        .Show(path =>
+                        {
+                            if (model is PldFile pld)
+                            {
+                                model.Md2 = new Md2(File.ReadAllBytes(path));
+                                MainWindow.LoadModel(model, pld.Tim);
+                            }
+                        });
+                }
+                else if (item is TimFile tim)
+                {
+                    dialog
+                        .AddExtension("*.tim")
+                        .Show(path =>
+                        {
+                            if (model is PldFile pld)
+                            {
+                                pld.Tim = new TimFile(path);
+                                MainWindow.LoadModel(model, pld.Tim);
+                            }
+                        });
+                }
+                else if (item is Part part)
+                {
+                    var builder = model.Md2.ToBuilder();
+                    model.Md2 = builder.ToMd2();
+                }
             }
         }
 
@@ -305,6 +391,16 @@ namespace emdui
                     .AddExtension("*.md1")
                     .Show(path => File.WriteAllBytes(path, md1.GetBytes()));
             }
+            else if (item is Md2 md2)
+            {
+                if (projectFile != null)
+                {
+                    dialog.WithDefaultFileName(Path.ChangeExtension(projectFile.Filename, ".MD2"));
+                }
+                dialog
+                    .AddExtension("*.md2")
+                    .Show(path => File.WriteAllBytes(path, md2.GetBytes()));
+            }
             else if (item is TimFile tim)
             {
                 if (projectFile != null)
@@ -325,6 +421,68 @@ namespace emdui
                             tim.Save(path);
                         }
                     });
+            }
+            else if (item is Part part)
+            {
+                if (projectFile.Content is ModelFile modelFile)
+                {
+                    if (projectFile != null)
+                    {
+                        dialog.WithDefaultFileName(Path.ChangeExtension(projectFile.Filename, $".{part.Index:00}.MD2"));
+                    }
+                    dialog
+                        .AddExtension("*.md2")
+                        .Show(path =>
+                        {
+                            var builder = modelFile.Md2.ToBuilder();
+                            var interestedPart = builder.Parts[part.Index];
+                            builder.Parts.Clear();
+                            builder.Parts.Add(interestedPart);
+                            File.WriteAllBytes(path, builder.ToMd2().GetBytes());
+                        });
+                }
+            }
+        }
+
+        private void addPartMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItem = GetSelectedItem();
+            var selectedModel = GetSelectedModel();
+            if (selectedItem is Md1 md1)
+            {
+                var part = new Md1Builder.Part();
+                part.Positions.Add(new Md1.Vector());
+                part.Normals.Add(new Md1.Vector());
+                part.Triangles.Add(new Md1.Triangle());
+                part.TriangleTextures.Add(new Md1.TriangleTexture());
+
+                var md1Builder = md1.ToBuilder();
+                md1Builder.Parts.Add(part);
+                selectedModel.Md1 = md1Builder.ToMd1();
+
+                RefreshItem(treeView.SelectedItem as TreeViewItem);
+            }
+            else if (selectedItem is Md2 md2)
+            {
+                var md2Builder = md2.ToBuilder();
+                md2Builder.Parts.Add(new Md2Builder.Part());
+                selectedModel.Md2 = md2Builder.ToMd2();
+
+                RefreshItem(treeView.SelectedItem as TreeViewItem);
+            }
+        }
+
+        private void RefreshItem(ItemsControl item)
+        {
+            var parent = item.Parent as ItemsControl;
+            var content = item.Tag;
+            if (content is Md2 md2)
+            {
+                var model = GetParentModel(item);
+                var index = parent.Items.IndexOf(item);
+                var refreshedNode = CreateItem(parent, model.Md2, index);
+                parent.Items.RemoveAt(index + 1);
+                refreshedNode.IsExpanded = true;
             }
         }
 

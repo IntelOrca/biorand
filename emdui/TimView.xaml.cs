@@ -381,18 +381,24 @@ namespace emdui
         {
             try
             {
+
+                var pageToPaletteTrim = 1;
                 var numPages = _timFile.Width / 128;
-                if (numPages <= _selectedPage)
+
+                // Must only have 3 cluts, otherwise inventory colours go weird
+                _timFile.ResizeCluts(numPages);
+
+                if (numPages <= pageToPaletteTrim)
                     return;
 
-                var palette = _timFile.GetPalette(_selectedPage);
+                var palette = _timFile.GetPalette(pageToPaletteTrim);
                 var targetPalette = new byte[palette.Length];
                 for (var i = 0; i < palette.Length; i++)
                 {
                     if (i >= 240)
                     {
                         var oldValue = TimFile.Convert16to32(palette[i]);
-                        targetPalette[i] = _timFile.ImportPixel(_selectedPage, 0, 240, oldValue);
+                        targetPalette[i] = _timFile.ImportPixel(pageToPaletteTrim, 0, 240, oldValue);
                     }
                     else
                     {
@@ -400,7 +406,7 @@ namespace emdui
                     }
                 }
 
-                var xStart = _selectedPage * 128;
+                var xStart = pageToPaletteTrim * 128;
                 for (var y = 0; y < _timFile.Height; y++)
                 {
                     for (var x = 0; x < 128; x++)
