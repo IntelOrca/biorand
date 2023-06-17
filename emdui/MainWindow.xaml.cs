@@ -95,7 +95,7 @@ namespace emdui
         {
             _tim = timFile;
             if (_modelFile is PldFile pldFile)
-                pldFile.SetTim(timFile);
+                pldFile.Tim = timFile;
             RefreshTimImage();
         }
 
@@ -175,7 +175,7 @@ namespace emdui
 
                 if (modelFile is PldFile pldFile)
                 {
-                    SetTimFile(pldFile.GetTim());
+                    SetTimFile(pldFile.Tim);
                 }
                 else
                 {

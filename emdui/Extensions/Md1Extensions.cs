@@ -1,7 +1,7 @@
 ﻿using System.Windows.Media.Media3D;
 using IntelOrca.Biohazard;
 
-namespace emdui
+namespace emdui.Extensions
 {
     internal static class Md1Extensions
     {

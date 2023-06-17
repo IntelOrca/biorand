@@ -1,6 +1,6 @@
 ﻿using System.Windows.Media.Media3D;
 
-namespace emdui
+namespace emdui.Extensions
 {
     internal static class VectorExtensions
     {

@@ -70,7 +70,7 @@ namespace IntelOrca.Emd
                 {
                     var pldFile = new PldFile(version, inputEmdPath);
                     modelFile = pldFile;
-                    timFile = pldFile.GetTim();
+                    timFile = pldFile.Tim;
                 }
                 else
                 {
@@ -102,7 +102,7 @@ namespace IntelOrca.Emd
                         var importedTimFile = ImportTimFile(inputPngPath);
                         if (modelFile is PldFile pldFile)
                         {
-                            pldFile.SetTim(importedTimFile);
+                            pldFile.Tim = importedTimFile;
                         }
                         else
                         {

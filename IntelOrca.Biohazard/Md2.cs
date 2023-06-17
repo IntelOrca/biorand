@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace IntelOrca.Biohazard
 {
-    public sealed class Md2
+    public sealed class Md2 : IModelMesh
     {
         private byte[] _data;
 
@@ -13,6 +13,8 @@ namespace IntelOrca.Biohazard
             _data = data;
         }
 
+        public BioVersion Version => BioVersion.Biohazard3;
+        public int NumParts => NumObjects;
         public byte[] GetBytes() => _data;
 
         public int Length => BitConverter.ToInt32(_data, 0);

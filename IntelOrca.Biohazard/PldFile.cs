@@ -77,8 +77,5 @@ namespace IntelOrca.Biohazard
                 SetChunk(TimChunkIndex, ms.ToArray());
             }
         }
-
-        public TimFile GetTim() => Tim;
-        public void SetTim(TimFile value) => Tim = value;
     }
 }
