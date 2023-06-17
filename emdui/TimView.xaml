@@ -43,7 +43,7 @@
                 <MenuItem Header="Copy Page" Click="CopyPage_Click" />
                 <MenuItem Header="Paste Page" Click="PastePage_Click" />
                 <Separator />
-                <MenuItem Header="Fix colours" Click="FixColours_Click" />
+                <MenuItem Header="Fix Palette for RE 3" Click="FixColours_Click" />
             </ContextMenu>
         </Grid.ContextMenu>
         <Image x:Name="image" HorizontalAlignment="Left" />

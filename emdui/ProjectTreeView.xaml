@@ -79,6 +79,8 @@
                 <ContextMenu>
                     <MenuItem Header="Import..." Click="importMenuItem_Click" />
                     <MenuItem Header="Export..." Click="exportMenuItem_Click" />
+                    <Separator />
+                    <MenuItem Header="Add part" Click="addPartMenuItem_Click" />
                 </ContextMenu>
             </TreeView.ContextMenu>
         </TreeView>

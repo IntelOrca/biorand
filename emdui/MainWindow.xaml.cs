@@ -18,7 +18,6 @@ namespace emdui
     {
         private Project _project;
 
-        private string _path;
         private ModelFile _modelFile;
 
         private Md1 _md1;
@@ -100,69 +99,12 @@ namespace emdui
             RefreshTimImage();
         }
 
-        private void LoadModel(string path)
+        private void LoadProject(string path)
         {
             _project = Project.FromFile(path);
             projectTreeView.Project = _project;
 
-            _path = path;
-            _modelFile = ModelFile.FromFile(path);
-            if (_modelFile is EmdFile emdFile)
-            {
-                var timPath = Path.ChangeExtension(path, ".tim");
-                if (File.Exists(timPath))
-                {
-                    _tim = new TimFile(timPath);
-                    RefreshTimImage();
-                }
-            }
-            else if (_modelFile is PldFile pldFile)
-            {
-                _modelFile = pldFile;
-                _tim = pldFile.GetTim();
-                RefreshTimImage();
-            }
-
-            _md1 = _modelFile.Md1;
-            _edd = _modelFile.GetEdd(0);
-            _emr = _modelFile.GetEmr(0);
-
-            /*
-            var directoryName = Path.GetDirectoryName(path);
-            var fileName = Path.GetFileName(path);
-            if (Regex.IsMatch(fileName, "PL[0-9][0-9].PLD", RegexOptions.IgnoreCase))
-            {
-                var plwFileName = $"{fileName.Substring(0, 4)}W07.PLW";
-                var plwPath = Path.Combine(directoryName, plwFileName);
-                if (File.Exists(plwPath))
-                {
-                    _plwFile = ModelFile.FromFile(plwPath) as PlwFile;
-                    _edd = _plwFile.GetEdd(0);
-                    _emr = _emr.WithKeyframes(_plwFile.GetEmr(0));
-
-                    var plwbuilder = _plwFile.Md1.ToBuilder();
-
-                    var md1 = _modelFile.Md1;
-                    var builder = md1.ToBuilder();
-
-                    builder.Parts[11] = plwbuilder.Parts[0];
-
-                    _modelFile.Md1 = builder.ToMd1();
-
-                    var tim = _timFile;
-                    var plwtim = _plwFile.Tim;
-                    for (var y = 0; y < 32; y++)
-                    {
-                        for (var x = 0; x < 56; x++)
-                        {
-                            var p = plwtim.GetPixel(x, y);
-                            tim.SetPixel(200 + x, 224 + y, 1, p);
-                        }
-                    }
-                    RefreshTimImage();
-                }
-            }
-            */
+            LoadModel(_project.MainModel, _project.MainTexture);
 
             RefreshParts();
             RefreshStatusBar();
@@ -170,18 +112,7 @@ namespace emdui
 
         private void SaveModel(string path)
         {
-            _path = path;
-
-            if (path.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
-            {
-                _modelFile.Save(_path);
-                var timPath = Path.ChangeExtension(path, ".tim");
-                SaveTim(timPath);
-            }
-            else
-            {
-                _modelFile.Save(_path);
-            }
+            _project.Save(path);
         }
 
         private void ImportModel(string path)
@@ -431,7 +362,10 @@ namespace emdui
         private void RefreshModelView()
         {
             _scene = new ModelScene();
-            _scene.GenerateFrom(_md1, _emr, _tim);
+            if (_project.Version == BioVersion.Biohazard2)
+                _scene.GenerateFrom(_md1, _emr, _tim);
+            else
+                _scene.GenerateFrom(_md2, _emr, _tim);
             viewport0.Scene = _scene;
             viewport1.Scene = _scene;
 
@@ -551,27 +485,29 @@ namespace emdui
         private void mainWindow_Loaded(object sender, RoutedEventArgs e)
         {
 #if DEBUG
-            // LoadModel(@"M:\git\rer\IntelOrca.Biohazard\data\re2\pld0\barry\pl00.pld");
-            // LoadModel(@"M:\git\rer\IntelOrca.Biohazard\data\re3\pld0\hunk\PL00.PLD");
-            LoadModel(@"M:\git\rer\IntelOrca.Biohazard\data\re2\pld0\chris\PL00.PLD");
+            // LoadProject(@"M:\git\rer\IntelOrca.Biohazard\data\re2\pld0\barry\pl00.pld");
+            // LoadProject(@"M:\git\rer\IntelOrca.Biohazard\data\re3\pld0\hunk\PL00.PLD");
+            // LoadProject(@"M:\git\rer\IntelOrca.Biohazard\data\re3\pld0\leon\PL00.PLD");
+            // LoadProject(@"M:\git\rer\IntelOrca.Biohazard\data\re2\pld0\chris\PL00.PLD");
+            LoadProject(@"F:\games\re3\mod_biorand\DATA\PLD\PL00.PLD");
 #endif
         }
 
         private void menuOpen_Click(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog();
-            openFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_path);
+            openFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_project.MainPath);
             openFileDialog.Filter = "EMD/PLD Files (*.emd;*.pld)|*.emd;*.pld";
             if (openFileDialog.ShowDialog() == true)
             {
-                LoadModel(openFileDialog.FileName);
+                LoadProject(openFileDialog.FileName);
             }
         }
 
         private void menuSave_Click(object sender, RoutedEventArgs e)
         {
             var saveFileDialog = new SaveFileDialog();
-            saveFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_path);
+            saveFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_project.MainPath);
             if (_modelFile is PldFile)
             {
                 saveFileDialog.Filter = "PLD Files (*.pld)|*.pld";
@@ -580,7 +516,7 @@ namespace emdui
             {
                 saveFileDialog.Filter = "EMD Files (*.emd)|*.emd";
             }
-            saveFileDialog.FileName = _path;
+            saveFileDialog.FileName = _project.MainPath;
             if (saveFileDialog.ShowDialog() == true)
             {
                 SaveModel(saveFileDialog.FileName);
@@ -688,7 +624,7 @@ namespace emdui
         private void menuExportModel_Click(object sender, RoutedEventArgs e)
         {
             var saveFileDialog = new SaveFileDialog();
-            saveFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_path);
+            saveFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_project.MainPath);
             saveFileDialog.Filter = "Wavefront .obj Files (*.obj)|*.obj";
             if (saveFileDialog.ShowDialog() == true)
             {
@@ -699,7 +635,7 @@ namespace emdui
         private void menuImportModel_Click(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog();
-            openFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_path);
+            openFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_project.MainPath);
             openFileDialog.Filter = "All Supported Files (*.emd;*.pld;*.obj)|*.emd;*.pld;*.obj";
             openFileDialog.Filter += "|EMD/PLD Files (*.emd;*.pld)|*.emd;*.pld";
             openFileDialog.Filter += "|Wavefront .obj Files (*.obj)|*.obj";
@@ -750,10 +686,24 @@ namespace emdui
             RefreshTimImage();
         }
 
+        public void LoadIsolatedModel(Md2 md2, TimFile texture)
+        {
+            _modelFile = null;
+            _md2 = md2;
+            _tim = texture;
+            _edd = null;
+            _emr = null;
+            RefreshModelView();
+            RefreshTimImage();
+        }
+
         public void LoadModel(ModelFile model, TimFile texture)
         {
             _modelFile = model;
-            _md1 = model.Md1;
+            if (_project.Version == BioVersion.Biohazard2)
+                _md1 = model.Md1;
+            else
+                _md2 = model.Md2;
             _tim = texture;
             _edd = _modelFile.GetEdd(0);
             _emr = _modelFile.GetEmr(0);

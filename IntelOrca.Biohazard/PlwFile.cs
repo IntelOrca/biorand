@@ -10,6 +10,11 @@ namespace IntelOrca.Biohazard
         private const int RE2_CHUNK_MD1 = 2;
         private const int RE2_CHUNK_TIM = 3;
 
+        private const int RE3_CHUNK_EDD = 0;
+        private const int RE3_CHUNK_EMR = 1;
+        private const int RE3_CHUNK_MD1 = 2;
+        private const int RE3_CHUNK_TIM = 8;
+
         public PlwFile(BioVersion version, string path)
             : base(version, path)
         {
@@ -17,14 +22,15 @@ namespace IntelOrca.Biohazard
 
         public override int NumPages => 1;
         protected override int Md1ChunkIndex => RE2_CHUNK_MD1;
-        protected override int Md2ChunkIndex => 0;
+        protected override int Md2ChunkIndex => RE3_CHUNK_MD1;
 
         public override Edd GetEdd(int index)
         {
             if (index != 0)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
-            return new Edd(GetChunk(RE2_CHUNK_EDD));
+            var chunkIndex = Version == BioVersion.Biohazard2 ? RE2_CHUNK_EDD : RE3_CHUNK_EDD;
+            return new Edd(GetChunk(chunkIndex));
         }
 
         public override void SetEdd(int index, Edd edd)
@@ -32,7 +38,8 @@ namespace IntelOrca.Biohazard
             if (index != 0)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
-            SetChunk(RE2_CHUNK_EDD, edd.GetBytes());
+            var chunkIndex = Version == BioVersion.Biohazard2 ? RE2_CHUNK_EDD : RE3_CHUNK_EDD;
+            SetChunk(chunkIndex, edd.GetBytes());
         }
 
         public override Emr GetEmr(int index)
@@ -40,7 +47,8 @@ namespace IntelOrca.Biohazard
             if (index != 0)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
-            return new Emr(GetChunk(RE2_CHUNK_EMR));
+            var chunkIndex = Version == BioVersion.Biohazard2 ? RE2_CHUNK_EMR : RE3_CHUNK_EMR;
+            return new Emr(GetChunk(chunkIndex));
         }
 
         public override void SetEmr(int index, Emr emr)
@@ -48,21 +56,24 @@ namespace IntelOrca.Biohazard
             if (index != 0)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
-            SetChunk(RE2_CHUNK_EMR, emr.GetBytes());
+            var chunkIndex = Version == BioVersion.Biohazard2 ? RE2_CHUNK_EMR : RE3_CHUNK_EMR;
+            SetChunk(chunkIndex, emr.GetBytes());
         }
 
         public TimFile Tim
         {
             get
             {
-                var ms = new MemoryStream(GetChunk(RE2_CHUNK_TIM));
+                var chunkIndex = Version == BioVersion.Biohazard2 ? RE2_CHUNK_TIM : RE3_CHUNK_TIM;
+                var ms = new MemoryStream(GetChunk(chunkIndex));
                 return new TimFile(ms);
             }
             set
             {
+                var chunkIndex = Version == BioVersion.Biohazard2 ? RE2_CHUNK_TIM : RE3_CHUNK_TIM;
                 var ms = new MemoryStream();
                 value.Save(ms);
-                SetChunk(RE2_CHUNK_TIM, ms.ToArray());
+                SetChunk(chunkIndex, ms.ToArray());
             }
         }
     }
