@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Media3D;
@@ -17,12 +16,16 @@ namespace emdui
     /// </summary>
     public partial class MainWindow : Window
     {
+        private Project _project;
+
         private string _path;
         private ModelFile _modelFile;
-        private TimFile _timFile;
-        private PlwFile _plwFile;
+
+        private Md1 _md1;
+        private Md2 _md2;
         private Edd _edd;
         private Emr _emr;
+        private TimFile _tim;
 
         private ModelScene _scene;
         private DispatcherTimer _timer;
@@ -40,11 +43,13 @@ namespace emdui
             _timer.Interval = TimeSpan.FromMilliseconds(40);
             _timer.Tick += _timer_Tick;
             _timer.IsEnabled = true;
+
+            projectTreeView.MainWindow = this;
         }
 
         private void _timer_Tick(object sender, EventArgs e)
         {
-            if (_modelFile == null)
+            if (_modelFile == null || _animationIndex == -1)
                 return;
 
             var edd = _edd;
@@ -60,11 +65,12 @@ namespace emdui
 
             if (_animationIndex != animationDropdown.SelectedIndex)
             {
-                if (animationDropdown.SelectedIndex == -1)
-                {
-                    animationDropdown.SelectedIndex = 0;
-                }
-                _animationIndex = animationDropdown.SelectedIndex;
+                animationDropdown.SelectedIndex = _animationIndex;
+                // if (animationDropdown.SelectedIndex == -1)
+                // {
+                //     animationDropdown.SelectedIndex = 0;
+                // }
+                // _animationIndex = animationDropdown.SelectedIndex;
             }
 
             var frames = edd.GetFrames(_animationIndex);
@@ -88,7 +94,7 @@ namespace emdui
 
         private void SetTimFile(TimFile timFile)
         {
-            _timFile = timFile;
+            _tim = timFile;
             if (_modelFile is PldFile pldFile)
                 pldFile.SetTim(timFile);
             RefreshTimImage();
@@ -96,6 +102,9 @@ namespace emdui
 
         private void LoadModel(string path)
         {
+            _project = Project.FromFile(path);
+            projectTreeView.Project = _project;
+
             _path = path;
             _modelFile = ModelFile.FromFile(path);
             if (_modelFile is EmdFile emdFile)
@@ -103,20 +112,22 @@ namespace emdui
                 var timPath = Path.ChangeExtension(path, ".tim");
                 if (File.Exists(timPath))
                 {
-                    _timFile = new TimFile(timPath);
+                    _tim = new TimFile(timPath);
                     RefreshTimImage();
                 }
             }
             else if (_modelFile is PldFile pldFile)
             {
                 _modelFile = pldFile;
-                _timFile = pldFile.GetTim();
+                _tim = pldFile.GetTim();
                 RefreshTimImage();
             }
 
+            _md1 = _modelFile.Md1;
             _edd = _modelFile.GetEdd(0);
             _emr = _modelFile.GetEmr(0);
 
+            /*
             var directoryName = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             if (Regex.IsMatch(fileName, "PL[0-9][0-9].PLD", RegexOptions.IgnoreCase))
@@ -151,6 +162,7 @@ namespace emdui
                     RefreshTimImage();
                 }
             }
+            */
 
             RefreshParts();
             RefreshStatusBar();
@@ -176,7 +188,7 @@ namespace emdui
         {
             if (path.EndsWith(".obj", StringComparison.CurrentCultureIgnoreCase))
             {
-                var numPages = _timFile.Width / 128;
+                var numPages = _tim.Width / 128;
                 var objImporter = new ObjImporter();
                 _modelFile.Md1 = objImporter.ImportMd1(path, numPages, GetFinalPosition);
             }
@@ -248,7 +260,7 @@ namespace emdui
 
         private void ExportModel(string path)
         {
-            var numPages = _timFile.Width / 128;
+            var numPages = _tim.Width / 128;
             var objExporter = new ObjExporter();
             objExporter.Export(_modelFile.Md1, path, numPages, GetFinalPosition);
 
@@ -289,25 +301,25 @@ namespace emdui
 
         private void SaveTim(string path)
         {
-            _timFile.Save(path);
+            _tim.Save(path);
         }
 
         private void ExportTim(string path)
         {
             if (path.EndsWith(".tim", StringComparison.OrdinalIgnoreCase))
             {
-                _timFile.Save(path);
+                _tim.Save(path);
             }
             else
             {
-                _timFile.ToBitmap().Save(path);
+                _tim.ToBitmap().Save(path);
             }
         }
 
         private void RefreshTimImage()
         {
             timImage.Tim = null;
-            timImage.Tim = _timFile;
+            timImage.Tim = _tim;
         }
 
         private string[] g_partNamesRe2 = new string[]
@@ -419,7 +431,7 @@ namespace emdui
         private void RefreshModelView()
         {
             _scene = new ModelScene();
-            _scene.GenerateFrom(_modelFile, _emr, _timFile);
+            _scene.GenerateFrom(_md1, _emr, _tim);
             viewport0.Scene = _scene;
             viewport1.Scene = _scene;
 
@@ -656,21 +668,21 @@ namespace emdui
 
         private void menuCopyPage_Click(object sender, RoutedEventArgs e)
         {
-            if (_timFile.Width < 3 * 128)
+            if (_tim.Width < 3 * 128)
             {
-                _timFile.ResizeImage(3 * 128, _timFile.Height);
+                _tim.ResizeImage(3 * 128, _tim.Height);
             }
-            _timFile.SetPalette(2, _timFile.GetPalette(0));
+            _tim.SetPalette(2, _tim.GetPalette(0));
 
             for (int x = 0; x < 128; x++)
             {
-                for (int y = 0; y < _timFile.Height; y++)
+                for (int y = 0; y < _tim.Height; y++)
                 {
-                    var p = _timFile.GetPixel(x, y, 0);
-                    _timFile.SetPixel(256 + x, y, 2, p);
+                    var p = _tim.GetPixel(x, y, 0);
+                    _tim.SetPixel(256 + x, y, 2, p);
                 }
             }
-            SetTimFile(_timFile);
+            SetTimFile(_tim);
         }
 
         private void menuExportModel_Click(object sender, RoutedEventArgs e)
@@ -725,6 +737,60 @@ namespace emdui
         {
             SetTimFile(timImage.Tim);
             RefreshModelView();
+        }
+
+        public void LoadIsolatedModel(Md1 md1, TimFile texture)
+        {
+            _modelFile = null;
+            _md1 = md1;
+            _tim = texture;
+            _edd = null;
+            _emr = null;
+            RefreshModelView();
+            RefreshTimImage();
+        }
+
+        public void LoadModel(ModelFile model, TimFile texture)
+        {
+            _modelFile = model;
+            _md1 = model.Md1;
+            _tim = texture;
+            _edd = _modelFile.GetEdd(0);
+            _emr = _modelFile.GetEmr(0);
+            _animationIndex = -1;
+            RefreshModelView();
+            RefreshTimImage();
+        }
+
+        public void LoadWeaponModel(PlwFile plw)
+        {
+            _edd = plw.GetEdd(0);
+            _emr = _emr.WithKeyframes(plw.GetEmr(0));
+            _animationIndex = -1;
+
+            var targetBuilder = _md1.ToBuilder();
+            var sourceBuilder = plw.Md1.ToBuilder();
+            targetBuilder.Parts[11] = sourceBuilder.Parts[0];
+            _md1 = targetBuilder.ToMd1();
+
+            var tim = _tim;
+            var plwTim = plw.Tim;
+            for (var y = 0; y < 32; y++)
+            {
+                for (var x = 0; x < 56; x++)
+                {
+                    var p = plwTim.GetPixel(x, y);
+                    tim.SetPixel(200 + x, 224 + y, 1, p);
+                }
+            }
+            RefreshModelView();
+            RefreshTimImage();
+        }
+
+        public void LoadAnimation(int index)
+        {
+            _animationIndex = index;
+            _time = 0;
         }
     }
 }

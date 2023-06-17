@@ -21,83 +21,96 @@
                 <MenuItem Header="Auto create hand with gun" Click="menuAutoHandWithGun_Click" />
             </MenuItem>
         </Menu>
-        <GroupBox DockPanel.Dock="Left" Header="Model Explorer">
-            <TreeView Grid.Row="0"
-                      x:Name="treeParts"
-                      Background="{x:Null}"
-                      BorderThickness="0"
-                      SelectedItemChanged="treeParts_SelectedItemChanged" />
-        </GroupBox>
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBarItem x:Name="fileTypeLabel">RE 2 .PLD Model</StatusBarItem>
             <StatusBarItem x:Name="numPartsLabel">0 parts</StatusBarItem>
         </StatusBar>
+
         <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <GroupBox Grid.Column="0" Header="Part">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Grid Grid.Row="0">
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0" Grid.Row="0">Relative X:</Label>
-                            <Label Grid.Column="0" Grid.Row="1">Relative Y:</Label>
-                            <Label Grid.Column="0" Grid.Row="2">Relative Z:</Label>
-                            <TextBox Grid.Column="1" Grid.Row="0" x:Name="partXTextBox" />
-                            <TextBox Grid.Column="1" Grid.Row="1" x:Name="partYTextBox" />
-                            <TextBox Grid.Column="1" Grid.Row="2" x:Name="partZTextBox" />
-                        </Grid>
-                        <ListBox Grid.Row="1" x:Name="listPrimitives" SelectionChanged="listPrimitives_SelectionChanged" />
-                    </Grid>
-                </GroupBox>
-                <Grid Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250" MinWidth="150" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <GroupBox Grid.Column="0" Header="Model Explorer">
+                <Grid>
+                    <local:ProjectTreeView x:Name="projectTreeView" />
+                    <TreeView Grid.Row="0"
+                              x:Name="treeParts"
+                              Background="{x:Null}"
+                              BorderThickness="0"
+                              SelectedItemChanged="treeParts_SelectedItemChanged"
+                              Visibility="Collapsed" />
+                </Grid>
+            </GroupBox>
+            <GridSplitter Grid.Column="1" ResizeBehavior="PreviousAndNext" VerticalAlignment="Stretch" Width="4" Background="Transparent" />
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="150" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <GroupBox Grid.Column="0" Header="Perspective">
-                        <local:SceneViewport x:Name="viewport0" />
+                    <GroupBox Grid.Column="0" Header="Part">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Column="0" Grid.Row="0">Relative X:</Label>
+                                <Label Grid.Column="0" Grid.Row="1">Relative Y:</Label>
+                                <Label Grid.Column="0" Grid.Row="2">Relative Z:</Label>
+                                <TextBox Grid.Column="1" Grid.Row="0" x:Name="partXTextBox" />
+                                <TextBox Grid.Column="1" Grid.Row="1" x:Name="partYTextBox" />
+                                <TextBox Grid.Column="1" Grid.Row="2" x:Name="partZTextBox" />
+                            </Grid>
+                            <ListBox Grid.Row="1" x:Name="listPrimitives" SelectionChanged="listPrimitives_SelectionChanged" />
+                        </Grid>
                     </GroupBox>
-                    <GroupBox Grid.Column="1" Header="Side">
-                        <local:SceneViewport x:Name="viewport1" />
+                    <Grid Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <GroupBox Grid.Column="0" Header="Perspective">
+                            <local:SceneViewport x:Name="viewport0" />
+                        </GroupBox>
+                        <GroupBox Grid.Column="1" Header="Side">
+                            <local:SceneViewport x:Name="viewport1" />
+                        </GroupBox>
+                    </Grid>
+                </Grid>
+
+                <Grid Grid.Row="1" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <GroupBox Grid.Column="0" Header="Texture">
+                        <local:TimView Grid.Column="0" x:Name="timImage" TimUpdated="timImage_TimUpdated" />
+                    </GroupBox>
+                    <GroupBox Grid.Column="1" Header="Texture">
+                        <StackPanel>
+                            <Label>Animation:</Label>
+                            <ComboBox x:Name="animationDropdown" />
+                            <Label>Time:</Label>
+                            <TextBlock x:Name="timeTextBlock">0.0</TextBlock>
+                        </StackPanel>
                     </GroupBox>
                 </Grid>
-            </Grid>
-
-            <Grid Grid.Row="1" >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <GroupBox Grid.Column="0" Header="Texture">
-                    <local:TimView Grid.Column="0" x:Name="timImage" TimUpdated="timImage_TimUpdated" />
-                </GroupBox>
-                <GroupBox Grid.Column="1" Header="Texture">
-                    <StackPanel>
-                        <Label>Animation:</Label>
-                        <ComboBox x:Name="animationDropdown" />
-                        <Label>Time:</Label>
-                        <TextBlock x:Name="timeTextBlock">0.0</TextBlock>
-                    </StackPanel>
-                </GroupBox>
             </Grid>
         </Grid>
     </DockPanel>

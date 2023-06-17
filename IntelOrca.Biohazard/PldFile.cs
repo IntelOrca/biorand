@@ -62,18 +62,23 @@ namespace IntelOrca.Biohazard
             SetChunk(GetEmrChunkIndex(index), emr.GetBytes());
         }
 
-        public TimFile GetTim()
+        public TimFile Tim
         {
-            var meshChunk = GetChunk(TimChunkIndex);
-            var ms = new MemoryStream(meshChunk);
-            return new TimFile(ms);
+            get
+            {
+                var meshChunk = GetChunk(TimChunkIndex);
+                var ms = new MemoryStream(meshChunk);
+                return new TimFile(ms);
+            }
+            set
+            {
+                var ms = new MemoryStream();
+                value.Save(ms);
+                SetChunk(TimChunkIndex, ms.ToArray());
+            }
         }
 
-        public void SetTim(TimFile value)
-        {
-            var ms = new MemoryStream();
-            value.Save(ms);
-            SetChunk(TimChunkIndex, ms.ToArray());
-        }
+        public TimFile GetTim() => Tim;
+        public void SetTim(TimFile value) => Tim = value;
     }
 }
