@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,14 +27,32 @@ namespace emdui
 
         private void Refresh()
         {
-            treeView.Items.Clear();
+            treeView.ItemsSource = null;
             if (_project == null)
                 return;
 
+            var items = new List<ProjectTreeViewItem>();
             foreach (var projectFile in _project.Files)
             {
-                CreateItem(treeView, projectFile);
+                if (projectFile.Content is PldFile pld)
+                {
+                    items.Add(new PldTreeViewItem(projectFile));
+                }
+                else if (projectFile.Content is PlwFile plw)
+                {
+                    items.Add(new PlwTreeViewItem(projectFile));
+                }
             }
+            treeView.ItemsSource = items;
+
+            // treeView.Items.Clear();
+            // if (_project == null)
+            //     return;
+            // 
+            // foreach (var projectFile in _project.Files)
+            // {
+            //     CreateItem(treeView, projectFile);
+            // }
         }
 
         private TreeViewItem CreateItem(ItemsControl parent, object item, int insertIndex = -1)
@@ -57,7 +77,7 @@ namespace emdui
                         CreateItem(tvItem, modelFile.Md2);
                     if (modelFile is PldFile pldFile)
                     {
-                        CreateItem(tvItem, pldFile.GetTim());
+                        CreateItem(tvItem, pldFile.Tim);
                     }
                     else if (modelFile is PlwFile plwFile)
                     {
@@ -136,7 +156,7 @@ namespace emdui
             }
         }
 
-        private ImageSource GetImage(string key) => (ImageSource)Resources[key];
+        private ImageSource GetImage(string key) => (ImageSource)App.Current.Resources[key];
 
         private static TreeViewItem VisualUpwardSearch(DependencyObject source)
         {
@@ -253,7 +273,7 @@ namespace emdui
                 {
                     if (_project.MainModel is PldFile parentPldFile)
                     {
-                        var tim = parentPldFile.GetTim();
+                        var tim = parentPldFile.Tim;
                         var plwTim = plwFile.Tim;
                         for (var y = 0; y < 32; y++)
                         {
@@ -580,6 +600,215 @@ namespace emdui
                 Edd = edd;
                 Index = index;
             }
+        }
+    }
+
+    public abstract class ProjectTreeViewItem
+    {
+        public virtual ImageSource Image => (ImageSource)App.Current.Resources["IconPLD"];
+        public abstract string Header { get; }
+        public virtual ObservableCollection<ProjectTreeViewItem> Items { get; } = new ObservableCollection<ProjectTreeViewItem>();
+        public ProjectFile ProjectFile { get; }
+        public ModelFile Model => ProjectFile.Content as ModelFile;
+
+        public ProjectTreeViewItem(ProjectFile projectFile)
+        {
+            ProjectFile = projectFile;
+        }
+    }
+
+    public class PldTreeViewItem : ProjectTreeViewItem
+    {
+        public override string Header => ProjectFile.Filename;
+        public PldFile Pld { get; }
+
+        public PldTreeViewItem(ProjectFile projectFile)
+            : base(projectFile)
+        {
+            Pld = (PldFile)projectFile.Content;
+            Items.Add(new EddTreeViewItem(ProjectFile, Pld.GetEdd(0)));
+            Items.Add(new EmrTreeViewItem(ProjectFile, Pld.GetEmr(0)));
+            if (Pld.Version == BioVersion.Biohazard2)
+                Items.Add(new MeshTreeViewItem(ProjectFile, Pld.Md1));
+            else
+                Items.Add(new MeshTreeViewItem(ProjectFile, Pld.Md2));
+            Items.Add(new TimTreeViewItem(ProjectFile, Pld.Tim));
+        }
+    }
+
+    public class PlwTreeViewItem : ProjectTreeViewItem
+    {
+        public override string Header => ProjectFile.Filename;
+        public PlwFile Plw { get; }
+
+        public PlwTreeViewItem(ProjectFile projectFile)
+            : base(projectFile)
+        {
+            Plw = (PlwFile)projectFile.Content;
+            Items.Add(new EddTreeViewItem(ProjectFile, Plw.GetEdd(0)));
+            Items.Add(new EmrTreeViewItem(ProjectFile, Plw.GetEmr(0)));
+            if (Plw.Version == BioVersion.Biohazard2)
+                Items.Add(new MeshTreeViewItem(ProjectFile, Plw.Md1));
+            else
+                Items.Add(new MeshTreeViewItem(ProjectFile, Plw.Md2));
+            Items.Add(new TimTreeViewItem(ProjectFile, Plw.Tim));
+        }
+    }
+
+    public class EddTreeViewItem : ProjectTreeViewItem
+    {
+        public override ImageSource Image => (ImageSource)Application.Current.Resources["IconEDD"];
+        public override string Header => "EDD";
+        public Edd Edd { get; }
+
+        public EddTreeViewItem(ProjectFile projectFile, Edd edd)
+            : base(projectFile)
+        {
+            Edd = edd;
+
+            var numAnimations = edd.AnimationCount;
+            for (var i = 0; i < numAnimations; i++)
+            {
+                Items.Add(new AnimationTreeViewItem(ProjectFile, edd, i));
+            }
+        }
+    }
+
+    public class AnimationTreeViewItem : ProjectTreeViewItem
+    {
+        public override ImageSource Image => (ImageSource)Application.Current.Resources["IconAnimation"];
+        public override string Header => $"Animation {Index}";
+        public Edd Edd { get; }
+        public int Index { get; }
+
+        public AnimationTreeViewItem(ProjectFile projectFile, Edd edd, int index)
+            : base(projectFile)
+        {
+            Edd = edd;
+            Index = index;
+        }
+    }
+
+    public class EmrTreeViewItem : ProjectTreeViewItem
+    {
+        public override ImageSource Image => (ImageSource)Application.Current.Resources["IconEMR"];
+        public override string Header => "EMR";
+        public Emr Emr { get; }
+
+        public EmrTreeViewItem(ProjectFile projectFile, Emr emr)
+            : base(projectFile)
+        {
+            Emr = emr;
+            if (emr.NumParts > 0 && !(Model is PlwFile))
+            {
+                Items.Add(new ArmatureTreeViewItem(ProjectFile, emr, 0));
+            }
+        }
+    }
+
+    public class ArmatureTreeViewItem : ProjectTreeViewItem
+    {
+        public override ImageSource Image => (ImageSource)Application.Current.Resources["IconArmature"];
+        public Emr Emr { get; }
+        public int PartIndex { get; }
+
+        public ArmatureTreeViewItem(ProjectFile projectFile, Emr emr, int partIndex)
+            : base(projectFile)
+        {
+            Emr = emr;
+            PartIndex = partIndex;
+
+            var children = Emr.GetArmatureParts(partIndex);
+            foreach (var child in children)
+            {
+                Items.Add(new ArmatureTreeViewItem(ProjectFile, emr, child));
+            }
+        }
+
+        public override string Header
+        {
+            get
+            {
+                var partIndex = PartIndex;
+                if (Model.Version == BioVersion.Biohazard2)
+                {
+                    if (g_partNamesRe2.Length > partIndex)
+                        return g_partNamesRe2[partIndex];
+                }
+                else
+                {
+                    if (g_partNamesRe3.Length > partIndex)
+                        return g_partNamesRe3[partIndex];
+                }
+                return $"Part {partIndex}";
+            }
+        }
+
+        private string[] g_partNamesRe2 = new string[]
+        {
+            "chest", "waist",
+            "thigh (right)", "calf (right)", "foot (right)",
+            "thigh (left)", "calf (left)", "foot (left)",
+            "head",
+            "upper arm (right)", "forearm (right)", "hand (right)",
+            "upper arm (left)", "forearm (left)", "hand (left)",
+            "ponytail (A)", "ponytail (B)", "ponytail (C)", "ponytail (D)"
+        };
+
+        private string[] g_partNamesRe3 = new string[]
+        {
+            "chest", "head",
+            "upper arm (right)", "forearm (right)", "hand (right)",
+            "upper arm (left)", "forearm (left)", "hand (left)",
+            "waist",
+            "thigh (right)", "calf (right)", "foot (right)",
+            "thigh (left)", "calf (left)", "foot (left)",
+            "hand with gun"
+        };
+    }
+
+    public class MeshTreeViewItem : ProjectTreeViewItem
+    {
+        public override ImageSource Image => (ImageSource)Application.Current.Resources["IconMD1"];
+        public override string Header => Mesh.Version == BioVersion.Biohazard2 ? "MD1" : "MD2";
+        public IModelMesh Mesh { get; }
+
+        public MeshTreeViewItem(ProjectFile projectFile, IModelMesh mesh)
+            : base(projectFile)
+        {
+            Mesh = mesh;
+            for (var i = 0; i < mesh.NumParts; i++)
+            {
+                Items.Add(new MeshPartTreeViewItem(ProjectFile, mesh, i));
+            }
+        }
+    }
+
+    public class MeshPartTreeViewItem : ProjectTreeViewItem
+    {
+        public override ImageSource Image => (ImageSource)Application.Current.Resources["IconPart"];
+        public override string Header => $"Part {PartIndex}";
+        public IModelMesh Mesh { get; }
+        public int PartIndex { get; }
+
+        public MeshPartTreeViewItem(ProjectFile projectFile, IModelMesh mesh, int partIndex)
+            : base(projectFile)
+        {
+            Mesh = mesh;
+            PartIndex = partIndex;
+        }
+    }
+
+    public class TimTreeViewItem : ProjectTreeViewItem
+    {
+        public override ImageSource Image => (ImageSource)Application.Current.Resources["IconTIM"];
+        public override string Header => "TIM";
+        public TimFile Tim { get; }
+
+        public TimTreeViewItem(ProjectFile projectFile, TimFile tim)
+            : base(projectFile)
+        {
+            Tim = tim;
         }
     }
 }
