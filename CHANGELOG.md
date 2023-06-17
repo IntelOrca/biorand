@@ -1,3 +1,7 @@
+BioRand v3.0.7 (2023-06-17)
+
+* [Fix] #443: RE 3, new characters animations glitch or crash.
+
 BioRand v3.0.6 (2023-06-16)
 
 * [Feature] RE 1, add Leon, Leon (RE2R), Claire, and Regina as playable characters.
