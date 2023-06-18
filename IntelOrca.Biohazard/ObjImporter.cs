@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using static IntelOrca.Biohazard.Md2;
 
@@ -25,7 +24,7 @@ namespace IntelOrca.Biohazard
         private int _minVertexIndex;
         private int _maxVertexIndex;
 
-        public Md1 ImportMd1(string objPath, int numPages, Func<int, Md1.Vector>? translate = null)
+        public Md1 ImportMd1(string objPath, int numPages, Func<int, Emr.Vector>? translate = null)
         {
             _objFile = new WavefrontObjFile(objPath);
             _dataStream = new MemoryStream();
@@ -104,7 +103,7 @@ namespace IntelOrca.Biohazard
                 }
                 else
                 {
-                    var origin = translate == null ? new Md1.Vector() : translate(md1Builder.Parts.Count);
+                    var origin = translate == null ? new Emr.Vector() : translate(md1Builder.Parts.Count);
                     for (int i = 0; i < _currentObject.vtx_count; i++)
                     {
                         var pos = _positions[i].ToMd1();

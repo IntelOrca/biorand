@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
-using emdui.Extensions;
 using IntelOrca.Biohazard;
 using Microsoft.Win32;
 
@@ -16,6 +14,8 @@ namespace emdui
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static MainWindow Instance { get; private set; }
+
         private Project _project;
 
         private ModelFile _modelFile;
@@ -31,6 +31,10 @@ namespace emdui
 
         private int _animationIndex;
         private double _time;
+        private int _selectedPartIndex;
+        private int _isolatedPartIndex;
+
+        public Project Project => _project;
 
         public MainWindow()
         {
@@ -44,6 +48,7 @@ namespace emdui
             _timer.IsEnabled = true;
 
             projectTreeView.MainWindow = this;
+            Instance = this;
         }
 
         private void _timer_Tick(object sender, EventArgs e)
@@ -105,8 +110,6 @@ namespace emdui
             projectTreeView.Project = _project;
 
             LoadModel(_project.MainModel, _project.MainTexture);
-
-            RefreshParts();
             RefreshStatusBar();
         }
 
@@ -115,179 +118,10 @@ namespace emdui
             _project.Save(path);
         }
 
-        private void ImportModel(string path)
-        {
-            if (path.EndsWith(".obj", StringComparison.CurrentCultureIgnoreCase))
-            {
-                var numPages = _tim.Width / 128;
-                var objImporter = new ObjImporter();
-                _modelFile.Md1 = objImporter.ImportMd1(path, numPages, GetFinalPosition);
-            }
-            else
-            {
-                var modelFile = ModelFile.FromFile(path);
-                if (modelFile.Version == BioVersion.Biohazard2)
-                {
-                    if (_modelFile.Version == BioVersion.Biohazard2)
-                    {
-                        _modelFile.Md1 = modelFile.Md1;
-                        _modelFile.SetEmr(0, modelFile.GetEmr(0));
-                    }
-                    else
-                    {
-                        _modelFile.Md2 = modelFile.Md1.ToMd2();
-
-                        var map2to3 = new[]
-                        {
-                            0, 8, 9, 10, 11, 12, 13, 14, 1, 2, 3, 4, 5, 6, 7
-                        };
-                        var emr = modelFile.GetEmr(0);
-                        var emrBuilder = _modelFile.GetEmr(0).ToBuilder();
-                        for (var i = 0; i < map2to3.Length; i++)
-                        {
-                            var srcPartIndex = i;
-                            var dstPartIndex = map2to3[i];
-                            var src = emr.GetRelativePosition(srcPartIndex);
-                            emrBuilder.RelativePositions[dstPartIndex] = src;
-                        }
-                        _modelFile.SetEmr(0, emrBuilder.ToEmr());
-                    }
-                }
-                else
-                {
-                    if (_modelFile.Version == BioVersion.Biohazard2)
-                    {
-                        _modelFile.Md1 = modelFile.Md2.ToMd1();
-                    }
-                    else
-                    {
-                        _modelFile.Md2 = modelFile.Md2;
-
-                        var emr = modelFile.GetEmr(0);
-                        var emrBuilder = _modelFile.GetEmr(0).ToBuilder();
-                        for (var i = 0; i < 15; i++)
-                        {
-                            emrBuilder.RelativePositions[i] = emr.GetRelativePosition(i);
-                        }
-                        _modelFile.SetEmr(0, emrBuilder.ToEmr());
-                    }
-                }
-
-                if (modelFile is PldFile pldFile)
-                {
-                    SetTimFile(pldFile.Tim);
-                }
-                else
-                {
-                    var timPath = Path.ChangeExtension(path, ".tim");
-                    if (File.Exists(timPath))
-                    {
-                        SetTimFile(new TimFile(timPath));
-                    }
-                }
-            }
-            RefreshModelView();
-        }
-
-        private void ExportModel(string path)
-        {
-            var numPages = _tim.Width / 128;
-            var objExporter = new ObjExporter();
-            objExporter.Export(_modelFile.Md1, path, numPages, GetFinalPosition);
-
-            var timPath = Path.ChangeExtension(path, ".png");
-            ExportTim(timPath);
-        }
-
-        private Md1.Vector GetFinalPosition(int targetPartIndex)
-        {
-            var emr = _emr;
-            if (targetPartIndex < 0 || targetPartIndex >= emr.NumParts)
-                return new Md1.Vector();
-
-            var positions = new Md1.Vector[emr.NumParts];
-
-            var stack = new Stack<byte>();
-            stack.Push(0);
-
-            while (stack.Count != 0)
-            {
-                var partIndex = stack.Pop();
-                var pos = positions[partIndex];
-                var rel = emr.GetRelativePosition(partIndex);
-                pos.x += rel.x;
-                pos.y += rel.y;
-                pos.z += rel.z;
-                positions[partIndex] = pos;
-                var children = emr.GetArmatureParts(partIndex);
-                foreach (var child in children)
-                {
-                    positions[child] = pos;
-                    stack.Push(child);
-                }
-            }
-
-            return positions[targetPartIndex];
-        }
-
-        private void SaveTim(string path)
-        {
-            _tim.Save(path);
-        }
-
-        private void ExportTim(string path)
-        {
-            if (path.EndsWith(".tim", StringComparison.OrdinalIgnoreCase))
-            {
-                _tim.Save(path);
-            }
-            else
-            {
-                _tim.ToBitmap().Save(path);
-            }
-        }
-
         private void RefreshTimImage()
         {
             timImage.Tim = null;
             timImage.Tim = _tim;
-        }
-
-        private string[] g_partNamesRe2 = new string[]
-        {
-            "chest", "waist",
-            "thigh (right)", "calf (right)", "foot (right)",
-            "thigh (left)", "calf (left)", "foot (left)",
-            "head",
-            "upper arm (right)", "forearm (right)", "hand (right)",
-            "upper arm (left)", "forearm (left)", "hand (left)",
-            "ponytail (A)", "ponytail (B)", "ponytail (C)", "ponytail (D)"
-        };
-
-        private string[] g_partNamesRe3 = new string[]
-        {
-            "chest", "head",
-            "upper arm (right)", "forearm (right)", "hand (right)",
-            "upper arm (left)", "forearm (left)", "hand (left)",
-            "waist",
-            "thigh (right)", "calf (right)", "foot (right)",
-            "thigh (left)", "calf (left)", "foot (left)",
-            "hand with gun"
-        };
-
-        private string GetPartName(int partIndex)
-        {
-            if (_modelFile.Version == BioVersion.Biohazard2)
-            {
-                if (g_partNamesRe2.Length > partIndex)
-                    return g_partNamesRe2[partIndex];
-            }
-            else
-            {
-                if (g_partNamesRe3.Length > partIndex)
-                    return g_partNamesRe3[partIndex];
-            }
-            return $"part {partIndex}";
         }
 
         private int GetNumParts()
@@ -295,68 +129,6 @@ namespace emdui
             if (_modelFile.Version == BioVersion.Biohazard2)
                 return _modelFile.Md1.NumObjects / 2;
             return _modelFile.Md2.NumObjects;
-        }
-
-        private void RefreshParts()
-        {
-            var emr = _emr;
-            var numParts = GetNumParts();
-            var rootPartIndex = 0;
-
-            var items = new TreeViewItem[emr.NumParts];
-            var parent = new TreeViewItem[emr.NumParts];
-            var stack = new Stack<byte>();
-            if (emr.NumParts != 0)
-            {
-                stack.Push((byte)rootPartIndex);
-            }
-            while (stack.Count != 0)
-            {
-                var partIndex = stack.Pop();
-                items[partIndex] = new TreeViewItem()
-                {
-                    Header = GetPartName(partIndex),
-                    Tag = (int)partIndex,
-                    IsExpanded = true
-                };
-                if (parent[partIndex] is TreeViewItem parentItem)
-                {
-                    parentItem.Items.Add(items[partIndex]);
-                }
-
-                var children = emr.GetArmatureParts(partIndex);
-                foreach (var child in children)
-                {
-                    parent[child] = items[partIndex];
-                    stack.Push(child);
-                }
-            }
-
-            var root = new TreeViewItem();
-            root.Header = "Skeleton";
-            root.IsExpanded = true;
-
-            if (emr.NumParts != 0)
-            {
-                root.Items.Add(items[rootPartIndex]);
-            }
-            for (int i = 0; i < numParts; i++)
-            {
-                if (i < items.Length && items[i] != null)
-                    continue;
-
-                root.Items.Add(new TreeViewItem()
-                {
-                    Header = GetPartName(i),
-                    Tag = (int)i,
-                    IsExpanded = true
-                });
-            }
-
-            treeParts.Items.Clear();
-            treeParts.Items.Add(root);
-
-            RefreshModelView();
         }
 
         private void RefreshModelView()
@@ -375,8 +147,21 @@ namespace emdui
 
         private void RefreshHighlightedPart()
         {
-            var partIndex = GetSelectedPartIndex();
-            _scene.HighlightPart(partIndex);
+            _scene.HighlightPart(_isolatedPartIndex == -1 ? _selectedPartIndex : -1);
+            RefreshTimPrimitives();
+        }
+
+        private void RefreshTimPrimitives()
+        {
+            var partIndex = _isolatedPartIndex;
+            if (partIndex == -1)
+            {
+                partIndex = _selectedPartIndex;
+            }
+            else
+            {
+                partIndex = 0;
+            }
 
             if (partIndex == -1)
             {
@@ -384,9 +169,8 @@ namespace emdui
                 return;
             }
 
-            if (_modelFile.Version == BioVersion.Biohazard2)
+            if (_md1 is Md1 md1)
             {
-                var md1 = _modelFile.Md1;
                 var objTriangle = md1.Objects[partIndex * 2];
                 var objQuad = md1.Objects[(partIndex * 2) + 1];
                 var triangleTextures = md1.GetTriangleTextures(in objTriangle);
@@ -421,23 +205,62 @@ namespace emdui
                 }
                 timImage.Primitives = primitives.ToArray();
             }
-            else
+            else if (_md2 is Md2 md2)
             {
-
+                var obj = md2.Objects[partIndex];
+                var triangles = md2.GetTriangles(in obj);
+                var quads = md2.GetQuads(in obj);
+                var primitives = new List<TimView.UVPrimitive>();
+                foreach (var t in triangles)
+                {
+                    var uv = new TimView.UVPrimitive();
+                    uv.Page = (byte)(t.page & 0xF);
+                    uv.U0 = t.tu0;
+                    uv.V0 = t.tv0;
+                    uv.U1 = t.tu1;
+                    uv.V1 = t.tv1;
+                    uv.U2 = t.tu2;
+                    uv.V2 = t.tv2;
+                    primitives.Add(uv);
+                }
+                foreach (var t in quads)
+                {
+                    var uv = new TimView.UVPrimitive();
+                    uv.IsQuad = true;
+                    uv.Page = (byte)(t.page & 0xF);
+                    uv.U0 = t.tu0;
+                    uv.V0 = t.tv0;
+                    uv.U1 = t.tu1;
+                    uv.V1 = t.tv1;
+                    uv.U2 = t.tu2;
+                    uv.V2 = t.tv2;
+                    uv.U3 = t.tu3;
+                    uv.V3 = t.tv3;
+                    primitives.Add(uv);
+                }
+                timImage.Primitives = primitives.ToArray();
             }
-
         }
 
         private void RefreshRelativePositionTextBoxes()
         {
             var emr = _emr;
-            var partIndex = GetSelectedPartIndex();
-            if (partIndex != -1 && partIndex < emr.NumParts)
+            var partIndex = _selectedPartIndex;
+            if (partIndex != -1 && emr != null && partIndex < emr.NumParts)
             {
                 var pos = emr.GetRelativePosition(partIndex);
                 partXTextBox.Text = pos.x.ToString();
                 partYTextBox.Text = pos.y.ToString();
                 partZTextBox.Text = pos.z.ToString();
+                partXTextBox.Visibility = Visibility.Visible;
+                partYTextBox.Visibility = Visibility.Visible;
+                partZTextBox.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                partXTextBox.Visibility = Visibility.Hidden;
+                partYTextBox.Visibility = Visibility.Hidden;
+                partZTextBox.Visibility = Visibility.Hidden;
             }
         }
 
@@ -452,7 +275,7 @@ namespace emdui
         private void RefreshPrimitives()
         {
             var md1 = _modelFile.Md1;
-            var selectedIndex = GetSelectedPartIndex() * 2;
+            var selectedIndex = _selectedPartIndex * 2;
             if (selectedIndex >= 0 && selectedIndex < md1.NumObjects)
             {
                 var objTri = md1.Objects[selectedIndex + 0];
@@ -470,18 +293,6 @@ namespace emdui
             }
         }
 
-        private int GetSelectedPartIndex()
-        {
-            if (treeParts.SelectedItem is TreeViewItem item)
-            {
-                if (item.Tag is int partIndex)
-                {
-                    return partIndex;
-                }
-            }
-            return -1;
-        }
-
         private void mainWindow_Loaded(object sender, RoutedEventArgs e)
         {
 #if DEBUG
@@ -489,7 +300,8 @@ namespace emdui
             // LoadProject(@"M:\git\rer\IntelOrca.Biohazard\data\re3\pld0\hunk\PL00.PLD");
             // LoadProject(@"M:\git\rer\IntelOrca.Biohazard\data\re3\pld0\leon\PL00.PLD");
             // LoadProject(@"M:\git\rer\IntelOrca.Biohazard\data\re2\pld0\chris\PL00.PLD");
-            LoadProject(@"F:\games\re3\mod_biorand\DATA\PLD\PL00.PLD");
+            // LoadProject(@"F:\games\re3\mod_biorand\DATA\PLD\PL00.PLD");
+            LoadProject(@"M:\git\rer\IntelOrca.Biohazard\data\re2\emd\chris\em050.emd");
 #endif
         }
 
@@ -532,7 +344,7 @@ namespace emdui
         private void listPrimitives_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var md1 = _modelFile.Md1;
-            var objIndex = GetSelectedPartIndex() * 2;
+            var objIndex = _selectedPartIndex * 2;
             if (objIndex >= 0 && objIndex < md1.NumObjects)
             {
                 var objTri = md1.Objects[objIndex + 0];
@@ -586,22 +398,6 @@ namespace emdui
             }
         }
 
-        private void menuAddDummyPart_Click(object sender, RoutedEventArgs e)
-        {
-            var md1 = _modelFile.Md1;
-            var md1Builder = md1.ToBuilder();
-
-            var part = new Md1Builder.Part();
-            part.Positions.Add(new Md1.Vector());
-            part.Normals.Add(new Md1.Vector());
-            part.Triangles.Add(new Md1.Triangle());
-            part.TriangleTextures.Add(new Md1.TriangleTexture());
-            md1Builder.Parts.Add(part);
-            _modelFile.Md1 = md1Builder.ToMd1();
-            RefreshParts();
-            RefreshStatusBar();
-        }
-
         private void menuCopyPage_Click(object sender, RoutedEventArgs e)
         {
             if (_tim.Width < 3 * 128)
@@ -621,78 +417,32 @@ namespace emdui
             SetTimFile(_tim);
         }
 
-        private void menuExportModel_Click(object sender, RoutedEventArgs e)
-        {
-            var saveFileDialog = new SaveFileDialog();
-            saveFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_project.MainPath);
-            saveFileDialog.Filter = "Wavefront .obj Files (*.obj)|*.obj";
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                ExportModel(saveFileDialog.FileName);
-            }
-        }
-
-        private void menuImportModel_Click(object sender, RoutedEventArgs e)
-        {
-            var openFileDialog = new OpenFileDialog();
-            openFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_project.MainPath);
-            openFileDialog.Filter = "All Supported Files (*.emd;*.pld;*.obj)|*.emd;*.pld;*.obj";
-            openFileDialog.Filter += "|EMD/PLD Files (*.emd;*.pld)|*.emd;*.pld";
-            openFileDialog.Filter += "|Wavefront .obj Files (*.obj)|*.obj";
-            if (openFileDialog.ShowDialog() == true)
-            {
-                ImportModel(openFileDialog.FileName);
-            }
-        }
-
-        private void menuAutoHandWithGun_Click(object sender, RoutedEventArgs e)
-        {
-            if (_modelFile.Version != BioVersion.Biohazard3 ||
-                _modelFile is PldFile)
-            {
-                MessageBox.Show("This feature is for RE 3 EMDs only", "Not applicable", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            var builder = _modelFile.Md2.ToBuilder();
-            if (builder.Parts.Count < 16)
-            {
-                var part = new Md2Builder.Part();
-                part.Positions.Add(new Md2.Vector());
-                part.Normals.Add(new Md2.Vector());
-                part.Triangles.Add(new Md2.Triangle());
-                builder.Parts.Add(part);
-            }
-            builder.Parts[15] = builder.Parts[4];
-            _modelFile.Md2 = builder.ToMd2();
-            RefreshModelView();
-            RefreshStatusBar();
-        }
-
         private void timImage_TimUpdated(object sender, EventArgs e)
         {
             SetTimFile(timImage.Tim);
             RefreshModelView();
         }
 
-        public void LoadIsolatedModel(Md1 md1, TimFile texture)
+        public void LoadIsolatedModel(Md1 md1, TimFile texture, int partIndex)
         {
             _modelFile = null;
             _md1 = md1;
             _tim = texture;
             _edd = null;
             _emr = null;
+            _isolatedPartIndex = partIndex;
             RefreshModelView();
             RefreshTimImage();
         }
 
-        public void LoadIsolatedModel(Md2 md2, TimFile texture)
+        public void LoadIsolatedModel(Md2 md2, TimFile texture, int partIndex)
         {
             _modelFile = null;
             _md2 = md2;
             _tim = texture;
             _edd = null;
             _emr = null;
+            _isolatedPartIndex = partIndex;
             RefreshModelView();
             RefreshTimImage();
         }
@@ -707,7 +457,9 @@ namespace emdui
             _tim = texture;
             _edd = _modelFile.GetEdd(0);
             _emr = _modelFile.GetEmr(0);
+            _isolatedPartIndex = -1;
             _animationIndex = -1;
+            _selectedPartIndex = -1;
             RefreshModelView();
             RefreshTimImage();
         }
@@ -716,7 +468,9 @@ namespace emdui
         {
             _edd = plw.GetEdd(0);
             _emr = _emr.WithKeyframes(plw.GetEmr(0));
+            _isolatedPartIndex = -1;
             _animationIndex = -1;
+            _selectedPartIndex = -1;
 
             var targetBuilder = _md1.ToBuilder();
             var sourceBuilder = plw.Md1.ToBuilder();
@@ -737,10 +491,19 @@ namespace emdui
             RefreshTimImage();
         }
 
-        public void LoadAnimation(int index)
+        public void LoadAnimation(Emr emr, Edd edd, int index)
         {
+            _emr = emr;
+            _edd = edd;
             _animationIndex = index;
             _time = 0;
+            _selectedPartIndex = -1;
+        }
+
+        public void SelectPart(int partIndex)
+        {
+            _selectedPartIndex = partIndex;
+            RefreshHighlightedPart();
         }
     }
 }

@@ -181,14 +181,6 @@
                   MouseRightButtonDown="treeView_MouseRightButtonDown"
                   PreviewMouseDoubleClick="treeView_PreviewMouseDoubleClick"
                   SelectedItemChanged="treeView_SelectedItemChanged">
-            <TreeView.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Import..." Click="importMenuItem_Click" />
-                    <MenuItem Header="Export..." Click="exportMenuItem_Click" />
-                    <Separator />
-                    <MenuItem Header="Add part" Click="addPartMenuItem_Click" />
-                </ContextMenu>
-            </TreeView.ContextMenu>
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type local:ProjectTreeViewItem}"
                                           ItemsSource="{Binding Items}">
