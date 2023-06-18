@@ -175,19 +175,20 @@ namespace IntelOrca.Biohazard
             }
 
             var roomRandomized = true;
+            var enemyRatioTotal = _config.EnemyRatios.Sum(x => x);
+            if (enemyRatioTotal == 0)
+                throw new BioRandUserException("No enemy ratios set.");
+
+            var enemyRooms = _config.EnemyRatios.Select(x => (x * enemyRdts.Count) / enemyRatioTotal).ToArray();
+            var enemies = _enemyHelper.GetSelectableEnemies()
+                .Zip(enemyRooms, (e, q) => (e, q))
+                .Where(x => x.q != 0)
+                .OrderBy(x => x.q)
+                .ToList();
+
             while (enemyRdts.Count != 0 && roomRandomized)
             {
                 roomRandomized = false;
-                var enemyRatioTotal = _config.EnemyRatios.Sum(x => x);
-                if (enemyRatioTotal == 0)
-                    throw new BioRandUserException("No enemy ratios set.");
-
-                var enemyRooms = _config.EnemyRatios.Select(x => (x * enemyRdts.Count) / enemyRatioTotal);
-                var enemies = _enemyHelper.GetSelectableEnemies()
-                    .Zip(enemyRooms, (e, q) => (e, q))
-                    .Where(x => x.q != 0)
-                    .OrderBy(x => x.q)
-                    .ToList();
 
                 for (int j = 0; j < enemies.Count; j++)
                 {
@@ -288,6 +289,8 @@ namespace IntelOrca.Biohazard
 
         private bool RandomizeRoomWithEnemy(Rdt rdt, SelectableEnemy targetEnemy)
         {
+            _logger.WriteLine($"Randomizing room {rdt} with enemy: {targetEnemy.Name}");
+
             byte? fixType = null;
             var enemies = rdt.Enemies.ToArray();
             var logEnemies = enemies.Select(GetEnemyLogText).ToArray();
