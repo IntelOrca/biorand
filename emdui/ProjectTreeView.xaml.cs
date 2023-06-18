@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,121 +43,17 @@ namespace emdui
                 {
                     items.Add(new PlwTreeViewItem(projectFile));
                 }
+                else if (projectFile.Content is EmdFile emd)
+                {
+                    items.Add(new EmdTreeViewItem(projectFile));
+                }
+                else if (projectFile.Content is TimFile tim)
+                {
+                    items.Add(new TimTreeViewItem(projectFile, tim));
+                }
             }
             treeView.ItemsSource = items;
-
-            // treeView.Items.Clear();
-            // if (_project == null)
-            //     return;
-            // 
-            // foreach (var projectFile in _project.Files)
-            // {
-            //     CreateItem(treeView, projectFile);
-            // }
         }
-
-        private TreeViewItem CreateItem(ItemsControl parent, object item, int insertIndex = -1)
-        {
-            var tvItem = new TreeViewItem();
-            if (insertIndex == -1)
-                parent.Items.Add(tvItem);
-            else
-                parent.Items.Insert(insertIndex, tvItem);
-
-            tvItem.Tag = item;
-            if (item is ProjectFile projectFile)
-            {
-                tvItem.Header = new ProjectTreeViewItemHeader(GetImageSource(projectFile.Kind), projectFile.Filename);
-                if (projectFile.Content is ModelFile modelFile)
-                {
-                    CreateItem(tvItem, modelFile.GetEdd(0));
-                    CreateItem(tvItem, modelFile.GetEmr(0));
-                    if (modelFile.Version == BioVersion.Biohazard2)
-                        CreateItem(tvItem, modelFile.Md1);
-                    else
-                        CreateItem(tvItem, modelFile.Md2);
-                    if (modelFile is PldFile pldFile)
-                    {
-                        CreateItem(tvItem, pldFile.Tim);
-                    }
-                    else if (modelFile is PlwFile plwFile)
-                    {
-                        CreateItem(tvItem, plwFile.Tim);
-                    }
-                }
-            }
-            else if (item is Md1 md1)
-            {
-                tvItem.Header = new ProjectTreeViewItemHeader(GetImage("IconMD1"), "MD1");
-                var numParts = md1.NumObjects / 2;
-                for (var i = 0; i < numParts; i++)
-                {
-                    CreateItem(tvItem, new Part(i));
-                }
-            }
-            else if (item is Md2 md2)
-            {
-                tvItem.Header = new ProjectTreeViewItemHeader(GetImage("IconMD1"), "MD2");
-                var numParts = md2.NumObjects;
-                for (var i = 0; i < numParts; i++)
-                {
-                    CreateItem(tvItem, new Part(i));
-                }
-            }
-            else if (item is Edd edd)
-            {
-                tvItem.Header = new ProjectTreeViewItemHeader(GetImage("IconEDD"), "EDD");
-                for (var i = 0; i < edd.AnimationCount; i++)
-                {
-                    CreateItem(tvItem, new Animation(edd, i));
-                }
-            }
-            else if (item is Emr emr)
-            {
-                tvItem.Header = new ProjectTreeViewItemHeader(GetImage("IconEMR"), "EMR");
-                if (!(GetParentModel(parent) is PlwFile))
-                {
-                    CreateItem(tvItem, new Armature(emr, 0));
-                }
-            }
-            else if (item is TimFile tim)
-            {
-                tvItem.Header = new ProjectTreeViewItemHeader(GetImage("IconTIM"), "TIM");
-            }
-            else if (item is Part part)
-            {
-                tvItem.Header = new ProjectTreeViewItemHeader(GetImage("IconPart"), $"Part {part.Index}");
-            }
-            else if (item is Armature armature)
-            {
-                tvItem.Header = new ProjectTreeViewItemHeader(GetImage("IconArmature"), GetPartName(armature.Index));
-                var children = armature.Emr.GetArmatureParts(armature.Index);
-                foreach (var child in children)
-                {
-                    CreateItem(tvItem, new Armature(armature.Emr, child));
-                }
-            }
-            else if (item is Animation animation)
-            {
-                tvItem.Header = new ProjectTreeViewItemHeader(GetImage("IconAnimation"), $"Animation {animation.Index}");
-            }
-            return tvItem;
-        }
-
-        private ImageSource GetImageSource(ProjectFileKind kind)
-        {
-            switch (kind)
-            {
-                case ProjectFileKind.Tim:
-                    return GetImage("IconTIM");
-                case ProjectFileKind.Plw:
-                    return GetImage("IconPLW");
-                default:
-                    return GetImage("IconPLD");
-            }
-        }
-
-        private ImageSource GetImage(string key) => (ImageSource)App.Current.Resources[key];
 
         private static TreeViewItem VisualUpwardSearch(DependencyObject source)
         {
@@ -164,48 +61,6 @@ namespace emdui
                 source = VisualTreeHelper.GetParent(source);
 
             return source as TreeViewItem;
-        }
-
-        private ProjectFile GetProjectFile(ItemsControl itemsControl)
-        {
-            var tvi = itemsControl;
-            while (tvi != null)
-            {
-                if (tvi.Tag is ProjectFile projectFile)
-                {
-                    return projectFile;
-                }
-                tvi = tvi.Parent as ItemsControl;
-            }
-            return null;
-        }
-
-        private ModelFile GetParentModel(ItemsControl treeViewItem)
-        {
-            if (GetProjectFile(treeViewItem) is ProjectFile projectFile)
-            {
-                return projectFile.Content as ModelFile;
-            }
-            return null;
-        }
-
-        private object GetSelectedItem()
-        {
-            if (treeView.SelectedItem is TreeViewItem tvi)
-            {
-                return tvi.Tag;
-            }
-            return null;
-        }
-
-        private ProjectFile GetSelectedProjectFile()
-        {
-            return GetProjectFile(treeView.SelectedItem as ItemsControl);
-        }
-
-        private ModelFile GetSelectedModel()
-        {
-            return GetSelectedProjectFile()?.Content as ModelFile;
         }
 
         private void treeView_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -220,327 +75,20 @@ namespace emdui
 
         private void treeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-
+            if (treeView.SelectedItem is ProjectTreeViewItem tvi)
+            {
+                tvi.Select();
+                treeView.ContextMenu = tvi.GetContextMenu();
+            }
         }
 
         private void treeView_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            var projectFile = GetSelectedProjectFile();
-            var item = GetSelectedItem();
-            if (item is Animation animation)
+            if (treeView.SelectedItem is ProjectTreeViewItem tvi)
             {
-                if (projectFile.Content is PldFile pldFile)
-                {
-                    MainWindow.LoadModel(pldFile, pldFile.Tim);
-                    MainWindow.LoadAnimation(animation.Index);
-                }
-                else if (projectFile.Content is PlwFile plwFile)
-                {
-                    if (_project.MainModel is PldFile parentPldFile)
-                    {
-                        MainWindow.LoadModel(parentPldFile, parentPldFile.Tim);
-                        MainWindow.LoadWeaponModel(plwFile);
-                        MainWindow.LoadAnimation(animation.Index);
-                        e.Handled = true;
-                    }
-                }
+                tvi.ExecuteDefaultAction();
+                e.Handled = true;
             }
-            else if (item is Part part)
-            {
-                if (projectFile.Content is PldFile pldFile)
-                {
-                    if (_project.Version == BioVersion.Biohazard2)
-                    {
-                        var builder = pldFile.Md1.ToBuilder();
-                        var partMd1 = builder.Parts[part.Index];
-                        builder.Parts.Clear();
-                        builder.Parts.Add(partMd1);
-                        var singleMd1 = builder.ToMd1();
-                        MainWindow.LoadIsolatedModel(singleMd1, pldFile.Tim);
-                    }
-                    else
-                    {
-                        var builder = pldFile.Md2.ToBuilder();
-                        var partMd2 = builder.Parts[part.Index];
-                        builder.Parts.Clear();
-                        builder.Parts.Add(partMd2);
-                        var singleMd2 = builder.ToMd2();
-                        MainWindow.LoadIsolatedModel(singleMd2, pldFile.Tim);
-                    }
-                    e.Handled = true;
-                }
-                else if (projectFile.Content is PlwFile plwFile)
-                {
-                    if (_project.MainModel is PldFile parentPldFile)
-                    {
-                        var tim = parentPldFile.Tim;
-                        var plwTim = plwFile.Tim;
-                        for (var y = 0; y < 32; y++)
-                        {
-                            for (var x = 0; x < 56; x++)
-                            {
-                                var p = plwTim.GetPixel(x, y);
-                                tim.SetPixel(200 + x, 224 + y, 1, p);
-                            }
-                        }
-
-                        var builder = plwFile.Md1.ToBuilder();
-                        var partMd1 = builder.Parts[part.Index];
-                        builder.Parts.Clear();
-                        builder.Parts.Add(partMd1);
-                        var singleMd1 = builder.ToMd1();
-                        MainWindow.LoadIsolatedModel(singleMd1, tim);
-                        e.Handled = true;
-                    }
-                }
-            }
-            else if (item is Md1 || item is Md2 || item is Emr || item is Armature)
-            {
-                if (projectFile.Content is PldFile pldFile)
-                {
-                    MainWindow.LoadModel(pldFile, pldFile.Tim);
-                    e.Handled = true;
-                }
-            }
-        }
-
-        private void importMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            var projectFile = GetSelectedProjectFile();
-            var item = GetSelectedItem();
-            var dialog = CommonFileDialog.Open();
-            if (projectFile.Content is ModelFile model)
-            {
-                if (item is Edd edd)
-                {
-                    dialog
-                        .AddExtension("*.edd")
-                        .Show(path =>
-                        {
-                            model.SetEdd(0, new Edd(File.ReadAllBytes(path)));
-                        });
-                }
-                else if (item is Emr emr)
-                {
-                    dialog
-                        .AddExtension("*.emr")
-                        .Show(path =>
-                        {
-                            model.SetEmr(0, new Emr(File.ReadAllBytes(path)));
-                        });
-                }
-                else if (item is Md1 md1)
-                {
-                    dialog
-                        .AddExtension("*.md1")
-                        .Show(path =>
-                        {
-                            if (model is PldFile pld)
-                            {
-                                model.Md1 = new Md1(File.ReadAllBytes(path));
-                                MainWindow.LoadModel(model, pld.Tim);
-                            }
-                        });
-                }
-                else if (item is Md2 md2)
-                {
-                    dialog
-                        .AddExtension("*.md2")
-                        .Show(path =>
-                        {
-                            if (model is PldFile pld)
-                            {
-                                model.Md2 = new Md2(File.ReadAllBytes(path));
-                                MainWindow.LoadModel(model, pld.Tim);
-                            }
-                        });
-                }
-                else if (item is TimFile tim)
-                {
-                    dialog
-                        .AddExtension("*.tim")
-                        .Show(path =>
-                        {
-                            if (model is PldFile pld)
-                            {
-                                pld.Tim = new TimFile(path);
-                                MainWindow.LoadModel(model, pld.Tim);
-                            }
-                        });
-                }
-                else if (item is Part part)
-                {
-                    var builder = model.Md2.ToBuilder();
-                    model.Md2 = builder.ToMd2();
-                }
-            }
-        }
-
-        private void exportMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            var projectFile = GetSelectedProjectFile();
-            var item = GetSelectedItem();
-            var dialog = CommonFileDialog.Save();
-            if (item is Edd edd)
-            {
-                if (projectFile != null)
-                {
-                    dialog.WithDefaultFileName(Path.ChangeExtension(projectFile.Filename, ".EDD"));
-                }
-                dialog
-                    .AddExtension("*.edd")
-                    .Show(path => File.ReadAllBytes(path));
-            }
-            else if (item is Emr emr)
-            {
-                if (projectFile != null)
-                {
-                    dialog.WithDefaultFileName(Path.ChangeExtension(projectFile.Filename, ".EMR"));
-                }
-                dialog
-                    .AddExtension("*.emr")
-                    .Show(path => File.ReadAllBytes(path));
-            }
-            else if (item is Md1 md1)
-            {
-                if (projectFile != null)
-                {
-                    dialog.WithDefaultFileName(Path.ChangeExtension(projectFile.Filename, ".MD1"));
-                }
-                dialog
-                    .AddExtension("*.md1")
-                    .Show(path => File.WriteAllBytes(path, md1.GetBytes()));
-            }
-            else if (item is Md2 md2)
-            {
-                if (projectFile != null)
-                {
-                    dialog.WithDefaultFileName(Path.ChangeExtension(projectFile.Filename, ".MD2"));
-                }
-                dialog
-                    .AddExtension("*.md2")
-                    .Show(path => File.WriteAllBytes(path, md2.GetBytes()));
-            }
-            else if (item is TimFile tim)
-            {
-                if (projectFile != null)
-                {
-                    dialog.WithDefaultFileName(Path.ChangeExtension(projectFile.Filename, ".TIM"));
-                }
-                dialog
-                    .AddExtension("*.png")
-                    .AddExtension("*.tim")
-                    .Show(path =>
-                    {
-                        if (path.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
-                        {
-                            tim.ToBitmap().Save(path);
-                        }
-                        else
-                        {
-                            tim.Save(path);
-                        }
-                    });
-            }
-            else if (item is Part part)
-            {
-                if (projectFile.Content is ModelFile modelFile)
-                {
-                    if (projectFile != null)
-                    {
-                        dialog.WithDefaultFileName(Path.ChangeExtension(projectFile.Filename, $".{part.Index:00}.MD2"));
-                    }
-                    dialog
-                        .AddExtension("*.md2")
-                        .Show(path =>
-                        {
-                            var builder = modelFile.Md2.ToBuilder();
-                            var interestedPart = builder.Parts[part.Index];
-                            builder.Parts.Clear();
-                            builder.Parts.Add(interestedPart);
-                            File.WriteAllBytes(path, builder.ToMd2().GetBytes());
-                        });
-                }
-            }
-        }
-
-        private void addPartMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            var selectedItem = GetSelectedItem();
-            var selectedModel = GetSelectedModel();
-            if (selectedItem is Md1 md1)
-            {
-                var part = new Md1Builder.Part();
-                part.Positions.Add(new Md1.Vector());
-                part.Normals.Add(new Md1.Vector());
-                part.Triangles.Add(new Md1.Triangle());
-                part.TriangleTextures.Add(new Md1.TriangleTexture());
-
-                var md1Builder = md1.ToBuilder();
-                md1Builder.Parts.Add(part);
-                selectedModel.Md1 = md1Builder.ToMd1();
-
-                RefreshItem(treeView.SelectedItem as TreeViewItem);
-            }
-            else if (selectedItem is Md2 md2)
-            {
-                var md2Builder = md2.ToBuilder();
-                md2Builder.Parts.Add(new Md2Builder.Part());
-                selectedModel.Md2 = md2Builder.ToMd2();
-
-                RefreshItem(treeView.SelectedItem as TreeViewItem);
-            }
-        }
-
-        private void RefreshItem(ItemsControl item)
-        {
-            var parent = item.Parent as ItemsControl;
-            var content = item.Tag;
-            if (content is Md2 md2)
-            {
-                var model = GetParentModel(item);
-                var index = parent.Items.IndexOf(item);
-                var refreshedNode = CreateItem(parent, model.Md2, index);
-                parent.Items.RemoveAt(index + 1);
-                refreshedNode.IsExpanded = true;
-            }
-        }
-
-        private string[] g_partNamesRe2 = new string[]
-        {
-            "chest", "waist",
-            "thigh (right)", "calf (right)", "foot (right)",
-            "thigh (left)", "calf (left)", "foot (left)",
-            "head",
-            "upper arm (right)", "forearm (right)", "hand (right)",
-            "upper arm (left)", "forearm (left)", "hand (left)",
-            "ponytail (A)", "ponytail (B)", "ponytail (C)", "ponytail (D)"
-        };
-
-        private string[] g_partNamesRe3 = new string[]
-        {
-            "chest", "head",
-            "upper arm (right)", "forearm (right)", "hand (right)",
-            "upper arm (left)", "forearm (left)", "hand (left)",
-            "waist",
-            "thigh (right)", "calf (right)", "foot (right)",
-            "thigh (left)", "calf (left)", "foot (left)",
-            "hand with gun"
-        };
-
-        private string GetPartName(int partIndex)
-        {
-            if (_project.Version == BioVersion.Biohazard2)
-            {
-                if (g_partNamesRe2.Length > partIndex)
-                    return g_partNamesRe2[partIndex];
-            }
-            else
-            {
-                if (g_partNamesRe3.Length > partIndex)
-                    return g_partNamesRe3[partIndex];
-            }
-            return $"Part {partIndex}";
         }
 
         public Project Project
@@ -555,56 +103,14 @@ namespace emdui
                 }
             }
         }
-
-        public class ProjectTreeViewItemHeader
-        {
-            public ImageSource Image { get; set; }
-            public string Text { get; set; }
-
-            public ProjectTreeViewItemHeader(ImageSource image, string text)
-            {
-                Image = image;
-                Text = text;
-            }
-        }
-
-        public class Part
-        {
-            public int Index { get; }
-
-            public Part(int index)
-            {
-                Index = index;
-            }
-        }
-
-        public class Armature
-        {
-            public Emr Emr { get; }
-            public int Index { get; }
-
-            public Armature(Emr emr, int index)
-            {
-                Emr = emr;
-                Index = index;
-            }
-        }
-
-        public class Animation
-        {
-            public Edd Edd { get; }
-            public int Index { get; }
-
-            public Animation(Edd edd, int index)
-            {
-                Edd = edd;
-                Index = index;
-            }
-        }
     }
 
-    public abstract class ProjectTreeViewItem
+    public abstract class ProjectTreeViewItem : INotifyPropertyChanged
     {
+        private readonly List<Tuple<string, Action>> _menuItems = new List<Tuple<string, Action>>();
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public virtual ImageSource Image => (ImageSource)App.Current.Resources["IconPLD"];
         public abstract string Header { get; }
         public virtual ObservableCollection<ProjectTreeViewItem> Items { get; } = new ObservableCollection<ProjectTreeViewItem>();
@@ -614,6 +120,64 @@ namespace emdui
         public ProjectTreeViewItem(ProjectFile projectFile)
         {
             ProjectFile = projectFile;
+        }
+
+        protected void NotifyPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected void AddMenuItem(string header, Action callback)
+        {
+            _menuItems.Add(new Tuple<string, Action>(header, callback));
+        }
+
+        protected void AddSeperator()
+        {
+            _menuItems.Add(null);
+        }
+
+        public void ExecuteDefaultAction()
+        {
+            OnDefaultAction();
+        }
+
+        public void Select()
+        {
+            OnSelect();
+        }
+
+        public virtual void OnDefaultAction()
+        {
+        }
+
+        public virtual void OnSelect()
+        {
+        }
+
+        public ContextMenu GetContextMenu()
+        {
+            if (_menuItems.Count == 0)
+                return null;
+
+            var contextMenu = new ContextMenu();
+            foreach (var menuItem in _menuItems)
+            {
+                if (menuItem == null)
+                {
+                    contextMenu.Items.Add(new Separator());
+                }
+                else
+                {
+                    var item = new MenuItem()
+                    {
+                        Header = menuItem.Item1
+                    };
+                    item.Click += (s, e) => menuItem.Item2();
+                    contextMenu.Items.Add(item);
+                }
+            }
+            return contextMenu;
         }
     }
 
@@ -626,13 +190,35 @@ namespace emdui
             : base(projectFile)
         {
             Pld = (PldFile)projectFile.Content;
-            Items.Add(new EddTreeViewItem(ProjectFile, Pld.GetEdd(0)));
-            Items.Add(new EmrTreeViewItem(ProjectFile, Pld.GetEmr(0)));
+            Items.Add(new EddTreeViewItem(ProjectFile, Pld.GetEdd(0), 0));
+            Items.Add(new EmrTreeViewItem(ProjectFile, Pld.GetEmr(0), 0));
             if (Pld.Version == BioVersion.Biohazard2)
                 Items.Add(new MeshTreeViewItem(ProjectFile, Pld.Md1));
             else
                 Items.Add(new MeshTreeViewItem(ProjectFile, Pld.Md2));
             Items.Add(new TimTreeViewItem(ProjectFile, Pld.Tim));
+        }
+    }
+
+    public class EmdTreeViewItem : ProjectTreeViewItem
+    {
+        public override string Header => ProjectFile.Filename;
+        public EmdFile Emd { get; }
+
+        public EmdTreeViewItem(ProjectFile projectFile)
+            : base(projectFile)
+        {
+            Emd = (EmdFile)projectFile.Content;
+            Items.Add(new EddTreeViewItem(ProjectFile, Emd.GetEdd(0), 0));
+            Items.Add(new EmrTreeViewItem(ProjectFile, Emd.GetEmr(0), 0));
+            Items.Add(new EddTreeViewItem(ProjectFile, Emd.GetEdd(1), 1));
+            Items.Add(new EmrTreeViewItem(ProjectFile, Emd.GetEmr(1), 1));
+            // Items.Add(new EddTreeViewItem(ProjectFile, Emd.GetEdd(2), 2));
+            // Items.Add(new EmrTreeViewItem(ProjectFile, Emd.GetEmr(2), 2));
+            if (Emd.Version == BioVersion.Biohazard2)
+                Items.Add(new MeshTreeViewItem(ProjectFile, Emd.Md1));
+            else
+                Items.Add(new MeshTreeViewItem(ProjectFile, Emd.Md2));
         }
     }
 
@@ -645,8 +231,8 @@ namespace emdui
             : base(projectFile)
         {
             Plw = (PlwFile)projectFile.Content;
-            Items.Add(new EddTreeViewItem(ProjectFile, Plw.GetEdd(0)));
-            Items.Add(new EmrTreeViewItem(ProjectFile, Plw.GetEmr(0)));
+            Items.Add(new EddTreeViewItem(ProjectFile, Plw.GetEdd(0), 0));
+            Items.Add(new EmrTreeViewItem(ProjectFile, Plw.GetEmr(0), 0));
             if (Plw.Version == BioVersion.Biohazard2)
                 Items.Add(new MeshTreeViewItem(ProjectFile, Plw.Md1));
             else
@@ -660,17 +246,45 @@ namespace emdui
         public override ImageSource Image => (ImageSource)Application.Current.Resources["IconEDD"];
         public override string Header => "EDD";
         public Edd Edd { get; }
+        public int Index { get; }
 
-        public EddTreeViewItem(ProjectFile projectFile, Edd edd)
+        public EddTreeViewItem(ProjectFile projectFile, Edd edd, int index)
             : base(projectFile)
         {
             Edd = edd;
+            Index = index;
 
             var numAnimations = edd.AnimationCount;
             for (var i = 0; i < numAnimations; i++)
             {
-                Items.Add(new AnimationTreeViewItem(ProjectFile, edd, i));
+                Items.Add(new AnimationTreeViewItem(ProjectFile, edd, Index, i));
             }
+
+            AddMenuItem("Import...", Import);
+            AddMenuItem("Export...", Export);
+        }
+
+        private void Import()
+        {
+            CommonFileDialog
+                .Open()
+                .AddExtension("*.edd")
+                .Show(path =>
+                {
+                    Model.SetEdd(0, new Edd(File.ReadAllBytes(path)));
+                });
+        }
+
+        private void Export()
+        {
+            var dialog = CommonFileDialog.Save();
+            if (ProjectFile != null)
+            {
+                dialog.WithDefaultFileName(Path.ChangeExtension(ProjectFile.Filename, ".EDD"));
+            }
+            dialog
+                .AddExtension("*.edd")
+                .Show(path => File.WriteAllBytes(path, Edd.GetBytes()));
         }
     }
 
@@ -679,13 +293,44 @@ namespace emdui
         public override ImageSource Image => (ImageSource)Application.Current.Resources["IconAnimation"];
         public override string Header => $"Animation {Index}";
         public Edd Edd { get; }
+        public int EddIndex { get; }
         public int Index { get; }
 
-        public AnimationTreeViewItem(ProjectFile projectFile, Edd edd, int index)
+        public AnimationTreeViewItem(ProjectFile projectFile, Edd edd, int eddIndex, int index)
             : base(projectFile)
         {
             Edd = edd;
+            EddIndex = eddIndex;
             Index = index;
+        }
+
+        public override void OnDefaultAction()
+        {
+            if (Model.Version == BioVersion.Biohazard3)
+                return;
+
+            var mainWindow = MainWindow.Instance;
+            var project = mainWindow.Project;
+            var emr = Model.GetEmr(EddIndex);
+            if (ProjectFile.Content is PldFile pldFile)
+            {
+                mainWindow.LoadModel(pldFile, pldFile.Tim);
+                mainWindow.LoadAnimation(emr, Edd, Index);
+            }
+            else if (ProjectFile.Content is PlwFile plwFile)
+            {
+                if (project.MainModel is PldFile parentPldFile)
+                {
+                    mainWindow.LoadModel(parentPldFile, parentPldFile.Tim);
+                    mainWindow.LoadWeaponModel(plwFile);
+                    mainWindow.LoadAnimation(emr, Edd, Index);
+                }
+            }
+            else if (ProjectFile.Content is EmdFile emdFile)
+            {
+                mainWindow.LoadModel(emdFile, MainWindow.Instance.Project.MainTexture);
+                mainWindow.LoadAnimation(emr, Edd, Index);
+            }
         }
     }
 
@@ -694,15 +339,56 @@ namespace emdui
         public override ImageSource Image => (ImageSource)Application.Current.Resources["IconEMR"];
         public override string Header => "EMR";
         public Emr Emr { get; }
+        public int EmrIndex { get; }
 
-        public EmrTreeViewItem(ProjectFile projectFile, Emr emr)
+        public EmrTreeViewItem(ProjectFile projectFile, Emr emr, int emrIndex)
             : base(projectFile)
         {
             Emr = emr;
+            EmrIndex = emrIndex;
             if (emr.NumParts > 0 && !(Model is PlwFile))
             {
-                Items.Add(new ArmatureTreeViewItem(ProjectFile, emr, 0));
+                Items.Add(new ArmatureTreeViewItem(ProjectFile, emr, emrIndex, 0));
             }
+
+            AddMenuItem("Import...", Import);
+            AddMenuItem("Export...", Export);
+        }
+
+        public override void OnSelect()
+        {
+            MainWindow.Instance.SelectPart(-1);
+        }
+
+        public override void OnDefaultAction()
+        {
+            if (ProjectFile.Content is PldFile pldFile)
+            {
+                MainWindow.Instance.LoadModel(pldFile, pldFile.Tim);
+            }
+        }
+
+        private void Import()
+        {
+            CommonFileDialog
+                .Open()
+                .AddExtension("*.emr")
+                .Show(path =>
+                {
+                    Model.SetEmr(0, new Emr(File.ReadAllBytes(path)));
+                });
+        }
+
+        private void Export()
+        {
+            var dialog = CommonFileDialog.Save();
+            if (ProjectFile != null)
+            {
+                dialog.WithDefaultFileName(Path.ChangeExtension(ProjectFile.Filename, ".EMR"));
+            }
+            dialog
+                .AddExtension("*.emr")
+                .Show(path => File.WriteAllBytes(path, Emr.GetBytes()));
         }
     }
 
@@ -710,18 +396,34 @@ namespace emdui
     {
         public override ImageSource Image => (ImageSource)Application.Current.Resources["IconArmature"];
         public Emr Emr { get; }
+        public int EmrIndex { get; }
         public int PartIndex { get; }
 
-        public ArmatureTreeViewItem(ProjectFile projectFile, Emr emr, int partIndex)
+        public ArmatureTreeViewItem(ProjectFile projectFile, Emr emr, int emrIndex, int partIndex)
             : base(projectFile)
         {
             Emr = emr;
+            EmrIndex = emrIndex;
             PartIndex = partIndex;
 
             var children = Emr.GetArmatureParts(partIndex);
             foreach (var child in children)
             {
-                Items.Add(new ArmatureTreeViewItem(ProjectFile, emr, child));
+                Items.Add(new ArmatureTreeViewItem(ProjectFile, emr, emrIndex, child));
+            }
+        }
+
+        public override void OnSelect()
+        {
+            MainWindow.Instance.SelectPart(PartIndex);
+        }
+
+        public override void OnDefaultAction()
+        {
+            if (ProjectFile.Content is PldFile pldFile)
+            {
+                MainWindow.Instance.LoadModel(pldFile, pldFile.Tim);
+                MainWindow.Instance.SelectPart(PartIndex);
             }
         }
 
@@ -771,16 +473,221 @@ namespace emdui
     {
         public override ImageSource Image => (ImageSource)Application.Current.Resources["IconMD1"];
         public override string Header => Mesh.Version == BioVersion.Biohazard2 ? "MD1" : "MD2";
-        public IModelMesh Mesh { get; }
+        public IModelMesh Mesh { get; private set; }
 
         public MeshTreeViewItem(ProjectFile projectFile, IModelMesh mesh)
             : base(projectFile)
         {
             Mesh = mesh;
-            for (var i = 0; i < mesh.NumParts; i++)
+            CreateChildren();
+            AddMenuItem("Import...", Import);
+            AddMenuItem("Export...", Export);
+            AddSeperator();
+            AddMenuItem("Add part", AddPart);
+            if (Model is EmdFile && mesh.Version == BioVersion.Biohazard3)
             {
-                Items.Add(new MeshPartTreeViewItem(ProjectFile, mesh, i));
+                AddMenuItem("Copy hand to gun hand", AutoHandWithGun);
             }
+        }
+
+        private string DefaultExtension => Mesh.Version == BioVersion.Biohazard2 ? ".MD1" : ".MD2";
+        private string ExtensionPattern => Mesh.Version == BioVersion.Biohazard2 ? "*.md1" : "*.md2";
+
+        private void CreateChildren()
+        {
+            Items.Clear();
+            for (var i = 0; i < Mesh.NumParts; i++)
+            {
+                Items.Add(new MeshPartTreeViewItem(ProjectFile, Mesh, i));
+            }
+        }
+
+        public override void OnSelect()
+        {
+            MainWindow.Instance.SelectPart(-1);
+        }
+
+        public override void OnDefaultAction()
+        {
+            MainWindow.Instance.LoadModel(Model, MainWindow.Instance.Project.MainTexture);
+        }
+
+        private void Import()
+        {
+            CommonFileDialog
+                .Open()
+                .AddExtension(ExtensionPattern)
+                .AddExtension("*.emd")
+                .AddExtension("*.pld")
+                .AddExtension("*.obj")
+                .Show(path =>
+                {
+                    if (path.EndsWith(".obj", StringComparison.OrdinalIgnoreCase))
+                    {
+                        ImportFromObj(path);
+                    }
+                    else if (path.EndsWith(".emd", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".pld", StringComparison.OrdinalIgnoreCase))
+                    {
+                        ImportFromModel(path);
+                    }
+                    else
+                    {
+                        if (Model.Version == BioVersion.Biohazard2)
+                            Mesh = Model.Md1 = new Md1(File.ReadAllBytes(path));
+                        else
+                            Mesh = Model.Md2 = new Md2(File.ReadAllBytes(path));
+                    }
+                    CreateChildren();
+                    MainWindow.Instance.LoadModel(Model, MainWindow.Instance.Project.MainTexture);
+                });
+        }
+
+        private void ImportFromObj(string path)
+        {
+            var project = MainWindow.Instance.Project;
+            var tim = project.MainTexture;
+            var emr = Model.GetEmr(0);
+            var numPages = tim.Width / 128;
+            var objImporter = new ObjImporter();
+            Mesh = Model.Md1 = objImporter.ImportMd1(path, numPages, emr.GetFinalPosition);
+        }
+
+        private void ImportFromModel(string path)
+        {
+            var project = MainWindow.Instance.Project;
+            var modelFile = ModelFile.FromFile(path);
+            if (modelFile.Version == BioVersion.Biohazard2)
+            {
+                if (Model.Version == BioVersion.Biohazard2)
+                {
+                    Model.Md1 = modelFile.Md1;
+                    Model.SetEmr(0, modelFile.GetEmr(0));
+                }
+                else
+                {
+                    Model.Md2 = modelFile.Md1.ToMd2();
+
+                    var map2to3 = new[]
+                    {
+                        0, 8, 9, 10, 11, 12, 13, 14, 1, 2, 3, 4, 5, 6, 7
+                    };
+                    var emr = modelFile.GetEmr(0);
+                    var emrBuilder = Model.GetEmr(0).ToBuilder();
+                    for (var i = 0; i < map2to3.Length; i++)
+                    {
+                        var srcPartIndex = i;
+                        var dstPartIndex = map2to3[i];
+                        var src = emr.GetRelativePosition(srcPartIndex);
+                        emrBuilder.RelativePositions[dstPartIndex] = src;
+                    }
+                    Model.SetEmr(0, emrBuilder.ToEmr());
+                }
+            }
+            else
+            {
+                if (Model.Version == BioVersion.Biohazard2)
+                {
+                    Model.Md1 = modelFile.Md2.ToMd1();
+                }
+                else
+                {
+                    Model.Md2 = modelFile.Md2;
+
+                    var emr = modelFile.GetEmr(0);
+                    var emrBuilder = Model.GetEmr(0).ToBuilder();
+                    for (var i = 0; i < 15; i++)
+                    {
+                        emrBuilder.RelativePositions[i] = emr.GetRelativePosition(i);
+                    }
+                    Model.SetEmr(0, emrBuilder.ToEmr());
+                }
+            }
+
+            if (modelFile is PldFile pldFile)
+            {
+                project.MainTexture = pldFile.Tim;
+            }
+            else
+            {
+                var timPath = Path.ChangeExtension(path, ".tim");
+                if (File.Exists(timPath))
+                {
+                    project.MainTexture = new TimFile(timPath);
+                }
+            }
+        }
+
+        private void Export()
+        {
+            var dialog = CommonFileDialog.Save();
+            if (ProjectFile != null)
+            {
+                dialog.WithDefaultFileName(Path.ChangeExtension(ProjectFile.Filename, DefaultExtension));
+            }
+            dialog
+                .AddExtension(ExtensionPattern)
+                .AddExtension("*.obj")
+                .Show(path =>
+                {
+                    if (path.EndsWith(".obj", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var project = MainWindow.Instance.Project;
+                        var tim = project.MainTexture;
+                        var emr = Model.GetEmr(0);
+                        if (Mesh is Md1 md1)
+                        {
+                            var numPages = tim.Width / 128;
+                            var objExporter = new ObjExporter();
+                            objExporter.Export(Model.Md1, path, numPages, emr.GetFinalPosition);
+
+                            var texturePath = Path.ChangeExtension(path, ".png");
+                            tim.ToBitmap().Save(texturePath);
+                        }
+                    }
+                    else
+                    {
+                        File.WriteAllBytes(path, Mesh.GetBytes());
+                    }
+                });
+        }
+
+        private void AddPart()
+        {
+            if (Mesh is Md1 md1)
+            {
+                var part = new Md1Builder.Part();
+                part.Positions.Add(new Md1.Vector());
+                part.Normals.Add(new Md1.Vector());
+                part.Triangles.Add(new Md1.Triangle());
+                part.TriangleTextures.Add(new Md1.TriangleTexture());
+
+                var md1Builder = md1.ToBuilder();
+                md1Builder.Parts.Add(part);
+                Mesh = Model.Md1 = md1Builder.ToMd1();
+            }
+            else if (Mesh is Md2 md2)
+            {
+                var md2Builder = md2.ToBuilder();
+                md2Builder.Parts.Add(new Md2Builder.Part());
+                Mesh = Model.Md2 = md2Builder.ToMd2();
+            }
+            CreateChildren();
+        }
+
+        private void AutoHandWithGun()
+        {
+            var builder = Model.Md2.ToBuilder();
+            if (builder.Parts.Count < 16)
+            {
+                var part = new Md2Builder.Part();
+                part.Positions.Add(new Md2.Vector());
+                part.Normals.Add(new Md2.Vector());
+                part.Triangles.Add(new Md2.Triangle());
+                builder.Parts.Add(part);
+            }
+            builder.Parts[15] = builder.Parts[4];
+            Model.Md2 = builder.ToMd2();
+            CreateChildren();
         }
     }
 
@@ -791,24 +698,218 @@ namespace emdui
         public IModelMesh Mesh { get; }
         public int PartIndex { get; }
 
+        private string DefaultExtension => Mesh.Version == BioVersion.Biohazard2 ? ".MD1" : ".MD2";
+        private string ExtensionPattern => Mesh.Version == BioVersion.Biohazard2 ? "*.md1" : "*.md2";
+
         public MeshPartTreeViewItem(ProjectFile projectFile, IModelMesh mesh, int partIndex)
             : base(projectFile)
         {
             Mesh = mesh;
             PartIndex = partIndex;
+
+            AddMenuItem("Import...", Import);
+            AddMenuItem("Export...", Export);
+        }
+
+        public override void OnSelect()
+        {
+            MainWindow.Instance.SelectPart(PartIndex);
+        }
+
+        public override void OnDefaultAction()
+        {
+            var mainWindow = MainWindow.Instance;
+            var project = mainWindow.Project;
+            var projectFile = ProjectFile;
+            if (projectFile.Content is PldFile pldFile)
+            {
+                if (project.Version == BioVersion.Biohazard2)
+                {
+                    var builder = pldFile.Md1.ToBuilder();
+                    var partMd1 = builder.Parts[PartIndex];
+                    builder.Parts.Clear();
+                    builder.Parts.Add(partMd1);
+                    var singleMd1 = builder.ToMd1();
+                    mainWindow.LoadIsolatedModel(singleMd1, pldFile.Tim, PartIndex);
+                }
+                else
+                {
+                    var builder = pldFile.Md2.ToBuilder();
+                    var partMd2 = builder.Parts[PartIndex];
+                    builder.Parts.Clear();
+                    builder.Parts.Add(partMd2);
+                    var singleMd2 = builder.ToMd2();
+                    mainWindow.LoadIsolatedModel(singleMd2, pldFile.Tim, PartIndex);
+                }
+            }
+            else if (projectFile.Content is PlwFile plwFile)
+            {
+                if (project.MainModel is PldFile parentPldFile)
+                {
+                    var tim = parentPldFile.Tim;
+                    var plwTim = plwFile.Tim;
+                    for (var y = 0; y < 32; y++)
+                    {
+                        for (var x = 0; x < 56; x++)
+                        {
+                            var p = plwTim.GetPixel(x, y);
+                            tim.SetPixel(200 + x, 224 + y, 1, p);
+                        }
+                    }
+
+                    var builder = plwFile.Md1.ToBuilder();
+                    var partMd1 = builder.Parts[PartIndex];
+                    builder.Parts.Clear();
+                    builder.Parts.Add(partMd1);
+                    var singleMd1 = builder.ToMd1();
+                    mainWindow.LoadIsolatedModel(singleMd1, tim, PartIndex);
+                }
+            }
+            else if (projectFile.Content is EmdFile emdFile)
+            {
+                var tim = MainWindow.Instance.Project.MainTexture;
+                if (project.Version == BioVersion.Biohazard2)
+                {
+                    var builder = emdFile.Md1.ToBuilder();
+                    var partMd1 = builder.Parts[PartIndex];
+                    builder.Parts.Clear();
+                    builder.Parts.Add(partMd1);
+                    var singleMd1 = builder.ToMd1();
+                    mainWindow.LoadIsolatedModel(singleMd1, tim, PartIndex);
+                }
+                else
+                {
+                    var builder = emdFile.Md2.ToBuilder();
+                    var partMd2 = builder.Parts[PartIndex];
+                    builder.Parts.Clear();
+                    builder.Parts.Add(partMd2);
+                    var singleMd2 = builder.ToMd2();
+                    mainWindow.LoadIsolatedModel(singleMd2, tim, PartIndex);
+                }
+            }
+        }
+
+        private void Import()
+        {
+            CommonFileDialog
+                .Open()
+                .AddExtension(ExtensionPattern)
+                .Show(path =>
+                {
+                    if (Model.Version == BioVersion.Biohazard2)
+                    {
+                        var srcBuilder = new Md1(File.ReadAllBytes(path)).ToBuilder();
+                        if (srcBuilder.Parts.Count > 0)
+                        {
+                            var builder = Model.Md1.ToBuilder();
+                            builder.Parts[PartIndex] = srcBuilder.Parts[0];
+                            Model.Md1 = builder.ToMd1();
+                        }
+                    }
+                    else
+                    {
+                        var srcBuilder = new Md2(File.ReadAllBytes(path)).ToBuilder();
+                        if (srcBuilder.Parts.Count > 0)
+                        {
+                            var builder = Model.Md2.ToBuilder();
+                            builder.Parts[PartIndex] = srcBuilder.Parts[0];
+                            Model.Md2 = builder.ToMd2();
+                        }
+                    }
+                    MainWindow.Instance.LoadModel(Model, MainWindow.Instance.Project.MainTexture);
+                });
+        }
+
+        private void Export()
+        {
+            var dialog = CommonFileDialog.Save();
+            if (ProjectFile != null)
+            {
+                dialog.WithDefaultFileName(Path.ChangeExtension(ProjectFile.Filename, DefaultExtension));
+            }
+            dialog
+                .AddExtension(ExtensionPattern)
+                .Show(path =>
+                {
+                    if (Model.Version == BioVersion.Biohazard2)
+                    {
+                        var builder = Model.Md1.ToBuilder();
+                        var interestedPart = builder.Parts[PartIndex];
+                        builder.Parts.Clear();
+                        builder.Parts.Add(interestedPart);
+                        File.WriteAllBytes(path, builder.ToMd1().GetBytes());
+                    }
+                    else
+                    {
+                        var builder = Model.Md2.ToBuilder();
+                        var interestedPart = builder.Parts[PartIndex];
+                        builder.Parts.Clear();
+                        builder.Parts.Add(interestedPart);
+                        File.WriteAllBytes(path, builder.ToMd2().GetBytes());
+                    }
+                });
         }
     }
 
     public class TimTreeViewItem : ProjectTreeViewItem
     {
         public override ImageSource Image => (ImageSource)Application.Current.Resources["IconTIM"];
-        public override string Header => "TIM";
+        public override string Header => ProjectFile.Kind == ProjectFileKind.Tim ? ProjectFile.Filename : "TIM";
         public TimFile Tim { get; }
 
         public TimTreeViewItem(ProjectFile projectFile, TimFile tim)
             : base(projectFile)
         {
             Tim = tim;
+
+            AddMenuItem("Import...", Import);
+            AddMenuItem("Export...", Export);
+        }
+
+        private void Import()
+        {
+            CommonFileDialog
+                .Open()
+                .AddExtension("*.tim")
+                .Show(path =>
+                {
+                    if (Model is PldFile pld)
+                    {
+                        pld.Tim = new TimFile(path);
+                    }
+                    else if (Model is PlwFile plw)
+                    {
+                        plw.Tim = new TimFile(path);
+                    }
+                    else if (ProjectFile.Kind == ProjectFileKind.Tim)
+                    {
+                        MainWindow.Instance.Project.MainTexture = new TimFile(path);
+                    }
+                    MainWindow.Instance.LoadModel(Model, MainWindow.Instance.Project.MainTexture);
+                });
+        }
+
+        private void Export()
+        {
+            var dialog = CommonFileDialog.Save();
+            if (ProjectFile != null)
+            {
+                dialog.WithDefaultFileName(Path.ChangeExtension(ProjectFile.Filename, ".TIM"));
+            }
+            dialog
+                .AddExtension("*.png")
+                .AddExtension("*.tim")
+                .Show(path =>
+                {
+                    if (path.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Tim.ToBitmap().Save(path);
+                    }
+                    else
+                    {
+                        Tim.Save(path);
+                    }
+                });
         }
     }
 }

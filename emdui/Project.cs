@@ -60,7 +60,7 @@ namespace emdui
             if (File.Exists(timPath))
             {
                 var timFile = new TimFile(timPath);
-                _projectFiles.Add(new ProjectFile(ProjectFileKind.Tim, timPath, timFile));
+                _projectFiles.Add(new ProjectFile(ProjectFileKind.Tim, Path.GetFileName(timPath), timFile));
             }
         }
 
@@ -107,6 +107,15 @@ namespace emdui
                     return _projectFiles.FirstOrDefault(x => x.Kind == ProjectFileKind.Tim).Content as TimFile;
                 else
                     return null;
+            }
+            set
+            {
+                if (MainModel is PldFile pldFile)
+                    pldFile.Tim = value;
+                else if (MainModel is PlwFile plwFile)
+                    plwFile.Tim = value;
+                else if (MainModel is EmdFile emdFile)
+                    _projectFiles.FirstOrDefault(x => x.Kind == ProjectFileKind.Tim).Content = value;
             }
         }
 

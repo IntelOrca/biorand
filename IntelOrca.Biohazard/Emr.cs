@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
@@ -33,6 +34,36 @@ namespace IntelOrca.Biohazard
                 y = values[1],
                 z = values[2]
             };
+        }
+
+        public Vector GetFinalPosition(int targetPartIndex)
+        {
+            if (targetPartIndex < 0 || targetPartIndex >= NumParts)
+                return new Vector();
+
+            var positions = new Vector[NumParts];
+
+            var stack = new Stack<byte>();
+            stack.Push(0);
+
+            while (stack.Count != 0)
+            {
+                var partIndex = stack.Pop();
+                var pos = positions[partIndex];
+                var rel = GetRelativePosition(partIndex);
+                pos.x += rel.x;
+                pos.y += rel.y;
+                pos.z += rel.z;
+                positions[partIndex] = pos;
+                var children = GetArmatureParts(partIndex);
+                foreach (var child in children)
+                {
+                    positions[child] = pos;
+                    stack.Push(child);
+                }
+            }
+
+            return positions[targetPartIndex];
         }
 
         public Armature GetArmature(int partIndex)

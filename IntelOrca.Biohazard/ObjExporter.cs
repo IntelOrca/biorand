@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Security.Cryptography;
 using System.Text;
-using static IntelOrca.Biohazard.Md2;
-using static IntelOrca.Biohazard.WavefrontObjFile;
 
 namespace IntelOrca.Biohazard
 {
@@ -40,7 +35,7 @@ namespace IntelOrca.Biohazard
             File.WriteAllText(_objPath!, _sb.ToString());
         }
 
-        public void Export(Md1 md1, string objPath, int numPages, Func<int, Md1.Vector>? partTranslate = null)
+        public void Export(Md1 md1, string objPath, int numPages, Func<int, Emr.Vector>? partTranslate = null)
         {
             Begin(objPath, numPages);
 
@@ -50,7 +45,7 @@ namespace IntelOrca.Biohazard
             var tvIndex = 1;
             foreach (var obj in md1.Objects)
             {
-                var translate = partTranslate == null ? new Md1.Vector() : partTranslate(objIndex / 2);
+                var translate = partTranslate == null ? new Emr.Vector() : partTranslate(objIndex / 2);
 
                 if ((objIndex & 1) == 0)
                     AppendLine($"o part_{objIndex / 2:00}");

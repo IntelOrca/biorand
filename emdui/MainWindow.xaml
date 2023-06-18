@@ -13,13 +13,6 @@
                 <MenuItem Header="Open" Click="menuOpen_Click" />
                 <MenuItem Header="Save" Click="menuSave_Click" />
             </MenuItem>
-            <MenuItem Header="Model">
-                <MenuItem Header="Import" Click="menuImportModel_Click" />
-                <MenuItem Header="Export" Click="menuExportModel_Click" />
-                <Separator />
-                <MenuItem Header="Add Dummy Object" Click="menuAddDummyPart_Click" />
-                <MenuItem Header="Auto create hand with gun" Click="menuAutoHandWithGun_Click" />
-            </MenuItem>
         </Menu>
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBarItem x:Name="fileTypeLabel">RE 2 .PLD Model</StatusBarItem>

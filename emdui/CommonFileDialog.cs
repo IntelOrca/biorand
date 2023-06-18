@@ -41,11 +41,15 @@ namespace emdui
 
         private string GetExtensionName(string extension)
         {
-            if (extension.StartsWith("*."))
+            switch (extension)
             {
-                extension = extension.Substring(2);
+                case "*.obj":
+                    return "Wavefront .obj Files";
+                case var _ when extension.StartsWith("*."):
+                    return extension.Substring(2).ToUpper() + " Files";
+                default:
+                    return extension.ToUpper() + " Files";
             }
-            return extension.ToUpper() + " Files";
         }
 
         public void Show(Action<string> callback)
