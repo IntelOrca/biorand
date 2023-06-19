@@ -4,7 +4,7 @@ using System.IO;
 namespace IntelOrca.Biohazard.Script.Opcodes
 {
     [DebuggerDisplay("{Opcode} Channel = {Channel} Id = {Id}")]
-    internal class XaOnOpcode : OpcodeBase
+    public class XaOnOpcode : OpcodeBase
     {
         public byte Channel { get; set; }
         public ushort Id { get; set; }

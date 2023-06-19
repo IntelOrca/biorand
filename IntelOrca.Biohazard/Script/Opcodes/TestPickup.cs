@@ -4,7 +4,7 @@ using System.IO;
 namespace IntelOrca.Biohazard.Script.Opcodes
 {
     [DebuggerDisplay("testpickup")]
-    internal class TestPickupOpcode : OpcodeBase
+    public class TestPickupOpcode : OpcodeBase
     {
         public byte Type { get; set; }
 

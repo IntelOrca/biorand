@@ -4,7 +4,7 @@ using System.IO;
 namespace IntelOrca.Biohazard.Script.Opcodes
 {
     [DebuggerDisplay("sce_em_set")]
-    internal class SceEmSetOpcode : OpcodeBase
+    public class SceEmSetOpcode : OpcodeBase
     {
         public byte Unk01 { get; set; }
         public byte Id { get; set; }

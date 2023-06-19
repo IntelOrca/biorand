@@ -13,7 +13,7 @@ namespace IntelOrca.Biohazard.Tests
         public TestData(ITestOutputHelper output)
         {
             _output = output;
-            _dataPath = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "..", "IntelOrca.Biohazard", "data");
+            _dataPath = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "..", "IntelOrca.Biohazard.BioRand", "data");
         }
 
         [Fact]

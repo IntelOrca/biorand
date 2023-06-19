@@ -4,7 +4,7 @@ using System.IO;
 namespace IntelOrca.Biohazard.Script.Opcodes
 {
     [DebuggerDisplay("{Opcode} Offset = {Offset}  Length = {Length}")]
-    internal class UnknownOpcode : OpcodeBase
+    public class UnknownOpcode : OpcodeBase
     {
         public byte[] Data { get; }
 

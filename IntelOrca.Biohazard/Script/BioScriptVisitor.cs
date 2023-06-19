@@ -4,7 +4,7 @@ using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.Script
 {
-    internal class BioScriptVisitor
+    public class BioScriptVisitor
     {
         protected BioVersion Version;
 

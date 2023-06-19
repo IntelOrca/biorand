@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using IntelOrca.Biohazard.Script;
 using Xunit;
 using Xunit.Abstractions;
-using static IntelOrca.Biohazard.Script.ScdAssembler;
 
 namespace IntelOrca.Biohazard.Tests
 {

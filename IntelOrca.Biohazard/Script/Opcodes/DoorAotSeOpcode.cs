@@ -1,13 +1,11 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
-using System.Reflection.Emit;
 
 namespace IntelOrca.Biohazard.Script.Opcodes
 {
 
     [DebuggerDisplay("door_aot_set")]
-    internal class DoorAotSeOpcode : OpcodeBase, IDoorAotSetOpcode
+    public class DoorAotSeOpcode : OpcodeBase, IDoorAotSetOpcode
     {
         public byte Id { get; set; }
         public byte SCE { get; set; }

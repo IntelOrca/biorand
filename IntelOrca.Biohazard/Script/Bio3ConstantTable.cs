@@ -1,14 +1,16 @@
-﻿using System.Collections;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 
 namespace IntelOrca.Biohazard.Script
 {
-    internal class Bio3ConstantTable : IConstantTable
+    public class Bio3ConstantTable : IConstantTable
     {
         private const byte SCE_ITEM = 2;
         private const byte SCE_EVENT = 5;
         private const byte SCE_FLAG_CHG = 6;
+
+        public string GetEnemyName(byte kind) => g_enemyNames.Namify("ENEMY_", kind);
+        public string GetItemName(byte kind) => g_itemNames.Namify("ITEM_", kind);
 
         public byte? FindOpcode(string name)
         {
@@ -297,28 +299,6 @@ namespace IntelOrca.Biohazard.Script
                 return FindConstantValue(symbol, 'v');
 
             return null;
-        }
-
-        public string GetEnemyName(byte kind)
-        {
-            if (kind >= g_enemyNames.Length || string.IsNullOrEmpty(g_enemyNames[kind]))
-                return $"ENEMY_{kind:X2}";
-            return $"ENEMY_" + g_enemyNames[kind]
-                .Replace(" ", "_")
-                .Replace("(", "")
-                .Replace(")", "")
-                .ToUpperInvariant();
-        }
-
-        public string GetItemName(byte kind)
-        {
-            if (kind >= g_itemNames.Length)
-                return "ITEM_UNKNOWN";
-            return $"ITEM_" + g_itemNames[kind]
-                .Replace(" ", "_")
-                .Replace("(", "")
-                .Replace(")", "")
-                .ToUpperInvariant();
         }
 
         public int GetInstructionSize(byte opcode, BinaryReader? br)

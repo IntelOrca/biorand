@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Numerics;
 
 namespace IntelOrca.Biohazard
 {
-    internal struct RdtItemId : IEquatable<RdtItemId>
+    public struct RdtItemId : IEquatable<RdtItemId>
     {
         public RdtId Rdt { get; }
         public byte Id { get; }

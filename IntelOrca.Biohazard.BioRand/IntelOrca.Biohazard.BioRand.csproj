@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -9,6 +9,9 @@
     <PackageReference Include="System.Text.Json" Version="6.0.6" />
     <PackageReference Include="OpenSoftware.DgmlBuilder" Version="2.0.0" />
     <PackageReference Include="NVorbis" Version="0.10.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IntelOrca.Biohazard\IntelOrca.Biohazard.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Resources.Designer.cs">
@@ -23,4 +26,15 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <None Update="data\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="data\title\" />
+  </ItemGroup>
+  <Target Name="CopyDllModuleToData" BeforeTargets="Compile">
+    <Copy SourceFiles="..\biorandmod\bin\biorand.dll" DestinationFolder="data" />
+  </Target>
 </Project>

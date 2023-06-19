@@ -1,6 +1,6 @@
 ﻿namespace IntelOrca.Biohazard.Script
 {
-    internal enum OpcodeV3 : byte
+    public enum OpcodeV3 : byte
     {
         Nop = 0x00,
         EvtEnd = 0x01,

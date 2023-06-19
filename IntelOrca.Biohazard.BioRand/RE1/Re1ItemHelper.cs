@@ -24,7 +24,7 @@ namespace IntelOrca.Biohazard.RE1
             return false;
         }
 
-        public bool IsItemTypeDiscardable(byte type)
+        public bool IsRe2ItemIdsDiscardable(byte type)
         {
             switch (type)
             {

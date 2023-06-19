@@ -281,7 +281,7 @@ namespace IntelOrca.Biohazard
             return numScripts;
         }
 
-        internal void ReadScript(BioScriptVisitor visitor)
+        public void ReadScript(BioScriptVisitor visitor)
         {
             visitor.VisitVersion(Version);
             ReadScript(BioScriptKind.Init, visitor);

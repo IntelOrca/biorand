@@ -3,29 +3,10 @@ using System.IO;
 
 namespace IntelOrca.Biohazard.Script
 {
-    internal class Bio1ConstantTable : IConstantTable
+    public class Bio1ConstantTable : IConstantTable
     {
-        public string GetEnemyName(byte kind)
-        {
-            if (kind >= g_enemyNames.Length)
-                return "ENEMY_UNKNOWN";
-            return $"ENEMY_" + g_enemyNames[kind]
-                .Replace(" ", "_")
-                .Replace("(", "")
-                .Replace(")", "")
-                .ToUpperInvariant();
-        }
-
-        public string GetItemName(byte kind)
-        {
-            if (kind >= g_itemNames.Length)
-                return "ITEM_UNKNOWN";
-            return $"ITEM_" + g_itemNames[kind]
-                .Replace(" ", "_")
-                .Replace("(", "")
-                .Replace(")", "")
-                .ToUpperInvariant();
-        }
+        public string GetEnemyName(byte kind) => g_enemyNames.Namify("ENEMY_", kind);
+        public string GetItemName(byte kind) => g_itemNames.Namify("ITEM_", kind);
 
         public string GetOpcodeSignature(byte opcode)
         {

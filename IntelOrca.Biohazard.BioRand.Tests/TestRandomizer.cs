@@ -104,7 +104,7 @@ namespace IntelOrca.Biohazard.Tests
 
         protected void Randomize(RandoConfig config)
         {
-            var dataPath = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "..", "IntelOrca.Biohazard", "data");
+            var dataPath = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "..", "IntelOrca.Biohazard.BioRand", "data");
             Environment.SetEnvironmentVariable("BIORAND_DATA", dataPath);
 
             var reInstall = GetInstallConfig();

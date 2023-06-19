@@ -45,7 +45,7 @@ namespace IntelOrca.Biohazard
                     var assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                     var basePath = assemblyDir;
 #if DEBUG
-                    basePath = Path.GetFullPath(Path.Combine(assemblyDir, "..\\..\\..\\..\\IntelOrca.Biohazard"));
+                    basePath = Path.GetFullPath(Path.Combine(assemblyDir, "..\\..\\..\\..\\IntelOrca.Biohazard.BioRand"));
 #endif
                     dataPath = Path.Combine(basePath, "data");
                 }
@@ -449,7 +449,7 @@ namespace IntelOrca.Biohazard
             }
             foreach (var item in rdt.Items)
             {
-                sb.AppendLine($"    Item #{item.Id}: {(ItemType)item.Type} x{item.Amount} (0x{item.Offset:X2})");
+                sb.AppendLine($"    Item #{item.Id}: {item.Type} x{item.Amount} (0x{item.Offset:X2})");
             }
             foreach (var enemy in rdt.Enemies)
             {

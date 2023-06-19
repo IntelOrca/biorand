@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using IntelOrca.Biohazard.BioRand.RE2;
 using IntelOrca.Biohazard.RE3;
 using IntelOrca.Biohazard.Script.Opcodes;
 
@@ -109,14 +110,14 @@ namespace IntelOrca.Biohazard
                 if (_rng.Next(0, 4) == 0)
                 {
                     _specialItem = (byte)_rng.NextOf(new[] {
-                        ItemType.GVirus,
-                        ItemType.Lighter,
-                        ItemType.Lockpick,
+                        Re2ItemIds.GVirus,
+                        Re2ItemIds.Lighter,
+                        Re2ItemIds.Lockpick,
                     });
                     _startKeyItems.Add(_specialItem.Value);
-                    if (_specialItem.Value == (byte)ItemType.Lockpick)
+                    if (_specialItem.Value == Re2ItemIds.Lockpick)
                     {
-                        _startKeyItems.Add((byte)ItemType.SmallKey);
+                        _startKeyItems.Add(Re2ItemIds.SmallKey);
                         if (_config.Player == 0)
                         {
                             // Remove small key check for sewer door
@@ -575,7 +576,7 @@ namespace IntelOrca.Biohazard
             // HACK for RE 2, Leon has lighter from start, Claire has lockpick instead of small keys
             //      this means it won't exist anywhere in the game when adding it in
             var noOriginalItemLocation = false;
-            if (_config.Game == 2 && ((_config.Player == 0 && req == (byte)ItemType.Lighter) || (_config.Player == 1 && req == (byte)ItemType.SmallKey)))
+            if (_config.Game == 2 && ((_config.Player == 0 && req == Re2ItemIds.Lighter) || (_config.Player == 1 && req == Re2ItemIds.SmallKey)))
             {
                 noOriginalItemLocation = true;
             }
@@ -773,24 +774,24 @@ namespace IntelOrca.Biohazard
 
             var ammoTypes = new HashSet<byte>();
             var gunpowderTypes = new HashSet<byte>();
-            foreach (var itemType in availableWeapons)
+            foreach (var Re2ItemIds in availableWeapons)
             {
                 // Spawn upgrade
-                var upgradeType = _itemHelper.GetWeaponUpgrade(itemType, _rng, _config);
+                var upgradeType = _itemHelper.GetWeaponUpgrade(Re2ItemIds, _rng, _config);
                 if (upgradeType != null && _rng.NextProbability(50))
                 {
                     SpawnItem(shuffled, upgradeType.Value, 1);
                 }
 
                 // Add supported ammo types
-                var weaponAmmoTypes = _itemHelper.GetAmmoTypeForWeapon(itemType);
+                var weaponAmmoTypes = _itemHelper.GetAmmoTypeForWeapon(Re2ItemIds);
                 foreach (var ammoType in weaponAmmoTypes)
                 {
                     ammoTypes.Add(ammoType);
                 }
 
                 // Add gunpowder types
-                var weaponGunpowderTypes = _itemHelper.GetWeaponGunpowder(itemType);
+                var weaponGunpowderTypes = _itemHelper.GetWeaponGunpowder(Re2ItemIds);
                 foreach (var gunpowderType in weaponGunpowderTypes)
                 {
                     gunpowderTypes.Add(gunpowderType);
@@ -870,13 +871,13 @@ namespace IntelOrca.Biohazard
                 var itemIndex = weaponPool.FindLastIndex(x => weaponKind == _itemHelper.GetWeaponKind(x));
                 if (itemIndex != -1)
                 {
-                    var itemType = weaponPool[itemIndex];
+                    var Re2ItemIds = weaponPool[itemIndex];
                     weaponPool.RemoveAt(itemIndex);
-                    availableWeapons.Add(itemType);
+                    availableWeapons.Add(Re2ItemIds);
 
                     // Add to inventory
-                    var amount = GetRandomAmount(itemType, true);
-                    _startingWeapons.Add(new RandomInventory.Entry(itemType, amount));
+                    var amount = GetRandomAmount(Re2ItemIds, true);
+                    _startingWeapons.Add(new RandomInventory.Entry(Re2ItemIds, amount));
                 }
             }
         }
@@ -885,21 +886,21 @@ namespace IntelOrca.Biohazard
         {
             for (int i = 0; i < count; i++)
             {
-                var itemType = probabilityTable.Next();
-                if (!SpawnItem(pool, itemType, GetRandomAmount(itemType, false)))
+                var Re2ItemIds = probabilityTable.Next();
+                if (!SpawnItem(pool, Re2ItemIds, GetRandomAmount(Re2ItemIds, false)))
                 {
                     break;
                 }
             }
         }
 
-        private bool SpawnItem(Queue<ItemPoolEntry> pool, byte itemType, byte amount)
+        private bool SpawnItem(Queue<ItemPoolEntry> pool, byte Re2ItemIds, byte amount)
         {
             if (pool.Count != 0)
             {
                 var oldEntry = pool.Dequeue();
                 var newEntry = oldEntry;
-                newEntry.Type = itemType;
+                newEntry.Type = Re2ItemIds;
                 newEntry.Amount = amount;
                 _logger.WriteLine($"    Replaced {oldEntry.ToString(_itemHelper)} with {newEntry.ToString(_itemHelper)}");
                 if (_definedPool.Any(x => x.RdtItemId == newEntry.RdtItemId))
@@ -1061,7 +1062,7 @@ namespace IntelOrca.Biohazard
             if (_itemHelper.IsItemInfinite((byte)keyType))
                 return 0;
 
-            if (!_itemHelper.IsItemTypeDiscardable((byte)keyType))
+            if (!_itemHelper.IsRe2ItemIdsDiscardable((byte)keyType))
                 return 1;
 
             ushort total = 0;
@@ -1139,7 +1140,7 @@ namespace IntelOrca.Biohazard
 
             public override string ToString()
             {
-                return $"{string.Join(",", Keys.Select(x => Items.GetItemName(x)))}";
+                return $"{string.Join(",", Keys.Select(x => x))}";
             }
 
             public KeyRequirement WithItem(ItemPoolEntry? item)

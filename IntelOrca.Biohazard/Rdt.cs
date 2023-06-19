@@ -7,7 +7,7 @@ using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard
 {
-    internal class Rdt
+    public class Rdt
     {
         private RdtFile _rdtFile;
         private List<(EmrFlags, double)> _emrScales = new List<(EmrFlags, double)>();
@@ -37,8 +37,6 @@ namespace IntelOrca.Biohazard
             _rdtFile = rdtFile;
             RdtId = rdtId;
         }
-
-        public IEnumerable<T> EnumerateOpcodes<T>(RandoConfig config) => AstEnumerator<T>.Enumerate(Ast!, config);
 
         public void SetDoorTarget(int id, RdtId target, DoorEntrance destination, RdtId originalId, bool noCompareRewrite = false)
         {
@@ -154,13 +152,13 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        public void SetEnemy(byte id, EnemyType type, byte state, byte ai, byte soundBank, byte texture)
+        public void SetEnemy(byte id, byte type, byte state, byte ai, byte soundBank, byte texture)
         {
             foreach (var enemy in Enemies)
             {
                 if (enemy.Id == id)
                 {
-                    enemy.Type = (byte)type;
+                    enemy.Type = type;
                     enemy.State = state;
                     enemy.Ai = ai;
                     enemy.SoundBank = soundBank;
@@ -379,13 +377,14 @@ namespace IntelOrca.Biohazard
                     door.Animation,
                     door.LockId,
                     door.LockType,
-                    door.LockType == 0xFF ? "side" : IntelOrca.Biohazard.Items.GetItemName(door.LockType));
+                    door.LockType == 0xFF ? "side" : door.LockType.ToString());
             }
             foreach (var item in Items)
             {
                 Console.WriteLine("ITEM  #{0:X2}: {1} x{2}",
                     item.Id,
-                    IntelOrca.Biohazard.Items.GetItemName(item.Type), item.Amount);
+                    item.Type,
+                    item.Amount);
             }
             foreach (var reset in Resets)
             {
@@ -393,7 +392,8 @@ namespace IntelOrca.Biohazard
                 {
                     Console.WriteLine("RESET #{0:X2}: {1} x{2}",
                         reset.Id,
-                        IntelOrca.Biohazard.Items.GetItemName(reset.Data0), reset.Data1);
+                        reset.Data0,
+                        reset.Data1);
                 }
             }
             Console.WriteLine("------------------------");

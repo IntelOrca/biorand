@@ -3,7 +3,7 @@
 namespace IntelOrca.Biohazard
 {
     [Flags]
-    internal enum EmrFlags
+    public enum EmrFlags
     {
         Player = 1,
         Partner = 2,

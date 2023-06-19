@@ -6,7 +6,7 @@
         string GetItemName(byte type);
         byte GetItemId(CommonItemKind kind);
         bool IsOptionalItem(RandoConfig config, byte type);
-        bool IsItemTypeDiscardable(byte type);
+        bool IsRe2ItemIdsDiscardable(byte type);
         bool IsItemInfinite(byte type);
         ItemAttribute GetItemAttributes(byte item);
         byte[] GetInitialKeyItems(RandoConfig config);

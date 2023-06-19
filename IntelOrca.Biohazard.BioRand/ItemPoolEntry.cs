@@ -27,7 +27,7 @@
 
         public override string ToString()
         {
-            return $"{RdtId}:{Id} [{Items.GetItemName(Type)} x{Amount}]";
+            return $"{RdtId}:{Id} [{Type} x{Amount}]";
         }
     }
 }

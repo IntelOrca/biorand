@@ -2,7 +2,7 @@
 
 namespace IntelOrca.Biohazard
 {
-    internal struct DoorEntrance
+    public struct DoorEntrance
     {
         public short X { get; set; }
         public short Y { get; set; }

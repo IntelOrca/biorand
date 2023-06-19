@@ -2,7 +2,7 @@
 
 namespace IntelOrca.Biohazard.Script.Opcodes
 {
-    internal abstract class OpcodeBase
+    public abstract class OpcodeBase
     {
         public byte Opcode { get; set; }
         public int Length { get; set; }

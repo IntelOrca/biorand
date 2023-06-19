@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml;
 using IntelOrca.Biohazard.RE1;
+using IntelOrca.Biohazard.RE2;
 using IntelOrca.Biohazard.RE3;
 using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
@@ -517,7 +518,7 @@ namespace IntelOrca.Biohazard
                 Opcode = _config.Game == 2 ? (byte)OpcodeV2.SceEmSet : (byte)OpcodeV3.SceEmSet,
                 Unk01 = 0,
                 Id = id,
-                Type = _config.Game == 2 ? (byte)EnemyType.ZombieRandom : Re3EnemyIds.ZombieDog,
+                Type = _config.Game == 2 ? Re2EnemyIds.ZombieRandom : Re3EnemyIds.ZombieDog,
                 State = 0,
                 Ai = 0,
                 Floor = (byte)ep.F,

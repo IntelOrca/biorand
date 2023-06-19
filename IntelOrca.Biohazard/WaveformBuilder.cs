@@ -5,7 +5,7 @@ using NVorbis;
 
 namespace IntelOrca.Biohazard
 {
-    internal class WaveformBuilder
+    public class WaveformBuilder
     {
         private const uint g_riffMagic = 0x46464952;
         private const uint g_waveMagic = 0x45564157;

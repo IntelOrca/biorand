@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace IntelOrca.Biohazard
 {
-    internal struct RdtDoorTarget : IEquatable<RdtDoorTarget>
+    public struct RdtDoorTarget : IEquatable<RdtDoorTarget>
     {
         private static Regex g_regex = new Regex(@"([0-9A-Za-z]+)(?:\:(\d+))?(?:%(\d+))?", RegexOptions.Compiled);
 

@@ -3,7 +3,7 @@ using System.IO;
 
 namespace IntelOrca.Biohazard
 {
-    internal class SlicedStream : Stream
+    public class SlicedStream : Stream
     {
         private readonly Stream _stream;
         private readonly long _begin;
