@@ -308,7 +308,7 @@ namespace emdui
         private void menuOpen_Click(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog();
-            openFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_project.MainPath);
+            openFileDialog.InitialDirectory = _project == null ? null : System.IO.Path.GetDirectoryName(_project.MainPath);
             openFileDialog.Filter = "EMD/PLD Files (*.emd;*.pld)|*.emd;*.pld";
             if (openFileDialog.ShowDialog() == true)
             {
@@ -318,6 +318,9 @@ namespace emdui
 
         private void menuSave_Click(object sender, RoutedEventArgs e)
         {
+            if (_project == null)
+                return;
+
             var saveFileDialog = new SaveFileDialog();
             saveFileDialog.InitialDirectory = System.IO.Path.GetDirectoryName(_project.MainPath);
             if (_modelFile is PldFile)
