@@ -8,6 +8,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "biorandmod", "biorandmod\biorandmod.vcxproj", "{707B2362-63FD-4B65-B5AF-FE0DD4B09AB7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntelOrca.Biohazard.BioRand", "IntelOrca.Biohazard.BioRand\IntelOrca.Biohazard.BioRand.csproj", "{58D6E501-CC3B-49D7-A813-50EF311A0B38}"
+	ProjectSection(ProjectDependencies) = postProject
+		{707B2362-63FD-4B65-B5AF-FE0DD4B09AB7} = {707B2362-63FD-4B65-B5AF-FE0DD4B09AB7}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntelOrca.Biohazard.BioRandTests", "IntelOrca.Biohazard.BioRand.Tests\IntelOrca.Biohazard.BioRandTests.csproj", "{69D82AA9-EBFE-4CBC-BEAA-47F8EFFECD65}"
 EndProject
