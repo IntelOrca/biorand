@@ -11,7 +11,7 @@
     <PackageReference Include="NVorbis" Version="0.10.5" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IntelOrca.Biohazard\IntelOrca.Biohazard.csproj" />
+    <ProjectReference Include="..\biohazard-utils\src\IntelOrca.Biohazard\IntelOrca.Biohazard.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Resources.Designer.cs">

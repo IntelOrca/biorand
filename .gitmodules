@@ -1,0 +1,3 @@
+[submodule "biohazard-utils"]
+	path = biohazard-utils
+	url = https://github.com/IntelOrca/biohazard-utils

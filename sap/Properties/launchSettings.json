@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "sap": {
-      "commandName": "Project",
-      "commandLineArgs": "-x M:\\temp\\re3extracted\\DATA\\SOUND\\C_02.VB -r 0,0,0,0,0,0,0,0,16000,16000,8000,11025,4000",
-      "workingDirectory": "M:\\temp\\sap"
-    }
-  }
-}

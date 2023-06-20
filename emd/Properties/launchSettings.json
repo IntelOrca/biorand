@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "emd": {
-      "commandName": "Project",
-      "commandLineArgs": "M:\\temp\\re3extracted\\ROOM\\EMD\\EM52.EMD M:\\temp\\re3play\\EM67\\blender.obj EM67.png -o TEST.EMD",
-      "workingDirectory": "M:\\temp\\re3play\\test"
-    }
-  }
-}

@@ -17,6 +17,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IntelOrca.Biohazard.BioRand\IntelOrca.Biohazard.BioRand.csproj" />
-    <ProjectReference Include="..\IntelOrca.Biohazard\IntelOrca.Biohazard.csproj" />
   </ItemGroup>
 </Project>
