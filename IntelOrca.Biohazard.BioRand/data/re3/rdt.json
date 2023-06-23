@@ -163,6 +163,11 @@
           "category": "exclude"
         }
       ],
+      "npcs": [
+        {
+          "excludeTypes": [ 96 ]
+        }
+      ],
       "enemies": []
     },
     "106": {
