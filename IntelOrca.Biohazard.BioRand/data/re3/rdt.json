@@ -893,7 +893,8 @@
     "122": {
       "enemies": [
         {
-          "condition": "$39 != 5"
+          "condition": "$39 != 5",
+          "nop": [ "0x1E64-0x1EB2" ]
         }
       ]
     },
