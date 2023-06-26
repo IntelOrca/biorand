@@ -1424,6 +1424,19 @@
         {
           "player": 1
         }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 2878 ],
+          "cutscene": 0,
+          "player": 0
+        },
+        {
+          "includeOffsets": [ 3292 ],
+          "excludeTypes": [ 90 ],
+          "cutscene": 1,
+          "player": 0
+        }
       ]
     },
     "21A": {

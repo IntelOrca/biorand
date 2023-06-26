@@ -89,11 +89,11 @@
     "pl0/voice/stage2/v023.sap": { "rdt": "216", "player": 0, "actor": "ada", "condition": "!ben" },
     "pl0/voice/stage2/v024.sap": { "rdt": "216", "player": 0, "actor": "ada" },
     "pl0/voice/stage2/v025.sap": { "rdt": "216", "player": 0, "actor": "ada" },
-    "pl0/voice/stage2/v026.sap": { "rdt": "219", "player": 0, "actor": "ben" },
-    "pl0/voice/stage2/v027.sap": { "rdt": "219", "player": 0, "actor": "ben", "kind": "doom" },
-    "pl0/voice/stage2/v028.sap": { "rdt": "219", "player": 0, "actor": "ben", "kind": "hurt" },
-    "pl0/voice/stage2/v030.sap": { "rdt": "219", "player": 0, "actor": "ben", "kind": "hurt" },
-    "pl0/voice/stage2/v032.sap": { "rdt": "219", "player": 0, "actor": "leon", "condition": "@ada", "nameClipped": { "start": 0.75 } },
+    "pl0/voice/stage2/v026.sap": { "rdt": "219", "player": 0, "cutscene": 1, "actor": "ben" },
+    "pl0/voice/stage2/v027.sap": { "rdt": "219", "player": 0, "cutscene": 1, "actor": "ben", "kind": "doom" },
+    "pl0/voice/stage2/v028.sap": { "rdt": "219", "player": 0, "cutscene": 1, "actor": "ben", "kind": "hurt" },
+    "pl0/voice/stage2/v030.sap": { "rdt": "219", "player": 0, "cutscene": 1, "actor": "ben", "kind": "hurt" },
+    "pl0/voice/stage2/v032.sap": { "rdt": "219", "player": 0, "cutscene": 0, "actor": "leon", "condition": "@ada", "nameClipped": { "start": 0.75 } },
 
     "pl0/voice/stage3/v000.sap": { "rdt": "301", "player": 0, "cutscene": 0, "actor": "leon" }, // since leon doesn't know who's ben, could be funny to keep it with everyone
     "pl0/voice/stage3/v001.sap": { "rdt": "301", "player": 0, "cutscene": 0, "actor": "ben" },
