@@ -9,6 +9,7 @@
         public ushort Amount { get; set; }
         public ushort[]? Requires { get; set; }
         public ItemPriority Priority { get; set; }
+        public bool AllowDocuments { get; set; }
 
         public RdtItemId RdtItemId
         {

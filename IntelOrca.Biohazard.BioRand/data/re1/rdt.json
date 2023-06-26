@@ -1071,7 +1071,8 @@
       "items": [
         {
           "id": 6,
-          "requires": [ 30 ]
+          "requires": [ 30 ],
+          "allowDocuments": false
         }
       ]
     },

@@ -125,6 +125,7 @@ namespace IntelOrca.Biohazard
         public string? Priority { get; set; }
         public ushort[]? Requires { get; set; }
         public string[]? RequiresRoom { get; set; }
+        public bool? AllowDocuments { get; set; }
         public bool? DoorRando { get; set; }
         public int? Player { get; set; }
         public int? Scenario { get; set; }

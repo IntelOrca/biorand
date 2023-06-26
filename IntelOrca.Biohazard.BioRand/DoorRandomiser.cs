@@ -888,7 +888,8 @@ namespace IntelOrca.Biohazard
                     RdtId = rdt.RdtId,
                     Id = x.Id,
                     Type = x.Type,
-                    Amount = x.Amount
+                    Amount = x.Amount,
+                    AllowDocuments = true
                 })
                 .ToArray();
 
@@ -1013,7 +1014,8 @@ namespace IntelOrca.Biohazard
                                     Type = (ushort)(correctedItem.Type ?? 0),
                                     Amount = correctedItem.Amount ?? 1,
                                     Requires = correctedItem.Requires,
-                                    Priority = ParsePriority(correctedItem.Priority)
+                                    Priority = ParsePriority(correctedItem.Priority),
+                                    AllowDocuments = correctedItem.AllowDocuments ?? true
                                 }
                             }).ToArray();
                         continue;
@@ -1036,6 +1038,7 @@ namespace IntelOrca.Biohazard
                         }
                         items[idx].Requires = correctedItem.Requires;
                         items[idx].Priority = ParsePriority(correctedItem.Priority);
+                        items[idx].AllowDocuments = correctedItem.AllowDocuments ?? true;
                     }
                     else
                     {
@@ -1047,7 +1050,8 @@ namespace IntelOrca.Biohazard
                                     Type = (ushort)(correctedItem.Type ?? 0),
                                     Amount = correctedItem.Amount ?? 1,
                                     Requires = correctedItem.Requires,
-                                    Priority = ParsePriority(correctedItem.Priority)
+                                    Priority = ParsePriority(correctedItem.Priority),
+                                    AllowDocuments = correctedItem.AllowDocuments ?? true
                                 }
                             }).ToArray();
                     }

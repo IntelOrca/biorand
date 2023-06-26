@@ -942,13 +942,30 @@ namespace IntelOrca.Biohazard
             var shufflePool = _shufflePool
                 .Where(x => x.Priority != ItemPriority.Low)
                 .ToArray();
-            var shuffled = shufflePool.Shuffle(_rng);
+            var shuffled = shufflePool.Shuffle(_rng).ToQueue();
             for (int i = 0; i < shufflePool.Length; i++)
             {
                 var entry = shufflePool[i];
-                entry.Type = shuffled[i].Type;
-                entry.Amount = shuffled[i].Amount;
-                _logger.WriteLine($"    Swapped {shufflePool[i].ToString(_itemHelper)} with {shuffled[i].ToString(_itemHelper)}");
+                var shuffleEntry = shuffled.Dequeue();
+                if (!entry.AllowDocuments)
+                {
+                    var iteration = 0;
+                    while ((_itemHelper.GetItemAttributes((byte)shuffleEntry.Type) & ItemAttribute.Document) != 0)
+                    {
+                        // We can't replace this item with a document,
+                        // put item back on the end and take next one
+                        shuffled.Enqueue(shuffleEntry);
+                        shuffleEntry = shuffled.Dequeue();
+                        iteration++;
+                        if (iteration >= 1000)
+                        {
+                            throw new BioRandUserException("Item could not be replaced with a non-document item.");
+                        }
+                    }
+                }
+                entry.Type = shuffleEntry.Type;
+                entry.Amount = shuffleEntry.Amount;
+                _logger.WriteLine($"    Swapped {shufflePool[i].ToString(_itemHelper)} with {shuffleEntry.ToString(_itemHelper)}");
                 _definedPool.Add(entry);
             }
             _shufflePool.Clear();
