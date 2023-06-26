@@ -2402,7 +2402,7 @@
           "randomPlacements": false
         },
         {
-          "nop": [ 4104 ],
+          "nop": [ "0x1008", "0x0EBE", "0x0EC8" ],
           "excludeTypes": [ 42 ],
           "randomPlacements": true,
           "doorRando": true,
