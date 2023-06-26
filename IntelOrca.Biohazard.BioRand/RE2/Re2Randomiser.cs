@@ -1,9 +1,10 @@
-﻿using IntelOrca.Biohazard.RE1;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using IntelOrca.Biohazard.Model;
+using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.RE3;
 
 namespace IntelOrca.Biohazard.RE2
