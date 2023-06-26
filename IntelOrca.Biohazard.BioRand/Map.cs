@@ -76,7 +76,7 @@ namespace IntelOrca.Biohazard
     public class MapRoom
     {
         public string? LinkedRoom { get; set; }
-        public ushort[]? Requires { get; set; }
+        public int[]? Requires { get; set; }
         public MapRoomDoor[]? Doors { get; set; }
         public MapRoomItem[]? Items { get; set; }
         public MapRoomEnemies[]? Enemies { get; set; }
@@ -94,11 +94,11 @@ namespace IntelOrca.Biohazard
         public string? Target { get; set; }
         public bool? Randomize { get; set; }
         public string? Lock { get; set; }
-        public int? LockId { get; set; }
+        public byte? LockId { get; set; }
         public bool NoReturn { get; set; }
         public bool NoUnlock { get; set; }
         public bool IsBridgeEdge { get; set; }
-        public ushort[]? Requires { get; set; }
+        public int[]? Requires { get; set; }
         public string[]? RequiresRoom { get; set; }
         public bool? DoorRando { get; set; }
         public int? Player { get; set; }
@@ -119,11 +119,11 @@ namespace IntelOrca.Biohazard
     {
         public int Offset { get; set; }
         public byte Id { get; set; }
-        public int? Type { get; set; }
-        public ushort? Amount { get; set; }
+        public byte? Type { get; set; }
+        public byte? Amount { get; set; }
         public string? Link { get; set; }
         public string? Priority { get; set; }
-        public ushort[]? Requires { get; set; }
+        public int[]? Requires { get; set; }
         public string[]? RequiresRoom { get; set; }
         public bool? AllowDocuments { get; set; }
         public bool? DoorRando { get; set; }

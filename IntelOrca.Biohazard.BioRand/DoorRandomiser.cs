@@ -329,7 +329,7 @@ namespace IntelOrca.Biohazard
                         LockDoor(edge);
 
                         // Remove requirement of keys
-                        edge.Requires = new ushort[0];
+                        edge.Requires = new byte[0];
                     }
                 }
             }
@@ -586,7 +586,7 @@ namespace IntelOrca.Biohazard
             ConnectDoor(entrance, exit, loopback);
         }
 
-        private void AddToKeyItemRequiredCount(IEnumerable<ushort> keys)
+        private void AddToKeyItemRequiredCount(IEnumerable<byte> keys)
         {
             foreach (var key in keys)
             {
@@ -908,7 +908,7 @@ namespace IntelOrca.Biohazard
             if (mapRoom == null)
                 throw new Exception("No JSON definition for room");
 
-            node.Requires = mapRoom.Requires ?? Array.Empty<ushort>();
+            node.Requires = mapRoom.Requires?.Select(x => (byte)x).ToArray() ?? Array.Empty<byte>();
             if (mapRoom.Items != null)
             {
                 node.RequiresRoom = mapRoom.Items
@@ -976,7 +976,7 @@ namespace IntelOrca.Biohazard
                     }
 
                     var edgeNode = GetOrCreateNode(target.Rdt);
-                    var edge = new PlayEdge(node, edgeNode, door.NoReturn, door.Requires, doorId, entrance);
+                    var edge = new PlayEdge(node, edgeNode, door.NoReturn, door.Requires?.Select(x => (byte)x).ToArray(), doorId, entrance);
                     edge.Randomize = door.Randomize ?? true;
                     edge.NoUnlock = door.NoUnlock;
                     edge.IsBridgeEdge = door.IsBridgeEdge;
@@ -1013,7 +1013,7 @@ namespace IntelOrca.Biohazard
                                     Id = correctedItem.Id,
                                     Type = (ushort)(correctedItem.Type ?? 0),
                                     Amount = correctedItem.Amount ?? 1,
-                                    Requires = correctedItem.Requires,
+                                    Requires = correctedItem.Requires?.Select(x => (byte)x).ToArray(),
                                     Priority = ParsePriority(correctedItem.Priority),
                                     AllowDocuments = correctedItem.AllowDocuments ?? true
                                 }
@@ -1036,7 +1036,7 @@ namespace IntelOrca.Biohazard
                             var rdtItemId = RdtItemId.Parse(correctedItem.Link);
                             node.LinkedItems.Add(correctedItem.Id, rdtItemId);
                         }
-                        items[idx].Requires = correctedItem.Requires;
+                        items[idx].Requires = correctedItem.Requires?.Select(x => (byte)x).ToArray();
                         items[idx].Priority = ParsePriority(correctedItem.Priority);
                         items[idx].AllowDocuments = correctedItem.AllowDocuments ?? true;
                     }
@@ -1049,7 +1049,7 @@ namespace IntelOrca.Biohazard
                                     Id = correctedItem.Id,
                                     Type = (ushort)(correctedItem.Type ?? 0),
                                     Amount = correctedItem.Amount ?? 1,
-                                    Requires = correctedItem.Requires,
+                                    Requires = correctedItem.Requires?.Select(x => (byte)x).ToArray(),
                                     Priority = ParsePriority(correctedItem.Priority),
                                     AllowDocuments = correctedItem.AllowDocuments ?? true
                                 }

@@ -22,8 +22,8 @@ namespace IntelOrca.Biohazard
         private List<ItemPoolEntry> _shufflePool = new List<ItemPoolEntry>();
         private List<ItemPoolEntry> _definedPool = new List<ItemPoolEntry>();
         private HashSet<KeyRequirement> _requiredItems = new HashSet<KeyRequirement>();
-        private HashSet<ushort> _startKeyItems = new HashSet<ushort>();
-        private HashSet<ushort> _haveItems = new HashSet<ushort>();
+        private HashSet<byte> _startKeyItems = new HashSet<byte>();
+        private HashSet<byte> _haveItems = new HashSet<byte>();
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
         private HashSet<RdtItemId> _visitedItems = new HashSet<RdtItemId>();
 
@@ -405,7 +405,7 @@ namespace IntelOrca.Biohazard
                     if (!edge.RequiresRoom.All(x => _visitedRooms.Contains(x)))
                         continue;
 
-                    var requiredItems = edge.Requires == null ? new ushort[0] : edge.Requires.Except(_haveItems).ToArray()!;
+                    var requiredItems = edge.Requires == null ? new byte[0] : edge.Requires.Except(_haveItems).ToArray()!;
                     var justOptionalLeft = requiredItems.All(x => _itemHelper.IsOptionalItem(_config, (byte)x));
                     if (requiredItems.Length == 0 || justOptionalLeft)
                     {
@@ -446,7 +446,7 @@ namespace IntelOrca.Biohazard
             return checkpoint;
         }
 
-        private bool HasAllRequiredItems(ushort[]? items)
+        private bool HasAllRequiredItems(byte[]? items)
         {
             if (items != null && items.Length != 0)
             {
@@ -545,7 +545,7 @@ namespace IntelOrca.Biohazard
             _requiredItems.Clear();
         }
 
-        private ushort[] GetKeyItemPlaceOrder()
+        private byte[] GetKeyItemPlaceOrder()
         {
             UpdateRequiredItemList();
             return _requiredItems
@@ -571,7 +571,7 @@ namespace IntelOrca.Biohazard
             _requiredItems.RemoveWhere(x => x.Keys.All(x => _haveItems.Contains(x)));
         }
 
-        private bool PlaceKeyItem(ushort req, bool alternativeRoute)
+        private bool PlaceKeyItem(byte req, bool alternativeRoute)
         {
             // HACK for RE 2, Leon has lighter from start, Claire has lockpick instead of small keys
             //      this means it won't exist anywhere in the game when adding it in
@@ -694,7 +694,7 @@ namespace IntelOrca.Biohazard
             return true;
         }
 
-        private (PlayNode, int)? FindKeyInLaterArea(ushort req)
+        private (PlayNode, int)? FindKeyInLaterArea(byte req)
         {
             foreach (var node in _nodes)
             {
@@ -1074,7 +1074,7 @@ namespace IntelOrca.Biohazard
                 rdt.Patches.Add(new KeyValuePair<int, byte>(0x1C7A, 5));
         }
 
-        private ushort GetTotalKeyRequirementCount(PlayNode node, ushort keyType)
+        private byte GetTotalKeyRequirementCount(PlayNode node, byte keyType)
         {
             if (_itemHelper.IsItemInfinite((byte)keyType))
                 return 0;
@@ -1082,7 +1082,7 @@ namespace IntelOrca.Biohazard
             if (!_itemHelper.IsRe2ItemIdsDiscardable((byte)keyType))
                 return 1;
 
-            ushort total = 0;
+            byte total = 0;
             var visited = new HashSet<PlayNode>();
             var stack = new Stack<PlayNode>();
             stack.Push(node);
@@ -1114,16 +1114,16 @@ namespace IntelOrca.Biohazard
 
         private class KeyRequirement : IEquatable<KeyRequirement>
         {
-            public ushort[] Keys { get; }
+            public byte[] Keys { get; }
             public ItemPoolEntry? Item { get; }
             public bool IsDoor { get; }
 
-            public KeyRequirement(IEnumerable<ushort> keys)
+            public KeyRequirement(IEnumerable<byte> keys)
                 : this(keys, null, false)
             {
             }
 
-            public KeyRequirement(IEnumerable<ushort> keys, ItemPoolEntry? item, bool isDoor = false)
+            public KeyRequirement(IEnumerable<byte> keys, ItemPoolEntry? item, bool isDoor = false)
             {
                 Keys = keys.OrderBy(x => x).ToArray();
                 if (Keys.Length == 0)

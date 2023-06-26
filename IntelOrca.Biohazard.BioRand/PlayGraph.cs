@@ -143,10 +143,10 @@ namespace IntelOrca.Biohazard
         public RdtId? LinkedRdtId { get; set; }
         public ItemPoolEntry[] Items { get; set; } = Array.Empty<ItemPoolEntry>();
         public Dictionary<byte, RdtItemId> LinkedItems { get; set; } = new Dictionary<byte, RdtItemId>();
-        public ushort[] Requires { get; set; } = Array.Empty<ushort>();
+        public byte[] Requires { get; set; } = Array.Empty<byte>();
         public PlayNode[] RequiresRoom { get; set; } = Array.Empty<PlayNode>();
         public List<PlayEdge> Edges { get; } = new List<PlayEdge>();
-        public ushort[] DoorRandoAllRequiredItems { get; set; } = Array.Empty<ushort>();
+        public byte[] DoorRandoAllRequiredItems { get; set; } = Array.Empty<byte>();
         public DoorRandoCategory Category { get; set; }
         public int[] DoorRandoNop { get; set; } = Array.Empty<int>();
         public List<ItemPoolEntry> PlacedKeyItems { get; } = new List<ItemPoolEntry>();
@@ -188,7 +188,7 @@ namespace IntelOrca.Biohazard
         public LockKind Lock { get; set; }
         public byte LockId { get; set; }
         public bool NoReturn { get; set; }
-        public ushort[] Requires { get; set; }
+        public byte[] Requires { get; set; }
         public PlayNode[] RequiresRoom { get; set; } = Array.Empty<PlayNode>();
         public int? DoorId { get; }
         public DoorEntrance? Entrance { get; set; }
@@ -197,13 +197,13 @@ namespace IntelOrca.Biohazard
         public bool NoUnlock { get; set; }
         public bool IsBridgeEdge { get; set; }
 
-        public PlayEdge(PlayNode parent, PlayNode node, bool noReturn, ushort[]? requires, int? doorId, DoorEntrance? entrance)
+        public PlayEdge(PlayNode parent, PlayNode node, bool noReturn, byte[]? requires, int? doorId, DoorEntrance? entrance)
         {
             Parent = parent;
             OriginalTargetRdt = node.RdtId;
             Node = node;
             NoReturn = noReturn;
-            Requires = requires ?? new ushort[0];
+            Requires = requires ?? new byte[0];
             DoorId = doorId;
             Entrance = entrance;
         }
