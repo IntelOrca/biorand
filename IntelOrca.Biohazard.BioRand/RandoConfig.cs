@@ -41,6 +41,7 @@ namespace IntelOrca.Biohazard
         // Numbers
         public byte Player0 { get; set; }
         public byte Player1 { get; set; }
+        public bool SwapCharacters { get; set; }
         public byte Weapon0 { get; set; } = 1;
         public byte Weapon1 { get; set; } = 1;
         public byte WeaponQuantity { get; set; } = 7;
@@ -101,7 +102,8 @@ namespace IntelOrca.Biohazard
 
             result.Player0 = reader.ReadByte(6);
             result.Player1 = reader.ReadByte(6);
-            reader.ReadByte(3);
+            reader.ReadByte(2);
+            result.SwapCharacters = reader.ReadFlag();
 
             result.RandomInventory = reader.ReadFlag();
             result.RandomEnemyPlacement = reader.ReadFlag();
@@ -171,7 +173,8 @@ namespace IntelOrca.Biohazard
 
             writer.Write(6, Player0);
             writer.Write(6, Player1);
-            writer.Write(3, 0);
+            writer.Write(2, 0);
+            writer.Write(SwapCharacters);
 
             writer.Write(RandomInventory);
             writer.Write(RandomEnemyPlacement);
@@ -205,7 +208,7 @@ namespace IntelOrca.Biohazard
             get => GameVariant & 1;
             set => GameVariant = (byte)((GameVariant & ~1) | (value & 1));
         }
-        
+
         public int Player
         {
             get => (GameVariant >> 1) & 1;

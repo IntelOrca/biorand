@@ -510,11 +510,26 @@ namespace IntelOrca.Biohazard
             if (!config.ChangePlayer)
                 return GetPlayerName(player).ToLower();
 
-            var pldIndex = (player == 0 ? config.Player0 : config.Player1) - 1;
-            var pldPath = DataManager.GetDirectories(BiohazardVersion, $"pld{player}")
+            var pldPath = GetSelectedPldPath(config, player);
+            return Path.GetFileName(pldPath).ToLower();
+        }
+
+        protected string GetSelectedPldPath(RandoConfig config, int player)
+        {
+            var pldIndex = GetSelectedPldIndex(config, player);
+            var pldDirectoryIndex = config.SwapCharacters ? player ^ 1 : player;
+            var pldPath = DataManager.GetDirectories(BiohazardVersion, $"pld{pldDirectoryIndex}")
                 .Skip(pldIndex)
                 .FirstOrDefault();
-            return Path.GetFileName(pldPath).ToLower();
+            return pldPath;
+        }
+
+        protected int GetSelectedPldIndex(RandoConfig config, int player)
+        {
+            var player0 = config.SwapCharacters ? config.Player1 : config.Player0;
+            var player1 = config.SwapCharacters ? config.Player0 : config.Player1;
+            var pldIndex = (player == 0 ? player0 : player1) - 1;
+            return pldIndex;
         }
 
         public virtual string[] GetNPCs()

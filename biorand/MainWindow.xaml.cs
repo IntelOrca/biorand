@@ -193,6 +193,20 @@ namespace IntelOrca.Biohazard.BioRand
                 chkPlayer.IsChecked = _config.ChangePlayer;
                 dropdownPlayer0.SelectedIndex = Math.Min(_config.Player0, dropdownPlayer0.Items.Count - 1);
                 dropdownPlayer1.SelectedIndex = Math.Min(_config.Player1, dropdownPlayer1.Items.Count - 1);
+                chkSwapCharacters.IsChecked = _config.SwapCharacters;
+
+                dropdownPlayer0Container.Child = null;
+                dropdownPlayer1Container.Child = null;
+                if (chkSwapCharacters.IsChecked == true)
+                {
+                    dropdownPlayer0Container.Child = dropdownPlayer1;
+                    dropdownPlayer1Container.Child = dropdownPlayer0;
+                }
+                else
+                {
+                    dropdownPlayer0Container.Child = dropdownPlayer0;
+                    dropdownPlayer1Container.Child = dropdownPlayer1;
+                }
 
                 if (listEnemies.ItemsSource != null)
                 {
@@ -263,8 +277,8 @@ namespace IntelOrca.Biohazard.BioRand
                 btnStartRE.Content = $"Start RE{_config.Game}";
                 var gameLocationPath = GetGameLocation();
                 var gameExecutableName = GetGameExecutable();
-                btnStartRE.IsEnabled = !string.IsNullOrEmpty(gameLocationPath) 
-                                        && !string.IsNullOrEmpty(gameExecutableName) 
+                btnStartRE.IsEnabled = !string.IsNullOrEmpty(gameLocationPath)
+                                        && !string.IsNullOrEmpty(gameExecutableName)
                                         && File.Exists(Path.Combine(gameLocationPath, gameExecutableName));
                 btnStartRE.ToolTip = $"Start the '{Path.GetFileName(gameExecutableName)}' executable.";
 
@@ -398,6 +412,7 @@ namespace IntelOrca.Biohazard.BioRand
             _config.ChangePlayer = chkPlayer.IsChecked == true;
             _config.Player0 = (byte)dropdownPlayer0.SelectedIndex;
             _config.Player1 = (byte)dropdownPlayer1.SelectedIndex;
+            _config.SwapCharacters = chkSwapCharacters.IsChecked == true;
 
             _config.EnemyRatios = listEnemies.ItemsSource
                 .Cast<SliderListItem>()
@@ -481,6 +496,13 @@ namespace IntelOrca.Biohazard.BioRand
                     {
                         yield return grandChild;
                     }
+                }
+            }
+            else if (parent is Decorator d)
+            {
+                foreach (var grandChild in GetAllControls(d.Child))
+                {
+                    yield return grandChild;
                 }
             }
         }
@@ -1019,6 +1041,7 @@ namespace IntelOrca.Biohazard.BioRand
                 lblPlayer1.Visibility = Visibility.Visible;
                 dropdownPlayer1.Visibility = Visibility.Visible;
             }
+            chkSwapCharacters.Visibility = SelectedGame != 2 ? Visibility.Visible : Visibility.Hidden;
         }
 
         private void UpdateEnemies()

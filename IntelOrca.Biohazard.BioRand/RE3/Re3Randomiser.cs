@@ -1,9 +1,8 @@
-﻿using IntelOrca.Biohazard.RE1;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using IntelOrca.Biohazard.RE1;
 
 namespace IntelOrca.Biohazard.RE3
 {
@@ -184,10 +183,7 @@ namespace IntelOrca.Biohazard.RE3
             if (config.ChangePlayer)
             {
                 // Change main
-                var pldIndex = (config.Player == 0 ? config.Player0 : config.Player1) - 1;
-                var pldPath = DataManager.GetDirectories(BiohazardVersion, $"pld{config.Player}")
-                    .Skip(pldIndex)
-                    .FirstOrDefault();
+                var pldPath = GetSelectedPldPath(config, config.Player);
                 actor = Path.GetFileName(pldPath);
                 SwapPlayerCharacter(config, logger, fileRepository, 0, "C_02.VB", actor);
 

@@ -139,10 +139,7 @@ namespace IntelOrca.Biohazard.RE1
             var partner = config.Player == 0 ? "rebecca" : "barry";
             if (config.ChangePlayer)
             {
-                var pldIndex = (config.Player == 0 ? config.Player0 : config.Player1) - 1;
-                var pldPath = DataManager.GetDirectories(BiohazardVersion, $"pld{config.Player}")
-                    .Skip(pldIndex)
-                    .FirstOrDefault();
+                var pldPath = GetSelectedPldPath(config, config.Player);
                 actor = Path.GetFileName(pldPath);
                 SwapPlayerCharacter(config, logger, actor, fileRepository);
             }
@@ -190,7 +187,7 @@ namespace IntelOrca.Biohazard.RE1
         private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, string actor, FileRepository fileRepository)
         {
             var originalPlayerActor = config.Player == 0 ? "chris" : "jill";
-            var srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld{config.Player}\\{actor}");
+            var srcPldDir = GetSelectedPldPath(config, config.Player);
             var srcFacePath = DataManager.GetPath(BiohazardVersion, $"face\\{actor}.tim");
 
             if (originalPlayerActor != actor)
@@ -206,7 +203,7 @@ namespace IntelOrca.Biohazard.RE1
             var pldFiles = Directory.GetFiles(srcPldDir);
             foreach (var pldPath in pldFiles)
             {
-                var pldFile = Path.GetFileName(pldPath);
+                var pldFile = config.Player == 0 ? "char10.emd" : "char11.emd";
                 var dstDir = pldFile.EndsWith(".emd", StringComparison.OrdinalIgnoreCase) ?
                     targetEnemyDir :
                     targetPlayersDir;

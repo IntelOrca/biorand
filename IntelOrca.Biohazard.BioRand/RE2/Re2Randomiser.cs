@@ -156,10 +156,7 @@ namespace IntelOrca.Biohazard.RE2
             var deathSoundIndex = config.Player == 0 ? 32 : 33;
             if (config.ChangePlayer)
             {
-                var selectedPldIndex = (config.Player == 0 ? config.Player0 : config.Player1) - 1;
-                var pldPath = DataManager.GetDirectories(BiohazardVersion, $"pld{config.Player}")
-                    .Skip(selectedPldIndex)
-                    .FirstOrDefault();
+                var pldPath = GetSelectedPldPath(config, config.Player);
                 actor = Path.GetFileName(pldPath);
                 if (actor == "sherry")
                 {

@@ -10,6 +10,9 @@ namespace IntelOrca.Biohazard.Tests
     public class TestRE1Rando : TestBaseRandomizer
     {
         public override byte Game => 1;
+
+        [Fact]
+        public void SwapPlayers() => SwapPlayersInner();
     }
 
     public class TestRE2Rando : TestBaseRandomizer
@@ -17,10 +20,10 @@ namespace IntelOrca.Biohazard.Tests
         public override byte Game => 2;
 
         [Fact]
-        public void RandomizeEnemyPlacements()
-        {
-            RandomizeEnemyPlacementsInner();
-        }
+        public void SwapPlayers() => SwapPlayersInner();
+
+        [Fact]
+        public void RandomizeEnemyPlacements() => RandomizeEnemyPlacementsInner();
     }
 
     public class TestRE3Rando : TestBaseRandomizer
@@ -28,10 +31,7 @@ namespace IntelOrca.Biohazard.Tests
         public override byte Game => 3;
 
         [Fact]
-        public void RandomizeEnemyPlacements()
-        {
-            RandomizeEnemyPlacementsInner();
-        }
+        public void RandomizeEnemyPlacements() => RandomizeEnemyPlacementsInner();
     }
 
     public abstract class TestBaseRandomizer
@@ -43,6 +43,13 @@ namespace IntelOrca.Biohazard.Tests
         {
             var config = GetBaseConfig();
             config.RandomDoors = true;
+            Randomize(config);
+        }
+
+        protected void SwapPlayersInner()
+        {
+            var config = GetBaseConfig();
+            config.SwapCharacters = true;
             Randomize(config);
         }
 
