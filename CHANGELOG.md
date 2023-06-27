@@ -1,3 +1,23 @@
+BioRand v3.0.8 (2023-06-27)
+
+* [Feature] Add music tracks from RE 1 remake.
+* [Feature] RE 1, RE 2, allow Leon/Claire characters to be swapped.
+* [Feature] RE 2, Allow partner to be a male character.
+* [Fix] #270: RE 2, Claire B, Magnum/Shotgun cannot kill enemies.
+* [Fix] #446: Enemies sliders not working properly.
+* [Fix] #447: RE 1, room 603, crash when hunter jumps you.
+* [Fix] #449: RE 3, room 105, NPC change to 96 crashes the game.
+* [Fix] #451: RE 3, room 206, enemies not disabled for post-basement cutscene.
+* [Fix] #452: RE 3, doors to rooms originally connected to room 105 are locked.
+* [Fix] #454: RE 2, room 405, Leon A, 6+ spiders crashes the game.
+* [Fix] #457: RE 3, room 122, enemy event crashes the game if not zombie.
+* [Fix] #458: RE 3, room 10F, killing dogs crashes the game.
+* [Fix] #459: RE 1, room 306, crash when picking up item which is replaced with a document.
+* [Fix] #460: RE 2, room 219, possible crash when Ben is replaced with EM5A.
+* [Fix] #461: RE 3, room 105, NPC change to 95 crashes the game.
+* [Fix] #462: RE 3, room 507, enemies unable to move.
+* [Fix] RE 2, Sherry weapon hit scan.
+
 BioRand v3.0.7 (2023-06-17)
 
 * [Fix] #443: RE 3, new characters animations glitch or crash.
