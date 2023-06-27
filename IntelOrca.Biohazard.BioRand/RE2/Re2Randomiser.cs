@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.RE1;
@@ -129,6 +130,7 @@ namespace IntelOrca.Biohazard.RE2
             }
 
             FixClaireWeapons();
+            FixWeaponHitScan(config);
             DisableWaitForSherry();
 
             // tmoji.bin
@@ -524,6 +526,61 @@ namespace IntelOrca.Biohazard.RE2
                 bw.Write(1);
                 bw.Write(b);
             }
+        }
+
+        private void FixWeaponHitScan(RandoConfig config)
+        {
+            var table = new short[]
+            {
+                0, 0, 0, 0,
+                -200, 300, 0, 0,
+                -200, 300, -2427, -2120,
+                -200, 300, -2427, -2120,
+                -200, 300, -2427, -2120,
+                -200, 300, -2427, -2120,
+                -200, 300, -2427, -2120,
+                -500, 150, -1813, -1506,
+                -500, 200, -1813, -1506,
+                -200, 300, 0, 0,
+                -200, 300, 0, 0,
+                -200, 300, 0, 0,
+                -200, 300, 0, 0,
+                -400, 30, -1850, -1890,
+                -600, 600, -1894, -1809,
+                -400, 200, -1894, -1809,
+                -200, 300, 0, 0,
+                -200, 300, 0, 0,
+                -200, 300, -2427, -2120,
+                -200, 300, -2427, -2120,
+            };
+
+            var actor = GetSelectedActor(config, config.SwapCharacters ? 0 : 1);
+            if (actor == "sherry")
+            {
+                // Override Claire with Sherry values, -2120 becomes -1565
+                for (var i = 0; i < table.Length; i += 4)
+                {
+                    table[i + 3] += 555;
+                }
+            }
+
+            if (config.SwapCharacters)
+            {
+                // Swap Leon and Claires values around
+                for (var i = 0; i < table.Length; i += 4)
+                {
+                    (table[i + 3], table[i + 2]) = (table[i + 2], table[i + 3]);
+                }
+            }
+
+            var pw = new PatchWriter(ExePatch);
+            pw.Begin(0x53A358);
+            var data = MemoryMarshal.Cast<short, byte>(new Span<short>(table));
+            foreach (var d in data)
+            {
+                pw.Write(d);
+            }
+            pw.End();
         }
 
         private void DisableWaitForSherry()

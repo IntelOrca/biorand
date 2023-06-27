@@ -171,13 +171,9 @@
                                     <Border Grid.Row="1" Grid.Column="2" x:Name="dropdownPlayer1Container">
                                         <ComboBox x:Name="dropdownPlayer1" />
                                     </Border>
-                                    <CheckBox Grid.Row="2" Grid.ColumnSpan="3" Margin="0,4,0,0" x:Name="chkSwapCharacters">
-                                        <CheckBox.ToolTip>Allow male characters to play Claire's scenario, and female characters to play Leon's scenario. Warning: there is current a weapon hit scan issue depending on character and weapon.</CheckBox.ToolTip>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock>Swap characters</TextBlock>
-                                            <TextBlock Foreground="Red" Margin="4,0,0,0">(experimental)</TextBlock>
-                                        </StackPanel>
-                                    </CheckBox>
+                                    <CheckBox Grid.Row="2" Grid.ColumnSpan="3" Margin="0,4,0,0" x:Name="chkSwapCharacters"
+                                              ToolTip="Allow male characters to play Claire's scenario, and female characters to play Leon's scenario."
+                                              Content="Swap characters" />
                                 </Grid>
                             </local:CheckGroupBox>
                             <local:CheckGroupBox x:Name="chkRngDoors" Header="Randomize Doors">
