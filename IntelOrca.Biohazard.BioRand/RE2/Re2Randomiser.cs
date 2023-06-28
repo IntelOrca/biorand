@@ -564,22 +564,38 @@ namespace IntelOrca.Biohazard.RE2
                 -200, 300, -2427, -2120,
             };
 
-            var actor = GetSelectedActor(config, config.SwapCharacters ? 0 : 1);
-            if (actor == "sherry")
-            {
-                // Override Claire with Sherry values, -2120 becomes -1565
-                for (var i = 0; i < table.Length; i += 4)
-                {
-                    table[i + 3] += 555;
-                }
-            }
-
             if (config.SwapCharacters)
             {
                 // Swap Leon and Claires values around
                 for (var i = 0; i < table.Length; i += 4)
                 {
                     (table[i + 3], table[i + 2]) = (table[i + 2], table[i + 3]);
+                }
+            }
+
+            for (var i = 0; i < 2; i++)
+            {
+                var pldPath = GetSelectedPldPath(config, i);
+                var csvPath = Path.Combine(pldPath, "weapons.csv");
+                if (!File.Exists(csvPath))
+                    continue;
+
+                var csv = File.ReadAllLines(csvPath)
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .Select(x => x.Trim().Split(','))
+                    .ToArray();
+
+                var k = 0;
+                for (var j = 0; j < table.Length; j += 4)
+                {
+                    for (var l = 0; l < 4; l++)
+                    {
+                        if ((i == 0 && l == 3) || (i == 1 && l == 2))
+                            continue;
+
+                        table[i + l] = short.Parse(csv[k][l]);
+                    }
+                    k++;
                 }
             }
 
