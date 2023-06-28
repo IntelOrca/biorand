@@ -43,6 +43,22 @@ namespace IntelOrca.Biohazard
             return actor;
         }
 
+        public static bool IsSherryActor(this string? actor)
+        {
+            var sherry = "sherry";
+            if (actor == null)
+                return false;
+
+            var fsIndex = actor.IndexOf('.');
+            if (fsIndex != -1)
+            {
+                if (actor.Length - fsIndex + 1 != sherry.Length)
+                    return false;
+                return actor.StartsWith(sherry, StringComparison.OrdinalIgnoreCase);
+            }
+            return string.Equals(actor, sherry, StringComparison.OrdinalIgnoreCase);
+        }
+
         public static T[] Shuffle<T>(this IEnumerable<T> items, Rng rng)
         {
             var array = items.ToArray();

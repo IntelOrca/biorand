@@ -414,11 +414,11 @@ namespace IntelOrca.Biohazard
                         var newActor = GetActor(newType);
                         if (oldActor != newActor)
                         {
-                            if (IsSherryActor(oldActor) && !IsSherryActor(newActor))
+                            if (oldActor.IsSherryActor() && !newActor.IsSherryActor())
                             {
                                 ScaleEMRs(rdt, enemy.Id, true);
                             }
-                            else if (IsSherryActor(newActor) && !IsSherryActor(oldActor))
+                            else if (newActor.IsSherryActor() && !oldActor.IsSherryActor())
                             {
                                 ScaleEMRs(rdt, enemy.Id, false);
                             }
@@ -450,22 +450,6 @@ namespace IntelOrca.Biohazard
             {
                 Re2Randomiser.ScaleEmrY(_logger, rdt, flags, inverse);
             }
-        }
-
-        private static bool IsSherryActor(string? actor)
-        {
-            var sherry = "sherry";
-            if (actor == null)
-                return false;
-
-            var fsIndex = actor.IndexOf('.');
-            if (fsIndex != -1)
-            {
-                if (actor.Length - fsIndex + 1 != sherry.Length)
-                    return false;
-                return actor.StartsWith(sherry, StringComparison.OrdinalIgnoreCase);
-            }
-            return string.Equals(actor, sherry, StringComparison.OrdinalIgnoreCase);
         }
 
         private Dictionary<string, string> RandomizeCharacters(Rdt rdt, Rng rng, byte[] defaultIncludeTypes, MapRoomNpcs[] npcs, Dictionary<int, byte> offsetToTypeMap, Dictionary<byte, byte> idToTypeMap)
@@ -522,13 +506,13 @@ namespace IntelOrca.Biohazard
                         if (idToTypeMap.TryGetValue(enemyId, out var alreadyType))
                         {
                             var actor = GetActor(alreadyType);
-                            if (IsSherryActor(actor))
+                            if (actor.IsSherryActor())
                             {
-                                supportedNpcs = supportedNpcs.Where(x => IsSherryActor(GetActor(x))).ToArray();
+                                supportedNpcs = supportedNpcs.Where(x => GetActor(x).IsSherryActor()).ToArray();
                             }
                             else
                             {
-                                supportedNpcs = supportedNpcs.Where(x => !IsSherryActor(GetActor(x))).ToArray();
+                                supportedNpcs = supportedNpcs.Where(x => !GetActor(x).IsSherryActor()).ToArray();
                             }
                         }
                     }

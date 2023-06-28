@@ -160,7 +160,7 @@ namespace IntelOrca.Biohazard.RE2
             {
                 var pldPath = GetSelectedPldPath(config, config.Player);
                 actor = Path.GetFileName(pldPath);
-                if (actor == "sherry")
+                if (actor.IsSherryActor())
                 {
                     foreach (var rdt in gameData.Rdts)
                     {
