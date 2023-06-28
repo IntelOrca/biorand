@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.RE1;
@@ -177,12 +178,19 @@ namespace IntelOrca.Biohazard.RE2
             ReplacePlayer(config, logger, fileRepository, pldIndex, hurtSoundIndex, deathSoundIndex, actor);
 
             // Some characters like Sherry need new enemy animations
-            var emdFiles = DataManager.GetFiles(BiohazardVersion, $"pld{config.Player}/{actor}/emd{config.Player}");
+            var srcPldDir = GetPldDirectory(actor, out var srcPldIndex);
+            var emdFiles = DataManager.GetFiles(BiohazardVersion, Path.Combine(srcPldDir, $"emd{srcPldIndex}"));
             var emdFolder = fileRepository.GetModPath($"pl{config.Player}/emd{config.Player}");
             Directory.CreateDirectory(emdFolder);
             foreach (var src in emdFiles)
             {
-                var dst = Path.Combine(emdFolder, Path.GetFileName(src));
+                var dstFileName = Path.GetFileName(src);
+                var match = Regex.Match(dstFileName, "em[0-9]([0-9a-f][0-9a-f]).emd", RegexOptions.IgnoreCase);
+                if (match.Success)
+                {
+                    dstFileName = $"em{config.Player}{match.Groups[1].Value}.emd";
+                }
+                var dst = Path.Combine(emdFolder, dstFileName);
                 File.Copy(src, dst, true);
             }
 
@@ -317,13 +325,7 @@ namespace IntelOrca.Biohazard.RE2
             };
 
             var originalPlayerActor = originalPLDs[pldIndex];
-            var srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld0\\{actor}");
-            var basePldIndex = 0;
-            if (!Directory.Exists(srcPldDir))
-            {
-                srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld1\\{actor}");
-                basePldIndex = 1;
-            }
+            var srcPldDir = GetPldDirectory(actor, out var basePldIndex);
 
             logger.WriteHeading($"Randomizing Player PL{pldIndex:X2}:");
             logger.WriteLine($"{originalPlayerActor} becomes {actor}");
@@ -417,11 +419,7 @@ namespace IntelOrca.Biohazard.RE2
             if (BgCreator == null)
                 return;
 
-            var srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld0\\{actor}");
-            if (!Directory.Exists(srcPldDir))
-            {
-                srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld1\\{actor}");
-            }
+            var srcPldDir = GetPldDirectory(actor, out _);
             var facePath = DataManager.GetPath(BiohazardVersion, Path.Combine(srcPldDir, "face.png"));
             if (!File.Exists(facePath))
                 return;
@@ -443,6 +441,18 @@ namespace IntelOrca.Biohazard.RE2
                 }
                 timCollection.Save(outputTimPath);
             }
+        }
+
+        private string GetPldDirectory(string actor, out int pldIndex)
+        {
+            var srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld0\\{actor}");
+            pldIndex = 0;
+            if (!Directory.Exists(srcPldDir))
+            {
+                srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld1\\{actor}");
+                pldIndex = 1;
+            }
+            return srcPldDir;
         }
 
         protected override void SerialiseInventory(FileRepository fileRepository)
