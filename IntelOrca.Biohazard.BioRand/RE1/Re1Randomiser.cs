@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using IntelOrca.Biohazard.RE3;
@@ -159,8 +160,8 @@ namespace IntelOrca.Biohazard.RE1
 
             for (int i = 0; i < 2; i++)
             {
-                var actor = GetSelectedActor(config, i);
-                var facePath = DataManager.GetPath(BiohazardVersion, Path.Combine($"pld{i}", actor, "face.png"));
+                var pldPath = GetSelectedPldPath(config, i);
+                var facePath = DataManager.GetPath(BiohazardVersion, Path.Combine(pldPath, "face.png"));
                 if (File.Exists(facePath))
                 {
                     BgCreator.DrawImage(timFile, facePath, i * 32, 0);
@@ -203,11 +204,14 @@ namespace IntelOrca.Biohazard.RE1
             var pldFiles = Directory.GetFiles(srcPldDir);
             foreach (var pldPath in pldFiles)
             {
-                var pldFile = config.Player == 0 ? "char10.emd" : "char11.emd";
-                var dstDir = pldFile.EndsWith(".emd", StringComparison.OrdinalIgnoreCase) ?
-                    targetEnemyDir :
-                    targetPlayersDir;
-                File.Copy(pldPath, Path.Combine(dstDir, pldFile), true);
+                if (Regex.IsMatch(Path.GetFileName(pldPath), "char1[01].emd", RegexOptions.IgnoreCase))
+                {
+                    var pldFile = config.Player == 0 ? "char10.emd" : "char11.emd";
+                    var dstDir = pldFile.EndsWith(".emd", StringComparison.OrdinalIgnoreCase) ?
+                        targetEnemyDir :
+                        targetPlayersDir;
+                    File.Copy(pldPath, Path.Combine(dstDir, pldFile), true);
+                }
             }
 
             // Replace hurt sounds
