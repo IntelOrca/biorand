@@ -593,7 +593,7 @@ namespace IntelOrca.Biohazard.RE2
                         if ((i == 0 && l == 3) || (i == 1 && l == 2))
                             continue;
 
-                        table[i + l] = short.Parse(csv[k][l]);
+                        table[j + l] = short.Parse(csv[k][l]);
                     }
                     k++;
                 }
