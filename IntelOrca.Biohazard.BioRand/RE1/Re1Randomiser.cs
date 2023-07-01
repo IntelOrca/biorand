@@ -202,15 +202,24 @@ namespace IntelOrca.Biohazard.RE1
             Directory.CreateDirectory(targetEnemyDir);
             Directory.CreateDirectory(targetPlayersDir);
             var pldFiles = Directory.GetFiles(srcPldDir);
-            foreach (var pldPath in pldFiles)
+            foreach (var pldFile in pldFiles)
             {
-                if (Regex.IsMatch(Path.GetFileName(pldPath), "char1[01].emd", RegexOptions.IgnoreCase))
+                var fileName = Path.GetFileName(pldFile);
+                if (Regex.IsMatch(fileName, "char1[01].emd", RegexOptions.IgnoreCase))
                 {
-                    var pldFile = config.Player == 0 ? "char10.emd" : "char11.emd";
-                    var dstDir = pldFile.EndsWith(".emd", StringComparison.OrdinalIgnoreCase) ?
-                        targetEnemyDir :
-                        targetPlayersDir;
-                    File.Copy(pldPath, Path.Combine(dstDir, pldFile), true);
+                    var targetFileName = config.Player == 0 ? "CHAR10.EMD" : "CHAR11.EMD";
+                    File.Copy(pldFile, Path.Combine(targetEnemyDir, targetFileName), true);
+                    continue;
+                }
+
+                var regex = Regex.Match(fileName, "w([0-9a-f][0-9a-f]).emw", RegexOptions.IgnoreCase);
+                if (regex.Success)
+                {
+                    var originalIndex = Convert.ToInt32(regex.Groups[1].Value, 16);
+                    var weaponIndex = originalIndex % 16;
+                    var targetWeaponIndex = config.Player == 0 ? weaponIndex : weaponIndex + 16;
+                    var targetFileName = $"W{targetWeaponIndex:X2}.EMW";
+                    File.Copy(pldFile, Path.Combine(targetPlayersDir, targetFileName), true);
                 }
             }
 
