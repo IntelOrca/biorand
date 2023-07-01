@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
@@ -124,6 +125,8 @@ namespace IntelOrca.Biohazard.RE1
             {
                 ChangePlayerInventoryFace(config, fileRepository);
             }
+
+            FixWeaponHitScan(config);
 
             base.Generate(config, reConfig, progress, fileRepository);
         }
@@ -344,6 +347,53 @@ namespace IntelOrca.Biohazard.RE1
                 }
             }
             return originalDataPath;
+        }
+
+        private void FixWeaponHitScan(RandoConfig config)
+        {
+            var table = new short[]
+            {
+                -2026, -1656, -2530, -2280, -2040, -1800,
+                -1917, -1617, -2190, -1940, -2003, -1720
+            };
+
+            var numValues = table.Length / 2;
+            if (config.SwapCharacters)
+            {
+                // Swap Chris and Jills values around
+                for (var i = 0; i < numValues; i++)
+                {
+                    (table[i], table[i + numValues]) = (table[i + numValues], table[i]);
+                }
+            }
+
+            for (var i = 0; i < 2; i++)
+            {
+                var pldPath = GetSelectedPldPath(config, i);
+                var csvPath = Path.Combine(pldPath, "weapons.csv");
+                if (!File.Exists(csvPath))
+                    continue;
+
+                var csv = File.ReadAllLines(csvPath)
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .Select(x => x.Trim().Split(','))
+                    .ToArray();
+
+                var offset = i * numValues;
+                for (var j = 0; j < numValues; j++)
+                {
+                    table[offset + j] = short.Parse(csv[j][0]);
+                }
+            }
+
+            var pw = new PatchWriter(ExePatch);
+            pw.Begin(0x4AAD98);
+            var data = MemoryMarshal.Cast<short, byte>(new Span<short>(table));
+            foreach (var d in data)
+            {
+                pw.Write(d);
+            }
+            pw.End();
         }
     }
 }
