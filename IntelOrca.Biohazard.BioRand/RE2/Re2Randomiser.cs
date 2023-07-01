@@ -218,12 +218,12 @@ namespace IntelOrca.Biohazard.RE2
             }
         }
 
-        internal override void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser)
+        internal override void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser, VoiceRandomiser voiceRandomiser)
         {
             if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard1))
             {
                 var dataPath = Re1Randomiser.FindDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard1));
-                npcRandomiser.AddToSelection(BioVersion.Biohazard1, new FileRepository(dataPath));
+                voiceRandomiser.AddToSelection(BioVersion.Biohazard1, new FileRepository(dataPath));
             }
             if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard3))
             {
@@ -231,7 +231,7 @@ namespace IntelOrca.Biohazard.RE2
                 var fileRepository = new FileRepository(dataPath);
                 var re3randomizer = new Re3Randomiser(null);
                 re3randomizer.AddArchives(dataPath, fileRepository);
-                npcRandomiser.AddToSelection(BioVersion.Biohazard3, fileRepository);
+                voiceRandomiser.AddToSelection(BioVersion.Biohazard3, fileRepository);
             }
 
             var emdFolders = DataManager.GetDirectories(BiohazardVersion, $"emd");

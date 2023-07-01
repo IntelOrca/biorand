@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
+using IntelOrca.Biohazard.BioRand;
 using IntelOrca.Biohazard.RE3;
 
 namespace IntelOrca.Biohazard.RE1
@@ -274,7 +275,7 @@ namespace IntelOrca.Biohazard.RE1
             }
         }
 
-        internal override void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser)
+        internal override void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser, VoiceRandomiser voiceRandomiser)
         {
             if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard2))
             {
@@ -284,7 +285,7 @@ namespace IntelOrca.Biohazard.RE1
                 {
                     dataPath = Path.Combine(dataPath, "data");
                 }
-                npcRandomiser.AddToSelection(BioVersion.Biohazard2, new FileRepository(dataPath));
+                voiceRandomiser.AddToSelection(BioVersion.Biohazard2, new FileRepository(dataPath));
             }
             if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard3))
             {
@@ -292,7 +293,7 @@ namespace IntelOrca.Biohazard.RE1
                 var fileRepository = new FileRepository(dataPath);
                 var re3randomizer = new Re3Randomiser(null);
                 re3randomizer.AddArchives(dataPath, fileRepository);
-                npcRandomiser.AddToSelection(BioVersion.Biohazard3, fileRepository);
+                voiceRandomiser.AddToSelection(BioVersion.Biohazard3, fileRepository);
             }
 
             var emdFolders = DataManager.GetDirectories(BiohazardVersion, $"emd");

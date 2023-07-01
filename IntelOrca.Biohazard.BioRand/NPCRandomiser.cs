@@ -1,43 +1,35 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.Json;
 using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.RE2;
 using IntelOrca.Biohazard.Script.Opcodes;
-using NVorbis;
 
 namespace IntelOrca.Biohazard
 {
     internal class NPCRandomiser
     {
         private static readonly object _sync = new object();
-        private static ConcurrentDictionary<string, double> _voiceLengthCache = new ConcurrentDictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 
         private readonly BioVersion _version;
         private readonly RandoLogger _logger;
         private readonly FileRepository _fileRepository;
         private readonly RandoConfig _config;
-        private readonly string _originalDataPath;
         private readonly string _modPath;
         private readonly GameData _gameData;
         private readonly Map _map;
         private readonly Rng _rng;
-        private readonly List<VoiceSample> _pool = new List<VoiceSample>();
-        private readonly HashSet<VoiceSample> _randomized = new HashSet<VoiceSample>();
         private readonly INpcHelper _npcHelper;
         private readonly DataManager _dataManager;
         private readonly string[] _playerActors;
         private readonly string[] _originalPlayerActor;
 
-        private VoiceSample[] _voiceSamples = new VoiceSample[0];
-        private List<VoiceSample> _uniqueSamples = new List<VoiceSample>();
         private Dictionary<byte, string> _extraNpcMap = new Dictionary<byte, string>();
         private List<ExternalCharacter> _emds = new List<ExternalCharacter>();
+
+        private VoiceRandomiser? _voiceRandomiser;
 
         public HashSet<string> SelectedActors { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -46,35 +38,28 @@ namespace IntelOrca.Biohazard
             RandoLogger logger,
             FileRepository fileRepository,
             RandoConfig config,
-            string originalDataPath,
             string modPath,
             GameData gameData,
             Map map,
             Rng random,
             INpcHelper npcHelper,
             DataManager dataManager,
-            string[]? playerActors)
+            string[]? playerActors,
+            VoiceRandomiser voiceRandomiser)
         {
             _version = version;
             _logger = logger;
             _fileRepository = fileRepository;
             _config = config;
-            _originalDataPath = originalDataPath;
             _modPath = modPath;
             _gameData = gameData;
             _map = map;
             _rng = random;
             _npcHelper = npcHelper;
             _dataManager = dataManager;
-            _voiceSamples = AddToSelection(version, fileRepository);
             _originalPlayerActor = _npcHelper.GetPlayerActors(config.Player);
             _playerActors = playerActors ?? _originalPlayerActor;
-
-            using (_logger.Progress.BeginTask(config.Player, "Scanning voices"))
-            {
-                var customSamples = AddCustom(fileRepository);
-                _uniqueSamples.AddRange(customSamples);
-            }
+            _voiceRandomiser = voiceRandomiser;
 
             FixRooms();
         }
@@ -92,99 +77,6 @@ namespace IntelOrca.Biohazard
             if (rdt != null && rdt.Version == BioVersion.Biohazard2)
             {
                 rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x22, new byte[] { 0x01, 0x03, 0x00 }));
-            }
-        }
-
-        public VoiceSample[] AddToSelection(BioVersion version, FileRepository fileRepository)
-        {
-            var voiceJsonPath = _dataManager.GetPath(version, "voice.json");
-            var voiceJson = File.ReadAllText(voiceJsonPath);
-            var extraSamples = LoadVoiceInfoFromJson(fileRepository, voiceJson);
-            _uniqueSamples.AddRange(extraSamples);
-            return extraSamples;
-        }
-
-        public VoiceSample[] AddCustom(FileRepository fileRepository)
-        {
-            var samples = new List<VoiceSample>();
-            foreach (var actorPath in _dataManager.GetDirectoriesIn("hurt"))
-            {
-                var actor = Path.GetFileName(actorPath);
-                var sampleFiles = Directory.GetFiles(actorPath);
-                foreach (var sampleFile in sampleFiles)
-                {
-                    if (!sampleFile.EndsWith(".wav", StringComparison.OrdinalIgnoreCase) &&
-                        !sampleFile.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
-
-                    var sample = new VoiceSample();
-                    sample.BasePath = Path.GetDirectoryName(sampleFile);
-                    sample.Path = Path.GetFileName(sampleFile);
-                    sample.Actor = actor;
-                    sample.End = GetVoiceLength(sampleFile, fileRepository);
-                    sample.Kind = Path.GetFileNameWithoutExtension(sampleFile) == "3" ? "death" : "hurt";
-                    samples.Add(sample);
-                }
-            }
-
-            var voiceLines = _dataManager
-                .GetDirectoriesIn("voice")
-                .SelectMany(x =>
-                {
-                    var actor = Path.GetFileName(x);
-                    var sampleFiles = Directory.GetFiles(x);
-                    return sampleFiles.Select(y => (Actor: actor, SampleFiles: y));
-                })
-                .AsParallel()
-                .Select(x => ProcessSample(x.Actor, x.SampleFiles, fileRepository))
-                .Where(x => x != null)
-                .ToArray() as VoiceSample[];
-
-            samples.AddRange(voiceLines);
-            return samples.ToArray();
-        }
-
-        private VoiceSample? ProcessSample(string actor, string sampleFile, FileRepository fileRepository)
-        {
-            if (!sampleFile.EndsWith(".wav", StringComparison.OrdinalIgnoreCase) &&
-                !sampleFile.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase))
-            {
-                return null;
-            }
-
-            using (_logger.Progress.BeginTask(_config.Player, $"Scanning '{sampleFile}'"))
-            {
-                var fileName = Path.GetFileName(sampleFile);
-                var conditions = GetThingsFromFileName(fileName, '-');
-                var conditionsb = new StringBuilder();
-                foreach (var condition in conditions)
-                {
-                    if (condition.StartsWith("no", StringComparison.OrdinalIgnoreCase))
-                    {
-                        if (conditionsb.Length != 0)
-                            conditionsb.Append(" && ");
-                        conditionsb.Append('!');
-                        conditionsb.Append(condition, 2, condition.Length - 2);
-                    }
-                    else
-                    {
-                        if (conditionsb.Length != 0)
-                            conditionsb.Append(" || ");
-                        conditionsb.Append('@');
-                        conditionsb.Append(condition);
-                    }
-                }
-
-                var sample = new VoiceSample();
-                sample.BasePath = Path.GetDirectoryName(sampleFile);
-                sample.Path = fileName;
-                sample.Actor = actor;
-                sample.End = GetVoiceLength(sampleFile, fileRepository);
-                sample.Kind = GetThingsFromFileName(fileName, '_').FirstOrDefault();
-                sample.Condition = conditionsb.Length == 0 ? null : conditionsb.ToString();
-                return sample;
             }
         }
 
@@ -225,16 +117,10 @@ namespace IntelOrca.Biohazard
             _emds.Add(new ExternalCharacter(emId, emPath, actor));
         }
 
-        private bool ActorHasVoiceSamples(string actor)
-        {
-            return _uniqueSamples.Any(x => x.Actor == actor);
-        }
-
         public void Randomise()
         {
             RandomizeExternalNPCs(_rng.NextFork());
             RandomizeRooms(_rng.NextFork());
-            SetVoices();
         }
 
         private void RandomizeExternalNPCs(Rng rng)
@@ -341,9 +227,7 @@ namespace IntelOrca.Biohazard
 
         private void RandomizeRooms(Rng rng)
         {
-            _logger.WriteHeading("Randomizing Characters, Voices:");
-            _uniqueSamples = _uniqueSamples.OrderBy(x => x.SortString).ToList();
-            _pool.AddRange(_uniqueSamples.Shuffle(rng.NextFork()));
+            _logger.WriteHeading("Randomizing Characters:");
             foreach (var rdt in _gameData.Rdts)
             {
                 RandomizeRoom(rng.NextFork(), rdt);
@@ -396,11 +280,8 @@ namespace IntelOrca.Biohazard
                 {
                     actorToNewActorMap[pc] = _playerActors[1];
                 }
-                RandomizeVoices(rdt, voiceRng, cutscene.Key, pc!, actorToNewActorMap);
-                if (actorToNewActorMap.Count != 1)
-                {
-                    _logger.WriteLine($"  cutscene #{cutscene.Key} contains {string.Join(", ", actorToNewActorMap.Values)}");
-                }
+
+                _voiceRandomiser?.SetRoomVoiceMap(rdt.RdtId, cutscene.Key, pc!, actorToNewActorMap);
             }
 
             foreach (var enemy in rdt.Enemies)
@@ -568,76 +449,6 @@ namespace IntelOrca.Biohazard
             return actorToNewActorMap;
         }
 
-        private void RandomizeVoices(Rdt rdt, Rng rng, int cutscene, string pc, Dictionary<string, string> actorToNewActorMap)
-        {
-            string? radioActor = null;
-            var actors = actorToNewActorMap.Values.ToArray();
-            foreach (var sample in _voiceSamples)
-            {
-                if (sample.Player == _config.Player &&
-                    sample.Cutscene == cutscene &&
-                    sample.IsPlayedIn(rdt.RdtId))
-                {
-                    var actor = sample.Actor!;
-                    var kind = sample.Kind;
-                    if (kind == "radio")
-                    {
-                        if (radioActor == null)
-                        {
-                            radioActor = GetRandomRadioActor(_rng, pc) ?? actor;
-                        }
-                        RandomizeVoice(rng, sample, actor, radioActor, sample.Kind, actors);
-                    }
-                    else if (actorToNewActorMap.TryGetValue(actor, out var newActor))
-                    {
-                        RandomizeVoice(rng, sample, actor, newActor, kind, actors);
-                    }
-                    else
-                    {
-                        RandomizeVoice(rng, sample, actor, actor, kind, actors);
-                    }
-                }
-            }
-        }
-
-        private string? GetRandomRadioActor(Rng rng, string pc)
-        {
-            var actors = _uniqueSamples
-                .Where(x => x.Kind == "radio" && x.Actor != pc)
-                .Select(x => x.Actor)
-                .Distinct()
-                .Shuffle(rng);
-            return actors.FirstOrDefault();
-        }
-
-        private void RandomizeVoice(Rng rng, VoiceSample voice, string actor, string newActor, string? kind, string[] actors)
-        {
-            if (_randomized.Contains(voice))
-                return;
-
-            actors = actors.Select(TrimActorGame).ToArray();
-            var randomVoice = GetRandomVoice(rng, newActor, kind, actors, voice.MaxLength);
-            if (randomVoice != null)
-            {
-                voice.Replacement = randomVoice;
-                _randomized.Add(voice);
-
-                var logKindSource = kind == null ? "" : $",{kind}";
-                var logKindTarget = randomVoice.Source.Kind == null ? "" : $",{randomVoice.Source.Kind}";
-                var logClip = randomVoice.IsClipped ? $" ({randomVoice.Start:0.00}-{randomVoice.End:0.00})" : "";
-                _logger.WriteLine($"    {voice.PathWithSapIndex} [{actor}{logKindSource}] becomes {randomVoice.PathWithSapIndex} [{newActor}{logKindTarget}]{logClip}");
-            }
-        }
-
-        private static string TrimActorGame(string actor)
-        {
-            var fsIndex = actor.IndexOf('.');
-            if (fsIndex == -1)
-                return actor;
-
-            return actor.Substring(0, fsIndex);
-        }
-
         private string? GetActor(byte enemyType, bool originalOnly = false)
         {
             if (!originalOnly && _extraNpcMap.TryGetValue(enemyType, out var actor))
@@ -645,490 +456,19 @@ namespace IntelOrca.Biohazard
             return _npcHelper.GetActor(enemyType);
         }
 
-        private VoiceSampleReplacement? GetRandomVoice(Rng rng, string actor, string? kind, string[] actors, double maxLength, bool refillPool = true)
+        [DebuggerDisplay("{Actor}")]
+        private struct ExternalCharacter
         {
-            for (int i = 0; i < _pool.Count; i++)
-            {
-                var sample = _pool[i];
-                var result = CheckSample(sample, actor, kind, actors, maxLength);
-                if (result == SampleCheckResult.Bad)
-                    continue;
+            public byte EmId { get; }
+            public string EmPath { get; }
+            public string Actor { get; }
 
-                _pool.RemoveAt(i);
-                if (result == SampleCheckResult.Clip)
-                    return new VoiceSampleReplacement(sample, sample.NameClipped!.Start, sample.NameClipped!.End);
-                else
-                    return new VoiceSampleReplacement(sample, sample.Start, sample.End);
+            public ExternalCharacter(byte emId, string emPath, string actor)
+            {
+                EmId = emId;
+                EmPath = emPath;
+                Actor = actor;
             }
-
-            if (!refillPool)
-            {
-                if (kind == "scream")
-                {
-                    // Try find a death sound instead
-                    return GetRandomVoice(rng, actor, "death", actors, maxLength, true);
-                }
-                else if (kind != null)
-                {
-                    // Fallback to any kind of voice
-                    return GetRandomVoice(rng, actor, null, actors, maxLength, true);
-                }
-                else
-                {
-                    return null;
-                }
-            }
-
-            // Do not add lines that are already in the pool.
-            // Otherwise we can end up with many duplicates in a row
-            var poolHash = _pool.ToHashSet();
-            var newItems = _uniqueSamples
-                .Where(x => x.Actor == actor)
-                .Where(x => !poolHash.Contains(x))
-                .Shuffle(rng);
-            _pool.AddRange(newItems);
-            return GetRandomVoice(rng, actor, kind, actors, maxLength, refillPool: false);
-        }
-
-        private SampleCheckResult CheckSample(VoiceSample sample, string actor, string? kind, string[] actors, double maxLength)
-        {
-            if (maxLength != 0 && sample.Length > maxLength)
-                return SampleCheckResult.Bad;
-            if (sample.Actor != actor)
-                return SampleCheckResult.Bad;
-            if (sample.Kind != kind)
-                return SampleCheckResult.Bad;
-            if (!sample.CheckConditions(actors))
-                return sample.NameClipped != null ? SampleCheckResult.Clip : SampleCheckResult.Bad;
-            return SampleCheckResult.Good;
-        }
-
-        private enum SampleCheckResult { Bad, Good, Clip }
-
-        private void SetVoices()
-        {
-            var groups = _voiceSamples.GroupBy(x => (x.Path, x.SapIndex));
-            foreach (var group in groups)
-            {
-                var sampleOrder = group.OrderBy(x => x.Start).ToArray();
-                if (sampleOrder.All(x => x.Replacement == null))
-                    continue;
-
-                var firstSample = sampleOrder[0];
-                var dstPath = GetVoicePath(_modPath, firstSample);
-                using (_logger.Progress.BeginTask(_config.Player, $"Writing '{dstPath}'"))
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(dstPath)!);
-
-                    if (sampleOrder.Length == 1 && firstSample.Replacement?.IsClipped == false && firstSample.SapIndex == null && firstSample.Replacement.Source.SapIndex == null)
-                    {
-                        var srcPath = GetVoicePath(firstSample.Replacement.Source);
-                        CopySample(srcPath, dstPath);
-                    }
-                    else
-                    {
-                        var builder = new WaveformBuilder();
-                        foreach (var sample in sampleOrder)
-                        {
-                            var replacement = sample.Replacement;
-                            if (replacement != null)
-                            {
-                                var sliceSrcPath = GetVoicePath(replacement.Source);
-                                using (_logger.Progress.BeginTask(_config.Player, $"Reading '{sliceSrcPath}'"))
-                                {
-                                    if (replacement.Source.SapIndex != null)
-                                    {
-                                        builder.Append(sliceSrcPath, replacement.Source.SapIndex.Value, replacement.Start, replacement.End);
-                                    }
-                                    else
-                                    {
-                                        var stream = _fileRepository.GetStream(sliceSrcPath);
-                                        builder.Append(sliceSrcPath, stream, replacement.Start, replacement.End);
-                                    }
-                                }
-                                builder.AppendSilence(sample.Length - replacement.Length);
-                            }
-                            else
-                            {
-                                builder.AppendSilence(sample.Length);
-                            }
-                        }
-
-                        if (firstSample.SapIndex != null)
-                        {
-                            // Copy existing sap file first, then modify the embedded .wavs
-                            if (!File.Exists(dstPath))
-                            {
-                                File.Copy(GetVoicePath(firstSample), dstPath, true);
-                            }
-                            builder.SaveAt(dstPath, firstSample.SapIndex.Value);
-                        }
-                        else
-                        {
-                            builder.Save(dstPath);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void CopySample(string srcPath, string dstPath)
-        {
-            var srcExtension = Path.GetExtension(srcPath);
-            var dstExtension = Path.GetExtension(dstPath);
-            if (srcExtension.Equals(dstExtension, StringComparison.OrdinalIgnoreCase))
-            {
-                _fileRepository.Copy(srcPath, dstPath);
-            }
-            else
-            {
-                var builder = new WaveformBuilder();
-                builder.Append(srcPath, _fileRepository.GetStream(srcPath));
-                builder.Save(dstPath);
-            }
-        }
-
-        private static string GetVoicePath(VoiceSample sample)
-        {
-            return Path.Combine(sample.BasePath, sample.Path);
-        }
-
-        private static string GetVoicePath(string basePath, VoiceSample sample)
-        {
-            return Path.Combine(basePath, sample.Path);
-        }
-
-        private static VoiceSample[] LoadVoiceInfoFromJson(FileRepository fileRepository, string json)
-        {
-            var voiceList = JsonSerializer.Deserialize<Dictionary<string, VoiceSample>>(json, new JsonSerializerOptions()
-            {
-                ReadCommentHandling = JsonCommentHandling.Skip,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            });
-
-            var samples = new List<VoiceSample>();
-            foreach (var kvp in voiceList!)
-            {
-                var sample = kvp.Value;
-                sample.BasePath = fileRepository.DataPath;
-                sample.Path = kvp.Key;
-                if (sample.Path.Contains("#"))
-                {
-                    var parts = sample.Path.Split('#');
-                    sample.Path = parts[0];
-                    sample.SapIndex = int.Parse(parts[1]);
-                }
-
-                var totalLength = GetVoiceLength(fileRepository.GetDataPath(sample.Path), fileRepository);
-                if (sample.Strict)
-                    sample.MaxLength = totalLength;
-                if (sample.Actors != null)
-                {
-                    var start = 0.0;
-                    foreach (var sub in sample.Actors)
-                    {
-                        var limited = true;
-                        var end = sub.Split;
-                        if (end == 0)
-                        {
-                            end = totalLength;
-                            limited = false;
-                        }
-                        var slice = sample.CreateSlice(sub, start, end);
-                        slice.Cutscene = sample.Cutscene;
-                        slice.Limited = limited;
-                        start = sub.Split;
-                        samples.Add(slice);
-                    }
-                }
-                else
-                {
-                    if (sample.End == 0)
-                    {
-                        sample.End = totalLength;
-                        if (sample.Start == 0)
-                        {
-                            sample.Vanilla = true;
-                        }
-                    }
-                    samples.Add(sample);
-                }
-            }
-
-            return samples.ToArray();
-        }
-
-        private static VoiceSample[] RemoveDuplicateVoices(VoiceSample[] samples, string originalDataPath)
-        {
-            var distinct = new List<VoiceSample>();
-            foreach (var group in samples.GroupBy(x => GetVoiceSize(originalDataPath, x)))
-            {
-                var pathToKeep = group.First().Path;
-                foreach (var item in group)
-                {
-                    if (item.Path == pathToKeep)
-                    {
-                        distinct.Add(item);
-                    }
-                }
-            }
-            return distinct.ToArray();
-        }
-
-        private static int GetVoiceSize(string basePath, VoiceSample sample)
-        {
-            var path = GetVoicePath(basePath, sample);
-            return (int)new FileInfo(path).Length;
-        }
-
-        private static double GetVoiceLength(string path, FileRepository fileRepository)
-        {
-            if (_voiceLengthCache.TryGetValue(path, out var result))
-            {
-                return result;
-            }
-            result = GetVoiceLengthInner(path, fileRepository);
-            _voiceLengthCache.TryAdd(path, result);
-            return result;
-        }
-
-        private static double GetVoiceLengthInner(string path, FileRepository fileRepository)
-        {
-            try
-            {
-                if (path.EndsWith(".sap", StringComparison.OrdinalIgnoreCase))
-                {
-                    using (var fs = fileRepository.GetStream(path))
-                    {
-                        fs.Position = 8;
-                        var br = new BinaryReader(fs);
-                        var magic = br.ReadUInt32();
-                        fs.Position -= 4;
-                        if (magic == 0x5367674F) // OGG
-                        {
-                            using (var vorbis = new VorbisReader(new SlicedStream(fs, 8, fs.Length - 8), closeOnDispose: false))
-                            {
-                                return vorbis.TotalTime.TotalSeconds;
-                            }
-                        }
-                        else
-                        {
-                            var decoder = new MSADPCMDecoder();
-                            return decoder.GetLength(fs);
-                        }
-                    }
-                }
-                else if (path.EndsWith(".ogg"))
-                {
-                    using (var vorbis = new VorbisReader(path))
-                    {
-                        return vorbis.TotalTime.TotalSeconds;
-                    }
-                }
-                else
-                {
-                    using (var fs = fileRepository.GetStream(path))
-                    {
-                        var decoder = new MSADPCMDecoder();
-                        return decoder.GetLength(fs);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new BioRandUserException($"Unable to process '{path}'. {ex.Message}");
-            }
-        }
-    }
-
-    [DebuggerDisplay("[{Actor}] {Sample}")]
-    internal class VoiceInfo
-    {
-        public VoiceSample Sample { get; set; }
-        public string Actor { get; set; }
-        public string Kind { get; set; }
-
-        public VoiceInfo(VoiceSample sample, string actor, string kind)
-        {
-            Sample = sample;
-            Actor = actor;
-            Kind = kind;
-        }
-    }
-
-    [DebuggerDisplay("Actor = {Actor} RdtId = {Rdt} Path = {Path}")]
-    public class VoiceSample
-    {
-        private RdtId[]? _cachedRdtIds;
-
-        public string? BasePath { get; set; }
-        public string? Path { get; set; }
-        public int? SapIndex { get; set; }
-        public string? Actor { get; set; }
-        public string? Kind { get; set; }
-        public string? Rdt { get; set; }
-        public string[]? Rdts { get; set; }
-        public int Player { get; set; }
-        public int Cutscene { get; set; }
-        public bool Strict { get; set; }
-
-        public double Start { get; set; }
-        public double End { get; set; }
-        public double Length => End - Start;
-
-        public string? Condition { get; set; }
-
-        public double MaxLength { get; set; }
-        public bool Vanilla { get; set; }
-        public bool Limited { get; set; }
-        public VoiceSampleSplit[]? Actors { get; set; }
-        public VoiceSampleNameClip? NameClipped { get; set; }
-
-        public VoiceSampleReplacement? Replacement { get; set; }
-
-        public string? PathWithSapIndex => SapIndex == null ? Path : $"{Path}#{SapIndex}";
-
-        public string SortString => $"{BasePath}/{PathWithSapIndex}:{Start}-{End}";
-
-        public VoiceSample CreateSlice(VoiceSampleSplit sub, double start, double end)
-        {
-            var nameClip = sub.NameClipped;
-            if (nameClip != null)
-            {
-                if (nameClip.End == 0)
-                    nameClip.End = end;
-                if (nameClip.Start == 0)
-                    nameClip.Start = start;
-            }
-
-            return new VoiceSample()
-            {
-                BasePath = BasePath,
-                Path = Path,
-                Actor = sub.Actor,
-                Rdt = Rdt,
-                Rdts = Rdts,
-                Player = Player,
-                Start = start,
-                End = end,
-                MaxLength = end - start,
-                Condition = sub.Condition,
-                Kind = sub.Kind,
-                NameClipped = nameClip
-            };
-        }
-
-        public bool CheckConditions(string[] otherActors)
-        {
-            if (Condition == null)
-                return true;
-
-            var conditions = Condition.Replace("&&", "&").Split('&');
-            foreach (var singleCondition in conditions)
-            {
-                var orResult = false;
-                var orConditions = singleCondition.Replace("||", "|").Split('|');
-                foreach (var orCondition in orConditions)
-                {
-                    var result = true;
-                    var sc = orCondition.Trim();
-                    if (sc.StartsWith("!"))
-                    {
-                        var cc = sc.Substring(1);
-                        if (otherActors.Contains(cc))
-                        {
-                            result = false;
-                        }
-                    }
-                    else if (sc.StartsWith("@"))
-                    {
-                        var cc = sc.Substring(1);
-                        if (!otherActors.Contains(cc))
-                        {
-                            result = false;
-                        }
-                    }
-                    if (result)
-                    {
-                        orResult = true;
-                        break;
-                    }
-                }
-                if (!orResult)
-                    return false;
-            }
-
-            return true;
-        }
-
-        public bool IsPlayedIn(RdtId rdtId)
-        {
-            if (_cachedRdtIds == null)
-            {
-                if (Rdts != null)
-                {
-                    _cachedRdtIds = Rdts.Select(RdtId.Parse).ToArray();
-                }
-                else if (Rdt != null)
-                {
-                    _cachedRdtIds = new[] { RdtId.Parse(Rdt) };
-                }
-                else
-                {
-                    _cachedRdtIds = new RdtId[0];
-                }
-            }
-            return _cachedRdtIds.Contains(rdtId);
-        }
-    }
-
-    public class VoiceSampleSplit
-    {
-        public string? Actor { get; set; }
-        public double Split { get; set; }
-        public string? Condition { get; set; }
-        public string? Kind { get; set; }
-        public VoiceSampleNameClip? NameClipped { get; set; }
-    }
-
-    public class VoiceSampleNameClip
-    {
-        public double Start { get; set; }
-        public double End { get; set; }
-    }
-
-    public class VoiceSampleReplacement
-    {
-        public VoiceSample Source { get; }
-        public double Start { get; }
-        public double End { get; }
-
-        public string PathWithSapIndex => Source.PathWithSapIndex!;
-        public double Length => End - Start;
-        public bool IsClipped => Start != Source.Start || End != Source.End || !Source.Vanilla;
-
-        public VoiceSampleReplacement(VoiceSample source, double start, double end)
-        {
-            Source = source;
-            Start = start;
-            End = end;
-            if (end == 0)
-                End = Source.End;
-        }
-    }
-
-    [DebuggerDisplay("{Actor}")]
-    public struct ExternalCharacter
-    {
-        public byte EmId { get; }
-        public string EmPath { get; }
-        public string Actor { get; }
-
-        public ExternalCharacter(byte emId, string emPath, string actor)
-        {
-            EmId = emId;
-            EmPath = emPath;
-            Actor = actor;
         }
     }
 }
