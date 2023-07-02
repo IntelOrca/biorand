@@ -1578,13 +1578,13 @@
       "npcs": [
         {
           "includeOffsets": [ 5392, 5444 ],
-          "includeTypes": [ 64, 68 ],
+          "includeTypes": [ 64 ],
           "scenario": 0,
           "player": 1
         },
         {
           "includeOffsets": [ 5492, 5598 ],
-          "includeTypes": [ 66, 68 ],
+          "includeTypes": [ 66 ],
           "scenario": 1,
           "player": 1
         },
@@ -1621,6 +1621,7 @@
       "npcs": [
         {
           "includeOffsets": [ 6876, 7204, 7508 ],
+          "includeTypes": [ 68 ],
           "cutscene": 0 // Leon,[Ben]
         },
         {
