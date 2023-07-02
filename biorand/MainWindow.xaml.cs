@@ -268,6 +268,10 @@ namespace IntelOrca.Biohazard.BioRand
                 sliderAreaCount.Value = _config.AreaCount;
                 sliderAreaSize.Value = _config.AreaSize;
 
+                chkCutscenes.IsChecked = _config.RandomCutscenes;
+                chkAllowAnyVoice.IsChecked = _config.AllowAnyVoice;
+                chkReduceSilences.IsChecked = _config.ReduceSilences;
+
                 dropdownVariant.SelectedIndex = Math.Min(_config.GameVariant, dropdownVariant.Items.Count - 1);
 
                 txtSeed.Text = _config.ToString();
@@ -458,6 +462,10 @@ namespace IntelOrca.Biohazard.BioRand
 
             _config.AreaCount = (byte)sliderAreaCount.Value;
             _config.AreaSize = (byte)sliderAreaSize.Value;
+
+            _config.RandomCutscenes = chkCutscenes.IsChecked == true;
+            _config.AllowAnyVoice = chkAllowAnyVoice.IsChecked == true;
+            _config.ReduceSilences = chkReduceSilences.IsChecked == true;
 
             _config.GameVariant = (byte)dropdownVariant.SelectedIndex;
 

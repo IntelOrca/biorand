@@ -250,6 +250,7 @@ namespace IntelOrca.Biohazard
             var randomItems = new Rng(baseSeed + 2);
             var randomEnemies = new Rng(baseSeed + 3);
             var randomNpcs = new Rng(baseSeed + 4);
+            var randomVoices = new Rng(baseSeed + 5);
 
             // In RE1, room sounds are not in the RDT, so enemies must be same for both players
             if (BiohazardVersion == BioVersion.Biohazard1)
@@ -312,23 +313,56 @@ namespace IntelOrca.Biohazard
                     }
                 }
 
+
                 string[]? playerActors;
                 using (progress.BeginTask(config.Player, $"Changing player character"))
                     playerActors = ChangePlayerCharacters(config, logger, gameData, fileRepository);
+
+                var voiceRandomiser = new VoiceRandomiser(
+                    BiohazardVersion,
+                    logger,
+                    fileRepository,
+                    config,
+                    fileRepository.DataPath,
+                    fileRepository.ModPath,
+                    gameData,
+                    map,
+                    randomVoices,
+                    NpcHelper,
+                    DataManager,
+                    playerActors);
+
                 if (config.RandomNPCs)
                 {
                     using (progress.BeginTask(config.Player, "Randomizing NPCs"))
                     {
-                        var npcRandomiser = new NPCRandomiser(BiohazardVersion, logger, fileRepository, config, fileRepository.DataPath, fileRepository.ModPath, gameData, map, randomNpcs, NpcHelper, DataManager, playerActors);
+                        var npcRandomiser = new NPCRandomiser(
+                            BiohazardVersion,
+                            logger,
+                            fileRepository,
+                            config,
+                            fileRepository.ModPath,
+                            gameData,
+                            map,
+                            randomNpcs,
+                            NpcHelper,
+                            DataManager,
+                            playerActors,
+                            voiceRandomiser);
                         var selectedActors = GetSelectedActors(config);
                         if (selectedActors.Length == 0)
                         {
                             throw new BioRandUserException("No NPCs selected.");
                         }
                         npcRandomiser.SelectedActors.AddRange(selectedActors);
-                        RandomizeNPCs(config, npcRandomiser);
+                        RandomizeNPCs(config, npcRandomiser, voiceRandomiser);
                         npcRandomiser.Randomise();
                     }
+                }
+
+                if (config.RandomCutscenes)
+                {
+                    voiceRandomiser.Randomise();
                 }
 
                 using (progress.BeginTask(config.Player, "Writing RDT files"))
@@ -402,7 +436,7 @@ namespace IntelOrca.Biohazard
             return null;
         }
 
-        internal virtual void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser)
+        internal virtual void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser, VoiceRandomiser voiceRandomiser)
         {
         }
 

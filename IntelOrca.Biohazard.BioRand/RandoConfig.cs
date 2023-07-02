@@ -37,6 +37,9 @@ namespace IntelOrca.Biohazard
         public bool AllowEnemiesAnyRoom { get; set; } = true;
         public byte EnemyQuantity { get; set; } = 2;
         public bool PrioritiseCutscenes { get; set; } = true;
+        public bool RandomCutscenes { get; set; }
+        public bool AllowAnyVoice { get; set; }
+        public bool ReduceSilences { get; set; }
 
         // Numbers
         public byte Player0 { get; set; }
@@ -110,6 +113,11 @@ namespace IntelOrca.Biohazard
             result.AllowEnemiesAnyRoom = reader.ReadFlag();
             result.EnemyQuantity = reader.ReadByte(2);
 
+            result.RandomCutscenes = reader.ReadFlag();
+            result.AllowAnyVoice = reader.ReadFlag();
+            result.ReduceSilences = reader.ReadFlag();
+            reader.ReadByte(2);
+
             var values = new List<byte>();
             for (int i = 0; i < 10; i++)
             {
@@ -180,6 +188,11 @@ namespace IntelOrca.Biohazard
             writer.Write(RandomEnemyPlacement);
             writer.Write(AllowEnemiesAnyRoom);
             writer.Write(2, EnemyQuantity);
+
+            writer.Write(RandomCutscenes);
+            writer.Write(AllowAnyVoice);
+            writer.Write(ReduceSilences);
+            writer.Write(2, 0);
 
             for (int i = 0; i < 10; i++)
             {
