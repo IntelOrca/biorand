@@ -916,7 +916,7 @@
       ],
       "npcs": [
         {
-          "includeOffsets": [ 7708, 7670 ]
+          "includeTypes": [ 74 ]
         }
       ]
     },

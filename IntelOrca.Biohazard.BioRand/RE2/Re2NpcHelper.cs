@@ -98,20 +98,27 @@ namespace IntelOrca.Biohazard.RE2
                         Re2EnemyIds.ChiefIrons1,
                         Re2EnemyIds.ChiefIrons2,
                         Re2EnemyIds.BenBertolucci1,
-                        Re2EnemyIds.BenBertolucci2
+                        Re2EnemyIds.BenBertolucci2,
+                        Re2EnemyIds.MarvinBranagh
                     };
                 case Re2EnemyIds.ClaireRedfield:
                     return new byte[] { 0x53, 0x55, 0x57, 0x5B,
                         Re2EnemyIds.ChiefIrons1,
                         Re2EnemyIds.ChiefIrons2,
                         Re2EnemyIds.BenBertolucci1,
-                        Re2EnemyIds.BenBertolucci2
+                        Re2EnemyIds.BenBertolucci2,
+                        Re2EnemyIds.MarvinBranagh
                     };
                 case Re2EnemyIds.SherryWithPendant:
                 case Re2EnemyIds.SherryWithClairesJacket:
-                    return new byte[] {
+                    return new byte[] { 0x48, 0x52, 0x54, 0x56, 0x58, 0x5A,
                         Re2EnemyIds.SherryWithPendant,
-                        Re2EnemyIds.SherryWithClairesJacket
+                        Re2EnemyIds.SherryWithClairesJacket,
+                        Re2EnemyIds.ChiefIrons1,
+                        Re2EnemyIds.ChiefIrons2,
+                        Re2EnemyIds.BenBertolucci1,
+                        Re2EnemyIds.BenBertolucci2,
+                        Re2EnemyIds.MarvinBranagh
                     };
                 case Re2EnemyIds.AdaWong1:
                 case Re2EnemyIds.AdaWong2:
@@ -152,6 +159,7 @@ namespace IntelOrca.Biohazard.RE2
                 case 0x59:
                 case 0x5B:
 
+                case Re2EnemyIds.MarvinBranagh:
                 case Re2EnemyIds.SherryWithClairesJacket:
                 case Re2EnemyIds.AdaWong2:
                 case Re2EnemyIds.BenBertolucci1:
