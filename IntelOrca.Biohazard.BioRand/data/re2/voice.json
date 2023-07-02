@@ -68,7 +68,7 @@
 
     "pl0/voice/stage2/v001.sap": { "rdt": "202", "player": 0, "actor": "leon" },
     "pl0/voice/stage2/v002.sap": { "rdt": "202", "player": 0, "actor": "marvin" },
-    "pl0/voice/stage2/v003.sap": { "rdt": "202", "player": 0, "actor": "marvin" },
+    "pl0/voice/stage2/v003.sap": { "rdt": "202", "player": 0, "actor": "marvin", "kind": "doom" },
     "pl0/voice/stage2/v004.sap": { "rdt": "202", "player": 0, "actor": "marvin", "condition": "@leon", "nameClipped": { "start": 5.0 } }, // end : 3.0 for alternate
     "pl0/voice/stage2/v006.sap": { "rdt": "202", "player": 0, "actor": "leon" },
     "pl0/voice/stage2/v007.sap": { "rdt": "202", "player": 0, "actor": "marvin" },
@@ -342,7 +342,7 @@
     "pl1/voice/stage1/v049.sap": { "rdt": "115", "player": 1, "actor": "leon" },
     "pl1/voice/stage1/v050.sap": { "rdt": "115", "player": 1, "actor": "claire" },
 
-    "pl1/voice/stage2/v000.sap": { "rdt": "202", "player": 1, "actor": "marvin" },
+    "pl1/voice/stage2/v000.sap": { "rdt": "202", "player": 1, "actor": "marvin", "kind": "doom" },
     "pl1/voice/stage2/v001.sap": { "rdt": "202", "player": 1, "actor": "claire" },
     "pl1/voice/stage2/v002.sap": { "rdt": "202", "player": 1, "actor": "claire" },
     "pl1/voice/stage2/v003.sap": { "rdt": "202", "player": 1, "actor": "marvin" },

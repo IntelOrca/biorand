@@ -148,6 +148,7 @@ namespace IntelOrca.Biohazard.RE2
             FixIronsReplacement(fileRepository.GetModPath("pl1/emd1/em142.emd"));
             FixBenReplacement(fileRepository.GetModPath("pl0/emd0/em044.emd"));
             FixBenReplacement(fileRepository.GetModPath("pl0/emd0/em046.emd"));
+            FixMarvinReplacement(fileRepository);
         }
 
         protected override string[] TitleCardSoundFiles { get; } =
@@ -581,6 +582,48 @@ namespace IntelOrca.Biohazard.RE2
 
                 emdFile.SetChunk(0, morphData.ToMorphData());
                 emdFile.Save(path);
+            }
+            catch
+            {
+            }
+        }
+
+        private void FixMarvinReplacement(FileRepository fileRepository)
+        {
+            var baseEmd = fileRepository.GetDataPath("pl0/emd0/em04A.emd");
+            var targetEmdLeon = fileRepository.GetModPath("pl0/emd0/em04A.emd");
+            var targetEmdClaire = fileRepository.GetModPath("pl1/emd1/em14A.emd");
+            FixMarvinReplacement(baseEmd, targetEmdLeon);
+            FixMarvinReplacement(baseEmd, targetEmdClaire);
+        }
+
+        private void FixMarvinReplacement(string baseEmd, string targetEmd)
+        {
+            try
+            {
+                if (!File.Exists(targetEmd))
+                    return;
+
+                var baseEmdFile = new EmdFile(BioVersion.Biohazard2, baseEmd);
+                var targetEmdFile = new EmdFile(BioVersion.Biohazard2, targetEmd);
+
+                var targetHeight = targetEmdFile.GetEmr(0).GetRelativePosition(0).y;
+                var targetScale = targetHeight / -1876.0;
+
+                baseEmdFile.SetEmr(0, baseEmdFile.GetEmr(0).WithSkeleton(targetEmdFile.GetEmr(0)).Scale(targetScale));
+                baseEmdFile.SetEmr(1, baseEmdFile.GetEmr(1).Scale(targetScale));
+
+                var builder = ((Md1)targetEmdFile.GetMesh(0)).ToBuilder();
+                if (builder.Parts.Count > 15)
+                    builder.Parts.RemoveRange(15, builder.Parts.Count - 15);
+
+                var zombieParts = new[] { 13, 0, 8, 12, 14, 9, 10, 11, 11 };
+                foreach (var zp in zombieParts)
+                    builder.Parts.Add(builder.Parts[zp]);
+
+                baseEmdFile.SetMesh(0, builder.ToMesh());
+
+                baseEmdFile.Save(targetEmd);
             }
             catch
             {
