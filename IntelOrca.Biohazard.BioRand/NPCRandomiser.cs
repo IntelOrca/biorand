@@ -146,42 +146,49 @@ namespace IntelOrca.Biohazard
                 return;
 
             _logger.WriteHeading("Adding additional NPCs:");
-            foreach (var g in _emds.GroupBy(x => x.EmId))
+            var emdSet = true;
+            while (emdSet)
             {
-                var gSelected = g.Where(x => SelectedActors.Contains(x.Actor)).ToArray();
-                if (gSelected.Length == 0)
-                    continue;
-
-                var slots = _npcHelper
-                    .GetSlots(_config, g.Key)
-                    .Except(_extraNpcMap.Keys)
-                    .ToArray();
-                var spare = slots
-                    .Where(x => _npcHelper.IsSpareSlot(x))
-                    .ToQueue();
-                var notSpare = slots
-                    .Where(x => !_npcHelper.IsSpareSlot(x))
-                    .Shuffle(rng)
-                    .ToQueue();
-
-                // Normal slot, take all selected characters
-                var randomCharactersToInclude = gSelected.Shuffle(rng);
-                foreach (var rchar in randomCharactersToInclude)
+                emdSet = false;
+                foreach (var g in _emds.GroupBy(x => x.EmId))
                 {
-                    if (spare.Count != 0)
+                    var gSelected = g.Where(x => SelectedActors.Contains(x.Actor)).ToArray();
+                    if (gSelected.Length == 0)
+                        continue;
+
+                    var slots = _npcHelper
+                        .GetSlots(_config, g.Key)
+                        .Except(_extraNpcMap.Keys)
+                        .ToArray();
+                    var spare = slots
+                        .Where(x => _npcHelper.IsSpareSlot(x))
+                        .ToQueue();
+                    var notSpare = slots
+                        .Where(x => !_npcHelper.IsSpareSlot(x))
+                        .Shuffle(rng)
+                        .ToQueue();
+
+                    // Normal slot, take all selected characters
+                    var randomCharactersToInclude = gSelected.Shuffle(rng);
+                    foreach (var rchar in randomCharactersToInclude)
                     {
-                        var slot = spare.Dequeue();
-                        SetEm(slot, rchar);
-                    }
-                    else if (notSpare.Count != 0)
-                    {
-                        // 50:50 on whether to use original or new character, unless original is not selected.
-                        var slot = notSpare.Dequeue();
-                        var originalActor = GetActor(slot, true) ?? "";
-                        if (!SelectedActors.Contains(originalActor) ||
-                            rng.NextProbability(50))
+                        if (spare.Count != 0)
                         {
+                            var slot = spare.Dequeue();
                             SetEm(slot, rchar);
+                            emdSet = true;
+                        }
+                        else if (notSpare.Count != 0)
+                        {
+                            // 50:50 on whether to use original or new character, unless original is not selected.
+                            var slot = notSpare.Dequeue();
+                            var originalActor = GetActor(slot, true) ?? "";
+                            if (!SelectedActors.Contains(originalActor) ||
+                                rng.NextProbability(50))
+                            {
+                                SetEm(slot, rchar);
+                                emdSet = true;
+                            }
                         }
                     }
                 }

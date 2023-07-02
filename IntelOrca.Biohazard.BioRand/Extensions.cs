@@ -5,7 +5,7 @@ using IntelOrca.Biohazard.Script;
 
 namespace IntelOrca.Biohazard
 {
-    public static class Extensions
+    public static class Extensions2
     {
         public static string ToTitle(this string x)
         {

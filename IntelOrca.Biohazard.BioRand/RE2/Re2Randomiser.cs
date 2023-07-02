@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.RE3;
@@ -141,6 +142,12 @@ namespace IntelOrca.Biohazard.RE2
             File.Copy(src, dst);
 
             base.Generate(config, reConfig, progress, fileRepository);
+
+            // If Ben is replaced, they need special morphing patches applied
+            FixIronsReplacement(fileRepository.GetModPath("pl1/emd1/em140.emd"));
+            FixIronsReplacement(fileRepository.GetModPath("pl1/emd1/em142.emd"));
+            FixBenReplacement(fileRepository.GetModPath("pl0/emd0/em044.emd"));
+            FixBenReplacement(fileRepository.GetModPath("pl0/emd0/em046.emd"));
         }
 
         protected override string[] TitleCardSoundFiles { get; } =
@@ -453,6 +460,178 @@ namespace IntelOrca.Biohazard.RE2
             }
             catch
             {
+            }
+        }
+
+        private void FixBenReplacement(string path)
+        {
+            try
+            {
+                if (!File.Exists(path))
+                    return;
+
+                var emdFile = new EmdFile(BioVersion.Biohazard2, path);
+
+                // Ensure there are 16 meshes (the last one is empty for the G-embryo as it exits the body)
+                var mesh = (Md1)emdFile.GetMesh(0);
+                EnsureMeshHasCorrectParts(ref mesh, false);
+                if (EnsureChestOnPage(ref mesh, 1))
+                {
+                    mesh = (Md1)mesh.EditMeshTextures(m =>
+                    {
+                        if (m.PartIndex == 0 || m.PartIndex == 9 || m.PartIndex == 12)
+                        {
+                            m.Page = 0;
+                        }
+                    });
+                    SwapPagesOnTexture(path);
+                }
+                emdFile.SetMesh(0, mesh);
+
+                // Create the morph data that Ben needs
+                var morphData = new MorphData.Builder();
+                morphData.Unknown00 = 0x00008001;
+
+                // Copy skeleton from EMR
+                var hunkEmr = emdFile.GetEmr(0);
+                var skel = new Emr.Vector[15];
+                for (var i = 0; i < 15; i++)
+                {
+                    skel[i] = hunkEmr.GetRelativePosition(i);
+                }
+                morphData.Skeletons.Add(skel);
+                morphData.Skeletons.Add(skel);
+
+                // Create morph group for chest (copy the chest mesh positions)
+                var g0 = new MorphData.Builder.MorphGroup();
+                g0.Unknown = 0x10000;
+                g0.Positions.Add(mesh.ToBuilder().Parts[0].Positions.Select(p => new Emr.Vector(p.x, p.y, p.z)).ToArray());
+                g0.Positions.Add(g0.Positions[0]);
+                morphData.Groups.Add(g0);
+
+                // Create morph group for G-embryo
+                var g1 = new MorphData.Builder.MorphGroup();
+                g1.Unknown = 0x10000;
+                g1.Positions.Add(new Emr.Vector[1]);
+                g1.Positions.Add(new Emr.Vector[1]);
+                morphData.Groups.Add(g1);
+
+                emdFile.SetChunk(0, morphData.ToMorphData());
+                emdFile.Save(path);
+            }
+            catch
+            {
+            }
+        }
+
+        private void FixIronsReplacement(string path)
+        {
+            try
+            {
+                if (!File.Exists(path))
+                    return;
+
+                var emdFile = new EmdFile(BioVersion.Biohazard2, path);
+
+                // Ensure there are 17 meshes (the second to last one is gun hand,
+                //                             the last one is empty for the G-embryo as it exits the body)
+                var mesh = (Md1)emdFile.GetMesh(0);
+                EnsureMeshHasCorrectParts(ref mesh, true);
+                if (EnsureChestOnPage(ref mesh, 0))
+                {
+                    mesh = (Md1)mesh.EditMeshTextures(m =>
+                    {
+                        if (m.PartIndex == 0 || m.PartIndex == 9 || m.PartIndex == 12)
+                        {
+                            m.Page = 1;
+                        }
+                    });
+                    SwapPagesOnTexture(path);
+                }
+                emdFile.SetMesh(0, mesh);
+
+                // Create the morph data that Irons needs
+                var morphData = new MorphData.Builder();
+                morphData.Unknown00 = 0x00010001;
+
+                // Copy skeleton from EMR
+                var hunkEmr = emdFile.GetEmr(0);
+                var skel = new Emr.Vector[15];
+                for (var i = 0; i < 15; i++)
+                {
+                    skel[i] = hunkEmr.GetRelativePosition(i);
+                }
+                morphData.Skeletons.Add(skel);
+                morphData.Skeletons.Add(skel);
+
+                // Create morph group for chest (copy the chest mesh positions)
+                var g0 = new MorphData.Builder.MorphGroup();
+                g0.Unknown = 0x10000;
+                g0.Positions.Add(mesh.ToBuilder().Parts[0].Positions.Select(p => new Emr.Vector(p.x, p.y, p.z)).ToArray());
+                g0.Positions.Add(g0.Positions[0]);
+                g0.Positions.Add(g0.Positions[0]);
+                morphData.Groups.Add(g0);
+
+                // Create morph group for G-embryo
+                var g1 = new MorphData.Builder.MorphGroup();
+                g1.Unknown = 2;
+                for (var i = 0; i < 301; i++)
+                    g1.Positions.Add(new Emr.Vector[1]);
+                morphData.Groups.Add(g1);
+
+                emdFile.SetChunk(0, morphData.ToMorphData());
+                emdFile.Save(path);
+            }
+            catch
+            {
+            }
+        }
+
+        private void EnsureMeshHasCorrectParts(ref Md1 mesh, bool hasHand)
+        {
+            var builder = mesh.ToBuilder();
+            while (builder.Count > 15)
+            {
+                builder.RemoveAt(builder.Count - 1);
+            }
+            if (hasHand)
+            {
+                builder.Add(builder.Parts[11]);
+            }
+            builder.Add();
+            mesh = builder.ToMesh();
+        }
+
+        private bool EnsureChestOnPage(ref Md1 mesh, int page)
+        {
+            var builder = mesh.ToBuilder();
+            var part0 = builder.Parts[0];
+            if (part0.TriangleTextures.Count > 0)
+            {
+                if ((part0.TriangleTextures[0].page & 0x0F) == page)
+                {
+                    return false;
+                }
+            }
+            else if (part0.QuadTextures.Count > 0)
+            {
+                if ((part0.QuadTextures[0].page & 0x0F) == page)
+                {
+                    return false;
+                }
+            }
+            mesh = (Md1)mesh.SwapPages(0, 1);
+            return true;
+        }
+
+        private void SwapPagesOnTexture(string emdPath)
+        {
+            var timPath = Path.ChangeExtension(emdPath, ".tim");
+            if (File.Exists(timPath))
+            {
+                var tim = new TimFile(timPath);
+                tim.SwapPages(0, 1);
+                tim.Save(timPath);
             }
         }
 
