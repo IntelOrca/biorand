@@ -94,9 +94,19 @@ namespace IntelOrca.Biohazard.RE2
             switch (id)
             {
                 case Re2EnemyIds.LeonKennedyRpd:
-                    return new byte[] { 0x48, 0x52, 0x54, 0x56, 0x58, 0x5A };
+                    return new byte[] { 0x48, 0x52, 0x54, 0x56, 0x58, 0x5A,
+                        Re2EnemyIds.ChiefIrons1,
+                        Re2EnemyIds.ChiefIrons2,
+                        Re2EnemyIds.BenBertolucci1,
+                        Re2EnemyIds.BenBertolucci2
+                    };
                 case Re2EnemyIds.ClaireRedfield:
-                    return new byte[] { 0x53, 0x55, 0x57, 0x5B };
+                    return new byte[] { 0x53, 0x55, 0x57, 0x5B,
+                        Re2EnemyIds.ChiefIrons1,
+                        Re2EnemyIds.ChiefIrons2,
+                        Re2EnemyIds.BenBertolucci1,
+                        Re2EnemyIds.BenBertolucci2
+                    };
                 case Re2EnemyIds.SherryWithPendant:
                 case Re2EnemyIds.SherryWithClairesJacket:
                     return new byte[] {
@@ -144,7 +154,9 @@ namespace IntelOrca.Biohazard.RE2
 
                 case Re2EnemyIds.SherryWithClairesJacket:
                 case Re2EnemyIds.AdaWong2:
+                case Re2EnemyIds.BenBertolucci1:
                 case Re2EnemyIds.BenBertolucci2:
+                case Re2EnemyIds.ChiefIrons1:
                 case Re2EnemyIds.ChiefIrons2:
                     return true;
                 default:
