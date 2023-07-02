@@ -13,6 +13,7 @@ namespace IntelOrca.Biohazard
     internal class VoiceRandomiser
     {
         private static ConcurrentDictionary<string, double> _voiceLengthCache = new ConcurrentDictionary<string, double>(StringComparer.OrdinalIgnoreCase);
+        private static VoiceSample[]? _customSamplesCache;
 
         private readonly BioVersion _version;
         private readonly RandoLogger _logger;
@@ -66,12 +67,6 @@ namespace IntelOrca.Biohazard
             _voiceSamples = AddToSelectionInternal(version, fileRepository);
             _originalPlayerActor = _npcHelper.GetPlayerActors(config.Player);
             _playerActors = playerActors ?? _originalPlayerActor;
-
-            using (_logger.Progress.BeginTask(config.Player, "Scanning voices"))
-            {
-                var customSamples = AddCustom(fileRepository);
-                _uniqueSamples.AddRange(customSamples);
-            }
         }
 
         public void AddToSelection(BioVersion version, FileRepository fileRepository) => AddToSelectionInternal(version, fileRepository);
@@ -208,16 +203,33 @@ namespace IntelOrca.Biohazard
 
         public void Randomise()
         {
-            RandomiseAuto();
+            ScanCustomSamples();
+            PopulateRoomVoices();
             RandomizeRooms(_rng.NextFork());
             SetVoices();
         }
 
-        private void RandomiseAuto()
+        private void ScanCustomSamples()
         {
-            _roomVoices.Clear();
+            if (_customSamplesCache == null)
+            {
+                using (_logger.Progress.BeginTask(_config.Player, "Scanning voices"))
+                {
+                    _customSamplesCache = AddCustom(_fileRepository);
+                }
+            }
+            _uniqueSamples.AddRange(_customSamplesCache);
+        }
+
+        private void PopulateRoomVoices()
+        {
             foreach (var rdt in _gameData.Rdts)
             {
+                if (_roomVoices.Any(x => x.RdtId == rdt.RdtId))
+                {
+                    continue;
+                }
+
                 var room = _map.GetRoom(rdt.RdtId);
                 var npcs = room?.Npcs ?? new[] { new MapRoomNpcs() };
                 npcs = npcs
@@ -357,7 +369,7 @@ namespace IntelOrca.Biohazard
                 return;
 
             actors = actors.Select(TrimActorGame).ToArray();
-            var randomVoice = GetRandomVoice(rng, newActor, kind, actors, voice.MaxLength);
+            var randomVoice = GetRandomVoice(rng, newActor, kind, actors, voice.Length, voice.MaxLength);
             if (randomVoice != null)
             {
                 voice.Replacement = randomVoice;
@@ -379,12 +391,12 @@ namespace IntelOrca.Biohazard
             return actor.Substring(0, fsIndex);
         }
 
-        private VoiceSampleReplacement? GetRandomVoice(Rng rng, string actor, string? kind, string[] actors, double maxLength, bool refillPool = true)
+        private VoiceSampleReplacement? GetRandomVoice(Rng rng, string actor, string? kind, string[] actors, double originalLength, double maxLength, bool refillPool = true)
         {
             for (int i = 0; i < _pool.Count; i++)
             {
                 var sample = _pool[i];
-                var result = CheckSample(sample, actor, kind, actors, maxLength);
+                var result = CheckSample(sample, actor, kind, actors, originalLength, maxLength);
                 if (result == SampleCheckResult.Bad)
                     continue;
 
@@ -397,15 +409,20 @@ namespace IntelOrca.Biohazard
 
             if (!refillPool)
             {
-                if (kind == "scream")
+                if (_config.ReduceSilences && originalLength != 0)
+                {
+                    // Allow any length sample
+                    return GetRandomVoice(rng, actor, kind, actors, 0, maxLength, true);
+                }
+                else if (kind == "scream")
                 {
                     // Try find a death sound instead
-                    return GetRandomVoice(rng, actor, "death", actors, maxLength, true);
+                    return GetRandomVoice(rng, actor, "death", actors, originalLength, maxLength, true);
                 }
                 else if (kind != null)
                 {
                     // Fallback to any kind of voice
-                    return GetRandomVoice(rng, actor, null, actors, maxLength, true);
+                    return GetRandomVoice(rng, actor, null, actors, originalLength, maxLength, true);
                 }
                 else
                 {
@@ -421,14 +438,16 @@ namespace IntelOrca.Biohazard
                 .Where(x => !poolHash.Contains(x))
                 .Shuffle(rng);
             _pool.AddRange(newItems);
-            return GetRandomVoice(rng, actor, kind, actors, maxLength, refillPool: false);
+            return GetRandomVoice(rng, actor, kind, actors, originalLength, maxLength, refillPool: false);
         }
 
-        private SampleCheckResult CheckSample(VoiceSample sample, string actor, string? kind, string[] actors, double maxLength)
+        private SampleCheckResult CheckSample(VoiceSample sample, string actor, string? kind, string[] actors, double originalLength, double maxLength)
         {
             if (maxLength != 0 && sample.Length > maxLength)
                 return SampleCheckResult.Bad;
-            if (sample.Actor != actor)
+            if (_config.ReduceSilences && originalLength != 0 && sample.Length < originalLength - 1) // Allow 1 second of silence
+                return SampleCheckResult.Bad;
+            if (!_config.AllowAnyVoice && sample.Actor != actor)
                 return SampleCheckResult.Bad;
             if (sample.Kind != kind)
                 return SampleCheckResult.Bad;
