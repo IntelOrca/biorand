@@ -143,6 +143,7 @@ namespace IntelOrca.Biohazard.RE2
 
             base.Generate(config, reConfig, progress, fileRepository);
 
+            ReplaceBradZombie(config, fileRepository);
             FixEmds(fileRepository);
         }
 
@@ -459,6 +460,39 @@ namespace IntelOrca.Biohazard.RE2
             }
         }
 
+        private void ReplaceBradZombie(RandoConfig config, FileRepository fileRepository)
+        {
+            if (!config.RandomEnemies)
+                return;
+
+            var pldFiles = new List<string>();
+            for (var i = 0; i < 2; i++)
+            {
+                var plds = DataManager.GetDirectories(BiohazardVersion, $"pld{i}");
+                foreach (var pld in plds)
+                {
+                    var files = DataManager.GetFiles(pld);
+                    foreach (var file in files)
+                    {
+                        if (file.EndsWith(".pld", StringComparison.OrdinalIgnoreCase))
+                        {
+                            pldFiles.Add(file);
+                        }
+                    }
+                }
+            }
+
+            var rng = new Rng(config.Seed);
+            var chosenPlds = pldFiles.Shuffle(rng).Take(2).ToArray();
+            for (var i = 0; i < 2; i++)
+            {
+                var fileName = $"pl{i}/emd{i}/em{i}11.emd";
+                var source = chosenPlds[i];
+                var target = fileRepository.GetModPath(fileName);
+                File.Copy(source, target, true);
+            }
+        }
+
         private void FixEmds(FileRepository fileRepository)
         {
             var specialEmds = new[]
@@ -468,6 +502,7 @@ namespace IntelOrca.Biohazard.RE2
                 Re2EnemyIds.BenBertolucci1,
                 Re2EnemyIds.BenBertolucci2,
                 Re2EnemyIds.MarvinBranagh,
+                Re2EnemyIds.ZombieBrad
             };
 
             foreach (var specialEmd in specialEmds)
@@ -490,7 +525,7 @@ namespace IntelOrca.Biohazard.RE2
                     return;
 
                 var baseEmdFile = new EmdFile(BioVersion.Biohazard2, baseEmdPath);
-                var targetEmdFile = new EmdFile(BioVersion.Biohazard2, targetEmdPath);
+                var targetEmdFile = ModelFile.FromFile(targetEmdPath)!;
 
                 // First get how tall the new EMD is compared to the old one
                 var sourceHeight = baseEmdFile.GetEmr(0).GetFinalPosition(0).y;
@@ -507,7 +542,13 @@ namespace IntelOrca.Biohazard.RE2
                     builder.Parts.RemoveRange(15, builder.Parts.Count - 15);
 
                 // Add extra meshes
-                if (type == Re2EnemyIds.MarvinBranagh)
+                if (type == Re2EnemyIds.ZombieBrad)
+                {
+                    var zombieParts = new[] { 10, 0 };
+                    foreach (var zp in zombieParts)
+                        builder.Parts.Add(builder.Parts[zp]);
+                }
+                else if (type == Re2EnemyIds.MarvinBranagh)
                 {
                     var zombieParts = new[] { 13, 0, 8, 12, 14, 9, 10, 11, 11 };
                     foreach (var zp in zombieParts)
@@ -579,6 +620,10 @@ namespace IntelOrca.Biohazard.RE2
                 }
 
                 baseEmdFile.Save(targetEmdPath);
+                if (targetEmdFile is PldFile)
+                {
+                    targetEmdFile.GetTim(0).Save(Path.ChangeExtension(targetEmdPath, ".tim"));
+                }
             }
             catch (Exception)
             {
