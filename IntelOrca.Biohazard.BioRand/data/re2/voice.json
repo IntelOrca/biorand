@@ -52,7 +52,7 @@
     "pl0/voice/stage1/v014.sap": { "rdt": "113", "player": 0, "actor": "leon", "condition": "@claire", "nameClipped": { "start": 0.7 } },
     "pl0/voice/stage1/v015.sap": { "rdt": "113", "player": 0, "actor": "claire" },
     "pl0/voice/stage1/v016.sap": { "rdt": "113", "player": 0, "actor": "leon" },
-    "pl0/voice/stage1/v017.sap": { "rdt": "113", "player": 0, "actor": "claire" },
+    "pl0/voice/stage1/v017.sap": { "rdt": "113", "player": 0, "actor": "claire", "strict": true },
     "pl0/voice/stage1/v018.sap": { "rdt": "113", "player": 0, "actor": "claire", "condition": "@leon", "nameClipped": { "start": 3.0 } }, // end : 2.37 for alternate
     "pl0/voice/stage1/v019.sap": { "rdt": "113", "player": 0, "actor": "leon" },
     "pl0/voice/stage1/v020.sap": { "rdt": "113", "player": 0, "actor": "leon" },
