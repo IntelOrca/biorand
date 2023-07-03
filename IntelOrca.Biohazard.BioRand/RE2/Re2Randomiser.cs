@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
@@ -14,7 +13,6 @@ namespace IntelOrca.Biohazard.RE2
 {
     public class Re2Randomiser : BaseRandomiser
     {
-        private const double SherryScaleY = 0.735911602209945;
         private const uint AddressInventoryLeon = 0x400000 + 0x001401B8;
         private const uint AddressInventoryClaire = 0x400000 + 0x001401D9;
 
@@ -165,38 +163,10 @@ namespace IntelOrca.Biohazard.RE2
             {
                 var pldPath = GetSelectedPldPath(config, config.Player);
                 actor = Path.GetFileName(pldPath);
-                if (actor.IsSherryActor())
-                {
-                    foreach (var rdt in gameData.Rdts)
-                    {
-                        if (rdt.RdtId == new RdtId(2, 0x06) ||
-                            rdt.RdtId == new RdtId(2, 0x07))
-                        {
-                            continue;
-                        }
-                        ScaleEmrY(logger, rdt, EmrFlags.Player, false);
-                    }
-                }
             }
-            // We still need to replace Leon / Claire so they can use more weapons
-            ReplacePlayer(config, logger, fileRepository, pldIndex, hurtSoundIndex, deathSoundIndex, actor);
 
-            // Some characters like Sherry need new enemy animations
-            var srcPldDir = GetPldDirectory(actor, out var srcPldIndex);
-            var emdFiles = DataManager.GetFiles(BiohazardVersion, Path.Combine(srcPldDir, $"emd{srcPldIndex}"));
-            var emdFolder = fileRepository.GetModPath($"pl{config.Player}/emd{config.Player}");
-            Directory.CreateDirectory(emdFolder);
-            foreach (var src in emdFiles)
-            {
-                var dstFileName = Path.GetFileName(src);
-                var match = Regex.Match(dstFileName, "em[0-9]([0-9a-f][0-9a-f]).emd", RegexOptions.IgnoreCase);
-                if (match.Success)
-                {
-                    dstFileName = $"em{config.Player}{match.Groups[1].Value}.emd";
-                }
-                var dst = Path.Combine(emdFolder, dstFileName);
-                File.Copy(src, dst, true);
-            }
+            ReplacePlayer(config, logger, fileRepository, pldIndex, hurtSoundIndex, deathSoundIndex, actor);
+            ScalePlayerEMRs(config, logger, gameData, fileRepository);
 
             // Change partner
             var rng = new Rng(config.Seed + config.Player);
@@ -212,9 +182,34 @@ namespace IntelOrca.Biohazard.RE2
             return new[] { actor, partner };
         }
 
-        internal static void ScaleEmrY(RandoLogger logger, Rdt rdt, EmrFlags flags, bool inverse)
+        private void ScalePlayerEMRs(RandoConfig config, RandoLogger logger, GameData gameData, FileRepository fileRepository)
         {
-            var scale = inverse ? 1 / SherryScaleY : SherryScaleY;
+            if (!config.ChangePlayer)
+                return;
+
+            var player = config.Player;
+            var pldFileName = $"pl{player}/pld/pl{player:00}.pld";
+            var originalPath = fileRepository.GetDataPath(pldFileName);
+            var newPath = fileRepository.GetModPath(pldFileName);
+            var originalFile = new PldFile(BiohazardVersion, originalPath);
+            var newFile = new PldFile(BiohazardVersion, newPath);
+            var scale = newFile.CalculateEmrScale(originalFile);
+            if (scale == 1)
+                return;
+
+            foreach (var rdt in gameData.Rdts)
+            {
+                if (rdt.RdtId == new RdtId(2, 0x06) ||
+                    rdt.RdtId == new RdtId(2, 0x07))
+                {
+                    continue;
+                }
+                ScaleEmrY(logger, rdt, EmrFlags.Player, scale);
+            }
+        }
+
+        internal static void ScaleEmrY(RandoLogger logger, Rdt rdt, EmrFlags flags, double scale)
+        {
             var emrIndex = rdt.ScaleEmrY(flags, scale);
             if (emrIndex != null)
             {
@@ -555,6 +550,7 @@ namespace IntelOrca.Biohazard.RE2
         {
             var emdFile = new EmdFile(BioVersion.Biohazard2, srcPath);
             emdFile.SetEmr(2, emdFile.GetEmr(2).Scale(scale));
+            Directory.CreateDirectory(Path.GetDirectoryName(dstPath));
             emdFile.Save(dstPath);
         }
 
