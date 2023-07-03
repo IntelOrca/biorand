@@ -41,7 +41,10 @@ namespace IntelOrca.Biohazard.RE2
             var npcCount = rdt.Enemies.Count(x => IsNpc(x.Type));
             if (npcCount > 1)
             {
-                var problematicTypes = new byte[] { 88, 89, 90 };
+                var problematicTypes = new byte[] {
+                    Re2EnemyIds.LeonKennedyCapTankTop,
+                    Re2EnemyIds.ClaireRedfieldCowGirl,
+                    Re2EnemyIds.LeonKennedyBlackLeather };
                 defaultIncludeTypes = defaultIncludeTypes
                     .Except(problematicTypes)
                     .ToArray();
@@ -145,20 +148,13 @@ namespace IntelOrca.Biohazard.RE2
         {
             switch (id)
             {
-                // Leon skins
-                case 0x52:
-                case 0x54:
-                case 0x56:
-                case 0x58:
-                case 0x5A:
-
-                // Claire skins
-                case 0x53:
-                case 0x55:
-                case 0x57:
-                case 0x59:
-                case 0x5B:
-
+                case Re2EnemyIds.LeonKennedyRpd:
+                case Re2EnemyIds.LeonKennedyBandaged:
+                case Re2EnemyIds.LeonKennedyCapTankTop:
+                case Re2EnemyIds.LeonKennedyBlackLeather:
+                case Re2EnemyIds.ClaireRedfield:
+                case Re2EnemyIds.ClaireRedfieldNoJacket:
+                case Re2EnemyIds.ClaireRedfieldCowGirl:
                 case Re2EnemyIds.RobertKendo:
                 case Re2EnemyIds.AnnetteBirkin1:
                 case Re2EnemyIds.AnnetteBirkin2:
