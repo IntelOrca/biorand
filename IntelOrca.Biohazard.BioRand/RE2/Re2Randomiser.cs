@@ -144,7 +144,7 @@ namespace IntelOrca.Biohazard.RE2
             base.Generate(config, reConfig, progress, fileRepository);
 
             ReplaceBradZombie(config, fileRepository);
-            // FixEmds(fileRepository);
+            ScaleEnemyAttacks(config, fileRepository);
         }
 
         protected override string[] TitleCardSoundFiles { get; } =
@@ -491,181 +491,71 @@ namespace IntelOrca.Biohazard.RE2
             }
         }
 
-        private void FixEmds(FileRepository fileRepository)
+        private void ScaleEnemyAttacks(RandoConfig config, FileRepository fileRepository)
         {
-            var specialEmds = new[]
-            {
-                Re2EnemyIds.ChiefIrons1,
-                Re2EnemyIds.ChiefIrons2,
-                Re2EnemyIds.BenBertolucci1,
-                Re2EnemyIds.BenBertolucci2,
-                Re2EnemyIds.MarvinBranagh,
-                Re2EnemyIds.ZombieBrad
+            if (!config.ChangePlayer)
+                return;
+
+            var enemiesToScale = new byte[] {
+                Re2EnemyIds.ZombieCop,
+                Re2EnemyIds.ZombieBrad,
+                Re2EnemyIds.ZombieGuy1,
+                Re2EnemyIds.ZombieGirl,
+                Re2EnemyIds.ZombieTestSubject,
+                Re2EnemyIds.ZombieScientist,
+                Re2EnemyIds.ZombieNaked,
+                Re2EnemyIds.ZombieGuy2,
+                Re2EnemyIds.ZombieGuy3,
+                Re2EnemyIds.ZombieRandom,
+                Re2EnemyIds.ZombieDog,
+                Re2EnemyIds.Crow,
+                Re2EnemyIds.LickerRed,
+                Re2EnemyIds.Alligator,
+                Re2EnemyIds.BirkinGoo,
+                Re2EnemyIds.BirkinGooChild,
+                Re2EnemyIds.Tyrant1,
+                Re2EnemyIds.Tyrant2,
+                Re2EnemyIds.ZombieArms,
+                Re2EnemyIds.Ivy,
+                Re2EnemyIds.Birkin1,
+                Re2EnemyIds.Birkin2,
+                Re2EnemyIds.Birkin4,
+                Re2EnemyIds.Birkin5,
+                0x36,
+                0x37,
+                Re2EnemyIds.IvyPurple,
+                Re2EnemyIds.GiantMoth,
+                Re2EnemyIds.MarvinBranagh
             };
 
-            foreach (var specialEmd in specialEmds)
+            for (var i = 0; i < 2; i++)
             {
-                for (var i = 0; i < 2; i++)
+                var pldFileName = $"pl{i}/pld/pl{i:00}.pld";
+                var originalPld = fileRepository.GetDataPath(pldFileName);
+                var moddedPld = fileRepository.GetModPath(pldFileName);
+                var originalPldFile = new PldFile(BioVersion.Biohazard2, originalPld);
+                var moddedPldFile = new PldFile(BioVersion.Biohazard2, moddedPld);
+                var targetScale = moddedPldFile.CalculateEmrScale(originalPldFile);
+                if (targetScale == 1)
+                    continue;
+
+                foreach (var enemy in enemiesToScale)
                 {
-                    var fileName = $"pl{i}/emd{i}/em{i}{specialEmd:X2}.emd";
-                    var baseEmdPath = fileRepository.GetDataPath(fileName);
-                    var targetEmdPath = fileRepository.GetModPath(fileName);
-                    FixEmd(specialEmd, baseEmdPath, targetEmdPath);
+                    var fileName = $"pl{i}/emd{i}/em{i}{enemy:X2}.emd";
+                    var target = fileRepository.GetModPath(fileName);
+                    var source = File.Exists(target) ?
+                        target :
+                        fileRepository.GetDataPath(fileName);
+                    ScaleEnemyAttacks(source, target, targetScale);
                 }
             }
         }
 
-        private void FixEmd(byte type, string baseEmdPath, string targetEmdPath)
+        private void ScaleEnemyAttacks(string srcPath, string dstPath, double scale)
         {
-            try
-            {
-                if (!File.Exists(targetEmdPath))
-                    return;
-
-                var baseEmdFile = new EmdFile(BioVersion.Biohazard2, baseEmdPath);
-                var targetEmdFile = ModelFile.FromFile(targetEmdPath)!;
-
-                // First get how tall the new EMD is compared to the old one
-                var sourceHeight = baseEmdFile.GetEmr(0).GetFinalPosition(0).y;
-                var targetHeight = targetEmdFile.GetEmr(0).GetFinalPosition(0).y;
-                var targetScale = ((double)targetHeight / sourceHeight) + 0.03;
-
-                // Now copy over the skeleton and scale the EMR keyframes
-                baseEmdFile.SetEmr(0, baseEmdFile.GetEmr(0).WithSkeleton(targetEmdFile.GetEmr(0)).Scale(targetScale));
-                baseEmdFile.SetEmr(1, baseEmdFile.GetEmr(1).Scale(targetScale));
-
-                // Copy over the mesh (clear any extra parts)
-                var builder = ((Md1)targetEmdFile.GetMesh(0)).ToBuilder();
-                if (builder.Parts.Count > 15)
-                    builder.Parts.RemoveRange(15, builder.Parts.Count - 15);
-
-                // Add extra meshes
-                if (type == Re2EnemyIds.ZombieBrad)
-                {
-                    var zombieParts = new[] { 10, 0 };
-                    foreach (var zp in zombieParts)
-                        builder.Parts.Add(builder.Parts[zp]);
-                }
-                else if (type == Re2EnemyIds.MarvinBranagh)
-                {
-                    var zombieParts = new[] { 13, 0, 8, 12, 14, 9, 10, 11, 11 };
-                    foreach (var zp in zombieParts)
-                        builder.Parts.Add(builder.Parts[zp]);
-                }
-                else if (type == Re2EnemyIds.ChiefIrons1 || type == Re2EnemyIds.ChiefIrons2)
-                {
-                    builder.Add(builder.Parts[11]);
-                    builder.Add();
-                }
-                else if (type == Re2EnemyIds.BenBertolucci1 || type == Re2EnemyIds.BenBertolucci2)
-                {
-                    builder.Add();
-                }
-
-                baseEmdFile.SetMesh(0, builder.ToMesh());
-
-                // Ben and Irons need have morphing info that needs zeroing
-                if (type == Re2EnemyIds.ChiefIrons1 ||
-                    type == Re2EnemyIds.BenBertolucci1 || type == Re2EnemyIds.BenBertolucci2)
-                {
-                    var morph = baseEmdFile.GetMorph(0).ToBuilder();
-
-                    // Copy skeleton from EMR
-                    var emr = baseEmdFile.GetEmr(0);
-                    var skel = Enumerable.Range(0, 15).Select(x => emr.GetRelativePosition(x)).ToArray();
-                    for (var i = 0; i < morph.Skeletons.Count; i++)
-                    {
-                        morph.Skeletons[i] = skel;
-                    }
-
-                    // Copy positions from chest mesh to morph group 0
-                    var positionData = ((Md1)baseEmdFile.GetMesh(0))
-                        .ToBuilder().Parts[0].Positions
-                        .Select(p => new Emr.Vector(p.x, p.y, p.z))
-                        .ToArray();
-                    for (var i = 0; i < morph.Groups[0].Positions.Count; i++)
-                    {
-                        morph.Groups[0].Positions[i] = positionData;
-                    }
-
-                    // Morph group 1 can just be zeros
-                    for (var i = 0; i < morph.Groups[1].Positions.Count; i++)
-                    {
-                        morph.Groups[1].Positions[i] = new Emr.Vector[1];
-                    }
-
-                    baseEmdFile.SetMorph(0, morph.ToMorphData());
-                }
-
-                // Ben and Irons need to have their chest on the right texture page
-                if (type == Re2EnemyIds.ChiefIrons1 || type == Re2EnemyIds.ChiefIrons2 ||
-                    type == Re2EnemyIds.BenBertolucci1 || type == Re2EnemyIds.BenBertolucci2)
-                {
-                    var pageIndex = type == Re2EnemyIds.ChiefIrons1 || type == Re2EnemyIds.ChiefIrons2 ? 0 : 1;
-                    var mesh = (Md1)baseEmdFile.GetMesh(0);
-                    if (EnsureChestOnPage(ref mesh, pageIndex))
-                    {
-                        mesh = (Md1)mesh.EditMeshTextures(m =>
-                        {
-                            if (m.PartIndex == 0 || m.PartIndex == 9 || m.PartIndex == 12)
-                            {
-                                m.Page = pageIndex ^ 1;
-                            }
-                        });
-                        SwapPagesOnTexture(targetEmdPath);
-                        baseEmdFile.SetMesh(0, mesh);
-                    }
-                }
-
-                baseEmdFile.Save(targetEmdPath);
-                if (targetEmdFile is PldFile)
-                {
-                    targetEmdFile.GetTim(0).Save(Path.ChangeExtension(targetEmdPath, ".tim"));
-                }
-            }
-            catch (Exception)
-            {
-                try
-                {
-                    File.Copy(baseEmdPath, targetEmdPath);
-                }
-                catch
-                {
-                }
-            }
-        }
-
-        private bool EnsureChestOnPage(ref Md1 mesh, int page)
-        {
-            var builder = mesh.ToBuilder();
-            var part0 = builder.Parts[0];
-            if (part0.TriangleTextures.Count > 0)
-            {
-                if ((part0.TriangleTextures[0].page & 0x0F) == page)
-                {
-                    return false;
-                }
-            }
-            else if (part0.QuadTextures.Count > 0)
-            {
-                if ((part0.QuadTextures[0].page & 0x0F) == page)
-                {
-                    return false;
-                }
-            }
-            mesh = (Md1)mesh.SwapPages(0, 1);
-            return true;
-        }
-
-        private void SwapPagesOnTexture(string emdPath)
-        {
-            var timPath = Path.ChangeExtension(emdPath, ".tim");
-            if (File.Exists(timPath))
-            {
-                var tim = new TimFile(timPath);
-                tim.SwapPages(0, 1);
-                tim.Save(timPath);
-            }
+            var emdFile = new EmdFile(BioVersion.Biohazard2, srcPath);
+            emdFile.SetEmr(2, emdFile.GetEmr(2).Scale(scale));
+            emdFile.Save(dstPath);
         }
 
         private void ChangePlayerInventoryFace(RandoConfig config, FileRepository fileRepository, int index, string actor)

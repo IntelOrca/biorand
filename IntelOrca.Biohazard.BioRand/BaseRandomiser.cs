@@ -572,11 +572,11 @@ namespace IntelOrca.Biohazard
             actors.AddRange(GetDefaultNPCs());
             for (int i = 0; i < 2; i++)
             {
-                var emds = DataManager
-                    .GetDirectories(BiohazardVersion, $"emd")
+                var plds = DataManager
+                    .GetDirectories(BiohazardVersion, $"pld{i}")
                     .Select(Path.GetFileName)
                     .ToArray();
-                actors.AddRange(emds);
+                actors.AddRange(plds);
             }
             return actors
                 .OrderBy(x => x)
