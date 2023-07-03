@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.RE2;
 using IntelOrca.Biohazard.Script.Opcodes;
@@ -80,38 +81,6 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private static string[] GetThingsFromFileName(string filename, char symbol)
-        {
-            var filenameEnd = filename.LastIndexOf('.');
-            if (filenameEnd == -1)
-                filenameEnd = filename.Length;
-
-            var result = new List<string>();
-            var start = -1;
-            for (int i = 0; i < filenameEnd; i++)
-            {
-                var c = filename[i];
-                if (c == symbol && start == -1)
-                {
-                    start = i + 1;
-                }
-                else if (c == '_' || c == '-')
-                {
-                    if (start != -1)
-                    {
-                        result.Add(filename.Substring(start, i - start));
-                        i--;
-                        start = -1;
-                    }
-                }
-            }
-            if (start != -1)
-            {
-                result.Add(filename.Substring(start, filenameEnd - start));
-            }
-            return result.ToArray();
-        }
-
         public void AddNPC(byte emId, string emPath, string actor)
         {
             _emds.Add(new ExternalCharacter(emId, emPath, actor));
@@ -146,48 +115,65 @@ namespace IntelOrca.Biohazard
                 return;
 
             _logger.WriteHeading("Adding additional NPCs:");
-            var emdSet = true;
-            while (emdSet)
+            if (_config.Game == 2)
             {
-                emdSet = false;
-                foreach (var g in _emds.GroupBy(x => x.EmId))
+                var externals = _emds
+                    .Where(x => SelectedActors.Contains(x.Actor))
+                    .ToEndlessBag(_rng);
+                for (var i = 0; i < 256; i++)
                 {
-                    var gSelected = g.Where(x => SelectedActors.Contains(x.Actor)).ToArray();
-                    if (gSelected.Length == 0)
+                    if (!_npcHelper.IsSpareSlot((byte)i))
                         continue;
 
-                    var slots = _npcHelper
-                        .GetSlots(_config, g.Key)
-                        .Except(_extraNpcMap.Keys)
-                        .ToArray();
-                    var spare = slots
-                        .Where(x => _npcHelper.IsSpareSlot(x))
-                        .ToQueue();
-                    var notSpare = slots
-                        .Where(x => !_npcHelper.IsSpareSlot(x))
-                        .Shuffle(rng)
-                        .ToQueue();
-
-                    // Normal slot, take all selected characters
-                    var randomCharactersToInclude = gSelected.Shuffle(rng);
-                    foreach (var rchar in randomCharactersToInclude)
+                    var ec = externals.Next();
+                    SetEm((byte)i, ec);
+                }
+            }
+            else
+            {
+                var emdSet = true;
+                while (emdSet)
+                {
+                    emdSet = false;
+                    foreach (var g in _emds.GroupBy(x => x.EmId))
                     {
-                        if (spare.Count != 0)
+                        var gSelected = g.Where(x => SelectedActors.Contains(x.Actor)).ToArray();
+                        if (gSelected.Length == 0)
+                            continue;
+
+                        var slots = _npcHelper
+                            .GetSlots(_config, g.Key)
+                            .Except(_extraNpcMap.Keys)
+                            .ToArray();
+                        var spare = slots
+                            .Where(x => _npcHelper.IsSpareSlot(x))
+                            .ToQueue();
+                        var notSpare = slots
+                            .Where(x => !_npcHelper.IsSpareSlot(x))
+                            .Shuffle(rng)
+                            .ToQueue();
+
+                        // Normal slot, take all selected characters
+                        var randomCharactersToInclude = gSelected.Shuffle(rng);
+                        foreach (var rchar in randomCharactersToInclude)
                         {
-                            var slot = spare.Dequeue();
-                            SetEm(slot, rchar);
-                            emdSet = true;
-                        }
-                        else if (notSpare.Count != 0)
-                        {
-                            // 50:50 on whether to use original or new character, unless original is not selected.
-                            var slot = notSpare.Dequeue();
-                            var originalActor = GetActor(slot, true) ?? "";
-                            if (!SelectedActors.Contains(originalActor) ||
-                                rng.NextProbability(50))
+                            if (spare.Count != 0)
                             {
+                                var slot = spare.Dequeue();
                                 SetEm(slot, rchar);
                                 emdSet = true;
+                            }
+                            else if (notSpare.Count != 0)
+                            {
+                                // 50:50 on whether to use original or new character, unless original is not selected.
+                                var slot = notSpare.Dequeue();
+                                var originalActor = GetActor(slot, true) ?? "";
+                                if (!SelectedActors.Contains(originalActor) ||
+                                    rng.NextProbability(50))
+                                {
+                                    SetEm(slot, rchar);
+                                    emdSet = true;
+                                }
                             }
                         }
                     }
@@ -197,7 +183,6 @@ namespace IntelOrca.Biohazard
 
         void SetEm(byte id, ExternalCharacter ec)
         {
-            _extraNpcMap[id] = ec.Actor;
             if (_config.Game == 1)
             {
                 var enemyDirectory = Path.Combine(_modPath, "enemy");
@@ -207,15 +192,13 @@ namespace IntelOrca.Biohazard
             }
             else if (_config.Game == 2)
             {
-                var emdPath = Path.Combine(_modPath, $"pl{_config.Player}", $"emd{_config.Player}");
-                Directory.CreateDirectory(emdPath);
+                var emdFileName = Path.Combine($"pl{_config.Player}", $"emd{_config.Player}", $"em{_config.Player}{id:X2}.emd");
+                var originalEmdPath = _fileRepository.GetDataPath(emdFileName);
+                var targetEmdPath = _fileRepository.GetModPath(emdFileName);
+                if (!File.Exists(originalEmdPath))
+                    return;
 
-                var srcEmd = ec.EmPath;
-                var dstEmd = Path.Combine(emdPath, $"EM{_config.Player}{id:X2}.EMD");
-                var srcTim = Path.ChangeExtension(ec.EmPath, ".tim");
-                var dstTim = Path.Combine(emdPath, $"EM{_config.Player}{id:X2}.TIM");
-                File.Copy(srcEmd, dstEmd, true);
-                File.Copy(srcTim, dstTim, true);
+                CreateEmdFile(id, ec.EmPath, originalEmdPath, targetEmdPath);
             }
             else if (_config.Game == 3)
             {
@@ -229,6 +212,7 @@ namespace IntelOrca.Biohazard
                 File.Copy(srcEmd, dstEmd, true);
                 File.Copy(srcTim, dstTim, true);
             }
+            _extraNpcMap[id] = ec.Actor;
             _logger.WriteLine($"Enemy 0x{id:X2} becomes {ec.Actor}");
         }
 
@@ -463,8 +447,172 @@ namespace IntelOrca.Biohazard
             return _npcHelper.GetActor(enemyType);
         }
 
+        private void CreateEmdFile(byte type, string pldPath, string baseEmdPath, string targetEmdPath)
+        {
+            var pldFile = ModelFile.FromFile(pldPath)!;
+            var emdFile = ModelFile.FromFile(baseEmdPath)!;
+
+            // First get how tall the new EMD is compared to the old one
+            var sourceHeight = emdFile.GetEmr(0).GetFinalPosition(0).y;
+            var targetHeight = pldFile.GetEmr(0).GetFinalPosition(0).y;
+            var targetScale = ((double)targetHeight / sourceHeight) + 0.03;
+
+            // Now copy over the skeleton and scale the EMR keyframes
+            emdFile.SetEmr(0, emdFile.GetEmr(0).WithSkeleton(pldFile.GetEmr(0)).Scale(targetScale));
+            emdFile.SetEmr(1, emdFile.GetEmr(1).Scale(targetScale));
+
+            // Copy over the mesh (clear any extra parts)
+            var builder = ((Md1)pldFile.GetMesh(0)).ToBuilder();
+            if (builder.Parts.Count > 15)
+                builder.Parts.RemoveRange(15, builder.Parts.Count - 15);
+
+            // Add extra meshes
+            if (type == Re2EnemyIds.ZombieBrad)
+            {
+                var zombieParts = new[] { 10, 0 };
+                foreach (var zp in zombieParts)
+                    builder.Parts.Add(builder.Parts[zp]);
+            }
+            else if (type == Re2EnemyIds.MarvinBranagh)
+            {
+                var zombieParts = new[] { 13, 0, 8, 12, 14, 9, 10, 11, 11 };
+                foreach (var zp in zombieParts)
+                    builder.Parts.Add(builder.Parts[zp]);
+            }
+            else if (type == Re2EnemyIds.ChiefIrons1 || type == Re2EnemyIds.ChiefIrons2)
+            {
+                builder.Add(builder.Parts[11]);
+                builder.Add();
+            }
+            else if (type == Re2EnemyIds.BenBertolucci1 || type == Re2EnemyIds.BenBertolucci2)
+            {
+                builder.Add();
+            }
+
+            emdFile.SetMesh(0, builder.ToMesh());
+
+            // Marvin
+            if (type == Re2EnemyIds.MarvinBranagh)
+            {
+                emdFile.SetMesh(0, emdFile.GetMesh(0).EditMeshTextures(m =>
+                {
+                    if (m.PartIndex >= 15)
+                    {
+                        m.Page += 2;
+                    }
+                    else if (m.Page == 0)
+                    {
+                        m.Page += 2;
+                    }
+                }));
+            }
+
+
+            // Ben and Irons need have morphing info that needs zeroing
+            if (type == Re2EnemyIds.ChiefIrons1 ||
+                type == Re2EnemyIds.BenBertolucci1 || type == Re2EnemyIds.BenBertolucci2)
+            {
+                var morph = emdFile.GetMorph(0).ToBuilder();
+
+                // Copy skeleton from EMR
+                var emr = emdFile.GetEmr(0);
+                var skel = Enumerable.Range(0, 15).Select(x => emr.GetRelativePosition(x)).ToArray();
+                for (var i = 0; i < morph.Skeletons.Count; i++)
+                {
+                    morph.Skeletons[i] = skel;
+                }
+
+                // Copy positions from chest mesh to morph group 0
+                var positionData = ((Md1)emdFile.GetMesh(0))
+                    .ToBuilder().Parts[0].Positions
+                    .Select(p => new Emr.Vector(p.x, p.y, p.z))
+                    .ToArray();
+                for (var i = 0; i < morph.Groups[0].Positions.Count; i++)
+                {
+                    morph.Groups[0].Positions[i] = positionData;
+                }
+
+                // Morph group 1 can just be zeros
+                for (var i = 0; i < morph.Groups[1].Positions.Count; i++)
+                {
+                    morph.Groups[1].Positions[i] = new Emr.Vector[1];
+                }
+
+                emdFile.SetMorph(0, morph.ToMorphData());
+            }
+
+            // Ben and Irons need to have their chest on the right texture page
+            if (type == Re2EnemyIds.ChiefIrons1 || type == Re2EnemyIds.ChiefIrons2 ||
+                type == Re2EnemyIds.BenBertolucci1 || type == Re2EnemyIds.BenBertolucci2)
+            {
+                var pageIndex = type == Re2EnemyIds.ChiefIrons1 || type == Re2EnemyIds.ChiefIrons2 ? 0 : 1;
+                var mesh = (Md1)emdFile.GetMesh(0);
+                if (EnsureChestOnPage(ref mesh, pageIndex))
+                {
+                    mesh = (Md1)mesh.EditMeshTextures(m =>
+                    {
+                        if (m.PartIndex == 0 || m.PartIndex == 9 || m.PartIndex == 12)
+                        {
+                            m.Page = pageIndex ^ 1;
+                        }
+                    });
+                    SwapPagesOnTexture(targetEmdPath);
+                    emdFile.SetMesh(0, mesh);
+                }
+            }
+
+            Directory.CreateDirectory(Path.GetDirectoryName(targetEmdPath));
+            emdFile.Save(targetEmdPath);
+            if (pldFile is PldFile)
+            {
+                var emdTim = pldFile.GetTim(0);
+                var plwPath = _fileRepository.GetDataPath("pl0/pld/PL00W02.PLW");
+                if (File.Exists(plwPath))
+                {
+                    var plw = ModelFile.FromFile(plwPath)!;
+                    var plwTim = plw.GetTim(0);
+                    emdTim = emdTim.WithWeaponTexture(plwTim, 1);
+                    emdTim = emdTim.WithWeaponTexture(plwTim, 3);
+                }
+                emdTim.Save(Path.ChangeExtension(targetEmdPath, ".tim"));
+            }
+        }
+
+        private bool EnsureChestOnPage(ref Md1 mesh, int page)
+        {
+            var builder = mesh.ToBuilder();
+            var part0 = builder.Parts[0];
+            if (part0.TriangleTextures.Count > 0)
+            {
+                if ((part0.TriangleTextures[0].page & 0x0F) == page)
+                {
+                    return false;
+                }
+            }
+            else if (part0.QuadTextures.Count > 0)
+            {
+                if ((part0.QuadTextures[0].page & 0x0F) == page)
+                {
+                    return false;
+                }
+            }
+            mesh = (Md1)mesh.SwapPages(0, 1);
+            return true;
+        }
+
+        private void SwapPagesOnTexture(string emdPath)
+        {
+            var timPath = Path.ChangeExtension(emdPath, ".tim");
+            if (File.Exists(timPath))
+            {
+                var tim = new TimFile(timPath);
+                tim.SwapPages(0, 1);
+                tim.Save(timPath);
+            }
+        }
+
         [DebuggerDisplay("{Actor}")]
-        private struct ExternalCharacter
+        private readonly struct ExternalCharacter
         {
             public byte EmId { get; }
             public string EmPath { get; }

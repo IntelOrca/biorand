@@ -144,7 +144,7 @@ namespace IntelOrca.Biohazard.RE2
             base.Generate(config, reConfig, progress, fileRepository);
 
             ReplaceBradZombie(config, fileRepository);
-            FixEmds(fileRepository);
+            // FixEmds(fileRepository);
         }
 
         protected override string[] TitleCardSoundFiles { get; } =
@@ -238,20 +238,18 @@ namespace IntelOrca.Biohazard.RE2
                 voiceRandomiser.AddToSelection(BioVersion.Biohazard3, fileRepository);
             }
 
-            var emdFolders = DataManager.GetDirectories(BiohazardVersion, $"emd");
-            foreach (var emdFolder in emdFolders)
+            var pldFolders0 = DataManager.GetDirectories(BiohazardVersion, $"pld0");
+            var pldFolders1 = DataManager.GetDirectories(BiohazardVersion, $"pld1");
+            var pldFolders = pldFolders0.Concat(pldFolders1).ToArray();
+            foreach (var pldFolder in pldFolders)
             {
-                var actor = Path.GetFileName(emdFolder);
-                var files = Directory.GetFiles(emdFolder);
+                var actor = Path.GetFileName(pldFolder);
+                var files = Directory.GetFiles(pldFolder);
                 foreach (var file in files)
                 {
-                    if (file.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
+                    if (file.EndsWith(".pld", StringComparison.OrdinalIgnoreCase))
                     {
-                        var hex = Path.GetFileName(file).Substring(3, 2);
-                        if (int.TryParse(hex, System.Globalization.NumberStyles.HexNumber, null, out var result))
-                        {
-                            npcRandomiser.AddNPC((byte)result, file, actor);
-                        }
+                        npcRandomiser.AddNPC(0, file, actor);
                     }
                 }
             }
