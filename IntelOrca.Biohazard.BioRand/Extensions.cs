@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.Script;
 
 namespace IntelOrca.Biohazard
@@ -118,5 +119,18 @@ namespace IntelOrca.Biohazard
         }
 
         public static IEnumerable<T> EnumerateOpcodes<T>(this Rdt rdt, RandoConfig config) => AstEnumerator<T>.Enumerate(rdt.Ast!, config);
+
+        public static double CalculateEmrScale(this ModelFile newModel, ModelFile originalModel)
+        {
+            var sourceHeight = originalModel.GetEmr(0).GetRelativePosition(0).y;
+            var targetHeight = newModel.GetEmr(0).GetRelativePosition(0).y;
+            var targetScale = ((double)targetHeight / sourceHeight) + 0.03;
+
+            // Don't bother scaling if only slightly out
+            if (Math.Abs(targetScale - 1) <= 0.2)
+                return 1;
+
+            return targetScale;
+        }
     }
 }

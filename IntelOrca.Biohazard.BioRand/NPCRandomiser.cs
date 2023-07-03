@@ -471,9 +471,7 @@ namespace IntelOrca.Biohazard
             }
 
             // First get how tall the new EMD is compared to the old one
-            var sourceHeight = emdFile.GetEmr(0).GetFinalPosition(0).y;
-            var targetHeight = pldFile.GetEmr(0).GetFinalPosition(0).y;
-            var targetScale = ((double)targetHeight / sourceHeight) + 0.03;
+            var targetScale = pldFile.CalculateEmrScale(emdFile);
 
             // Now copy over the skeleton and scale the EMR keyframes
             emdFile.SetEmr(0, emdFile.GetEmr(0).WithSkeleton(pldFile.GetEmr(0)).Scale(targetScale));
