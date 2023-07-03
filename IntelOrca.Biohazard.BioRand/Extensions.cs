@@ -59,6 +59,12 @@ namespace IntelOrca.Biohazard
             return string.Equals(actor, sherry, StringComparison.OrdinalIgnoreCase);
         }
 
+        public static T Random<T>(this IEnumerable<T> items, Rng rng)
+        {
+            var index = rng.Next(0, items.Count());
+            return items.ElementAt(index);
+        }
+
         public static T[] Shuffle<T>(this IEnumerable<T> items, Rng rng)
         {
             var array = items.ToArray();
