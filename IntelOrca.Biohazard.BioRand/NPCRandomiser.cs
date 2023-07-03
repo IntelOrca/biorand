@@ -29,6 +29,7 @@ namespace IntelOrca.Biohazard
         private readonly string[] _originalPlayerActor;
 
         private Dictionary<byte, string> _extraNpcMap = new Dictionary<byte, string>();
+        private Dictionary<byte, (short, short)> _npcHeight = new Dictionary<byte, (short, short)>();
         private List<ExternalCharacter> _emds = new List<ExternalCharacter>();
 
         private VoiceRandomiser? _voiceRandomiser;
@@ -283,18 +284,10 @@ namespace IntelOrca.Biohazard
                     var npc = npcs.FirstOrDefault(x => x.IncludeOffsets == null || x.IncludeOffsets.Contains(enemy.Offset));
                     if (npc == null || npc.EmrScale != false)
                     {
-                        var oldActor = GetActor(enemy.Type, originalOnly: true);
-                        var newActor = GetActor(newType);
-                        if (oldActor != newActor)
+                        var scale = GetEmrScale(enemy.Type, newType);
+                        if (scale != 1)
                         {
-                            if (oldActor.IsSherryActor() && !newActor.IsSherryActor())
-                            {
-                                ScaleEMRs(rdt, enemy.Id, true);
-                            }
-                            else if (newActor.IsSherryActor() && !oldActor.IsSherryActor())
-                            {
-                                ScaleEMRs(rdt, enemy.Id, false);
-                            }
+                            ScaleEMRs(rdt, enemy.Id, scale);
                         }
                     }
                     enemy.Type = newType;
@@ -302,7 +295,37 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private void ScaleEMRs(Rdt rdt, byte id, bool inverse)
+        private double GetEmrScale(byte oldType, byte newType)
+        {
+            var (oldTypeOrig, _) = GetNpcHeight(oldType);
+            var (_, newTypeNew) = GetNpcHeight(newType);
+            var scale = Extensions2.GetScale(oldTypeOrig, newTypeNew);
+            return scale;
+        }
+
+        private (short, short) GetNpcHeight(byte type)
+        {
+            if (!_npcHeight.TryGetValue(type, out var height))
+            {
+                var player = _config.Player;
+                var emdFileName = $"pl{player}/emd{player}/em{player}{type:X2}.emd";
+                var originalEmdPath = _fileRepository.GetDataPath(emdFileName);
+                var moddedEmdPath = _fileRepository.GetModPath(emdFileName);
+                var originalEmdFile = new EmdFile(BioVersion.Biohazard2, originalEmdPath);
+                var originalHeight = originalEmdFile.GetHeight();
+                var moddedHeight = originalHeight;
+                if (File.Exists(moddedEmdPath))
+                {
+                    var moddedEmdFile = new EmdFile(BioVersion.Biohazard2, moddedEmdPath);
+                    moddedHeight = moddedEmdFile.GetHeight();
+                }
+                height = (originalHeight, moddedHeight);
+                _npcHeight[type] = height;
+            }
+            return height;
+        }
+
+        private void ScaleEMRs(Rdt rdt, byte id, double scale)
         {
             EmrFlags flags = 0;
             switch (id)
@@ -321,7 +344,7 @@ namespace IntelOrca.Biohazard
             }
             if (flags != 0)
             {
-                Re2Randomiser.ScaleEmrY(_logger, rdt, flags, inverse);
+                Re2Randomiser.ScaleEmrY(_logger, rdt, flags, scale);
             }
         }
 
@@ -460,7 +483,7 @@ namespace IntelOrca.Biohazard
                 throw new BioRandUserException($"{pldPath} does not conform to the PLD texture standard.");
             }
 
-            var weapon = GetSuitableWeaponFroNPC(type).Random(_rng);
+            var weapon = GetSuitableWeaponForNPC(type).Random(_rng);
             var plwPath = GetPlwPath(pldPath, weapon);
             if (plwPath != null)
             {
@@ -640,7 +663,7 @@ namespace IntelOrca.Biohazard
             return null;
         }
 
-        private static byte[] GetSuitableWeaponFroNPC(byte npc)
+        private static byte[] GetSuitableWeaponForNPC(byte npc)
         {
             return npc switch
             {

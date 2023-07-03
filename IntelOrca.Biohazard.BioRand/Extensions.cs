@@ -120,17 +120,27 @@ namespace IntelOrca.Biohazard
 
         public static IEnumerable<T> EnumerateOpcodes<T>(this Rdt rdt, RandoConfig config) => AstEnumerator<T>.Enumerate(rdt.Ast!, config);
 
+        public static short GetHeight(this ModelFile model)
+        {
+            return model.GetEmr(0).GetRelativePosition(0).y;
+        }
+
         public static double CalculateEmrScale(this ModelFile newModel, ModelFile originalModel)
         {
-            var sourceHeight = originalModel.GetEmr(0).GetRelativePosition(0).y;
-            var targetHeight = newModel.GetEmr(0).GetRelativePosition(0).y;
-            var targetScale = ((double)targetHeight / sourceHeight) + 0.03;
+            var sourceHeight = originalModel.GetHeight();
+            var targetHeight = newModel.GetHeight();
+            return GetScale(sourceHeight, targetHeight);
+        }
+
+        public static double GetScale(short sourceHeight, short targetHeight)
+        {
+            var result = ((double)targetHeight / sourceHeight) + 0.03;
 
             // Don't bother scaling if only slightly out
-            if (Math.Abs(targetScale - 1) <= 0.2)
+            if (Math.Abs(result - 1) <= 0.2)
                 return 1;
 
-            return targetScale;
+            return result;
         }
     }
 }
