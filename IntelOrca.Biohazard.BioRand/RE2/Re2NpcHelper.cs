@@ -22,14 +22,14 @@ namespace IntelOrca.Biohazard.RE2
         {
             var defaultIncludeTypes = new byte[] {
                 // Re2EnemyIds.ChiefIrons1,
-                Re2EnemyIds.AdaWong1,
+                // Re2EnemyIds.AdaWong1,
                 // Re2EnemyIds.ChiefIrons2,
-                Re2EnemyIds.AdaWong2,
+                // Re2EnemyIds.AdaWong2,
                 Re2EnemyIds.BenBertolucci1,
                 Re2EnemyIds.SherryWithPendant,
                 Re2EnemyIds.BenBertolucci2,
                 Re2EnemyIds.AnnetteBirkin1,
-                // Re2EnemyIds.RobertKendo,
+                Re2EnemyIds.RobertKendo,
                 Re2EnemyIds.AnnetteBirkin2,
                 // Re2EnemyIds.MarvinBranagh,
                 Re2EnemyIds.SherryWithClairesJacket,
@@ -159,9 +159,12 @@ namespace IntelOrca.Biohazard.RE2
                 case 0x59:
                 case 0x5B:
 
+                case Re2EnemyIds.RobertKendo:
+                case Re2EnemyIds.AnnetteBirkin1:
+                case Re2EnemyIds.AnnetteBirkin2:
                 case Re2EnemyIds.MarvinBranagh:
+                case Re2EnemyIds.SherryWithPendant:
                 case Re2EnemyIds.SherryWithClairesJacket:
-                case Re2EnemyIds.AdaWong2:
                 case Re2EnemyIds.BenBertolucci1:
                 case Re2EnemyIds.BenBertolucci2:
                 case Re2EnemyIds.ChiefIrons1:

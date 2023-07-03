@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using IntelOrca.Biohazard.BioRand.RE2;
 using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.RE2;
@@ -449,8 +450,25 @@ namespace IntelOrca.Biohazard
 
         private void CreateEmdFile(byte type, string pldPath, string baseEmdPath, string targetEmdPath)
         {
-            var pldFile = ModelFile.FromFile(pldPath)!;
-            var emdFile = ModelFile.FromFile(baseEmdPath)!;
+            var pldFile = ModelFile.FromFile(pldPath);
+            var emdFile = ModelFile.FromFile(baseEmdPath);
+            var timFile = pldFile.GetTim(0);
+            var plwFile = null as ModelFile;
+
+            if (timFile.Width != 128 * 4)
+            {
+                throw new BioRandUserException($"{pldPath} does not conform to the PLD texture standard.");
+            }
+
+            var weapon = GetSuitableWeaponFroNPC(type).Random(_rng);
+            var plwPath = GetPlwPath(pldPath, weapon);
+            if (plwPath != null)
+            {
+                plwFile = ModelFile.FromFile(plwPath);
+                var plwTim = plwFile.GetTim(0);
+                timFile = timFile.WithWeaponTexture(plwTim, 1);
+                timFile = timFile.WithWeaponTexture(plwTim, 3);
+            }
 
             // First get how tall the new EMD is compared to the old one
             var sourceHeight = emdFile.GetEmr(0).GetFinalPosition(0).y;
@@ -467,26 +485,42 @@ namespace IntelOrca.Biohazard
                 builder.Parts.RemoveRange(15, builder.Parts.Count - 15);
 
             // Add extra meshes
+            var weaponMesh = builder.Parts[11];
+            if (plwFile != null)
+            {
+                weaponMesh = ((Md1)plwFile.GetMesh(0)).ToBuilder().Parts[0];
+            }
+
             if (type == Re2EnemyIds.ZombieBrad)
             {
                 var zombieParts = new[] { 10, 0 };
                 foreach (var zp in zombieParts)
                     builder.Parts.Add(builder.Parts[zp]);
             }
+            else if (type == Re2EnemyIds.RobertKendo)
+            {
+                builder.Parts[11] = weaponMesh;
+            }
             else if (type == Re2EnemyIds.MarvinBranagh)
             {
                 var zombieParts = new[] { 13, 0, 8, 12, 14, 9, 10, 11, 11 };
                 foreach (var zp in zombieParts)
                     builder.Parts.Add(builder.Parts[zp]);
+                builder.Parts[builder.Parts.Count - 1] = weaponMesh;
             }
             else if (type == Re2EnemyIds.ChiefIrons1 || type == Re2EnemyIds.ChiefIrons2)
             {
-                builder.Add(builder.Parts[11]);
+                builder.Add(weaponMesh);
                 builder.Add();
             }
-            else if (type == Re2EnemyIds.BenBertolucci1 || type == Re2EnemyIds.BenBertolucci2)
+            else if (type == Re2EnemyIds.BenBertolucci1 || type == Re2EnemyIds.BenBertolucci2 ||
+                     type == Re2EnemyIds.SherryWithPendant || type == Re2EnemyIds.SherryWithClairesJacket)
             {
                 builder.Add();
+            }
+            else if (type == Re2EnemyIds.AnnetteBirkin1 || type == Re2EnemyIds.AnnetteBirkin2)
+            {
+                builder.Add(weaponMesh);
             }
 
             emdFile.SetMesh(0, builder.ToMesh());
@@ -496,7 +530,7 @@ namespace IntelOrca.Biohazard
             {
                 emdFile.SetMesh(0, emdFile.GetMesh(0).EditMeshTextures(m =>
                 {
-                    if (m.PartIndex >= 15)
+                    if (m.PartIndex >= 15 && m.PartIndex != 23)
                     {
                         m.Page += 2;
                     }
@@ -506,7 +540,6 @@ namespace IntelOrca.Biohazard
                     }
                 }));
             }
-
 
             // Ben and Irons need have morphing info that needs zeroing
             if (type == Re2EnemyIds.ChiefIrons1 ||
@@ -556,26 +589,76 @@ namespace IntelOrca.Biohazard
                             m.Page = pageIndex ^ 1;
                         }
                     });
-                    SwapPagesOnTexture(targetEmdPath);
+                    timFile.SwapPages(0, 1);
                     emdFile.SetMesh(0, mesh);
                 }
             }
 
             Directory.CreateDirectory(Path.GetDirectoryName(targetEmdPath));
             emdFile.Save(targetEmdPath);
-            if (pldFile is PldFile)
+            timFile.Save(Path.ChangeExtension(targetEmdPath, ".tim"));
+        }
+
+        private string? GetPlwPath(string pldPath, byte weapon)
+        {
+            var player = 0;
+            var fileName = Path.GetFileNameWithoutExtension(pldPath);
+            if (fileName.Equals("pl01", StringComparison.OrdinalIgnoreCase))
             {
-                var emdTim = pldFile.GetTim(0);
-                var plwPath = _fileRepository.GetDataPath("pl0/pld/PL00W02.PLW");
-                if (File.Exists(plwPath))
-                {
-                    var plw = ModelFile.FromFile(plwPath)!;
-                    var plwTim = plw.GetTim(0);
-                    emdTim = emdTim.WithWeaponTexture(plwTim, 1);
-                    emdTim = emdTim.WithWeaponTexture(plwTim, 3);
-                }
-                emdTim.Save(Path.ChangeExtension(targetEmdPath, ".tim"));
+                player = 1;
             }
+
+            var plwFileName = $"PL{player:00}W{weapon:X2}.PLW";
+            var pldDirectory = Path.GetDirectoryName(pldPath);
+            var customPlwPath = Path.Combine(pldDirectory, plwFileName);
+            if (File.Exists(customPlwPath))
+            {
+                return customPlwPath;
+            }
+
+            var originalPlwPath = _fileRepository.GetDataPath($"pl{player}/pld/{plwFileName}");
+            if (File.Exists(originalPlwPath))
+            {
+                return originalPlwPath;
+            }
+
+            return null;
+        }
+
+        private static byte[] GetSuitableWeaponFroNPC(byte npc)
+        {
+            return npc switch
+            {
+                Re2EnemyIds.MarvinBranagh => new[]
+                {
+                    Re2ItemIds.HandgunLeon,
+                    Re2ItemIds.Magnum,
+                    Re2ItemIds.ColtSAA,
+                    Re2ItemIds.Shotgun,
+                    Re2ItemIds.Bowgun,
+                    Re2ItemIds.GrenadeLauncherExplosive,
+                    Re2ItemIds.Sparkshot,
+                    Re2ItemIds.SMG,
+                    Re2ItemIds.Flamethrower,
+                    Re2ItemIds.RocketLauncher,
+                },
+                Re2EnemyIds.RobertKendo => new[]
+                {
+                    Re2ItemIds.Shotgun,
+                    Re2ItemIds.Bowgun,
+                    Re2ItemIds.GrenadeLauncherExplosive,
+                    Re2ItemIds.Sparkshot,
+                    Re2ItemIds.SMG,
+                    Re2ItemIds.Flamethrower,
+                    Re2ItemIds.RocketLauncher,
+                },
+                _ => new[]
+                {
+                    Re2ItemIds.HandgunLeon,
+                    Re2ItemIds.Magnum,
+                    Re2ItemIds.ColtSAA
+                },
+            };
         }
 
         private bool EnsureChestOnPage(ref Md1 mesh, int page)
@@ -598,17 +681,6 @@ namespace IntelOrca.Biohazard
             }
             mesh = (Md1)mesh.SwapPages(0, 1);
             return true;
-        }
-
-        private void SwapPagesOnTexture(string emdPath)
-        {
-            var timPath = Path.ChangeExtension(emdPath, ".tim");
-            if (File.Exists(timPath))
-            {
-                var tim = new TimFile(timPath);
-                tim.SwapPages(0, 1);
-                tim.Save(timPath);
-            }
         }
 
         [DebuggerDisplay("{Actor}")]
