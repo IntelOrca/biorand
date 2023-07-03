@@ -481,6 +481,7 @@ namespace IntelOrca.Biohazard
 
             // Copy over the mesh (clear any extra parts)
             var builder = ((Md1)pldFile.GetMesh(0)).ToBuilder();
+            var hairParts = builder.Parts.Skip(15).ToArray();
             if (builder.Parts.Count > 15)
                 builder.Parts.RemoveRange(15, builder.Parts.Count - 15);
 
@@ -521,6 +522,22 @@ namespace IntelOrca.Biohazard
             else if (type == Re2EnemyIds.AnnetteBirkin1 || type == Re2EnemyIds.AnnetteBirkin2)
             {
                 builder.Add(weaponMesh);
+            }
+            else if (type == Re2EnemyIds.ClaireRedfield ||
+                     type == Re2EnemyIds.ClaireRedfieldNoJacket ||
+                     type == Re2EnemyIds.ClaireRedfieldCowGirl)
+            {
+                for (var i = 0; i < 4; i++)
+                {
+                    if (i < hairParts.Length)
+                    {
+                        builder.Add(hairParts[i]);
+                    }
+                }
+                while (builder.Count < 15 + 4)
+                {
+                    builder.Add();
+                }
             }
 
             emdFile.SetMesh(0, builder.ToMesh());
