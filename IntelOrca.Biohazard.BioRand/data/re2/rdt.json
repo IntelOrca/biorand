@@ -2532,7 +2532,14 @@
       "enemies": [
         {
           "excludeTypes": [ 58 ],
-          "player": 1
+          "player": 1,
+          "randomPlacements": false
+        },
+        {
+          "nop": [ "0x23AC", "0x23C6" ],
+          "excludeTypes": [ 58 ],
+          "player": 1,
+          "randomPlacements": true
         }
       ]
     },
