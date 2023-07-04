@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using IntelOrca.Biohazard.BioRand.RE2;
-using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.RE2;
 using IntelOrca.Biohazard.Script.Opcodes;
@@ -117,7 +115,7 @@ namespace IntelOrca.Biohazard
                 return;
 
             _logger.WriteHeading("Adding additional NPCs:");
-            if (_config.Game == 2)
+            if (_config.Game == 1 || _config.Game == 2)
             {
                 var externals = _emds
                     .Where(x => SelectedActors.Contains(x.Actor))
@@ -187,10 +185,13 @@ namespace IntelOrca.Biohazard
         {
             if (_config.Game == 1)
             {
-                var enemyDirectory = Path.Combine(_modPath, "enemy");
-                Directory.CreateDirectory(enemyDirectory);
-                var dst = Path.Combine(enemyDirectory, $"EM1{id:X3}.EMD");
-                File.Copy(ec.EmPath, dst, true);
+                var emdFileName = Path.Combine("enemy", $"em1{id:X3}.emd");
+                var originalEmdPath = _fileRepository.GetDataPath(emdFileName);
+                var targetEmdPath = _fileRepository.GetModPath(emdFileName);
+                if (!File.Exists(originalEmdPath))
+                    return;
+
+                _npcHelper.CreateEmdFile(id, ec.EmPath, originalEmdPath, targetEmdPath, _fileRepository, _rng);
             }
             else if (_config.Game == 2)
             {
@@ -200,7 +201,7 @@ namespace IntelOrca.Biohazard
                 if (!File.Exists(originalEmdPath))
                     return;
 
-                CreateEmdFile(id, ec.EmPath, originalEmdPath, targetEmdPath);
+                _npcHelper.CreateEmdFile(id, ec.EmPath, originalEmdPath, targetEmdPath, _fileRepository, _rng);
             }
             else if (_config.Game == 3)
             {
@@ -236,10 +237,6 @@ namespace IntelOrca.Biohazard
                 .Shuffle(rng)
                 .DistinctBy(x => _npcHelper.GetActor(x))
                 .ToArray();
-            if (_extraNpcMap.Count != 0)
-            {
-                defaultIncludeTypes = defaultIncludeTypes.Concat(_extraNpcMap.Keys).ToArray();
-            }
             if (rng.Next(0, 8) != 0)
             {
                 // Make it rare for player to also be an NPC
@@ -297,6 +294,10 @@ namespace IntelOrca.Biohazard
 
         private double GetEmrScale(byte oldType, byte newType)
         {
+            // Currently only supported in RE 2
+            if (_config.Game != 2)
+                return 1;
+
             var (oldTypeOrig, _) = GetNpcHeight(oldType);
             var (_, newTypeNew) = GetNpcHeight(newType);
             var scale = Extensions2.GetScale(oldTypeOrig, newTypeNew);
@@ -469,256 +470,6 @@ namespace IntelOrca.Biohazard
             if (!originalOnly && _extraNpcMap.TryGetValue(enemyType, out var actor))
                 return actor;
             return _npcHelper.GetActor(enemyType);
-        }
-
-        private void CreateEmdFile(byte type, string pldPath, string baseEmdPath, string targetEmdPath)
-        {
-            var pldFile = ModelFile.FromFile(pldPath);
-            var emdFile = ModelFile.FromFile(baseEmdPath);
-            var timFile = pldFile.GetTim(0);
-            var plwFile = null as ModelFile;
-
-            if (timFile.Width != 128 * 4)
-            {
-                throw new BioRandUserException($"{pldPath} does not conform to the PLD texture standard.");
-            }
-
-            var weapon = GetSuitableWeaponForNPC(type).Random(_rng);
-            var plwPath = GetPlwPath(pldPath, weapon);
-            if (plwPath != null)
-            {
-                plwFile = ModelFile.FromFile(plwPath);
-                var plwTim = plwFile.GetTim(0);
-                timFile = timFile.WithWeaponTexture(plwTim, 1);
-                timFile = timFile.WithWeaponTexture(plwTim, 3);
-            }
-
-            // First get how tall the new EMD is compared to the old one
-            var targetScale = pldFile.CalculateEmrScale(emdFile);
-
-            // Now copy over the skeleton and scale the EMR keyframes
-            emdFile.SetEmr(0, emdFile.GetEmr(0).WithSkeleton(pldFile.GetEmr(0)).Scale(targetScale));
-            emdFile.SetEmr(1, emdFile.GetEmr(1).Scale(targetScale));
-
-            // Copy over the mesh (clear any extra parts)
-            var builder = ((Md1)pldFile.GetMesh(0)).ToBuilder();
-            var hairParts = builder.Parts.Skip(15).ToArray();
-            if (builder.Parts.Count > 15)
-                builder.Parts.RemoveRange(15, builder.Parts.Count - 15);
-
-            // Add extra meshes
-            var weaponMesh = builder.Parts[11];
-            if (plwFile != null)
-            {
-                weaponMesh = ((Md1)plwFile.GetMesh(0)).ToBuilder().Parts[0];
-            }
-
-            if (type == Re2EnemyIds.ZombieBrad)
-            {
-                var zombieParts = new[] { 10, 0 };
-                foreach (var zp in zombieParts)
-                    builder.Parts.Add(builder.Parts[zp]);
-            }
-            else if (type == Re2EnemyIds.RobertKendo)
-            {
-                builder.Parts[11] = weaponMesh;
-            }
-            else if (type == Re2EnemyIds.MarvinBranagh)
-            {
-                var zombieParts = new[] { 13, 0, 8, 12, 14, 9, 10, 11, 11 };
-                foreach (var zp in zombieParts)
-                    builder.Parts.Add(builder.Parts[zp]);
-                builder.Parts[builder.Parts.Count - 1] = weaponMesh;
-            }
-            else if (type == Re2EnemyIds.ChiefIrons1 || type == Re2EnemyIds.ChiefIrons2)
-            {
-                builder.Add(weaponMesh);
-                builder.Add();
-            }
-            else if (type == Re2EnemyIds.BenBertolucci1 || type == Re2EnemyIds.BenBertolucci2 ||
-                     type == Re2EnemyIds.SherryWithPendant || type == Re2EnemyIds.SherryWithClairesJacket)
-            {
-                builder.Add();
-            }
-            else if (type == Re2EnemyIds.AnnetteBirkin1 || type == Re2EnemyIds.AnnetteBirkin2)
-            {
-                builder.Add(weaponMesh);
-            }
-            else if (type == Re2EnemyIds.ClaireRedfield ||
-                     type == Re2EnemyIds.ClaireRedfieldNoJacket ||
-                     type == Re2EnemyIds.ClaireRedfieldCowGirl)
-            {
-                for (var i = 0; i < 4; i++)
-                {
-                    if (i < hairParts.Length)
-                    {
-                        builder.Add(hairParts[i]);
-                    }
-                }
-                while (builder.Count < 15 + 4)
-                {
-                    builder.Add();
-                }
-            }
-
-            emdFile.SetMesh(0, builder.ToMesh());
-
-            // Marvin
-            if (type == Re2EnemyIds.MarvinBranagh)
-            {
-                emdFile.SetMesh(0, emdFile.GetMesh(0).EditMeshTextures(m =>
-                {
-                    if (m.PartIndex >= 15 && m.PartIndex != 23)
-                    {
-                        m.Page += 2;
-                    }
-                    else if (m.Page == 0)
-                    {
-                        m.Page += 2;
-                    }
-                }));
-            }
-
-            // Ben and Irons need have morphing info that needs zeroing
-            if (type == Re2EnemyIds.ChiefIrons1 ||
-                type == Re2EnemyIds.BenBertolucci1 || type == Re2EnemyIds.BenBertolucci2)
-            {
-                var morph = emdFile.GetMorph(0).ToBuilder();
-
-                // Copy skeleton from EMR
-                var emr = emdFile.GetEmr(0);
-                var skel = Enumerable.Range(0, 15).Select(x => emr.GetRelativePosition(x)).ToArray();
-                for (var i = 0; i < morph.Skeletons.Count; i++)
-                {
-                    morph.Skeletons[i] = skel;
-                }
-
-                // Copy positions from chest mesh to morph group 0
-                var positionData = ((Md1)emdFile.GetMesh(0))
-                    .ToBuilder().Parts[0].Positions
-                    .Select(p => new Emr.Vector(p.x, p.y, p.z))
-                    .ToArray();
-                for (var i = 0; i < morph.Groups[0].Positions.Count; i++)
-                {
-                    morph.Groups[0].Positions[i] = positionData;
-                }
-
-                // Morph group 1 can just be zeros
-                for (var i = 0; i < morph.Groups[1].Positions.Count; i++)
-                {
-                    morph.Groups[1].Positions[i] = new Emr.Vector[1];
-                }
-
-                emdFile.SetMorph(0, morph.ToMorphData());
-            }
-
-            // Ben and Irons need to have their chest on the right texture page
-            if (type == Re2EnemyIds.ChiefIrons1 || type == Re2EnemyIds.ChiefIrons2 ||
-                type == Re2EnemyIds.BenBertolucci1 || type == Re2EnemyIds.BenBertolucci2)
-            {
-                var pageIndex = type == Re2EnemyIds.ChiefIrons1 || type == Re2EnemyIds.ChiefIrons2 ? 0 : 1;
-                var mesh = (Md1)emdFile.GetMesh(0);
-                if (EnsureChestOnPage(ref mesh, pageIndex))
-                {
-                    mesh = (Md1)mesh.EditMeshTextures(m =>
-                    {
-                        if (m.PartIndex == 0 || m.PartIndex == 9 || m.PartIndex == 12)
-                        {
-                            m.Page = pageIndex ^ 1;
-                        }
-                    });
-                    timFile.SwapPages(0, 1);
-                    emdFile.SetMesh(0, mesh);
-                }
-            }
-
-            Directory.CreateDirectory(Path.GetDirectoryName(targetEmdPath));
-            emdFile.Save(targetEmdPath);
-            timFile.Save(Path.ChangeExtension(targetEmdPath, ".tim"));
-        }
-
-        private string? GetPlwPath(string pldPath, byte weapon)
-        {
-            var player = 0;
-            var fileName = Path.GetFileNameWithoutExtension(pldPath);
-            if (fileName.Equals("pl01", StringComparison.OrdinalIgnoreCase))
-            {
-                player = 1;
-            }
-
-            var plwFileName = $"PL{player:00}W{weapon:X2}.PLW";
-            var pldDirectory = Path.GetDirectoryName(pldPath);
-            var customPlwPath = Path.Combine(pldDirectory, plwFileName);
-            if (File.Exists(customPlwPath))
-            {
-                return customPlwPath;
-            }
-
-            var originalPlwPath = _fileRepository.GetDataPath($"pl{player}/pld/{plwFileName}");
-            if (File.Exists(originalPlwPath))
-            {
-                return originalPlwPath;
-            }
-
-            return null;
-        }
-
-        private static byte[] GetSuitableWeaponForNPC(byte npc)
-        {
-            return npc switch
-            {
-                Re2EnemyIds.MarvinBranagh => new[]
-                {
-                    Re2ItemIds.HandgunLeon,
-                    Re2ItemIds.Magnum,
-                    Re2ItemIds.ColtSAA,
-                    Re2ItemIds.Shotgun,
-                    Re2ItemIds.Bowgun,
-                    Re2ItemIds.GrenadeLauncherExplosive,
-                    Re2ItemIds.Sparkshot,
-                    Re2ItemIds.SMG,
-                    Re2ItemIds.Flamethrower,
-                    Re2ItemIds.RocketLauncher,
-                },
-                Re2EnemyIds.RobertKendo => new[]
-                {
-                    Re2ItemIds.Shotgun,
-                    Re2ItemIds.Bowgun,
-                    Re2ItemIds.GrenadeLauncherExplosive,
-                    Re2ItemIds.Sparkshot,
-                    Re2ItemIds.SMG,
-                    Re2ItemIds.Flamethrower,
-                    Re2ItemIds.RocketLauncher,
-                },
-                _ => new[]
-                {
-                    Re2ItemIds.HandgunLeon,
-                    Re2ItemIds.Magnum,
-                    Re2ItemIds.ColtSAA
-                },
-            };
-        }
-
-        private bool EnsureChestOnPage(ref Md1 mesh, int page)
-        {
-            var builder = mesh.ToBuilder();
-            var part0 = builder.Parts[0];
-            if (part0.TriangleTextures.Count > 0)
-            {
-                if ((part0.TriangleTextures[0].page & 0x0F) == page)
-                {
-                    return false;
-                }
-            }
-            else if (part0.QuadTextures.Count > 0)
-            {
-                if ((part0.QuadTextures[0].page & 0x0F) == page)
-                {
-                    return false;
-                }
-            }
-            mesh = (Md1)mesh.SwapPages(0, 1);
-            return true;
         }
 
         [DebuggerDisplay("{Actor}")]
