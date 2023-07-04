@@ -1,4 +1,5 @@
-﻿using IntelOrca.Biohazard.Script;
+﻿using System;
+using IntelOrca.Biohazard.Script;
 
 namespace IntelOrca.Biohazard.RE3
 {
@@ -97,7 +98,7 @@ namespace IntelOrca.Biohazard.RE3
                         Re3EnemyIds.NikolaiDead,
                         Re3EnemyIds.ChiefIrons
                     };
-            default:
+                default:
                     return new[] { id };
             }
         }
@@ -121,6 +122,11 @@ namespace IntelOrca.Biohazard.RE3
                 default:
                     return false;
             }
+        }
+
+        public void CreateEmdFile(byte type, string pldPath, string baseEmdPath, string targetEmdPath, FileRepository fileRepository, Rng rng)
+        {
+            throw new NotImplementedException();
         }
     }
 }

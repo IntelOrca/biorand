@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
-using IntelOrca.Biohazard.BioRand;
 using IntelOrca.Biohazard.RE3;
 
 namespace IntelOrca.Biohazard.RE1
@@ -280,20 +279,18 @@ namespace IntelOrca.Biohazard.RE1
                 voiceRandomiser.AddToSelection(BioVersion.Biohazard3, fileRepository);
             }
 
-            var emdFolders = DataManager.GetDirectories(BiohazardVersion, $"emd");
-            foreach (var emdFolder in emdFolders)
+            var pldFolders0 = DataManager.GetDirectories(BiohazardVersion, $"pld0");
+            var pldFolders1 = DataManager.GetDirectories(BiohazardVersion, $"pld1");
+            var pldFolders = pldFolders0.Concat(pldFolders1).ToArray();
+            foreach (var pldFolder in pldFolders)
             {
-                var actor = Path.GetFileName(emdFolder);
-                var files = Directory.GetFiles(emdFolder);
+                var actor = Path.GetFileName(pldFolder);
+                var files = Directory.GetFiles(pldFolder);
                 foreach (var file in files)
                 {
                     if (file.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
                     {
-                        var hex = Path.GetFileName(file).Substring(3, 3);
-                        if (int.TryParse(hex, System.Globalization.NumberStyles.HexNumber, null, out var result))
-                        {
-                            npcRandomiser.AddNPC((byte)result, file, actor);
-                        }
+                        npcRandomiser.AddNPC(0, file, actor);
                     }
                 }
             }
