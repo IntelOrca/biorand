@@ -158,6 +158,12 @@
           "target": "106"
         }
       ],
+      "items": [
+        {
+          "id": 12,
+          "priority": "low"
+        }
+      ],
       "enemies": [
         {
           "keepAi": true,
