@@ -204,6 +204,22 @@ namespace IntelOrca.Biohazard.RE1
             var targetPlayersDir = fileRepository.GetModPath("players");
             Directory.CreateDirectory(targetEnemyDir);
             Directory.CreateDirectory(targetPlayersDir);
+
+            // Copy base EMW files
+            var baseWeaponIndex = (config.SwapCharacters ? config.Player ^ 1 : config.Player) * 16;
+            for (var i = 0; i < 16; i++)
+            {
+                var sourceFileName = $"players/w{baseWeaponIndex + i:X2}.emw";
+                var targetFileName = $"players/w{(config.Player * 16) + i:X2}.emw";
+                var sourceFile = fileRepository.GetDataPath(sourceFileName);
+                var targetLocation = fileRepository.GetModPath(targetFileName);
+                if (File.Exists(sourceFile))
+                {
+                    File.Copy(sourceFile, targetLocation, true);
+                }
+            }
+
+            // Copy override EMD files
             var pldFiles = Directory.GetFiles(srcPldDir);
             foreach (var pldFile in pldFiles)
             {
