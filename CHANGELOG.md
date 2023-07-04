@@ -1,3 +1,16 @@
+BioRand v3.0.9 (2023-07-04)
+
+* [Fix] #463: RE 2, Leon A/B, Sherry height is wrong when grabbed by enemies.
+* [Fix] #466: RE 1, swap characters crashes apart from Chris / Jill.
+* [Fix] #470: RE 2, room 409, Claire A/B, crash when random enemy placement is on.
+* [Fix] #472: RE 3, room 315, crash when enemies are changed.
+* [Fix] #480: RE 3, room 104, softlock if the player ignores lighter oil item.
+* [Fix] error: resampling not yet supported for stereo.
+* [Fix] RE 1, EMW files are not replaced.
+* [Fix] RE 1, weapon hit scan is incorrect when swapping characters.
+* [Fix] RE 2, Sherry (RE2R) has incorrect height during cutscenes.
+* [Fix] RE 2, some female EMDs don't have hurt texture pages.
+
 BioRand v3.0.8 (2023-06-27)
 
 * [Feature] Add music tracks from RE 1 remake.
