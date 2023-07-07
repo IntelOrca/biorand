@@ -170,6 +170,7 @@ namespace IntelOrca.Biohazard.RE2
                 case Re2EnemyIds.BenBertolucci2:
                 case Re2EnemyIds.ChiefIrons1:
                 case Re2EnemyIds.ChiefIrons2:
+                case Re2EnemyIds.MayorsDaughter:
                     return true;
                 default:
                     return false;
@@ -202,8 +203,35 @@ namespace IntelOrca.Biohazard.RE2
             var targetScale = pldFile.CalculateEmrScale(emdFile);
 
             // Now copy over the skeleton and scale the EMR keyframes
-            emdFile.SetEmr(0, emdFile.GetEmr(0).WithSkeleton(pldFile.GetEmr(0)).Scale(targetScale));
-            emdFile.SetEmr(1, emdFile.GetEmr(1).Scale(targetScale));
+            if (type == Re2EnemyIds.MayorsDaughter)
+            {
+                var zombiePath = fileRepository.GetDataPath("pl0/emd0/em010.emd");
+                var zombie = new EmdFile(BioVersion.Biohazard2, zombiePath);
+                var offset = zombie.GetEdd(1).Animations[22].Offset;
+                var edd = zombie.GetEdd(1).ToBuilder();
+                edd.Animations[0] = edd.Animations[22];
+                edd.Animations[0].Frames = edd.Animations[0].Frames.Take(1).ToArray();
+                edd.Animations.RemoveRange(1, edd.Animations.Count - 1);
+                emdFile.SetEdd(0, edd.ToEdd());
+                var emr = pldFile.GetEmr(0)
+                    .WithKeyframes(zombie.GetEmr(1))
+                    .ToBuilder();
+
+                var kf = emr.KeyFrames[edd.Animations[0].Frames[0].Index];
+                var kfOffset = kf.Offset;
+                kfOffset.x += 300;
+                kf.Offset = kfOffset;
+                var a = kf.Angles[0];
+                a.y = 1024 * 3;
+                kf.Angles[0] = a;
+
+                emdFile.SetEmr(0, emr.ToEmr());
+            }
+            else
+            {
+                emdFile.SetEmr(0, emdFile.GetEmr(0).WithSkeleton(pldFile.GetEmr(0)).Scale(targetScale));
+                emdFile.SetEmr(1, emdFile.GetEmr(1).Scale(targetScale));
+            }
 
             // Copy over the mesh (clear any extra parts)
             var builder = ((Md1)pldFile.GetMesh(0)).ToBuilder();
@@ -265,6 +293,19 @@ namespace IntelOrca.Biohazard.RE2
                     builder.Add();
                 }
             }
+            else if (type == Re2EnemyIds.MayorsDaughter)
+            {
+                // Offset body to right place above table
+                foreach (var part in builder.Parts)
+                {
+                    for (var i = 0; i < part.Positions.Count; i++)
+                    {
+                        var p = part.Positions[i];
+                        p.x += 100;
+                        part.Positions[i] = p;
+                    }
+                }
+            }
 
             emdFile.SetMesh(0, builder.ToMesh());
 
@@ -281,6 +322,13 @@ namespace IntelOrca.Biohazard.RE2
                     {
                         m.Page += 2;
                     }
+                }));
+            }
+            else if (type == Re2EnemyIds.MayorsDaughter)
+            {
+                emdFile.SetMesh(0, emdFile.GetMesh(0).EditMeshTextures(m =>
+                {
+                    m.Page += 2;
                 }));
             }
 
