@@ -119,14 +119,14 @@ namespace IntelOrca.Biohazard
             {
                 var externals = _emds
                     .Where(x => SelectedActors.Contains(x.Actor))
-                    .ToEndlessBag(_rng);
+                    .ToEndlessBag(rng);
                 for (var i = 0; i < 256; i++)
                 {
                     if (!_npcHelper.IsSpareSlot((byte)i))
                         continue;
 
                     var ec = externals.Next();
-                    SetEm((byte)i, ec);
+                    SetEm((byte)i, ec, rng);
                 }
             }
             else
@@ -160,7 +160,7 @@ namespace IntelOrca.Biohazard
                             if (spare.Count != 0)
                             {
                                 var slot = spare.Dequeue();
-                                SetEm(slot, rchar);
+                                SetEm(slot, rchar, rng);
                                 emdSet = true;
                             }
                             else if (notSpare.Count != 0)
@@ -171,7 +171,7 @@ namespace IntelOrca.Biohazard
                                 if (!SelectedActors.Contains(originalActor) ||
                                     rng.NextProbability(50))
                                 {
-                                    SetEm(slot, rchar);
+                                    SetEm(slot, rchar, rng);
                                     emdSet = true;
                                 }
                             }
@@ -181,7 +181,7 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        void SetEm(byte id, ExternalCharacter ec)
+        void SetEm(byte id, ExternalCharacter ec, Rng rng)
         {
             if (_config.Game == 1)
             {
@@ -191,7 +191,7 @@ namespace IntelOrca.Biohazard
                 if (!File.Exists(originalEmdPath))
                     return;
 
-                _npcHelper.CreateEmdFile(id, ec.EmPath, originalEmdPath, targetEmdPath, _fileRepository, _rng);
+                _npcHelper.CreateEmdFile(id, ec.EmPath, originalEmdPath, targetEmdPath, _fileRepository, rng);
             }
             else if (_config.Game == 2)
             {
@@ -201,7 +201,7 @@ namespace IntelOrca.Biohazard
                 if (!File.Exists(originalEmdPath))
                     return;
 
-                _npcHelper.CreateEmdFile(id, ec.EmPath, originalEmdPath, targetEmdPath, _fileRepository, _rng);
+                _npcHelper.CreateEmdFile(id, ec.EmPath, originalEmdPath, targetEmdPath, _fileRepository, rng);
             }
             else if (_config.Game == 3)
             {
