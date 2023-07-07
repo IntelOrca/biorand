@@ -2130,7 +2130,8 @@
     "71A": {
       "doors": [
         {
-          "target": "70C"
+          "target": "70C",
+          "noUnlock": true
         },
         {
           "target": "71B"
