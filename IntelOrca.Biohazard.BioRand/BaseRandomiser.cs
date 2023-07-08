@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using IntelOrca.Biohazard.BioRand;
 using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.RE2;
 using IntelOrca.Biohazard.RE3;
@@ -313,6 +314,13 @@ namespace IntelOrca.Biohazard
                     }
                 }
 
+                if (config.RandomEnemySkins)
+                {
+                    using (progress.BeginTask(config.Player, "Randomizing enemy skins"))
+                    {
+                        RandomizeEnemySkins(config, logger, gameData, fileRepository);
+                    }
+                }
 
                 string[]? playerActors;
                 using (progress.BeginTask(config.Player, $"Changing player character"))
@@ -434,6 +442,10 @@ namespace IntelOrca.Biohazard
         internal virtual string[]? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, FileRepository fileRepository)
         {
             return null;
+        }
+
+        internal virtual void RandomizeEnemySkins(RandoConfig config, RandoLogger logger, GameData gameData, FileRepository fileRepository)
+        {
         }
 
         internal virtual void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser, VoiceRandomiser voiceRandomiser)
@@ -564,6 +576,11 @@ namespace IntelOrca.Biohazard
             var player1 = config.SwapCharacters ? config.Player0 : config.Player1;
             var pldIndex = (player == 0 ? player0 : player1) - 1;
             return pldIndex;
+        }
+
+        public virtual EnemySkin[] GetEnemySkins()
+        {
+            return new EnemySkin[0];
         }
 
         public virtual string[] GetNPCs()

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using IntelOrca.Biohazard.BioRand;
 using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.RE1;
@@ -141,7 +144,6 @@ namespace IntelOrca.Biohazard.RE2
 
             base.Generate(config, reConfig, progress, fileRepository);
 
-            ReplaceBradZombie(config, fileRepository);
             ScaleEnemyAttacks(config, fileRepository);
         }
 
@@ -215,6 +217,126 @@ namespace IntelOrca.Biohazard.RE2
             {
                 logger.WriteLine($"  {rdt}: EMR [{flags}] Y offsets scaled by {scale}");
             }
+        }
+
+        internal override void RandomizeEnemySkins(RandoConfig config, RandoLogger logger, GameData gameData, FileRepository fileRepository)
+        {
+            var soundRegex = new Regex("(enemy[0-9][0-9])_([0-9]+)(.ogg|.wav)", RegexOptions.IgnoreCase);
+            var rng = new Rng(config.Seed);
+
+            var pldDir0 = DataManager.GetDirectories(BiohazardVersion, "pld0");
+            var pldDir1 = DataManager.GetDirectories(BiohazardVersion, "pld1");
+            var pldBag = new EndlessBag<string>(rng, pldDir0.Concat(pldDir1));
+
+            var enemySkins = GetEnemySkins();
+            var enabledSkins = config.EnabledEnemySkins;
+            for (var i = 0; i < enemySkins.Length; i++)
+            {
+                if (!enabledSkins[i])
+                    continue;
+
+                var enemySkin = enemySkins[i];
+                foreach (var id in enemySkin.EnemyIds)
+                {
+                    var enemyDir = DataManager.GetPath(BiohazardVersion, Path.Combine("emd", enemySkin.FileName));
+
+                    // EMD/TIM
+                    var srcEmdFileName = $"EM0{id:X2}.EMD";
+                    var dstEmdFileName = $"EM{config.Player}{id:X2}.EMD";
+                    var emdPath = $"pl{config.Player}/emd{config.Player}/{dstEmdFileName}";
+                    var origEmd = fileRepository.GetDataPath(emdPath);
+                    var srcEmd = Path.Combine(enemyDir, srcEmdFileName);
+                    var srcTim = Path.ChangeExtension(srcEmd, ".tim");
+                    var dstEmd = fileRepository.GetModPath(emdPath);
+                    var dstTim = Path.ChangeExtension(dstEmd, ".tim");
+
+                    if (new FileInfo(srcEmd).Length == 0)
+                    {
+                        // NPC overwrite
+                        var pldPath = Directory.GetFiles(pldBag.Next()).FirstOrDefault(x => x.EndsWith(".PLD", StringComparison.OrdinalIgnoreCase));
+                        var pldFile = new PldFile(BiohazardVersion, pldPath);
+                        var emdFile = new EmdFile(BiohazardVersion, origEmd);
+
+                        CreateZombie(id, pldFile, emdFile, dstEmd);
+                    }
+                    else
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(dstEmd));
+                        File.Copy(srcEmd, dstEmd, true);
+                        File.Copy(srcTim, dstTim, true);
+                    }
+
+                    // Sounds (shared, so only do it for Player 0)
+                    if (config.Player == 1)
+                        continue;
+                    foreach (var file in Directory.GetFiles(enemyDir))
+                    {
+                        var match = soundRegex.Match(Path.GetFileName(file));
+                        if (match.Success)
+                        {
+                            var sapIndex = int.Parse(match.Groups[2].Value);
+                            var sapPath = $"common/sound/enemy/{match.Groups[1].Value}.sap";
+                            var srcSapPath = fileRepository.GetDataPath(sapPath);
+                            var dstSapPath = fileRepository.GetModPath(sapPath);
+                            if (!File.Exists(dstSapPath))
+                            {
+                                Directory.CreateDirectory(Path.GetDirectoryName(dstSapPath));
+                                File.Copy(srcSapPath, dstSapPath, true);
+                            }
+
+                            var waveformBuilder = new WaveformBuilder();
+                            waveformBuilder.Append(file);
+                            waveformBuilder.SaveAt(dstSapPath, sapIndex);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void CreateZombie(byte type, PldFile srcPld, EmdFile srcEmd, string dstPath)
+        {
+            var tim = srcPld.GetTim(0);
+            if (type == Re2EnemyIds.ZombieRandom)
+            {
+                tim.ImportPage(0, tim.ExportPage(3));
+                tim.ImportPage(1, tim.ExportPage(2));
+                tim.ImportPage(3, tim.ExportPage(2));
+            }
+            else
+            {
+                tim.ImportPage(1, tim.ExportPage(2));
+                tim.ImportPage(0, tim.ExportPage(3));
+                tim.ImportPage(2, tim.ExportPage(0));
+                tim.ImportPage(3, tim.ExportPage(1));
+            }
+
+            var targetScale = srcPld.CalculateEmrScale(srcEmd) * 0.85;
+            srcEmd.SetEmr(0, srcEmd.GetEmr(0).WithSkeleton(srcPld.GetEmr(0)).Scale(targetScale));
+            srcEmd.SetEmr(1, srcEmd.GetEmr(1).Scale(targetScale));
+
+            srcEmd.SetMesh(0, srcPld.GetMesh(0).SwapPages(0, 1, true));
+            if (type == Re2EnemyIds.ZombieRandom)
+            {
+                srcEmd.SetMesh(0, srcEmd.GetMesh(0)
+                    .EditMeshTextures(m =>
+                    {
+                        if (m.PartIndex != 8)
+                            m.Page = 0;
+                    }));
+            }
+
+            var mesh = srcEmd.GetMesh(0).ToBuilder();
+            while (mesh.Count > 15)
+            {
+                mesh.RemoveAt(mesh.Count - 1);
+            }
+            mesh.Add(mesh[9]);
+            mesh.Add(mesh[0]);
+            srcEmd.SetMesh(0, mesh.ToMesh());
+
+            Directory.CreateDirectory(Path.GetDirectoryName(dstPath));
+            srcEmd.Save(dstPath);
+            tim.Save(Path.ChangeExtension(dstPath, ".tim"));
         }
 
         internal override void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser, VoiceRandomiser voiceRandomiser)
@@ -303,6 +425,33 @@ namespace IntelOrca.Biohazard.RE2
             {
                 var actor = Path.GetFileName(pldPath);
                 result.Add(actor.ToActorString());
+            }
+            return result.ToArray();
+        }
+
+        public override EnemySkin[] GetEnemySkins()
+        {
+            var emdRegex = new Regex("em0([0-9a-f][0-9a-f]).emd", RegexOptions.IgnoreCase);
+            var result = new List<EnemySkin>();
+            foreach (var enemyDir in DataManager.GetDirectories(BiohazardVersion, "emd"))
+            {
+                var enemyIds = new List<byte>();
+                foreach (var file in Directory.GetFiles(enemyDir))
+                {
+                    var fileName = Path.GetFileName(file);
+                    var match = emdRegex.Match(fileName);
+                    if (match.Success)
+                    {
+                        var id = byte.Parse(match.Groups[1].Value, NumberStyles.HexNumber);
+                        enemyIds.Add(id);
+                    }
+                }
+                if (enemyIds.Count > 0)
+                {
+                    var fileName = Path.GetFileName(enemyDir);
+                    var enemyName = new Re2EnemyHelper().GetEnemyName(enemyIds[0]).ToLower().ToActorString();
+                    result.Add(new EnemySkin(fileName, enemyName, enemyIds.ToArray()));
+                }
             }
             return result.ToArray();
         }
@@ -450,39 +599,6 @@ namespace IntelOrca.Biohazard.RE2
             }
             catch
             {
-            }
-        }
-
-        private void ReplaceBradZombie(RandoConfig config, FileRepository fileRepository)
-        {
-            if (!config.RandomEnemies)
-                return;
-
-            var pldFiles = new List<string>();
-            for (var i = 0; i < 2; i++)
-            {
-                var plds = DataManager.GetDirectories(BiohazardVersion, $"pld{i}");
-                foreach (var pld in plds)
-                {
-                    var files = DataManager.GetFiles(pld);
-                    foreach (var file in files)
-                    {
-                        if (file.EndsWith(".pld", StringComparison.OrdinalIgnoreCase))
-                        {
-                            pldFiles.Add(file);
-                        }
-                    }
-                }
-            }
-
-            var rng = new Rng(config.Seed);
-            var chosenPlds = pldFiles.Shuffle(rng).Take(2).ToArray();
-            for (var i = 0; i < 2; i++)
-            {
-                var fileName = $"pl{i}/emd{i}/em{i}11.emd";
-                var source = chosenPlds[i];
-                var target = fileRepository.GetModPath(fileName);
-                File.Copy(source, target, true);
             }
         }
 

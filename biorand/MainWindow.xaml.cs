@@ -136,6 +136,10 @@ namespace IntelOrca.Biohazard.BioRand
                 {
                     comboBox.SelectionChanged += ComboBox_SelectionChanged;
                 }
+                else if (control is CheckBoxList checkBoxList)
+                {
+                    checkBoxList.ItemValueChanged += OnCheckBoxChanged;
+                }
             }
         }
 
@@ -218,27 +222,14 @@ namespace IntelOrca.Biohazard.BioRand
                     }
                 }
 
+                chkEnemySkins.IsChecked = _config.RandomEnemySkins;
+                listEnemySkins.Values = _config.EnabledEnemySkins;
+
                 chkRngChars.IsChecked = _config.RandomNPCs;
-                if (listNPCs.ItemsSource != null)
-                {
-                    var index = 0;
-                    foreach (CheckBoxListItem item in listNPCs.ItemsSource)
-                    {
-                        item.IsChecked = _config.EnabledNPCs.Length > index ? _config.EnabledNPCs[index] : false;
-                        index++;
-                    }
-                }
+                listNPCs.Values = _config.EnabledNPCs;
 
                 chkRngBgm.IsChecked = _config.RandomBgm;
-                if (listBGMs.ItemsSource != null)
-                {
-                    var index = 0;
-                    foreach (CheckBoxListItem item in listBGMs.ItemsSource)
-                    {
-                        item.IsChecked = _config.EnabledBGMs.Length > index ? _config.EnabledBGMs[index] : false;
-                        index++;
-                    }
-                }
+                listBGMs.Values = _config.EnabledBGMs;
 
                 chkRngDoors.IsChecked = _config.RandomDoors;
                 chkPrioritiseCutscenes.IsChecked = _config.PrioritiseCutscenes;
@@ -423,17 +414,14 @@ namespace IntelOrca.Biohazard.BioRand
                 .Select(x => (byte)x.Value)
                 .ToArray();
 
+            _config.RandomEnemySkins = chkEnemySkins.IsChecked == true;
+            _config.EnabledEnemySkins = listEnemySkins.Values;
+
             _config.RandomNPCs = chkRngChars.IsChecked == true;
-            _config.EnabledNPCs = listNPCs.ItemsSource
-                .Cast<CheckBoxListItem>()
-                .Select(x => x.IsChecked)
-                .ToArray();
+            _config.EnabledNPCs = listNPCs.Values;
 
             _config.RandomBgm = chkRngBgm.IsChecked == true;
-            _config.EnabledBGMs = listBGMs.ItemsSource
-                .Cast<CheckBoxListItem>()
-                .Select(x => x.IsChecked)
-                .ToArray();
+            _config.EnabledBGMs = listBGMs.Values;
 
             _config.RandomDoors = chkRngDoors.IsChecked == true;
             _config.PrioritiseCutscenes = chkPrioritiseCutscenes.IsChecked == true;
@@ -882,6 +870,7 @@ namespace IntelOrca.Biohazard.BioRand
                         Visibility.Hidden;
                     UpdatePlayerDropdowns();
                     UpdateEnemies();
+                    UpdateEnemySkinList();
                     UpdateNPCList();
                     UpdateBGMList();
                     UpdateLogButtons();
@@ -1063,22 +1052,28 @@ namespace IntelOrca.Biohazard.BioRand
             listEnemies.ItemsSource = items;
         }
 
+        private void UpdateEnemySkinList()
+        {
+            var randomizer = GetRandomizer();
+            listEnemySkins.Names = randomizer
+                .GetEnemySkins()
+                .Select(x => x.ToString())
+                .ToArray();
+        }
+
         private void UpdateNPCList()
         {
             var randomizer = GetRandomizer();
-            listNPCs.ItemsSource = randomizer
+            listNPCs.Names = randomizer
                 .GetNPCs()
-                .Select(x => new CheckBoxListItem(x.ToActorString(), true))
+                .Select(x => x.ToActorString())
                 .ToArray();
         }
 
         private void UpdateBGMList()
         {
             var randomizer = GetRandomizer();
-            listBGMs.ItemsSource = randomizer
-                .GetMusicAlbums()
-                .Select(x => new CheckBoxListItem(x, true))
-                .ToArray();
+            listBGMs.Names = randomizer.GetMusicAlbums();
         }
 
         private void UpdateLogButtons()
@@ -1118,92 +1113,6 @@ namespace IntelOrca.Biohazard.BioRand
 
             var path = Path.Combine(location, "mod_biorand", $"log_pl{player}.txt");
             return path;
-        }
-
-        private void npcContextUnselectAll_Click(object sender, RoutedEventArgs e)
-        {
-            using (SuspendEvents())
-            {
-                foreach (CheckBoxListItem item in listNPCs.ItemsSource)
-                {
-                    item.IsChecked = false;
-                }
-            }
-            UpdateConfig();
-            UpdateUi();
-        }
-
-        private void npcContextSelectAll_Click(object sender, RoutedEventArgs e)
-        {
-            using (SuspendEvents())
-            {
-                foreach (CheckBoxListItem item in listNPCs.ItemsSource)
-                {
-                    item.IsChecked = true;
-                }
-            }
-            UpdateConfig();
-            UpdateUi();
-        }
-
-        private void npcContextRandom_Click(object sender, RoutedEventArgs e)
-        {
-            using (SuspendEvents())
-            {
-                var items = listNPCs.ItemsSource.Cast<CheckBoxListItem>();
-                var numItems = items.Count();
-                var numChecked = _random.Next(1, numItems);
-                var checkedItems = items.Shuffle(_random).Take(numChecked).ToArray();
-                foreach (CheckBoxListItem item in listNPCs.ItemsSource)
-                {
-                    item.IsChecked = checkedItems.Contains(item);
-                }
-            }
-            UpdateConfig();
-            UpdateUi();
-        }
-
-        private void bgmContextUnselectAll_Click(object sender, RoutedEventArgs e)
-        {
-            using (SuspendEvents())
-            {
-                foreach (CheckBoxListItem item in listBGMs.ItemsSource)
-                {
-                    item.IsChecked = false;
-                }
-            }
-            UpdateConfig();
-            UpdateUi();
-        }
-
-        private void bgmContextSelectAll_Click(object sender, RoutedEventArgs e)
-        {
-            using (SuspendEvents())
-            {
-                foreach (CheckBoxListItem item in listBGMs.ItemsSource)
-                {
-                    item.IsChecked = true;
-                }
-            }
-            UpdateConfig();
-            UpdateUi();
-        }
-
-        private void bgmContextRandom_Click(object sender, RoutedEventArgs e)
-        {
-            using (SuspendEvents())
-            {
-                var items = listBGMs.ItemsSource.Cast<CheckBoxListItem>();
-                var numItems = items.Count();
-                var numChecked = _random.Next(1, numItems);
-                var checkedItems = items.Shuffle(_random).Take(numChecked).ToArray();
-                foreach (CheckBoxListItem item in listBGMs.ItemsSource)
-                {
-                    item.IsChecked = checkedItems.Contains(item);
-                }
-            }
-            UpdateConfig();
-            UpdateUi();
         }
 
         private void enemyContextAllNone_Click(object sender, RoutedEventArgs e)
@@ -1378,46 +1287,6 @@ namespace IntelOrca.Biohazard.BioRand
     {
         public ImageSource Image { get; set; }
         public int Game { get; set; }
-    }
-
-    public class CheckBoxListItem : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private string _text;
-        private bool _isChecked;
-
-        public string Text
-        {
-            get => _text;
-            set
-            {
-                if (_text != value)
-                {
-                    _text = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Text)));
-                }
-            }
-        }
-
-        public bool IsChecked
-        {
-            get => _isChecked;
-            set
-            {
-                if (_isChecked != value)
-                {
-                    _isChecked = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsChecked)));
-                }
-            }
-        }
-
-        public CheckBoxListItem(string text, bool isChecked)
-        {
-            _text = text;
-            _isChecked = isChecked;
-        }
     }
 
     public class SliderListItem : INotifyPropertyChanged

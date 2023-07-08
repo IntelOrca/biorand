@@ -25,6 +25,7 @@ namespace IntelOrca.Biohazard
         public bool ChangePlayer { get; set; }
         public bool RandomPlayer { get; set; }
         public bool RandomDoors { get; set; }
+        public bool RandomEnemySkins { get; set; } = true;
         public bool RandomNPCs { get; set; } = true;
         public bool RandomEnemies { get; set; } = true;
         public bool RandomItems { get; set; } = true;
@@ -58,6 +59,7 @@ namespace IntelOrca.Biohazard
         public byte AreaSize { get; set; } = 7;
 
         public byte[] EnemyRatios { get; set; } = new byte[0];
+        public bool[] EnabledEnemySkins { get; set; } = new bool[0];
         public bool[] EnabledNPCs { get; set; } = new bool[0];
         public bool[] EnabledBGMs { get; set; } = new bool[0];
 
@@ -116,7 +118,8 @@ namespace IntelOrca.Biohazard
             result.RandomCutscenes = reader.ReadFlag();
             result.AllowAnyVoice = reader.ReadFlag();
             result.ReduceSilences = reader.ReadFlag();
-            reader.ReadByte(2);
+            reader.ReadByte(1);
+            result.RandomEnemySkins = reader.ReadFlag();
 
             var values = new List<byte>();
             for (int i = 0; i < 10; i++)
@@ -126,6 +129,7 @@ namespace IntelOrca.Biohazard
             result.EnemyRatios = values.ToArray();
             result.EnabledNPCs = reader.ReadBooleanArray(60);
             result.EnabledBGMs = reader.ReadBooleanArray(15);
+            result.EnabledEnemySkins = reader.ReadBooleanArray(15);
 
             return result;
         }
@@ -192,7 +196,8 @@ namespace IntelOrca.Biohazard
             writer.Write(RandomCutscenes);
             writer.Write(AllowAnyVoice);
             writer.Write(ReduceSilences);
-            writer.Write(2, 0);
+            writer.Write(1, 0);
+            writer.Write(RandomEnemySkins);
 
             for (int i = 0; i < 10; i++)
             {
@@ -207,6 +212,7 @@ namespace IntelOrca.Biohazard
             }
             writer.WriteArray(60, EnabledNPCs);
             writer.WriteArray(15, EnabledBGMs);
+            writer.WriteArray(15, EnabledEnemySkins);
 
             return writer.ToString();
         }

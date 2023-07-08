@@ -287,19 +287,19 @@
                                 </StackPanel>
                             </local:CheckGroupBox>
                         </StackPanel>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <local:CheckGroupBox Grid.Row="0" x:Name="chkCutscenes" Header="Randomize Cutscenes" ToolTip="Randomize the voices of the player and NPCs during cutscenes.">
-                                <StackPanel>
-                                    <CheckBox x:Name="chkAllowAnyVoice" ToolTip="If enabled, characters can speak other character's voice line.">Allow any character voice</CheckBox>
-                                    <CheckBox x:Name="chkReduceSilences" ToolTip="If enabled, voice lines are chosen to best match the length of the original line. This can however reduce the RNG.">Reduce awkward silences</CheckBox>
-                                </StackPanel>
-                            </local:CheckGroupBox>
-                            <StackPanel Grid.Row="1" Orientation="Horizontal">
-                                <local:CheckGroupBox x:Name="chkRngEnemies" Header="Randomize Enemies" Width="300">
+                        <StackPanel Orientation="Horizontal">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <local:CheckGroupBox Grid.Row="0" x:Name="chkCutscenes" Header="Randomize Cutscenes" ToolTip="Randomize the voices of the player and NPCs during cutscenes.">
+                                    <StackPanel>
+                                        <CheckBox x:Name="chkAllowAnyVoice" ToolTip="If enabled, characters can speak other character's voice line.">Allow any character voice</CheckBox>
+                                        <CheckBox x:Name="chkReduceSilences" ToolTip="If enabled, voice lines are chosen to best match the length of the original line. This can however reduce the RNG.">Reduce awkward silences</CheckBox>
+                                    </StackPanel>
+                                </local:CheckGroupBox>
+                                <local:CheckGroupBox Grid.Row="1" x:Name="chkRngEnemies" Header="Randomize Enemies" Width="300">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
@@ -311,13 +311,13 @@
                                             <CheckBox x:Name="chkRandomEnemyPlacements" ToolTip="When checked, enemy quantity and positions will be random.">Random enemy placements</CheckBox>
                                             <CheckBox x:Name="chkEnemyRestrictedRooms" ToolTip="When checked, enemies can be in save rooms.">Allow enemies in save rooms</CheckBox>
                                             <local:RandoSlider x:Name="sliderEnemyCount"
-                                                               Heading="Average number of enemies per room"
-                                                               LowText="1"
-                                                               HighText="6"
-                                                               Maximum="3"
-                                                               ToolTip="Adjusts the average number of enemies that can occur in a room." />
+                                                                Heading="Average number of enemies per room"
+                                                                LowText="1"
+                                                                HighText="6"
+                                                                Maximum="3"
+                                                                ToolTip="Adjusts the average number of enemies that can occur in a room." />
                                             <local:RandoSlider x:Name="sliderEnemyDifficulty" Heading="Difficulty" LowText="Ez" HighText="Hard" Maximum="3"
-                                                               ToolTip="Adjusts the limit of how many difficult enemies can appear in a single room, and the likelyhood of them being aggravated."/>
+                                                                ToolTip="Adjusts the limit of how many difficult enemies can appear in a single room, and the likelyhood of them being aggravated."/>
                                         </StackPanel>
                                         <ListView Grid.Row="1" x:Name="listEnemies" HorizontalContentAlignment="Stretch" Margin="0 4">
                                             <ListView.ContextMenu>
@@ -341,13 +341,13 @@
                                                         </Grid.ColumnDefinitions>
                                                         <TextBlock Grid.Column="0" Text="{Binding Text}" />
                                                         <local:RandoSlider Grid.Column="1"
-                                                                           HorizontalContentAlignment="Stretch"
-                                                                           Heading=""
-                                                                           Maximum="{Binding Maximum}"
-                                                                           Value="{Binding Value, Mode=TwoWay}"
-                                                                           LowText="None"
-                                                                           HighText="High"
-                                                                           ValueChanged="Slider_ValueChanged" />
+                                                                            HorizontalContentAlignment="Stretch"
+                                                                            Heading=""
+                                                                            Maximum="{Binding Maximum}"
+                                                                            Value="{Binding Value, Mode=TwoWay}"
+                                                                            LowText="None"
+                                                                            HighText="High"
+                                                                            ValueChanged="Slider_ValueChanged" />
                                                     </Grid>
                                                 </DataTemplate>
                                             </ListView.ItemTemplate>
@@ -356,60 +356,17 @@
                                         <TextBlock Grid.Row="3">Note: Some rooms can only contain certain enemies.</TextBlock>
                                     </Grid>
                                 </local:CheckGroupBox>
-                                <local:CheckGroupBox x:Name="chkRngChars" MinWidth="150" Header="Randomize NPCs">
-                                    <ListView x:Name="listNPCs">
-                                        <ListView.ContextMenu>
-                                            <ContextMenu>
-                                                <MenuItem Header="Unselect All" Click="npcContextUnselectAll_Click" />
-                                                <MenuItem Header="Select All" Click="npcContextSelectAll_Click" />
-                                                <MenuItem Header="Random" Click="npcContextRandom_Click" />
-                                            </ContextMenu>
-                                        </ListView.ContextMenu>
-                                        <ListView.ItemContainerStyle>
-                                            <Style TargetType="ListViewItem">
-                                                <Setter Property="Focusable" Value="false" />
-                                            </Style>
-                                        </ListView.ItemContainerStyle>
-                                        <ListView.ItemTemplate>
-                                            <DataTemplate>
-                                                <StackPanel>
-                                                    <CheckBox Content="{Binding Text}"
-                                                              IsChecked="{Binding IsChecked}"
-                                                              Checked="OnCheckBoxChanged"
-                                                              Unchecked="OnCheckBoxChanged" />
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </ListView.ItemTemplate>
-                                    </ListView>
-                                </local:CheckGroupBox>
-                                <local:CheckGroupBox x:Name="chkRngBgm" Header="Randomize Music">
-                                    <ListView x:Name="listBGMs">
-                                        <ListView.ContextMenu>
-                                            <ContextMenu>
-                                                <MenuItem Header="Unselect All" Click="bgmContextUnselectAll_Click" />
-                                                <MenuItem Header="Select All" Click="bgmContextSelectAll_Click" />
-                                                <MenuItem Header="Random" Click="bgmContextRandom_Click" />
-                                            </ContextMenu>
-                                        </ListView.ContextMenu>
-                                        <ListView.ItemContainerStyle>
-                                            <Style TargetType="ListViewItem">
-                                                <Setter Property="Focusable" Value="false" />
-                                            </Style>
-                                        </ListView.ItemContainerStyle>
-                                        <ListView.ItemTemplate>
-                                            <DataTemplate>
-                                                <StackPanel>
-                                                    <CheckBox Content="{Binding Text}"
-                                                              IsChecked="{Binding IsChecked}"
-                                                              Checked="OnCheckBoxChanged"
-                                                              Unchecked="OnCheckBoxChanged" />
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </ListView.ItemTemplate>
-                                    </ListView>
-                                </local:CheckGroupBox>
-                            </StackPanel>
-                        </Grid>
+                            </Grid>
+                            <local:CheckGroupBox x:Name="chkEnemySkins" MinWidth="150" Header="Enemy Skins">
+                                <local:CheckBoxList x:Name="listEnemySkins" />
+                            </local:CheckGroupBox>
+                            <local:CheckGroupBox x:Name="chkRngChars" MinWidth="150" Header="Randomize NPCs">
+                                <local:CheckBoxList x:Name="listNPCs" />
+                            </local:CheckGroupBox>
+                            <local:CheckGroupBox x:Name="chkRngBgm" Header="Randomize Music">
+                                <local:CheckBoxList x:Name="listBGMs" />
+                            </local:CheckGroupBox>
+                        </StackPanel>
                     </local:LeftPriorityContainer>
                 </StackPanel>
             </Grid>
