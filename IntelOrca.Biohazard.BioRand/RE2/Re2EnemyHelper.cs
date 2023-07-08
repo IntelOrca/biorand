@@ -157,6 +157,9 @@ namespace IntelOrca.Biohazard.RE2
                     enemy.SoundBank = 16;
                     break;
                 case Re2EnemyIds.LickerRed:
+                    enemy.State = 0;
+                    enemy.SoundBank = 51;
+                    break;
                 case Re2EnemyIds.LickerGrey:
                     enemy.State = 0;
                     enemy.SoundBank = 14;
@@ -166,9 +169,12 @@ namespace IntelOrca.Biohazard.RE2
                     enemy.SoundBank = 15;
                     break;
                 case Re2EnemyIds.Ivy:
-                case Re2EnemyIds.IvyPurple:
                     enemy.State = 0;
                     enemy.SoundBank = 19;
+                    break;
+                case Re2EnemyIds.IvyPurple:
+                    enemy.State = 0;
+                    enemy.SoundBank = 48;
                     break;
                 case Re2EnemyIds.GiantMoth:
                     enemy.State = 0;
@@ -194,12 +200,15 @@ namespace IntelOrca.Biohazard.RE2
                 case Re2EnemyIds.ZombieGuy2:
                 case Re2EnemyIds.ZombieGuy3:
                 case Re2EnemyIds.ZombieRandom:
+                    return 9;
                 case Re2EnemyIds.ZombieScientist:
+                    return 47;
                 case Re2EnemyIds.ZombieTestSubject:
+                    return 47;
                 case Re2EnemyIds.ZombieBrad:
                     return 1;
                 case Re2EnemyIds.ZombieGirl:
-                    return 10;
+                    return 45;
                 case Re2EnemyIds.ZombieNaked:
                     return 46;
                 default:
