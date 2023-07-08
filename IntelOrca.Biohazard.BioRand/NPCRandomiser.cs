@@ -115,69 +115,16 @@ namespace IntelOrca.Biohazard
                 return;
 
             _logger.WriteHeading("Adding additional NPCs:");
-            if (_config.Game == 1 || _config.Game == 2)
+            var externals = _emds
+                .Where(x => SelectedActors.Contains(x.Actor))
+                .ToEndlessBag(rng);
+            for (var i = 0; i < 256; i++)
             {
-                var externals = _emds
-                    .Where(x => SelectedActors.Contains(x.Actor))
-                    .ToEndlessBag(rng);
-                for (var i = 0; i < 256; i++)
-                {
-                    if (!_npcHelper.IsSpareSlot((byte)i))
-                        continue;
+                if (!_npcHelper.IsSpareSlot((byte)i))
+                    continue;
 
-                    var ec = externals.Next();
-                    SetEm((byte)i, ec, rng);
-                }
-            }
-            else
-            {
-                var emdSet = true;
-                while (emdSet)
-                {
-                    emdSet = false;
-                    foreach (var g in _emds.GroupBy(x => x.EmId))
-                    {
-                        var gSelected = g.Where(x => SelectedActors.Contains(x.Actor)).ToArray();
-                        if (gSelected.Length == 0)
-                            continue;
-
-                        var slots = _npcHelper
-                            .GetSlots(_config, g.Key)
-                            .Except(_extraNpcMap.Keys)
-                            .ToArray();
-                        var spare = slots
-                            .Where(x => _npcHelper.IsSpareSlot(x))
-                            .ToQueue();
-                        var notSpare = slots
-                            .Where(x => !_npcHelper.IsSpareSlot(x))
-                            .Shuffle(rng)
-                            .ToQueue();
-
-                        // Normal slot, take all selected characters
-                        var randomCharactersToInclude = gSelected.Shuffle(rng);
-                        foreach (var rchar in randomCharactersToInclude)
-                        {
-                            if (spare.Count != 0)
-                            {
-                                var slot = spare.Dequeue();
-                                SetEm(slot, rchar, rng);
-                                emdSet = true;
-                            }
-                            else if (notSpare.Count != 0)
-                            {
-                                // 50:50 on whether to use original or new character, unless original is not selected.
-                                var slot = notSpare.Dequeue();
-                                var originalActor = GetActor(slot, true) ?? "";
-                                if (!SelectedActors.Contains(originalActor) ||
-                                    rng.NextProbability(50))
-                                {
-                                    SetEm(slot, rchar, rng);
-                                    emdSet = true;
-                                }
-                            }
-                        }
-                    }
-                }
+                var ec = externals.Next();
+                SetEm((byte)i, ec, rng);
             }
         }
 
@@ -205,15 +152,13 @@ namespace IntelOrca.Biohazard
             }
             else if (_config.Game == 3)
             {
-                var emdPath = Path.Combine(_modPath, "ROOM", "EMD");
-                Directory.CreateDirectory(emdPath);
+                var emdFileName = Path.Combine($"ROOM", $"EMD", $"EM{id:X2}.EMD");
+                var originalEmdPath = _fileRepository.GetDataPath(emdFileName);
+                var targetEmdPath = _fileRepository.GetModPath(emdFileName);
+                if (!_fileRepository.Exists(originalEmdPath))
+                    return;
 
-                var srcEmd = ec.EmPath;
-                var dstEmd = Path.Combine(emdPath, $"EM{id:X2}.EMD");
-                var srcTim = Path.ChangeExtension(ec.EmPath, ".tim");
-                var dstTim = Path.Combine(emdPath, $"EM{id:X2}.TIM");
-                File.Copy(srcEmd, dstEmd, true);
-                File.Copy(srcTim, dstTim, true);
+                _npcHelper.CreateEmdFile(id, ec.EmPath, originalEmdPath, targetEmdPath, _fileRepository, rng);
             }
             _extraNpcMap[id] = ec.Actor;
             _logger.WriteLine($"Enemy 0x{id:X2} becomes {ec.Actor}");

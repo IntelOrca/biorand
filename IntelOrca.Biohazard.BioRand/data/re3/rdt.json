@@ -735,6 +735,7 @@
         },
         {
           "includeOffsets": [ 17196 ],
+          "includeTypes": [ 90 ],
           "cutscene": 2
         }
       ]
@@ -1321,6 +1322,7 @@
         },
         {
           "includeOffsets": [ 20512, 20536, 20560 ],
+          "excludeTypes": [ 83, 90 ],
           "cutscene": 2 // Carlos and Nikolai
         },
         {
@@ -1463,7 +1465,7 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 47 ]
+          "excludeTypes": [ 47, 87 ]
         }
       ],
       "enemies": [

@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using IntelOrca.Biohazard.Extensions;
+using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.Script;
 
 namespace IntelOrca.Biohazard.RE3
@@ -68,7 +71,7 @@ namespace IntelOrca.Biohazard.RE3
                 Re3EnemyIds.NikolaiZinoviev,
                 Re3EnemyIds.BradVickers,
                 Re3EnemyIds.TyrellPatrick,
-                Re3EnemyIds.PromoGirl,
+                // Re3EnemyIds.PromoGirl,
                 Re3EnemyIds.CarlosOliveira1,
                 Re3EnemyIds.CarlosOliveira2,
                 Re3EnemyIds.JillValentine1,
@@ -107,17 +110,26 @@ namespace IntelOrca.Biohazard.RE3
         {
             switch (id)
             {
-                // Includes any NPC that does not have 15 parts
-                // case Re3EnemyIds.MarvinBranagh1:
+                // Simple
+                case Re3EnemyIds.MarvinBranagh1:
+                case Re3EnemyIds.MarvinBranagh2:
+                case Re3EnemyIds.PromoGirl:
+                case Re3EnemyIds.ChiefIrons:
+
+                // Advanced
                 case Re3EnemyIds.CarlosOliveira1:
+                case Re3EnemyIds.MikhailViktor:
+                case Re3EnemyIds.NikolaiZinoviev:
+                case Re3EnemyIds.BradVickers:
                 case Re3EnemyIds.DarioRosso:
                 case Re3EnemyIds.MurphySeeker:
-                case Re3EnemyIds.MarvinBranagh2:
+                case Re3EnemyIds.TyrellPatrick:
                 case Re3EnemyIds.BradZombie:
                 case Re3EnemyIds.DarioZombie:
-                case Re3EnemyIds.PromoGirl:
-                case Re3EnemyIds.JillValentine2:
-                case Re3EnemyIds.ChiefIrons:
+                // case Re3EnemyIds.JillValentine1:
+                case Re3EnemyIds.CarlosOliveira2:
+                // case Re3EnemyIds.JillValentine2:
+                case Re3EnemyIds.NikolaiDead:
                     return true;
                 default:
                     return false;
@@ -126,7 +138,165 @@ namespace IntelOrca.Biohazard.RE3
 
         public void CreateEmdFile(byte type, string pldPath, string baseEmdPath, string targetEmdPath, FileRepository fileRepository, Rng rng)
         {
-            throw new NotImplementedException();
+            var pldFile = ModelFile.FromFile(pldPath);
+            var emdFile = new EmdFile(BioVersion.Biohazard3, fileRepository.GetStream(baseEmdPath));
+            var timFile = pldFile.GetTim(0);
+            var plwFile = null as ModelFile;
+
+            var weapon = GetSuitableWeaponForNPC(type).Random(rng);
+            var plwPath = GetPlwPath(fileRepository, pldPath, weapon);
+            if (plwPath != null)
+            {
+                plwFile = new PlwFile(BioVersion.Biohazard3, fileRepository.GetStream(plwPath));
+                var plwTim = plwFile.GetTim(0);
+                timFile = timFile.WithWeaponTexture(plwTim, 1);
+            }
+
+            // First get how tall the new EMD is compared to the old one
+            var targetScale = pldFile.CalculateEmrScale(emdFile);
+
+            emdFile.SetEmr(0, emdFile.GetEmr(0).WithSkeleton(pldFile.GetEmr(0)).Scale(targetScale));
+            emdFile.SetEmr(1, emdFile.GetEmr(1).Scale(targetScale));
+
+            // Copy over the mesh (clear any extra parts)
+            var builder = ((Md2)pldFile.GetMesh(0)).ToBuilder();
+            if (builder.Parts.Count > 15)
+                builder.Parts.RemoveRange(15, builder.Parts.Count - 15);
+
+            // Add extra meshes
+            var weaponMesh = builder.Parts[4];
+            if (plwFile != null)
+            {
+                weaponMesh = ((Md2)plwFile.GetMesh(0)).ToBuilder().Parts[0];
+            }
+
+            if (HasWeapon(type))
+            {
+                builder.Add(weaponMesh);
+            }
+            else if (type == Re3EnemyIds.JillValentine1 || type == Re3EnemyIds.JillValentine2)
+            {
+                builder.Add();
+            }
+
+            emdFile.SetMesh(1, builder.ToMesh());
+
+            emdFile.SetChunk(0, new ReadOnlyMemory<byte>(new byte[4]));
+
+            Directory.CreateDirectory(Path.GetDirectoryName(targetEmdPath));
+            emdFile.Save(targetEmdPath);
+            timFile.Save(Path.ChangeExtension(targetEmdPath, ".tim"));
+        }
+
+        private static string? GetPlwPath(FileRepository fileRepository, string pldPath, byte weapon)
+        {
+            var plwFileName = $"PL00W{weapon:X2}.PLW";
+            var pldDirectory = Path.GetDirectoryName(pldPath);
+            var customPlwPath = Path.Combine(pldDirectory, plwFileName);
+            if (File.Exists(customPlwPath))
+            {
+                return customPlwPath;
+            }
+
+            var originalPlwPath = fileRepository.GetDataPath($"data/pld/{plwFileName}");
+            if (fileRepository.Exists(originalPlwPath))
+            {
+                return originalPlwPath;
+            }
+
+            return null;
+        }
+
+        private static byte[] GetSuitableWeaponForNPC(byte npc)
+        {
+            switch (npc)
+            {
+                case Re3EnemyIds.MikhailViktor:
+                case Re3EnemyIds.CarlosOliveira2:
+                    return new[]
+                    {
+                        Re3ItemIds.RifleM4A1Auto
+                    };
+                default:
+                    return new[]
+                    {
+                        Re3ItemIds.HandgunSigpro,
+                        Re3ItemIds.HandgunBeretta,
+                        Re3ItemIds.ShotgunBenelli,
+                        Re3ItemIds.MagnumSW,
+                        Re3ItemIds.GrenadeLauncherGrenade,
+                        Re3ItemIds.GrenadeLauncherFlame,
+                        Re3ItemIds.GrenadeLauncherAcid,
+                        Re3ItemIds.GrenadeLauncherFreeze,
+                        Re3ItemIds.RocketLauncher,
+                        Re3ItemIds.GatlingGun,
+                        Re3ItemIds.MineThrower,
+                        Re3ItemIds.HangunEagle,
+                        Re3ItemIds.RifleM4A1Manual,
+                        Re3ItemIds.RifleM4A1Auto,
+                        Re3ItemIds.ShotgunM37,
+                        Re3ItemIds.HandgunSigproEnhanced,
+                        Re3ItemIds.HandgunBerettaEnhanced,
+                        Re3ItemIds.ShotgunBenelliEnhanced,
+                        Re3ItemIds.MineThrowerEnhanced,
+                    };
+            };
+        }
+
+        private static bool HasWeapon(byte type)
+        {
+            switch (type)
+            {
+                case Re3EnemyIds.CarlosOliveira1:
+                case Re3EnemyIds.MikhailViktor:
+                case Re3EnemyIds.NikolaiZinoviev:
+                case Re3EnemyIds.BradVickers:
+                case Re3EnemyIds.TyrellPatrick:
+                case Re3EnemyIds.CarlosOliveira2:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private static bool HasGore(byte type)
+        {
+            switch (type)
+            {
+                case Re3EnemyIds.BradZombie:
+                case Re3EnemyIds.DarioZombie:
+                case Re3EnemyIds.NikolaiDead:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private static bool IsMorphingNpc(byte type)
+        {
+            switch (type)
+            {
+                case Re3EnemyIds.CarlosOliveira1:
+                case Re3EnemyIds.MikhailViktor:
+                case Re3EnemyIds.NikolaiZinoviev:
+                case Re3EnemyIds.BradVickers:
+                case Re3EnemyIds.DarioRosso:
+                case Re3EnemyIds.MurphySeeker:
+                case Re3EnemyIds.TyrellPatrick:
+                case Re3EnemyIds.BradZombie:
+                case Re3EnemyIds.DarioZombie:
+                case Re3EnemyIds.JillValentine1:
+                case Re3EnemyIds.CarlosOliveira2:
+                case Re3EnemyIds.JillValentine2:
+                case Re3EnemyIds.NikolaiDead:
+                    return true;
+                case Re3EnemyIds.MarvinBranagh1:
+                case Re3EnemyIds.MarvinBranagh2:
+                case Re3EnemyIds.PromoGirl:
+                case Re3EnemyIds.ChiefIrons:
+                default:
+                    return false;
+            }
         }
     }
 }

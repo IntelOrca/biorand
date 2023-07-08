@@ -328,20 +328,16 @@ namespace IntelOrca.Biohazard.RE3
                 voiceRandomiser.AddToSelection(BioVersion.Biohazard3, fileRepository);
             }
 
-            var emdFolders = DataManager.GetDirectories(BiohazardVersion, $"emd");
-            foreach (var emdFolder in emdFolders)
+            var pldFolders = DataManager.GetDirectories(BiohazardVersion, $"pld0");
+            foreach (var pldFolder in pldFolders)
             {
-                var actor = Path.GetFileName(emdFolder);
-                var files = Directory.GetFiles(emdFolder);
+                var actor = Path.GetFileName(pldFolder);
+                var files = Directory.GetFiles(pldFolder);
                 foreach (var file in files)
                 {
-                    if (file.EndsWith(".emd", StringComparison.OrdinalIgnoreCase))
+                    if (file.EndsWith(".pld", StringComparison.OrdinalIgnoreCase))
                     {
-                        var hex = Path.GetFileName(file).Substring(2, 2);
-                        if (int.TryParse(hex, System.Globalization.NumberStyles.HexNumber, null, out var result))
-                        {
-                            npcRandomiser.AddNPC((byte)result, file, actor);
-                        }
+                        npcRandomiser.AddNPC(0, file, actor);
                     }
                 }
             }
