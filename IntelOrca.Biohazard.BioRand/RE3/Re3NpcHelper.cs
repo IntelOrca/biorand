@@ -181,7 +181,7 @@ namespace IntelOrca.Biohazard.RE3
 
             emdFile.SetMesh(1, builder.ToMesh());
 
-            emdFile.SetChunk(0, new ReadOnlyMemory<byte>(new byte[4]));
+            emdFile.SetChunk(0, pldFile.GetChunk<ReadOnlyMemory<byte>>(3));
 
             Directory.CreateDirectory(Path.GetDirectoryName(targetEmdPath));
             emdFile.Save(targetEmdPath);
