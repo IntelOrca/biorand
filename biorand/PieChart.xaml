@@ -13,6 +13,6 @@
                 <Path Fill="Black" Width="100" Height="100" Data="M 0,50 A 50,50 0 0 1 50,0 L 50,50 Z" />
             </Grid>
         </Viewbox>
-        <Grid x:Name="horizontalGrid" />
+        <Grid x:Name="topGrid" />
     </Grid>
 </UserControl>
