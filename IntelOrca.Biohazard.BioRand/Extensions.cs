@@ -27,9 +27,11 @@ namespace IntelOrca.Biohazard
             return new string(chars);
         }
 
-        public static string GetBaseName(this string x)
+        public static string GetBaseName(this string x) => GetBaseName(x, '.');
+
+        public static string GetBaseName(this string x, char delimiter)
         {
-            var fsIndex = x.IndexOf('.');
+            var fsIndex = x.IndexOf(delimiter);
             if (fsIndex != -1)
                 return x.Substring(0, fsIndex);
             return x;

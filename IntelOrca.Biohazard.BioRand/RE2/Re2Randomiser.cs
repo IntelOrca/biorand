@@ -456,7 +456,10 @@ namespace IntelOrca.Biohazard.RE2
                     result.Add(new EnemySkin(fileName, enemyNames, enemyIds.ToArray()));
                 }
             }
-            return result.ToArray();
+            return result
+                .OrderBy(x => x.IsOriginal ? 0 : 1)
+                .ThenBy(x => x.IsNPC ? 0 : 1)
+                .ToArray();
         }
 
         protected override string[] GetDefaultNPCs()

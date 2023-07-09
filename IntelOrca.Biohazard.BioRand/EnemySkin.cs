@@ -31,27 +31,29 @@ namespace IntelOrca.Biohazard.BioRand
 
         private static string GetNameFromFileName(string fileName)
         {
-            var regex = new Regex("([^.]*)(?:\\.(.*))?");
+            var regex = new Regex("([^.$]*)(?:\\$([^.]+))?(?:\\.(.*))?");
             var match = regex.Match(fileName);
             if (!match.Success)
                 return fileName;
 
-            var baseName = match.Groups[1].Value;
-            baseName = baseName == "npc" ? "NPC" : baseName.ToTitle();
+            var name = match.Groups[1].Value;
+            name = name == "npc" ? "NPC" : name.ToTitle();
             if (match.Groups[2].Success)
-                return $"{baseName} ({match.Groups[2].Value.ToTitle()})";
-            return baseName;
+                name += $", {match.Groups[2].Value.ToTitle()}";
+            if (match.Groups[3].Success)
+                name += $" ({match.Groups[3].Value.ToUpper()})";
+            return name;
         }
 
         public string ToolTip
         {
             get
             {
-                if (FileName == OriginalFileName)
+                if (IsOriginal)
                 {
                     return "Allows the original enemy skins to occasionally override custom skins.";
                 }
-                if (FileName.GetBaseName() == "npc")
+                if (IsNPC)
                 {
                     return "Replaces zombies with random NPCs.";
                 }
@@ -59,6 +61,8 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
+        public bool IsOriginal => FileName == OriginalFileName;
+        public bool IsNPC => FileName.GetBaseName('$') == "npc";
         public override string ToString() => $"{Name} [{string.Join(", ", EnemyNames)}]";
     }
 }
