@@ -298,14 +298,25 @@ namespace IntelOrca.Biohazard.RE1
                 }
                 if (hurtFiles.All(x => x != null))
                 {
+                    var hurtFileNames = new[]
+                    {
+                        new[] { "chris", "ch_ef" },
+                        new[] { "jill", "jill_ef" }
+                    };
+
                     var soundDir = fileRepository.GetModPath("sound");
                     Directory.CreateDirectory(soundDir);
+
                     for (int i = 0; i < hurtFiles.Length; i++)
                     {
-                        var soundPath = Path.Combine(soundDir, $"{originalPlayerActor.ToUpperInvariant()}{i + 1:00}.WAV");
                         var waveformBuilder = new WaveformBuilder();
                         waveformBuilder.Append(hurtFiles[i]);
-                        waveformBuilder.Save(soundPath);
+                        for (var j = 0; j < 2; j++)
+                        {
+                            var hurtFileName = hurtFileNames[config.Player][j];
+                            var soundPath = Path.Combine(soundDir, $"{hurtFileName}{i + 1:00}.WAV");
+                            waveformBuilder.Save(soundPath);
+                        }
                     }
                 }
             }
