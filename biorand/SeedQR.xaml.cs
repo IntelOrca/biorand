@@ -1,9 +1,9 @@
-﻿using QRCoder;
-using System.IO;
+﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using QRCoder;
 
 namespace IntelOrca.Biohazard.BioRand
 {
@@ -41,7 +41,7 @@ namespace IntelOrca.Biohazard.BioRand
 
             var seed = config.ToString();
             var qrGenerator = new QRCodeGenerator();
-            var qrCodeData = qrGenerator.CreateQrCode(seed, QRCodeGenerator.ECCLevel.Q);
+            var qrCodeData = qrGenerator.CreateQrCode(seed, QRCodeGenerator.ECCLevel.M);
             var qrCode = new QRCode(qrCodeData);
             var qrCodeImage = qrCode.GetGraphic(3);
             image.Source = ConvertBitmap(qrCodeImage);

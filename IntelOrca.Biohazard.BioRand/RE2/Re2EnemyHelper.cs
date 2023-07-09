@@ -208,7 +208,7 @@ namespace IntelOrca.Biohazard.RE2
                 case Re2EnemyIds.ZombieBrad:
                     return 1;
                 case Re2EnemyIds.ZombieGirl:
-                    return 45;
+                    return 44;
                 case Re2EnemyIds.ZombieNaked:
                     return 46;
                 default:

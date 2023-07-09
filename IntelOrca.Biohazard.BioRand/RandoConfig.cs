@@ -14,6 +14,10 @@ namespace IntelOrca.Biohazard
 
         public const int MaxSeed = 0b11111_11111_11111_11111;
         public const byte LatestVersion = 7;
+        public const int MaxEnemies = 10;
+        public const int MaxEnemySkins = 25;
+        public const int MaxNPCs = 60;
+        public const int MaxBGMs = 15;
 
         public byte Version { get; set; } = LatestVersion;
         public byte Game { get; set; } = 2;
@@ -122,14 +126,14 @@ namespace IntelOrca.Biohazard
             result.RandomEnemySkins = reader.ReadFlag();
 
             var values = new List<byte>();
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < MaxEnemies; i++)
             {
                 values.Add(reader.ReadByte(3));
             }
             result.EnemyRatios = values.ToArray();
-            result.EnabledNPCs = reader.ReadBooleanArray(60);
-            result.EnabledBGMs = reader.ReadBooleanArray(15);
-            result.EnabledEnemySkins = reader.ReadBooleanArray(15);
+            result.EnabledNPCs = reader.ReadBooleanArray(MaxNPCs);
+            result.EnabledBGMs = reader.ReadBooleanArray(MaxBGMs);
+            result.EnabledEnemySkins = reader.ReadBooleanArray(MaxEnemySkins);
 
             return result;
         }
@@ -199,7 +203,7 @@ namespace IntelOrca.Biohazard
             writer.Write(1, 0);
             writer.Write(RandomEnemySkins);
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < MaxEnemies; i++)
             {
                 if (EnemyRatios.Length > i)
                 {
@@ -210,9 +214,9 @@ namespace IntelOrca.Biohazard
                     writer.Write(3, 0);
                 }
             }
-            writer.WriteArray(60, EnabledNPCs);
-            writer.WriteArray(15, EnabledBGMs);
-            writer.WriteArray(15, EnabledEnemySkins);
+            writer.WriteArray(MaxNPCs, EnabledNPCs);
+            writer.WriteArray(MaxBGMs, EnabledBGMs);
+            writer.WriteArray(MaxEnemySkins, EnabledEnemySkins);
 
             return writer.ToString();
         }

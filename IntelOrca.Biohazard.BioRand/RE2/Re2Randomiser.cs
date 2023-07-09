@@ -11,6 +11,7 @@ using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.RE1;
 using IntelOrca.Biohazard.RE3;
+using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.RE2
 {
@@ -223,22 +224,26 @@ namespace IntelOrca.Biohazard.RE2
         {
             var soundRegex = new Regex("(enemy[0-9][0-9])_([0-9]+)(.ogg|.wav)", RegexOptions.IgnoreCase);
             var rng = new Rng(config.Seed);
+            var rng2 = new Rng(config.Seed);
 
             var pldDir0 = DataManager.GetDirectories(BiohazardVersion, "pld0");
             var pldDir1 = DataManager.GetDirectories(BiohazardVersion, "pld1");
             var pldBag = new EndlessBag<string>(rng, pldDir0.Concat(pldDir1));
 
-            var enemySkins = GetEnemySkins();
-            var enabledSkins = config.EnabledEnemySkins;
-            for (var i = 0; i < enemySkins.Length; i++)
-            {
-                if (!enabledSkins[i])
-                    continue;
+            var enemySkins = GetEnemySkins()
+                .Zip(config.EnabledEnemySkins, (skin, enabled) => (skin, enabled))
+                .Where(s => s.enabled)
+                .Select(s => s.skin)
+                .Shuffle(rng);
 
-                var enemySkin = enemySkins[i];
-                foreach (var id in enemySkin.EnemyIds)
+            var soundProcessActions = new List<Action>();
+            var sapLock = new object();
+
+            foreach (var skin in enemySkins)
+            {
+                foreach (var id in skin.EnemyIds)
                 {
-                    var enemyDir = DataManager.GetPath(BiohazardVersion, Path.Combine("emd", enemySkin.FileName));
+                    var enemyDir = DataManager.GetPath(BiohazardVersion, Path.Combine("emd", skin.FileName));
 
                     // EMD/TIM
                     var srcEmdFileName = $"EM0{id:X2}.EMD";
@@ -253,11 +258,17 @@ namespace IntelOrca.Biohazard.RE2
                     if (new FileInfo(srcEmd).Length == 0)
                     {
                         // NPC overwrite
-                        var pldPath = Directory.GetFiles(pldBag.Next()).FirstOrDefault(x => x.EndsWith(".PLD", StringComparison.OrdinalIgnoreCase));
+                        var pldFolder = pldBag.Next();
+                        var pldPath = Directory.GetFiles(pldFolder)
+                            .First(x => x.EndsWith(".PLD", StringComparison.OrdinalIgnoreCase));
                         var pldFile = new PldFile(BiohazardVersion, pldPath);
                         var emdFile = new EmdFile(BiohazardVersion, origEmd);
 
                         CreateZombie(id, pldFile, emdFile, dstEmd);
+                        if (Path.GetFileNameWithoutExtension(pldPath).Equals("PL01", StringComparison.OrdinalIgnoreCase))
+                        {
+                            OverrideSoundBank(gameData, rng2, id, new byte[] { 10, 11, 44, 45 });
+                        }
                     }
                     else
                     {
@@ -284,13 +295,20 @@ namespace IntelOrca.Biohazard.RE2
                                 File.Copy(srcSapPath, dstSapPath, true);
                             }
 
-                            var waveformBuilder = new WaveformBuilder();
-                            waveformBuilder.Append(file);
-                            waveformBuilder.SaveAt(dstSapPath, sapIndex);
+                            soundProcessActions.Add(() =>
+                            {
+                                var waveformBuilder = new WaveformBuilder();
+                                waveformBuilder.Append(file);
+                                lock (sapLock)
+                                    waveformBuilder.SaveAt(dstSapPath, sapIndex);
+                            });
                         }
                     }
                 }
             }
+
+            // Do sound processing in bulk / parallel
+            Parallel.ForEach(soundProcessActions, x => x());
         }
 
         private void CreateZombie(byte type, PldFile srcPld, EmdFile srcEmd, string dstPath)
@@ -337,6 +355,21 @@ namespace IntelOrca.Biohazard.RE2
             Directory.CreateDirectory(Path.GetDirectoryName(dstPath));
             srcEmd.Save(dstPath);
             tim.Save(Path.ChangeExtension(dstPath, ".tim"));
+        }
+
+        private void OverrideSoundBank(GameData gameData, Rng rng, byte enemyType, byte[] banks)
+        {
+            foreach (var rdt in gameData.Rdts)
+            {
+                var soundBank = rng.NextOf<byte>(banks);
+                foreach (var opcode in rdt.AllOpcodes.OfType<SceEmSetOpcode>())
+                {
+                    if (opcode.Type == enemyType)
+                    {
+                        opcode.SoundBank = soundBank;
+                    }
+                }
+            }
         }
 
         internal override void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser, VoiceRandomiser voiceRandomiser)
@@ -826,7 +859,7 @@ namespace IntelOrca.Biohazard.RE2
                 -200, 300, -2427, -2120,
             };
 
-            if (config.SwapCharacters)
+            if (config.ChangePlayer && config.SwapCharacters)
             {
                 // Swap Leon and Claires values around
                 for (var i = 0; i < table.Length; i += 4)

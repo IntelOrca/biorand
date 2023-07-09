@@ -1,7 +1,7 @@
-﻿using QRCoder;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using QRCoder;
 
 namespace IntelOrca.Biohazard.BioRand
 {
@@ -87,7 +87,7 @@ namespace IntelOrca.Biohazard.BioRand
         private static Bitmap GetQRImage(string text)
         {
             var qrGenerator = new QRCodeGenerator();
-            var qrCodeData = qrGenerator.CreateQrCode(text, QRCodeGenerator.ECCLevel.Q);
+            var qrCodeData = qrGenerator.CreateQrCode(text, QRCodeGenerator.ECCLevel.M);
             var qrCode = new QRCode(qrCodeData);
             var qrCodeImage = qrCode.GetGraphic(1, Color.White, Color.Transparent, true);
             return qrCodeImage;
