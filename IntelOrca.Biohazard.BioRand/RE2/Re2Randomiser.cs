@@ -433,6 +433,7 @@ namespace IntelOrca.Biohazard.RE2
         {
             var emdRegex = new Regex("em0([0-9a-f][0-9a-f]).emd", RegexOptions.IgnoreCase);
             var result = new List<EnemySkin>();
+            result.Add(EnemySkin.Original);
             foreach (var enemyDir in DataManager.GetDirectories(BiohazardVersion, "emd"))
             {
                 var enemyIds = new List<byte>();
@@ -449,8 +450,10 @@ namespace IntelOrca.Biohazard.RE2
                 if (enemyIds.Count > 0)
                 {
                     var fileName = Path.GetFileName(enemyDir);
-                    var enemyName = new Re2EnemyHelper().GetEnemyName(enemyIds[0]).ToLower().ToActorString();
-                    result.Add(new EnemySkin(fileName, enemyName, enemyIds.ToArray()));
+                    var enemyNames = enemyIds
+                        .Select(x => EnemyHelper.GetEnemyName(x).ToLower().ToActorString())
+                        .ToArray();
+                    result.Add(new EnemySkin(fileName, enemyNames, enemyIds.ToArray()));
                 }
             }
             return result.ToArray();

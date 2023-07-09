@@ -27,6 +27,14 @@ namespace IntelOrca.Biohazard
             return new string(chars);
         }
 
+        public static string GetBaseName(this string x)
+        {
+            var fsIndex = x.IndexOf('.');
+            if (fsIndex != -1)
+                return x.Substring(0, fsIndex);
+            return x;
+        }
+
         public static string ToActorString(this string x)
         {
             var actor = x;

@@ -16,17 +16,18 @@
         </ListView.ContextMenu>
         <ListView.ItemContainerStyle>
             <Style TargetType="ListViewItem">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Setter Property="Focusable" Value="false" />
+                <Setter Property="Padding" Value="0" />
             </Style>
         </ListView.ItemContainerStyle>
         <ListView.ItemTemplate>
             <DataTemplate>
-                <StackPanel>
-                    <CheckBox Content="{Binding Text}"
-                              IsChecked="{Binding IsChecked}"
-                              Checked="OnCheckBoxChanged"
-                              Unchecked="OnCheckBoxChanged" />
-                </StackPanel>
+                <CheckBox Content="{Binding Text}"
+                          ToolTip="{Binding ToolTip}"
+                          IsChecked="{Binding IsChecked}"
+                          Checked="OnCheckBoxChanged"
+                          Unchecked="OnCheckBoxChanged" />
             </DataTemplate>
         </ListView.ItemTemplate>
     </ListView>

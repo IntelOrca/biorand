@@ -1055,9 +1055,12 @@ namespace IntelOrca.Biohazard.BioRand
         private void UpdateEnemySkinList()
         {
             var randomizer = GetRandomizer();
-            listEnemySkins.Names = randomizer
-                .GetEnemySkins()
-                .Select(x => x.ToString())
+            var enemySkins = randomizer.GetEnemySkins();
+            listEnemySkins.Names = enemySkins
+                .Select(x => x.Name)
+                .ToArray();
+            listEnemySkins.ToolTips = enemySkins
+                .Select(x => x.ToolTip)
                 .ToArray();
         }
 

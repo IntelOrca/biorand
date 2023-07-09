@@ -36,6 +36,21 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
+        public object[] ToolTips
+        {
+            get => _items.Select(x => x.Text).ToArray();
+            set
+            {
+                for (var i = 0; i < _items.Length; i++)
+                {
+                    if (value.Length <= i)
+                        break;
+
+                    _items[i].ToolTip = value[i];
+                }
+            }
+        }
+
         public bool[] Values
         {
             get => _items.Select(x => x.IsChecked).ToArray();
@@ -135,6 +150,7 @@ namespace IntelOrca.Biohazard.BioRand
         public event PropertyChangedEventHandler PropertyChanged;
 
         private string _text;
+        private object _toolTip;
         private bool _isChecked;
 
         public string Text
@@ -150,6 +166,19 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
+        public object ToolTip
+        {
+            get => _toolTip;
+            set
+            {
+                if (_toolTip != value)
+                {
+                    _toolTip = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ToolTip)));
+                }
+            }
+        }
+
         public bool IsChecked
         {
             get => _isChecked;
@@ -161,6 +190,10 @@ namespace IntelOrca.Biohazard.BioRand
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsChecked)));
                 }
             }
+        }
+
+        public CheckBoxListItem()
+        {
         }
 
         public CheckBoxListItem(string text, bool isChecked)
