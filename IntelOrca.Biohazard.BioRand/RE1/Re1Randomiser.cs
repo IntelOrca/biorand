@@ -439,7 +439,7 @@ namespace IntelOrca.Biohazard.RE1
                         if (file.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) ||
                             file.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
                         {
-                            var soundFileName = Path.ChangeExtension(file, ".wav").ToUpperInvariant();
+                            var soundFileName = Path.ChangeExtension(Path.GetFileName(file), ".wav").ToUpperInvariant();
                             var sapPath = $"sound/{soundFileName}";
                             var dstPath = fileRepository.GetModPath(sapPath);
                             Directory.CreateDirectory(Path.GetDirectoryName(dstPath));
