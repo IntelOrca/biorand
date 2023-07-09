@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using IntelOrca.Biohazard.Extensions;
+using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
 
@@ -197,5 +200,77 @@ namespace IntelOrca.Biohazard.RE1
             new SelectableEnemy("Tyrant", "DarkGray", new[] { Re1EnemyIds.Tyrant1 }),
             new SelectableEnemy("Yawn", "DarkOliveGreen", new[] { Re1EnemyIds.Yawn1, Re1EnemyIds.Yawn2 }),
         };
+
+        public void CreateZombie(byte type, EmdFile srcPld, EmdFile srcEmd, string dstPath)
+        {
+            var remap = new byte[] { 2, 0, 1, 12, 13, 14, 9, 10, 11, 6, 7, 8, 3, 4, 5 };
+            var srcPart = new byte[] {
+                255, 0, 1,
+                1, 3, 4,
+                1, 6, 7,
+                0, 9, 10,
+                0, 12, 13 };
+            var targetScale = srcPld.CalculateEmrScale(srcEmd);
+
+            var emrBuilder = srcEmd.GetEmr(1).ToBuilder();
+            var pldEmr = srcPld.GetEmr(0);
+            for (var i = 0; i < remap.Length; i++)
+            {
+                var pos = pldEmr.GetFinalPosition(remap[i]);
+                if (srcPart[i] == 255)
+                {
+                    pos.x = 0;
+                    pos.y = (short)(pos.y * targetScale);
+                    pos.z = 0;
+                }
+                else
+                {
+                    var srcPos = pldEmr.GetFinalPosition(remap[srcPart[i]]);
+                    pos.x -= srcPos.x;
+                    pos.y -= srcPos.y;
+                    pos.z -= srcPos.z;
+                }
+                if (i == 4 || i == 5)
+                    pos = new Emr.Vector(pos.x, pos.z, (short)-pos.y);
+                if (i == 7 || i == 8)
+                    pos = new Emr.Vector((short)pos.x, (short)-pos.z, (short)pos.y);
+                emrBuilder.RelativePositions[i] = pos;
+            }
+            srcEmd.SetEmr(1, emrBuilder.ToEmr().Scale(0.88 * targetScale));
+
+            srcEmd.SetMesh(0, srcPld.GetMesh(0));
+            var mesh = ((Tmd)srcEmd.GetMesh(0)).ToBuilder();
+            while (mesh.Count > 15)
+            {
+                mesh.RemoveAt(mesh.Count - 1);
+            }
+            var copy = mesh.Parts.ToArray();
+            for (var i = 0; i < remap.Length; i++)
+            {
+                mesh.Parts[i] = copy[remap[i]];
+            }
+            for (var j = 3; j < 6; j++)
+            {
+                for (var i = 0; i < mesh.Parts[j].Positions.Count; i++)
+                {
+                    var pos = mesh.Parts[j].Positions[i];
+                    mesh.Parts[j].Positions[i] = new Tmd.Vector((short)pos.x, (short)pos.z, (short)-pos.y);
+                }
+            }
+            for (var j = 6; j < 9; j++)
+            {
+                for (var i = 0; i < mesh.Parts[j].Positions.Count; i++)
+                {
+                    var pos = mesh.Parts[j].Positions[i];
+                    mesh.Parts[j].Positions[i] = new Tmd.Vector((short)pos.x, (short)-pos.z, (short)pos.y);
+                }
+            }
+            srcEmd.SetMesh(0, mesh.ToMesh());
+
+            srcEmd.SetTim(0, srcPld.GetTim(0));
+
+            Directory.CreateDirectory(Path.GetDirectoryName(dstPath));
+            srcEmd.Save(dstPath);
+        }
     }
 }

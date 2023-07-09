@@ -20,12 +20,13 @@ namespace IntelOrca.Biohazard.RE2
         private const uint AddressInventoryLeon = 0x400000 + 0x001401B8;
         private const uint AddressInventoryClaire = 0x400000 + 0x001401D9;
 
+        private readonly Re2EnemyHelper _enemyHelper = new Re2EnemyHelper();
         private ReInstallConfig? _reInstallConfig;
 
         protected override BioVersion BiohazardVersion => BioVersion.Biohazard2;
         internal override IDoorHelper DoorHelper { get; } = new Re2DoorHelper();
         internal override IItemHelper ItemHelper { get; } = new Re2ItemHelper();
-        internal override IEnemyHelper EnemyHelper { get; } = new Re2EnemyHelper();
+        internal override IEnemyHelper EnemyHelper => _enemyHelper;
         internal override INpcHelper NpcHelper { get; } = new Re2NpcHelper();
 
         public Re2Randomiser(IBgCreator? bgCreator) : base(bgCreator)
@@ -226,7 +227,6 @@ namespace IntelOrca.Biohazard.RE2
 
             var soundRegex = new Regex("enemy([0-9][0-9])_([0-9]+)(.ogg|.wav)", RegexOptions.IgnoreCase);
             var rng = new Rng(config.Seed);
-            var rng2 = new Rng(config.Seed);
 
             var pldDir0 = DataManager.GetDirectories(BiohazardVersion, "pld0");
             var pldDir1 = DataManager.GetDirectories(BiohazardVersion, "pld1");
@@ -289,7 +289,7 @@ namespace IntelOrca.Biohazard.RE2
                         var emdFile = new EmdFile(BiohazardVersion, origEmd);
 
                         logger.WriteLine($"Setting EM{config.Player}{id:X2} to {actor}");
-                        CreateZombie(id, pldFile, emdFile, dstEmd);
+                        _enemyHelper.CreateZombie(id, pldFile, emdFile, dstEmd);
                         if (Path.GetFileNameWithoutExtension(pldPath).Equals("PL01", StringComparison.OrdinalIgnoreCase))
                         {
                             OverrideSoundBank(gameData, id, 45);
@@ -351,52 +351,6 @@ namespace IntelOrca.Biohazard.RE2
 
             // Do sound processing in bulk / parallel
             Parallel.ForEach(soundProcessActions, x => x());
-        }
-
-        private void CreateZombie(byte type, PldFile srcPld, EmdFile srcEmd, string dstPath)
-        {
-            var tim = srcPld.GetTim(0);
-            if (type == Re2EnemyIds.ZombieRandom)
-            {
-                tim.ImportPage(0, tim.ExportPage(3));
-                tim.ImportPage(1, tim.ExportPage(2));
-                tim.ImportPage(3, tim.ExportPage(2));
-            }
-            else
-            {
-                tim.ImportPage(1, tim.ExportPage(2));
-                tim.ImportPage(0, tim.ExportPage(3));
-                tim.ImportPage(2, tim.ExportPage(0));
-                tim.ImportPage(3, tim.ExportPage(1));
-            }
-
-            var targetScale = srcPld.CalculateEmrScale(srcEmd) * 0.85;
-            srcEmd.SetEmr(0, srcEmd.GetEmr(0).WithSkeleton(srcPld.GetEmr(0)).Scale(targetScale));
-            srcEmd.SetEmr(1, srcEmd.GetEmr(1).Scale(targetScale));
-
-            srcEmd.SetMesh(0, srcPld.GetMesh(0).SwapPages(0, 1, true));
-            if (type == Re2EnemyIds.ZombieRandom)
-            {
-                srcEmd.SetMesh(0, srcEmd.GetMesh(0)
-                    .EditMeshTextures(m =>
-                    {
-                        if (m.PartIndex != 8)
-                            m.Page = 0;
-                    }));
-            }
-
-            var mesh = srcEmd.GetMesh(0).ToBuilder();
-            while (mesh.Count > 15)
-            {
-                mesh.RemoveAt(mesh.Count - 1);
-            }
-            mesh.Add(mesh[9]);
-            mesh.Add(mesh[0]);
-            srcEmd.SetMesh(0, mesh.ToMesh());
-
-            Directory.CreateDirectory(Path.GetDirectoryName(dstPath));
-            srcEmd.Save(dstPath);
-            tim.Save(Path.ChangeExtension(dstPath, ".tim"));
         }
 
         private void OverrideSoundBank(GameData gameData, byte enemyType, byte bank)

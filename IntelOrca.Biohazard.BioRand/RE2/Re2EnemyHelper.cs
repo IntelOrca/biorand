@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using IntelOrca.Biohazard.Extensions;
+using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
 
@@ -329,6 +332,52 @@ namespace IntelOrca.Biohazard.RE2
                 default:
                     return 0;
             }
+        }
+
+        public void CreateZombie(byte type, PldFile srcPld, EmdFile srcEmd, string dstPath)
+        {
+            var tim = srcPld.GetTim(0);
+            if (type == Re2EnemyIds.ZombieRandom)
+            {
+                tim.ImportPage(0, tim.ExportPage(3));
+                tim.ImportPage(1, tim.ExportPage(2));
+                tim.ImportPage(3, tim.ExportPage(2));
+            }
+            else
+            {
+                tim.ImportPage(1, tim.ExportPage(2));
+                tim.ImportPage(0, tim.ExportPage(3));
+                tim.ImportPage(2, tim.ExportPage(0));
+                tim.ImportPage(3, tim.ExportPage(1));
+            }
+
+            var targetScale = srcPld.CalculateEmrScale(srcEmd) * 0.85;
+            srcEmd.SetEmr(0, srcEmd.GetEmr(0).WithSkeleton(srcPld.GetEmr(0)).Scale(targetScale));
+            srcEmd.SetEmr(1, srcEmd.GetEmr(1).Scale(targetScale));
+
+            srcEmd.SetMesh(0, srcPld.GetMesh(0).SwapPages(0, 1, true));
+            if (type == Re2EnemyIds.ZombieRandom)
+            {
+                srcEmd.SetMesh(0, srcEmd.GetMesh(0)
+                    .EditMeshTextures(m =>
+                    {
+                        if (m.PartIndex != 8)
+                            m.Page = 0;
+                    }));
+            }
+
+            var mesh = srcEmd.GetMesh(0).ToBuilder();
+            while (mesh.Count > 15)
+            {
+                mesh.RemoveAt(mesh.Count - 1);
+            }
+            mesh.Add(mesh[9]);
+            mesh.Add(mesh[0]);
+            srcEmd.SetMesh(0, mesh.ToMesh());
+
+            Directory.CreateDirectory(Path.GetDirectoryName(dstPath));
+            srcEmd.Save(dstPath);
+            tim.Save(Path.ChangeExtension(dstPath, ".tim"));
         }
     }
 }
