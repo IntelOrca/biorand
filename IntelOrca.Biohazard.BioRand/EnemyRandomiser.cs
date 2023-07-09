@@ -15,6 +15,7 @@ namespace IntelOrca.Biohazard
 {
     internal class EnemyRandomiser
     {
+        private static bool g_debugLogging = false;
         private static object g_xmlSync = new object();
 
         private BioVersion _version;
@@ -312,7 +313,7 @@ namespace IntelOrca.Biohazard
                         continue;
 
                     var newLog = GetNewEnemyLogText(enemy);
-                    _logger.WriteLine($"Created {rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) {newLog}");
+                    _logger.WriteLine($"  Created {rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) {newLog}");
                     fixType ??= enemy.Type;
                 }
             }
@@ -325,7 +326,7 @@ namespace IntelOrca.Biohazard
                     var newLog = GetEnemyLogText(enemy);
                     if (oldLog != newLog)
                     {
-                        _logger.WriteLine($"{rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) {oldLog} becomes {newLog}");
+                        _logger.WriteLine($"  {rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) {oldLog} becomes {newLog}");
                         fixType ??= enemy.Type;
                     }
                 }
@@ -379,7 +380,8 @@ namespace IntelOrca.Biohazard
                     foreach (var offset in nopArray)
                     {
                         rdt.Nop(offset);
-                        _logger.WriteLine($"{rdt.RdtId} (0x{offset:X2}) opcode removed");
+                        if (g_debugLogging)
+                            _logger.WriteLine($"{rdt.RdtId} (0x{offset:X2}) opcode removed");
                     }
                 }
 
@@ -407,7 +409,8 @@ namespace IntelOrca.Biohazard
                 foreach (var offset in nopArray)
                 {
                     rdt.Nop(offset);
-                    _logger.WriteLine($"{rdt.RdtId} (0x{offset:X2}) opcode removed");
+                    if (g_debugLogging)
+                        _logger.WriteLine($"{rdt.RdtId} (0x{offset:X2}) opcode removed");
                 }
             }
 

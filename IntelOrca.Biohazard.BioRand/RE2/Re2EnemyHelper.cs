@@ -208,7 +208,7 @@ namespace IntelOrca.Biohazard.RE2
                 case Re2EnemyIds.ZombieBrad:
                     return 1;
                 case Re2EnemyIds.ZombieGirl:
-                    return 44;
+                    return 45;
                 case Re2EnemyIds.ZombieNaked:
                     return 46;
                 default:
@@ -299,5 +299,36 @@ namespace IntelOrca.Biohazard.RE2
             new SelectableEnemy("Tyrant", "DarkGray", new[] { Re2EnemyIds.Tyrant1 }),
             new SelectableEnemy("Birkin", "IndianRed", new[] { Re2EnemyIds.Birkin1 }),
         };
+
+        public byte GetEnemySapNumber(byte enemyType)
+        {
+            switch (enemyType)
+            {
+                case Re2EnemyIds.LickerGrey:
+                    return 8;
+                case Re2EnemyIds.LickerRed:
+                    return 9;
+                case Re2EnemyIds.Tyrant1:
+                    return 12;
+                case Re2EnemyIds.Ivy:
+                case Re2EnemyIds.IvyPurple:
+                    return 13;
+                case Re2EnemyIds.ZombieScientist:
+                case Re2EnemyIds.ZombieTestSubject:
+                    return 4;
+                case Re2EnemyIds.ZombieNaked:
+                    return 5;
+                case Re2EnemyIds.ZombieCop:
+                case Re2EnemyIds.ZombieGuy1:
+                case Re2EnemyIds.ZombieGuy2:
+                case Re2EnemyIds.ZombieGuy3:
+                case Re2EnemyIds.ZombieRandom:
+                    return 50;
+                case Re2EnemyIds.ZombieGirl:
+                    return 52;
+                default:
+                    return 0;
+            }
+        }
     }
 }
