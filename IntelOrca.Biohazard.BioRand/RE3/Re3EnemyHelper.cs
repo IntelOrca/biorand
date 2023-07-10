@@ -269,43 +269,36 @@ namespace IntelOrca.Biohazard.RE3
             {
                 srcEmd.SetEmr(0, srcEmd.GetEmr(0).WithSkeleton(srcPld.GetEmr(0)).Scale(targetScale));
                 srcEmd.SetEmr(1, srcEmd.GetEmr(1).Scale(targetScale));
-                var mesh1 = srcPld.GetMesh(0).ToBuilder();
-                while (mesh1.Count > 15)
+                var mesh = srcPld.GetMesh(0).ToBuilder();
+                while (mesh.Count > 15)
                 {
-                    mesh1.RemoveAt(mesh1.Count - 1);
+                    mesh.RemoveAt(mesh.Count - 1);
                 }
                 if (type == Re3EnemyIds.ZombieGuy4)
                 {
-                    mesh1.Add(mesh1[0]);
+                    mesh.Add(mesh[0]);
                 }
-                srcEmd.SetMesh(1, mesh1.ToMesh());
-
-                // Copy mesh 1 to mesh 0
-                var mesh0 = srcEmd.GetMesh(0).ToBuilder();
-                if (mesh0.Count != 0)
-                {
-                    for (var i = 0; i < mesh0.Count; i++)
-                    {
-                        mesh0[i] = mesh1[i];
-                    }
-                    srcEmd.SetMesh(0, mesh0.ToMesh());
-                }
-
-                srcEmd.SetMorph(0, srcPld.GetMorph(0));
+                srcEmd.SetMesh(1, mesh.ToMesh());
             }
             else
             {
                 srcEmd.SetEmr(0, ConvertToZombieEmr(srcEmd.GetEmr(0), srcPld.GetEmr(0)).Scale(targetScale));
                 srcEmd.SetEmr(1, srcEmd.GetEmr(1).Scale(targetScale));
-                srcEmd.SetMesh(0, ConvertToZombieMesh(srcPld.GetMesh(0), srcPld.GetEmr(0)));
-                srcEmd.SetMesh(1, srcEmd.GetMesh(0));
-
-                var m = srcEmd.GetMesh(0).ToBuilder();
-                m.Add(m[1]);
-                srcEmd.SetMesh(0, m.ToMesh());
+                srcEmd.SetMesh(1, ConvertToZombieMesh(srcPld.GetMesh(0), srcPld.GetEmr(0)));
             }
 
+            // Copy bits of mesh 1 to mesh 0
+            var mesh0 = srcEmd.GetMesh(0).ToBuilder();
+            var mesh1 = srcEmd.GetMesh(1).ToBuilder();
             var copyParts = GetZombieMesh0Parts(type);
+            for (var i = 0; i < copyParts.Length; i++)
+            {
+                mesh0[i] = mesh1[copyParts[i]];
+            }
+            srcEmd.SetMesh(0, mesh0.ToMesh());
+
+            // Copy over morph info
+            srcEmd.SetMorph(0, srcPld.GetMorph(0));
 
             Directory.CreateDirectory(Path.GetDirectoryName(dstPath));
             srcEmd.Save(dstPath);
@@ -392,14 +385,41 @@ namespace IntelOrca.Biohazard.RE3
             // 8 WAIST
             // 9 LEFT THIGH, LEFT CALF, LEFT FOOT,
             // 12 RIGHT THIGH, RIGHT CALF, RIGHT FOOT,
+
+            // 0 CHEST, HEAD,
+            // 2 LEFT ARM UPPER, LEFT FOREARM
+            // 4 RIGHT ARM UPPER, RIGHT FOREARM
+            // 6 WAIST
+            // 7 LEFT THIGH, LEFT CALF
+            // 9 RIGHT THIGH, RIGHT CALF
             switch (type)
             {
                 case Re3EnemyIds.ZombieGuy1:
                     return new byte[] { 0, 2, 5, 8, 9, 10, 12, 13 };
                 case Re3EnemyIds.ZombieGirl2:
                     return new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 };
+                case Re3EnemyIds.ZombieGuy3:
+                    return new byte[] { 0, 2, 3, 6, 7, 8, 9, 10, 0, 2, 3, 4, 5, 0, 4, 5, 2, 3, 1 };
+                case Re3EnemyIds.ZombieGuy4:
+                    return new byte[] { 0, 2, 3, 5, 6, 8, 9, 10, 12, 13 };
+                case Re3EnemyIds.ZombieNaked:
+                    return new byte[] { 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1 };
+                case Re3EnemyIds.ZombieGuy5:
+                    return new byte[] { 0, 1, 2, 4, 6, 7, 8, 9, 10, 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1 };
+                case Re3EnemyIds.ZombieGuy6:
+                    return new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+                case Re3EnemyIds.ZombieLab:
+                    return new byte[] { 1, 0, 2, 4, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 6, 7, 0, 9, 2, 3, 4, 5, 1 };
+                case Re3EnemyIds.ZombieGirl3:
+                    return new byte[] { 1 };
+                case Re3EnemyIds.ZombieRpd2:
+                    return new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1 };
+                case Re3EnemyIds.ZombieGuy7:
+                    return new byte[] { 0, 2, 4, 6, 7, 8, 9, 10, 0, 2, 3, 4, 5, 0, 2, 3, 4, 5, 1 };
+                case Re3EnemyIds.ZombieGuy8:
+                    return new byte[] { 1, 0, 2, 4, 6, 7, 8, 9, 10, 0, 2, 4, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 2, 4 };
             }
-            return null;
+            return new byte[0];
         }
 
         private static readonly byte[] _zombieTypes = new byte[]
