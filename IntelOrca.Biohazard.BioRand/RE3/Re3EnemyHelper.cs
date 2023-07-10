@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using IntelOrca.Biohazard.RE1;
+using IntelOrca.Biohazard.Extensions;
+using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
 
@@ -257,6 +258,148 @@ namespace IntelOrca.Biohazard.RE3
                 default:
                     return 0;
             }
+        }
+
+        public void CreateZombie(byte type, PldFile srcPld, EmdFile srcEmd, string dstPath)
+        {
+            var tim = srcPld.GetTim(0);
+
+            var targetScale = srcPld.CalculateEmrScale(srcEmd) * 0.85;
+            if (type < Re3EnemyIds.ZombieGuy3 || type == Re3EnemyIds.ZombieGuy4)
+            {
+                srcEmd.SetEmr(0, srcEmd.GetEmr(0).WithSkeleton(srcPld.GetEmr(0)).Scale(targetScale));
+                srcEmd.SetEmr(1, srcEmd.GetEmr(1).Scale(targetScale));
+                var mesh1 = srcPld.GetMesh(0).ToBuilder();
+                while (mesh1.Count > 15)
+                {
+                    mesh1.RemoveAt(mesh1.Count - 1);
+                }
+                if (type == Re3EnemyIds.ZombieGuy4)
+                {
+                    mesh1.Add(mesh1[0]);
+                }
+                srcEmd.SetMesh(1, mesh1.ToMesh());
+
+                // Copy mesh 1 to mesh 0
+                var mesh0 = srcEmd.GetMesh(0).ToBuilder();
+                if (mesh0.Count != 0)
+                {
+                    for (var i = 0; i < mesh0.Count; i++)
+                    {
+                        mesh0[i] = mesh1[i];
+                    }
+                    srcEmd.SetMesh(0, mesh0.ToMesh());
+                }
+
+                srcEmd.SetMorph(0, srcPld.GetMorph(0));
+            }
+            else
+            {
+                srcEmd.SetEmr(0, ConvertToZombieEmr(srcEmd.GetEmr(0), srcPld.GetEmr(0)).Scale(targetScale));
+                srcEmd.SetEmr(1, srcEmd.GetEmr(1).Scale(targetScale));
+                srcEmd.SetMesh(0, ConvertToZombieMesh(srcPld.GetMesh(0), srcPld.GetEmr(0)));
+                srcEmd.SetMesh(1, srcEmd.GetMesh(0));
+
+                var m = srcEmd.GetMesh(0).ToBuilder();
+                m.Add(m[1]);
+                srcEmd.SetMesh(0, m.ToMesh());
+            }
+
+            var copyParts = GetZombieMesh0Parts(type);
+
+            Directory.CreateDirectory(Path.GetDirectoryName(dstPath));
+            srcEmd.Save(dstPath);
+            tim.Save(Path.ChangeExtension(dstPath, ".tim"));
+        }
+
+        private static Emr ConvertToZombieEmr(Emr baseEmr, Emr pldEmr)
+        {
+            var remap = new byte[] { 0, 1, 2, 3, 5, 6, 8, 9, 10, 12, 13 };
+
+            var e = baseEmr.ToBuilder();
+            for (var i = 0; i < remap.Length; i++)
+            {
+                e.RelativePositions[i] = pldEmr.GetRelativePosition(remap[i]);
+            }
+            return e.ToEmr();
+        }
+
+        private static IModelMesh ConvertToZombieMesh(IModelMesh mesh, Emr emr)
+        {
+            var b = ((Md2)mesh).ToBuilder();
+            while (b.Count > 15)
+                b.RemoveAt(b.Count - 1);
+
+            Append(b.Parts[3], Translate(b.Parts[4], emr.GetRelativePosition(4)));
+            Append(b.Parts[6], Translate(b.Parts[7], emr.GetRelativePosition(7)));
+            Append(b.Parts[10], Translate(b.Parts[11], emr.GetRelativePosition(11)));
+            Append(b.Parts[13], Translate(b.Parts[14], emr.GetRelativePosition(14)));
+
+            b.RemoveAt(14);
+            b.RemoveAt(11);
+            b.RemoveAt(7);
+            b.RemoveAt(4);
+            return b.ToMesh();
+        }
+
+        private static Md2.Builder.Part Append(Md2.Builder.Part target, Md2.Builder.Part source)
+        {
+            var basePosition = (byte)target.Positions.Count;
+
+            target.Positions.AddRange(source.Positions);
+            target.Normals.AddRange(source.Normals);
+
+            var triangles = source.Triangles.ToArray();
+            for (var i = 0; i < triangles.Length; i++)
+            {
+                triangles[i].v0 += basePosition;
+                triangles[i].v1 += basePosition;
+                triangles[i].v2 += basePosition;
+            }
+
+            var quads = source.Quads.ToArray();
+            for (var i = 0; i < quads.Length; i++)
+            {
+                quads[i].v0 += basePosition;
+                quads[i].v1 += basePosition;
+                quads[i].v2 += basePosition;
+                quads[i].v3 += basePosition;
+            }
+
+            target.Triangles.AddRange(triangles);
+            target.Quads.AddRange(quads);
+            return target;
+        }
+
+        private static Md2.Builder.Part Translate(Md2.Builder.Part part, Emr.Vector offset)
+        {
+            for (var i = 0; i < part.Positions.Count; i++)
+            {
+                var pos = part.Positions[i];
+                pos.x += offset.x;
+                pos.y += offset.y;
+                pos.z += offset.z;
+                part.Positions[i] = pos;
+            }
+            return part;
+        }
+
+        private static byte[] GetZombieMesh0Parts(byte type)
+        {
+            // 0 CHEST, HEAD,
+            // 2 LEFT ARM UPPER, LEFT FOREARM, LEFT HAND,
+            // 5 RIGHT ARM UPPER, RIGHT FOREARM, RIGHT HAND,
+            // 8 WAIST
+            // 9 LEFT THIGH, LEFT CALF, LEFT FOOT,
+            // 12 RIGHT THIGH, RIGHT CALF, RIGHT FOOT,
+            switch (type)
+            {
+                case Re3EnemyIds.ZombieGuy1:
+                    return new byte[] { 0, 2, 5, 8, 9, 10, 12, 13 };
+                case Re3EnemyIds.ZombieGirl2:
+                    return new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 };
+            }
+            return null;
         }
 
         private static readonly byte[] _zombieTypes = new byte[]
