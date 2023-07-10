@@ -431,19 +431,29 @@ namespace IntelOrca.Biohazard.RE3
                     if (new FileInfo(srcEmd).Length == 0)
                     {
                         // NPC overwrite
-                        var pldFolder = pldBag.Next();
-                        var actor = Path.GetFileName(pldFolder).ToActorString();
-                        var pldPath = Directory.GetFiles(pldFolder)
-                            .First(x => x.EndsWith(".PLD", StringComparison.OrdinalIgnoreCase));
-                        var pldFile = new PldFile(BiohazardVersion, pldPath);
-                        var emdFile = null as EmdFile;
-                        using (var emdStream = fileRepository.GetStream(origEmd))
+                        for (var i = 0; i < 32; i++)
                         {
-                            emdFile = new EmdFile(BiohazardVersion, emdStream);
-                        }
+                            var pldFolder = pldBag.Next();
+                            var actor = Path.GetFileName(pldFolder).ToActorString();
+                            var pldPath = Directory.GetFiles(pldFolder)
+                                .First(x => x.EndsWith(".PLD", StringComparison.OrdinalIgnoreCase));
+                            var pldFile = new PldFile(BiohazardVersion, pldPath);
+                            if (pldFile.GetMorph(0).Data.Length > 4)
+                            {
+                                // This PLD is unsuitable
+                                continue;
+                            }
 
-                        logger.WriteLine($"Setting EM{config.Player}{id:X2} to {actor}");
-                        _enemyHelper.CreateZombie(id, pldFile, emdFile, dstEmd);
+                            var emdFile = null as EmdFile;
+                            using (var emdStream = fileRepository.GetStream(origEmd))
+                            {
+                                emdFile = new EmdFile(BiohazardVersion, emdStream);
+                            }
+
+                            logger.WriteLine($"Setting EM{config.Player}{id:X2} to {actor}");
+                            _enemyHelper.CreateZombie(id, pldFile, emdFile, dstEmd);
+                            break;
+                        }
                         // if (Path.GetFileNameWithoutExtension(pldPath).Equals("PL01", StringComparison.OrdinalIgnoreCase))
                         // {
                         //     OverrideSoundBank(gameData, id, 45);
