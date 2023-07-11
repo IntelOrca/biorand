@@ -440,8 +440,10 @@ namespace IntelOrca.Biohazard.RE1
                             file.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
                         {
                             var soundFileName = Path.ChangeExtension(Path.GetFileName(file), ".wav").ToUpperInvariant();
-                            var sapPath = $"sound/{soundFileName}";
-                            var dstPath = fileRepository.GetModPath(sapPath);
+                            var wavPath = soundFileName.Equals("VB00_10.WAV", StringComparison.OrdinalIgnoreCase) ?
+                                $"voice/{soundFileName}" :
+                                $"sound/{soundFileName}";
+                            var dstPath = fileRepository.GetModPath(wavPath);
                             Directory.CreateDirectory(Path.GetDirectoryName(dstPath));
 
                             logger.WriteLine($"  Setting {soundFileName} to {file}");
