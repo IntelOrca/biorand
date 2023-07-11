@@ -1433,7 +1433,7 @@
         },
         {
           "includeOffsets": [ 3292 ],
-          "excludeTypes": [ 90 ],
+          "includeTypes": [ 68 ],
           "cutscene": 1,
           "player": 0
         }
@@ -2515,8 +2515,8 @@
       ],
       "npcs": [
         {
-          "includeOffsets": [ 9180 ],
-          "excludeTypes": [ 64, 65, 66, 67, 69, 73, 79, 80, 81 ],
+          "includeOffsets": [ 71 ],
+          "includeTypes": [ 71, 73 ],
           "playerActor": "ada",
           "cutscene": 0,
           "player": 0
@@ -3126,7 +3126,8 @@
       ],
       "npcs": [
         {
-          "scenario": 1
+          "scenario": 1,
+          "includeTypes": [ 71, 73 ]
         }
       ],
       "enemies": [
@@ -3192,6 +3193,15 @@
           "priority": "low",
           "doorRando": true,
           "player": 0
+        }
+      ],
+      "npcs": [
+        {
+          "includeTypes": [ 71, 73 ],
+          "player": 0
+        },
+        {
+          "player": 1
         }
       ]
     },
@@ -3507,6 +3517,7 @@
       ],
       "npcs": [
         {
+          "includeTypes": [ 71, 73 ],
           "scenario": 0
         }
       ],
@@ -3602,13 +3613,13 @@
       "npcs": [
         {
           "includeOffsets": [ 13608 ],
-          "excludeTypes": [ 90 ],
+          "includeTypes": [ 71, 73 ],
           "cutscene": 0,
           "player": 0
         },
         {
           "includeOffsets": [ 13608, 13630, 13786 ],
-          "excludeTypes": [ 90 ],
+          "includeTypes": [ 71, 73 ],
           "cutscene": 1,
           "player": 0
         },
@@ -3657,7 +3668,7 @@
         },
         {
           "includeOffsets": [ 4870 ],
-          "excludeTypes": [ 88, 89, 90 ],
+          "includeTypes": [ 71, 73 ],
           "cutscene": 1,
           "player": 1
         },
@@ -3717,7 +3728,7 @@
       "enemies": [],
       "npcs": [
         {
-          "excludeTypes": [ 81, 83, 85, 87, 89, 91 ]
+          "includeTypes": [ 71, 73 ]
         }
       ]
     },

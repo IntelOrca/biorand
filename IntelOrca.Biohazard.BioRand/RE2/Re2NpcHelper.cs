@@ -34,27 +34,16 @@ namespace IntelOrca.Biohazard.RE2
                 Re2EnemyIds.SherryWithPendant,
                 Re2EnemyIds.BenBertolucci2,
                 Re2EnemyIds.AnnetteBirkin1,
-                Re2EnemyIds.RobertKendo,
+                // Re2EnemyIds.RobertKendo,
                 Re2EnemyIds.AnnetteBirkin2,
                 // Re2EnemyIds.MarvinBranagh,
                 Re2EnemyIds.SherryWithClairesJacket,
                 Re2EnemyIds.LeonKennedyRpd,
-                Re2EnemyIds.ClaireRedfield };
-
-            // Alternative costumes for Leon / Claire cause issues if there are multiple occurances
-            // of them in the same cutscene. Only place them in rooms where we can guarantee there is only 1 NPC.
-            var npcCount = rdt.Enemies.Count(x => IsNpc(x.Type));
-            if (npcCount > 1)
-            {
-                var problematicTypes = new byte[] {
-                    Re2EnemyIds.LeonKennedyCapTankTop,
-                    Re2EnemyIds.ClaireRedfieldCowGirl,
-                    Re2EnemyIds.LeonKennedyBlackLeather };
-                defaultIncludeTypes = defaultIncludeTypes
-                    .Except(problematicTypes)
-                    .ToArray();
-            }
-
+                Re2EnemyIds.ClaireRedfield,
+                Re2EnemyIds.LeonKennedyCapTankTop,
+                Re2EnemyIds.ClaireRedfieldCowGirl,
+                Re2EnemyIds.LeonKennedyBlackLeather
+            };
             return defaultIncludeTypes;
         }
 
