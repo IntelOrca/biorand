@@ -116,6 +116,12 @@ namespace IntelOrca.Biohazard.RE1
                 case Re1EnemyIds.Forrest:
                 case Re1EnemyIds.Richard:
                 case Re1EnemyIds.Enrico:
+                case Re1EnemyIds.Kenneth2:
+                case Re1EnemyIds.Barry2:
+                case Re1EnemyIds.BarryStars2:
+                case Re1EnemyIds.RebeccaStars2:
+                case Re1EnemyIds.Barry3:
+                case Re1EnemyIds.WeskerStars2:
                     return true;
                 default:
                     return false;
@@ -163,8 +169,97 @@ namespace IntelOrca.Biohazard.RE1
             emdFile.SetMesh(0, builder.ToMesh());
             emdFile.SetTim(0, timFile);
 
+            // Weapons
+            var weapons = GetWeaponForCharacter(type);
+            foreach (var (weapon, file) in weapons)
+            {
+                var plwIndex = GetWeapon(weapon);
+                if (plwIndex == 0)
+                    continue;
+
+                var plwPath = GetPlwPath(pldPath, plwIndex, fileRepository);
+                if (plwPath == null)
+                    continue;
+
+                var plwFile = new PlwFile(BioVersion.Biohazard1, plwPath);
+                var mesh = plwFile.GetMesh(0);
+                var weaponPath = fileRepository.GetModPath(Path.Combine("players", file));
+                Directory.CreateDirectory(Path.GetDirectoryName(weaponPath));
+                File.WriteAllBytes(weaponPath, mesh.Data.ToArray());
+            }
+
             Directory.CreateDirectory(Path.GetDirectoryName(targetEmdPath));
             emdFile.Save(targetEmdPath);
+        }
+
+        private static string? GetPlwPath(string pldPath, int plwIndex, FileRepository fileRepository)
+        {
+            var playerIndex = 0;
+            if (Path.GetFileName(pldPath).Equals("CHAR11.EMD", System.StringComparison.OrdinalIgnoreCase))
+            {
+                playerIndex = 1;
+            }
+
+            var plwFileName = $"W{playerIndex}{plwIndex}.EMW";
+            var plwPath = Path.Combine(Path.GetDirectoryName(pldPath), plwFileName);
+            if (File.Exists(plwPath))
+            {
+                return plwPath;
+            }
+
+            var originalPath = fileRepository.GetDataPath(Path.Combine("players", plwFileName));
+            if (File.Exists(originalPath))
+            {
+                return originalPath;
+            }
+
+            return null;
+        }
+
+        private static (byte, string)[] GetWeaponForCharacter(byte type)
+        {
+            return type switch
+            {
+                Re1EnemyIds.ChrisStars => new[] { (Re1ItemIds.Beretta, "ws202.tmd") },
+                Re1EnemyIds.JillStars => new[] { (Re1ItemIds.Beretta, "ws212.tmd") },
+                Re1EnemyIds.BarryStars => new[] {
+                    (Re1ItemIds.ColtPython, "ws224.tmd"),
+                    (Re1ItemIds.FlameThrower, "ws225.tmd")
+                },
+                Re1EnemyIds.RebeccaStars => new[] {
+                    (Re1ItemIds.Beretta, "ws232.tmd")
+                },
+                // (Re1ItemIds.FAidSpray, "ws236.tmd");
+                Re1EnemyIds.WeskerStars => new[] { (Re1ItemIds.Beretta, "ws242.tmd") },
+                _ => new (byte, string)[0],
+            };
+        }
+
+        private static byte GetWeapon(byte type)
+        {
+            switch (type)
+            {
+                case Re1ItemIds.CombatKnife:
+                    return 1;
+                case Re1ItemIds.Beretta:
+                    return 2;
+                case Re1ItemIds.Shotgun:
+                    return 3;
+                case Re1ItemIds.ColtPython:
+                    return 4;
+                case Re1ItemIds.FlameThrower:
+                    return 5;
+                case Re1ItemIds.BazookaAcid:
+                case Re1ItemIds.BazookaExplosive:
+                case Re1ItemIds.BazookaFlame:
+                    return 6;
+                case Re1ItemIds.RocketLauncher:
+                    return 7;
+                case Re1ItemIds.MiniGun:
+                    return 8;
+                default:
+                    return 0;
+            };
         }
     }
 }

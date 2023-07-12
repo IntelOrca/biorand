@@ -471,6 +471,12 @@
           "priority": "fixed",
           "player": 1
         }
+      ],
+      "npcs": [
+        {
+          "includeTypes": [ 35 ],
+          "player": 0
+        }
       ]
     },
     "111": {
@@ -1095,6 +1101,12 @@
           "priority": "low",
           "player": 1
         }
+      ],
+      "npcs": [
+        {
+          "includeTypes": [ 42 ],
+          "player": 1
+        }
       ]
     },
     "308": {
@@ -1141,7 +1153,13 @@
           "target": "30A"
         }
       ],
-      "enemies": []
+      "enemies": [],
+      "npcs": [
+        {
+          "includeTypes": [ 45 ],
+          "player": 1
+        }
+      ]
     },
     "30A": {
       "doors": [
@@ -1370,7 +1388,7 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 39, 40 ]
+          "includeTypes": [ 32, 33, 34, 35, 36 ]
         }
       ],
       "enemies": []
@@ -1546,6 +1564,15 @@
           "player": 1,
           "doorRando": true
         }
+      ],
+      "npcs": [
+        {
+          "player": 0
+        },
+        {
+          "includeTypes": [ 42 ],
+          "player": 1
+        }
       ]
     },
     "40D": {
@@ -1657,6 +1684,12 @@
         {
           "id": 2,
           "type": 0,
+          "player": 1
+        }
+      ],
+      "npcs": [
+        {
+          "includeTypes": [ 42 ],
           "player": 1
         }
       ]
@@ -1922,7 +1955,23 @@
           "priority": "low"
         }
       ],
-      "enemies": []
+      "enemies": [],
+      "npcs": [
+        {
+          "includeTypes": [ 46 ],
+          "player": 0
+        },
+        {
+          "includeOffsets": [ 116516 ],
+          "includeTypes": [ 46 ],
+          "player": 1
+        },
+        {
+          "includeOffsets": [ 116458 ],
+          "includeTypes": [ 45 ],
+          "player": 1
+        }
+      ]
     },
     "514": {
       "doors": [
@@ -1933,6 +1982,36 @@
         {
           "target": "515",
           "randomize": false
+        }
+      ],
+      "npcs": [
+        {
+          "includeOffsets": [ 61400 ],
+          "includeTypes": [ 36 ],
+          "player": 0
+        },
+        {
+          "includeOffsets": [ 61428 ],
+          "includeTypes": [ 35 ],
+          "player": 0
+        },
+        {
+          "includeOffsets": [ 61472 ],
+          "player": 0
+        },
+        {
+          "includeOffsets": [ 61396 ],
+          "includeTypes": [ 36 ],
+          "player": 1
+        },
+        {
+          "includeOffsets": [ 61428 ],
+          "includeTypes": [ 32, 33, 34, 35, 36 ],
+          "player": 1
+        },
+        {
+          "includeOffsets": [ 61612 ],
+          "player": 1
         }
       ]
     },
@@ -1949,7 +2028,17 @@
       ]
     },
     "601": {
-      "enemies": []
+      "enemies": [
+        {
+          "player": 1
+        }
+      ],
+      "npcs": [
+        {
+          "includeTypes": [ 44 ],
+          "player": 0
+        }
+      ]
     },
     "603": {
       "enemies": []
@@ -1995,6 +2084,19 @@
         }
       ]
     },
+    "706": {
+      "enemies": [
+        {
+          "player": 1
+        }
+      ],
+      "npcs": [
+        {
+          "includeTypes": [ 44 ],
+          "player": 0
+        }
+      ]
+    },
     "708": {
       "enemies": [
         {
@@ -2032,6 +2134,12 @@
         {
           "keepState": true,
           "includeTypes": [ 12, 18 ]
+        }
+      ],
+      "npcs": [
+        {
+          "includeTypes": [ 42 ],
+          "player": 1
         }
       ]
     },

@@ -118,48 +118,50 @@ namespace IntelOrca.Biohazard
             var externals = _emds
                 .Where(x => SelectedActors.Contains(x.Actor))
                 .ToEndlessBag(rng);
+
+            var actorMap = new Dictionary<string, ExternalCharacter>();
             for (var i = 0; i < 256; i++)
             {
-                if (!_npcHelper.IsSpareSlot((byte)i))
+                var enemyType = (byte)i;
+                if (!_npcHelper.IsSpareSlot(enemyType))
                     continue;
 
-                var ec = externals.Next();
-                SetEm((byte)i, ec, rng);
+                var originalActor = _npcHelper.GetActor(enemyType);
+                ExternalCharacter newActor;
+                if (originalActor != null)
+                {
+                    if (!actorMap.TryGetValue(originalActor, out newActor))
+                    {
+                        newActor = externals.Next();
+                        actorMap[originalActor] = newActor;
+                    }
+                }
+                else
+                {
+                    newActor = externals.Next();
+                }
+                SetEm(enemyType, newActor, rng);
             }
         }
 
         void SetEm(byte id, ExternalCharacter ec, Rng rng)
         {
-            if (_config.Game == 1)
+            var emdFileName = _config.Game switch
             {
-                var emdFileName = Path.Combine("enemy", $"em1{id:X3}.emd");
-                var originalEmdPath = _fileRepository.GetDataPath(emdFileName);
-                var targetEmdPath = _fileRepository.GetModPath(emdFileName);
-                if (!File.Exists(originalEmdPath))
-                    return;
+                1 => Path.Combine("enemy", $"em1{id:X3}.emd"),
+                2 => Path.Combine($"pl{_config.Player}", $"emd{_config.Player}", $"em{_config.Player}{id:X2}.emd"),
+                3 => Path.Combine($"ROOM", $"EMD", $"EM{id:X2}.EMD"),
+                _ => null,
+            };
+            if (emdFileName == null)
+                return;
 
-                _npcHelper.CreateEmdFile(id, ec.EmPath, originalEmdPath, targetEmdPath, _fileRepository, rng);
-            }
-            else if (_config.Game == 2)
-            {
-                var emdFileName = Path.Combine($"pl{_config.Player}", $"emd{_config.Player}", $"em{_config.Player}{id:X2}.emd");
-                var originalEmdPath = _fileRepository.GetDataPath(emdFileName);
-                var targetEmdPath = _fileRepository.GetModPath(emdFileName);
-                if (!File.Exists(originalEmdPath))
-                    return;
+            var originalEmdPath = _fileRepository.GetDataPath(emdFileName);
+            var targetEmdPath = _fileRepository.GetModPath(emdFileName);
+            if (!_fileRepository.Exists(originalEmdPath))
+                return;
 
-                _npcHelper.CreateEmdFile(id, ec.EmPath, originalEmdPath, targetEmdPath, _fileRepository, rng);
-            }
-            else if (_config.Game == 3)
-            {
-                var emdFileName = Path.Combine($"ROOM", $"EMD", $"EM{id:X2}.EMD");
-                var originalEmdPath = _fileRepository.GetDataPath(emdFileName);
-                var targetEmdPath = _fileRepository.GetModPath(emdFileName);
-                if (!_fileRepository.Exists(originalEmdPath))
-                    return;
-
-                _npcHelper.CreateEmdFile(id, ec.EmPath, originalEmdPath, targetEmdPath, _fileRepository, rng);
-            }
+            _npcHelper.CreateEmdFile(id, ec.EmPath, originalEmdPath, targetEmdPath, _fileRepository, rng);
             _extraNpcMap[id] = ec.Actor;
             _logger.WriteLine($"Enemy 0x{id:X2} becomes {ec.Actor}");
         }
