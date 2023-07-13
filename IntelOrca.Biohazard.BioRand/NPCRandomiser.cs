@@ -126,9 +126,9 @@ namespace IntelOrca.Biohazard
                 if (!_npcHelper.IsSpareSlot(enemyType))
                     continue;
 
-                var originalActor = _npcHelper.GetActor(enemyType);
                 ExternalCharacter newActor;
-                if (originalActor != null)
+                var originalActor = _npcHelper.GetActor(enemyType);
+                if (originalActor != null && _config.Game == 1)
                 {
                     if (!actorMap.TryGetValue(originalActor, out newActor))
                     {

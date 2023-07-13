@@ -34,7 +34,7 @@ namespace IntelOrca.Biohazard.RE2
                 Re2EnemyIds.SherryWithPendant,
                 Re2EnemyIds.BenBertolucci2,
                 Re2EnemyIds.AnnetteBirkin1,
-                // Re2EnemyIds.RobertKendo,
+                Re2EnemyIds.RobertKendo,
                 Re2EnemyIds.AnnetteBirkin2,
                 // Re2EnemyIds.MarvinBranagh,
                 Re2EnemyIds.SherryWithClairesJacket,
@@ -216,8 +216,17 @@ namespace IntelOrca.Biohazard.RE2
 
                 emdFile.SetEmr(0, emr.ToEmr());
             }
+            else if (type == Re2EnemyIds.RobertKendo)
+            {
+                // Copy skeleton and animations
+                emdFile.SetEdd(0, pldFile.GetEdd(0));
+                emdFile.SetEmr(0, pldFile.GetEmr(0).Scale(targetScale));
+                emdFile.SetEdd(1, plwFile!.GetEdd(0));
+                emdFile.SetEmr(1, emdFile.GetEmr(1).WithKeyframes(plwFile.GetEmr(0)).Scale(targetScale));
+            }
             else
             {
+                // Only copy skeleton, not animations
                 emdFile.SetEmr(0, emdFile.GetEmr(0).WithSkeleton(pldFile.GetEmr(0)).Scale(targetScale));
                 emdFile.SetEmr(1, emdFile.GetEmr(1).Scale(targetScale));
             }
