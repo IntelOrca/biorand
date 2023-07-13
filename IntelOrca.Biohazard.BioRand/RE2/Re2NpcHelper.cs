@@ -27,9 +27,9 @@ namespace IntelOrca.Biohazard.RE2
         {
             var defaultIncludeTypes = new byte[] {
                 // Re2EnemyIds.ChiefIrons1,
-                // Re2EnemyIds.AdaWong1,
+                Re2EnemyIds.AdaWong1,
                 // Re2EnemyIds.ChiefIrons2,
-                // Re2EnemyIds.AdaWong2,
+                Re2EnemyIds.AdaWong2,
                 Re2EnemyIds.BenBertolucci1,
                 Re2EnemyIds.SherryWithPendant,
                 Re2EnemyIds.BenBertolucci2,
@@ -150,6 +150,8 @@ namespace IntelOrca.Biohazard.RE2
                 case Re2EnemyIds.ClaireRedfieldNoJacket:
                 case Re2EnemyIds.ClaireRedfieldCowGirl:
                 case Re2EnemyIds.RobertKendo:
+                case Re2EnemyIds.AdaWong1:
+                case Re2EnemyIds.AdaWong2:
                 case Re2EnemyIds.AnnetteBirkin1:
                 case Re2EnemyIds.AnnetteBirkin2:
                 case Re2EnemyIds.MarvinBranagh:
@@ -274,6 +276,12 @@ namespace IntelOrca.Biohazard.RE2
             else if (type == Re2EnemyIds.AnnetteBirkin1 || type == Re2EnemyIds.AnnetteBirkin2)
             {
                 builder.Add(weaponMesh);
+            }
+            else if (type == Re2EnemyIds.AdaWong1 || type == Re2EnemyIds.AdaWong2)
+            {
+                builder[0].InsertDummyPoints(160);
+                builder.Add(weaponMesh);
+                builder.Add();
             }
             else if (type == Re2EnemyIds.ClaireRedfield ||
                      type == Re2EnemyIds.ClaireRedfieldNoJacket ||

@@ -619,29 +619,9 @@ namespace IntelOrca.Biohazard.RE2
             {
                 // Open the PLD and insert 160 empty positions at the start of mesh 0
                 // this prevents the game from morphing any visible primitives
-                const ushort skipPositionCount = 160;
-
                 var pldFileFixed = new PldFile(BioVersion.Biohazard2, path);
-                var mesh = ((Md1)pldFileFixed.GetMesh(0)).ToBuilder();
-                var part = mesh.Parts[0];
-                part.Positions.InsertRange(0, new Md1.Vector[skipPositionCount]);
-                for (var i = 0; i < part.Triangles.Count; i++)
-                {
-                    var t = part.Triangles[i];
-                    t.v0 += skipPositionCount;
-                    t.v1 += skipPositionCount;
-                    t.v2 += skipPositionCount;
-                    part.Triangles[i] = t;
-                }
-                for (var i = 0; i < part.Quads.Count; i++)
-                {
-                    var t = part.Quads[i];
-                    t.v0 += skipPositionCount;
-                    t.v1 += skipPositionCount;
-                    t.v2 += skipPositionCount;
-                    t.v3 += skipPositionCount;
-                    part.Quads[i] = t;
-                }
+                var mesh = pldFileFixed.GetMesh(0).ToBuilder();
+                mesh[0].InsertDummyPoints(160);
                 pldFileFixed.SetMesh(0, mesh.ToMesh());
                 pldFileFixed.Save(path);
             }
