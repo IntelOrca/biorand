@@ -3102,6 +3102,11 @@
           "target": "50B",
           "lock": "unblock"
         }
+      ],
+      "npcs": [
+        {
+          "excludeTypes": [ 103 ]
+        }
       ]
     },
     "50B": {
