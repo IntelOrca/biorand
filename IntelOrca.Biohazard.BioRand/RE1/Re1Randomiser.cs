@@ -389,72 +389,76 @@ namespace IntelOrca.Biohazard.RE1
             var soundProcessActions = new List<Action>();
             var sapLock = new object();
 
-            var replacedEnemyTypes = new HashSet<byte>();
-            foreach (var skin in enemySkins)
+            var allReplacableEnemyIds = enemySkins
+                .SelectMany(x => x.EnemyIds)
+                .Distinct()
+                .Shuffle(rng);
+            foreach (var id in allReplacableEnemyIds)
             {
-                foreach (var id in skin.EnemyIds)
+                // Check if we are to preserve the original enemy type
+                if (keepOriginal.Contains(id))
                 {
-                    // Check if we are to preserve the original enemy type
-                    if (keepOriginal.Contains(id))
-                        continue;
+                    logger.WriteLine($"Setting EM1{config.Player}{id:X2} to Original");
+                    continue;
+                }
 
-                    if (!replacedEnemyTypes.Add(id))
-                        continue;
+                var skin = enemySkins
+                    .Shuffle(rng)
+                    .First(x => x.EnemyIds.Contains(id));
 
-                    // EMD/TIM
-                    var enemyDir = DataManager.GetPath(BiohazardVersion, Path.Combine("emd", skin.FileName));
-                    var srcEmdFileName = $"EM10{id:X2}.EMD";
-                    var dstEmdFileName = $"EM1{config.Player}{id:X2}.EMD";
-                    var emdPath = $"enemy/{dstEmdFileName}";
-                    var origEmd = fileRepository.GetDataPath(emdPath);
-                    var srcEmd = Path.Combine(enemyDir, srcEmdFileName);
-                    var dstEmd = fileRepository.GetModPath(emdPath);
+                // EMD/TIM
+                var enemyDir = DataManager.GetPath(BiohazardVersion, Path.Combine("emd", skin.FileName));
+                var srcEmdFileName = $"EM10{id:X2}.EMD";
+                var dstEmdFileName = $"EM1{config.Player}{id:X2}.EMD";
+                var emdPath = $"enemy/{dstEmdFileName}";
+                var origEmd = fileRepository.GetDataPath(emdPath);
+                var srcEmd = Path.Combine(enemyDir, srcEmdFileName);
+                var dstEmd = fileRepository.GetModPath(emdPath);
 
-                    if (new FileInfo(srcEmd).Length == 0)
+                if (new FileInfo(srcEmd).Length == 0)
+                {
+                    // NPC overwrite
+                    var pldFolder = pldBag.Next();
+                    var actor = Path.GetFileName(pldFolder).ToActorString();
+                    var pldPath = Directory.GetFiles(pldFolder)
+                        .First(x => x.EndsWith(".emd", StringComparison.OrdinalIgnoreCase));
+                    var pldFile = new EmdFile(BiohazardVersion, pldPath);
+                    var emdFile = new EmdFile(BiohazardVersion, origEmd);
+
+                    logger.WriteLine($"Setting EM1{config.Player}{id:X2} to {actor}");
+                    _enemyHelper.CreateZombie(id, pldFile, emdFile, dstEmd);
+                }
+                else
+                {
+                    logger.WriteLine($"Setting EM1{config.Player}{id:X2} to {skin.Name}");
+                    Directory.CreateDirectory(Path.GetDirectoryName(dstEmd));
+                    File.Copy(srcEmd, dstEmd, true);
+                }
+
+                // Sounds (shared, so only do it for Player 0)
+                if (config.Player == 1)
+                    continue;
+
+                foreach (var file in Directory.GetFiles(enemyDir))
+                {
+                    if (file.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) ||
+                        file.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
                     {
-                        // NPC overwrite
-                        var pldFolder = pldBag.Next();
-                        var actor = Path.GetFileName(pldFolder).ToActorString();
-                        var pldPath = Directory.GetFiles(pldFolder)
-                            .First(x => x.EndsWith(".emd", StringComparison.OrdinalIgnoreCase));
-                        var pldFile = new EmdFile(BiohazardVersion, pldPath);
-                        var emdFile = new EmdFile(BiohazardVersion, origEmd);
+                        var soundFileName = Path.ChangeExtension(Path.GetFileName(file), ".wav").ToUpperInvariant();
+                        var wavPath = soundFileName.Equals("VB00_10.WAV", StringComparison.OrdinalIgnoreCase) ?
+                            $"voice/{soundFileName}" :
+                            $"sound/{soundFileName}";
+                        var dstPath = fileRepository.GetModPath(wavPath);
+                        Directory.CreateDirectory(Path.GetDirectoryName(dstPath));
 
-                        logger.WriteLine($"Setting EM1{config.Player}{id:X2} to {actor}");
-                        _enemyHelper.CreateZombie(id, pldFile, emdFile, dstEmd);
-                    }
-                    else
-                    {
-                        logger.WriteLine($"Setting EM1{config.Player}{id:X2} to {skin.Name}");
-                        Directory.CreateDirectory(Path.GetDirectoryName(dstEmd));
-                        File.Copy(srcEmd, dstEmd, true);
-                    }
-
-                    // Sounds (shared, so only do it for Player 0)
-                    if (config.Player == 1)
-                        continue;
-
-                    foreach (var file in Directory.GetFiles(enemyDir))
-                    {
-                        if (file.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) ||
-                            file.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
+                        logger.WriteLine($"  Setting {soundFileName} to {file}");
+                        soundProcessActions.Add(() =>
                         {
-                            var soundFileName = Path.ChangeExtension(Path.GetFileName(file), ".wav").ToUpperInvariant();
-                            var wavPath = soundFileName.Equals("VB00_10.WAV", StringComparison.OrdinalIgnoreCase) ?
-                                $"voice/{soundFileName}" :
-                                $"sound/{soundFileName}";
-                            var dstPath = fileRepository.GetModPath(wavPath);
-                            Directory.CreateDirectory(Path.GetDirectoryName(dstPath));
-
-                            logger.WriteLine($"  Setting {soundFileName} to {file}");
-                            soundProcessActions.Add(() =>
-                            {
-                                var waveformBuilder = new WaveformBuilder();
-                                waveformBuilder.Append(file);
-                                lock (sapLock)
-                                    waveformBuilder.Save(dstPath);
-                            });
-                        }
+                            var waveformBuilder = new WaveformBuilder();
+                            waveformBuilder.Append(file);
+                            lock (sapLock)
+                                waveformBuilder.Save(dstPath);
+                        });
                     }
                 }
             }

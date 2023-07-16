@@ -254,99 +254,103 @@ namespace IntelOrca.Biohazard.RE2
             // Change bank 5 to bank 9 (This means we don't need to override enemy41.sap)
             SwapSoundBank(gameData, 5, 9);
 
-            var replacedEnemyTypes = new HashSet<byte>();
             var replacedSapNumbers = new HashSet<byte>();
-            foreach (var skin in enemySkins)
+            var allReplacableEnemyIds = enemySkins
+                .SelectMany(x => x.EnemyIds)
+                .Distinct()
+                .Shuffle(rng);
+            foreach (var id in allReplacableEnemyIds)
             {
-                foreach (var id in skin.EnemyIds)
+                // Check if we are to preserve the original enemy type
+                if (keepOriginal.Contains(id))
                 {
-                    // Check if we are to preserve the original enemy type
-                    if (keepOriginal.Contains(id))
-                        continue;
-
-                    if (!replacedEnemyTypes.Add(id))
-                        continue;
-
-                    // EMD/TIM
-                    var enemyDir = DataManager.GetPath(BiohazardVersion, Path.Combine("emd", skin.FileName));
-                    var srcEmdFileName = $"EM0{id:X2}.EMD";
-                    var dstEmdFileName = $"EM{config.Player}{id:X2}.EMD";
-                    var emdPath = $"pl{config.Player}/emd{config.Player}/{dstEmdFileName}";
-                    var origEmd = fileRepository.GetDataPath(emdPath);
-                    var srcEmd = Path.Combine(enemyDir, srcEmdFileName);
-                    var srcTim = Path.ChangeExtension(srcEmd, ".tim");
-                    var dstEmd = fileRepository.GetModPath(emdPath);
-                    var dstTim = Path.ChangeExtension(dstEmd, ".tim");
-
-                    if (new FileInfo(srcEmd).Length == 0)
-                    {
-                        // NPC overwrite
-                        var pldFolder = pldBag.Next();
-                        var actor = Path.GetFileName(pldFolder).ToActorString();
-                        var pldPath = Directory.GetFiles(pldFolder)
-                            .First(x => x.EndsWith(".PLD", StringComparison.OrdinalIgnoreCase));
-                        var pldFile = new PldFile(BiohazardVersion, pldPath);
-                        var emdFile = new EmdFile(BiohazardVersion, origEmd);
-
-                        logger.WriteLine($"Setting EM{config.Player}{id:X2} to {actor}");
-                        _enemyHelper.CreateZombie(id, pldFile, emdFile, dstEmd);
-                        if (Path.GetFileNameWithoutExtension(pldPath).Equals("PL01", StringComparison.OrdinalIgnoreCase))
-                        {
-                            OverrideSoundBank(gameData, id, 45);
-                        }
-                    }
-                    else
-                    {
-                        logger.WriteLine($"Setting EM{config.Player}{id:X2} to {skin.Name}");
-                        Directory.CreateDirectory(Path.GetDirectoryName(dstEmd));
-                        File.Copy(srcEmd, dstEmd, true);
-                        File.Copy(srcTim, dstTim, true);
-                    }
-
-                    // Sounds (shared, so only do it for Player 0)
-                    if (config.Player == 1)
-                        continue;
-
-                    // Do not replace the same sap again
-                    var relevantSapNumber = ((Re2EnemyHelper)EnemyHelper).GetEnemySapNumber(id);
-                    foreach (var file in Directory.GetFiles(enemyDir))
-                    {
-                        var match = soundRegex.Match(Path.GetFileName(file));
-                        if (match.Success)
-                        {
-                            // Only process sound files that override our relevant sap
-                            var enemySapNumber = byte.Parse(match.Groups[1].Value);
-                            if (relevantSapNumber != 0 && enemySapNumber != relevantSapNumber)
-                                continue;
-
-                            if (replacedSapNumbers.Contains(enemySapNumber))
-                                continue;
-
-                            relevantSapNumber = enemySapNumber;
-                            var enemySapFileName = $"enemy{enemySapNumber:00}.sap";
-                            var sapIndex = int.Parse(match.Groups[2].Value);
-                            var sapPath = $"common/sound/enemy/{enemySapFileName}";
-                            var srcSapPath = fileRepository.GetDataPath(sapPath);
-                            var dstSapPath = fileRepository.GetModPath(sapPath);
-                            if (!File.Exists(dstSapPath))
-                            {
-                                Directory.CreateDirectory(Path.GetDirectoryName(dstSapPath));
-                                File.Copy(srcSapPath, dstSapPath, true);
-                            }
-
-                            logger.WriteLine($"  Setting {enemySapFileName}#{sapIndex} to {file}");
-                            soundProcessActions.Add(() =>
-                            {
-                                var waveformBuilder = new WaveformBuilder();
-                                waveformBuilder.Append(file);
-                                lock (sapLock)
-                                    waveformBuilder.SaveAt(dstSapPath, sapIndex);
-                            });
-                        }
-                    }
-                    if (relevantSapNumber != 0)
-                        replacedSapNumbers.Add(relevantSapNumber);
+                    logger.WriteLine($"Setting EM{config.Player}{id:X2} to Original");
+                    continue;
                 }
+
+                var skin = enemySkins
+                    .Shuffle(rng)
+                    .First(x => x.EnemyIds.Contains(id));
+
+                // EMD/TIM
+                var enemyDir = DataManager.GetPath(BiohazardVersion, Path.Combine("emd", skin.FileName));
+                var srcEmdFileName = $"EM0{id:X2}.EMD";
+                var dstEmdFileName = $"EM{config.Player}{id:X2}.EMD";
+                var emdPath = $"pl{config.Player}/emd{config.Player}/{dstEmdFileName}";
+                var origEmd = fileRepository.GetDataPath(emdPath);
+                var srcEmd = Path.Combine(enemyDir, srcEmdFileName);
+                var srcTim = Path.ChangeExtension(srcEmd, ".tim");
+                var dstEmd = fileRepository.GetModPath(emdPath);
+                var dstTim = Path.ChangeExtension(dstEmd, ".tim");
+
+                if (new FileInfo(srcEmd).Length == 0)
+                {
+                    // NPC overwrite
+                    var pldFolder = pldBag.Next();
+                    var actor = Path.GetFileName(pldFolder).ToActorString();
+                    var pldPath = Directory.GetFiles(pldFolder)
+                        .First(x => x.EndsWith(".PLD", StringComparison.OrdinalIgnoreCase));
+                    var pldFile = new PldFile(BiohazardVersion, pldPath);
+                    var emdFile = new EmdFile(BiohazardVersion, origEmd);
+
+                    logger.WriteLine($"Setting EM{config.Player}{id:X2} to {actor}");
+                    _enemyHelper.CreateZombie(id, pldFile, emdFile, dstEmd);
+                    if (Path.GetFileNameWithoutExtension(pldPath).Equals("PL01", StringComparison.OrdinalIgnoreCase))
+                    {
+                        OverrideSoundBank(gameData, id, 45);
+                    }
+                }
+                else
+                {
+                    logger.WriteLine($"Setting EM{config.Player}{id:X2} to {skin.Name}");
+                    Directory.CreateDirectory(Path.GetDirectoryName(dstEmd));
+                    File.Copy(srcEmd, dstEmd, true);
+                    File.Copy(srcTim, dstTim, true);
+                }
+
+                // Sounds (shared, so only do it for Player 0)
+                if (config.Player == 1)
+                    continue;
+
+                // Do not replace the same sap again
+                var relevantSapNumber = ((Re2EnemyHelper)EnemyHelper).GetEnemySapNumber(id);
+                foreach (var file in Directory.GetFiles(enemyDir))
+                {
+                    var match = soundRegex.Match(Path.GetFileName(file));
+                    if (match.Success)
+                    {
+                        // Only process sound files that override our relevant sap
+                        var enemySapNumber = byte.Parse(match.Groups[1].Value);
+                        if (relevantSapNumber != 0 && enemySapNumber != relevantSapNumber)
+                            continue;
+
+                        if (replacedSapNumbers.Contains(enemySapNumber))
+                            continue;
+
+                        relevantSapNumber = enemySapNumber;
+                        var enemySapFileName = $"enemy{enemySapNumber:00}.sap";
+                        var sapIndex = int.Parse(match.Groups[2].Value);
+                        var sapPath = $"common/sound/enemy/{enemySapFileName}";
+                        var srcSapPath = fileRepository.GetDataPath(sapPath);
+                        var dstSapPath = fileRepository.GetModPath(sapPath);
+                        if (!File.Exists(dstSapPath))
+                        {
+                            Directory.CreateDirectory(Path.GetDirectoryName(dstSapPath));
+                            File.Copy(srcSapPath, dstSapPath, true);
+                        }
+
+                        logger.WriteLine($"  Setting {enemySapFileName}#{sapIndex} to {file}");
+                        soundProcessActions.Add(() =>
+                        {
+                            var waveformBuilder = new WaveformBuilder();
+                            waveformBuilder.Append(file);
+                            lock (sapLock)
+                                waveformBuilder.SaveAt(dstSapPath, sapIndex);
+                        });
+                    }
+                }
+                if (relevantSapNumber != 0)
+                    replacedSapNumbers.Add(relevantSapNumber);
             }
 
             // Do sound processing in bulk / parallel

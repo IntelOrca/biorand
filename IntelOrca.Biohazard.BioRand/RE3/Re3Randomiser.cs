@@ -407,65 +407,70 @@ namespace IntelOrca.Biohazard.RE3
             }
 
             var replacedEnemyTypes = new HashSet<byte>();
-            foreach (var skin in enemySkins)
+            var allReplacableEnemyIds = enemySkins
+                .SelectMany(x => x.EnemyIds)
+                .Distinct()
+                .Shuffle(rng);
+            foreach (var id in allReplacableEnemyIds)
             {
-                foreach (var id in skin.EnemyIds)
+                // Check if we are to preserve the original enemy type
+                if (keepOriginal.Contains(id))
                 {
-                    // Check if we are to preserve the original enemy type
-                    if (keepOriginal.Contains(id))
-                        continue;
+                    logger.WriteLine($"Setting EM{id:X2} to Original");
+                    continue;
+                }
 
-                    if (!replacedEnemyTypes.Add(id))
-                        continue;
+                var skin = enemySkins
+                    .Shuffle(rng)
+                    .First(x => x.EnemyIds.Contains(id));
 
-                    // EMD/TIM
-                    var enemyDir = DataManager.GetPath(BiohazardVersion, Path.Combine("emd", skin.FileName));
-                    var emdFileName = $"EM{id:X2}.EMD";
-                    var emdPath = $"room/emd/{emdFileName}";
-                    var origEmd = fileRepository.GetDataPath(emdPath);
-                    var srcEmd = Path.Combine(enemyDir, emdFileName);
-                    var srcTim = Path.ChangeExtension(srcEmd, ".tim");
-                    var dstEmd = fileRepository.GetModPath(emdPath);
-                    var dstTim = Path.ChangeExtension(dstEmd, ".tim");
+                // EMD/TIM
+                var enemyDir = DataManager.GetPath(BiohazardVersion, Path.Combine("emd", skin.FileName));
+                var emdFileName = $"EM{id:X2}.EMD";
+                var emdPath = $"room/emd/{emdFileName}";
+                var origEmd = fileRepository.GetDataPath(emdPath);
+                var srcEmd = Path.Combine(enemyDir, emdFileName);
+                var srcTim = Path.ChangeExtension(srcEmd, ".tim");
+                var dstEmd = fileRepository.GetModPath(emdPath);
+                var dstTim = Path.ChangeExtension(dstEmd, ".tim");
 
-                    if (new FileInfo(srcEmd).Length == 0)
+                if (new FileInfo(srcEmd).Length == 0)
+                {
+                    // NPC overwrite
+                    for (var i = 0; i < 32; i++)
                     {
-                        // NPC overwrite
-                        for (var i = 0; i < 32; i++)
+                        var pldFolder = pldBag.Next();
+                        var actor = Path.GetFileName(pldFolder).ToActorString();
+                        var pldPath = Directory.GetFiles(pldFolder)
+                            .First(x => x.EndsWith(".PLD", StringComparison.OrdinalIgnoreCase));
+                        var pldFile = new PldFile(BiohazardVersion, pldPath);
+                        if (pldFile.GetMorph(0).Data.Length > 4)
                         {
-                            var pldFolder = pldBag.Next();
-                            var actor = Path.GetFileName(pldFolder).ToActorString();
-                            var pldPath = Directory.GetFiles(pldFolder)
-                                .First(x => x.EndsWith(".PLD", StringComparison.OrdinalIgnoreCase));
-                            var pldFile = new PldFile(BiohazardVersion, pldPath);
-                            if (pldFile.GetMorph(0).Data.Length > 4)
-                            {
-                                // This PLD is unsuitable
-                                continue;
-                            }
-
-                            var emdFile = null as EmdFile;
-                            using (var emdStream = fileRepository.GetStream(origEmd))
-                            {
-                                emdFile = new EmdFile(BiohazardVersion, emdStream);
-                            }
-
-                            logger.WriteLine($"Setting EM{config.Player}{id:X2} to {actor}");
-                            _enemyHelper.CreateZombie(id, pldFile, emdFile, dstEmd);
-                            break;
+                            // This PLD is unsuitable
+                            continue;
                         }
-                        // if (Path.GetFileNameWithoutExtension(pldPath).Equals("PL01", StringComparison.OrdinalIgnoreCase))
-                        // {
-                        //     OverrideSoundBank(gameData, id, 45);
-                        // }
+
+                        var emdFile = null as EmdFile;
+                        using (var emdStream = fileRepository.GetStream(origEmd))
+                        {
+                            emdFile = new EmdFile(BiohazardVersion, emdStream);
+                        }
+
+                        logger.WriteLine($"Setting EM{id:X2} to {actor}");
+                        _enemyHelper.CreateZombie(id, pldFile, emdFile, dstEmd);
+                        break;
                     }
-                    else
-                    {
-                        logger.WriteLine($"Setting EM{config.Player}{id:X2} to {skin.Name}");
-                        Directory.CreateDirectory(Path.GetDirectoryName(dstEmd));
-                        File.Copy(srcEmd, dstEmd, true);
-                        File.Copy(srcTim, dstTim, true);
-                    }
+                    // if (Path.GetFileNameWithoutExtension(pldPath).Equals("PL01", StringComparison.OrdinalIgnoreCase))
+                    // {
+                    //     OverrideSoundBank(gameData, id, 45);
+                    // }
+                }
+                else
+                {
+                    logger.WriteLine($"Setting EM{config.Player}{id:X2} to {skin.Name}");
+                    Directory.CreateDirectory(Path.GetDirectoryName(dstEmd));
+                    File.Copy(srcEmd, dstEmd, true);
+                    File.Copy(srcTim, dstTim, true);
                 }
             }
         }
