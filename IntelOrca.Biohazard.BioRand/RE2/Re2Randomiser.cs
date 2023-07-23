@@ -556,9 +556,9 @@ namespace IntelOrca.Biohazard.RE2
                     pldFile = $"PL{pldIndex:X2}{pldFile.Substring(4)}";
                     var targetFile = Path.Combine(targetPldDir, pldFile);
                     File.Copy(pldPath, targetFile, true);
-                    if (pldFile.EndsWith("pld", StringComparison.OrdinalIgnoreCase) && pldIndex == 14)
+                    if (pldFile.EndsWith("pld", StringComparison.OrdinalIgnoreCase))
                     {
-                        FixAdaPld(targetFile);
+                        FixPld(targetFile, pldIndex);
                     }
                 }
             }
@@ -617,21 +617,24 @@ namespace IntelOrca.Biohazard.RE2
             }
         }
 
-        private void FixAdaPld(string path)
+        private void FixPld(string path, int pldIndex)
         {
-            try
+            // Open the PLD and insert 160 empty positions at the start of mesh 0
+            // this prevents the game from morphing any visible primitives
+            var pldFileFixed = new PldFile(BioVersion.Biohazard2, path);
+
+            // Ensure we have at least 19 parts, so everything works on Claire
+            var mesh = pldFileFixed.GetMesh(0).ToBuilder();
+            while (mesh.Count < 19)
             {
-                // Open the PLD and insert 160 empty positions at the start of mesh 0
-                // this prevents the game from morphing any visible primitives
-                var pldFileFixed = new PldFile(BioVersion.Biohazard2, path);
-                var mesh = pldFileFixed.GetMesh(0).ToBuilder();
+                mesh.Add();
+            }
+            if (pldIndex == 14)
+            {
                 mesh[0].InsertDummyPoints(160);
-                pldFileFixed.SetMesh(0, mesh.ToMesh());
-                pldFileFixed.Save(path);
             }
-            catch
-            {
-            }
+            pldFileFixed.SetMesh(0, mesh.ToMesh());
+            pldFileFixed.Save(path);
         }
 
         private void ScaleEnemyAttacks(RandoConfig config, FileRepository fileRepository)
