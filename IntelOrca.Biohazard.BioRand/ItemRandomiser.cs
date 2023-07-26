@@ -355,6 +355,23 @@ namespace IntelOrca.Biohazard
 
         private PlayNode Search(PlayNode start)
         {
+            // Repeat the search until the room count no longer increases
+            // This fixes #509 where the order of rooms checked would cause a half search to occur
+            // before and after a key item placement. Caused by a room requirement condition.
+            var result = SearchInternal(start);
+            var visited1 = _visitedRooms.Count;
+            var visited2 = visited1;
+            do
+            {
+                visited1 = visited2;
+                result = SearchInternal(start);
+                visited2 = _visitedRooms.Count;
+            } while (visited2 > visited1);
+            return result;
+        }
+
+        private PlayNode SearchInternal(PlayNode start)
+        {
             var checkpoint = start;
             var seen = new HashSet<RdtId>();
             var walkedNodes = new List<PlayNode>();
