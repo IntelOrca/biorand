@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using IntelOrca.Biohazard.BioRand;
+using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.RE1;
 
@@ -257,7 +258,10 @@ namespace IntelOrca.Biohazard.RE3
                      pldFile.EndsWith("plw", StringComparison.OrdinalIgnoreCase)))
                 {
                     pldFile = $"PL{pldIndex:X2}{pldFile.Substring(4)}";
-                    File.Copy(pldPath, Path.Combine(targetPldDir, pldFile), true);
+                    if (pldFile.EndsWith("pld", StringComparison.OrdinalIgnoreCase))
+                        ProcessPlayerModel(pldPath, Path.Combine(targetPldDir, pldFile));
+                    else
+                        File.Copy(pldPath, Path.Combine(targetPldDir, pldFile), true);
                 }
             }
 
@@ -313,6 +317,30 @@ namespace IntelOrca.Biohazard.RE3
                     vb.Write(vbTargetPath);
                 }
             }
+        }
+
+        private void ProcessPlayerModel(string source, string destination)
+        {
+            var pldFile = new PldFile(BiohazardVersion, source);
+
+            // Update texture
+            var p2timPath = DataManager.GetPath(BiohazardVersion, "pld.2.tim");
+            var p2tim = new TimFile(p2timPath);
+            var pldTim = pldFile.GetTim(0);
+            pldTim.ImportPage(2, p2tim);
+            pldTim.ResizeImage(128 * 3, 256);
+            pldTim.ResizeCluts(3);
+            pldFile.SetTim(0, pldTim);
+
+            // Ensure there are 21 parts in mesh
+            var builder = pldFile.GetMesh(0).ToBuilder();
+            while (builder.Count < 21)
+            {
+                builder.Add();
+            }
+            pldFile.SetMesh(0, builder.ToMesh());
+
+            pldFile.Save(destination);
         }
 
         private void ChangePlayerInventoryFace(RandoConfig config, FileRepository fileRepository, int faceIndex, string actor)
