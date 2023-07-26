@@ -16,7 +16,7 @@ namespace IntelOrca.Biohazard
         public const byte LatestVersion = 7;
         public const int MaxEnemies = 10;
         public const int MaxEnemySkins = 25;
-        public const int MaxNPCs = 60;
+        public const int MaxNPCs = 65;
         public const int MaxBGMs = 15;
 
         public byte Version { get; set; } = LatestVersion;
