@@ -1,3 +1,30 @@
+BioRand v3.1.0 (2023-07-27)
+
+* [Feature] Add fully randomized voice lines option.
+* [Feature] Add reduce awkward silences option.
+* [Feature] All NPC EMD files now auto generated from PLD files.
+* [Feature] Allow zombies to be a random character.
+* [Feature] Applicable randomized NPCs now have a random gun.
+* [Feature] Random enemy skins.
+* [Feature] RE 1, Kenneth now randomized.
+* [Feature] RE 1, Random NPCs now keep their correct animations.
+* [Feature] RE 1, Add Barry as playable character.
+* [Feature] RE 2, Ben, Irons, and Marvin now fully replaced with any character.
+* [Feature] RE 2, Mayor's daughter now randomized.
+* [Feature] RE 2, Add Alexia, Alfred, Dario, David, Nemesis, Nikolai, Rachael, Tyrell as playable characters.
+* [Feature] RE 3, Add Alexia, Alfred, Annette (RE2R), Ashley, Ben, Chris, Chris (CV), Dario, David, Enrico, Kendo, Irons, Piers, Rebecca, Tyrell, Wesker, Wesker (RE5) as playable characters.
+* [Enhancement] Increase size of enemy bar chart.
+* [Enhancement] RE 1, Chris / Jill voice during lab computer now randomized.
+* [Change] Update Regina's voice files.
+* [Fix] #482: RE 3, room 50A, crash due to NPC change
+* [Fix] #491: RE 3, room 112, Brad replacing Marvin EMD crashes game
+* [Fix] #501: RE 2, room 301, Ben -> Hunk has wrong body texture
+* [Fix] #509: RE 2, scenario B, power room key always in 603
+* [Fix] Ada character replacement has odd mesh morphing.
+* [Fix] RE 1, player hurt sounds not correct in cave / lab
+* [Fix] RE 1, room 71A, softlock when ladder is locked
+* [Fix] RE 2, room 113, Claire voice lines can overlap
+
 BioRand v3.0.9 (2023-07-04)
 
 * [Fix] #463: RE 2, Leon A/B, Sherry height is wrong when grabbed by enemies.
