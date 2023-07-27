@@ -8,10 +8,10 @@ BioRand v3.1.0 (2023-07-27)
 * [Feature] Random enemy skins.
 * [Feature] RE 1, Kenneth now randomized.
 * [Feature] RE 1, Random NPCs now keep their correct animations.
-* [Feature] RE 1, Add Barry as playable character.
+* [Feature] RE 1, Add Ark, Barry, Jill (RE3), Steve as playable characters.
 * [Feature] RE 2, Ben, Irons, and Marvin now fully replaced with any character.
 * [Feature] RE 2, Mayor's daughter now randomized.
-* [Feature] RE 2, Add Alexia, Alfred, Dario, David, Nemesis, Nikolai, Rachael, Tyrell as playable characters.
+* [Feature] RE 2, Add Alexia, Alfred, Dario, David, Lott, Nemesis, Nikolai, Rachael, Tyrell as playable characters.
 * [Feature] RE 3, Add Alexia, Alfred, Annette (RE2R), Ashley, Ben, Chris, Chris (CV), Dario, David, Enrico, Kendo, Irons, Piers, Rebecca, Tyrell, Wesker, Wesker (RE5) as playable characters.
 * [Enhancement] Increase size of enemy bar chart.
 * [Enhancement] RE 1, Chris / Jill voice during lab computer now randomized.
