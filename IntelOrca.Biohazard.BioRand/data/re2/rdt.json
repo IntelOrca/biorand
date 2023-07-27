@@ -2515,7 +2515,7 @@
       ],
       "npcs": [
         {
-          "includeOffsets": [ 71 ],
+          "includeOffsets": [ 9180 ],
           "includeTypes": [ 71, 72, 73 ],
           "playerActor": "ada",
           "cutscene": 0,
