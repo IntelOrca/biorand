@@ -283,6 +283,10 @@ namespace IntelOrca.Biohazard.RE2
                 builder.Add(weaponMesh);
                 builder.Add();
             }
+            else if (type == Re2EnemyIds.LeonKennedyBlackLeather)
+            {
+                builder[0].InsertDummyPoints(146);
+            }
             else if (type == Re2EnemyIds.ClaireRedfield ||
                      type == Re2EnemyIds.ClaireRedfieldNoJacket ||
                      type == Re2EnemyIds.ClaireRedfieldCowGirl)

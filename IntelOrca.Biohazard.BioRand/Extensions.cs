@@ -147,8 +147,8 @@ namespace IntelOrca.Biohazard
             var result = ((double)targetHeight / sourceHeight) + 0.03;
 
             // Don't bother scaling if only slightly out
-            if (Math.Abs(result - 1) <= 0.2)
-                return 1;
+            // if (Math.Abs(result - 1) <= 0.2)
+            //     return 1;
 
             return result;
         }
