@@ -602,11 +602,8 @@ namespace IntelOrca.Biohazard
             var index = FindNewKeyItemLocation(req, includeLowPriority: false, includeKeyItems: !noOriginalItemLocation);
             if (index == null)
             {
-                index = FindNewKeyItemLocation(req, includeLowPriority: true, includeKeyItems: false);
-                if (index == null)
-                {
-                    throw new Exception("Run out of free item slots");
-                }
+                throw new BioRandUserException("This seed has a door configuration where not enough item " +
+                    "pickups exist for all the required key items. Try another seed, or increasing your segment size.");
             }
 
             var itemEntry = _currentPool[index.Value];
