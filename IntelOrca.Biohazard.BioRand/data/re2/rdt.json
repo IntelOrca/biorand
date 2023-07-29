@@ -2213,6 +2213,7 @@
       ],
       "npcs": [
         {
+          "excludeTypes": [ 68, 70 ],
           "player": 1
         }
       ]
