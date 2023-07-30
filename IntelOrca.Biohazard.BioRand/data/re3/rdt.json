@@ -3112,7 +3112,7 @@
       ],
       "npcs": [
         {
-          "excludeTypes": [ 103 ]
+          "excludeTypes": [ 47, 87, 103 ]
         }
       ]
     },
