@@ -602,8 +602,19 @@ namespace IntelOrca.Biohazard
             var index = FindNewKeyItemLocation(req, includeLowPriority: false, includeKeyItems: !noOriginalItemLocation);
             if (index == null)
             {
-                throw new BioRandUserException("This seed has a door configuration where not enough item " +
-                    "pickups exist for all the required key items. Try another seed, or increasing your segment size.");
+                if (_config.RandomDoors)
+                {
+                    throw new BioRandUserException("This seed has a door configuration where not enough item " +
+                        "pickups exist for all the required key items. Try another seed, or increasing your segment size.");
+                }
+                else
+                {
+                    index = FindNewKeyItemLocation(req, includeLowPriority: true, includeKeyItems: !noOriginalItemLocation);
+                    if (index == null)
+                    {
+                        throw new Exception($"Unable to find location for {_itemHelper.GetItemName(req)}.");
+                    }
+                }
             }
 
             var itemEntry = _currentPool[index.Value];
