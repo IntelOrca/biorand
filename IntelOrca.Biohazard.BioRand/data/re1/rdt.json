@@ -860,7 +860,13 @@
       "npcs": [
         {
           "includeOffsets": [ 168024, 168170, 168194 ],
-          "includeTypes": [ 40, 42 ]
+          "includeTypes": [ 40, 42 ],
+          "player": 0
+        },
+        {
+          "includeOffsets": [ 168034, 168098, 168126 ],
+          "includeTypes": [ 40, 42 ],
+          "player": 1
         }
       ]
     },
