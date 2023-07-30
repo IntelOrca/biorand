@@ -703,6 +703,12 @@
           "priority": "low",
           "player": 1
         }
+      ],
+      "npcs": [
+        {
+          "use": "106;0x2FC70",
+          "player": 1
+        }
       ]
     },
     "204": {
