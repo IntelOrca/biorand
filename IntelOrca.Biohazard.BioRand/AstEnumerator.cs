@@ -42,14 +42,18 @@ namespace IntelOrca.Biohazard.Script
         {
             base.VisitOpcode(node);
 
-            if (Condition.GameMode != null && Condition.GameMode != 0)
-                return;
-            if (Condition.Difficulty != null && Condition.Difficulty != 0)
-                return;
-            if (Condition.Player != null && Condition.Player != _config.Player)
-                return;
-            if (Condition.Scenario != null && Condition.Scenario != _config.Scenario)
-                return;
+            if (_config.Game == 2)
+            {
+                if (Condition.GameMode != null && Condition.GameMode != 0)
+                    return;
+                // All US item placements are now added back in
+                // if (Condition.Difficulty != null && Condition.Difficulty != 0)
+                //     return;
+                if (Condition.Player != null && Condition.Player != _config.Player)
+                    return;
+                if (Condition.Scenario != null && Condition.Scenario != _config.Scenario)
+                    return;
+            }
 
             if (node.Opcode is T opcode)
             {

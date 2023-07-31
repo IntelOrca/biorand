@@ -95,6 +95,10 @@
       ],
       "items": [
         {
+          "id": 5,
+          "priority": "low"
+        },
+        {
           "id": 31,
           "type": 0
         }
@@ -201,6 +205,12 @@
         {
           "target": "109"
         }
+      ],
+      "items": [
+        {
+          "id": 5,
+          "priority": "low"
+        }
       ]
     },
     "109": {
@@ -285,6 +295,10 @@
       ],
       "items": [
         {
+          "id": 5,
+          "priority": "low"
+        },
+        {
           "id": 16,
           "requires": [ 51 ]
         }
@@ -340,6 +354,12 @@
             "cut": 3
           },
           "doorRando": true
+        }
+      ],
+      "items": [
+        {
+          "id": 12,
+          "priority": "low"
         }
       ]
     },
@@ -705,6 +725,12 @@
         {
           "target": "119"
         }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "priority": "low"
+        }
       ]
     },
     "119": {
@@ -888,6 +914,10 @@
         }
       ],
       "items": [
+        {
+          "id": 12,
+          "priority": "low"
+        },
         {
           "id": 255,
           "type": 53,
@@ -1079,6 +1109,10 @@
           "type": 0
         },
         {
+          "id": 13,
+          "priority": "low"
+        },
+        {
           "id": 14,
           "type": 0
         },
@@ -1147,6 +1181,12 @@
           "excludeTypes": [ 58 ],
           "difficulty": "medium"
         }
+      ],
+      "items": [
+        {
+          "id": 28,
+          "priority": "low"
+        }
       ]
     },
     "20C": {
@@ -1203,6 +1243,10 @@
         {
           "id": 1,
           "requires": [ 47 ]
+        },
+        {
+          "id": 11,
+          "priority": "low"
         },
         {
           "id": 20,
@@ -1270,12 +1314,30 @@
           "target": "210",
           "requires": [ 92 ]
         }
+      ],
+      "items": [
+        {
+          "id": 6,
+          "priority": "low"
+        }
       ]
     },
     "210": {
       "doors": [
         {
           "target": "20F"
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "priority": "low",
+          "player": 0
+        },
+        {
+          "id": 3,
+          "priority": "low",
+          "player": 1
         }
       ]
     },
@@ -1301,6 +1363,12 @@
         {
           "target": "215",
           "requires": [ 92 ]
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "priority": "low"
         }
       ]
     },
@@ -2484,6 +2552,12 @@
         {
           "target": "40A",
           "doorRando": true
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "priority": "low"
         }
       ],
       "npcs": [
@@ -3775,6 +3849,10 @@
           "doorRando": true,
           "player": 1,
           "scenario": 0
+        },
+        {
+          "id": 20,
+          "priority": "low"
         }
       ],
       "enemies": [
