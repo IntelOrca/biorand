@@ -2438,7 +2438,7 @@
         },
         {
           "includeOffsets": [ 3650 ],
-          "excludeTypes": [ 90 ],
+          "excludeTypes": [ 64, 66, 68, 70, 90 ],
           "player": 1
         },
         {
