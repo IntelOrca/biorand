@@ -69,6 +69,8 @@ namespace IntelOrca.Biohazard.BioRand
                 gameLocation1.IsSettingsLoaded = true;
                 gameLocation2.IsSettingsLoaded = true;
                 gameLocation3.IsSettingsLoaded = true;
+
+                chkRandomizeTitleVoice.IsChecked = _settings.RandomizeTitleVoice;
             }
 
             var seed = SelectedGame == 0 ? _settings.Seed1 : SelectedGame == 1 ? _settings.Seed2 : _settings.Seed3;
@@ -95,6 +97,8 @@ namespace IntelOrca.Biohazard.BioRand
             _settings.GameExecutable1 = gameLocation1.SelectedExecutable;
             _settings.GameExecutable2 = gameLocation2.SelectedExecutable;
             _settings.GameExecutable3 = gameLocation3.SelectedExecutable;
+
+            _settings.RandomizeTitleVoice = chkRandomizeTitleVoice.IsChecked == true;
 
             switch (SelectedGame)
             {
@@ -581,6 +585,7 @@ namespace IntelOrca.Biohazard.BioRand
         private ReInstallConfig GetInstallConfig()
         {
             var config = new ReInstallConfig();
+            config.RandomizeTitleVoice = _settings.RandomizeTitleVoice;
             config.SetEnabled(0, _settings.GameEnabled1);
             config.SetEnabled(1, _settings.GameEnabled2);
             config.SetEnabled(2, _settings.GameEnabled3);
@@ -974,6 +979,11 @@ namespace IntelOrca.Biohazard.BioRand
         }
 
         private void gameLocation_Changed(object sender, EventArgs e)
+        {
+            SaveSettings();
+        }
+
+        private void randomizeTitleVoice_Changed(object sender, RoutedEventArgs e)
         {
             SaveSettings();
         }

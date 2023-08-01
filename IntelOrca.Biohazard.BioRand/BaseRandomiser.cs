@@ -238,8 +238,9 @@ namespace IntelOrca.Biohazard
 
             using (progress.BeginTask(null, $"Creating backgrounds"))
                 CreateBackgrounds(config, fileRepository);
-            using (progress.BeginTask(null, $"Copying title card sounds"))
-                CreateTitleCardSounds(config, fileRepository);
+            if (reConfig.RandomizeTitleVoice)
+                using (progress.BeginTask(null, $"Copying title card sounds"))
+                    CreateTitleCardSounds(config, fileRepository);
             using (progress.BeginTask(null, $"Copying biorand.dll"))
                 CreateDataModule(fileRepository);
         }

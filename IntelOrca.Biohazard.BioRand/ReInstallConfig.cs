@@ -7,6 +7,8 @@ namespace IntelOrca.Biohazard
         private string[] _installPath = new string[3];
         private bool[] _enabled = new bool[3];
 
+        public bool RandomizeTitleVoice { get; set; } = true;
+
         public string GetInstallPath(int index)
         {
             var result = _installPath[index];

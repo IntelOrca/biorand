@@ -24,6 +24,8 @@ namespace IntelOrca.Biohazard.BioRand
         public string GameExecutable2 { get; set; }
         public string GameExecutable3 { get; set; }
 
+        public bool RandomizeTitleVoice { get; set; } = true;
+
         public static string GetSettingsPath()
         {
             return Path.Combine(GetSettingsDirectory(), "settings.json");
