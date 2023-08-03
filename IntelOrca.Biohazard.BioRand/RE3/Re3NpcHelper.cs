@@ -183,6 +183,10 @@ namespace IntelOrca.Biohazard.RE3
 
             emdFile.SetChunk(0, pldFile.GetChunk<MorphData>(3));
 
+            // The texture should only be two pages
+            timFile.ResizeImage(2 * 128, 256);
+            timFile.ResizeCluts(2);
+
             Directory.CreateDirectory(Path.GetDirectoryName(targetEmdPath));
             emdFile.Save(targetEmdPath);
             timFile.Save(Path.ChangeExtension(targetEmdPath, ".tim"));
