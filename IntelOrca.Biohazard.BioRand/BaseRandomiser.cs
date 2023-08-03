@@ -374,6 +374,16 @@ namespace IntelOrca.Biohazard
                     voiceRandomiser.Randomise();
                 }
 
+                // Copy EMD to EMD08
+                {
+                    var emd = fileRepository.GetModPath("ROOM/EMD");
+                    var emd08 = fileRepository.GetModPath("ROOM/EMD08");
+                    if (Directory.Exists(emd))
+                    {
+                        fileRepository.CopyDirectory(emd, emd08);
+                    }
+                }
+
                 using (progress.BeginTask(config.Player, "Writing RDT files"))
                 {
                     foreach (var rdt in gameData.Rdts)
