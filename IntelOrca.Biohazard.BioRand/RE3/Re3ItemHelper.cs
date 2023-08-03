@@ -15,7 +15,7 @@ namespace IntelOrca.Biohazard.RE3
                 case Re3ItemIds.HandgunBerettaEnhanced:
                     return new byte[] {
                         Re3ItemIds.HandgunAmmo,
-                        Re3ItemIds.HandgunBerettaEnhanced
+                        Re3ItemIds.HandgunEnhancedAmmo
                     };
                 case Re3ItemIds.HangunEagle:
                     return new byte[] { Re3ItemIds.HandgunAmmo };
