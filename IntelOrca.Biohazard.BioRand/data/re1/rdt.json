@@ -1651,6 +1651,16 @@
       ]
     },
     "500": {
+      "doorRando": [
+        {
+          "nop": [ "0xCF1A-0xCF5E" ],
+          "player": 0
+        },
+        {
+          "nop": [ "0xCF1A-0xCF90" ],
+          "player": 1
+        }
+      ],
       "doors": [
         {
           "target": "310"
