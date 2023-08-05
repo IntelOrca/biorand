@@ -733,10 +733,11 @@
     ]
   },
 
-  "voice/V106_00.wav": { "rdt": "203", "player": 1, "actor": "jill", "condition": "@barry" },
+  "voice/V106_00.wav": { "rdt": "106", "player": 1, "cutscene": 3, "actor": "jill", "condition": "@barry" },
   "voice/V106_01.wav": {
-    "rdt": "203",
+    "rdt": "106",
     "player": 1,
+    "cutscene": 3,
     "actors": [
       {
         "actor": "barry",
@@ -754,8 +755,9 @@
     ]
   },
   "voice/V106_02.wav": {
-    "rdt": "203",
+    "rdt": "106",
     "player": 1,
+    "cutscene": 3,
     "actors": [
       {
         "actor": "jill",

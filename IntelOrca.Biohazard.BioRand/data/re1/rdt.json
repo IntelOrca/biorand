@@ -253,21 +253,27 @@
           "player": 0
         },
         {
-          "includeOffsets": [ 195950, 196006, 195696, 195772, 195858, 196028 ],
+          "includeOffsets": [ 196006, 196028 ], // Wesker, Barry (entrance)
           "excludeTypes": [ 39, 40 ],
           "cutscene": 0,
           "player": 1
         },
         {
-          "includeOffsets": [ 195950, 196006 ],
+          "includeOffsets": [ 195950 ], // Wesker (backtrack)
           "excludeTypes": [ 39, 40 ],
           "cutscene": 1,
           "player": 1
         },
         {
-          "includeOffsets": [ 195696, 195772, 195858, 196028 ],
+          "includeOffsets": [ 195772, 195858 ], // Barry (lockpick)
           "excludeTypes": [ 39, 40 ],
           "cutscene": 2,
+          "player": 1
+        },
+        {
+          "includeOffsets": [ 195696 ], // Barry (acid rounds)
+          "excludeTypes": [ 39, 40 ],
+          "cutscene": 3,
           "player": 1
         }
       ]
