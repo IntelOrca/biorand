@@ -529,7 +529,8 @@ namespace IntelOrca.Biohazard
         {
             var srcExtension = Path.GetExtension(srcPath);
             var dstExtension = Path.GetExtension(dstPath);
-            if (srcExtension.Equals(dstExtension, StringComparison.OrdinalIgnoreCase))
+            if (srcExtension.Equals(dstExtension, StringComparison.OrdinalIgnoreCase) &&
+                _config.Game != 1) // RE 1 doesn't support ADPCM which the source voice might be (i.e. from RE 3)
             {
                 _fileRepository.Copy(srcPath, dstPath);
             }
