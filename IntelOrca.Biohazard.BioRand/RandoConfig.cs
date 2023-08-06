@@ -148,6 +148,13 @@ namespace IntelOrca.Biohazard
             return result;
         }
 
+        public RandoConfig WithSeed(int seed)
+        {
+            var result = Clone();
+            result.Seed = seed;
+            return result;
+        }
+
         public override string ToString()
         {
             var writer = new Writer();

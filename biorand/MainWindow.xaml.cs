@@ -75,9 +75,9 @@ namespace IntelOrca.Biohazard.BioRand
 
             if (!Version.TryParse(_settings.LastVersion, out var lastVersion) || lastVersion != Program.CurrentVersion)
             {
-                _settings.Seed1 = new RandoConfig().ToString();
-                _settings.Seed2 = new RandoConfig().ToString();
-                _settings.Seed3 = new RandoConfig().ToString();
+                _settings.Seed1 = new RandoConfig().WithSeed(_random.Next(0, RandoConfig.MaxSeed)).ToString();
+                _settings.Seed2 = new RandoConfig().WithSeed(_random.Next(0, RandoConfig.MaxSeed)).ToString();
+                _settings.Seed3 = new RandoConfig().WithSeed(_random.Next(0, RandoConfig.MaxSeed)).ToString();
             }
 
             var seed = SelectedGame == 0 ? _settings.Seed1 : SelectedGame == 1 ? _settings.Seed2 : _settings.Seed3;
