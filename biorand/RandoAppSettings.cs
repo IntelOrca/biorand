@@ -26,6 +26,9 @@ namespace IntelOrca.Biohazard.BioRand
 
         public bool RandomizeTitleVoice { get; set; } = true;
 
+        public string LastVersion { get; set; }
+
+
         public static string GetSettingsPath()
         {
             return Path.Combine(GetSettingsDirectory(), "settings.json");

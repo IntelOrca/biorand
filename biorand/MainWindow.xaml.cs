@@ -73,6 +73,13 @@ namespace IntelOrca.Biohazard.BioRand
                 chkRandomizeTitleVoice.IsChecked = _settings.RandomizeTitleVoice;
             }
 
+            if (!Version.TryParse(_settings.LastVersion, out var lastVersion) || lastVersion != Program.CurrentVersion)
+            {
+                _settings.Seed1 = new RandoConfig().ToString();
+                _settings.Seed2 = new RandoConfig().ToString();
+                _settings.Seed3 = new RandoConfig().ToString();
+            }
+
             var seed = SelectedGame == 0 ? _settings.Seed1 : SelectedGame == 1 ? _settings.Seed2 : _settings.Seed3;
             if (seed == null)
             {
@@ -99,6 +106,8 @@ namespace IntelOrca.Biohazard.BioRand
             _settings.GameExecutable3 = gameLocation3.SelectedExecutable;
 
             _settings.RandomizeTitleVoice = chkRandomizeTitleVoice.IsChecked == true;
+
+            _settings.LastVersion = Program.CurrentVersionNumber;
 
             switch (SelectedGame)
             {
@@ -244,7 +253,7 @@ namespace IntelOrca.Biohazard.BioRand
                 sliderEnemyCount.Value = _config.EnemyQuantity;
                 chkRngItems.IsChecked = _config.RandomItems || _config.RandomDoors;
                 chkCustomItemPool.IsChecked = !_config.ShuffleItems || _config.RandomDoors;
-                chkAlternativeRoute.IsChecked = _config.AlternativeRoutes && !_config.RandomDoors;
+                chkAlternativeRoute.IsChecked = _config.AlternativeRoutes;
                 chkIncludeDocuments.IsChecked = _config.IncludeDocuments;
                 chkRandomInventory.IsChecked = _config.RandomInventory;
 
@@ -439,7 +448,7 @@ namespace IntelOrca.Biohazard.BioRand
             _config.RandomItems = chkRngItems.IsChecked == true || _config.RandomDoors;
             _config.RandomEnemyPlacement = chkRandomEnemyPlacements.IsChecked == true;
             _config.ShuffleItems = chkCustomItemPool.IsChecked != true && !_config.RandomDoors;
-            _config.AlternativeRoutes = chkAlternativeRoute.IsChecked == true && !_config.RandomDoors;
+            _config.AlternativeRoutes = chkAlternativeRoute.IsChecked == true;
             _config.IncludeDocuments = chkIncludeDocuments.IsChecked == true;
             _config.RandomInventory = chkRandomInventory.IsChecked == true;
             _config.Weapon0 = (byte)dropdownWeapon0.SelectedIndex;
@@ -985,7 +994,10 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void randomizeTitleVoice_Changed(object sender, RoutedEventArgs e)
         {
-            SaveSettings();
+            if (!_suspendEvents)
+            {
+                SaveSettings();
+            }
         }
 
         private int? SelectedGame

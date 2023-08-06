@@ -26,23 +26,23 @@ namespace IntelOrca.Biohazard
 
         // Flags
         public bool ProtectFromSoftLock { get; set; } = true;
-        public bool ChangePlayer { get; set; }
-        public bool RandomPlayer { get; set; }
+        public bool ChangePlayer { get; set; } = true;
+        public bool RandomPlayer { get; set; } = true;
         public bool RandomDoors { get; set; }
         public bool RandomEnemySkins { get; set; } = true;
         public bool RandomNPCs { get; set; } = true;
         public bool RandomEnemies { get; set; } = true;
         public bool RandomItems { get; set; } = true;
         public bool RandomBgm { get; set; } = true;
-        public bool ShuffleItems { get; set; } = true;
+        public bool ShuffleItems { get; set; }
         public bool AlternativeRoutes { get; set; } = true;
-        public bool IncludeDocuments { get; set; }
+        public bool IncludeDocuments { get; set; } = true;
         public bool RandomInventory { get; set; } = true;
-        public bool RandomEnemyPlacement { get; set; }
+        public bool RandomEnemyPlacement { get; set; } = true;
         public bool AllowEnemiesAnyRoom { get; set; } = true;
         public byte EnemyQuantity { get; set; } = 2;
         public bool PrioritiseCutscenes { get; set; } = true;
-        public bool RandomCutscenes { get; set; }
+        public bool RandomCutscenes { get; set; } = true;
         public bool AllowAnyVoice { get; set; }
         public bool ReduceSilences { get; set; }
 
@@ -55,7 +55,7 @@ namespace IntelOrca.Biohazard
         public byte WeaponQuantity { get; set; } = 7;
         public byte RatioAmmo { get; set; } = 16;
         public byte RatioHealth { get; set; } = 16;
-        public byte RatioInkRibbons { get; set; } = 16;
+        public byte RatioInkRibbons { get; set; } = 4;
         public byte RatioGunpowder { get; set; } = 16;
         public byte AmmoQuantity { get; set; } = 4;
         public byte EnemyDifficulty { get; set; } = 2;
@@ -211,7 +211,7 @@ namespace IntelOrca.Biohazard
                 }
                 else
                 {
-                    writer.Write(3, 0);
+                    writer.Write(3, 7);
                 }
             }
             writer.WriteArray(MaxNPCs, EnabledNPCs);
