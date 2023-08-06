@@ -1,3 +1,30 @@
+BioRand v3.1.1 (2023-08-06)
+
+* [Feature] Add option for title voice randomization.
+* [Feature] RE 2, add US/EUR item placements.
+* [Feature] RE 3, add Nemesis, and Sheva as playable characters.
+* [Change] Move Barry and Billy radio voice samples to misc category.
+* [Fix] #513: RE 3, Annette model has texture issues.
+* [Fix] #514: RE 1, room 118, key item placed in 618.
+* [Fix] #515: RE 2, 401, Claire A, crash due to partner being Ben.
+* [Fix] #520: RE 1, Jill (RE3) voices are sometimes silent.
+* [Fix] #525: RE 3, 107, crash due to Marvin 2 as NPC.
+* [Fix] #526: RE 2, room 404, Claire A, crash due to Ben NPC.
+* [Fix] #527: RE 2, room 608, moths may crash the game.
+* [Fix] #529: RE 1, room 500, softlock when escape sequence active.
+* [Fix] #530: RE 3, Zombies during Carlos segment have incorrect meshes and UV.
+* [Fix] #531: RE 3, room 11B, NPC has glitched textures.
+* [Fix] #535: RE 1, room 106, incorrect voice for acid round cutscene.
+* [Fix] RE 1, 203, NPC has incorrect voice.
+* [Fix] RE 1, 20D, NPC has incorrect voice.
+* [Fix] RE 1, various sound conversion issues.
+* [Fix] RE 2, missing PLWs for Claire and Rebecca.
+* [Fix] RE 3, 105, crash caused by Irons NPC.
+* [Fix] RE 3, 50A, crash caused by Marvin NPC.
+* [Fix] RE 3, Ashley caused crashes.
+* [Fix] RE 3, Krauser has graphical issues.
+* [Fix] RE 3, starting handgun ammo is sometimes another handgun.
+
 BioRand v3.1.0 (2023-07-27)
 
 * [Feature] Add fully randomized voice lines option.
