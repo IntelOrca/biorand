@@ -14,8 +14,24 @@ namespace IntelOrca.Biohazard.BioRand.Cli
             _items = items.ToArray();
         }
 
-        public void Add(byte item, byte amount)
+        public void Add(byte item, byte amount, bool combine)
         {
+            if (combine)
+            {
+                for (var i = 0; i < _items.Length; i++)
+                {
+                    if (_items[i].Type == item)
+                    {
+                        var total = _items[i].Amount + amount;
+                        if (total < 255)
+                        {
+                            _items[i].Amount = (byte)total;
+                            return;
+                        }
+                    }
+                }
+            }
+
             var emptySlot = FindEmptyItemIndex();
             if (emptySlot == -1)
                 return;
@@ -31,6 +47,8 @@ namespace IntelOrca.Biohazard.BioRand.Cli
         private int FindEmptyItemIndex()
         {
             var firstItemIndex = FindFirstItemIndex();
+            if (firstItemIndex == -1)
+                return 0;
             for (var i = 0; i < _items.Length; i++)
             {
                 var slot = (firstItemIndex + i) % _items.Length;

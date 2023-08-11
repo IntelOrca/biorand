@@ -7,6 +7,7 @@ using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 using Archipelago.MultiClient.Net.Models;
+using IntelOrca.Biohazard.RE2;
 
 namespace IntelOrca.Biohazard.BioRand.Cli
 {
@@ -16,6 +17,8 @@ namespace IntelOrca.Biohazard.BioRand.Cli
         private readonly int _port;
         private readonly ArchipelagoSession _session;
         private readonly ReProcess _reProcess;
+        private ReFlags _lastItemFlags;
+        private IItemHelper _itemHelper = new Re2ItemHelper();
 
         public ApClient(ReProcess reProcess, string host, int port)
         {
@@ -44,9 +47,49 @@ namespace IntelOrca.Biohazard.BioRand.Cli
 
         public async Task RunAsync()
         {
+            await Task.Delay(1000);
             while (_session.Socket.Connected)
             {
+                await CheckPickedUpItemsAsync();
                 await Task.Delay(100);
+            }
+        }
+
+        private async Task CheckPickedUpItemsAsync()
+        {
+            try
+            {
+                var flags = _reProcess.ItemFlags;
+                if (flags != _lastItemFlags)
+                {
+                    var changedFlags = flags & (flags ^ _lastItemFlags);
+
+                    var allItems = _session.Locations.AllLocations;
+                    var allCheckedItems = flags.Keys
+                        .Select(x => (long)x)
+                        .Intersect(allItems)
+                        .ToArray();
+                    var newItems = changedFlags.Keys
+                        .Select(x => (long)x)
+                        .Intersect(allItems)
+                        .ToArray();
+
+                    var locationInfo = await _session.Locations.ScoutLocationsAsync(newItems);
+                    foreach (var l in locationInfo.Locations)
+                    {
+                        var itemName = _session.Items.GetItemName(l.Item);
+                        var playerName = _session.Players.GetPlayerName(l.Player);
+                        Log($"Found {itemName} for {playerName}");
+                    }
+
+                    await _session.Locations.CompleteLocationChecksAsync(allCheckedItems);
+
+                    _lastItemFlags = _reProcess.ItemFlags;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log(ex);
             }
         }
 
@@ -58,8 +101,9 @@ namespace IntelOrca.Biohazard.BioRand.Cli
         private void Items_ItemReceived(ReceivedItemsHelper helper)
         {
             var items = new List<NetworkItem>();
-            foreach (var receivedItem in helper.AllItemsReceived)
+            while (helper.Any())
             {
+                var receivedItem = helper.DequeueItem();
                 var itemName = helper.GetItemName(receivedItem.Item);
                 var playerName = _session.Players.GetPlayerName(receivedItem.Player);
                 Log($"Received {itemName} from {playerName}");
@@ -75,7 +119,11 @@ namespace IntelOrca.Biohazard.BioRand.Cli
             {
                 var type = (byte)(networkItem.Item & 0xFF);
                 var amount = (byte)((networkItem.Item >> 8) & 0xFF);
-                itemBox.Add(type, amount);
+                var attributes = _itemHelper.GetItemAttributes(type);
+                var combine =
+                    attributes.HasFlag(ItemAttribute.Ammo) ||
+                    attributes.HasFlag(ItemAttribute.InkRibbon);
+                itemBox.Add(type, amount, combine);
             }
             _reProcess.SetItemBox(itemBox);
         }
@@ -83,6 +131,14 @@ namespace IntelOrca.Biohazard.BioRand.Cli
         private void Log(string message)
         {
             Console.WriteLine(message);
+        }
+
+        private void Log(Exception ex)
+        {
+            var backup = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(ex.Message);
+            Console.ForegroundColor = backup;
         }
     }
 }
