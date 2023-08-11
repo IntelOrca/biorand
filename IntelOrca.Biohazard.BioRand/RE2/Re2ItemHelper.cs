@@ -4,7 +4,7 @@ using IntelOrca.Biohazard.Script;
 
 namespace IntelOrca.Biohazard.BioRand.RE2
 {
-    internal class Re2ItemHelper : IItemHelper
+    public class Re2ItemHelper : IItemHelper
     {
         private const bool g_leonWeaponFix = true;
         private const bool g_claireWeaponFix = true;

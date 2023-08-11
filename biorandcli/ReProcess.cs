@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using static IntelOrca.Biohazard.BioRand.Cli.Win32;
 
 namespace IntelOrca.Biohazard.BioRand.Cli
@@ -30,12 +32,12 @@ namespace IntelOrca.Biohazard.BioRand.Cli
         public int CurrentRoom => Read<ushort>(0x0098EB16);
         public int CurrentCut => Read<ushort>(0x0098EB18);
         public int LastCut => Read<ushort>(0x0098EB1A);
-        public ulong GameFlags => Read<ulong>(0x00989ED0);
-        public ulong StateFlags => Read<ulong>(0x00989ED4);
-        public ulong GeneralFlags => Read<ulong>(0x0098EB4C);
-        public ulong LocalFlags => Read<ulong>(0x0098EB6C);
-        public ulong ItemFlags => Read<ulong>(0x0098EBB4);
-        public ulong LockFlags => Read<ulong>(0x0098ED2C);
+        public ReFlags GameFlags => ReadFlags(0x00989ED0, 4);
+        public ReFlags StateFlags => ReadFlags(0x00989ED4, 4);
+        public ReFlags GeneralFlags => ReadFlags(0x0098EB4C, 32);
+        public ReFlags LocalFlags => ReadFlags(0x0098EB6C, 8);
+        public ReFlags ItemFlags => ReadFlags(0x0098EBB4, 32);
+        public ReFlags LockFlags => ReadFlags(0x0098ED2C, 8);
 
         public int GetTime()
         {
@@ -54,6 +56,12 @@ namespace IntelOrca.Biohazard.BioRand.Cli
             WriteArray<ReItem>(0x0098ED60, itemBox.Items);
         }
 
+        public ReFlags ReadFlags(int address, int numBytes)
+        {
+            var data = ReadArray<byte>(address, numBytes);
+            return new ReFlags(data);
+        }
+
 #pragma warning disable CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
         private T Read<T>(int address) where T : struct
         {
@@ -69,7 +77,7 @@ namespace IntelOrca.Biohazard.BioRand.Cli
         private T[] ReadArray<T>(int address, int count) where T : struct
         {
             var items = new T[count];
-            var numBytes = count * sizeof(ReItem);
+            var numBytes = count * sizeof(T);
             fixed (T* item = &items[0])
             {
                 ReadProcessMemory(_process.Handle, (IntPtr)address, (IntPtr)item, (IntPtr)numBytes, out var readBytes);
@@ -79,12 +87,90 @@ namespace IntelOrca.Biohazard.BioRand.Cli
 
         private void WriteArray<T>(int address, ReadOnlySpan<T> value) where T : struct
         {
-            var numBytes = value.Length * sizeof(ReItem);
+            var numBytes = value.Length * sizeof(T);
             fixed (T* item = &value[0])
             {
                 WriteProcessMemory(_process.Handle, (IntPtr)address, (IntPtr)item, (IntPtr)numBytes, out var writtenBytes);
             }
         }
 #pragma warning restore CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
+    }
+
+    public readonly struct ReFlags : IEquatable<ReFlags>
+    {
+        private readonly byte[] _flags;
+
+        public int Count => _flags == null ? 0 : _flags.Length * 8;
+        public int ByteLength => _flags == null ? 0 : _flags.Length;
+
+        public ReFlags(ReadOnlySpan<byte> src)
+        {
+            _flags = src.ToArray();
+        }
+
+        public int[] Keys
+        {
+            get
+            {
+                var keys = new List<int>();
+                var numFlags = Count;
+                for (var i = 0; i < numFlags; i++)
+                {
+                    if (this[i])
+                        keys.Add(i);
+                }
+                return keys.ToArray();
+            }
+        }
+
+        public bool this[int index] => (_flags[index >> 3] & (1 << (index & 7))) != 0;
+        public static bool operator ==(ReFlags lhs, ReFlags rhs) => lhs.Equals(rhs);
+        public static bool operator !=(ReFlags lhs, ReFlags rhs) => !(lhs == rhs);
+
+        public static ReFlags operator ^(ReFlags lhs, ReFlags rhs)
+        {
+            var minLength = Math.Min(lhs.ByteLength, rhs.ByteLength);
+            var resultFlags = new byte[minLength];
+            for (var i = 0; i < minLength; i++)
+            {
+                resultFlags[i] = (byte)(lhs._flags[i] ^ rhs._flags[i]);
+            }
+            return new ReFlags(resultFlags);
+        }
+
+        public static ReFlags operator &(ReFlags lhs, ReFlags rhs)
+        {
+            var minLength = Math.Min(lhs.ByteLength, rhs.ByteLength);
+            var resultFlags = new byte[minLength];
+            for (var i = 0; i < minLength; i++)
+            {
+                resultFlags[i] = (byte)(lhs._flags[i] & rhs._flags[i]);
+            }
+            return new ReFlags(resultFlags);
+        }
+
+        public override bool Equals(object obj) => obj is ReFlags flags && Equals(flags);
+
+        public bool Equals(ReFlags other)
+        {
+            if (_flags is null && other._flags is null)
+                return true;
+            if (_flags is null || other._flags is null)
+                return false;
+            return _flags.SequenceEqual(other._flags);
+        }
+
+        public override int GetHashCode()
+        {
+            int hash = 17;
+            unchecked
+            {
+                foreach (byte flag in _flags)
+                {
+                    hash = hash * 31 + flag.GetHashCode();
+                }
+            }
+            return hash;
+        }
     }
 }
