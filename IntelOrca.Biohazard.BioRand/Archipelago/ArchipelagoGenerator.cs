@@ -147,7 +147,8 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
                 {
                     Type = item.Type,
                     Amount = item.Amount,
-                    Name = itemDisplayName
+                    Name = itemDisplayName,
+                    Group = GetItemGroup(itemAttributes)
                 };
 
                 _items.Add(apItem);
@@ -159,6 +160,23 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
                 });
             }
             return locations.ToArray();
+        }
+
+        private static string? GetItemGroup(ItemAttribute attributes)
+        {
+            if (attributes.HasFlag(ItemAttribute.Weapon))
+                return "weapon";
+            if (attributes.HasFlag(ItemAttribute.Ammo))
+                return "ammo";
+            if (attributes.HasFlag(ItemAttribute.Gunpowder))
+                return "gunpowder";
+            if (attributes.HasFlag(ItemAttribute.Heal))
+                return "heal";
+            if (attributes.HasFlag(ItemAttribute.InkRibbon))
+                return "ink";
+            if (attributes.HasFlag(ItemAttribute.Key))
+                return "key";
+            return null;
         }
     }
 }
