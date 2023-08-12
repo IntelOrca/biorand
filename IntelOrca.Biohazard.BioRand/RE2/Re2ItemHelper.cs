@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using IntelOrca.Biohazard.Script;
+using IntelOrca.Biohazard.BioRand.RE2;
 
 namespace IntelOrca.Biohazard.BioRand.RE2
 {
@@ -23,13 +24,7 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             }
         }
 
-        public string GetItemName(byte type)
-        {
-            var name = new Bio2ConstantTable().GetItemName(type);
-            return name
-                .Remove(0, 5)
-                .Replace("_", " ");
-        }
+        public string GetItemName(byte type) => g_itemNames[type];
 
         public byte GetItemId(CommonItemKind kind)
         {
@@ -487,5 +482,138 @@ namespace IntelOrca.Biohazard.BioRand.RE2
         {
             return new byte[0];
         }
+
+        private static string[] g_itemNames = new string[]
+        {
+            "None",
+            "Knife",
+            "Handgun (Leon)",
+            "Handgun (Claire)",
+            "C. Handgun",
+            "Magnum",
+            "C. Magnum",
+            "Shotgun",
+            "C. Shotgun",
+            "G. Launcher (Explosive)",
+            "G. Launcher (Flame)",
+            "G. Launcher (Acid)",
+            "Bow Gun",
+            "Colt S.A.A.",
+            "Spark Shot",
+            "S. Machine Gun",
+            "Flamethrower",
+            "R. Launcher",
+            "Gatling Gun",
+            "Beretta",
+            "H. Gun Bullets",
+            "Shotgun Shells",
+            "M. Bullets",
+            "Fuel",
+            "G. Rounds",
+            "Flame Rounds",
+            "Acid Rounds",
+            "M.G. Bullets",
+            "S. Shot Bullets",
+            "Bow Gun Bolts",
+            "Ink Ribbon",
+            "Small Key",
+            "H. Gun Parts",
+            "Magnum Parts",
+            "Shotgun Parts",
+            "F. Aid Spray",
+            "Anti-virus bomb",
+            "Chemical AC-W24",
+            "Green Herb",
+            "Red Herb",
+            "Blue Herb",
+            "Mixed Herb (GG)",
+            "Mixed Herb (GR)",
+            "Mixed Herb (GB)",
+            "Mixed Herb (GGG)",
+            "Mixed Herb (GGB)",
+            "Mixed Herb (GRB)",
+            "Lighter",
+            "Lockpick",
+            "Photo (Sherry)",
+            "Valve Handle",
+            "Virgin Heart",
+            "Red Card Key",
+            "Blue Card Key",
+            "Serpent Stone",
+            "Jaguar Stone",
+            "Jaguar Stone (L)",
+            "Jaguar Stone (R)",
+            "Eagle Stone",
+            "Bishop Plug",
+            "Rook Plug",
+            "Knight Plug",
+            "King Plug",
+            "W. Box Key",
+            "Detonator",
+            "Plastic Bomb",
+            "Bomb & Detonator",
+            "Crank",
+            "Film (A)",
+            "Film (B)",
+            "Film (C)",
+            "Unicorn Medal",
+            "Eagle Medal",
+            "Wolf Medal",
+            "G. Cogwheel",
+            "Manhole Opener",
+            "Main Fuse",
+            "Fuse Case",
+            "Vaccine",
+            "Vaccine Cart.",
+            "Film (D)",
+            "Base Vaccine",
+            "G-virus",
+            "Special Key",
+            "Joint S Plug",
+            "Joint N Plug",
+            "Cord",
+            "Photo (Ada)",
+            "Cabin Key",
+            "Spade Key",
+            "Diamond Key",
+            "Heart Key",
+            "Club Key",
+            "C. Panel Key (Down)",
+            "C. Panel Key (Up)",
+            "P. Room Key",
+            "MO disk",
+            "Lab Card Key",
+            "Master Key",
+            "Platform Key",
+            "",
+            "",
+            "",
+            "",
+            "Chris's diary",
+            "Memo to Chris",
+            "Memo to Leon",
+            "Police memorandum",
+            "Operation report 1",
+            "Mail to the chief 1",
+            "Mail to the chief 2",
+            "Secretary's diary A",
+            "Secretary's diary B",
+            "Operation report 2",
+            "User registration",
+            "Developed Film (A)",
+            "Developed Film (B)",
+            "Developed Film (C)",
+            "Patrol report",
+            "Watchman's diary",
+            "Chief's diary",
+            "Sewer manager diary",
+            "Sewer manager fax",
+            "Developed Film (D)",
+            "Vaccine synthesis",
+            "Lab security manual",
+            "P-epsilon Report",
+            "Rookie files 1",
+            "Rookie files 2",
+        };
     }
 }
