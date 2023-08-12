@@ -36,6 +36,7 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
         public int Type { get; set; }
         public int Amount { get; set; }
         public string? Name { get; set; }
+        public string? Group { get; set; }
 
         public override string ToString() => $"{Id}: {Name}";
     }
