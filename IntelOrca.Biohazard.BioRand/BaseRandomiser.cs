@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using IntelOrca.Biohazard.BioRand.Archipelago;
 using IntelOrca.Biohazard.BioRand.Events;
 using IntelOrca.Biohazard.BioRand.RE1;
 using IntelOrca.Biohazard.BioRand.RE2;
@@ -291,6 +292,7 @@ namespace IntelOrca.Biohazard.BioRand
                 ItemRandomiser? itemRandomiser = null;
                 if (config.RandomDoors || config.RandomItems)
                 {
+                    var archPath = fileRepository.GetModPath($"ap_pl{config.Player}.json");
                     var dgmlPath = fileRepository.GetModPath($"graph_pl{config.Player}.dgml");
                     var doorRando = new DoorRandomiser(logger, config, gameData, map, randomDoors, DoorHelper, ItemHelper);
                     itemRandomiser = new ItemRandomiser(logger, config, gameData, randomItems, ItemHelper);
@@ -313,6 +315,10 @@ namespace IntelOrca.Biohazard.BioRand
                     }
                     finally
                     {
+                        var apGenerator = new ArchipelagoGenerator(ItemHelper);
+                        apGenerator.Generate(archPath, graph,
+                            seed: config.ToString(),
+                            description: $"Archipelago item randomization for BioRand, Resident Evil {config.Game}");
                         graph.GenerateDgml(dgmlPath, ItemHelper);
                     }
                 }
