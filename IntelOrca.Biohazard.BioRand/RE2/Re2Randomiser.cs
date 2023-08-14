@@ -6,14 +6,13 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using IntelOrca.Biohazard.BioRand;
+using IntelOrca.Biohazard.BioRand.RE1;
+using IntelOrca.Biohazard.BioRand.RE3;
 using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
-using IntelOrca.Biohazard.RE1;
-using IntelOrca.Biohazard.RE3;
 using IntelOrca.Biohazard.Script.Opcodes;
 
-namespace IntelOrca.Biohazard.RE2
+namespace IntelOrca.Biohazard.BioRand.RE2
 {
     public class Re2Randomiser : BaseRandomiser
     {
@@ -212,7 +211,7 @@ namespace IntelOrca.Biohazard.RE2
             }
         }
 
-        internal static void ScaleEmrY(RandoLogger logger, Rdt rdt, EmrFlags flags, double scale)
+        internal static void ScaleEmrY(RandoLogger logger, RandomizedRdt rdt, EmrFlags flags, double scale)
         {
             var emrIndex = rdt.ScaleEmrY(flags, scale);
             if (emrIndex != null)

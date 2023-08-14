@@ -6,11 +6,11 @@ using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
 
-namespace IntelOrca.Biohazard.RE3
+namespace IntelOrca.Biohazard.BioRand.RE3
 {
     internal class Re3EnemyHelper : IEnemyHelper
     {
-        public void BeginRoom(Rdt rdt)
+        public void BeginRoom(RandomizedRdt rdt)
         {
         }
 
@@ -191,7 +191,7 @@ namespace IntelOrca.Biohazard.RE3
             }
         }
 
-        public bool SupportsEnemyType(RandoConfig config, Rdt rdt, string difficulty, bool hasEnemyPlacements, byte enemyType)
+        public bool SupportsEnemyType(RandoConfig config, RandomizedRdt rdt, string difficulty, bool hasEnemyPlacements, byte enemyType)
         {
             // These enemies always work
             switch (enemyType)

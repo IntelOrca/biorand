@@ -5,7 +5,7 @@ using OpenSoftware.DgmlTools;
 using OpenSoftware.DgmlTools.Builders;
 using OpenSoftware.DgmlTools.Model;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.BioRand
 {
     internal class PlayGraph
     {

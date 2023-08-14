@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using IntelOrca.Biohazard.BioRand.RE2;
-using IntelOrca.Biohazard.RE3;
+using IntelOrca.Biohazard.BioRand.RE3;
 using IntelOrca.Biohazard.Script.Opcodes;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.BioRand
 {
     internal class ItemRandomiser
     {

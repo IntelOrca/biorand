@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using IntelOrca.Biohazard.Model;
-using IntelOrca.Biohazard.Script;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.BioRand
 {
     public static class Extensions2
     {
@@ -128,7 +127,7 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        public static IEnumerable<T> EnumerateOpcodes<T>(this Rdt rdt, RandoConfig config) => AstEnumerator<T>.Enumerate(rdt.Ast!, config);
+        public static IEnumerable<T> EnumerateOpcodes<T>(this RandomizedRdt rdt, RandoConfig config) => AstEnumerator<T>.Enumerate(rdt.Ast!, config);
 
         public static short GetHeight(this ModelFile model)
         {

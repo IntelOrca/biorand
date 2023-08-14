@@ -4,7 +4,7 @@ using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.Script;
 
-namespace IntelOrca.Biohazard.RE3
+namespace IntelOrca.Biohazard.BioRand.RE3
 {
     internal class Re3NpcHelper : INpcHelper
     {
@@ -63,7 +63,7 @@ namespace IntelOrca.Biohazard.RE3
             return type >= Re3EnemyIds.CarlosOliveira1 || type == Re3EnemyIds.MarvinBranagh1;
         }
 
-        public byte[] GetDefaultIncludeTypes(Rdt rdt)
+        public byte[] GetDefaultIncludeTypes(RandomizedRdt rdt)
         {
             var defaultIncludeTypes = new byte[] {
                 Re3EnemyIds.MarvinBranagh1,

@@ -4,7 +4,7 @@ using System.Linq;
 using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
 
-namespace IntelOrca.Biohazard.RE3
+namespace IntelOrca.Biohazard.BioRand.RE3
 {
     internal class Re3DoorHelper : IDoorHelper
     {
@@ -317,7 +317,7 @@ namespace IntelOrca.Biohazard.RE3
                 }
             }
 
-            void AddCutCorrection(Rdt rdt, byte flag3, byte originalCut, byte newCut)
+            void AddCutCorrection(RandomizedRdt rdt, byte flag3, byte originalCut, byte newCut)
             {
                 // if (bits[3][flag3] == 1 && cut == originalCut)
                 rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x06, new byte[] { 0x00, 0x10, 0x00 }));
@@ -422,7 +422,7 @@ namespace IntelOrca.Biohazard.RE3
             }
         }
 
-        private static void CopyDoorTo(Rdt rdt, int dstId, int srcId)
+        private static void CopyDoorTo(RandomizedRdt rdt, int dstId, int srcId)
         {
             var src = rdt.Doors.First(x => x.Id == srcId);
             foreach (var dst in rdt.Doors.Where(x => x.Id == dstId))

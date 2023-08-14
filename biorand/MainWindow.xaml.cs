@@ -14,9 +14,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
-using IntelOrca.Biohazard.RE1;
-using IntelOrca.Biohazard.RE2;
-using IntelOrca.Biohazard.RE3;
+using IntelOrca.Biohazard.BioRand.RE1;
+using IntelOrca.Biohazard.BioRand.RE2;
+using IntelOrca.Biohazard.BioRand.RE3;
 
 namespace IntelOrca.Biohazard.BioRand
 {

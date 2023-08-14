@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
-using IntelOrca.Biohazard.BioRand.RE2;
 using IntelOrca.Biohazard.Script;
 
-namespace IntelOrca.Biohazard.RE2
+namespace IntelOrca.Biohazard.BioRand.RE2
 {
     internal class Re2ItemHelper : IItemHelper
     {

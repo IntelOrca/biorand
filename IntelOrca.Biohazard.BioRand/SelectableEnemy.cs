@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.BioRand
 {
     [DebuggerDisplay("{Name}")]
     public class SelectableEnemy

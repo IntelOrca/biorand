@@ -1,12 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using IntelOrca.Biohazard.BioRand.RE2;
 using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.Script;
 
-namespace IntelOrca.Biohazard.RE2
+namespace IntelOrca.Biohazard.BioRand.RE2
 {
     internal class Re2NpcHelper : INpcHelper
     {
@@ -23,7 +22,7 @@ namespace IntelOrca.Biohazard.RE2
             return player == 0 ? new[] { "leon", "ada" } : new[] { "claire", "sherry" };
         }
 
-        public byte[] GetDefaultIncludeTypes(Rdt rdt)
+        public byte[] GetDefaultIncludeTypes(RandomizedRdt rdt)
         {
             var defaultIncludeTypes = new byte[] {
                 // Re2EnemyIds.ChiefIrons1,

@@ -1,11 +1,11 @@
 using System;
 using System.IO;
-using IntelOrca.Biohazard.RE1;
-using IntelOrca.Biohazard.RE2;
-using IntelOrca.Biohazard.RE3;
+using IntelOrca.Biohazard.BioRand.RE1;
+using IntelOrca.Biohazard.BioRand.RE2;
+using IntelOrca.Biohazard.BioRand.RE3;
 using Xunit;
 
-namespace IntelOrca.Biohazard.Tests
+namespace IntelOrca.Biohazard.BioRand.Tests
 {
     public class TestRE1Rando : TestBaseRandomizer
     {

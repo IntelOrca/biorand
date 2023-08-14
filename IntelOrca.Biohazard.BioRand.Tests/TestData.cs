@@ -3,7 +3,7 @@ using System.IO;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace IntelOrca.Biohazard.Tests
+namespace IntelOrca.Biohazard.BioRand.Tests
 {
     public class TestData
     {

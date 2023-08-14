@@ -7,11 +7,10 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
-using IntelOrca.Biohazard.BioRand;
+using IntelOrca.Biohazard.BioRand.RE3;
 using IntelOrca.Biohazard.Model;
-using IntelOrca.Biohazard.RE3;
 
-namespace IntelOrca.Biohazard.RE1
+namespace IntelOrca.Biohazard.BioRand.RE1
 {
     public class Re1Randomiser : BaseRandomiser
     {

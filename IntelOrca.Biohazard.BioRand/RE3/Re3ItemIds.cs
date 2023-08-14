@@ -1,4 +1,4 @@
-﻿namespace IntelOrca.Biohazard.RE3
+﻿namespace IntelOrca.Biohazard.BioRand.RE3
 {
     internal static class Re3ItemIds
     {

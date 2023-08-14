@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using IntelOrca.Biohazard.BioRand.RE2;
 using IntelOrca.Biohazard.Model;
-using IntelOrca.Biohazard.RE2;
 using IntelOrca.Biohazard.Script.Opcodes;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.BioRand
 {
     internal class NPCRandomiser
     {
@@ -175,7 +175,7 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private void RandomizeRoom(Rng rng, Rdt rdt)
+        private void RandomizeRoom(Rng rng, RandomizedRdt rdt)
         {
             var npcRng = rng.NextFork();
             var voiceRng = rng.NextFork();
@@ -273,7 +273,7 @@ namespace IntelOrca.Biohazard
             return height;
         }
 
-        private void ScaleEMRs(Rdt rdt, byte id, double scale)
+        private void ScaleEMRs(RandomizedRdt rdt, byte id, double scale)
         {
             EmrFlags flags = 0;
             switch (id)
@@ -296,7 +296,7 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private Dictionary<string, string> RandomizeCharacters(Rdt rdt, Rng rng, byte[] defaultIncludeTypes, MapRoomNpcs[] npcs, Dictionary<int, byte> offsetToTypeMap, Dictionary<byte, byte> idToTypeMap)
+        private Dictionary<string, string> RandomizeCharacters(RandomizedRdt rdt, Rng rng, byte[] defaultIncludeTypes, MapRoomNpcs[] npcs, Dictionary<int, byte> offsetToTypeMap, Dictionary<byte, byte> idToTypeMap)
         {
             var actorToNewActorMap = new Dictionary<string, string>();
             foreach (var npc in npcs)

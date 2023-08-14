@@ -3,7 +3,7 @@ using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.Script;
 
-namespace IntelOrca.Biohazard.RE1
+namespace IntelOrca.Biohazard.BioRand.RE1
 {
     internal class Re1NpcHelper : INpcHelper
     {
@@ -15,7 +15,7 @@ namespace IntelOrca.Biohazard.RE1
                 .Replace("_", " ");
         }
 
-        public byte[] GetDefaultIncludeTypes(Rdt rdt)
+        public byte[] GetDefaultIncludeTypes(RandomizedRdt rdt)
         {
             return new byte[]
             {

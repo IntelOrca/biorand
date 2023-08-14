@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using IntelOrca.Biohazard.Script;
 
-namespace IntelOrca.Biohazard.Script
+namespace IntelOrca.Biohazard.BioRand
 {
     public class AstEnumerator<T> : ConditionalAstVisitor
     {

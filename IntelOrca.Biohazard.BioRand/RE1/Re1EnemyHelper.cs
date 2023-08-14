@@ -7,7 +7,7 @@ using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
 
-namespace IntelOrca.Biohazard.RE1
+namespace IntelOrca.Biohazard.BioRand.RE1
 {
     internal class Re1EnemyHelper : IEnemyHelper
     {
@@ -26,14 +26,14 @@ namespace IntelOrca.Biohazard.RE1
                 .Replace("_", " ");
         }
 
-        public bool SupportsEnemyType(RandoConfig config, Rdt rdt, string difficulty, bool hasEnemyPlacements, byte enemyType)
+        public bool SupportsEnemyType(RandoConfig config, RandomizedRdt rdt, string difficulty, bool hasEnemyPlacements, byte enemyType)
         {
             var exclude = new HashSet<byte>();
             ExcludeEnemies(config, rdt, difficulty, x => exclude.Add(x));
             return !exclude.Contains(enemyType);
         }
 
-        private void ExcludeEnemies(RandoConfig config, Rdt rdt, string difficulty, Action<byte> exclude)
+        private void ExcludeEnemies(RandoConfig config, RandomizedRdt rdt, string difficulty, Action<byte> exclude)
         {
             var types = rdt.Enemies
                 .Select(x => x.Type)
@@ -135,7 +135,7 @@ namespace IntelOrca.Biohazard.RE1
             }
         }
 
-        public void BeginRoom(Rdt rdt)
+        public void BeginRoom(RandomizedRdt rdt)
         {
         }
 

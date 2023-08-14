@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml;
-using IntelOrca.Biohazard.RE1;
-using IntelOrca.Biohazard.RE2;
-using IntelOrca.Biohazard.RE3;
+using IntelOrca.Biohazard.BioRand.RE1;
+using IntelOrca.Biohazard.BioRand.RE2;
+using IntelOrca.Biohazard.BioRand.RE3;
 using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.BioRand
 {
     internal class EnemyRandomiser
     {
@@ -106,7 +106,7 @@ namespace IntelOrca.Biohazard
             FixRooms();
         }
 
-        private Rdt[] GetAccessibleRdts(PlayGraph? graph)
+        private RandomizedRdt[] GetAccessibleRdts(PlayGraph? graph)
         {
             if (graph == null || graph.Start == null)
                 return _gameData.Rdts;
@@ -145,7 +145,7 @@ namespace IntelOrca.Biohazard
             return result.ToArray();
         }
 
-        private void RandomizeRooms(Rdt[] rdts)
+        private void RandomizeRooms(RandomizedRdt[] rdts)
         {
             var enemyRdts = rdts
                 .Where(RdtCanHaveEnemies)
@@ -218,7 +218,7 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private bool RdtCanHaveEnemies(Rdt rdt)
+        private bool RdtCanHaveEnemies(RandomizedRdt rdt)
         {
             var hasEnemyPlacements =
                 _config.RandomEnemyPlacement &&
@@ -228,7 +228,7 @@ namespace IntelOrca.Biohazard
                 .Any();
         }
 
-        private bool RdtSupportsEnemyType(Rdt rdt, byte[] enemyTypes)
+        private bool RdtSupportsEnemyType(RandomizedRdt rdt, byte[] enemyTypes)
         {
             var hasEnemyPlacements =
                 _config.RandomEnemyPlacement &&
@@ -289,7 +289,7 @@ namespace IntelOrca.Biohazard
             return true;
         }
 
-        private bool RandomizeRoomWithEnemy(Rdt rdt, SelectableEnemy targetEnemy)
+        private bool RandomizeRoomWithEnemy(RandomizedRdt rdt, SelectableEnemy targetEnemy)
         {
             _logger.WriteLine($"Randomizing room {rdt} with enemy: {targetEnemy.Name}");
 
@@ -363,7 +363,7 @@ namespace IntelOrca.Biohazard
             return $"[{_enemyHelper.GetEnemyName(enemy.Type)},{enemy.State},{enemy.Ai},{enemy.SoundBank},{enemy.Texture}] at ({enemy.X},{enemy.Y},{enemy.Z})";
         }
 
-        private bool RemoveAllEnemiesFromRoom(Rdt rdt)
+        private bool RemoveAllEnemiesFromRoom(RandomizedRdt rdt)
         {
             // Only count rooms that could have had enemies changed
             var newPlacements = _enemyPositions.Count(x => x.RdtId == rdt.RdtId);
@@ -401,7 +401,7 @@ namespace IntelOrca.Biohazard
             return true;
         }
 
-        private void RandomiseRoom(Rng rng, Rdt rdt, MapRoomEnemies enemySpec, SelectableEnemy targetEnemy)
+        private void RandomiseRoom(Rng rng, RandomizedRdt rdt, MapRoomEnemies enemySpec, SelectableEnemy targetEnemy)
         {
             if (enemySpec.Nop != null)
             {
@@ -463,7 +463,7 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private SceEmSetOpcode[] GenerateRandomEnemies(Rng rng, Rdt rdt, MapRoomEnemies enemySpec, SceEmSetOpcode[] currentEnemies, byte enemyType)
+        private SceEmSetOpcode[] GenerateRandomEnemies(Rng rng, RandomizedRdt rdt, MapRoomEnemies enemySpec, SceEmSetOpcode[] currentEnemies, byte enemyType)
         {
             var relevantPlacements = _enemyPositions
                 .Where(x => x.RdtId == rdt.RdtId)
@@ -538,7 +538,7 @@ namespace IntelOrca.Biohazard
             return enemy;
         }
 
-        private void InsertConditions(Rdt rdt, int opcodeIndex, int numOpcodes, string? condition)
+        private void InsertConditions(RandomizedRdt rdt, int opcodeIndex, int numOpcodes, string? condition)
         {
             if (string.IsNullOrEmpty(condition))
                 return;

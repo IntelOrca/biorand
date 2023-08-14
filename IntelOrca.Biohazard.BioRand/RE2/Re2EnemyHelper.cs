@@ -7,7 +7,7 @@ using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
 
-namespace IntelOrca.Biohazard.RE2
+namespace IntelOrca.Biohazard.BioRand.RE2
 {
     internal class Re2EnemyHelper : IEnemyHelper
     {
@@ -37,7 +37,7 @@ namespace IntelOrca.Biohazard.RE2
                 .Replace("_", " ");
         }
 
-        public bool SupportsEnemyType(RandoConfig config, Rdt rdt, string difficulty, bool hasEnemyPlacements, byte enemyType)
+        public bool SupportsEnemyType(RandoConfig config, RandomizedRdt rdt, string difficulty, bool hasEnemyPlacements, byte enemyType)
         {
             if (config.RandomEnemyPlacement && hasEnemyPlacements)
             {
@@ -51,7 +51,7 @@ namespace IntelOrca.Biohazard.RE2
             }
         }
 
-        private void ExcludeEnemies(RandoConfig config, Rdt rdt, string difficulty, Action<byte> exclude)
+        private void ExcludeEnemies(RandoConfig config, RandomizedRdt rdt, string difficulty, Action<byte> exclude)
         {
             var types = rdt.Enemies
                 .Select(x => x.Type)
@@ -79,7 +79,7 @@ namespace IntelOrca.Biohazard.RE2
             }
         }
 
-        public void BeginRoom(Rdt rdt)
+        public void BeginRoom(RandomizedRdt rdt)
         {
             // Mute dead zombies or vines, this ensures our random enemy type
             // will be heard

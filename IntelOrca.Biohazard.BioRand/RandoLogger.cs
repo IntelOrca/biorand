@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.BioRand
 {
     public class RandoLogger : IDisposable
     {

@@ -1,4 +1,4 @@
-﻿namespace IntelOrca.Biohazard.RE2
+﻿namespace IntelOrca.Biohazard.BioRand.RE2
 {
     internal class Re2DoorHelper : IDoorHelper
     {

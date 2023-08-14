@@ -1,7 +1,7 @@
 ﻿using System;
 using IntelOrca.Biohazard.Script;
 
-namespace IntelOrca.Biohazard.RE3
+namespace IntelOrca.Biohazard.BioRand.RE3
 {
     internal class Re3ItemHelper : IItemHelper
     {

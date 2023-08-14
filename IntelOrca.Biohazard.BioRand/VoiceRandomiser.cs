@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.Json;
 using NVorbis;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.BioRand
 {
     internal class VoiceRandomiser
     {
@@ -256,7 +256,7 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private HashSet<string> GetActors(Rdt rdt, MapRoomNpcs[] npcs)
+        private HashSet<string> GetActors(RandomizedRdt rdt, MapRoomNpcs[] npcs)
         {
             var actorToNewActorMap = new HashSet<string>();
             foreach (var npc in npcs)
@@ -303,7 +303,7 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private void RandomizeRoom(Rng rng, Rdt rdt, RoomVoices[] roomVoices)
+        private void RandomizeRoom(Rng rng, RandomizedRdt rdt, RoomVoices[] roomVoices)
         {
             foreach (var v in roomVoices)
             {
@@ -311,7 +311,7 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private void RandomizeVoices(Rdt rdt, Rng rng, int cutscene, string pc, Dictionary<string, string> actorToNewActorMap)
+        private void RandomizeVoices(RandomizedRdt rdt, Rng rng, int cutscene, string pc, Dictionary<string, string> actorToNewActorMap)
         {
             var first = true;
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IntelOrca.Biohazard.RE1
+namespace IntelOrca.Biohazard.BioRand.RE1
 {
     internal class Re1DoorHelper : IDoorHelper
     {

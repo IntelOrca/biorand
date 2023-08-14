@@ -2,9 +2,11 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using IntelOrca.Biohazard.Extensions;
+using IntelOrca.Biohazard.Room;
 using IntelOrca.Biohazard.Script;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.BioRand
 {
     internal static class GameDataReader
     {
@@ -20,7 +22,7 @@ namespace IntelOrca.Biohazard
             File.WriteAllText("map.json", json);
         }
 
-        private static Map GenerateMap(IEnumerable<Rdt> rooms)
+        private static Map GenerateMap(IEnumerable<RandomizedRdt> rooms)
         {
             var map = new Map();
             var mapRooms = new Dictionary<string, MapRoom>();
@@ -44,12 +46,12 @@ namespace IntelOrca.Biohazard
             return map;
         }
 
-        public static Rdt ReadRdt(BioVersion version, byte[] data, string path, string? modPath)
+        public static RandomizedRdt ReadRdt(BioVersion version, byte[] data, string path, string? modPath)
         {
-            var rdtFile = new RdtFile(data, version);
+            var rdtFile = Rdt.FromData(version, data);
             var rdt = Path.GetFileName(path).StartsWith("ROOM", System.StringComparison.OrdinalIgnoreCase) ?
-                new Rdt(rdtFile, RdtId.Parse(Path.GetFileNameWithoutExtension(path).Substring(4, 3))) :
-                new Rdt(rdtFile, RdtId.Parse(Path.GetFileNameWithoutExtension(path).Substring(1, 3)));
+                new RandomizedRdt(rdtFile, RdtId.Parse(Path.GetFileNameWithoutExtension(path).Substring(4, 3))) :
+                new RandomizedRdt(rdtFile, RdtId.Parse(Path.GetFileNameWithoutExtension(path).Substring(1, 3)));
 
             rdt.OriginalPath = path;
             rdt.ModifiedPath = modPath;
@@ -73,14 +75,14 @@ namespace IntelOrca.Biohazard
             return rdt;
         }
 
-        private static string Decompile(RdtFile rdtFile, bool assemblyFormat, bool listingFormat)
+        private static string Decompile(IRdt rdtFile, bool assemblyFormat, bool listingFormat)
         {
             var scriptDecompiler = new ScriptDecompiler(assemblyFormat, listingFormat);
             rdtFile.ReadScript(scriptDecompiler);
             return scriptDecompiler.GetScript();
         }
 
-        private static ScriptAst CreateAst(RdtFile rdtFile)
+        private static ScriptAst CreateAst(IRdt rdtFile)
         {
             var builder = new ScriptAstBuilder();
             rdtFile.ReadScript(builder);

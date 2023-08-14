@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using IntelOrca.Biohazard.Script.Opcodes;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.BioRand
 {
     internal class DoorRandomiser
     {
@@ -839,7 +839,7 @@ namespace IntelOrca.Biohazard
             }
         }
 
-        private Rdt GetIdealRdt(RdtId rtdId)
+        private RandomizedRdt GetIdealRdt(RdtId rtdId)
         {
             var rdt = _gameData.GetRdt(rtdId)!;
             if (rdt.Version == BioVersion.Biohazard1)
@@ -853,7 +853,7 @@ namespace IntelOrca.Biohazard
             return rdt;
         }
 
-        private static bool IsSameRdtId(Rdt rdt, RdtId id, RdtId other)
+        private static bool IsSameRdtId(RandomizedRdt rdt, RdtId id, RdtId other)
         {
             if (rdt.Version == BioVersion.Biohazard1)
             {
@@ -932,7 +932,7 @@ namespace IntelOrca.Biohazard
                         continue;
 
                     DoorEntrance? entrance = null;
-                    Rdt targetRdt;
+                    RandomizedRdt targetRdt;
                     IDoorAotSetOpcode? targetExit;
                     var target = RdtDoorTarget.Parse(door.Target!);
                     if (target.Id != null)

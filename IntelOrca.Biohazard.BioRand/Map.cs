@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.BioRand
 {
     public class Map
     {
@@ -16,7 +16,7 @@ namespace IntelOrca.Biohazard
             return value;
         }
 
-        internal static int[] ParseNopArray(System.Text.Json.JsonElement[]? nopArray, Rdt rdt)
+        internal static int[] ParseNopArray(System.Text.Json.JsonElement[]? nopArray, RandomizedRdt rdt)
         {
             var nop = new List<int>();
             if (nopArray != null)

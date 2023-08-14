@@ -5,12 +5,12 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using IntelOrca.Biohazard.BioRand;
-using IntelOrca.Biohazard.RE1;
-using IntelOrca.Biohazard.RE2;
-using IntelOrca.Biohazard.RE3;
+using IntelOrca.Biohazard.BioRand.RE1;
+using IntelOrca.Biohazard.BioRand.RE2;
+using IntelOrca.Biohazard.BioRand.RE3;
+using IntelOrca.Biohazard.Room;
 
-namespace IntelOrca.Biohazard
+namespace IntelOrca.Biohazard.BioRand
 {
     public abstract class BaseRandomiser
     {
@@ -122,8 +122,8 @@ namespace IntelOrca.Biohazard
                 {
                     if (File.Exists(rdtPath))
                     {
-                        var rdtFile = new RdtFile(rdtPath, BiohazardVersion);
-                        result[rdtId] = rdtFile.Checksum;
+                        var rdtFile = Rdt.FromFile(BiohazardVersion, rdtPath);
+                        result[rdtId] = rdtFile.Data.CalculateFnv1a();
                     }
                 }
                 catch
@@ -135,7 +135,7 @@ namespace IntelOrca.Biohazard
 
         private GameData ReadGameData(FileRepository fileRepository, int player, RdtId[] rdtIds, bool mod)
         {
-            var rdts = new List<Rdt>();
+            var rdts = new List<RandomizedRdt>();
             foreach (var rdtId in rdtIds)
             {
                 var rdtPath = GetRdtPath(fileRepository.DataPath, rdtId, player);
@@ -498,7 +498,7 @@ namespace IntelOrca.Biohazard
             File.WriteAllText(path, sb.ToString());
         }
 
-        private void DumpRdt(StringBuilder sb, Rdt rdt)
+        private void DumpRdt(StringBuilder sb, RandomizedRdt rdt)
         {
             foreach (var door in rdt.Doors)
             {

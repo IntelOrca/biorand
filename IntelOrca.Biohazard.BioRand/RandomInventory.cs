@@ -1,4 +1,4 @@
-﻿namespace IntelOrca.Biohazard
+﻿namespace IntelOrca.Biohazard.BioRand
 {
     internal class RandomInventory
     {

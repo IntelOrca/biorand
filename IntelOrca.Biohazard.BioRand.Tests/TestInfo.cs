@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace IntelOrca.Biohazard.Tests
+namespace IntelOrca.Biohazard.BioRand.Tests
 {
     internal static class TestInfo
     {

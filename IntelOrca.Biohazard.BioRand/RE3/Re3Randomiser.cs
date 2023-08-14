@@ -4,12 +4,11 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using IntelOrca.Biohazard.BioRand;
+using IntelOrca.Biohazard.BioRand.RE1;
 using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
-using IntelOrca.Biohazard.RE1;
 
-namespace IntelOrca.Biohazard.RE3
+namespace IntelOrca.Biohazard.BioRand.RE3
 {
     public class Re3Randomiser : BaseRandomiser
     {
