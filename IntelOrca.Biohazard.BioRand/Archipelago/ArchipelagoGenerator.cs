@@ -10,6 +10,7 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
     {
         private readonly IItemHelper _itemHelper;
         private readonly List<ArchipelagoRegion> _regions = new List<ArchipelagoRegion>();
+        private readonly List<ArchipelagoLocation> _locations = new List<ArchipelagoLocation>();
         private readonly List<ArchipelagoItem> _items = new List<ArchipelagoItem>();
         private readonly HashSet<PlayNode> _visited = new HashSet<PlayNode>();
         private readonly Dictionary<PlayNode, ArchipelagoRegion> _nodeToRegionMap = new Dictionary<PlayNode, ArchipelagoRegion>();
@@ -21,23 +22,35 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
 
         public void Generate(string path, PlayGraph graph, string? seed = null, string? description = null)
         {
-            var exitNodes = new Queue<(ArchipelagoRegion?, PlayNode)>();
-            exitNodes.Enqueue((null, graph.Start!));
-
+            var exitNodes = new Queue<PlayEdge>();
+            GetNextRegion(graph.Start!, exitNodes);
             while (!_visited.Contains(graph.End!) && exitNodes.Count != 0)
             {
-                var (region, exitNode) = exitNodes.Dequeue();
-                if (_visited.Contains(exitNode))
+                var edge = exitNodes.Dequeue();
+                if (_visited.Contains(edge.Node!))
                     continue;
 
-                var regionId = GetNextRegion(exitNode, exitNodes);
-                if (region != null)
-                    region.Edges!.Add(regionId);
+                var regionId = GetNextRegion(edge.Node!, exitNodes);
+                var fromRegion = _nodeToRegionMap[edge.Parent];
+                AddEdgeToRegion(fromRegion, edge);
             }
 
-            if (_nodeToRegionMap.TryGetValue(graph.End!, out var victoryRegion))
+            AddVictoryEvent(graph.End!);
+
+            // Convert require arrays to AP item ids
+            foreach (var region in _regions)
             {
-                victoryRegion.Victory = true;
+                if (region.Edges != null)
+                {
+                    foreach (var edge in region.Edges)
+                    {
+                        edge.Requires = ConvertRequiresArray(edge.Requires);
+                    }
+                }
+            }
+            foreach (var location in _locations)
+            {
+                location.Requires = ConvertRequiresArray(location.Requires);
             }
 
             var output = new ArchipelagoData()
@@ -45,6 +58,7 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
                 Description = description,
                 Seed = seed,
                 Regions = _regions.ToArray(),
+                Locations = _locations.ToArray(),
                 Items = _items
                     .DistinctBy(x => x.Id)
                     .OrderBy(x => x.Type)
@@ -60,7 +74,53 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
             File.WriteAllText(path, outputJson);
         }
 
-        private int GetNextRegion(PlayNode startNode, Queue<(ArchipelagoRegion?, PlayNode)> exitNodes)
+        private void AddVictoryEvent(PlayNode victoryNode)
+        {
+            // Add fake victory location with victory item
+            var victoryItemId = 0x10000;
+            _items.Add(new ArchipelagoItem()
+            {
+                Id = victoryItemId,
+                Name = "Victory",
+                Group = "event"
+            });
+            var victoryLocation = new ArchipelagoLocation()
+            {
+                Id = _locations.Count,
+                Name = "Victory",
+                Item = victoryItemId
+            };
+            _locations.Add(victoryLocation);
+            var endRegion = _nodeToRegionMap[victoryNode];
+            endRegion.Locations = endRegion.Locations
+                .Concat(new[] { victoryLocation.Id!.Value })
+                .ToArray();
+        }
+
+        private int[]? ConvertRequiresArray(int[]? input)
+        {
+            if (input == null)
+                return null;
+
+            var output = input
+                .Select(type => FindItemId(type))
+                .Where(x => x != null)
+                .Select(x => x!.Value)
+                .ToArray();
+            return output.Length == 0 ? null : output;
+        }
+
+        private int? FindItemId(int type)
+        {
+            foreach (var item in _items)
+            {
+                if (item.Type == type)
+                    return item.Id;
+            }
+            return null;
+        }
+
+        private int GetNextRegion(PlayNode startNode, Queue<PlayEdge> exits)
         {
             var regionId = _regions.Count;
             var region = new ArchipelagoRegion()
@@ -69,9 +129,8 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
                 Name = $"Region {regionId}"
             };
             _regions.Add(region);
-            _nodeToRegionMap.Add(startNode, region);
 
-            var regionEdges = new List<ArchipelagoRegion>();
+            var regionEdges = new List<ArchipelagoEdge>();
             var regionNodes = new List<PlayNode>();
             var locations = new List<ArchipelagoLocation>();
 
@@ -83,6 +142,7 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
                 if (!_visited.Add(node))
                     continue;
 
+                _nodeToRegionMap.Add(node, region);
                 regionNodes.Add(node);
                 ProcessRoomItems(node, locations);
 
@@ -94,12 +154,11 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
                     var edgeNode = edge.Node!;
                     if (_nodeToRegionMap.TryGetValue(edgeNode, out var exitRegion))
                     {
-                        if (exitRegion != region)
-                            regionEdges.Add(exitRegion);
+                        AddEdgeToRegion(region, edge);
                     }
                     else if (IsExitEdge(edge))
                     {
-                        exitNodes.Enqueue((region, edgeNode));
+                        exits.Enqueue(edge);
                     }
                     else
                     {
@@ -107,12 +166,26 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
                     }
                 }
             }
-            region.Locations = locations.ToArray();
-            region.Edges = regionEdges
-                .Select(x => x.Id)
-                .Distinct()
-                .ToList();
+            region.Locations = locations.Select(x => x.Id!.Value).ToArray();
             return regionId;
+        }
+
+        private void AddEdgeToRegion(ArchipelagoRegion region, PlayEdge edge)
+        {
+            var edgeRegion = _nodeToRegionMap[edge.Node!];
+            if (edgeRegion == region)
+                return;
+
+            foreach (var oldEdge in region.Edges!)
+            {
+                if (oldEdge.Region == edgeRegion.Id)
+                    return;
+            }
+
+            var apEdge = new ArchipelagoEdge();
+            apEdge.Region = edgeRegion.Id;
+            apEdge.Requires = edge.Requires.Select(x => (int)x).ToArray();
+            region.Edges!.Add(apEdge);
         }
 
         private static bool IsExitEdge(PlayEdge edge)
@@ -126,14 +199,14 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
         {
             if (edge.Node == null)
                 return true;
-            if (edge.Lock == LockKind.Always)
+            if (edge.Lock == LockKind.Always || edge.Lock == LockKind.Gate || edge.Lock == LockKind.Side)
                 return true;
             return false;
         }
 
         private ArchipelagoLocation[] ProcessRoomItems(PlayNode node, List<ArchipelagoLocation> locations)
         {
-            foreach (var item in node.Items)
+            foreach (var item in node.Items.Concat(node.PlacedKeyItems))
             {
                 var itemAttributes = _itemHelper.GetItemAttributes((byte)item.Type);
                 var hasQuantity =
@@ -152,12 +225,18 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
                 };
 
                 _items.Add(apItem);
-                locations.Add(new ArchipelagoLocation()
+                var location = new ArchipelagoLocation()
                 {
+                    Id = _locations.Count,
                     Name = $"{item.RdtItemId}",
-                    Item = apItem.Id,
-                    Priority = item.Priority.ToString().ToLowerInvariant()
-                });
+                    Item = apItem.Id!.Value,
+                };
+                if (item.Priority != ItemPriority.Normal)
+                    location.Priority = item.Priority.ToString().ToLowerInvariant();
+                if (item.Requires != null && item.Requires.Length != 0)
+                    location.Requires = item.Requires.Select(x => (int)x).ToArray();
+                locations.Add(location);
+                _locations.Add(location);
             }
             return locations.ToArray();
         }
@@ -176,6 +255,8 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
                 return "ink";
             if (attributes.HasFlag(ItemAttribute.Key))
                 return "key";
+            if (attributes.HasFlag(ItemAttribute.Document))
+                return "document";
             return null;
         }
     }

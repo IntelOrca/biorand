@@ -7,7 +7,7 @@ using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 using Archipelago.MultiClient.Net.Models;
-using IntelOrca.Biohazard.RE2;
+using IntelOrca.Biohazard.BioRand.RE2;
 
 namespace IntelOrca.Biohazard.BioRand.Cli
 {
