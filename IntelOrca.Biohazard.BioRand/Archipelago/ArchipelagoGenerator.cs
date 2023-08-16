@@ -8,6 +8,7 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
 {
     internal class ArchipelagoGenerator
     {
+        private readonly IDoorHelper _doorHelper;
         private readonly IItemHelper _itemHelper;
         private readonly List<ArchipelagoRegion> _regions = new List<ArchipelagoRegion>();
         private readonly List<ArchipelagoLocation> _locations = new List<ArchipelagoLocation>();
@@ -15,8 +16,9 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
         private readonly HashSet<PlayNode> _visited = new HashSet<PlayNode>();
         private readonly Dictionary<PlayNode, ArchipelagoRegion> _nodeToRegionMap = new Dictionary<PlayNode, ArchipelagoRegion>();
 
-        public ArchipelagoGenerator(IItemHelper itemHelper)
+        public ArchipelagoGenerator(IDoorHelper doorHelper, IItemHelper itemHelper)
         {
+            _doorHelper = doorHelper;
             _itemHelper = itemHelper;
         }
 
@@ -206,6 +208,7 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
 
         private ArchipelagoLocation[] ProcessRoomItems(PlayNode node, List<ArchipelagoLocation> locations)
         {
+            var roomDisplayName = _doorHelper.GetRoomDisplayName(node.RdtId);
             foreach (var item in node.Items.Concat(node.PlacedKeyItems))
             {
                 var itemAttributes = _itemHelper.GetItemAttributes((byte)item.Type);
@@ -228,7 +231,7 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
                 var location = new ArchipelagoLocation()
                 {
                     Id = _locations.Count,
-                    Name = $"{item.RdtItemId}",
+                    Name = $"{item.RdtItemId} {roomDisplayName}",
                     Item = apItem.Id!.Value,
                 };
                 if (item.Priority != ItemPriority.Normal)

@@ -236,5 +236,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             var room = gameData.GetRdt(new RdtId(2, 0x03));
             room?.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x05, new byte[] { 0x00, 43, 0 }));
         }
+
+        public string? GetRoomDisplayName(RdtId id) => null;
     }
 }

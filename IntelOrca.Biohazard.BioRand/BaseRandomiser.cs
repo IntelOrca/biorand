@@ -315,7 +315,7 @@ namespace IntelOrca.Biohazard.BioRand
                     }
                     finally
                     {
-                        var apGenerator = new ArchipelagoGenerator(ItemHelper);
+                        var apGenerator = new ArchipelagoGenerator(DoorHelper, ItemHelper);
                         apGenerator.Generate(archPath, graph,
                             seed: config.ToString(),
                             description: $"Archipelago item randomization for BioRand, Resident Evil {config.Game}");
