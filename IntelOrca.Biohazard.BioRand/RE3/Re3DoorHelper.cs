@@ -460,5 +460,7 @@ namespace IntelOrca.Biohazard.BioRand.RE3
             result.Target = newTarget;
             return result;
         }
+
+        public string? GetRoomDisplayName(RdtId id) => null;
     }
 }
