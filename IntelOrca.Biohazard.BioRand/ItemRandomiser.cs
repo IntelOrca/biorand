@@ -931,6 +931,9 @@ namespace IntelOrca.Biohazard.BioRand
                 if (_definedPool.Any(x => x.RdtItemId == newEntry.RdtItemId))
                     throw new Exception();
                 _definedPool.Add(newEntry);
+
+                var itemParentNode = _nodes.First(x => x.RdtId == newEntry.RdtId);
+                itemParentNode.PlacedNonKeyItems.Add(newEntry);
                 return true;
             }
             else
