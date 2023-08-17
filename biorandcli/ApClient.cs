@@ -19,6 +19,7 @@ namespace IntelOrca.Biohazard.BioRand.Cli
         private readonly ReProcess _reProcess;
         private ReFlags _lastItemFlags;
         private IItemHelper _itemHelper = new Re2ItemHelper();
+        private bool _isPickingUpItem;
 
         public ApClient(ReProcess reProcess, string host, int port)
         {
@@ -51,8 +52,10 @@ namespace IntelOrca.Biohazard.BioRand.Cli
             while (_session.Socket.Connected)
             {
                 await CheckPickedUpItemsAsync();
+                await UpdatePickupItemAsync();
                 await Task.Delay(100);
             }
+            Console.Error.WriteLine("Disconnected");
         }
 
         private async Task CheckPickedUpItemsAsync()
@@ -74,18 +77,69 @@ namespace IntelOrca.Biohazard.BioRand.Cli
                         .Intersect(allItems)
                         .ToArray();
 
+                    Log($"New locations looted: [{string.Join(", ", changedFlags.Keys)}]");
                     var locationInfo = await _session.Locations.ScoutLocationsAsync(newItems);
                     foreach (var l in locationInfo.Locations)
                     {
                         var itemName = _session.Items.GetItemName(l.Item);
                         var playerName = _session.Players.GetPlayerName(l.Player);
-                        Log($"Found {itemName} for {playerName}");
+                        Log($"Found {itemName} for {playerName} at location {l.Location}");
                     }
 
                     await _session.Locations.CompleteLocationChecksAsync(allCheckedItems);
 
                     _lastItemFlags = _reProcess.ItemFlags;
                 }
+            }
+            catch (Exception ex)
+            {
+                Log(ex);
+            }
+        }
+
+        private async Task UpdatePickupItemAsync()
+        {
+            try
+            {
+                var isPickingUpItem = _reProcess.HudMode == 2;
+                if (isPickingUpItem == _isPickingUpItem)
+                {
+                    return;
+                }
+
+                if (isPickingUpItem)
+                {
+                    var flag = _reProcess.PickupFlag;
+                    Log($"Picking up item at location {flag}.");
+
+                    var allLocations = _session.Locations.AllLocations;
+                    if (allLocations.Contains(flag))
+                    {
+                        var locationInfo = await _session.Locations.ScoutLocationsAsync(flag);
+                        foreach (var l in locationInfo.Locations)
+                        {
+                            var itemName = _session.Items.GetItemName(l.Item);
+                            var playerName = _session.Players.GetPlayerName(l.Player);
+                            Log($"  Item: {itemName} for {playerName} at location {l.Location}");
+
+
+                            if (l.Player != _session.ConnectionInfo.Slot)
+                            {
+                                _reProcess.PickupType = Re2ItemIds.None;
+                                _reProcess.PickupName = Re2ItemIds.None;
+                                _reProcess.PickupAmount = 0;
+                            }
+                            else
+                            {
+                                _reProcess.PickupType = (byte)(l.Item & 0xFF);
+                                _reProcess.PickupName = (byte)(l.Item & 0xFF);
+                                _reProcess.PickupAmount = (byte)((l.Item >> 8) & 0xFF);
+                            }
+                            break;
+                        }
+                    }
+                }
+                _isPickingUpItem = isPickingUpItem;
             }
             catch (Exception ex)
             {

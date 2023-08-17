@@ -189,6 +189,7 @@ namespace IntelOrca.Biohazard.BioRand
         public DoorRandoCategory Category { get; set; }
         public int[] DoorRandoNop { get; set; } = Array.Empty<int>();
         public List<ItemPoolEntry> PlacedKeyItems { get; } = new List<ItemPoolEntry>();
+        public List<ItemPoolEntry> PlacedNonKeyItems { get; } = new List<ItemPoolEntry>();
         public int Depth { get; set; }
         public bool Visited { get; set; }
         public bool HasCutscene { get; set; }

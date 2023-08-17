@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using static IntelOrca.Biohazard.BioRand.Cli.Win32;
 
 namespace IntelOrca.Biohazard.BioRand.Cli
@@ -38,6 +39,46 @@ namespace IntelOrca.Biohazard.BioRand.Cli
         public ReFlags LocalFlags => ReadFlags(0x0098EB6C, 8);
         public ReFlags ItemFlags => ReadFlags(0x0098EBB4, 32);
         public ReFlags LockFlags => ReadFlags(0x0098ED2C, 8);
+        public byte HudMode => Read<byte>(0x00691F70);
+        public byte PickupName
+        {
+            get => Read<byte>(0x0098504F);
+            set => Write<byte>(0x0098504F, value);
+        }
+        public byte PickupType
+        {
+            get => Read<byte>(0x0098E529);
+            set => Write<byte>(0x0098E529, value);
+        }
+        public uint PickupAotAddress => Read<uint>(0x009888D0);
+
+        public byte PickupAmount
+        {
+            get
+            {
+                var address = PickupAotAddress;
+                return Read<byte>((int)(address + 14));
+            }
+            set
+            {
+                var address = PickupAotAddress;
+                Write<byte>((int)(address + 14), value);
+            }
+        }
+
+        public byte PickupFlag
+        {
+            get
+            {
+                var address = PickupAotAddress;
+                return Read<byte>((int)(address + 16));
+            }
+            set
+            {
+                var address = PickupAotAddress;
+                Write<byte>((int)(address + 16), value);
+            }
+        }
 
         public int GetTime()
         {
@@ -123,7 +164,17 @@ namespace IntelOrca.Biohazard.BioRand.Cli
             }
         }
 
-        public bool this[int index] => (_flags[index >> 3] & (1 << (index & 7))) != 0;
+        // public bool this[int index] => (_flags[index >> 3] & (1 << (index & 7))) != 0;
+        public bool this[int index]
+        {
+            get
+            {
+                var ints = MemoryMarshal.Cast<byte, int>(_flags);
+                var idx = ints[index >> 5];
+                var mask = 1 << ((32 - index - 1) & 31);
+                return (idx & mask) != 0;
+            }
+        }
         public static bool operator ==(ReFlags lhs, ReFlags rhs) => lhs.Equals(rhs);
         public static bool operator !=(ReFlags lhs, ReFlags rhs) => !(lhs == rhs);
 

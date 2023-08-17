@@ -1,6 +1,6 @@
 ﻿namespace IntelOrca.Biohazard.BioRand.RE2
 {
-    internal static class Re2ItemIds
+    public static class Re2ItemIds
     {
         public const byte None = 0;
         public const byte Knife = 1;

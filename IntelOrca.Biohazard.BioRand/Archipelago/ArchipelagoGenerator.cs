@@ -209,7 +209,7 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
         private ArchipelagoLocation[] ProcessRoomItems(PlayNode node, List<ArchipelagoLocation> locations)
         {
             var roomDisplayName = _doorHelper.GetRoomDisplayName(node.RdtId);
-            foreach (var item in node.Items.Concat(node.PlacedKeyItems))
+            foreach (var item in node.PlacedKeyItems.Concat(node.PlacedNonKeyItems))
             {
                 var itemAttributes = _itemHelper.GetItemAttributes((byte)item.Type);
                 var hasQuantity =
