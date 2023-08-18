@@ -12,6 +12,7 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
         private readonly IItemHelper _itemHelper;
         private readonly List<ArchipelagoRegion> _regions = new List<ArchipelagoRegion>();
         private readonly List<ArchipelagoLocation> _locations = new List<ArchipelagoLocation>();
+        private readonly HashSet<int> _locationIds = new HashSet<int>();
         private readonly List<ArchipelagoItem> _items = new List<ArchipelagoItem>();
         private readonly HashSet<PlayNode> _visited = new HashSet<PlayNode>();
         private readonly Dictionary<PlayNode, ArchipelagoRegion> _nodeToRegionMap = new Dictionary<PlayNode, ArchipelagoRegion>();
@@ -228,9 +229,19 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
                 };
 
                 _items.Add(apItem);
+
+                // Can't add another item which shares same global ID, give it a non-clash ID
+                var id = (int)item.GlobalId;
+                var priority = item.Priority;
+                if (!_locationIds.Add(id))
+                {
+                    id = 0x20000 | _locations.Count;
+                    priority = ItemPriority.Low;
+                }
+
                 var location = new ArchipelagoLocation()
                 {
-                    Id = _locations.Count,
+                    Id = id,
                     Name = $"{item.RdtItemId} {roomDisplayName}",
                     Item = apItem.Id!.Value,
                 };
