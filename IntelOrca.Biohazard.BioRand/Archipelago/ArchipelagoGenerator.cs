@@ -16,6 +16,8 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
         private readonly List<ArchipelagoItem> _items = new List<ArchipelagoItem>();
         private readonly HashSet<PlayNode> _visited = new HashSet<PlayNode>();
         private readonly Dictionary<PlayNode, ArchipelagoRegion> _nodeToRegionMap = new Dictionary<PlayNode, ArchipelagoRegion>();
+        private readonly HashSet<int> _previousRequiredKeys = new HashSet<int>();
+        private readonly HashSet<int> _allRequiredKeys = new HashSet<int>();
 
         public ArchipelagoGenerator(IDoorHelper doorHelper, IItemHelper itemHelper)
         {
@@ -33,9 +35,31 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
                 if (_visited.Contains(edge.Node!))
                     continue;
 
-                var regionId = GetNextRegion(edge.Node!, exitNodes);
+                if (edge.NoReturn)
+                {
+                    // Save no return edge till last
+                    if (exitNodes.Count(x => !x.NoReturn) != 0)
+                    {
+                        exitNodes.Enqueue(edge);
+                        continue;
+                    }
+                }
+
+                GetNextRegion(edge.Node!, exitNodes);
                 var fromRegion = _nodeToRegionMap[edge.Parent];
-                AddEdgeToRegion(fromRegion, edge);
+                var apEdge = AddEdgeToRegion(fromRegion, edge);
+                if (apEdge != null && edge.NoReturn)
+                {
+                    var req1 = apEdge.Requires ?? new int[0];
+                    var req2 = req1
+                        .Concat(_allRequiredKeys)
+                        .Except(_previousRequiredKeys)
+                        .Distinct()
+                        .ToArray();
+                    apEdge.Requires = req2.Length == 0 ? null : req2;
+                    _previousRequiredKeys.AddRange(_allRequiredKeys);
+                    _allRequiredKeys.Clear();
+                }
             }
 
             AddVictoryEvent(graph.End!);
@@ -89,7 +113,7 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
             });
             var victoryLocation = new ArchipelagoLocation()
             {
-                Id = _locations.Count,
+                Id = victoryItemId,
                 Name = "Victory",
                 Item = victoryItemId
             };
@@ -173,27 +197,32 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
             return regionId;
         }
 
-        private void AddEdgeToRegion(ArchipelagoRegion region, PlayEdge edge)
+        private ArchipelagoEdge? AddEdgeToRegion(ArchipelagoRegion region, PlayEdge edge)
         {
             var edgeRegion = _nodeToRegionMap[edge.Node!];
             if (edgeRegion == region)
-                return;
+                return null;
 
             foreach (var oldEdge in region.Edges!)
             {
                 if (oldEdge.Region == edgeRegion.Id)
-                    return;
+                    return null;
             }
 
             var apEdge = new ArchipelagoEdge();
             apEdge.Region = edgeRegion.Id;
             apEdge.Requires = edge.Requires.Select(x => (int)x).ToArray();
+            foreach (var r in apEdge.Requires)
+                _allRequiredKeys.Add(r);
             region.Edges!.Add(apEdge);
+            return apEdge;
         }
 
         private static bool IsExitEdge(PlayEdge edge)
         {
             if (edge.Requires?.Length != 0)
+                return true;
+            if (edge.NoReturn)
                 return true;
             return false;
         }
@@ -248,7 +277,11 @@ namespace IntelOrca.Biohazard.BioRand.Archipelago
                 if (item.Priority != ItemPriority.Normal)
                     location.Priority = item.Priority.ToString().ToLowerInvariant();
                 if (item.Requires != null && item.Requires.Length != 0)
+                {
                     location.Requires = item.Requires.Select(x => (int)x).ToArray();
+                    foreach (var r in location.Requires)
+                        _allRequiredKeys.Add(r);
+                }
                 locations.Add(location);
                 _locations.Add(location);
             }
