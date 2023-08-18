@@ -7,6 +7,7 @@
         public byte Id { get; set; }
         public ushort Type { get; set; }
         public ushort Amount { get; set; }
+        public ushort GlobalId { get; set; }
         public byte[]? Requires { get; set; }
         public ItemPriority Priority { get; set; }
         public bool AllowDocuments { get; set; }

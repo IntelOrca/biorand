@@ -121,6 +121,7 @@ namespace IntelOrca.Biohazard.BioRand
         public byte Id { get; set; }
         public byte? Type { get; set; }
         public byte? Amount { get; set; }
+        public byte? GlobalId { get; set; }
         public string? Link { get; set; }
         public string? Priority { get; set; }
         public int[]? Requires { get; set; }
