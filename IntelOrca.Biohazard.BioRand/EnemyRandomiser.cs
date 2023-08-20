@@ -8,6 +8,8 @@ using System.Xml;
 using IntelOrca.Biohazard.BioRand.RE1;
 using IntelOrca.Biohazard.BioRand.RE2;
 using IntelOrca.Biohazard.BioRand.RE3;
+using IntelOrca.Biohazard.Extensions;
+using IntelOrca.Biohazard.Room;
 using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
 
@@ -31,6 +33,7 @@ namespace IntelOrca.Biohazard.BioRand
         private EnemyPosition[] _enemyPositions = new EnemyPosition[0];
         private HashSet<byte> _killIdPool = new HashSet<byte>();
         private Queue<byte> _killIds = new Queue<byte>();
+        private Dictionary<byte, EmbeddedEffect> _effects = new Dictionary<byte, EmbeddedEffect>();
 
         public EnemyRandomiser(BioVersion version, RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng rng, IEnemyHelper enemyHelper, string modPath, DataManager dataManager)
         {
@@ -55,6 +58,25 @@ namespace IntelOrca.Biohazard.BioRand
                     ReadCommentHandling = JsonCommentHandling.Skip,
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 })!;
+            }
+        }
+
+        private void GatherEsps()
+        {
+            if (_version != BioVersion.Biohazard1)
+                return;
+
+            foreach (var rdt in _gameData.Rdts)
+            {
+                var embeddedEffects = ((Rdt1)rdt.RdtFile).EmbeddedEffects;
+                for (var i = 0; i < embeddedEffects.Count; i++)
+                {
+                    var ee = embeddedEffects[i];
+                    if (ee.Id != 0xFF && !_effects.ContainsKey(ee.Id))
+                    {
+                        _effects[ee.Id] = ee;
+                    }
+                }
             }
         }
 
@@ -101,6 +123,7 @@ namespace IntelOrca.Biohazard.BioRand
         {
             _logger.WriteHeading("Randomizing enemies:");
             ReadEnemyPlacements();
+            GatherEsps();
             SetupRandomEnemyPlacements();
             RandomizeRooms(GetAccessibleRdts(graph));
             FixRooms();
@@ -337,6 +360,7 @@ namespace IntelOrca.Biohazard.BioRand
                 if (fixType != null)
                 {
                     FixRE1Sounds(rdt.RdtId, fixType.Value);
+                    AddRequiredEsps(rdt, fixType.Value);
                 }
             }
             else
@@ -351,6 +375,30 @@ namespace IntelOrca.Biohazard.BioRand
                 }
             }
             return fixType != null;
+        }
+
+        private void AddRequiredEsps(RandomizedRdt rdt, byte enemyType)
+        {
+            var espIds = _enemyHelper.GetRequiredEsps(enemyType);
+            if (espIds.Length == 0)
+                return;
+
+            var rdtFile = (Rdt1)rdt.RdtFile;
+            var embeddedEffects = rdtFile.EmbeddedEffects;
+            var missingIds = espIds.Except(embeddedEffects.Ids).ToArray();
+            if (missingIds.Length == 0)
+                return;
+
+            var existingEffects = embeddedEffects.Effects.ToList();
+            foreach (var id in missingIds)
+            {
+                existingEffects.Add(_effects[id]);
+                _logger.WriteLine($"  {rdt.RdtId} ESP{id:X2} added");
+            }
+
+            var rdtBuilder = rdtFile.ToBuilder();
+            rdtBuilder.EmbeddedEffects = new EmbeddedEffectList(existingEffects.ToArray());
+            rdt.RdtFile = rdtBuilder.ToRdt();
         }
 
         private string GetEnemyLogText(SceEmSetOpcode enemy)
@@ -515,27 +563,56 @@ namespace IntelOrca.Biohazard.BioRand
 
         private SceEmSetOpcode CreateEnemy(byte id, EnemyPosition ep)
         {
-            var enemy = new SceEmSetOpcode()
+            if (_version == BioVersion.Biohazard1)
             {
-                Length = 22,
-                Opcode = _config.Game == 2 ? (byte)OpcodeV2.SceEmSet : (byte)OpcodeV3.SceEmSet,
-                Unk01 = 0,
-                Id = id,
-                Type = _config.Game == 2 ? Re2EnemyIds.ZombieRandom : Re3EnemyIds.ZombieDog,
-                State = 0,
-                Ai = 0,
-                Floor = (byte)ep.F,
-                SoundBank = (byte)(_config.Game == 2 ? 9 : 32),
-                Texture = 0,
-                KillId = GetNextKillId(),
-                X = (short)ep.X,
-                Y = (short)ep.Y,
-                Z = (short)ep.Z,
-                D = (short)ep.D,
-                Animation = 0,
-                Unk15 = 0
-            };
-            return enemy;
+                var enemy = new SceEmSetOpcode()
+                {
+                    Length = 22,
+                    Opcode = (byte)OpcodeV1.SceEmSet,
+                    Type = Re1EnemyIds.Zombie,
+                    State = 0,
+                    KillId = GetNextKillId(),
+                    Re1Unk04 = 1,
+                    Re1Unk05 = 2,
+                    Re1Unk06 = 0,
+                    Re1Unk07 = 0,
+                    D = (short)ep.D,
+                    Re1Unk0A = 0,
+                    Re1Unk0B = 0,
+                    X = (short)ep.X,
+                    Y = (short)ep.Y,
+                    Z = (short)ep.Z,
+                    Id = id,
+                    Re1Unk13 = 0,
+                    Re1Unk14 = 0,
+                    Re1Unk15 = 0,
+                };
+                return enemy;
+            }
+            else
+            {
+                var enemy = new SceEmSetOpcode()
+                {
+                    Length = 22,
+                    Opcode = _config.Game == 2 ? (byte)OpcodeV2.SceEmSet : (byte)OpcodeV3.SceEmSet,
+                    Unk01 = 0,
+                    Id = id,
+                    Type = _config.Game == 2 ? Re2EnemyIds.ZombieRandom : Re3EnemyIds.ZombieDog,
+                    State = 0,
+                    Ai = 0,
+                    Floor = (byte)ep.F,
+                    SoundBank = (byte)(_config.Game == 2 ? 9 : 32),
+                    Texture = 0,
+                    KillId = GetNextKillId(),
+                    X = (short)ep.X,
+                    Y = (short)ep.Y,
+                    Z = (short)ep.Z,
+                    D = (short)ep.D,
+                    Animation = 0,
+                    Unk15 = 0
+                };
+                return enemy;
+            }
         }
 
         private void InsertConditions(RandomizedRdt rdt, int opcodeIndex, int numOpcodes, string? condition)

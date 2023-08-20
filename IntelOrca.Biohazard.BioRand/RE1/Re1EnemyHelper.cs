@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.Script;
@@ -35,6 +34,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 
         private void ExcludeEnemies(RandoConfig config, RandomizedRdt rdt, string difficulty, Action<byte> exclude)
         {
+#if false
             var types = rdt.Enemies
                 .Select(x => x.Type)
                 .Where(IsEnemy)
@@ -108,6 +108,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                     exclude(Re1EnemyIds.Tyrant2);
                     break;
             }
+#endif
         }
 
         public bool ShouldChangeEnemy(RandoConfig config, SceEmSetOpcode enemy)
@@ -185,7 +186,30 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             }
         }
 
-        public int GetEnemyTypeLimit(RandoConfig config, byte type) => 32;
+        public int GetEnemyTypeLimit(RandoConfig config, byte type)
+        {
+            byte[] limit;
+            switch (type)
+            {
+                case Re1EnemyIds.Cerberus:
+                case Re1EnemyIds.Chimera:
+                case Re1EnemyIds.Neptune:
+                    limit = new byte[] { 2, 4, 6, 8 };
+                    break;
+                case Re1EnemyIds.Hunter:
+                    limit = new byte[] { 2, 3, 4, 6 };
+                    break;
+                case Re1EnemyIds.Tyrant1:
+                case Re1EnemyIds.Yawn1:
+                    limit = new byte[] { 1 };
+                    break;
+                default:
+                    limit = new byte[] { 16 };
+                    break;
+            }
+            var index = Math.Min(limit.Length - 1, config.EnemyDifficulty);
+            return limit[index];
+        }
 
         public SelectableEnemy[] GetSelectableEnemies() => new[]
         {
@@ -200,6 +224,38 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             new SelectableEnemy("Tyrant", "DarkGray", new[] { Re1EnemyIds.Tyrant1 }),
             new SelectableEnemy("Yawn", "DarkOliveGreen", new[] { Re1EnemyIds.Yawn1, Re1EnemyIds.Yawn2 }),
         };
+
+        public byte[] GetRequiredEsps(byte enemyType)
+        {
+            switch (enemyType)
+            {
+                case Re1EnemyIds.Zombie:
+                case Re1EnemyIds.ZombieNaked:
+                case Re1EnemyIds.ZombieResearcher:
+                    return new byte[] { 0x03, 0x04 };
+                case Re1EnemyIds.Cerberus:
+                case Re1EnemyIds.Snake:
+                    return new byte[] { 0x04 };
+                case Re1EnemyIds.SpiderBrown:
+                case Re1EnemyIds.SpiderBlack:
+                    return new byte[] { 0x1E };
+                case Re1EnemyIds.Crow:
+                    return new byte[] { 0x1C };
+                case Re1EnemyIds.Hunter:
+                    return new byte[] { 0x03, 0x04 };
+                case Re1EnemyIds.Bee:
+                case Re1EnemyIds.Tyrant1:
+                case Re1EnemyIds.Yawn1:
+                default:
+                    return new byte[0];
+                case Re1EnemyIds.Chimera:
+                    return new byte[] { 0x03, 0x04, 0x1D, 0x1F };
+                case Re1EnemyIds.Neptune:
+                    return new byte[] { 0x17, 0x25 };
+                case Re1EnemyIds.Plant42Vines:
+                    return new byte[] { 0x14, 0x1E };
+            }
+        }
 
         public void CreateZombie(byte type, EmdFile srcPld, EmdFile srcEmd, string dstPath)
         {

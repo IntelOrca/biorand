@@ -13,5 +13,6 @@ namespace IntelOrca.Biohazard.BioRand
         bool IsUniqueEnemyType(byte type);
         SelectableEnemy[] GetSelectableEnemies();
         int GetEnemyTypeLimit(RandoConfig config, byte type);
+        byte[] GetRequiredEsps(byte enemyType);
     }
 }
