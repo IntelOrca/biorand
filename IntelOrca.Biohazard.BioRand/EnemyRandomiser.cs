@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using System.Xml;
 using IntelOrca.Biohazard.BioRand.RE1;
 using IntelOrca.Biohazard.BioRand.RE2;
@@ -541,6 +540,7 @@ namespace IntelOrca.Biohazard.BioRand
             byte enemyId = 0;
             byte killId = 0;
 
+            var enemyOpcodes = new List<OpcodeBase>();
             var firstEnemyOpcodeIndex = rdt.AdditionalOpcodes.Count;
             foreach (var ep in relevantPlacements)
             {
@@ -550,13 +550,13 @@ namespace IntelOrca.Biohazard.BioRand
                 }
 
                 var newEnemy = CreateEnemy(enemyId, ep);
-                rdt.AdditionalOpcodes.Add(newEnemy);
+                enemyOpcodes.Add(newEnemy);
                 enemies.Add(newEnemy);
                 enemyId++;
                 killId++;
             }
 
-            InsertConditions(rdt, firstEnemyOpcodeIndex, rdt.AdditionalOpcodes.Count - firstEnemyOpcodeIndex, enemySpec.Condition);
+            InsertConditions(rdt, enemyOpcodes, enemySpec.Condition);
 
             return enemies.ToArray();
         }
@@ -615,77 +615,20 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
-        private void InsertConditions(RandomizedRdt rdt, int opcodeIndex, int numOpcodes, string? condition)
+        private void InsertConditions(RandomizedRdt rdt, List<OpcodeBase> enemyOpcodes, string? condition)
         {
             if (string.IsNullOrEmpty(condition))
+            {
+                rdt.AdditionalOpcodes.AddRange(enemyOpcodes);
                 return;
-
-            if (_config.Game != 3)
-                throw new NotSupportedException("Enemy conditions not supported for this game");
-
-            var negated = false;
-            var negatedMatch = Regex.Match(condition!, "!\\((.*)\\)");
-            if (negatedMatch.Success)
-            {
-                negated = true;
-                condition = negatedMatch.Groups[1].Value;
             }
 
-            var conditions = condition!
-                .Replace("&&", "&")
-                .Split('&')
-                .Select(x => x.Trim())
-                .ToArray();
+            // if (_config.Game != 3)
+            //     throw new NotSupportedException("Enemy conditions not supported for this game");
 
-            var ckOpcodes = new List<OpcodeBase>();
-            foreach (var c in conditions)
-            {
-                var m = Regex.Match(c, "(!?)(\\d+):(\\d+)");
-                if (m.Success)
-                {
-                    var value = m.Groups[1].Value == "!" ? (byte)0 : (byte)1;
-                    var left = byte.Parse(m.Groups[2].Value);
-                    var right = byte.Parse(m.Groups[3].Value);
-                    ckOpcodes.Add(new UnknownOpcode(0, (byte)OpcodeV3.Ck, new byte[] { left, right, value }));
-                }
-                else
-                {
-                    m = Regex.Match(c, "\\$(\\d+)\\s*(!=|==)\\s*(\\d+)");
-                    if (m.Success)
-                    {
-                        var var = byte.Parse(m.Groups[1].Value);
-                        var op = m.Groups[2].Value == "==" ? (byte)0 : (byte)5;
-                        var value = byte.Parse(m.Groups[3].Value);
-                        ckOpcodes.Add(new UnknownOpcode(0, (byte)OpcodeV3.Cmp, new byte[] { 0x00, var, op, (byte)value, 0x00 }));
-                    }
-                }
-            }
-
-            var ifSize = ckOpcodes.Sum(x => x.Length);
-            if (negated)
-            {
-                ifSize += 4;
-                var elseSize = (numOpcodes * 24) + 4;
-
-                // Insert else opcodes
-                rdt.AdditionalOpcodes.Insert(opcodeIndex, new UnknownOpcode(0, (byte)OpcodeV3.ElseCk, new byte[] { 0, (byte)(elseSize & 0xFF), (byte)(elseSize >> 8) }));
-            }
-            else
-            {
-                ifSize += (numOpcodes * 24) + 2;
-
-                // Insert endif opcodes
-                rdt.AdditionalOpcodes.Insert(opcodeIndex + numOpcodes, new UnknownOpcode(0, (byte)OpcodeV3.EndIf, new byte[] { 0 }));
-            }
-
-            // Insert if opcodes
-            rdt.AdditionalOpcodes.Insert(opcodeIndex + 0, new UnknownOpcode(0, (byte)OpcodeV3.IfelCk, new byte[] { 0x00, (byte)(ifSize & 0xFF), (byte)(ifSize >> 8) }));
-
-            // Insert ck opcodes
-            for (var i = 0; i < ckOpcodes.Count; i++)
-            {
-                rdt.AdditionalOpcodes.Insert(opcodeIndex + 1 + i, ckOpcodes[i]);
-            }
+            var scdCondition = ScdCondition.Parse(condition!);
+            var opcodes = scdCondition.Generate(_version, enemyOpcodes);
+            rdt.AdditionalOpcodes.AddRange(opcodes);
         }
 
         private static void PrintAllEnemies(GameData gameData)

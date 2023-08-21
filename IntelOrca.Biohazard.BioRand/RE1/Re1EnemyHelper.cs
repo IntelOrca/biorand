@@ -216,7 +216,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             new SelectableEnemy("Bee", "Yellow", new[] { Re1EnemyIds.Bee }),
             new SelectableEnemy("Crow", "Black", new[] { Re1EnemyIds.Crow }),
             new SelectableEnemy("Snake", "DarkOliveGreen", new[] { Re1EnemyIds.Snake }),
-            new SelectableEnemy("Spider", "YellowGreen", new[] { Re1EnemyIds.SpiderBrown }),
+            new SelectableEnemy("Spider", "YellowGreen", new[] { Re1EnemyIds.SpiderBrown, Re1EnemyIds.SpiderBlack }),
             new SelectableEnemy("Zombie", "LightGray", _zombieTypes),
             new SelectableEnemy("Chimera", "Gray", new[] { Re1EnemyIds.Chimera }),
             new SelectableEnemy("Hunter", "IndianRed", new[] { Re1EnemyIds.Hunter }),

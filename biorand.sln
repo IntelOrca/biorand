@@ -12,7 +12,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntelOrca.Biohazard.BioRand
 		{707B2362-63FD-4B65-B5AF-FE0DD4B09AB7} = {707B2362-63FD-4B65-B5AF-FE0DD4B09AB7}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntelOrca.Biohazard.BioRandTests", "IntelOrca.Biohazard.BioRand.Tests\IntelOrca.Biohazard.BioRandTests.csproj", "{69D82AA9-EBFE-4CBC-BEAA-47F8EFFECD65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntelOrca.Biohazard.BioRand.Tests", "IntelOrca.Biohazard.BioRand.Tests\IntelOrca.Biohazard.BioRand.Tests.csproj", "{69D82AA9-EBFE-4CBC-BEAA-47F8EFFECD65}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntelOrca.Biohazard", "biohazard-utils\src\IntelOrca.Biohazard\IntelOrca.Biohazard.csproj", "{66E02DD8-9F1A-4D2F-84FE-5AB7157663B6}"
 EndProject
