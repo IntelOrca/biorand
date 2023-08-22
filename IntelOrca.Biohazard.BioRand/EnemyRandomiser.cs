@@ -52,11 +52,33 @@ namespace IntelOrca.Biohazard.BioRand
             if (_config.RandomEnemyPlacement)
             {
                 var json = _dataManager.GetText(_version, "enemy.json");
-                _enemyPositions = JsonSerializer.Deserialize<EnemyPosition[]>(json, new JsonSerializerOptions()
+                var enemyPositions = JsonSerializer.Deserialize<EnemyPosition[]>(json, new JsonSerializerOptions()
                 {
                     ReadCommentHandling = JsonCommentHandling.Skip,
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                })!;
+                })!.ToList();
+
+                foreach (var room in _map.Rooms!)
+                {
+                    var linkedRoom = room.Value.LinkedRoom;
+                    if (linkedRoom == null)
+                        continue;
+
+                    var rdtId = RdtId.Parse(room.Key);
+                    var linkedRdtId = RdtId.Parse(linkedRoom);
+                    if (!enemyPositions.Any(x => x.RdtId == linkedRdtId))
+                    {
+                        // Copy positions to linked room
+                        var srcEnemyPositions = enemyPositions.Where(x => x.RdtId == rdtId).ToArray();
+                        foreach (var pos in srcEnemyPositions)
+                        {
+                            var copy = pos;
+                            copy.RdtId = linkedRdtId;
+                            enemyPositions.Add(copy);
+                        }
+                    }
+                }
+                _enemyPositions = enemyPositions.ToArray();
             }
         }
 
@@ -791,24 +813,18 @@ namespace IntelOrca.Biohazard.BioRand
 
         public struct EnemyPosition : IEquatable<EnemyPosition>
         {
-            private RdtId _rdtId;
-
-            public RdtId RdtId => _rdtId;
-
-            public string? Room
-            {
-                get => _rdtId.ToString();
-                set
-                {
-                    _rdtId = value == null ? default(RdtId) : RdtId.Parse(value);
-                }
-            }
-
+            public RdtId RdtId { get; set; }
             public int X { get; set; }
             public int Y { get; set; }
             public int Z { get; set; }
             public int D { get; set; }
             public int F { get; set; }
+
+            public string? Room
+            {
+                get => RdtId.ToString();
+                set => RdtId = value == null ? default(RdtId) : RdtId.Parse(value);
+            }
 
             public override bool Equals(object? obj)
             {

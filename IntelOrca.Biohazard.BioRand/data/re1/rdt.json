@@ -39,6 +39,12 @@
           "type": 0,
           "player": 0
         }
+      ],
+      "enemies": [
+        {
+          "player": 1,
+          "restricted": true
+        }
       ]
     },
     "101": {
@@ -139,7 +145,8 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 3, 4, 10 ]
+          "excludeTypes": [ 3, 4, 10 ],
+          "randomPlacements": false
         }
       ],
       "npcs": []
@@ -204,7 +211,11 @@
           "player": 1
         }
       ],
-      "enemies": [],
+      "enemies": [
+        {
+          "player": 0
+        }
+      ],
       "npcs": [
         {
           "includeOffsets": [ 164604, 164650, 164674 ],
@@ -493,6 +504,11 @@
           "includeTypes": [ 35 ],
           "player": 0
         }
+      ],
+      "enemies": [
+        {
+          "player": 1
+        }
       ]
     },
     "111": {
@@ -613,6 +629,11 @@
           "type": 11,
           "amount": 15,
           "priority": "low"
+        }
+      ],
+      "enemies": [
+        {
+          "restricted": true
         }
       ]
     },
@@ -808,7 +829,8 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 2 ]
+          "excludeTypes": [ 2 ],
+          "randomPlacements": false
         }
       ]
     },
@@ -837,6 +859,15 @@
         {
           "id": 8,
           "type": 0
+        }
+      ],
+      "enemies": [
+        {
+          "player": 0
+        },
+        {
+          "condition": "!(1:8 && 1:98 && 1:7)",
+          "player": 1
         }
       ]
     },
@@ -884,7 +915,8 @@
           "includeTypes": [ 40, 42 ],
           "player": 1
         }
-      ]
+      ],
+      "enemies": []
     },
     "20E": {
       "linkedRoom": "70E",
@@ -2065,6 +2097,13 @@
         }
       ]
     },
+    "600": {
+      "enemies": [
+        {
+          "restricted": true
+        }
+      ]
+    },
     "601": {
       "enemies": [
         {
@@ -2094,11 +2133,15 @@
         }
       ]
     },
-    "614": {
-      "enemies": []
-    },
     "617": {
       "enemies": []
+    },
+    "618": {
+      "enemies": [
+        {
+          "restricted": true
+        }
+      ]
     },
     "619": {
       "doors": [
@@ -2305,6 +2348,11 @@
         {
           "target": "71B",
           "lock": "side"
+        }
+      ],
+      "enemies": [
+        {
+          "randomPlacements": false
         }
       ]
     }

@@ -30,6 +30,7 @@ namespace IntelOrca.Biohazard.BioRand.Tests
         [Theory]
         [InlineData("!1:2", "01-0A-04-01-02-00-00-CD-00-CC-03-00")]
         [InlineData("!1:0 && !1:2", "01-0E-04-01-00-00-04-01-02-00-00-CD-00-CC-03-00")]
+        [InlineData("!(1:8 && 1:98 && 1:7)", "01-0E-04-01-08-01-04-01-62-01-04-01-07-01-02-06-00-CD-00-CC")]
         public void Generate_1(string expression, string bytes)
         {
             var expr = ScdCondition.Parse(expression);
