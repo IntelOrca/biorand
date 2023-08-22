@@ -488,17 +488,17 @@ namespace IntelOrca.Biohazard.BioRand
                 .Where(e => _enemyHelper.ShouldChangeEnemy(_config, e))
                 .ToArray();
 
-            var includeTypes = enemySpec.IncludeTypes == null ?
-                null :
-                enemySpec.IncludeTypes.Select(x => (byte)x).ToHashSet();
-            var excludeTypes = enemySpec.ExcludeTypes == null ?
-                new HashSet<byte>() :
-                enemySpec.ExcludeTypes.Select(x => (byte)x).ToHashSet();
-
-            var possibleTypes = targetEnemy.Types
-                .Where(x => !excludeTypes.Contains(x))
-                .Shuffle(_rng)
-                .ToArray();
+            var possibleTypes = targetEnemy.Types.Shuffle(_rng);
+            if (enemySpec.IncludeTypes != null)
+            {
+                var includeTypes = enemySpec.IncludeTypes.Select(x => (byte)x).ToHashSet();
+                possibleTypes = possibleTypes.Intersect(includeTypes).ToArray();
+            }
+            else if (enemySpec.ExcludeTypes != null)
+            {
+                var excludeTypes = enemySpec.ExcludeTypes.Select(x => (byte)x).ToHashSet();
+                possibleTypes = possibleTypes.Except(excludeTypes).ToArray();
+            }
             if (possibleTypes.Length == 0)
                 return;
 

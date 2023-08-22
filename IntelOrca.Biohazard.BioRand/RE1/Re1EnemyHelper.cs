@@ -27,6 +27,15 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 
         public bool SupportsEnemyType(RandoConfig config, RandomizedRdt rdt, string difficulty, bool hasEnemyPlacements, byte enemyType)
         {
+            if (enemyType == Re1EnemyIds.Yawn1)
+            {
+                return rdt.RdtId == new RdtId(1, 0x10);
+            }
+            else if (enemyType == Re1EnemyIds.Yawn2)
+            {
+                return rdt.RdtId == new RdtId(6, 0x0C);
+            }
+
             var exclude = new HashSet<byte>();
             ExcludeEnemies(config, rdt, difficulty, x => exclude.Add(x));
             return !exclude.Contains(enemyType);
@@ -200,7 +209,13 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                     limit = new byte[] { 2, 3, 4, 6 };
                     break;
                 case Re1EnemyIds.Tyrant1:
+                    limit = new byte[] { 1, 2, 3, 4 };
+                    break;
+                case Re1EnemyIds.SpiderBlack:
+                    limit = new byte[] { 1, 1, 2, 2 };
+                    break;
                 case Re1EnemyIds.Yawn1:
+                case Re1EnemyIds.Yawn2:
                     limit = new byte[] { 1 };
                     break;
                 default:
@@ -216,13 +231,14 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             new SelectableEnemy("Bee", "Yellow", new[] { Re1EnemyIds.Bee }),
             new SelectableEnemy("Crow", "Black", new[] { Re1EnemyIds.Crow }),
             new SelectableEnemy("Snake", "DarkOliveGreen", new[] { Re1EnemyIds.Snake }),
-            new SelectableEnemy("Spider", "YellowGreen", new[] { Re1EnemyIds.SpiderBrown, Re1EnemyIds.SpiderBlack }),
+            new SelectableEnemy("Spider", "YellowGreen", new[] { Re1EnemyIds.SpiderBrown }),
             new SelectableEnemy("Zombie", "LightGray", _zombieTypes),
             new SelectableEnemy("Chimera", "Gray", new[] { Re1EnemyIds.Chimera }),
             new SelectableEnemy("Hunter", "IndianRed", new[] { Re1EnemyIds.Hunter }),
             new SelectableEnemy("Cerberus", "Black", new[] { Re1EnemyIds.Cerberus }),
             new SelectableEnemy("Tyrant", "DarkGray", new[] { Re1EnemyIds.Tyrant1 }),
             new SelectableEnemy("Yawn", "DarkOliveGreen", new[] { Re1EnemyIds.Yawn1, Re1EnemyIds.Yawn2 }),
+            new SelectableEnemy("Black Tiger", "Black", new[] { Re1EnemyIds.SpiderBlack }),
         };
 
         public byte[] GetRequiredEsps(byte enemyType)
