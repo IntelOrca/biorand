@@ -164,7 +164,10 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 case Re1EnemyIds.Bee:
                 case Re1EnemyIds.Chimera:
                 case Re1EnemyIds.Snake:
+                    break;
                 case Re1EnemyIds.Neptune:
+                    enemy.State = (byte)rng.NextOf(0, 2);
+                    break;
                 case Re1EnemyIds.Tyrant1:
                 case Re1EnemyIds.Yawn1:
                 case Re1EnemyIds.Plant42Vines:
@@ -236,6 +239,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             new SelectableEnemy("Chimera", "Gray", new[] { Re1EnemyIds.Chimera }),
             new SelectableEnemy("Hunter", "IndianRed", new[] { Re1EnemyIds.Hunter }),
             new SelectableEnemy("Cerberus", "Black", new[] { Re1EnemyIds.Cerberus }),
+            new SelectableEnemy("Neptune", "Purple", new[] { Re1EnemyIds.Neptune }),
             new SelectableEnemy("Tyrant", "DarkGray", new[] { Re1EnemyIds.Tyrant1 }),
             new SelectableEnemy("Yawn", "DarkOliveGreen", new[] { Re1EnemyIds.Yawn1, Re1EnemyIds.Yawn2 }),
             new SelectableEnemy("Black Tiger", "Black", new[] { Re1EnemyIds.SpiderBlack }),
