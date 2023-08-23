@@ -203,6 +203,11 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             byte[] limit;
             switch (type)
             {
+                case Re1EnemyIds.Zombie:
+                case Re1EnemyIds.ZombieResearcher:
+                case Re1EnemyIds.ZombieNaked:
+                    limit = new byte[] { 4, 6, 8, 12 };
+                    break;
                 case Re1EnemyIds.Cerberus:
                 case Re1EnemyIds.Chimera:
                 case Re1EnemyIds.Neptune:
