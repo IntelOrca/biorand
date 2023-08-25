@@ -1088,7 +1088,8 @@
       "enemies": [
         {
           "keepState": true,
-          "includeTypes": [ 12, 13 ]
+          "includeTypes": [ 4, 11, 12, 13 ],
+          "ignoreRatio": true
         }
       ]
     },
@@ -2783,7 +2784,8 @@
       "enemies": [
         {
           "keepState": true,
-          "includeTypes": [ 12, 18 ]
+          "includeTypes": [ 11, 12, 18 ],
+          "ignoreRatio": true
         }
       ],
       "npcs": [

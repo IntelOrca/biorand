@@ -140,6 +140,7 @@ namespace IntelOrca.Biohazard.BioRand
         public bool KeepState { get; set; }
         public bool KeepAi { get; set; }
         public bool KeepPositions { get; set; }
+        public bool IgnoreRatio { get; set; }
         public short? Y { get; set; }
         public string? Difficulty { get; set; }
         public bool? Restricted { get; set; }

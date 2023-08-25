@@ -232,6 +232,28 @@ namespace IntelOrca.Biohazard.BioRand
                 .OrderBy(x => x.q)
                 .ToList();
 
+            // First randomize rooms that ignore enemy ratios
+            // This was added for RE 1 to stop Yawn (who can only be in two rooms) always appearing in those rooms
+            for (var i = 0; i < enemyRdts.Count; i++)
+            {
+                var rdt = enemyRdts[i];
+                var firstSpec = GetEnemySpecs(rdt.RdtId).FirstOrDefault();
+                if (firstSpec == null || !firstSpec.IgnoreRatio)
+                    continue;
+
+                var allowedEnemies = enemies
+                    .Select(x => x.e)
+                    .Where(x => RdtSupportsEnemyType(rdt, x.Types))
+                    .Shuffle(_rng);
+                if (allowedEnemies.Length == 0)
+                    continue;
+
+                RandomizeRoomWithEnemy(rdt, allowedEnemies.First());
+                enemyRdts.RemoveAt(i);
+                i--;
+            }
+
+            // Distribute enemies across remaining rooms
             while (enemyRdts.Count != 0 && roomRandomized)
             {
                 roomRandomized = false;

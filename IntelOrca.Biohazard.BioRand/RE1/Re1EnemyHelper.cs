@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
@@ -35,89 +34,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             {
                 return rdt.RdtId == new RdtId(6, 0x0C);
             }
-
-            var exclude = new HashSet<byte>();
-            ExcludeEnemies(config, rdt, difficulty, x => exclude.Add(x));
-            return !exclude.Contains(enemyType);
-        }
-
-        private void ExcludeEnemies(RandoConfig config, RandomizedRdt rdt, string difficulty, Action<byte> exclude)
-        {
-#if false
-            var types = rdt.Enemies
-                .Select(x => x.Type)
-                .Where(IsEnemy)
-                .ToArray();
-
-            if (types.Length == 0)
-                return;
-
-            var type = types[0];
-            if (types.Length > 1 &&
-                type != Re1EnemyIds.Yawn1 &&
-                type != Re1EnemyIds.Yawn2 &&
-                type != Re1EnemyIds.Tyrant1 &&
-                type != Re1EnemyIds.Tyrant2)
-            {
-                exclude(Re1EnemyIds.Yawn1);
-                exclude(Re1EnemyIds.Tyrant1);
-                exclude(Re1EnemyIds.Yawn2);
-                exclude(Re1EnemyIds.Tyrant2);
-            }
-
-            switch (type)
-            {
-                case Re1EnemyIds.Zombie:
-                case Re1EnemyIds.ZombieNaked:
-                case Re1EnemyIds.ZombieResearcher:
-                case Re1EnemyIds.Hunter:
-                case Re1EnemyIds.SpiderBrown:
-                    exclude(Re1EnemyIds.SpiderBrown);
-                    exclude(Re1EnemyIds.SpiderBlack);
-                    exclude(Re1EnemyIds.Crow);
-                    exclude(Re1EnemyIds.Chimera);
-                    exclude(Re1EnemyIds.Yawn2);
-                    exclude(Re1EnemyIds.Tyrant2);
-                    break;
-
-                case Re1EnemyIds.Cerberus:
-                case Re1EnemyIds.Crow:
-                case Re1EnemyIds.Bee:
-                case Re1EnemyIds.Snake:
-                case Re1EnemyIds.Neptune:
-                case Re1EnemyIds.Plant42Vines:
-                    exclude(Re1EnemyIds.Zombie);
-                    exclude(Re1EnemyIds.ZombieNaked);
-                    exclude(Re1EnemyIds.ZombieResearcher);
-                    exclude(Re1EnemyIds.Cerberus);
-                    exclude(Re1EnemyIds.SpiderBrown);
-                    exclude(Re1EnemyIds.SpiderBlack);
-                    exclude(Re1EnemyIds.Crow);
-                    exclude(Re1EnemyIds.Hunter);
-                    exclude(Re1EnemyIds.Chimera);
-                    exclude(Re1EnemyIds.Yawn2);
-                    exclude(Re1EnemyIds.Tyrant2);
-                    break;
-                case Re1EnemyIds.Chimera:
-                    exclude(Re1EnemyIds.Zombie);
-                    exclude(Re1EnemyIds.ZombieNaked);
-                    exclude(Re1EnemyIds.ZombieResearcher);
-                    exclude(Re1EnemyIds.Cerberus);
-                    exclude(Re1EnemyIds.SpiderBrown);
-                    exclude(Re1EnemyIds.SpiderBlack);
-                    exclude(Re1EnemyIds.Crow);
-                    exclude(Re1EnemyIds.Hunter);
-                    exclude(Re1EnemyIds.Yawn2);
-                    exclude(Re1EnemyIds.Tyrant2);
-                    break;
-                case Re1EnemyIds.SpiderBlack:
-                case Re1EnemyIds.Tyrant1:
-                case Re1EnemyIds.Yawn1:
-                case Re1EnemyIds.Yawn2:
-                    exclude(Re1EnemyIds.Tyrant2);
-                    break;
-            }
-#endif
+            return true;
         }
 
         public bool ShouldChangeEnemy(RandoConfig config, SceEmSetOpcode enemy)
@@ -151,6 +68,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 
         public void SetEnemy(RandoConfig config, Rng rng, SceEmSetOpcode enemy, MapRoomEnemies enemySpec, byte enemyType)
         {
+            var originalState = enemy.State;
             switch (enemyType)
             {
                 case Re1EnemyIds.Zombie:
@@ -164,17 +82,23 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 case Re1EnemyIds.Bee:
                 case Re1EnemyIds.Chimera:
                 case Re1EnemyIds.Snake:
+                    enemy.State = 0;
                     break;
                 case Re1EnemyIds.Neptune:
-                    enemy.State = (byte)rng.NextOf(0, 2);
+                    if (enemySpec.KeepState)
+                        enemy.State = 0; // HACK make sure Attic Yawn gets big shark (small shark gets stuck)
+                    else
+                        enemy.State = (byte)rng.NextOf(0, 2);
                     break;
                 case Re1EnemyIds.Tyrant1:
                 case Re1EnemyIds.Yawn1:
+                case Re1EnemyIds.Yawn2:
                 case Re1EnemyIds.Plant42Vines:
-                    if (!enemySpec.KeepState)
-                        enemy.State = 0;
+                    enemy.State = 0;
                     break;
             }
+            if (enemySpec.KeepState)
+                enemy.State = (byte)(enemy.State | (originalState & 0x80));
         }
 
         public bool IsEnemy(byte type)
