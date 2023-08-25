@@ -131,6 +131,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 
             FixFlamethrowerCombine();
             FixWasteHeal();
+            FixNeptuneDamage();
             FixWeaponHitScan(config);
 
             base.Generate(config, reConfig, progress, fileRepository);
@@ -550,6 +551,34 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             pw.Write(0x90);
             pw.Write(0x90);
             pw.End();
+        }
+
+        private void FixNeptuneDamage()
+        {
+            var pw = new PatchWriter(ExePatch);
+
+            // Neptune has no death routine, so replace it with Cerberus's
+            // 0x4AA0EC -> 0x004596D0
+            pw.Begin(0x4AA0EC);
+            pw.Write32(0x004596D0);
+            pw.End();
+
+            // Give Neptune a damage value for each weapon
+            const int numWeapons = 10;
+            const int entrySize = 12;
+            var damageValues = new short[] { 16, 14, 32, 40, 130, 20, 100, 200, 100, 900 };
+            var enemyDataArrays = new uint[] { 0x4AF908U, 0x4B0268 };
+            foreach (var enemyData in enemyDataArrays)
+            {
+                var neptuneData = enemyData + (Re1EnemyIds.Neptune * (numWeapons * entrySize)) + 0x06;
+                for (var i = 0; i < numWeapons; i++)
+                {
+                    pw.Begin(neptuneData);
+                    pw.Write16(damageValues[i]);
+                    pw.End();
+                    neptuneData += entrySize;
+                }
+            }
         }
 
         private void FixWeaponHitScan(RandoConfig config)
