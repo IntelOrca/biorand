@@ -373,7 +373,13 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 4, 12 ]
+          "excludeTypes": [ 4, 12 ],
+          "player": 0
+        },
+        {
+          "condition": "!(!1:32 && 1:33)",
+          "excludeTypes": [ 4, 12 ],
+          "player": 1
         }
       ]
     },
@@ -621,7 +627,14 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 4 ]
+          "condition": "!(7:0 && 7:1 && 1:32)",
+          "excludeTypes": [ 4 ],
+          "player": 0
+        },
+        {
+          "condition": "!(7:0 && 7:1)",
+          "excludeTypes": [ 4 ],
+          "player": 1
         }
       ]
     },
@@ -1041,6 +1054,7 @@
       ],
       "enemies": [
         {
+          "condition": "1:67",
           "excludeTypes": [ 4 ]
         }
       ]

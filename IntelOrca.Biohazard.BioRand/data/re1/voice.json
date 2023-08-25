@@ -835,7 +835,7 @@
       },
       {
         "actor": "barry",
-        "condition": "!jill"
+        "condition": "jill"
       }
     ]
   },
