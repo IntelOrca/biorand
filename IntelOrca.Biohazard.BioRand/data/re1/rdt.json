@@ -2586,11 +2586,7 @@
           "target": "71C"
         }
       ],
-      "enemies": [
-        {
-          "excludeTypes": [ 4 ]
-        }
-      ]
+      "enemies": []
     },
     "611": {
       "enemies": [
