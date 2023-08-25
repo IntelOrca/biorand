@@ -12,10 +12,10 @@ namespace IntelOrca.Biohazard.BioRand
 {
     public class RandomizedRdt
     {
-        private IRdt _rdtFile;
         private List<(EmrFlags, double)> _emrScales = new List<(EmrFlags, double)>();
 
-        public BioVersion Version => _rdtFile.Version;
+        public BioVersion Version => RdtFile.Version;
+        public IRdt RdtFile { get; set; }
         public RdtId RdtId { get; }
         public string? OriginalPath { get; set; }
         public string? ModifiedPath { get; set; }
@@ -37,7 +37,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         public RandomizedRdt(IRdt rdtFile, RdtId rdtId)
         {
-            _rdtFile = rdtFile;
+            RdtFile = rdtFile;
             RdtId = rdtId;
         }
 
@@ -261,7 +261,7 @@ namespace IntelOrca.Biohazard.BioRand
             if (_emrScales.Any(x => x.Item1 == flags))
                 return null;
 
-            var rbj = ((Rdt2)_rdtFile).RBJ;
+            var rbj = ((Rdt2)RdtFile).RBJ;
             for (int i = 0; i < rbj.Count; i++)
             {
                 var emrFlags = rbj[i].Flags;
@@ -276,7 +276,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         public void Save()
         {
-            using (var ms = new MemoryStream(_rdtFile.Data.ToArray()))
+            using (var ms = new MemoryStream(RdtFile.Data.ToArray()))
             {
                 var bw = new BinaryWriter(ms);
                 foreach (var opcode in Opcodes)
@@ -290,9 +290,9 @@ namespace IntelOrca.Biohazard.BioRand
                     bw.Write(patch.Value);
                 }
                 if (Version == BioVersion.Biohazard1)
-                    _rdtFile = new Rdt1(ms.ToArray());
+                    RdtFile = new Rdt1(ms.ToArray());
                 else
-                    _rdtFile = new Rdt2(Version, ms.ToArray());
+                    RdtFile = new Rdt2(Version, ms.ToArray());
             }
 
             // HACK do not play around with EMRs for RE 2, 409 because it crashes the room
@@ -301,7 +301,7 @@ namespace IntelOrca.Biohazard.BioRand
             PrependOpcodes();
 
             Directory.CreateDirectory(Path.GetDirectoryName(ModifiedPath!)!);
-            File.WriteAllBytes(ModifiedPath!, _rdtFile.Data.ToArray());
+            File.WriteAllBytes(ModifiedPath!, RdtFile.Data.ToArray());
         }
 
         private void UpdateEmrs()
@@ -309,7 +309,7 @@ namespace IntelOrca.Biohazard.BioRand
             if (_emrScales.Count == 0)
                 return;
 
-            var rdtBuilder = ((Rdt2)_rdtFile).ToBuilder();
+            var rdtBuilder = ((Rdt2)RdtFile).ToBuilder();
             var rbjBuilder = rdtBuilder.RBJ.ToBuilder();
             foreach (var (flags, scale) in _emrScales)
             {
@@ -345,18 +345,31 @@ namespace IntelOrca.Biohazard.BioRand
             if (AdditionalOpcodes.Count == 0)
                 return;
 
-            var rdtBuilder = ((Rdt2)_rdtFile).ToBuilder();
-            var scdBuilder = rdtBuilder.SCDINIT.ToBuilder();
             var ms = new MemoryStream();
             var bw = new BinaryWriter(ms);
             foreach (var opcode in AdditionalOpcodes)
             {
                 opcode.Write(bw);
             }
-            bw.Write(scdBuilder.Procedures[0].Data);
-            scdBuilder.Procedures[0] = new ScdProcedure(scdBuilder.Version, ms.ToArray());
-            rdtBuilder.SCDINIT = scdBuilder.ToProcedureList();
-            _rdtFile = rdtBuilder.ToRdt();
+
+            if (RdtFile is Rdt1 rdt1)
+            {
+                var rdtBuilder = rdt1.ToBuilder();
+                var scdBuilder = rdtBuilder.InitSCD.ToBuilder();
+                bw.Write(scdBuilder.Procedures[0].Data);
+                scdBuilder.Procedures[0] = new ScdProcedure(BioVersion.Biohazard1, ms.ToArray());
+                rdtBuilder.InitSCD = scdBuilder.ToContainer();
+                RdtFile = rdtBuilder.ToRdt();
+            }
+            else if (RdtFile is Rdt2 rdt2)
+            {
+                var rdtBuilder = rdt2.ToBuilder();
+                var scdBuilder = rdtBuilder.SCDINIT.ToBuilder();
+                bw.Write(scdBuilder.Procedures[0].Data);
+                scdBuilder.Procedures[0] = new ScdProcedure(scdBuilder.Version, ms.ToArray());
+                rdtBuilder.SCDINIT = scdBuilder.ToProcedureList();
+                RdtFile = rdtBuilder.ToRdt();
+            }
         }
 
         public void Print()

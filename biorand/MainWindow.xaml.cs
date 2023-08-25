@@ -856,20 +856,6 @@ namespace IntelOrca.Biohazard.BioRand
                     panelInfo.Visibility = Visibility.Hidden;
                     panelConfig.Visibility = Visibility.Hidden;
                     panelRando.Visibility = Visibility.Visible;
-                    if (index == 0)
-                    {
-                        chkRandomEnemyPlacements.Visibility = Visibility.Hidden;
-                        chkEnemyRestrictedRooms.Visibility = Visibility.Hidden;
-                        sliderEnemyCount.Visibility = Visibility.Hidden;
-
-                        _config.RandomEnemyPlacement = false;
-                    }
-                    else
-                    {
-                        chkRandomEnemyPlacements.Visibility = Visibility.Visible;
-                        chkEnemyRestrictedRooms.Visibility = Visibility.Visible;
-                        sliderEnemyCount.Visibility = Visibility.Visible;
-                    }
                     if (index == 2)
                     {
                         sliderGunpowder.Visibility = Visibility.Visible;

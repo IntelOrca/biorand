@@ -14,7 +14,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         public const int MaxSeed = 0b11111_11111_11111_11111;
         public const byte LatestVersion = 7;
-        public const int MaxEnemies = 10;
+        public const int MaxEnemies = 12;
         public const int MaxEnemySkins = 25;
         public const int MaxNPCs = 65;
         public const int MaxBGMs = 15;
@@ -130,6 +130,7 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 values.Add(reader.ReadByte(3));
             }
+            reader.ReadByte(4);
             result.EnemyRatios = values.ToArray();
             result.EnabledNPCs = reader.ReadBooleanArray(MaxNPCs);
             result.EnabledBGMs = reader.ReadBooleanArray(MaxBGMs);
@@ -221,6 +222,7 @@ namespace IntelOrca.Biohazard.BioRand
                     writer.Write(3, 7);
                 }
             }
+            writer.Write(4, 0);
             writer.WriteArray(MaxNPCs, EnabledNPCs);
             writer.WriteArray(MaxBGMs, EnabledBGMs);
             writer.WriteArray(MaxEnemySkins, EnabledEnemySkins);

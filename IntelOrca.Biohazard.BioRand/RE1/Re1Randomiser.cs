@@ -129,6 +129,8 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 ChangePlayerInventoryFace(config, fileRepository);
             }
 
+            FixFlamethrowerCombine();
+            FixWasteHeal();
             FixWeaponHitScan(config);
 
             base.Generate(config, reConfig, progress, fileRepository);
@@ -515,6 +517,39 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 }
             }
             return originalDataPath;
+        }
+
+        private void FixFlamethrowerCombine()
+        {
+            var pw = new PatchWriter(ExePatch);
+
+            // and bx, 0x7F -> nop
+            pw.Begin(0x4483BD);
+            pw.Write(0x90);
+            pw.Write(0x90);
+            pw.Write(0x90);
+            pw.Write(0x90);
+            pw.End();
+
+            // and bx, 0x7F -> nop
+            pw.Begin(0x44842D);
+            pw.Write(0x90);
+            pw.Write(0x90);
+            pw.Write(0x90);
+            pw.Write(0x90);
+            pw.End();
+        }
+
+        private void FixWasteHeal()
+        {
+            // Allow using heal items when health is at max
+            var pw = new PatchWriter(ExePatch);
+
+            // jge 0447AA2h -> nop
+            pw.Begin(0x447A39);
+            pw.Write(0x90);
+            pw.Write(0x90);
+            pw.End();
         }
 
         private void FixWeaponHitScan(RandoConfig config)
