@@ -590,7 +590,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             };
 
             var numValues = table.Length / 2;
-            if (config.SwapCharacters)
+            if (config.ChangePlayer && config.SwapCharacters)
             {
                 // Swap Chris and Jills values around
                 for (var i = 0; i < numValues; i++)
