@@ -764,10 +764,10 @@ namespace IntelOrca.Biohazard.BioRand
                 case Re1EnemyIds.Cerberus:
                     result = new[] { "cer_foot", "cer_taoA", "cer_unar", "cer_bite", "cer_cryA", "cer_taoB", "cer_jkMX", "cer_kamu", "cer_cryB", "cer_runMX" };
                     break;
-                case Re1EnemyIds.SpiderBrown:
+                case Re1EnemyIds.WebSpinner:
                     result = new[] { "kuasi_A", "kuasi_B", "kuasi_C", "sp_rakk", "sp_atck", "sp_bomb", "sp_fumu", "sp_Doku", "sp_sanj2" };
                     break;
-                case Re1EnemyIds.SpiderBlack:
+                case Re1EnemyIds.BlackTiger:
                     result = new[] { "kuasi_A", "kuasi_B", "kuasi_C", "sp_rakk", "sp_atck", "sp_bomb", "sp_fumu", "sp_Doku", "poison" };
                     break;
                 case Re1EnemyIds.Crow:
@@ -776,7 +776,7 @@ namespace IntelOrca.Biohazard.BioRand
                 case Re1EnemyIds.Hunter:
                     result = new[] { "HU_walkA", "HU_walkB", "HU_jump", "HU_att", "HU_land", "HU_smash", "HU_dam", "HU_Nout" };
                     break;
-                case Re1EnemyIds.Bee:
+                case Re1EnemyIds.Wasp:
                     result = new[] { "bee4_ed", "hatinage", "bee_fumu" };
                     break;
                 case Re1EnemyIds.Plant42:

@@ -5,11 +5,11 @@
         public const byte Zombie = 0;
         public const byte ZombieNaked = 1;
         public const byte Cerberus = 2;
-        public const byte SpiderBrown = 3;
-        public const byte SpiderBlack = 4;
+        public const byte WebSpinner = 3;
+        public const byte BlackTiger = 4;
         public const byte Crow = 5;
         public const byte Hunter = 6;
-        public const byte Bee = 7;
+        public const byte Wasp = 7;
         public const byte Plant42 = 8;
         public const byte Chimera = 9;
         public const byte Snake = 10;

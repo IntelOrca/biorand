@@ -45,10 +45,10 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 case Re1EnemyIds.ZombieNaked:
                 case Re1EnemyIds.ZombieResearcher:
                 case Re1EnemyIds.Cerberus:
-                case Re1EnemyIds.SpiderBrown:
+                case Re1EnemyIds.WebSpinner:
                 case Re1EnemyIds.Crow:
                 case Re1EnemyIds.Hunter:
-                case Re1EnemyIds.Bee:
+                case Re1EnemyIds.Wasp:
                 case Re1EnemyIds.Chimera:
                 case Re1EnemyIds.Snake:
                 case Re1EnemyIds.Neptune:
@@ -75,11 +75,11 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 case Re1EnemyIds.ZombieNaked:
                 case Re1EnemyIds.ZombieResearcher:
                 case Re1EnemyIds.Cerberus:
-                case Re1EnemyIds.SpiderBrown:
-                case Re1EnemyIds.SpiderBlack:
+                case Re1EnemyIds.WebSpinner:
+                case Re1EnemyIds.BlackTiger:
                 case Re1EnemyIds.Crow:
                 case Re1EnemyIds.Hunter:
-                case Re1EnemyIds.Bee:
+                case Re1EnemyIds.Wasp:
                 case Re1EnemyIds.Chimera:
                 case Re1EnemyIds.Snake:
                     enemy.State = 0;
@@ -110,7 +110,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
         {
             switch (type)
             {
-                case Re1EnemyIds.SpiderBlack:
+                case Re1EnemyIds.BlackTiger:
                 case Re1EnemyIds.Plant42:
                 case Re1EnemyIds.Yawn1:
                 case Re1EnemyIds.Yawn2:
@@ -143,7 +143,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 case Re1EnemyIds.Tyrant1:
                     limit = new byte[] { 1, 2, 3, 4 };
                     break;
-                case Re1EnemyIds.SpiderBlack:
+                case Re1EnemyIds.BlackTiger:
                     limit = new byte[] { 1, 1, 2, 2 };
                     break;
                 case Re1EnemyIds.Yawn1:
@@ -160,10 +160,10 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 
         public SelectableEnemy[] GetSelectableEnemies() => new[]
         {
-            new SelectableEnemy("Bee", "Yellow", new[] { Re1EnemyIds.Bee }),
+            new SelectableEnemy("Wasp", "Yellow", new[] { Re1EnemyIds.Wasp }),
             new SelectableEnemy("Crow", "Black", new[] { Re1EnemyIds.Crow }),
-            new SelectableEnemy("Snake", "DarkOliveGreen", new[] { Re1EnemyIds.Snake }),
-            new SelectableEnemy("Spider", "YellowGreen", new[] { Re1EnemyIds.SpiderBrown }),
+            new SelectableEnemy("Adder", "DarkOliveGreen", new[] { Re1EnemyIds.Snake }),
+            new SelectableEnemy("Web Spinner", "YellowGreen", new[] { Re1EnemyIds.WebSpinner }),
             new SelectableEnemy("Zombie", "LightGray", _zombieTypes),
             new SelectableEnemy("Chimera", "Gray", new[] { Re1EnemyIds.Chimera }),
             new SelectableEnemy("Hunter", "IndianRed", new[] { Re1EnemyIds.Hunter }),
@@ -171,7 +171,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             new SelectableEnemy("Neptune", "Purple", new[] { Re1EnemyIds.Neptune }),
             new SelectableEnemy("Tyrant", "DarkGray", new[] { Re1EnemyIds.Tyrant1 }),
             new SelectableEnemy("Yawn", "DarkOliveGreen", new[] { Re1EnemyIds.Yawn1, Re1EnemyIds.Yawn2 }),
-            new SelectableEnemy("Black Tiger", "Black", new[] { Re1EnemyIds.SpiderBlack }),
+            new SelectableEnemy("Black Tiger", "Black", new[] { Re1EnemyIds.BlackTiger }),
         };
 
         public byte[] GetRequiredEsps(byte enemyType)
@@ -185,14 +185,14 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 case Re1EnemyIds.Cerberus:
                 case Re1EnemyIds.Snake:
                     return new byte[] { 0x04 };
-                case Re1EnemyIds.SpiderBrown:
-                case Re1EnemyIds.SpiderBlack:
+                case Re1EnemyIds.WebSpinner:
+                case Re1EnemyIds.BlackTiger:
                     return new byte[] { 0x1E };
                 case Re1EnemyIds.Crow:
                     return new byte[] { 0x1C };
                 case Re1EnemyIds.Hunter:
                     return new byte[] { 0x03, 0x04 };
-                case Re1EnemyIds.Bee:
+                case Re1EnemyIds.Wasp:
                 case Re1EnemyIds.Tyrant1:
                 case Re1EnemyIds.Yawn1:
                 default:
