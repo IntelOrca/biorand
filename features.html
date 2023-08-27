@@ -22,9 +22,8 @@
   <link href="assets/css/style.css" rel="stylesheet">
 </head>
 <body>
-  <header id="header" class="fixed-top ">
+  <header id="header" class="fixed-top">
     <div class="container d-flex align-items-center">
-      
       <h1 class="logo me-auto">
         <a class="scrollto" href="index.html">
           <img class="logo scrollto" src="assets/img/umbrella.png" alt="">BIORAND
@@ -49,7 +48,76 @@
       </nav>
     </div>
   </header>
-  <footer id="footer" style="bottom: 0; position: fixed; width: 100%;">
+  <main>
+    <section class="clear-header">
+      <div class="container">
+        <div class="section-title">
+          <h2>Features</h2>
+        </div>
+        <div class="row">
+          <div class="feature">
+            <h2>🚪 Door randomization</h2>
+            <p>Nearly all doors will be changed to link to different rooms. A graph is constructed to provide an alternative route through the game, key items must still be picked up and doors must still be unlocked.</p>
+            <p>The randomizer will create 1 to 4 segments that are bridged together with specific rooms (usually bosses). There are options for controlling the number of segments and the average size of a segment. Choosing one segment with the maximum size will generate one very large graph with intertwining rooms, where as 4 segments with a low size will give you a more linear and smaller graph.</p>
+            <p>The randomizer will also attempt to ensure a room with a box is accessible without needing to pick up any key items from the start or bridge room. Is it possible that some doors will loopback to another room that you could already access. In the cases where there is a loopback to a room where one or more key items were required to loopback, the the door will be locked from the earlier side, thus making it an unlockable shortcut. Doors locked from the inside in the original game may not be locked in a door rando. Depending on the constraints and randomness, some doors may never be connected up and always remain locked.</p>
+            <p>Not all key items will need to be collected to reach the next bridge room or end, but they may lead to collecting more items such as ammo, ink ribbons, health, or weapons. If a key item is optional for a segment, but is required in a later segment, the key item will be placed again. The amount of usages you get for a key item will depend on how many more times you will need to use it again later in the run, therefore it is safe to discard any item when prompted. A door rando will not ensure enough ammo or weapons are placed before boss rooms, keep this in mind when setting your random item ratios.</p>
+            <p>If your constraints are too strict, you may get an error for some seeds where it failed to generate a graph that was completable, usually due to the lack of rooms to place items in. If this happens, try another seed or increasing the segment size. </p>
+          </div>
+          <div class="feature">
+            <h2>🔑 Key item randomization</h2>
+            <p>This randomizer is able to place key items accordingly so that they always appear in a location that can be accessed prior to the door or object that requires the key. Some items crash the game when changing them (such as the locker containing the flamethrower in the lab), and some items do not always spawn in. In the cases where an item isn't always available to pick up, a non-essential item will be placed there (i.e. not a key item or weapon). Only scripted tyrants from the original game will drop items, and these items will also be replaced with a non-essential item.</p>
+            <p>There are several options that affect how items are placed:</p>
+            <h3>🗎 Include documents</h3>
+            <p>Whether or not documents will be replaced with key items or random items. This includes the photos you collect from developing films in the dark room, however the photos will never be key items or weapons due to the fact that, choosing not to pick the item will prevent you from ever picking it up, as you can not develop the film again.</p>
+            <h3>🔂 Allow alternative routes</h3>
+            <p>This will spawn key items in such a way that you may not be able to unlock doors or use objects in the same order as the original game. For example, in Resident Evil 2, the heart key might be spawned in the main hall, and the spade key might be spawned in the basement. This means you must first visit the basement before you can visit the library.</p>
+            <h3>🔐 Safe key placement</h3>
+            <p>This will ensure all key items are placed within an area of the game that is accessible from the door or object that requires the key item. If this is disabled, lab key items can be placed in the police station. The player must therefore be thorough and check every item to make sure all key items are collected before activating any point-of-no-return.</p>
+            <p>In Resident Evil 2, there are 3 significant points-of-no-return:</p>
+            <ul>
+              <li>The gate leading to the front of the police station.</li>
+              <li>The train / lift transporting you from the marshaling yard to the lab.</li>
+              <li>The train platform at the end of scenario B.</li>
+            </ul>
+            <p>BioRand pretends there are two more points-of-no-return:</p>
+            <ul>
+              <li>The door leading to the sewers</li>
+              <li>The cable car transporting you from the sewers to the marshaling yard.</li>
+            </ul>
+          </div>
+          <div class="feature">
+            <h2>🗡️ Custom item pool</h2>
+            <p>If not enabled, all the items found in the base game are just shuffled. This means you will find the same number of ink ribbons, handgun ammo, herbs etc. If enabled, the game will replace every item pickup with a random item type and quantity.</p>
+          </div>
+          <div class="feature">
+            <h2>🎒 Random inventory</h2>
+            <p>Enabling random inventory will change your starting loadout. You can configure up to two weapons that you start off with. The rest of your inventory will contain a random selection of gunpowder, ammo, health, and ink ribbons. In RE 3, you will only be given the reloading tool if there is gunpowder available in the seed. The knife is always provided except in RE 3, where that is by default found in your item box.</p>
+          </div>
+          <div class="feature">
+            <h2>🌿 Non-key item randomization</h2>
+            <p>Each compatible weapon is randomly placed. Some may not be placed at all. Only ammo for weapons that are placed in the game will be placed. You will not find ammo for a weapon that you will never pick up. The ratio of gun powder, ammo, health and ink ribbons can be adjusted. Setting the ratio to 0 will ensure that items of that kind are never placed. The average quantity of ammo found in each location can be adjusted. Lowest setting will typically give you one bullet per ammo pickup, where as the highest setting will allow a maximum of 60 handgun bullets in a pickup, or 30 shotgun shells.</p>
+          </div>
+          <div class="feature">
+            <h2>🧟 Enemy randomization</h2>
+            <p>Enemies can be randomized with a difficulty value. An easy difficulty will more likely spawn slower, and easier to dodge enemies such as crows, ivies, spiders, and zombies. A higher difficulty will more likely spawn faster, and more lethal enemies such as cerebrus', lickers, and tyrants. Some enemies are not randomized to prevent crashes.</p>
+          </div>
+          <div class="feature">
+            <h2>👤 Player Character</h2>
+            <p>Swap the character you play with any supported character that comes with BioRand. Characters from RE 1, will need an RE 1 game installation in order to use their voice lines. The same applies for RE 2, and RE 3.</p>
+          </div>
+          <div class="feature">
+            <h2>🎤 Character, voice randomization</h2>
+            <p>Randomizes all NPCs in the game and their voice lines. Voice lines are picked based on the character that is swapped in. Some characters can not be swapped or are only swapped with a limited range of other characters to prevent crashes or cutscene soft locks.</p>
+          </div>
+          <div class="feature">
+            <h2>🎶 Background music randomization</h2>
+            <p>All background music tracks are shuffled. Music is shuffled by genre, so danger tracks are swapped with other danger tracks, calm tracks are swapped with other calm tracks. Some rooms contining only ambient sound effects, such as the power room in the basement are replaced with music tracks. Custom music can be included, just drop a .wav or .ogg file under data/bgm/custom/{tag} directory next to BioRand. The tag folders can be safe, creepy, or danger.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer id="footer">
     <div class="container footer-bottom clearfix">
       <div class="copyright">
         &copy; <strong><span>BioRand</span></strong> 2022-2023 &bullet; licensed under MIT.

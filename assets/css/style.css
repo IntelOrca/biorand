@@ -167,6 +167,10 @@ h6 {
   margin-right: 8px;
 }
 
+.clear-header {
+  padding-top: 140px;
+}
+
 /* Navigation Menu */
 /**
 * Desktop Navigation 
@@ -930,6 +934,22 @@ section {
     max-width: 100%;
     margin: 0 auto 30px auto;
   }
+}
+
+/* Features */
+.feature {
+  background-color: #f3f5fa;
+  padding: 8px 14px;
+  margin: 20px 0;
+  border-radius: 8px;
+}
+
+.feature h3 {
+  font-size: 24px;
+}
+
+.feature ul {
+  margin-left: 20px;
 }
 
 /* Footer */
