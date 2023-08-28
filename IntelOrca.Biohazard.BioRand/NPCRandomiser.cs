@@ -386,10 +386,15 @@ namespace IntelOrca.Biohazard.BioRand
                                 var parts = npc.Use.Split(';');
                                 var rdtId = RdtId.Parse(parts[0]);
                                 var rdtOffset = int.Parse(parts[1].Substring(2), System.Globalization.NumberStyles.HexNumber);
-                                newEnemyType = _gameData
-                                    .GetRdt(rdtId)!
-                                    .Enemies.FirstOrDefault(x => x.Offset == rdtOffset)
-                                    .Type;
+                                var altRdt = _gameData.GetRdt(rdtId);
+                                if (altRdt != null)
+                                {
+                                    var altNpc = altRdt.Enemies.FirstOrDefault(x => x.Offset == rdtOffset);
+                                    if (altNpc != null)
+                                    {
+                                        newEnemyType = altNpc.Type;
+                                    }
+                                }
                             }
                             else
                             {
