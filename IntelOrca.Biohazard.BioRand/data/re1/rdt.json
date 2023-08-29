@@ -1978,7 +1978,7 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 4 ]
+          "excludeTypes": [ 4, 12 ]
         }
       ]
     },
@@ -2317,7 +2317,8 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 4 ]
+          "excludeTypes": [ 4 ],
+          "restricted": true
         }
       ]
     },

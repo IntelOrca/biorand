@@ -135,7 +135,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 case Re1EnemyIds.Cerberus:
                 case Re1EnemyIds.Chimera:
                 case Re1EnemyIds.Neptune:
-                    limit = new byte[] { 2, 4, 6, 8 };
+                    limit = new byte[] { 2, 3, 5, 8 };
                     break;
                 case Re1EnemyIds.Hunter:
                     limit = new byte[] { 2, 3, 4, 6 };
