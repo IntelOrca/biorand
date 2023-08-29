@@ -513,7 +513,8 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 2, 4 ]
+          "excludeTypes": [ 2, 4 ],
+          "keepState": true
         }
       ]
     },
@@ -2568,7 +2569,8 @@
     "60E": {
       "enemies": [
         {
-          "excludeTypes": [ 2, 4 ]
+          "excludeTypes": [ 2, 4 ],
+          "keepState": true
         }
       ]
     },
