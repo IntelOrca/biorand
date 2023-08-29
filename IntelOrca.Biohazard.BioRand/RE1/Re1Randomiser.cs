@@ -132,6 +132,10 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             FixFlamethrowerCombine();
             FixWasteHeal();
             FixNeptuneDamage();
+            if (reConfig.MaxInventorySize)
+            {
+                FixChrisInventorySize();
+            }
             FixWeaponHitScan(config);
 
             base.Generate(config, reConfig, progress, fileRepository);
@@ -579,6 +583,41 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                     neptuneData += entrySize;
                 }
             }
+        }
+
+        private void FixChrisInventorySize()
+        {
+            var addresses = new uint[]
+            {
+                0x40B461,
+                0x40B476,
+                0x40B483,
+                0x414103,
+                0x414022
+            };
+
+            var pw = new PatchWriter(ExePatch);
+            foreach (var addr in addresses)
+            {
+                pw.Begin(addr);
+                pw.Write(0xB0);
+                pw.Write(0x01);
+                pw.Write(0x90);
+                pw.Write(0x90);
+                pw.Write(0x90);
+                pw.End();
+            }
+
+            // Rebirth
+            pw.Begin(0x100505A3);
+            pw.Write(0xB8);
+            pw.Write(0x01);
+            pw.Write(0x00);
+            pw.Write(0x00);
+            pw.Write(0x00);
+            pw.Write(0x90);
+            pw.Write(0x90);
+            pw.End();
         }
 
         private void FixWeaponHitScan(RandoConfig config)

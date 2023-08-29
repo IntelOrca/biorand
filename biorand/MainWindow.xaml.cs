@@ -71,6 +71,7 @@ namespace IntelOrca.Biohazard.BioRand
                 gameLocation3.IsSettingsLoaded = true;
 
                 chkRandomizeTitleVoice.IsChecked = _settings.RandomizeTitleVoice;
+                chkMaxInventorySize.IsChecked = _settings.MaxInventorySize;
             }
 
             if (!Version.TryParse(_settings.LastVersion, out var lastVersion) || lastVersion != Program.CurrentVersion)
@@ -106,6 +107,7 @@ namespace IntelOrca.Biohazard.BioRand
             _settings.GameExecutable3 = gameLocation3.SelectedExecutable;
 
             _settings.RandomizeTitleVoice = chkRandomizeTitleVoice.IsChecked == true;
+            _settings.MaxInventorySize = chkMaxInventorySize.IsChecked == true;
 
             _settings.LastVersion = Program.CurrentVersionNumber;
 
@@ -595,6 +597,7 @@ namespace IntelOrca.Biohazard.BioRand
         {
             var config = new ReInstallConfig();
             config.RandomizeTitleVoice = _settings.RandomizeTitleVoice;
+            config.MaxInventorySize = _settings.MaxInventorySize;
             config.SetEnabled(0, _settings.GameEnabled1);
             config.SetEnabled(1, _settings.GameEnabled2);
             config.SetEnabled(2, _settings.GameEnabled3);
@@ -978,7 +981,7 @@ namespace IntelOrca.Biohazard.BioRand
             SaveSettings();
         }
 
-        private void randomizeTitleVoice_Changed(object sender, RoutedEventArgs e)
+        private void globalCheckBox_Changed(object sender, RoutedEventArgs e)
         {
             if (!_suspendEvents)
             {

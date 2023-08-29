@@ -81,7 +81,12 @@
                     <local:GameLocationBox x:Name="gameLocation1" Tag="0" Header="Resident Evil 1" Validate="gameLocation_Validate" Changed="gameLocation_Changed" />
                     <local:GameLocationBox x:Name="gameLocation2" Tag="1" Header="Resident Evil 2" Validate="gameLocation_Validate" Changed="gameLocation_Changed" />
                     <local:GameLocationBox x:Name="gameLocation3" Tag="2" Header="Resident Evil 3" Validate="gameLocation_Validate" Changed="gameLocation_Changed" />
-                    <CheckBox x:Name="chkRandomizeTitleVoice" Checked="randomizeTitleVoice_Changed" Unchecked="randomizeTitleVoice_Changed">Randomize title voice</CheckBox>
+                    <GroupBox Header="In-game tweaks">
+                        <StackPanel>
+                            <CheckBox x:Name="chkMaxInventorySize" Checked="globalCheckBox_Changed" Unchecked="globalCheckBox_Changed">Max inventory size</CheckBox>
+                            <CheckBox x:Name="chkRandomizeTitleVoice" Checked="globalCheckBox_Changed" Unchecked="globalCheckBox_Changed">Randomize title voice</CheckBox>
+                        </StackPanel>
+                    </GroupBox>
                 </StackPanel>
                 <StackPanel x:Name="panelRando" Visibility="Visible">
                     <Grid>

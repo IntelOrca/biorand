@@ -8,6 +8,7 @@ namespace IntelOrca.Biohazard.BioRand
         private bool[] _enabled = new bool[3];
 
         public bool RandomizeTitleVoice { get; set; } = true;
+        public bool MaxInventorySize { get; set; }
 
         public string GetInstallPath(int index)
         {
