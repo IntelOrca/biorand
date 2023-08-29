@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
 using System.Xml;
 using IntelOrca.Biohazard.BioRand.RE1;
 using IntelOrca.Biohazard.BioRand.RE2;
@@ -18,6 +19,8 @@ namespace IntelOrca.Biohazard.BioRand
     {
         private static bool g_debugLogging = false;
         private static object g_xmlSync = new object();
+        private static readonly Dictionary<RdtId, SelectableEnemy> g_stickyEnemies = new Dictionary<RdtId, SelectableEnemy>();
+        private static int g_player;
 
         private BioVersion _version;
         private readonly RandoLogger _logger;
@@ -143,11 +146,41 @@ namespace IntelOrca.Biohazard.BioRand
         public void Randomise(PlayGraph? graph)
         {
             _logger.WriteHeading("Randomizing enemies:");
-            ReadEnemyPlacements();
-            GatherEsps();
-            SetupRandomEnemyPlacements();
-            RandomizeRooms(GetAccessibleRdts(graph));
-            FixRooms();
+            ResetStickyEnemies();
+            try
+            {
+                ReadEnemyPlacements();
+                GatherEsps();
+                SetupRandomEnemyPlacements();
+                RandomizeRooms(GetAccessibleRdts(graph));
+                FixRooms();
+            }
+            finally
+            {
+                EndStickyEnemies();
+            }
+        }
+
+        private void ResetStickyEnemies()
+        {
+            if (_config.Game != 1)
+                return;
+
+            // Wait for player to switch
+            while (_config.Player != g_player)
+            {
+                Thread.Sleep(100);
+            }
+
+            if (_config.Player == 0)
+            {
+                g_stickyEnemies.Clear();
+            }
+        }
+
+        private void EndStickyEnemies()
+        {
+            g_player = (g_player + 1) % 2;
         }
 
         private RandomizedRdt[] GetAccessibleRdts(PlayGraph? graph)
@@ -296,6 +329,15 @@ namespace IntelOrca.Biohazard.BioRand
 
         private bool RdtSupportsEnemyType(RandomizedRdt rdt, byte[] enemyTypes)
         {
+            // RE 1, only allow enemy that was placed in Chris room due to shared sounds
+            if (g_stickyEnemies.TryGetValue(rdt.RdtId, out var stickyEnemy))
+            {
+                if (!stickyEnemy.Types.Intersect(enemyTypes).Any())
+                {
+                    return false;
+                }
+            }
+
             var hasEnemyPlacements =
                 _config.RandomEnemyPlacement &&
                 _enemyPositions.Any(x => x.RdtId == rdt.RdtId);
@@ -404,6 +446,10 @@ namespace IntelOrca.Biohazard.BioRand
                 {
                     FixRE1Sounds(rdt.RdtId, fixType.Value);
                     AddRequiredEsps(rdt, fixType.Value);
+                    if (_config.Player == 0)
+                    {
+                        g_stickyEnemies.Add(rdt.RdtId, targetEnemy);
+                    }
                 }
             }
             else
