@@ -16,6 +16,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
     {
         private readonly Re1EnemyHelper _enemyHelper = new Re1EnemyHelper();
         private ReInstallConfig? _reInstallConfig;
+        private object _playerFaceSync = new object();
 
         protected override BioVersion BiohazardVersion => BioVersion.Biohazard1;
         internal override IDoorHelper DoorHelper { get; } = new Re1DoorHelper();
@@ -32,6 +33,40 @@ namespace IntelOrca.Biohazard.BioRand.RE1
         protected override string[] GetDefaultNPCs()
         {
             return new[] { "chris", "jill", "barry", "rebecca", "wesker", "enrico", "richard" };
+        }
+
+        private string[] GetEnabledPartners(RandoConfig config)
+        {
+            var enabledPLDs = GetAllPLDs().Intersect(GetEnabledNPCs(config)).ToArray();
+            return enabledPLDs;
+        }
+
+        private string[] GetAllPLDs()
+        {
+            var pldFiles0 = DataManager
+                .GetDirectories(BiohazardVersion, $"pld0")
+                .Select(x => Path.GetFileName(x))
+                .ToArray();
+            var pldFiles1 = DataManager
+                .GetDirectories(BiohazardVersion, $"pld1")
+                .Select(x => Path.GetFileName(x))
+                .ToArray();
+            return pldFiles0.Concat(pldFiles1).OrderBy(x => x).ToArray();
+        }
+
+        private string[] GetEnabledNPCs(RandoConfig config)
+        {
+            var result = new List<string>();
+            var allNPCs = GetNPCs();
+            var enabledNPCs = config.EnabledNPCs;
+            for (int i = 0; i < allNPCs.Length; i++)
+            {
+                if (enabledNPCs.Length > i && enabledNPCs[i])
+                {
+                    result.Add(allNPCs[i]);
+                }
+            }
+            return result.ToArray();
         }
 
         public override bool ValidateGamePath(string path)
@@ -124,11 +159,6 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 () => GenerateRdts(config.WithPlayerScenario(0, 0), progress, fileRepository),
                 () => GenerateRdts(config.WithPlayerScenario(1, 0), progress, fileRepository));
 
-            if (config.ChangePlayer)
-            {
-                ChangePlayerInventoryFace(config, fileRepository);
-            }
-
             FixFlamethrowerCombine();
             FixWasteHeal();
             FixNeptuneDamage();
@@ -155,33 +185,48 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             {
                 var pldPath = GetSelectedPldPath(config, config.Player);
                 actor = Path.GetFileName(pldPath);
-                SwapPlayerCharacter(config, logger, actor, fileRepository);
+                SwapPlayerCharacter(config, logger, config.Player, actor, fileRepository);
             }
+
+            // Change partner
+            if (config.Player == 0)
+            {
+                var rng = new Rng(config.Seed);
+                var enabledPLDs = GetEnabledPartners(config);
+                if (enabledPLDs.Length != 0)
+                {
+                    partner = rng.NextOf(enabledPLDs);
+                    SwapPlayerCharacter(config, logger, 3, partner, fileRepository);
+                }
+            }
+
             return new[] { actor, partner };
         }
 
-        private void ChangePlayerInventoryFace(RandoConfig config, FileRepository fileRepository)
+        private void ChangePlayerInventoryFace(FileRepository fileRepository, int pldIndex, string actor)
         {
             if (BgCreator == null)
                 return;
 
-            var inputTimPath = fileRepository.GetDataPath("data/statface.tim");
-            var outputTimPath = fileRepository.GetModPath("data/statface.tim");
-            Directory.CreateDirectory(Path.GetDirectoryName(outputTimPath!));
-
-            var timFile = new TimFile(inputTimPath);
-
-            for (int i = 0; i < 2; i++)
+            lock (_playerFaceSync)
             {
-                var pldPath = GetSelectedPldPath(config, i);
+                var outputTimPath = fileRepository.GetModPath("data/statface.tim");
+                var inputTimPath = File.Exists(outputTimPath) ?
+                    outputTimPath :
+                    fileRepository.GetDataPath("data/statface.tim");
+                Directory.CreateDirectory(Path.GetDirectoryName(outputTimPath!));
+
+                var timFile = new TimFile(inputTimPath);
+                var pldPath = GetPldDirectory(actor, out _);
                 var facePath = DataManager.GetPath(BiohazardVersion, Path.Combine(pldPath, "face.png"));
                 if (File.Exists(facePath))
                 {
-                    BgCreator.DrawImage(timFile, facePath, i * 32, 0);
+                    var row = pldIndex / 2;
+                    var col = pldIndex % 2;
+                    BgCreator.DrawImage(timFile, facePath, col * 32, row * 32);
                 }
+                timFile.Save(outputTimPath);
             }
-
-            timFile.Save(outputTimPath);
         }
 
         public override string[] GetPlayerCharacters(int index)
@@ -231,15 +276,34 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 .ToArray();
         }
 
-        private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, string actor, FileRepository fileRepository)
+        private string GetPldDirectory(string actor, out int pldIndex)
         {
-            var originalPlayerActor = config.Player == 0 ? "chris" : "jill";
-            var srcPldDir = GetSelectedPldPath(config, config.Player);
+            var srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld0\\{actor}");
+            pldIndex = 0;
+            if (!Directory.Exists(srcPldDir))
+            {
+                srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld1\\{actor}");
+                pldIndex = 1;
+            }
+            return srcPldDir;
+        }
+
+        private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, int pldIndex, string actor, FileRepository fileRepository)
+        {
+            var originalPlayerActor = pldIndex switch
+            {
+                0 => "chris",
+                1 => "jill",
+                2 => "barry",
+                3 => "rebecca",
+                _ => throw new NotImplementedException()
+            };
+            var srcPldDir = GetPldDirectory(actor, out _);
             var srcFacePath = DataManager.GetPath(BiohazardVersion, $"face\\{actor}.tim");
 
             if (originalPlayerActor != actor)
             {
-                logger.WriteHeading("Randomizing Player:");
+                logger.WriteHeading(pldIndex < 2 ? "Randomizing Player:" : "Randomizing Partner:");
                 logger.WriteLine($"{originalPlayerActor} becomes {actor}");
             }
 
@@ -253,7 +317,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             for (var i = 0; i < 16; i++)
             {
                 var sourceFileName = $"players/w{baseWeaponIndex + i:X2}.emw";
-                var targetFileName = $"players/w{(config.Player * 16) + i:X2}.emw";
+                var targetFileName = $"players/w{(pldIndex * 16) + i:X2}.emw";
                 var sourceFile = fileRepository.GetDataPath(sourceFileName);
                 var targetLocation = fileRepository.GetModPath(targetFileName);
                 if (File.Exists(sourceFile))
@@ -269,7 +333,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 var fileName = Path.GetFileName(pldFile);
                 if (Regex.IsMatch(fileName, "char1[01].emd", RegexOptions.IgnoreCase))
                 {
-                    var targetFileName = config.Player == 0 ? "CHAR10.EMD" : "CHAR11.EMD";
+                    var targetFileName = $"CHAR1{pldIndex}.EMD";
                     File.Copy(pldFile, Path.Combine(targetEnemyDir, targetFileName), true);
                     continue;
                 }
@@ -307,7 +371,9 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                     var hurtFileNames = new[]
                     {
                         new[] { "chris", "ch_ef" },
-                        new[] { "jill", "jill_ef" }
+                        new[] { "jill", "jill_ef" },
+                        new string[0],
+                        new[] { "reb" }
                     };
 
                     var soundDir = fileRepository.GetModPath("sound");
@@ -317,15 +383,17 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                     {
                         var waveformBuilder = new WaveformBuilder();
                         waveformBuilder.Append(hurtFiles[i]);
-                        for (var j = 0; j < 2; j++)
+                        var arr = hurtFileNames[pldIndex];
+                        foreach (var hurtFileName in arr)
                         {
-                            var hurtFileName = hurtFileNames[config.Player][j];
                             var soundPath = Path.Combine(soundDir, $"{hurtFileName}{i + 1:00}.WAV");
                             waveformBuilder.Save(soundPath);
                         }
                     }
                 }
             }
+
+            ChangePlayerInventoryFace(fileRepository, pldIndex, actor);
         }
 
         internal override void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser, VoiceRandomiser voiceRandomiser)
