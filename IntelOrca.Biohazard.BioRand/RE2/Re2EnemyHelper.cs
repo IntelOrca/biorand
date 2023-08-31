@@ -336,6 +336,8 @@ namespace IntelOrca.Biohazard.BioRand.RE2
 
         public byte[] GetRequiredEsps(byte enemyType) => new byte[0];
 
+        public byte[] GetReservedEnemyIds() => new byte[0];
+
         public void CreateZombie(byte type, PldFile srcPld, EmdFile srcEmd, string dstPath)
         {
             var tim = srcPld.GetTim(0);

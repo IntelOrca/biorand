@@ -121,6 +121,11 @@ namespace IntelOrca.Biohazard.BioRand
             _enemyPositions = _enemyPositions.Shuffle(_rng);
             for (byte i = 0; i < 255; i++)
                 _killIdPool.Add(i);
+
+            var reservedEnemyIds = _enemyHelper.GetReservedEnemyIds();
+            foreach (var enemyId in reservedEnemyIds)
+                _killIdPool.Remove(enemyId);
+
             foreach (var rdt in _gameData.Rdts)
             {
                 byte[] killIds;

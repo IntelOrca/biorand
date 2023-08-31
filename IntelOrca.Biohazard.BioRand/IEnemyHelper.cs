@@ -14,5 +14,6 @@ namespace IntelOrca.Biohazard.BioRand
         SelectableEnemy[] GetSelectableEnemies();
         int GetEnemyTypeLimit(RandoConfig config, byte type);
         byte[] GetRequiredEsps(byte enemyType);
+        byte[] GetReservedEnemyIds();
     }
 }

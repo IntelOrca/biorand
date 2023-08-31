@@ -158,6 +158,8 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             return limit[index];
         }
 
+        public byte[] GetReservedEnemyIds() => new byte[0];
+
         public SelectableEnemy[] GetSelectableEnemies() => new[]
         {
             new SelectableEnemy("Wasp", "Yellow", new[] { Re1EnemyIds.Wasp }),
