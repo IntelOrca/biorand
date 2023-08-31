@@ -8,7 +8,6 @@ using System.Text.Json;
 using IntelOrca.Biohazard.BioRand.RE1;
 using IntelOrca.Biohazard.BioRand.RE2;
 using IntelOrca.Biohazard.BioRand.RE3;
-using IntelOrca.Biohazard.Room;
 
 namespace IntelOrca.Biohazard.BioRand
 {
@@ -74,7 +73,8 @@ namespace IntelOrca.Biohazard.BioRand
             var result = 0;
             var dataPath = GetDataPath(installPath);
             var rdtIds = GetRdtIds(dataPath);
-            for (int player = 0; player < 2; player++)
+            var numPlayers = BiohazardVersion == BioVersion.Biohazard3 ? 1 : 2;
+            for (int player = 0; player < numPlayers; player++)
             {
                 var actualChecksums = GetRdtChecksums(dataPath, player, rdtIds);
                 var expectedChecksums = GetRdtChecksums(player);
@@ -114,16 +114,18 @@ namespace IntelOrca.Biohazard.BioRand
 
         private Dictionary<RdtId, ulong> GetRdtChecksums(string dataPath, int player, RdtId[] rdtIds)
         {
+            var fileRepo = new FileRepository(dataPath);
+            if (this is Re3Randomiser re3randomizer)
+                re3randomizer.AddArchives(dataPath, fileRepo);
             var result = new Dictionary<RdtId, ulong>();
             foreach (var rdtId in rdtIds)
             {
                 var rdtPath = GetRdtPath(dataPath, rdtId, player);
                 try
                 {
-                    if (File.Exists(rdtPath))
+                    if (fileRepo.Exists(rdtPath))
                     {
-                        var rdtFile = Rdt.FromFile(BiohazardVersion, rdtPath);
-                        result[rdtId] = rdtFile.Data.CalculateFnv1a();
+                        result[rdtId] = fileRepo.GetBytes(rdtPath).CalculateFnv1a();
                     }
                 }
                 catch
