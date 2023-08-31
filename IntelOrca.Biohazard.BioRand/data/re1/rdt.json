@@ -2584,7 +2584,8 @@
     "610": {
       "doors": [
         {
-          "target": "104"
+          "target": "104",
+          "id": 0
         },
         {
           "target": "71C"
@@ -2641,7 +2642,8 @@
     "619": {
       "doors": [
         {
-          "target": "10A"
+          "target": "10A",
+          "id": 0
         }
       ],
       "enemies": [
@@ -2766,7 +2768,8 @@
       ],
       "doors": [
         {
-          "target": "20B"
+          "target": "20B",
+          "id": 0
         },
         {
           "target": "71A",
@@ -2876,7 +2879,8 @@
     "715": {
       "doors": [
         {
-          "target": "201"
+          "target": "201",
+          "id": 0
         }
       ],
       "items": [
