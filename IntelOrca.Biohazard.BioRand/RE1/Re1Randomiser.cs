@@ -552,7 +552,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
         {
             var doc = new XmlDocument();
             var root = doc.CreateElement("Init");
-            var player = 0;
+            var player = 1;
             foreach (var inventory in Inventories.Reverse<RandomInventory?>())
             {
                 var playerNode = doc.CreateElement("Player");
@@ -570,7 +570,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                     }
                 }
                 root.AppendChild(playerNode);
-                player++;
+                player--;
             }
             doc.AppendChild(root);
             doc.Save(fileRepository.GetModPath("init.xml"));
@@ -655,6 +655,9 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 
         private void FixChrisInventorySize()
         {
+            var pw = new PatchWriter(ExePatch);
+
+            // Inventory instructions
             var addresses = new uint[]
             {
                 0x40B461,
@@ -663,8 +666,6 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 0x414103,
                 0x414022
             };
-
-            var pw = new PatchWriter(ExePatch);
             foreach (var addr in addresses)
             {
                 pw.Begin(addr);
@@ -675,6 +676,14 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 pw.Write(0x90);
                 pw.End();
             }
+
+            // Partner swap
+            pw.Begin(0x0041B208);
+            pw.Write(0xC7);
+            pw.Write(0x05);
+            pw.Write32(0x00AA8E48);
+            pw.Write32(0x00C38814);
+            pw.End();
 
             // Rebirth
             pw.Begin(0x100505A3);

@@ -8,6 +8,8 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 
         public void Begin(RandoConfig config, GameData gameData, Map map)
         {
+            AllowPartnerItemBoxes(gameData);
+
             if (!config.RandomDoors)
                 return;
 
@@ -91,6 +93,20 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                     return new RdtId(rdtId.Stage - 5, rdtId.Room);
             }
             return rdtId;
+        }
+
+        private void AllowPartnerItemBoxes(GameData gameData)
+        {
+            // Remove partner check for these two item boxes
+            // This is so Rebecca can use the item boxes
+            // Important for Chris 8-inventory because the inventory
+            // is now shared for both him and Rebecca and player
+            // might need to make space for more items e.g. (V-JOLT)
+            var room = gameData.GetRdt(new RdtId(0, 0x00));
+            room?.Nop(0x10C92);
+
+            room = gameData.GetRdt(new RdtId(3, 0x03));
+            room?.Nop(0x1F920);
         }
     }
 }
