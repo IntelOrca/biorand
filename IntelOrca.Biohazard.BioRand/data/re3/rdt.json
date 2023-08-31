@@ -2502,7 +2502,7 @@
         {
           "playerActor": "carlos",
           "includeOffsets": [ 9224 ],
-          "excludeTypes": [ 91 ]
+          "includeTypes": [ 80, 81, 82, 83, 86, 92 ]
         }
       ],
       "enemies": [
@@ -2558,7 +2558,7 @@
       "npcs": [
         {
           "playerActor": "carlos",
-          "excludeTypes": [ 47, 87 ]
+          "includeTypes": [ 80, 81, 82, 83, 86, 92 ]
         }
       ],
       "enemies": [
