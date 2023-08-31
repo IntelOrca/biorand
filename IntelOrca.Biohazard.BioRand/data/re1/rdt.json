@@ -2041,13 +2041,27 @@
         },
         {
           "category": "box",
-          "nop": [ "0x4984-0x4A72" ],
+          "cutscene": true,
+          "nop": [ "0x498E-0x499C", "0x49A8", "0x4A00" ],
           "player": 1
         }
       ],
       "doors": [
         {
-          "target": "500"
+          "target": "500",
+          "player": 0
+        },
+        {
+          "target": "500",
+          "player": 1,
+          "doorRando": false
+        },
+        {
+          "target": "500",
+          "lock": "unblock",
+          "noUnlock": true,
+          "player": 1,
+          "doorRando": true
         },
         {
           "target": "503"
@@ -2065,7 +2079,14 @@
           "player": 0
         },
         {
+          "includeOffsets": [ 18776 ], // Barry (dying)
           "includeTypes": [ 42 ],
+          "cutscene": 0,
+          "player": 1
+        },
+        {
+          "includeOffsets": [ 18798 ], // Chris (let's go)
+          "cutscene": 1,
           "player": 1
         }
       ],
@@ -2180,6 +2201,11 @@
       ]
     },
     "508": {
+      "doorRando": [
+        {
+          "nop": [ "0x442", "0x450", "0x480" ]
+        }
+      ],
       "doors": [
         {
           "target": "505"
@@ -2205,7 +2231,13 @@
       "npcs": [
         {
           "use": "502;0x493A",
+          "doorRando": false,
           "player": 0
+        },
+        {
+          "use": "502;0x496E",
+          "doorRando": false,
+          "player": 1
         }
       ]
     },
