@@ -1327,7 +1327,7 @@
         },
         {
           "includeOffsets": [ 20512, 20536, 20560 ],
-          "excludeTypes": [ 83, 90 ],
+          "excludeTypes": [ 47, 83, 87, 90 ],
           "cutscene": 2 // Carlos and Nikolai
         },
         {
