@@ -3753,7 +3753,7 @@
         },
         {
           "includeOffsets": [ 4892 ],
-          "excludeTypes": [ 88, 89, 90 ],
+          "includeTypes": [ 69, 79 ],
           "cutscene": 2,
           "player": 1
         }
