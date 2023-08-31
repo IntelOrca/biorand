@@ -1901,7 +1901,6 @@
           "player": 0
         },
         {
-          "includeTypes": [ 42 ],
           "player": 1
         }
       ]
@@ -2837,7 +2836,6 @@
       ],
       "npcs": [
         {
-          "includeTypes": [ 42 ],
           "player": 1
         }
       ]
