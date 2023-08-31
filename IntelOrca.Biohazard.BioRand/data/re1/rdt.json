@@ -2062,6 +2062,9 @@
       ],
       "npcs": [
         {
+          "player": 0
+        },
+        {
           "includeTypes": [ 42 ],
           "player": 1
         }
@@ -2197,6 +2200,12 @@
       "enemies": [
         {
           "excludeTypes": [ 4 ]
+        }
+      ],
+      "npcs": [
+        {
+          "use": "502;0x493A",
+          "player": 0
         }
       ]
     },

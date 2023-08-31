@@ -1354,7 +1354,7 @@
   "voice/VA00_02.wav": { "rdt": "000", "player": 1, "actor": "rebecca", "condition": "@chris" },
   "voice/VA00_03.wav": { "rdt": "000", "player": 1, "actor": "barry" },
   "voice/VA00_04.wav": { "rdt": "000", "player": 1, "actor": "chris" },
-  "voice/VA00_05.wav": { "rdt": "000", "player": 1, "actor": "jill" },
+  "voice/VA00_05.wav": { "rdt": "502", "player": 0, "actor": "jill" },
   "voice/VA01_00.wav": { "rdt": "20D", "player": 1, "actor": "jill", "condition": "@richard", "nameClipped": { "start": 1.3 } },
   "voice/VA01_01.wav": { "rdt": "20D", "player": 1, "actor": "richard", "condition": "@jill", "nameClipped": { "start": 0.9 } },
   "voice/VA01_02.wav": { "rdt": "20D", "player": 1, "actor": "jill" },
@@ -1412,9 +1412,10 @@
   "voice/VA08_08.wav": { "rdt": "409", "player": 0, "actor": "rebecca", "condition": "@chris" },
   "voice/VA08_09.wav": { "rdt": "409", "player": 0, "actor": "chris" },
   "voice/VA08_0A.wav": { "rdt": "409", "player": 0, "actor": "rebecca", "condition": "@chris" },
+  "voice/VA09_00.wav": { "rdt": "50C", "player": 0, "actor": "rebecca", "condition": "@chris" },
   "voice/VA09_01.wav": {
     "rdt": "50C",
-    "player": 1,
+    "player": 0,
     "actors": [
       {
         "actor": "chris",
@@ -1429,7 +1430,7 @@
   },
   "voice/VA09_02.wav": {
     "rdt": "50C",
-    "player": 1,
+    "player": 0,
     "actors": [
       {
         "actor": "chris",
@@ -1444,7 +1445,7 @@
   },
   "voice/VA09_03.wav": {
     "rdt": "50C",
-    "player": 1,
+    "player": 0,
     "actors": [
       {
         "actor": "chris",
