@@ -757,6 +757,11 @@
       ]
     },
     "11C": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "linkedRoom": "61C",
       "doors": [
         {
@@ -1201,7 +1206,7 @@
     "302": {
       "doorRando": [
         {
-          "nop": [ "0x18DA2", "0x18DE0" ]
+          "nop": [ "0x192C4", "0x192D0", "0x192DC", "0x1944A", "0x19450" ]
         }
       ],
       "doors": [
@@ -1210,8 +1215,7 @@
           "randomize": false,
           "requires": [ 39 ],
           "lock": "unblock",
-          "noUnlock": true,
-          "doorRando": false
+          "noUnlock": true
         },
         {
           "target": "301",
@@ -1268,7 +1272,8 @@
     "305": {
       "doorRando": [
         {
-          "category": "bridge"
+          "category": "bridge",
+          "nop": [ "0x3EEEC", "0x3EEF8" ]
         }
       ],
       "doors": [
