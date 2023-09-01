@@ -1,4 +1,5 @@
 ﻿using System;
+using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.BioRand.RE1
 {
@@ -8,7 +9,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 
         public void Begin(RandoConfig config, GameData gameData, Map map)
         {
-            AllowPartnerItemBoxes(gameData);
+            ApplyPatches(config, gameData);
 
             if (!config.RandomDoors)
                 return;
@@ -95,6 +96,16 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             return rdtId;
         }
 
+        private void ApplyPatches(RandoConfig config, GameData gameData)
+        {
+            AllowPartnerItemBoxes(gameData);
+
+            if (!config.RandomDoors)
+                return;
+
+            ForceTyrant2(gameData);
+        }
+
         private void AllowPartnerItemBoxes(GameData gameData)
         {
             // Remove partner check for these two item boxes
@@ -107,6 +118,12 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 
             room = gameData.GetRdt(new RdtId(3, 0x03));
             room?.Nop(0x1F920);
+        }
+
+        private void ForceTyrant2(GameData gameData)
+        {
+            var room = gameData.GetRdt(new RdtId(2, 0x03));
+            room?.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x05, new byte[] { 0x00, 43, 0 }));
         }
     }
 }
