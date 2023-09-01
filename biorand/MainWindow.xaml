@@ -83,7 +83,7 @@
                     <local:GameLocationBox x:Name="gameLocation3" Tag="2" Header="Resident Evil 3" Validate="gameLocation_Validate" Changed="gameLocation_Changed" />
                     <GroupBox Header="In-game tweaks">
                         <StackPanel>
-                            <CheckBox x:Name="chkMaxInventorySize" Checked="globalCheckBox_Changed" Unchecked="globalCheckBox_Changed">Max inventory size</CheckBox>
+                            <CheckBox x:Name="chkMaxInventorySize" Checked="globalCheckBox_Changed" Unchecked="globalCheckBox_Changed">Max inventory size (RE 1)</CheckBox>
                             <CheckBox x:Name="chkRandomizeTitleVoice" Checked="globalCheckBox_Changed" Unchecked="globalCheckBox_Changed">Randomize title voice</CheckBox>
                         </StackPanel>
                     </GroupBox>
