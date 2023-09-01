@@ -8,7 +8,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using IntelOrca.Biohazard.BioRand.RE3;
+using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
+using IntelOrca.Biohazard.Room;
 
 namespace IntelOrca.Biohazard.BioRand.RE1
 {
@@ -185,7 +187,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             {
                 var pldPath = GetSelectedPldPath(config, config.Player);
                 actor = Path.GetFileName(pldPath);
-                SwapPlayerCharacter(config, logger, config.Player, actor, fileRepository);
+                SwapPlayerCharacter(config, logger, gameData, config.Player, actor, fileRepository);
             }
 
             // Change partner
@@ -196,7 +198,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 if (enabledPLDs.Length != 0)
                 {
                     partner = rng.NextOf(enabledPLDs);
-                    SwapPlayerCharacter(config, logger, 3, partner, fileRepository);
+                    SwapPlayerCharacter(config, logger, gameData, 3, partner, fileRepository);
                 }
             }
 
@@ -288,7 +290,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             return srcPldDir;
         }
 
-        private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, int pldIndex, string actor, FileRepository fileRepository)
+        private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, GameData gameData, int pldIndex, string actor, FileRepository fileRepository)
         {
             var originalPlayerActor = pldIndex switch
             {
@@ -406,6 +408,9 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             }
 
             ChangePlayerInventoryFace(fileRepository, pldIndex, actor);
+
+            if (pldIndex <= 1)
+                FixPlayerAnimations(config, logger, gameData, fileRepository);
         }
 
         internal override void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser, VoiceRandomiser voiceRandomiser)
@@ -602,6 +607,70 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 }
             }
             return originalDataPath;
+        }
+
+        private void FixPlayerAnimations(RandoConfig config, RandoLogger logger, GameData gameData, FileRepository fileRepository)
+        {
+            // Each room may store some player animations
+            // We must correct the height of these for the custom character
+            var pldPath = $"ENEMY/CHAR1{config.Player}.EMD";
+            var oldPldPath = fileRepository.GetDataPath(pldPath);
+            var newPldPath = fileRepository.GetModPath(pldPath);
+            if (!fileRepository.Exists(newPldPath))
+                return;
+
+            var oldPldFile = new EmdFile(BioVersion.Biohazard1, oldPldPath);
+            var newPldFile = new EmdFile(BioVersion.Biohazard1, newPldPath);
+            var scale = newPldFile.CalculateEmrScale(oldPldFile);
+
+            logger.WriteHeading($"Scaling EMRs in RDTs");
+            foreach (var rdt in gameData.Rdts)
+            {
+                var rdt1 = (Rdt1)rdt.RdtFile;
+                var builder = rdt1.ToBuilder();
+                if (builder.EMR != null)
+                {
+                    logger.WriteLine($"Scaling EMR in {rdt.RdtId}");
+                    builder.EMR = builder.EMR.Scale(scale);
+                    rdt.RdtFile = builder.ToRdt();
+                }
+            }
+
+            logger.WriteHeading($"Scaling EMRs in EMDs");
+            var enemiesToScale = new byte[] {
+                Re1EnemyIds.Zombie,
+                Re1EnemyIds.ZombieNaked,
+                Re1EnemyIds.Cerberus,
+                Re1EnemyIds.WebSpinner,
+                Re1EnemyIds.BlackTiger,
+                Re1EnemyIds.Crow,
+                Re1EnemyIds.Hunter,
+                Re1EnemyIds.Wasp,
+                Re1EnemyIds.Plant42,
+                Re1EnemyIds.Chimera,
+                Re1EnemyIds.Snake,
+                Re1EnemyIds.Neptune,
+                Re1EnemyIds.Tyrant1,
+                Re1EnemyIds.Yawn1,
+                Re1EnemyIds.Plant42Roots,
+                Re1EnemyIds.Plant42Vines,
+                Re1EnemyIds.Tyrant2,
+                Re1EnemyIds.ZombieResearcher,
+                Re1EnemyIds.Yawn2
+            };
+            foreach (var emId in enemiesToScale)
+            {
+                logger.WriteLine($"Scaling EMR in EM1{config.Player}{emId:X2}");
+                var emdPath = $"ENEMY/EM1{config.Player}{emId:X2}.EMD";
+                var oldEmdPath = fileRepository.GetDataPath(emdPath);
+                var newEmdPath = fileRepository.GetModPath(emdPath);
+                var emdFile = fileRepository.Exists(newEmdPath) ?
+                    new EmdFile(BioVersion.Biohazard1, newEmdPath) :
+                    new EmdFile(BioVersion.Biohazard1, oldEmdPath);
+
+                emdFile.SetEmr(0, emdFile.GetEmr(0).Scale(scale));
+                emdFile.Save(newEmdPath);
+            }
         }
 
         private void FixFlamethrowerCombine()
