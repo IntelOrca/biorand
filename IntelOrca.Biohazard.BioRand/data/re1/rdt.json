@@ -895,7 +895,13 @@
         },
         {
           "target": "207",
-          "lock": "always",
+          "entrance": {
+            "x": 9180,
+            "y": 0,
+            "z": 11280,
+            "d": 2048,
+            "cut": 3
+          },
           "doorRando": true
         }
       ]
@@ -915,6 +921,13 @@
         },
         {
           "target": "20B"
+        },
+        {
+          "create": true,
+          "texture": 0,
+          "target": "206",
+          "id": 4,
+          "doorRando": true
         }
       ],
       "enemies": [

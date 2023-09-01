@@ -205,23 +205,46 @@ namespace IntelOrca.Biohazard.BioRand
             IDoorAotSetOpcode door;
             if (aotSet is AotSetOpcode aotSet2p)
             {
-                door = new DoorAotSeOpcode()
+                if (Version == BioVersion.Biohazard1)
                 {
-                    Length = 32,
-                    Opcode = Version == BioVersion.Biohazard2 ? (byte)OpcodeV2.DoorAotSe : (byte)OpcodeV3.DoorAotSe,
-                    Id = aotSet2p.Id,
-                    SCE = 1,
-                    SAT = aotSet2p.SAT,
-                    Floor = aotSet2p.Floor,
-                    Super = aotSet2p.Super,
-                    X = aotSet2p.X,
-                    Z = aotSet2p.Z,
-                    W = aotSet2p.W,
-                    D = aotSet2p.D,
-                    Texture = texture,
-                    LockType = key ?? 0,
-                    LockId = lockId ?? 0
-                };
+                    door = new DoorAotSeOpcode()
+                    {
+                        Length = 26,
+                        Opcode = (byte)OpcodeV1.DoorAotSe,
+                        Id = aotSet2p.Id,
+                        X = aotSet2p.X,
+                        Z = aotSet2p.Z,
+                        W = aotSet2p.W,
+                        D = aotSet2p.D,
+                        Re1UnkA = 3,
+                        Re1UnkB = 0,
+                        Animation = texture,
+                        Re1UnkC = 7,
+                        LockId = lockId ?? 0,
+                        LockType = key ?? 0,
+                        Free = 129
+                    };
+                }
+                else
+                {
+                    door = new DoorAotSeOpcode()
+                    {
+                        Length = 32,
+                        Opcode = Version == BioVersion.Biohazard2 ? (byte)OpcodeV2.DoorAotSe : (byte)OpcodeV3.DoorAotSe,
+                        Id = aotSet2p.Id,
+                        SCE = 1,
+                        SAT = aotSet2p.SAT,
+                        Floor = aotSet2p.Floor,
+                        Super = aotSet2p.Super,
+                        X = aotSet2p.X,
+                        Z = aotSet2p.Z,
+                        W = aotSet2p.W,
+                        D = aotSet2p.D,
+                        Texture = texture,
+                        LockType = key ?? 0,
+                        LockId = lockId ?? 0
+                    };
+                }
             }
             else if (aotSet is AotSet4pOpcode aotSet4p)
             {
