@@ -187,9 +187,13 @@ namespace IntelOrca.Biohazard.BioRand
             if (rng.Next(0, 8) != 0)
             {
                 // Make it rare for player to also be an NPC
-                defaultIncludeTypes = defaultIncludeTypes
+                var newDefaultIncludeTypes = defaultIncludeTypes
                     .Where(x => GetActor(x) != _playerActors[0])
                     .ToArray();
+                if (newDefaultIncludeTypes.Length != 0)
+                {
+                    defaultIncludeTypes = newDefaultIncludeTypes;
+                }
             }
 
             var room = _map.GetRoom(rdt.RdtId);
