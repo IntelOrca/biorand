@@ -78,6 +78,7 @@
                     </StackPanel>
                 </StackPanel>
                 <StackPanel x:Name="panelConfig" Visibility="Hidden">
+                    <TextBlock>In order to generate a seed, set the location of where each Resident Evil game is installed on your system. All games need to be specified in order for content from all games to be used in the seed.</TextBlock>
                     <local:GameLocationBox x:Name="gameLocation1" Tag="0" Header="Resident Evil 1" Validate="gameLocation_Validate" Changed="gameLocation_Changed" />
                     <local:GameLocationBox x:Name="gameLocation2" Tag="1" Header="Resident Evil 2" Validate="gameLocation_Validate" Changed="gameLocation_Changed" />
                     <local:GameLocationBox x:Name="gameLocation3" Tag="2" Header="Resident Evil 3" Validate="gameLocation_Validate" Changed="gameLocation_Changed" />

@@ -1000,6 +1000,7 @@ namespace IntelOrca.Biohazard.BioRand
             }
             set
             {
+                value = value ?? 3;
                 foreach (GameMenuItem item in gameListView.Items)
                 {
                     if (item.Game == value)

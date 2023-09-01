@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace IntelOrca.Biohazard.BioRand
 {
@@ -67,6 +68,10 @@ namespace IntelOrca.Biohazard.BioRand
                     var instance = JsonSerializer.Deserialize<RandoAppSettings>(json, GetJsonSerializerOptions());
                     return instance;
                 }
+                else
+                {
+                    return AutoDetermineGames();
+                }
             }
             catch
             {
@@ -99,6 +104,41 @@ namespace IntelOrca.Biohazard.BioRand
                 sw.WriteLine($"Generated randomizer [{seed}] @ {dt} in \"{gamePath}\"");
                 sw.Flush();
             }
+        }
+
+        private static RandoAppSettings AutoDetermineGames()
+        {
+            var settings = new RandoAppSettings();
+            var location = Program.CurrentAssembly.Location;
+            var potentialExtractionDirectory = Path.GetDirectoryName(Path.GetDirectoryName(location));
+            var directories = Directory.GetDirectories(potentialExtractionDirectory);
+            foreach (var dir in directories)
+            {
+                var dirName = Path.GetFileName(dir);
+                if (Regex.IsMatch(dirName, "re[123](hd)?"))
+                {
+                    var game = dirName[2] - '0';
+                    switch (game)
+                    {
+                        case 1:
+                            settings.GameEnabled1 = true;
+                            settings.GamePath1 = dir;
+                            settings.GameExecutable1 = "Bio.exe";
+                            break;
+                        case 2:
+                            settings.GameEnabled2 = true;
+                            settings.GamePath2 = dir;
+                            settings.GameExecutable2 = "bio2 1.10.exe";
+                            break;
+                        case 3:
+                            settings.GameEnabled3 = true;
+                            settings.GamePath3 = dir;
+                            settings.GameExecutable3 = "BIOHAZARD(R) 3 PC.exe";
+                            break;
+                    }
+                }
+            }
+            return settings;
         }
     }
 }
