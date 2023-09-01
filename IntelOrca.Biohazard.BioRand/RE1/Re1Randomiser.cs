@@ -390,6 +390,18 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                             waveformBuilder.Save(soundPath);
                         }
                     }
+
+                    if (pldIndex <= 1)
+                    {
+                        var nom = pldIndex == 0 ? "ch_nom.wav" : "ji_nom.wav";
+                        var sime = pldIndex == 0 ? "ch_sime.wav" : "ji_sime.wav";
+                        var waveformBuilder = new WaveformBuilder();
+                        waveformBuilder.Append(hurtFiles[3]);
+                        waveformBuilder.Save(Path.Combine(soundDir, nom));
+                        waveformBuilder = new WaveformBuilder();
+                        waveformBuilder.Append(hurtFiles[2]);
+                        waveformBuilder.Save(Path.Combine(soundDir, sime));
+                    }
                 }
             }
 
