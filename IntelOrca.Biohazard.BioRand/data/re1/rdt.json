@@ -580,10 +580,20 @@
       ]
     },
     "112": {
+      "doorRando": [
+        {
+          "nop": [ "0x17864-0x17866", "0x17884-0x17886" ]
+        }
+      ],
       "linkedRoom": "612",
       "doors": [
         {
           "target": "111"
+        },
+        {
+          "target": "11C",
+          "requires": [ 56 ],
+          "doorRando": true
         }
       ]
     },
