@@ -60,6 +60,13 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             Randomize(config);
         }
 
+        protected void RandomizeEnemySkins()
+        {
+            var config = GetBaseConfig();
+            config.RandomEnemySkins = true;
+            Randomize(config);
+        }
+
         [Fact]
         public void RandomizeItems_Shuffle()
         {
@@ -90,6 +97,7 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             config.RandomNPCs = false;
             config.ChangePlayer = false;
             config.RandomNPCs = true;
+            config.RandomCutscenes = true;
             Randomize(config);
         }
 
@@ -154,10 +162,13 @@ namespace IntelOrca.Biohazard.BioRand.Tests
 
             config.RandomEnemies = true;
             config.RandomEnemyPlacement = false;
+            config.RandomEnemySkins = false;
             config.EnemyDifficulty = 2;
             config.EnemyRatios = new byte[5];
             for (int i = 0; i < 5; i++)
                 config.EnemyRatios[i] = 7;
+
+            config.RandomCutscenes = false;
 
             config.RandomNPCs = false;
             config.EnabledNPCs = new bool[10];
