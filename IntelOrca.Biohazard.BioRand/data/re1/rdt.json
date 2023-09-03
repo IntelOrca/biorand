@@ -2119,8 +2119,10 @@
       ],
       "enemies": [
         {
-          "condition": "0:55",
-          "excludeTypes": [ 4 ]
+          "condition": "1:75",
+          "excludeTypes": [ 4 ],
+          "restricted": true,
+          "player": 0
         }
       ]
     },
