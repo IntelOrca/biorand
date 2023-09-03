@@ -223,7 +223,7 @@
                                             <CheckBox x:Name="chkAlternativeRoute" ToolTip="When checked, key items will be placed in any order. For example, in RE 2, the spade key may be placed in the basement and the heart key in the main hall.">Allow alternative routes</CheckBox>
                                         </StackPanel>
                                         <StackPanel Grid.Column="2">
-                                            <CheckBox x:Name="chkProtectSoftLock" ToolTip="When checked, restricts keys to the area they are required. For example, in RE 2, lab keys will not appear in the police station.">Safe key placement</CheckBox>
+                                            <CheckBox x:Name="chkProtectSoftLock" ToolTip="When checked, restricts keys to the area they are required. For example, in RE 2, lab keys will not appear in the police station.">Segmented placement</CheckBox>
                                         </StackPanel>
                                     </Grid>
                                     <local:CheckGroupBox x:Name="chkCustomItemPool" Header="Custom item pool" ToolTip="When not checked, shuffles the vanilla pool of items. If checked, all items are replaced with random pickups.">
