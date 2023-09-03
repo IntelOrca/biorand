@@ -1150,6 +1150,7 @@
       "doorRando": [
         {
           "cutscene": true,
+          "nop": [ "0x2474E-0x2475A" ],
           "player": 1
         }
       ],
@@ -1288,8 +1289,7 @@
       ],
       "doors": [
         {
-          "target": "30F",
-          "noUnlock": true
+          "target": "30F"
         },
         {
           "target": "310",
