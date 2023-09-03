@@ -345,7 +345,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 {
                     var originalIndex = Convert.ToInt32(regex.Groups[1].Value, 16);
                     var weaponIndex = originalIndex % 16;
-                    var targetWeaponIndex = pldIndex * 16;
+                    var targetWeaponIndex = (pldIndex * 16) + weaponIndex;
                     var targetFileName = $"W{targetWeaponIndex:X2}.EMW";
                     File.Copy(pldFile, Path.Combine(targetPlayersDir, targetFileName), true);
                 }
