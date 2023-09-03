@@ -1288,7 +1288,8 @@
       ],
       "doors": [
         {
-          "target": "30F"
+          "target": "30F",
+          "noUnlock": true
         },
         {
           "target": "310",
@@ -1546,7 +1547,8 @@
     "30F": {
       "doors": [
         {
-          "target": "305"
+          "target": "305",
+          "noUnlock": true
         },
         {
           "target": "306",
