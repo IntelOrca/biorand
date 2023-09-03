@@ -60,7 +60,7 @@ h6 {
   bottom: 0;
   z-index: 9999;
   overflow: hidden;
-  background: #37517e;
+  background: #000;
 }
 
 #preloader:before {
@@ -136,14 +136,14 @@ h6 {
   transition: all 0.5s;
   z-index: 997;
   padding: 15px 0;
-  background: rgb(0,0,0);
-  background: linear-gradient(180deg, rgb(0, 0, 0) 0%, rgb(0, 0, 0) 80%, rgba(0,0,0,0) 100%);
+  background: rgb(0, 0, 0);
+  background: linear-gradient(180deg, rgb(0, 0, 0) 0%, rgb(0, 0, 0) 80%, rgba(0, 0, 0, 0) 100%);
 }
 
 #header.header-scrolled,
 #header.header-inner-pages {
-  background: rgb(0,0,0);
-  background: linear-gradient(180deg, rgb(0, 0, 0) 0%, rgb(0, 0, 0) 80%, rgba(0,0,0,0) 100%);
+  background: rgb(0, 0, 0);
+  background: linear-gradient(180deg, rgb(0, 0, 0) 0%, rgb(0, 0, 0) 80%, rgba(0, 0, 0, 0) 100%);
 }
 
 #header .logo {
@@ -651,8 +651,9 @@ section {
   content: '';
   height: 10px;
   position: absolute;
-  background: linear-gradient(180deg, rgba(255,255,255,1), rgba(255,255,255,0));
+  background: linear-gradient(180deg, rgba(243, 245, 250, 1), rgba(243, 245, 250, 0));
 }
+
 .randomize-wheel-right::after {
   left: 0;
   bottom: 0;
@@ -661,22 +662,25 @@ section {
   content: '';
   height: 10px;
   position: absolute;
-  background: linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,1));
+  background: linear-gradient(180deg, rgba(243, 245, 250, 0), rgba(243, 245, 250, 1));
 }
+
 .randomize-wheel-right ul {
   margin: 0;
   padding: 0;
 }
+
 .randomize-wheel-right ul.move-up {
   margin: -40px 0 0 0;
   transition-property: margin;
   transition-duration: 1s;
 }
+
 .randomize-wheel-right li {
   opacity: 1;
   height: 30px;
   margin: 10px 0;
-  list-style: none; 
+  list-style: none;
 }
 
 /* About */

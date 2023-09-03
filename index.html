@@ -1,339 +1,272 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
-  <title>BioRand - A Resident Evil randomizer</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
-
-  <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
-
-  <!-- Google Fonts -->
-  <link
-    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Jost:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
-    rel="stylesheet">
-
-  <!-- Vendor CSS Files -->
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="assets/css/style.css" rel="stylesheet">
-</head>
-
-<body>
-  <header id="header" class="fixed-top ">
-    <div class="container d-flex align-items-center">
-
-      <h1 class="logo me-auto">
-        <a class="scrollto" href="#hero">
-          <img class="logo scrollto" src="assets/img/umbrella.png" alt="">BIORAND
-        </a>
-      </h1>
-      <nav id="navbar" class="navbar">
-        <ul>
-          <li><a class="nav-link scrollto" href="#about">About</a></li>
-          <li><a class="nav-link scrollto" href="#downloads">Downloads</a></li>
-          <!--
-          <li><a class="nav-link scrollto" href="#beta">Beta</a></li>
-          <li><a class="nav-link scrollto" href="#glossary">Glossary</a></li>
-          -->
-          <li><a class="nav-link" href="features.html">Features</a></li>
-          <li><a class="nav-link" href="strats.html">Strats</a></li>
-          <li><a class="nav-link" href="algorithm.html">Algorithm</a></li>
-          <li><a class="nav-link" href="contributors.html">Contributors</a></li>
-          <li><a class="nav-link" href="https://github.com/intelorca/biorand"><i class="bi bi-github"></i></a></li>
-          <li><a class="nav-link" href="https://discord.gg/zNeTSxxHU5"><i class="bi bi-discord"></i></a></li>
-        </ul>
-        <i class="bi bi-list mobile-nav-toggle"></i>
-      </nav>
+---
+layout: default
+id: index
+title: "BioRand - A Resident Evil randomizer"
+---
+<section id="hero" class="d-flex align-items-center">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 d-flex flex-column justify-content-center pt-4 pt-lg-0 order-2 order-lg-1">
+        <h1>BIORAND</h1>
+        <h2>A <span class="resident-evil"><mark>R</mark>ESIDENT <mark>E</mark>VIL</span> randomizer</h2>
+        <div class="d-flex justify-content-center justify-content-lg-start">
+          <a href="#downloads" class="btn-download scrollto">Download</a>
+          <a href="#about" class="btn-watch-video scrollto"><i class="bi bi-play-circle"></i><span>Watch
+              Video</span></a>
+        </div>
+      </div>
+      <div class="col-lg-6 order-1 order-lg-2 hero-img">
+        <div class="looping-video"><video autoplay loop src="assets/video/placeholder.mp4" type="video/mp4" /></div>
+        <blockquote class="tagline"><q>A randomizer is like a box of chocolates,<br />you never know what you gonna
+            get.</q></blockquote>
+      </div>
     </div>
-  </header>
-  <section id="hero" class="d-flex align-items-center">
+  </div>
+</section>
+<main id="main">
+  <section id="randomize" class="randomize section-bg">
     <div class="container">
       <div class="row">
-        <div class="col-lg-6 d-flex flex-column justify-content-center pt-4 pt-lg-0 order-2 order-lg-1">
-          <h1>BIORAND</h1>
-          <h2>A <span class="resident-evil"><mark>R</mark>ESIDENT <mark>E</mark>VIL</span> randomizer</h2>
-          <div class="d-flex justify-content-center justify-content-lg-start">
-            <a href="#downloads" class="btn-download scrollto">Download</a>
-            <a href="#about" class="btn-watch-video scrollto"><i class="bi bi-play-circle"></i><span>Watch
-                Video</span></a>
+        <div class="d-flex justify-content-center randomize-wheel-container">
+          <div class="randomize-wheel-left">Randomize&nbsp;</div>
+          <div class="randomize-wheel-right">
+            <ul class="move-up">
+              <li>weapons</li>
+              <li>items</li>
+              <li>enemies</li>
+              <li>music</li>
+              <li>ammo quantity</li>
+              <li>characters</li>
+              <li>enemy positions</li>
+              <li>keys</li>
+              <li>doors</li>
+              <li>your starting inventory</li>
+              <li>enemy skins</li>
+              <li>cutscenes</li>
+              <li>enemy ratios</li>
+              <li>the difficulty</li>
+              <li>item ratios</li>
+            </ul>
           </div>
-        </div>
-        <div class="col-lg-6 order-1 order-lg-2 hero-img">
-          <div class="looping-video"><video autoplay loop src="assets/video/placeholder.mp4" type="video/mp4" /></div>
-          <blockquote class="tagline"><q>A randomizer is like a box of chocolates,<br />you never know what you gonna
-              get.</q></blockquote>
         </div>
       </div>
     </div>
   </section>
-  <main id="main">
-    <section id="randomize" class="randomize section-bg">
-      <div class="container">
-        <div class="row">
-          <div class="d-flex justify-content-center randomize-wheel-container">
-            <div class="randomize-wheel-left">Randomize&nbsp;</div>
-            <div class="randomize-wheel-right">
-              <ul class="move-up">
-                <li>weapons</li>
-                <li>items</li>
-                <li>enemies</li>
-                <li>music</li>
-                <li>ammo quantity</li>
-                <li>characters</li>
-                <li>enemy positions</li>
-                <li>keys</li>
-                <li>doors</li>
-                <li>your starting inventory</li>
-                <li>enemy skins</li>
-                <li>cutscenes</li>
-                <li>enemy ratios</li>
-                <li>the difficulty</li>
-                <li>item ratios</li>
-              </ul>
-            </div>
-          </div>
-        </div>
+  <section id="about" class="about">
+    <div class="container">
+      <div class="section-title">
+        <h2>What is BIORAND?</h2>
       </div>
-    </section>
-    <section id="about" class="about">
-      <div class="container">
-        <div class="section-title">
-          <h2>What is BIORAND?</h2>
-        </div>
-        <div class="row content">
-          <div class="col-lg-6">
-            <p>
-              In video games, a randomizer modifies various aspects of the game, such as enemy and item locations,
-              to provide a new experience with each playthrough thus increasing the replayability value.
-            </p>
-            <p>
-              BIORAND is a randomizer for the original Resident Evil games released on PC:
-            </p>
-            <ul>
-              <li><i class="ri-check-double-line"></i> Resident Evil</li>
-              <li><i class="ri-check-double-line"></i> Resident Evil 2</li>
-              <li><i class="ri-check-double-line"></i> Resident Evil 3: Nemesis</li>
-            </ul>
-            <p>
-              BIORAND can randomize just about anything including doors, item locations, enemies, characters, cutscenes,
-              background music,
-              and much more.
-            </p>
-          </div>
-          <div class="col-lg-6 pt-4 pt-lg-0">
-            <figure class="figure">
-              <iframe width="560" height="315" src="https://www.youtube.com/embed/kl4GU29ZrUo?si=FpucSBTCVpeyASue"
-                title="YouTube video player" frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen></iframe>
-              <figcaption class="figure-caption">
-                An explanation, and demonstration of BIORAND by
-                <a href="https://youtube.com/c/Bawkbasoup" target="_blank">Bawkbasoup</a>.
-              </figcaption>
-            </figure>
-          </div>
-        </div>
-        <div class="row streamers">
-          <h2>Great for streamers</h3>
-            <p>
-              Randomizers are not just fun to play, but they are also very entertaining to watch.
-              Opening that next door is as much as a surprise to your audience as it is to you. Amuse
-              them with countless challenges and surprises.
-            </p>
-        </div>
-      </div>
-    </section>
-    <section id="downloads" class="downloads">
-      <div class="container">
-        <div class="section-title">
-          <h2>Downloads</h2>
-          <p>Select the bundle you would like to download. You can download BioRand on its own or with Resident Evil
-            and optionally the community HD packs.
+      <div class="row content">
+        <div class="col-lg-6">
+          <p>
+            In video games, a randomizer modifies various aspects of the game, such as enemy and item locations,
+            to provide a new experience with each playthrough thus increasing the replayability value.
+          </p>
+          <p>
+            BIORAND is a randomizer for the original Resident Evil games released on PC:
+          </p>
+          <ul>
+            <li><i class="ri-check-double-line"></i> Resident Evil</li>
+            <li><i class="ri-check-double-line"></i> Resident Evil 2</li>
+            <li><i class="ri-check-double-line"></i> Resident Evil 3: Nemesis</li>
+          </ul>
+          <p>
+            BIORAND can randomize just about anything including doors, item locations, enemies, characters, cutscenes,
+            background music,
+            and much more.
           </p>
         </div>
-        <div class="row">
-          <div class="col-lg-4">
-            <div class="box d-flex flex-column">
-              <div>
-                <h3>BioRand</h3>
-                <ul>
-                  <li><i class="bx bx-check"></i> BioRand</li>
-                </ul>
-              </div>
-              <div class="mt-auto">
-                <a href="https://cdn.biorand.net/biorand" class="buy-btn">Download (0.4 GiB)</a>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-4 mt-4 mt-lg-0">
-            <div class="box d-flex flex-column">
-              <div>
-                <h3>Resident Evil + BioRand</h3>
-                <ul>
-                  <li><i class="bx bx-check"></i> Resident Evil</li>
-                  <li><i class="bx bx-check"></i> Resident Evil 2</li>
-                  <li><i class="bx bx-check"></i> Resident Evil 3: Nemesis</li>
-                  <li><i class="bx bx-check"></i> Resident Evil Rebirth</li>
-                  <li><i class="bx bx-check"></i> BioRand</li>
-                </ul>
-              </div>
-              <div class="mt-auto">
-                <a href="https://cdn.biorand.net/re-biorand" class="buy-btn">Download (4 GiB)</a>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-4 mt-4 mt-lg-0">
-            <div class="box featured d-flex flex-column">
-              <div>
-                <h3>Resident Evil + HD pack + BioRand</h3>
-                <ul>
-                  <li><i class="bx bx-check"></i> Resident Evil + HD pack</li>
-                  <li><i class="bx bx-check"></i> Resident Evil 2 + HD pack</li>
-                  <li><i class="bx bx-check"></i> Resident Evil 3: Nemesis + HD pack</li>
-                  <li><i class="bx bx-check"></i> Resident Evil Rebirth</li>
-                  <li><i class="bx bx-check"></i> HD mod</li>
-                  <li><i class="bx bx-check"></i> Seamless HD project</li>
-                  <li><i class="bx bx-check"></i> BioRand</li>
-                </ul>
-              </div>
-              <div class="mt-auto">
-                <a href="https://cdn.biorand.net/re-hd-biorand" class="buy-btn">Download (7 GiB)</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <p>The bundles above contains the following:</p>
-          <div class="col-lg-6 mt-4 mt-lg-0">
-            <ul>
-              <li>Resident Evil<sub>MediaKite</sub></li>
-              <li>Resident Evil 2<sub>Sourcenext 1.10</sub></li>
-              <li>Resident Evil 3: Nemesis<sub>Sourcenext</sub></li>
-            </ul>
-          </div>
-          <div class="col-lg-6 mt-4 mt-lg-0">
-            <ul>
-              <li><a href="https://classicrebirth.com/index.php/downloads/resident-evil-classic-rebirth/">Resident Evil
-                  Rebirth by Apple of Eden</a></li>
-              <li><a href="https://www.moddb.com/mods/resident-evil-hd-mod/downloads/resident-evil-hd-mod">Resident Evil
-                  HD mod by teamX</a></li>
-              <li><a
-                  href="https://www.moddb.com/mods/resident-evil-seamless-hd-project/downloads/re-shdp-patch-1-1">Resident
-                  Evil Seamless HD project by the SHDP team</a></li>
-            </ul>
-          </div>
-          <p>Please support the teams behind the Rebirth and HD projects, for providing so many quality-of-life
-            improvements to the game.</p>
+        <div class="col-lg-6 pt-4 pt-lg-0">
+          <figure class="figure">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/kl4GU29ZrUo?si=FpucSBTCVpeyASue"
+              title="YouTube video player" frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen></iframe>
+            <figcaption class="figure-caption">
+              An explanation, and demonstration of BIORAND by
+              <a href="https://youtube.com/c/Bawkbasoup" target="_blank">Bawkbasoup</a>.
+            </figcaption>
+          </figure>
         </div>
       </div>
-    </section>
-    <section id="beta" class="beta">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-9 text-center text-lg-start">
-            <h3>Beta Testing</h3>
-            <p>
-              Get access to the latest features by beta testing development builds of BioRand.
-              Raise bug reports and help improve the stability of BioRand for the next release.
-            </p>
-            <p>
-              To download development builds, you will need to create a GitHub account, then follow
-              the link on the right. Choose the latest build then scroll down to artifacts and download
-              the build archive.
-            </p>
-          </div>
-          <div class="col-lg-3 beta-btn-container text-center">
-            <a class="beta-btn align-middle" href="#">Beta Test</a>
-          </div>
-        </div>
+      <div class="row streamers">
+        <h2>Great for streamers</h3>
+          <p>
+            Randomizers are not just fun to play, but they are also very entertaining to watch.
+            Opening that next door is as much as a surprise to your audience as it is to you. Amuse
+            them with countless challenges and surprises.
+          </p>
       </div>
-    </section>
-    <section id="glossary" class="glossary">
-      <div class="container">
-        <div class="section-title">
-          <h2>Glossary</h2>
-          <p>Here are some terms you may come across during your randomizer journey.</p>
-        </div>
-        <div class="glossary-term-container">
-          <div class="glossary-term">
-            <h4>Seed</h4>
-            <p>
-              Your unique configuration of the game. Seeds are expressed as QR codes or a alphanumeric code, that can be
-              shared.
-            </p>
-          </div>
-          <div class="glossary-term">
-            <h4>Run / Rando</h4>
-            <p>
-              A playthrough of the game randomized using a particular seed.
-            </p>
-          </div>
-          <div class="glossary-term">
-            <h4>Key Item</h4>
-            <p>
-              A key or key item is an item that is required to progress through the game, or to obtain another item.
-              For example, the heart key to enter the basement, or the unicorn medal to obtain the item in the RPD
-              hall's statue.
-            </p>
-          </div>
-          <div class="glossary-term">
-            <h4>Segmented Run</h4>
-            <p>
-              A segmented run is one of which consists of two or more segments which constrain key items for a specific
-              area to that area.
-              For example, in Resident Evil 2, a segmented run would ensure all RPD key items are in the RPD, all sewer
-              key items are in the sewer
-              and all lab key items are in the lab. A non-segmented run could result in a lab key appearing in the RPD.
-            </p>
-          </div>
-          <div class="glossary-term">
-            <h4>Spoiler Log</h4>
-            <p>
-              The spoiler log is a text document that is generated alongside a seed. It lists where every key item, and
-              weapon is
-              amongst all the other changes performed by the randomizer. Use this to help you find where an item is if
-              you get stuck.
-            </p>
-          </div>
-          <div class="glossary-term">
-            <h4>Softlock</h4>
-            <p>
-              A point in the run where you are unable to progress. This can be due to many reasons such as BIORAND
-              producing a seed
-              which is too difficult, a crash or glitch in Resident Evil, or a bug in BIORAND where a key item might be
-              unobtainable.
-              In some situations, replaying the same seed, or loading an older saved game, with a different strategy can
-              allow you to progress.
-              Sometimes you may just have to quit and try a new seed. Should you encounter an impossible seed not caused
-              by difficulty, or a crash,
-              please raise a bug report.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-  <footer id="footer">
-    <div class="container footer-bottom clearfix">
-      <div class="copyright">
-        &copy; <strong><span>BioRand</span></strong> 2022-2023 &bullet; licensed under MIT.
-      </div>
-      <div class="credits">Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a></div>
     </div>
-  </footer>
-
-  <div id="preloader"></div>
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center">
-    <i class="bi bi-arrow-up-short"></i>
-  </a>
-
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/js/main.js"></script>
-</body>
-
-</html>
+  </section>
+  <section id="downloads" class="downloads">
+    <div class="container">
+      <div class="section-title">
+        <h2>Downloads</h2>
+        <p>Select the bundle you would like to download. You can download BioRand on its own or with Resident Evil
+          and optionally the community HD packs.
+        </p>
+      </div>
+      <div class="row">
+        <div class="col-lg-4">
+          <div class="box d-flex flex-column">
+            <div>
+              <h3>BioRand</h3>
+              <ul>
+                <li><i class="bx bx-check"></i> BioRand</li>
+              </ul>
+            </div>
+            <div class="mt-auto">
+              <a href="https://cdn.biorand.net/biorand" class="buy-btn">Download (0.4 GiB)</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 mt-4 mt-lg-0">
+          <div class="box d-flex flex-column">
+            <div>
+              <h3>Resident Evil + BioRand</h3>
+              <ul>
+                <li><i class="bx bx-check"></i> Resident Evil</li>
+                <li><i class="bx bx-check"></i> Resident Evil 2</li>
+                <li><i class="bx bx-check"></i> Resident Evil 3: Nemesis</li>
+                <li><i class="bx bx-check"></i> Resident Evil Rebirth</li>
+                <li><i class="bx bx-check"></i> BioRand</li>
+              </ul>
+            </div>
+            <div class="mt-auto">
+              <a href="https://cdn.biorand.net/re-biorand" class="buy-btn">Download (4 GiB)</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 mt-4 mt-lg-0">
+          <div class="box featured d-flex flex-column">
+            <div>
+              <h3>Resident Evil + HD pack + BioRand</h3>
+              <ul>
+                <li><i class="bx bx-check"></i> Resident Evil + HD pack</li>
+                <li><i class="bx bx-check"></i> Resident Evil 2 + HD pack</li>
+                <li><i class="bx bx-check"></i> Resident Evil 3: Nemesis + HD pack</li>
+                <li><i class="bx bx-check"></i> Resident Evil Rebirth</li>
+                <li><i class="bx bx-check"></i> HD mod</li>
+                <li><i class="bx bx-check"></i> Seamless HD project</li>
+                <li><i class="bx bx-check"></i> BioRand</li>
+              </ul>
+            </div>
+            <div class="mt-auto">
+              <a href="https://cdn.biorand.net/re-hd-biorand" class="buy-btn">Download (7 GiB)</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <p>The bundles above contains the following:</p>
+        <div class="col-lg-6 mt-4 mt-lg-0">
+          <ul>
+            <li>Resident Evil<sub>MediaKite</sub></li>
+            <li>Resident Evil 2<sub>Sourcenext 1.10</sub></li>
+            <li>Resident Evil 3: Nemesis<sub>Sourcenext</sub></li>
+          </ul>
+        </div>
+        <div class="col-lg-6 mt-4 mt-lg-0">
+          <ul>
+            <li><a href="https://classicrebirth.com/index.php/downloads/resident-evil-classic-rebirth/">Resident Evil
+                Rebirth by Apple of Eden</a></li>
+            <li><a href="https://www.moddb.com/mods/resident-evil-hd-mod/downloads/resident-evil-hd-mod">Resident Evil
+                HD mod by teamX</a></li>
+            <li><a
+                href="https://www.moddb.com/mods/resident-evil-seamless-hd-project/downloads/re-shdp-patch-1-1">Resident
+                Evil Seamless HD project by the SHDP team</a></li>
+          </ul>
+        </div>
+        <p>Please support the teams behind the Rebirth and HD projects, for providing so many quality-of-life
+          improvements to the game.</p>
+      </div>
+    </div>
+  </section>
+  <section id="beta" class="beta">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-9 text-center text-lg-start">
+          <h3>Beta Testing</h3>
+          <p>
+            Get access to the latest features by beta testing development builds of BioRand.
+            Raise bug reports and help improve the stability of BioRand for the next release.
+          </p>
+          <p>
+            To download development builds, you will need to create a GitHub account, then follow
+            the link on the right. Choose the latest build then scroll down to artifacts and download
+            the build archive.
+          </p>
+        </div>
+        <div class="col-lg-3 beta-btn-container text-center">
+          <a class="beta-btn align-middle" href="#">Beta Test</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="glossary" class="glossary">
+    <div class="container">
+      <div class="section-title">
+        <h2>Glossary</h2>
+        <p>Here are some terms you may come across during your randomizer journey.</p>
+      </div>
+      <div class="glossary-term-container">
+        <div class="glossary-term">
+          <h4>Seed</h4>
+          <p>
+            Your unique configuration of the game. Seeds are expressed as QR codes or a alphanumeric code, that can be
+            shared.
+          </p>
+        </div>
+        <div class="glossary-term">
+          <h4>Run / Rando</h4>
+          <p>
+            A playthrough of the game randomized using a particular seed.
+          </p>
+        </div>
+        <div class="glossary-term">
+          <h4>Key Item</h4>
+          <p>
+            A key or key item is an item that is required to progress through the game, or to obtain another item.
+            For example, the heart key to enter the basement, or the unicorn medal to obtain the item in the RPD
+            hall's statue.
+          </p>
+        </div>
+        <div class="glossary-term">
+          <h4>Segmented Run</h4>
+          <p>
+            A segmented run is one of which consists of two or more segments which constrain key items for a specific
+            area to that area.
+            For example, in Resident Evil 2, a segmented run would ensure all RPD key items are in the RPD, all sewer
+            key items are in the sewer
+            and all lab key items are in the lab. A non-segmented run could result in a lab key appearing in the RPD.
+          </p>
+        </div>
+        <div class="glossary-term">
+          <h4>Spoiler Log</h4>
+          <p>
+            The spoiler log is a text document that is generated alongside a seed. It lists where every key item, and
+            weapon is
+            amongst all the other changes performed by the randomizer. Use this to help you find where an item is if
+            you get stuck.
+          </p>
+        </div>
+        <div class="glossary-term">
+          <h4>Softlock</h4>
+          <p>
+            A point in the run where you are unable to progress. This can be due to many reasons such as BIORAND
+            producing a seed
+            which is too difficult, a crash or glitch in Resident Evil, or a bug in BIORAND where a key item might be
+            unobtainable.
+            In some situations, replaying the same seed, or loading an older saved game, with a different strategy can
+            allow you to progress.
+            Sometimes you may just have to quit and try a new seed. Should you encounter an impossible seed not caused
+            by difficulty, or a crash,
+            please raise a bug report.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
