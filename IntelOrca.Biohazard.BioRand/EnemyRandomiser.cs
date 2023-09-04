@@ -688,7 +688,7 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 var enemy = new SceEmSetOpcode()
                 {
-                    Length = 22,
+                    Length = _config.Game == 2 ? 22 : 24,
                     Opcode = _config.Game == 2 ? (byte)OpcodeV2.SceEmSet : (byte)OpcodeV3.SceEmSet,
                     Unk01 = 0,
                     Id = id,

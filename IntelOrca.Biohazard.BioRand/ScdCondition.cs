@@ -160,14 +160,14 @@ namespace IntelOrca.Biohazard.BioRand
             var ifAddress = ifOpcode.Offset;
             if (negated)
             {
-                ifAddress = (elseOpcode!.Offset + elseOpcode.Length) - ifAddress - 4;
-                var elseAddress = offset - elseOpcode.Offset + 8;
+                ifAddress = (elseOpcode!.Offset + elseOpcode.Length) - (ifAddress + 4);
+                var elseAddress = offset - elseOpcode.Offset;
                 elseOpcode.Data[1] = (byte)(elseAddress & 0xFF);
                 elseOpcode.Data[2] = (byte)((elseAddress >> 8) & 0xFF);
             }
             else
             {
-                ifAddress = offset - ifAddress - 2;
+                ifAddress = offset - (ifAddress + 4);
             }
             ifOpcode.Data[1] = (byte)(ifAddress & 0xFF);
             ifOpcode.Data[2] = (byte)((ifAddress >> 8) & 0xFF);
