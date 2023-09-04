@@ -177,4 +177,18 @@
             }
         }, 4000);
     });
+
+    /**
+     * Save looping video progress
+     */
+    let videoEl = document.getElementById('looping-video');
+    let store = JSON.parse(localStorage.getItem('looping-video'));
+    if (store && 'time' in store) {
+        videoEl.currentTime = store.time;
+    }
+    setInterval(() => {
+        localStorage.setItem('looping-video', JSON.stringify({
+            time: videoEl.currentTime
+        }));
+    }, 1000);
 })();

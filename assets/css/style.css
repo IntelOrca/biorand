@@ -489,13 +489,13 @@ h6 {
 }
 
 #hero .looping-video {
-  background-color: white;
   overflow: hidden;
-  height: 346px;
+  height: 324px;
 }
 
 #hero video {
-  width: 100%;
+  float: right;
+  height: 100%;
 }
 
 #hero .tagline {
