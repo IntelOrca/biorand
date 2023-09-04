@@ -1398,7 +1398,19 @@
       "doorRando": [
         {
           "cutscene": true,
-          "nop": [ "0x2BA2", "0x2BEA-0x2BF4", "0x2DD2-0x2DE4", "0x2E22", "0x2FCC-0x3016", "0x33C0", "0x344A", "0x3AD4-0x3B1E" ]
+          "nop": [
+            "0x2B7A",
+            "0x2BA2",
+            "0x2BEA-0x2BF4",
+            "0x2DD2-0x2DE4",
+            "0x2E22",
+            "0x2FCC-0x3016",
+            "0x33C0",
+            "0x344A",
+            "0x3894",
+            "0x3AD4-0x3B1E",
+            "0x3B66"
+          ]
         }
       ],
       "doors": [
@@ -1419,6 +1431,11 @@
         {
           "id": 3,
           "priority": "low"
+        }
+      ],
+      "npcs": [
+        {
+          "excludeTypes": [ 47, 87 ]
         }
       ],
       "enemies": [
