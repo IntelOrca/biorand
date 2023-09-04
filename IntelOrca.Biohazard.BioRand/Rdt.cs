@@ -354,13 +354,7 @@ namespace IntelOrca.Biohazard.BioRand
                 }
             }
             rdtBuilder.RBJ = rbjBuilder.ToRbj();
-
-            // if (RdtId == new RdtId(5, 0x12) && _emrScales.Count != 0)
-            // {
-            //     _rdtFile.DuplicateEmr(0);
-            //     _rdtFile.UpdateEmrFlags(0, EmrFlags.Player);
-            //     _rdtFile.UpdateEmrFlags(1, EmrFlags.Entity1 | EmrFlags.Entity2);
-            // }
+            RdtFile = rdtBuilder.ToRdt();
         }
 
         private void PrependOpcodes()
