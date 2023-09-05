@@ -43,8 +43,8 @@ namespace IntelOrca.Biohazard.BioRand.Tests
         }
 
         [Theory]
-        [InlineData("1:2", "06-00-0C-00-4C-01-02-01-00-CD-00-CC-08-00")]
-        [InlineData("!(7:34 && 7:36 && 7:47 && 7:35)", "06-00-14-00-4C-07-22-01-4C-07-24-01-4C-07-2F-01-4C-07-23-01-07-00-10-00-00-CD-00-CC")]
+        [InlineData("1:2", "06-00-0A-00-4C-01-02-01-00-CD-00-CC-08-00")]
+        [InlineData("!(7:34 && 7:36 && 7:47 && 7:35)", "06-00-14-00-4C-07-22-01-4C-07-24-01-4C-07-2F-01-4C-07-23-01-07-00-08-00-00-CD-00-CC")]
         public void Generate_3(string expression, string bytes)
         {
             var expr = ScdCondition.Parse(expression);
