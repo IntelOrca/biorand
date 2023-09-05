@@ -18,11 +18,19 @@ namespace IntelOrca.Biohazard.BioRand.RE1
     {
         private readonly Re1EnemyHelper _enemyHelper = new Re1EnemyHelper();
         private ReInstallConfig? _reInstallConfig;
+        private Re1ItemHelper _itemHelper;
         private object _playerFaceSync = new object();
 
         protected override BioVersion BiohazardVersion => BioVersion.Biohazard1;
         internal override IDoorHelper DoorHelper { get; } = new Re1DoorHelper();
-        internal override IItemHelper ItemHelper { get; } = new Re1ItemHelper();
+        internal override IItemHelper ItemHelper
+        {
+            get
+            {
+                _itemHelper ??= new Re1ItemHelper(_reInstallConfig!.MaxInventorySize);
+                return _itemHelper;
+            }
+        }
         internal override IEnemyHelper EnemyHelper => _enemyHelper;
         internal override INpcHelper NpcHelper { get; } = new Re1NpcHelper();
 

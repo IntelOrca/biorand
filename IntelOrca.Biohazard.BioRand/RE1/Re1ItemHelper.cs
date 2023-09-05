@@ -5,6 +5,13 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 {
     internal class Re1ItemHelper : IItemHelper
     {
+        private readonly bool _hasMaxInventory;
+
+        public Re1ItemHelper(bool hasMaxInventory)
+        {
+            _hasMaxInventory = hasMaxInventory;
+        }
+
         public byte GetItemSize(byte type)
         {
             return 1;
@@ -357,7 +364,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 
         public int[] GetInventorySize(RandoConfig config)
         {
-            if (config.Player == 0)
+            if (config.Player == 0 && !_hasMaxInventory)
                 return new int[] { 6, 2 }; // Rebecca needs at 4 spare slots for serum / v-jolt bottles
             else
                 return new int[] { 8 };
