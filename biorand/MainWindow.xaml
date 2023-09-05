@@ -56,10 +56,11 @@
                     <TextBlock FontSize="24">Contributors</TextBlock>
                     <StackPanel Margin="12,0,0,0">
                         <TextBlock FontSize="16">IntelOrca - programmer</TextBlock>
-                        <TextBlock FontSize="16">Kashup - testing, models, textures, voices</TextBlock>
                         <TextBlock FontSize="16">Snipz - testing, animations, models, voices</TextBlock>
+                        <TextBlock FontSize="16">Kashup - testing, models, textures, voices</TextBlock>
                         <TextBlock FontSize="16">Shannon - testing</TextBlock>
                         <TextBlock FontSize="16">baesik - testing</TextBlock>
+                        <TextBlock FontSize="16">otamega72 - testing</TextBlock>
                         <TextBlock FontSize="16">PMCDC - UI enhancements</TextBlock>
                         <TextBlock FontSize="16">ALSOP - Kendo texture</TextBlock>
                         <TextBlock FontSize="16">AndrewC - Barry, Enrico, Jill, and extra models</TextBlock>

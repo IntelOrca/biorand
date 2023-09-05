@@ -1,10 +1,11 @@
 # Contributors
 
 * **IntelOrca** - programmer
-* **Kashup** - testing, models, textures, voices
 * **Snipz** -  testing, animations, models, voices
+* **Kashup** - testing, models, textures, voices
 * **Shannon** - testing
 * **baesik** - testing
+* **otamega72** - testing
 * **PMCDC** - UI enhancements
 * **ALSOP** - Kendo texture
 * **AndrewC** - Barry, Enrico, Jill, and extra models
