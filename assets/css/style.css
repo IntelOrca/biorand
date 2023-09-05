@@ -417,7 +417,6 @@ h6 {
 /* Hero Section */
 #hero {
   width: 100%;
-  height: 80vh;
   max-height: 500px;
   background-image: url('../img/rpd-bg.jpg');
   background-size: cover;
@@ -443,7 +442,7 @@ h6 {
   font-size: 40px;
   font-family: 'Compacta';
   letter-spacing: 3px;
-  margin-left: 192px;
+  margin: 0 auto;
 }
 
 #hero .btn-download {
@@ -523,6 +522,10 @@ h6 {
   #hero .hero-img img {
     width: 50%;
   }
+
+  #hero h1 {
+    font-size: 100px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -539,6 +542,10 @@ h6 {
 
   #hero .hero-img img {
     width: 70%;
+  }
+
+  #hero .hero-title {
+    display: none !important;
   }
 }
 
@@ -738,13 +745,28 @@ section {
   text-decoration: none;
 }
 
+.about iframe {
+  max-width: 100%;
+}
+
 .about .streamers {
   margin-top: 32px;
+}
+
+.about .screenshot img {
+  width: auto;
+  max-height: 75vh;
 }
 
 /* Glossary */
 .glossary-term-container {
   column-count: 2;
+}
+
+@media (max-width: 992px) {
+  .glossary-term-container {
+    column-count: 1;
+  }
 }
 
 .glossary-term {
@@ -854,12 +876,15 @@ section {
 }
 
 .downloads ul {
-  padding: 20px 0;
   list-style: none;
   color: #999;
   text-align: left;
   line-height: 16px;
   font-size: 16px;
+}
+
+.downloads .tiers ul {
+  padding: 20px 0;
 }
 
 .downloads ul li {
