@@ -39,6 +39,7 @@ namespace IntelOrca.Biohazard.BioRand
             LoadSettings();
             UpdateUi();
             UpdateEnabledUi();
+            PopulateChangelog();
 #if !DEBUG
             CheckForNewVersion();
 #endif
@@ -47,6 +48,24 @@ namespace IntelOrca.Biohazard.BioRand
             Title += $" - v{version.Major}.{version.Minor}.{version.Build}";
             SelectedGame = _settings.LastSelectedGame;
             versionLabel.Text = Program.CurrentVersionInfo;
+        }
+
+        private void PopulateChangelog()
+        {
+            try
+            {
+#if DEBUG
+                var installLocation = Path.Combine(Path.GetDirectoryName(Program.CurrentAssembly.Location), "..\\..\\..\\..");
+#else
+                var installLocation = Path.GetDirectoryName(Program.CurrentAssembly.Location);
+#endif
+                var changelogPath = Path.Combine(installLocation, "CHANGELOG.md");
+                var changelog = File.ReadAllText(changelogPath);
+                textChangelog.Text = changelog;
+            }
+            catch
+            {
+            }
         }
 
         private void LoadSettings()
@@ -79,6 +98,10 @@ namespace IntelOrca.Biohazard.BioRand
                 _settings.Seed1 = new RandoConfig().WithSeed(_random.Next(0, RandoConfig.MaxSeed)).ToString();
                 _settings.Seed2 = new RandoConfig().WithSeed(_random.Next(0, RandoConfig.MaxSeed)).ToString();
                 _settings.Seed3 = new RandoConfig().WithSeed(_random.Next(0, RandoConfig.MaxSeed)).ToString();
+                if (lastVersion != default)
+                {
+                    SelectedGame = 5;
+                }
             }
 
             var seed = SelectedGame == 0 ? _settings.Seed1 : SelectedGame == 1 ? _settings.Seed2 : _settings.Seed3;
@@ -842,20 +865,30 @@ namespace IntelOrca.Biohazard.BioRand
 
             using (SuspendEvents())
             {
-                if (index == 4)
+                if (index == 5)
                 {
+                    panelNew.Visibility = Visibility.Visible;
+                    panelInfo.Visibility = Visibility.Hidden;
+                    panelConfig.Visibility = Visibility.Hidden;
+                    panelRando.Visibility = Visibility.Hidden;
+                }
+                else if (index == 4)
+                {
+                    panelNew.Visibility = Visibility.Hidden;
                     panelInfo.Visibility = Visibility.Visible;
                     panelConfig.Visibility = Visibility.Hidden;
                     panelRando.Visibility = Visibility.Hidden;
                 }
                 else if (index == 3)
                 {
+                    panelNew.Visibility = Visibility.Hidden;
                     panelInfo.Visibility = Visibility.Hidden;
                     panelConfig.Visibility = Visibility.Visible;
                     panelRando.Visibility = Visibility.Hidden;
                 }
                 else
                 {
+                    panelNew.Visibility = Visibility.Hidden;
                     panelInfo.Visibility = Visibility.Hidden;
                     panelConfig.Visibility = Visibility.Hidden;
                     panelRando.Visibility = Visibility.Visible;

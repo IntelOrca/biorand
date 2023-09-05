@@ -50,8 +50,27 @@
                 <local:GameMenuItem Game="2" Image="/resources/re3.png" />
                 <local:GameMenuItem Game="3" Image="/resources/settings.png" />
                 <local:GameMenuItem Game="4" Image="/resources/info.png" />
+                <local:GameMenuItem Game="5" Image="/resources/new.png" />
             </ListView>
             <Grid Grid.Column="1" Margin="4">
+                <Grid x:Name="panelNew" Visibility="Visible">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0">
+                        <TextBlock FontSize="24">What's New - BioRand 3.1.2</TextBlock>
+                        <TextBlock FontSize="16">BioRand has a new website: https://biorand.net</TextBlock>
+                        <TextBlock FontSize="16">Please now use this link for BioRand when sharing the mod.</TextBlock>
+                        <TextBlock FontSize="16" Margin="0,16,0,0">Chris (RE 1) can now have 8 item slots. Enable this in the settings panel.</TextBlock>
+                    </StackPanel>
+                    <TextBox Grid.Row="1" x:Name="textChangelog"
+                             Margin="0,16,0,0"
+                             FontSize="14"
+                             IsReadOnly="True"
+                             MaxHeight="500"
+                             VerticalScrollBarVisibility="Visible" />
+                </Grid>
                 <StackPanel x:Name="panelInfo" Visibility="Hidden">
                     <TextBlock FontSize="24">Contributors</TextBlock>
                     <StackPanel Margin="12,0,0,0">
@@ -90,7 +109,7 @@
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>
-                <StackPanel x:Name="panelRando" Visibility="Visible">
+                <StackPanel x:Name="panelRando" Visibility="Hidden">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -99,9 +118,10 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" x:Name="versionLabel" />
                         <StackPanel Grid.Column="2" Margin="4 0" Orientation="Horizontal">
+                            <TextBlock Margin="0 0 8 0"><Hyperlink Click="Link_Click" NavigateUri="https://biorand.net">Website</Hyperlink></TextBlock>
                             <TextBlock Margin="0 0 8 0"><Hyperlink Click="Link_Click" NavigateUri="https://discord.gg/zNeTSxxHU5">Discord</Hyperlink></TextBlock>
                             <TextBlock Margin="0 0 8 0"><Hyperlink Click="Link_Click" NavigateUri="https://github.com/IntelOrca/biorand">GitHub</Hyperlink></TextBlock>
-                            <TextBlock Margin="0 0 8 0"><Hyperlink Click="Link_Click" NavigateUri="https://twitter.com/re_biorand">Twitter</Hyperlink></TextBlock>
+                            <TextBlock Margin="0 0 8 0"><Hyperlink Click="Link_Click" NavigateUri="https://x.com/re_biorand">X</Hyperlink></TextBlock>
                             <TextBlock><Hyperlink Click="Link_Click" NavigateUri="https://github.com/IntelOrca/biorand#readme">View Documentation</Hyperlink></TextBlock>
                         </StackPanel>
                     </Grid>
