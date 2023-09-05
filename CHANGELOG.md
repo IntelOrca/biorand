@@ -1,47 +1,47 @@
-BioRand v3.1.2 (TBA)
+BioRand v3.1.2 (2023-09-05)
 
-[Change] Add BSAA radio voice clips.
-[Change] RE 1, change enemy names.
-[Change] RE 1, room 212, force cutscene for Jill door rando.
-[Change] RE 3, add RDT integrity check.
-[Feature] RE 1, add Kendo, Lott, and Sherry as a playable character.
-[Feature] RE 1, add random enemy placements.
-[Feature] RE 1, allow Chris to use 8 inventory slots.
-[Feature] RE 1, allow using herbs when at full health.
-[Feature] RE 1, enable Neptune as a kill-able enemy.
-[Feature] RE 1, Tyrant 2 fight is now guaranteed in door randos.
-[Feature] RE 2, add Leon (RE 6) as a playable character.
-[Feature] RE 2, add wasp enemy skin.
-[Fix] #229: RE 1, combining large amount of ammo with Flamethrower would overflow.
-[Fix] #325: RE 3, an error occured during generation with randomize NPCs.
-[Fix] #475: RE 1, room 305, player sometimes changes.
-[Fix] #540: RE 3, room 20B, graphical issues during cutscene.
-[Fix] #546: RE 3, room 211, crash due to NPC EM67.
-[Fix] #549: RE 3, room 107, crash due to reused global enemy ID.
-[Fix] #550: RE 3, room 402, Hunter may not spawn in cutscene.
-[Fix] #552: RE 3, room 20C, crash due to Marvin NPC.
-[Fix] #552: RE 3, room 211, crash due to Marvin NPC.
-[Fix] #553: RE 3, 205, crash due to NPC EM67.
-[Fix] #556: RE 2, room 608 NPC out of place during cutscene.
-[Fix] #556: RE 2, room 612 NPC out of place during cutscene.
-[Fix] #561: RE 3, room 502, 508, 50C, incorrect voices during cutscene.
-[Fix] Incorrect voices when only one character is available.
-[Fix] RE 1, 30F, locked lift causes softlock.
-[Fix] RE 1, improve partner handling for 8 slot inventory.
-[Fix] RE 1, incorrect enemy sounds for Jill.
-[Fix] RE 1, incorrect hit scan when swap is on but change player isn't.
-[Fix] RE 1, player animation height.
-[Fix] RE 1, randomize Rebecca / partner character.
-[Fix] RE 1, room 112, enable closet door in door rando.
-[Fix] RE 1, room 207, enable broken door in door rando.
-[Fix] RE 1, room 502, improve logic for Jill.
-[Fix] RE 1, room 513, 70C, NPC was always Barry.
-[Fix] RE 1, zombie death and vine grab player sounds were incorrect.
-[Fix] RE 2, room 408, NPC might not have a gun.
-[Fix] RE 3, Jake has corrupted face texture.
-[Fix] RE 3, room 20D, incorrect Carlos voice.
-[Fix] RE 3, room 20E, door rando, camera locked after cutscene.
-[Fix] RE 3, room 408, 40A, only use NPCs with weapon.
+* [Change] Add BSAA radio voice clips.
+* [Change] RE 1, change enemy names.
+* [Change] RE 1, room 212, force cutscene for Jill door rando.
+* [Change] RE 3, add RDT integrity check.
+* [Feature] RE 1, add Kendo, Lott, and Sherry as a playable character.
+* [Feature] RE 1, add random enemy placements.
+* [Feature] RE 1, allow Chris to use 8 inventory slots.
+* [Feature] RE 1, allow using herbs when at full health.
+* [Feature] RE 1, enable Neptune as a kill-able enemy.
+* [Feature] RE 1, Tyrant 2 fight is now guaranteed in door randos.
+* [Feature] RE 2, add Leon (RE 6) as a playable character.
+* [Feature] RE 2, add wasp enemy skin.
+* [Fix] #229: RE 1, combining large amount of ammo with Flamethrower would overflow.
+* [Fix] #325: RE 3, an error occured during generation with randomize NPCs.
+* [Fix] #475: RE 1, room 305, player sometimes changes.
+* [Fix] #540: RE 3, room 20B, graphical issues during cutscene.
+* [Fix] #546: RE 3, room 211, crash due to NPC EM67.
+* [Fix] #549: RE 3, room 107, crash due to reused global enemy ID.
+* [Fix] #550: RE 3, room 402, Hunter may not spawn in cutscene.
+* [Fix] #552: RE 3, room 20C, crash due to Marvin NPC.
+* [Fix] #552: RE 3, room 211, crash due to Marvin NPC.
+* [Fix] #553: RE 3, 205, crash due to NPC EM67.
+* [Fix] #556: RE 2, room 608 NPC out of place during cutscene.
+* [Fix] #556: RE 2, room 612 NPC out of place during cutscene.
+* [Fix] #561: RE 3, room 502, 508, 50C, incorrect voices during cutscene.
+* [Fix] Incorrect voices when only one character is available.
+* [Fix] RE 1, 30F, locked lift causes softlock.
+* [Fix] RE 1, improve partner handling for 8 slot inventory.
+* [Fix] RE 1, incorrect enemy sounds for Jill.
+* [Fix] RE 1, incorrect hit scan when swap is on but change player isn't.
+* [Fix] RE 1, player animation height.
+* [Fix] RE 1, randomize Rebecca / partner character.
+* [Fix] RE 1, room 112, enable closet door in door rando.
+* [Fix] RE 1, room 207, enable broken door in door rando.
+* [Fix] RE 1, room 502, improve logic for Jill.
+* [Fix] RE 1, room 513, 70C, NPC was always Barry.
+* [Fix] RE 1, zombie death and vine grab player sounds were incorrect.
+* [Fix] RE 2, room 408, NPC might not have a gun.
+* [Fix] RE 3, Jake has corrupted face texture.
+* [Fix] RE 3, room 20D, incorrect Carlos voice.
+* [Fix] RE 3, room 20E, door rando, camera locked after cutscene.
+* [Fix] RE 3, room 408, 40A, only use NPCs with weapon.
 
 BioRand v3.1.1 (2023-08-06)
 
