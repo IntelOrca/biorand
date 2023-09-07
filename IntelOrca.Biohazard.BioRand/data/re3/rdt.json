@@ -2313,7 +2313,8 @@
         {
           "playerActor": "carlos"
         }
-      ]
+      ],
+      "enemies": []
     },
     "312": {
       "npcs": []
