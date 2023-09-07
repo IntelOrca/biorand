@@ -48,6 +48,7 @@ namespace IntelOrca.Biohazard.BioRand
             Title += $" - v{version.Major}.{version.Minor}.{version.Build}";
             SelectedGame = _settings.LastSelectedGame;
             versionLabel.Text = Program.CurrentVersionInfo;
+            txtWhatsNewTitle.Text = txtWhatsNewTitle.Text.Replace("{VERSION}", Program.CurrentVersionNumber);
         }
 
         private void PopulateChangelog()

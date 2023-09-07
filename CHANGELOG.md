@@ -1,3 +1,16 @@
+BioRand v3.1.3 (2023-09-07)
+
+* [Feature] RE 1, add Carlos, Irons, Marvin, Nikolai, and Wesker (RE 5) as playable characters.
+* [Fix] #565: RE 1, Chris, random items in inventory slot 7,8.
+* [Fix] #568: RE 1, room 405, enemies present during cutscene.
+* [Fix] #569: RE 1, Enrico does not have a gun.
+* [Fix] #570: RE 3, room 310, enemies present during cutscene.
+* [Fix] #572: RE 1, room 10E, crash when enemy is adder.
+* [Fix] RE 1, 10F, crash during cutscene due to bees.
+* [Fix] RE 1, 20A, crash during cutscene due to mini spiders.
+* [Fix] RE 1, room 116, pickup always has amount 7.
+* [Fix] RE 1, room 212, 408, 502, 508, Richard is too slow.
+
 BioRand v3.1.2 (2023-09-05)
 
 * [Change] Add BSAA radio voice clips.
