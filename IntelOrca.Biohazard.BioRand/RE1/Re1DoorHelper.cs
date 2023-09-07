@@ -98,12 +98,25 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 
         private void ApplyPatches(RandoConfig config, GameData gameData)
         {
+            ShotgunOnWallFix(config, gameData);
             AllowPartnerItemBoxes(gameData);
 
             if (!config.RandomDoors)
                 return;
 
             ForceTyrant2(gameData);
+        }
+
+        private void ShotgunOnWallFix(RandoConfig config, GameData gameData)
+        {
+            if (!config.RandomItems)
+                return;
+
+            var rdt = gameData.GetRdt(new RdtId(0, 0x16));
+            if (rdt == null)
+                return;
+
+            rdt.Nop(0x1FE16);
         }
 
         private void AllowPartnerItemBoxes(GameData gameData)
