@@ -1162,11 +1162,9 @@
       "enemies": [],
       "npcs": [
         {
-          "includeOffsets": [ 149302 ],
-          "includeTypes": [ 38, 40, 42 ]
-        },
-        {
-          "includeOffsets": [ 149348 ]
+          "includeOffsets": [ 149348 ],
+          "excludeTypes": [ 39 ],
+          "player": 1
         }
       ]
     },
@@ -1790,6 +1788,11 @@
           "player": 0
         }
       ],
+      "npcs": [
+        {
+          "excludeTypes": [ 39 ]
+        }
+      ],
       "enemies": [
         {
           "condition": "!(!0:0 && 1:61 && 1:170)",
@@ -2105,6 +2108,7 @@
       ],
       "npcs": [
         {
+          "excludeTypes": [ 39 ],
           "player": 0
         },
         {
@@ -2115,6 +2119,7 @@
         },
         {
           "includeOffsets": [ 18798 ], // Chris (let's go)
+          "excludeTypes": [ 39 ],
           "cutscene": 1,
           "player": 1
         }
