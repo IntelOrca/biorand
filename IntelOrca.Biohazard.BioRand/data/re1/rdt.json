@@ -551,7 +551,7 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 4 ],
+          "excludeTypes": [ 3, 4, 7, 10 ],
           "player": 1
         }
       ]
