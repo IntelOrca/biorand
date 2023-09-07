@@ -166,6 +166,18 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                     break;
             }
 
+            // Enrico has a baked in gun
+            if (type == Re1EnemyIds.Enrico)
+            {
+                var plwIndex = rng.Next(Re1ItemIds.CombatKnife, Re1ItemIds.RocketLauncher + 1);
+                var plwPath = GetPlwPath(pldPath, plwIndex, fileRepository);
+                if (plwPath != null)
+                {
+                    var plwFile = new PlwFile(BioVersion.Biohazard1, plwPath);
+                    builder[14] = plwFile.GetMesh(0).ToBuilder()[0];
+                }
+            }
+
             emdFile.SetMesh(0, builder.ToMesh());
             emdFile.SetTim(0, timFile);
 
