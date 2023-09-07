@@ -1707,7 +1707,7 @@
           "condition": "!(1:175 && !0:0)",
           "excludeOffsets": [ 103668, 103690, 103712 ],
           "excludeTypes": [ 4 ],
-          "player": 0
+          "player": 1
         }
       ]
     },
