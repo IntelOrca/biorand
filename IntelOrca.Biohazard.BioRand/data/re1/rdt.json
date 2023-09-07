@@ -513,7 +513,7 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 2, 4 ],
+          "excludeTypes": [ 2, 4, 10 ],
           "keepState": true
         }
       ]
