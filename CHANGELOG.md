@@ -10,6 +10,7 @@ BioRand v3.1.3 (2023-09-07)
 * [Fix] RE 1, 20A, crash during cutscene due to mini spiders.
 * [Fix] RE 1, room 116, pickup always has amount 7.
 * [Fix] RE 1, room 212, 408, 502, 508, Richard is too slow.
+* [Fix] RE 1, room 302, stuck when ladder is locked.
 
 BioRand v3.1.2 (2023-09-05)
 
