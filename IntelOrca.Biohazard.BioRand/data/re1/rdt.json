@@ -1738,7 +1738,7 @@
       "enemies": [
         {
           "excludeTypes": [ 4 ],
-          "player": 1
+          "player": 0
         },
         {
           "condition": "!(1:178 && !1:174 && 1:176 && 1:177)",
