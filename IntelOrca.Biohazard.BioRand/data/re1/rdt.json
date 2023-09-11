@@ -1084,7 +1084,7 @@
       "enemies": [
         {
           "condition": "1:67",
-          "excludeTypes": [ 4 ]
+          "excludeTypes": [ 4, 11 ]
         }
       ]
     },
