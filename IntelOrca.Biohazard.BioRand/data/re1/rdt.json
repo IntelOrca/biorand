@@ -2734,7 +2734,13 @@
     "61A": {
       "enemies": [
         {
-          "excludeTypes": [ 4 ]
+          "condition": "!23:0",
+          "excludeTypes": [ 4 ],
+          "player": 0
+        },
+        {
+          "excludeTypes": [ 4 ],
+          "player": 1
         }
       ]
     },
