@@ -1311,6 +1311,11 @@
           "requires": [ 30 ],
           "allowDocuments": false
         }
+      ],
+      "enemies": [
+        {
+          "exclude": [ 3, 4, 10 ]
+        }
       ]
     },
     "307": {
