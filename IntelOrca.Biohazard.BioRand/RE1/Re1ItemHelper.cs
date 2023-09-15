@@ -176,7 +176,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 case Re1ItemIds.Battery:
                     return 2;
                 case Re1ItemIds.SmallKey:
-                    return config.RandomDoors ? 1 : 5;
+                    return config.RandomDoors ? 1 : 6;
                 case Re1ItemIds.MODisk:
                     return 3;
             }
