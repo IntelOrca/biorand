@@ -178,6 +178,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 FixChrisInventorySize();
             }
             FixWeaponHitScan(config);
+            FixYawnPoison(config);
 
             base.Generate(config, reConfig, progress, fileRepository);
         }
@@ -845,6 +846,20 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             {
                 pw.Write(d);
             }
+            pw.End();
+        }
+
+        private void FixYawnPoison(RandoConfig config)
+        {
+            const byte ST_POISON = 0x02;
+            const byte ST_POISON_YAWN = 0x20;
+
+            var pw = new PatchWriter(ExePatch);
+            pw.Begin(0x45B8C0 + 6); // 80 0D 90 52 C3 00 20
+            if (config.RandomDoors)
+                pw.Write(ST_POISON);
+            else
+                pw.Write(ST_POISON_YAWN);
             pw.End();
         }
     }
