@@ -894,7 +894,7 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 4 ]
+          "excludeTypes": [ 3, 4, 10 ]
         }
       ]
     },
@@ -2793,7 +2793,7 @@
     "705": {
       "enemies": [
         {
-          "excludeTypes": [ 4 ]
+          "excludeTypes": [ 3, 4, 10 ]
         }
       ]
     },
