@@ -351,7 +351,7 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 foreach (var type in enemyTypes)
                 {
-                    if (!_enemyHelper.SupportsEnemyType(_config, rdt, enemySpec.Difficulty ?? "", hasEnemyPlacements && !enemySpec.KeepPositions, type))
+                    if (!_enemyHelper.SupportsEnemyType(_config, rdt, hasEnemyPlacements && !enemySpec.KeepPositions, type))
                         continue;
 
                     if (enemySpec.IncludeTypes != null)
@@ -579,6 +579,16 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 enemiesToChange = GenerateRandomEnemies(rng, rdt, enemySpec, enemiesToChange, possibleTypes[0]);
             }
+            else
+            {
+                var quantity = enemiesToChange.DistinctBy(x => x.Id).Count();
+                possibleTypes = possibleTypes.Where(type =>
+                {
+                    var difficulty = Math.Min(enemySpec.MaxDifficulty ?? 3, _config.EnemyDifficulty);
+                    var maxQuantity = _enemyHelper.GetEnemyTypeLimit(_config, enemySpec.MaxDifficulty ?? _config.EnemyDifficulty, type);
+                    return maxQuantity >= quantity;
+                }).ToArray();
+            }
 
             if (possibleTypes.Length == 0)
                 return;
@@ -621,7 +631,8 @@ namespace IntelOrca.Biohazard.BioRand
             max = Math.Min(max, relevantPlacements.Length);
             var quantity = rng.Next(1, avg * 2);
             quantity = Math.Min(quantity, max);
-            quantity = Math.Min(quantity, _enemyHelper.GetEnemyTypeLimit(_config, enemyType));
+            var difficulty = Math.Min(enemySpec.MaxDifficulty ?? 3, _config.EnemyDifficulty);
+            quantity = Math.Min(quantity, _enemyHelper.GetEnemyTypeLimit(_config, difficulty, enemyType));
             relevantPlacements = relevantPlacements
                 .Take(quantity)
                 .ToArray();

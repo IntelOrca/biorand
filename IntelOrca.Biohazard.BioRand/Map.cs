@@ -142,7 +142,7 @@ namespace IntelOrca.Biohazard.BioRand
         public bool KeepPositions { get; set; }
         public bool IgnoreRatio { get; set; }
         public short? Y { get; set; }
-        public string? Difficulty { get; set; }
+        public int? MaxDifficulty { get; set; }
         public bool? Restricted { get; set; }
         public string? Condition { get; set; }
 

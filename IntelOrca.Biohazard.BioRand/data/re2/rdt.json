@@ -564,7 +564,7 @@
       "enemies": [
         {
           "excludeTypes": [ 42, 58 ],
-          "difficulty": "hard",
+          "maxDifficulty": 2,
           "randomPlacements": false
         },
         {
@@ -929,7 +929,7 @@
       "enemies": [
         {
           "nop": [ 7810, 7854, 7858, 7862, 7868, 8166, 8170, 8174, 8180, 8184 ],
-          "difficulty": "medium",
+          "maxDifficulty": 1,
           "excludeTypes": [ 58 ],
           "keepPositions": true,
           "player": 0,
@@ -938,7 +938,7 @@
         {
           "nop": [ 7772, 7816, 7820, 7824, 7830, 8128, 8132, 8136, 8142, 8146 ],
           "excludeTypes": [ 58 ],
-          "difficulty": "medium",
+          "maxDifficulty": 1,
           "keepPositions": true,
           "player": 1,
           "scenario": 1
@@ -1048,7 +1048,7 @@
       ],
       "enemies": [
         {
-          "difficulty": "medium"
+          "maxDifficulty": 1
         }
       ]
     },
@@ -1158,7 +1158,7 @@
       "enemies": [
         {
           "excludeTypes": [ 58 ],
-          "difficulty": "hard"
+          "maxDifficulty":  2
         }
       ]
     },
@@ -1179,7 +1179,7 @@
         {
           "excludeOffsets": [ 12368 ],
           "excludeTypes": [ 58 ],
-          "difficulty": "medium"
+          "maxDifficulty":  2
         }
       ],
       "items": [
@@ -1229,7 +1229,7 @@
       ],
       "enemies": [
         {
-          "difficulty": "medium"
+          "maxDifficulty":  1
         }
       ]
     },

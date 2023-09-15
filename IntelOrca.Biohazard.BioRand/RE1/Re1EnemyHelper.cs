@@ -24,7 +24,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 .Replace("_", " ");
         }
 
-        public bool SupportsEnemyType(RandoConfig config, RandomizedRdt rdt, string difficulty, bool hasEnemyPlacements, byte enemyType)
+        public bool SupportsEnemyType(RandoConfig config, RandomizedRdt rdt, bool hasEnemyPlacements, byte enemyType)
         {
             if (enemyType == Re1EnemyIds.Yawn1)
             {
@@ -122,7 +122,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             }
         }
 
-        public int GetEnemyTypeLimit(RandoConfig config, byte type)
+        public int GetEnemyTypeLimit(RandoConfig config, int difficulty, byte type)
         {
             byte[] limit;
             switch (type)
@@ -154,7 +154,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                     limit = new byte[] { 16 };
                     break;
             }
-            var index = Math.Min(limit.Length - 1, config.EnemyDifficulty);
+            var index = Math.Min(limit.Length - 1, difficulty);
             return limit[index];
         }
 

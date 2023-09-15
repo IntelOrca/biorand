@@ -37,7 +37,7 @@ namespace IntelOrca.Biohazard.BioRand.RE2
                 .Replace("_", " ");
         }
 
-        public bool SupportsEnemyType(RandoConfig config, RandomizedRdt rdt, string difficulty, bool hasEnemyPlacements, byte enemyType)
+        public bool SupportsEnemyType(RandoConfig config, RandomizedRdt rdt, bool hasEnemyPlacements, byte enemyType)
         {
             if (config.RandomEnemyPlacement && hasEnemyPlacements)
             {
@@ -46,12 +46,12 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             else
             {
                 var exclude = new HashSet<byte>();
-                ExcludeEnemies(config, rdt, difficulty, x => exclude.Add(x));
+                ExcludeEnemies(config, rdt, x => exclude.Add(x));
                 return !exclude.Contains(enemyType);
             }
         }
 
-        private void ExcludeEnemies(RandoConfig config, RandomizedRdt rdt, string difficulty, Action<byte> exclude)
+        private void ExcludeEnemies(RandoConfig config, RandomizedRdt rdt, Action<byte> exclude)
         {
             var types = rdt.Enemies
                 .Select(x => x.Type)
@@ -61,21 +61,6 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             if (types.Length != 1)
             {
                 exclude(Re2EnemyIds.Birkin1);
-            }
-
-            if (difficulty == "medium" && config.EnemyDifficulty < 2)
-            {
-                exclude(Re2EnemyIds.LickerRed);
-                exclude(Re2EnemyIds.LickerGrey);
-                exclude(Re2EnemyIds.ZombieDog);
-                exclude(Re2EnemyIds.Tyrant1);
-            }
-            else if (difficulty == "hard" && config.EnemyDifficulty < 3)
-            {
-                exclude(Re2EnemyIds.LickerRed);
-                exclude(Re2EnemyIds.LickerGrey);
-                exclude(Re2EnemyIds.ZombieDog);
-                exclude(Re2EnemyIds.Tyrant1);
             }
         }
 
@@ -262,7 +247,7 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             }
         }
 
-        public int GetEnemyTypeLimit(RandoConfig config, byte type)
+        public int GetEnemyTypeLimit(RandoConfig config, int difficulty, byte type)
         {
             byte[] limit;
             switch (type)
@@ -285,7 +270,7 @@ namespace IntelOrca.Biohazard.BioRand.RE2
                     limit = new byte[] { 16 };
                     break;
             }
-            var index = Math.Min(limit.Length - 1, config.EnemyDifficulty);
+            var index = Math.Min(limit.Length - 1, difficulty);
             return limit[index];
         }
 

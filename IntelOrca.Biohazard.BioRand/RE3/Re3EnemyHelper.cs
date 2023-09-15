@@ -22,7 +22,7 @@ namespace IntelOrca.Biohazard.BioRand.RE3
                 .Replace("_", " ");
         }
 
-        public int GetEnemyTypeLimit(RandoConfig config, byte type)
+        public int GetEnemyTypeLimit(RandoConfig config, int difficulty, byte type)
         {
             byte[] limit;
             switch (type)
@@ -42,7 +42,7 @@ namespace IntelOrca.Biohazard.BioRand.RE3
                     limit = new byte[] { 16 };
                     break;
             }
-            var index = Math.Min(limit.Length - 1, config.EnemyDifficulty);
+            var index = Math.Min(limit.Length - 1, difficulty);
             return limit[index];
         }
 
@@ -191,7 +191,7 @@ namespace IntelOrca.Biohazard.BioRand.RE3
             }
         }
 
-        public bool SupportsEnemyType(RandoConfig config, RandomizedRdt rdt, string difficulty, bool hasEnemyPlacements, byte enemyType)
+        public bool SupportsEnemyType(RandoConfig config, RandomizedRdt rdt, bool hasEnemyPlacements, byte enemyType)
         {
             // These enemies always work
             switch (enemyType)
