@@ -1595,6 +1595,7 @@
       "npcs": [
         {
           "includeOffsets": [ 11176 ],
+          "includeTypes": [ 65, 67, 71, 72, 73, 74 ],
           "cutscene": 0,
           "player": 1
         },
