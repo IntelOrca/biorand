@@ -169,6 +169,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 () => GenerateRdts(config.WithPlayerScenario(0, 0), progress, fileRepository),
                 () => GenerateRdts(config.WithPlayerScenario(1, 0), progress, fileRepository));
 
+            DisableDemo();
             FixFlamethrowerCombine();
             FixWasteHeal();
             FixNeptuneDamage();
@@ -679,6 +680,20 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 emdFile.SetEmr(0, emdFile.GetEmr(0).Scale(scale));
                 emdFile.Save(newEmdPath);
             }
+        }
+
+        private void DisableDemo()
+        {
+            var pw = new PatchWriter(ExePatch);
+            pw.Begin(0x48E031);
+            pw.Write(0x90);
+            pw.Write(0x90);
+            pw.Write(0x90);
+            pw.Write(0x90);
+            pw.Write(0x90);
+            pw.Write(0x90);
+            pw.Write(0x90);
+            pw.End();
         }
 
         private void FixFlamethrowerCombine()

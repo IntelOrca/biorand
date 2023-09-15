@@ -133,6 +133,7 @@ namespace IntelOrca.Biohazard.BioRand.RE2
                     () => GenerateRdts(config.WithPlayerScenario(1, 0), progress, fileRepository));
             }
 
+            DisableDemo();
             FixClaireWeapons();
             FixWeaponHitScan(config);
             DisableWaitForSherry();
@@ -801,6 +802,15 @@ namespace IntelOrca.Biohazard.BioRand.RE2
                     bw.End();
                 }
             }
+        }
+
+        private void DisableDemo()
+        {
+            var pw = new PatchWriter(ExePatch);
+            pw.Begin(0x503C45);
+            pw.Write(0x90);
+            pw.Write(0x90);
+            pw.End();
         }
 
         private void FixClaireWeapons()

@@ -101,6 +101,8 @@ namespace IntelOrca.Biohazard.BioRand.RE3
 
             GenerateRdts(config, progress, fileRepository);
 
+            DisableDemo();
+
             base.Generate(config, reConfig, progress, fileRepository);
         }
 
@@ -666,6 +668,19 @@ namespace IntelOrca.Biohazard.BioRand.RE3
                 vb.SetSampleFromPCM(6, pcmData);
                 vb.Write(vbTargetPath);
             }
+        }
+
+        private void DisableDemo()
+        {
+            var pw = new PatchWriter(ExePatch);
+            pw.Begin(0x6093F675); // Rebirth
+            pw.Write(0x90);
+            pw.Write(0x90);
+            pw.Write(0x90);
+            pw.Write(0x90);
+            pw.Write(0x90);
+            pw.Write(0x90);
+            pw.End();
         }
 
         private static readonly string[] g_trackOrder = new[]
