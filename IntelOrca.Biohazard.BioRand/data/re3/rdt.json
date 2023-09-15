@@ -1324,6 +1324,7 @@
       "npcs": [
         {
           "includeOffsets": [ 20152 ],
+          "includeTypes": [ 80, 81, 82, 83, 86, 92 ],
           "cutscene": 0 // Nikolai (first greet)
         },
         {
