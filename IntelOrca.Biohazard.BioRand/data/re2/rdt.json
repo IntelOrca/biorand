@@ -3534,18 +3534,18 @@
     "60C": {
       "doorRando": [
         {
-          "nop": [ 4042, 5894, 6140, 6192, 6150, 6178, 3994 ],
+          "nop": [ 5894, "0x1396-0x14A6", "0x14BC-0x15BA" ],
           "cutscene": true,
           "player": 0,
           "scenario": 0
         },
         {
-          "nop": [ 4042, 5894, 6140, 6192, 6150, 6178, 3994 ],
+          "nop": [ 5894, "0x1396-0x14A6", "0x14BC-0x15BA" ],
           "player": 0,
           "scenario": 1
         },
         {
-          "nop": [ 4010 ],
+          "nop": [ "0x133C-0x144C", "0x1462-0x1560" ],
           "cutscene": true,
           "player": 1
         }
@@ -3560,14 +3560,16 @@
         {
           "target": "60F",
           "requires": [ 76 ],
-          "requiresRoom": [ "611" ],
+          "requiresRoom": [ "611", "613" ],
+          "noUnlock": true,
           "player": 0,
           "doorRando": true
         },
         {
           "target": "60F",
           "requires": [ 76 ],
-          "requiresRoom": [ "608" ],
+          "requiresRoom": [ "608", "613" ],
+          "noUnlock": true,
           "player": 1,
           "doorRando": true
         },
