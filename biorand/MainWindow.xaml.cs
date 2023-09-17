@@ -651,7 +651,12 @@ namespace IntelOrca.Biohazard.BioRand
             try
             {
                 var err = randomizer.DoIntegrityCheck(gamePath);
-                if (err == 2)
+                if (err == 3)
+                {
+                    ShowFailedMessage("Integrity Check Failed", "Director's cut camera angles are not supported.\n" +
+                        $"Rename your bio1dc folder to something else.");
+                }
+                else if (err == 2)
                 {
                     ShowFailedMessage("Integrity Check Failed", "One or more of your room files are missing.\n" +
                         $"Check that your {game} installation is integral.");

@@ -96,6 +96,12 @@ namespace IntelOrca.Biohazard.BioRand
                     }
                 }
             }
+
+            if (Directory.Exists(Path.Combine(dataPath, "bio1dc")))
+                return 3;
+            if (Directory.Exists(Path.Combine(dataPath, "..", "bio1dc")))
+                return 3;
+
             return result;
         }
 
