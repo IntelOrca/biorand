@@ -1344,7 +1344,7 @@
       ],
       "enemies": [
         {
-          "exclude": [ 3, 4, 10 ],
+          "excludeTypes": [ 3, 4, 10 ],
           "maxDifficulty": 1
         }
       ]
