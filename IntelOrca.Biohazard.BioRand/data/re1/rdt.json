@@ -1377,12 +1377,12 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 4 ],
+          "excludeTypes": [ 3, 4, 10 ],
           "player": 0
         },
         {
           "condition": "!(!1:92 && !1:72)",
-          "excludeTypes": [ 4 ],
+          "excludeTypes": [ 3, 4, 10 ],
           "player": 1
         }
       ]
