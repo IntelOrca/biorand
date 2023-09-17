@@ -2527,38 +2527,31 @@
       ]
     },
     "408": {
-      "doorRando": [
-        {
-          "category": "exclude",
-          "player": 1
-        }
-      ],
       "doors": [
         {
-          "target": "407",
-          "doorRando": false
+          "target": "407"
         },
         {
           "target": "40A",
-          "requires": [ 50 ],
-          "doorRando": false
-        },
-        // Force reversal, so items can be picked up before
-        // needing to use the valve handle
-        {
-          "target": "407",
-          "requires": [ 50 ],
-          "doorRando": true
-        },
-        {
-          "target": "40A",
-          "doorRando": true
+          "requires": [ 50 ]
         }
       ],
       "items": [
         {
           "id": 2,
           "priority": "low"
+        },
+        {
+          "id": 7,
+          "requires": [ 50 ]
+        },
+        {
+          "id": 8,
+          "requires": [ 50 ]
+        },
+        {
+          "id": 9,
+          "requires": [ 50 ]
         }
       ],
       "npcs": [
@@ -2577,7 +2570,7 @@
     "409": {
       "doorRando": [
         {
-          "category": "exclude",
+          "nop": [ "0x239A-0x2418" ],
           "player": 0
         }
       ],
@@ -2587,7 +2580,8 @@
         },
         {
           "target": "40B",
-          "requires": [ 50 ]
+          "requires": [ 50 ],
+          "requiresRoom": [ "408" ]
         }
       ],
       "npcs": [
