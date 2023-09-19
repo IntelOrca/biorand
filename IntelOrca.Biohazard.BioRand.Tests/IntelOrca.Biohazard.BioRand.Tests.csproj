@@ -16,6 +16,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\IntelOrca.Biohazard.BioRand.Network\IntelOrca.Biohazard.BioRand.Network.csproj" />
     <ProjectReference Include="..\IntelOrca.Biohazard.BioRand\IntelOrca.Biohazard.BioRand.csproj" />
   </ItemGroup>
 </Project>
