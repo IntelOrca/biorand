@@ -28,7 +28,7 @@ namespace IntelOrca.Biohazard.BioRand
         private static Version CurrentVersion = Assembly.GetEntryAssembly().GetName().Version;
 
         private Rng _random = new Rng();
-        private RandoAppSettings _settings = new RandoAppSettings();
+        private RandoAppSettings _settings = RandoAppSettings.Instance;
         private RandoConfig _config = new RandoConfig();
         private bool _suspendEvents;
 
@@ -71,7 +71,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void LoadSettings()
         {
-            _settings = RandoAppSettings.Load();
+            _settings = RandoAppSettings.Instance = RandoAppSettings.Load();
             using (SuspendEvents())
             {
                 gameLocation1.Location = _settings.GamePath1;
@@ -871,32 +871,16 @@ namespace IntelOrca.Biohazard.BioRand
 
             using (SuspendEvents())
             {
-                if (index == 5)
+                foreach (UIElement panel in panelContainer.Children)
                 {
-                    panelNew.Visibility = Visibility.Visible;
-                    panelInfo.Visibility = Visibility.Hidden;
-                    panelConfig.Visibility = Visibility.Hidden;
-                    panelRando.Visibility = Visibility.Hidden;
+                    panel.Visibility = Visibility.Hidden;
                 }
-                else if (index == 4)
+                if (index >= 3)
                 {
-                    panelNew.Visibility = Visibility.Hidden;
-                    panelInfo.Visibility = Visibility.Visible;
-                    panelConfig.Visibility = Visibility.Hidden;
-                    panelRando.Visibility = Visibility.Hidden;
-                }
-                else if (index == 3)
-                {
-                    panelNew.Visibility = Visibility.Hidden;
-                    panelInfo.Visibility = Visibility.Hidden;
-                    panelConfig.Visibility = Visibility.Visible;
-                    panelRando.Visibility = Visibility.Hidden;
+                    panelContainer.Children[index.Value - 2].Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    panelNew.Visibility = Visibility.Hidden;
-                    panelInfo.Visibility = Visibility.Hidden;
-                    panelConfig.Visibility = Visibility.Hidden;
                     panelRando.Visibility = Visibility.Visible;
                     if (index == 2)
                     {

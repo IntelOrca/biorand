@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using IntelOrca.Biohazard.BioRand.Network;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace IntelOrca.Biohazard.BioRand.Tests
@@ -83,7 +84,7 @@ namespace IntelOrca.Biohazard.BioRand.Tests
 
         private static BioRandServer CreateServer()
         {
-            var server = new BioRandServer();
+            var server = new BioRandServer(NullLogger.Instance);
             server.Listen(new IPEndPoint(IPAddress.Any, BioRandServer.DefaultPort));
             return server;
         }

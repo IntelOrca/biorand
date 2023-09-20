@@ -20,6 +20,7 @@
     <PackageReference Include="QRCoder" Version="1.4.3" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\IntelOrca.Biohazard.BioRand.Network\IntelOrca.Biohazard.BioRand.Network.csproj" />
     <ProjectReference Include="..\IntelOrca.Biohazard.BioRand\IntelOrca.Biohazard.BioRand.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -29,9 +30,7 @@
     <Resource Include="resources\*.png" />
   </ItemGroup>
   <Target Name="SetSourceRevisionId" BeforeTargets="InitializeSourceControlInformation">
-    <Exec Command="git describe --long --always --exclude=* --abbrev=7"
-      ConsoleToMSBuild="True"
-      IgnoreExitCode="False">
+    <Exec Command="git describe --long --always --exclude=* --abbrev=7" ConsoleToMSBuild="True" IgnoreExitCode="False">
       <Output PropertyName="SourceRevisionId" TaskParameter="ConsoleOutput" />
     </Exec>
   </Target>

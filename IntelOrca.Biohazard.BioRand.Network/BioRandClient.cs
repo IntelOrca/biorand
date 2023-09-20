@@ -18,14 +18,22 @@ namespace IntelOrca.Biohazard.BioRand.Network
         public string[] RoomPlayers { get; private set; }
         public BioRandJsonStream Stream { get; private set; }
 
+        public bool Connected => _client.Connected;
+
         public void Dispose()
         {
             if (Stream != null)
             {
-                Stream.SendPacketAsync(new DisconnectPacket(), default(CancellationToken)).Wait();
-                Stream.Dispose();
+                try
+                {
+                    Stream.SendPacketAsync(new DisconnectPacket(), default(CancellationToken)).Wait();
+                    Stream.Dispose();
+                }
+                catch
+                {
+                }
+                Stream = null;
             }
-            Stream = null;
             _client?.Dispose();
             _client = null;
         }

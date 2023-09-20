@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using IntelOrca.Biohazard.BioRand.Network.Packets;
+using Microsoft.Extensions.Logging;
 
 namespace IntelOrca.Biohazard.BioRand.Network
 {
@@ -14,6 +15,7 @@ namespace IntelOrca.Biohazard.BioRand.Network
         public const int DefaultPort = 31070;
         public const int Version = 1;
 
+        private readonly ILogger _logger;
         private readonly List<TcpListener> _listeners = new List<TcpListener>();
         private CancellationTokenSource _runCts;
         private Task _runTask;
@@ -23,8 +25,9 @@ namespace IntelOrca.Biohazard.BioRand.Network
 
         public IReadOnlyList<BioRandPlayer> Players => _players;
 
-        public BioRandServer()
+        public BioRandServer(ILogger logger)
         {
+            _logger = logger;
             _runCts = new CancellationTokenSource();
             _runTask = Task.Run(() => RunAsync(_runCts.Token));
         }
@@ -40,6 +43,7 @@ namespace IntelOrca.Biohazard.BioRand.Network
             var listener = new TcpListener(endPoint);
             listener.Start();
             _listeners.Add(listener);
+            _logger.LogInformation("Listening on {0}", endPoint);
         }
 
         private async Task RunAsync(CancellationToken ct)
@@ -78,6 +82,7 @@ namespace IntelOrca.Biohazard.BioRand.Network
             var player = new BioRandPlayer(client, GetNextPlayerId());
             player.ReceivePacket += OnReceievePacket;
             _players.Add(player);
+            _logger.LogInformation("{0} connected", player.Id);
         }
 
         private async void OnReceievePacket(object sender, Packet e)
@@ -93,14 +98,13 @@ namespace IntelOrca.Biohazard.BioRand.Network
 
         private async Task HandleDisconnectedClientsAsync()
         {
-            foreach (var player in _players)
+            var disconnectedPlayers = _players.Where(x => !x.Connected).ToArray();
+            foreach (var player in disconnectedPlayers)
             {
-                if (!player.Connected)
-                {
-                    await RemovePlayerFromRoomAsync(player);
-                }
+                await RemovePlayerFromRoomAsync(player);
+                _players.Remove(player);
+                _logger.LogInformation("{0} disconnected", player.Id);
             }
-            _players.RemoveAll(x => !x.Connected);
         }
 
         private async Task<Packet> ReceievePacketAsync(BioRandPlayer player, Packet p)
@@ -113,6 +117,7 @@ namespace IntelOrca.Biohazard.BioRand.Network
                         return ErrorPacket("Incompatible version with server");
                     }
                     player.Name = auth.ClientName;
+                    _logger.LogInformation("{0} authenticated as {1}", player.Id, player.Name);
                     return new AuthenticatedPacket()
                     {
                         ClientId = player.Id,
@@ -128,6 +133,7 @@ namespace IntelOrca.Biohazard.BioRand.Network
                         await RemovePlayerFromRoomAsync(player);
                         var room = CreateRoom();
                         room.Players.Add(player);
+                        player.Room = room;
                         return GetRoomDetailsPacket(room);
                     }
                 case JoinRoomPacket joinPacket:
@@ -140,6 +146,7 @@ namespace IntelOrca.Biohazard.BioRand.Network
                         await RemovePlayerFromRoomAsync(player);
                         player.Room = room;
                         room.Players.Add(player);
+                        _logger.LogInformation("{0} joined {1}", player.Id, room.Id);
                         return await RefreshRoomDetailsAsync(room, player);
                     }
                 case LeaveRoomPacket leavePacket:
@@ -156,12 +163,18 @@ namespace IntelOrca.Biohazard.BioRand.Network
             var room = new BioRandRoom();
             room.Id = GetNextRoomId();
             _rooms.Add(room);
+            _logger.LogInformation("{0} created", room.Id);
             return room;
         }
 
         private void RoomEmptyRooms()
         {
-            _rooms.RemoveAll(x => x.Empty);
+            var emptyRooms = _rooms.Where(x => x.Empty).ToArray();
+            foreach (var room in emptyRooms)
+            {
+                _rooms.Remove(room);
+                _logger.LogInformation("{0} deleted", room.Id);
+            }
         }
 
         private RoomDetailsPacket GetRoomDetailsPacket(BioRandRoom room)
@@ -176,11 +189,13 @@ namespace IntelOrca.Biohazard.BioRand.Network
 
         private async Task RemovePlayerFromRoomAsync(BioRandPlayer player)
         {
-            if (player.Room != null)
+            var room = player.Room;
+            if (room != null)
             {
-                player.Room.Players.Remove(player);
-                await RefreshRoomDetailsAsync(player.Room);
+                room.Players.Remove(player);
+                await RefreshRoomDetailsAsync(room);
                 player.Room = null;
+                _logger.LogInformation("{0} left {1}", player.Id, room.Id);
             }
         }
 

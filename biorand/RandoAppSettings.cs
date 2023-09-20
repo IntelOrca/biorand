@@ -7,6 +7,8 @@ namespace IntelOrca.Biohazard.BioRand
 {
     public class RandoAppSettings
     {
+        public static RandoAppSettings Instance { get; set; } = new RandoAppSettings();
+
         public string Seed1 { get; set; }
         public string Seed2 { get; set; }
         public string Seed3 { get; set; }
@@ -30,6 +32,8 @@ namespace IntelOrca.Biohazard.BioRand
 
         public string LastVersion { get; set; }
 
+        public string PlayerName { get; set; }
+        public string ServerAddress { get; set; }
 
         public static string GetSettingsPath()
         {

@@ -43,30 +43,36 @@ namespace IntelOrca.Biohazard.BioRand.Network
 
         private async void ReceiveLoop(CancellationToken ct)
         {
-            while (!ct.IsCancellationRequested)
+            try
             {
-                if (_stream.DataAvailable)
+                while (!ct.IsCancellationRequested)
                 {
-                    var packet = await ReadPacketAsync(ct);
-                    if (packet != null)
+                    if (_stream.DataAvailable)
                     {
-                        if (packet.ReplyId == null)
+                        var packet = await ReadPacketAsync(ct);
+                        if (packet != null)
                         {
-                            ReceievePacket?.Invoke(this, packet);
-                        }
-                        else
-                        {
-                            lock (_packetSync)
+                            if (packet.ReplyId == null)
                             {
-                                _receivedPackets.Add(packet);
+                                ReceievePacket?.Invoke(this, packet);
+                            }
+                            else
+                            {
+                                lock (_packetSync)
+                                {
+                                    _receivedPackets.Add(packet);
+                                }
                             }
                         }
                     }
+                    else
+                    {
+                        await Task.Delay(10);
+                    }
                 }
-                else
-                {
-                    await Task.Delay(10);
-                }
+            }
+            catch
+            {
             }
         }
 
