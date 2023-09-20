@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Net.Sockets;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using IntelOrca.Biohazard.BioRand.Network;
+using IntelOrca.Biohazard.BioRand.Process;
 
 namespace IntelOrca.Biohazard.BioRand
 {
@@ -12,6 +14,9 @@ namespace IntelOrca.Biohazard.BioRand
     public partial class NetworkPanel : UserControl
     {
         private BioRandClient _client;
+        private ReProcess _process;
+        private ItemBox _lastItemBoxState;
+        private Timer _timer;
 
         public NetworkPanel()
         {
@@ -20,6 +25,16 @@ namespace IntelOrca.Biohazard.BioRand
 
             var settings = RandoAppSettings.Instance;
             txtPlayerName.Text = settings.PlayerName ?? "jill_sandwich";
+
+            _timer = new Timer();
+            _timer.Interval = 100;
+            _timer.Elapsed += OnTimerElapsed;
+            _timer.Enabled = true;
+        }
+
+        private void OnTimerElapsed(object sender, ElapsedEventArgs e)
+        {
+            Dispatcher.Invoke(() => UpdateGame());
         }
 
         private async void btnConnect_Click(object sender, RoutedEventArgs e)
@@ -77,23 +92,25 @@ namespace IntelOrca.Biohazard.BioRand
             if (_client == null)
             {
                 panelConnect.Visibility = Visibility.Visible;
-                panelMenu.Visibility = Visibility.Hidden;
-                panelRoom.Visibility = Visibility.Hidden;
+                panelMenu.Visibility = Visibility.Collapsed;
+                panelRoom.Visibility = Visibility.Collapsed;
             }
             else if (_client.RoomId == null)
             {
-                panelConnect.Visibility = Visibility.Hidden;
+                panelConnect.Visibility = Visibility.Collapsed;
                 panelMenu.Visibility = Visibility.Visible;
-                panelRoom.Visibility = Visibility.Hidden;
+                panelRoom.Visibility = Visibility.Collapsed;
                 lblPlayerName.Text = _client.ClientName;
             }
             else
             {
-                panelConnect.Visibility = Visibility.Hidden;
-                panelMenu.Visibility = Visibility.Hidden;
+                panelConnect.Visibility = Visibility.Collapsed;
+                panelMenu.Visibility = Visibility.Collapsed;
                 panelRoom.Visibility = Visibility.Visible;
                 txtCurrentRoomId.Text = _client.RoomId;
                 lblPlayerList.Text = string.Join("\n", _client.RoomPlayers);
+
+                UpdateGame();
             }
         }
 
@@ -155,6 +172,91 @@ namespace IntelOrca.Biohazard.BioRand
         private void ShowError(string caption, string message)
         {
             MessageBox.Show(message, caption, MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private void UpdateGame()
+        {
+            if (_process == null)
+            {
+                _process = FindGame();
+            }
+            else if (!_process.IsRunning)
+            {
+                _process = null;
+            }
+
+            if (_process == null)
+            {
+                lblGame.Text = "Not found";
+            }
+            else
+            {
+                lblGame.Text = $"Process: {_process.Name} ({_process.Id})\nItems:";
+
+                var itemHelper = ItemHelper.GetHelper(BioVersion.Biohazard2);
+                var processHelper = ProcessHelper.GetHelper(BioVersion.Biohazard2, _process);
+                var itemBox = processHelper.GetItemBox();
+                foreach (var item in itemBox.Items)
+                {
+                    if (item.Type == 0)
+                        continue;
+
+                    lblGame.Text += $"\n    {itemHelper.GetItemName(item.Type)} x{item.Amount}";
+                }
+
+                if (_lastItemBoxState != null)
+                {
+                    var changes = itemBox.GetChangesFrom(_lastItemBoxState);
+                    if (changes.Length != 0)
+                    {
+
+                    }
+                }
+                _lastItemBoxState = itemBox;
+            }
+        }
+
+        private static ReProcess FindGame()
+        {
+            var processes = System.Diagnostics.Process.GetProcesses();
+            foreach (var process in processes)
+            {
+                if (process.ProcessName.Contains("bio2"))
+                {
+                    return new ReProcess(process);
+                }
+            }
+            return null;
+        }
+    }
+
+    internal unsafe class ReProcess : IProcess
+    {
+        private readonly System.Diagnostics.Process _process;
+
+        public int Id => _process.Id;
+        public string Name => _process.ProcessName;
+        public bool IsRunning => !_process.HasExited;
+
+        public ReProcess(System.Diagnostics.Process process)
+        {
+            _process = process;
+        }
+
+        public void ReadMemory(int offset, Span<byte> buffer)
+        {
+            fixed (byte* ptr = buffer)
+            {
+                Win32.ReadProcessMemory(_process.Handle, (IntPtr)offset, (IntPtr)ptr, (IntPtr)buffer.Length, out var readBytes);
+            }
+        }
+
+        public void WriteMemory(int offset, ReadOnlySpan<byte> buffer)
+        {
+            fixed (byte* ptr = buffer)
+            {
+                Win32.WriteProcessMemory(_process.Handle, (IntPtr)offset, (IntPtr)ptr, (IntPtr)buffer.Length, out var readBytes);
+            }
         }
     }
 }

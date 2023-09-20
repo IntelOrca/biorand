@@ -1,4 +1,9 @@
-﻿namespace IntelOrca.Biohazard.BioRand
+﻿using System;
+using IntelOrca.Biohazard.BioRand.RE1;
+using IntelOrca.Biohazard.BioRand.RE2;
+using IntelOrca.Biohazard.BioRand.RE3;
+
+namespace IntelOrca.Biohazard.BioRand
 {
     public interface IItemHelper
     {
@@ -23,5 +28,19 @@
         bool HasInkRibbons(RandoConfig config);
         bool HasGunPowder(RandoConfig config);
         int[]? GetInventorySize(RandoConfig config);
+    }
+
+    public static class ItemHelper
+    {
+        public static IItemHelper GetHelper(BioVersion version)
+        {
+            return version switch
+            {
+                BioVersion.Biohazard1 => new Re1ItemHelper(false),
+                BioVersion.Biohazard2 => new Re2ItemHelper(),
+                BioVersion.Biohazard3 => new Re3ItemHelper(),
+                _ => throw new NotSupportedException()
+            };
+        }
     }
 }

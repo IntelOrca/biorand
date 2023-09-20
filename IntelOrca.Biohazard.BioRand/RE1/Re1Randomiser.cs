@@ -34,9 +34,11 @@ namespace IntelOrca.Biohazard.BioRand.RE1
         internal override IEnemyHelper EnemyHelper => _enemyHelper;
         internal override INpcHelper NpcHelper { get; } = new Re1NpcHelper();
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public Re1Randomiser(IBgCreator? bgCreator) : base(bgCreator)
         {
         }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
         public override string GetPlayerName(int player) => player == 0 ? "Chris" : "Jill";
 

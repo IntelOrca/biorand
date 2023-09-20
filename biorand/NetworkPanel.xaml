@@ -6,12 +6,12 @@
              xmlns:local="clr-namespace:IntelOrca.Biohazard.BioRand"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel>
+    <StackPanel HorizontalAlignment="Left" Width="500">
         <TextBlock FontSize="32">Co-operative Mode</TextBlock>
         <Grid x:Name="networkPanelContainer">
-            <StackPanel x:Name="panelConnect" HorizontalAlignment="Left" Visibility="Hidden">
+            <StackPanel x:Name="panelConnect" Visibility="Hidden">
                 <GroupBox Header="Join" Margin="4">
-                    <StackPanel HorizontalAlignment="Left">
+                    <StackPanel>
                         <Label>Name:</Label>
                         <StackPanel Orientation="Horizontal">
                             <TextBox x:Name="txtPlayerName" Text="jill_sandwich" MaxLength="32" Width="200" Margin="2" />
@@ -20,7 +20,7 @@
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
-            <StackPanel x:Name="panelMenu" HorizontalAlignment="Left" Visibility="Hidden">
+            <StackPanel x:Name="panelMenu" Visibility="Hidden">
                 <GroupBox Header="Player" Margin="4">
                     <StackPanel>
                         <TextBlock x:Name="lblPlayerName" />
@@ -40,15 +40,20 @@
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
-            <StackPanel x:Name="panelRoom" Visibility="Visible">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Margin="2">Room Id:</TextBlock>
-                    <TextBox x:Name="txtCurrentRoomId" Margin="2" Padding="8,0" MaxLength="16" IsReadOnly="True">ROOM-24714</TextBox>
-                    <Button Click="btnLeaveRoom_Click" Padding="8,0">Leave</Button>
+            <GroupBox x:Name="panelRoom" Margin="4" Header="Room" Visibility="Visible">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="2">Id:</TextBlock>
+                        <TextBox x:Name="txtCurrentRoomId" Margin="2" Padding="8,0" MaxLength="16" IsReadOnly="True">ROOM-24714</TextBox>
+                        <Button Click="btnLeaveRoom_Click" Padding="8,0">Leave</Button>
+                    </StackPanel>
+                    <TextBlock Margin="2">Players:</TextBlock>
+                    <TextBlock x:Name="lblPlayerList" Margin="24,0,0,0">Player</TextBlock>
                 </StackPanel>
-                <TextBlock Margin="2">Players:</TextBlock>
-                <TextBlock x:Name="lblPlayerList" Margin="24,0,0,0">Player</TextBlock>
-            </StackPanel>
+            </GroupBox>
         </Grid>
+        <GroupBox Margin="4" Header="Game">
+            <TextBlock x:Name="lblGame">Not found</TextBlock>
+        </GroupBox>
     </StackPanel>
 </UserControl>

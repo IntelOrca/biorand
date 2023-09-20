@@ -835,21 +835,21 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void UpdateLink_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://github.com/IntelOrca/biorand/releases");
+            System.Diagnostics.Process.Start("https://github.com/IntelOrca/biorand/releases");
         }
 
         private void ReportIssue_Click(object sender, RoutedEventArgs e)
         {
             var version = UrlEncoder.Default.Encode(string.Format("{0} ({1})", Program.CurrentVersionNumber, Program.GitHash));
             var seed = UrlEncoder.Default.Encode(_config.ToString());
-            Process.Start($"https://github.com/IntelOrca/biorand/issues/new?template=bug_report.yml&version={version}&seed={seed}");
+            System.Diagnostics.Process.Start($"https://github.com/IntelOrca/biorand/issues/new?template=bug_report.yml&version={version}&seed={seed}");
         }
 
         private void Link_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Hyperlink hyperlink)
             {
-                Process.Start(hyperlink.NavigateUri.ToString());
+                System.Diagnostics.Process.Start(hyperlink.NavigateUri.ToString());
             }
         }
 
@@ -1135,7 +1135,7 @@ namespace IntelOrca.Biohazard.BioRand
             var path = GetLogPath(player);
             if (File.Exists(path))
             {
-                Process.Start(path);
+                System.Diagnostics.Process.Start(path);
             }
             else
             {
@@ -1306,7 +1306,7 @@ namespace IntelOrca.Biohazard.BioRand
             try
             {
                 var processStartInfo = new ProcessStartInfo() { WorkingDirectory = executableDirectory, FileName = Path.GetFileName(executablePath) };
-                Process.Start(processStartInfo);
+                System.Diagnostics.Process.Start(processStartInfo);
             }
             catch (Exception ex)
             {
