@@ -18,7 +18,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
     {
         private readonly Re1EnemyHelper _enemyHelper = new Re1EnemyHelper();
         private ReInstallConfig? _reInstallConfig;
-        private Re1ItemHelper _itemHelper;
+        private Re1ItemHelper? _itemHelper;
         private object _playerFaceSync = new object();
 
         protected override BioVersion BiohazardVersion => BioVersion.Biohazard1;

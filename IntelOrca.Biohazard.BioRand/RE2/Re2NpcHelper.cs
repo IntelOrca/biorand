@@ -197,17 +197,18 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             {
                 var zombiePath = fileRepository.GetDataPath("pl0/emd0/em010.emd");
                 var zombie = new EmdFile(BioVersion.Biohazard2, zombiePath);
-                var offset = zombie.GetEdd(1).Animations[22].Offset;
-                var edd = zombie.GetEdd(1).ToBuilder();
-                edd.Animations[0] = edd.Animations[22];
-                edd.Animations[0].Frames = edd.Animations[0].Frames.Take(1).ToArray();
-                edd.Animations.RemoveRange(1, edd.Animations.Count - 1);
-                emdFile.SetEdd(0, edd.ToEdd());
+                var edd = (Edd1)zombie.GetEdd(1);
+                var offset = edd.Animations[22].Offset;
+                var eddBuilder = edd.ToBuilder();
+                eddBuilder.Animations[0] = eddBuilder.Animations[22];
+                eddBuilder.Animations[0].Frames = eddBuilder.Animations[0].Frames.Take(1).ToArray();
+                eddBuilder.Animations.RemoveRange(1, eddBuilder.Animations.Count - 1);
+                emdFile.SetEdd(0, eddBuilder.ToEdd());
                 var emr = pldFile.GetEmr(0)
                     .WithKeyframes(zombie.GetEmr(1))
                     .ToBuilder();
 
-                var kf = emr.KeyFrames[edd.Animations[0].Frames[0].Index];
+                var kf = emr.KeyFrames[eddBuilder.Animations[0].Frames[0].Index];
                 var kfOffset = kf.Offset;
                 kfOffset.x += 300;
                 kf.Offset = kfOffset;
