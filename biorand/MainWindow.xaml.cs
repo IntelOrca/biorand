@@ -288,6 +288,7 @@ namespace IntelOrca.Biohazard.BioRand
                 sliderWeaponQuantity.Value = _config.WeaponQuantity;
 
                 sliderEnemyDifficulty.Value = _config.EnemyDifficulty;
+                sliderEnemyRooms.Value = _config.EnemyRooms;
 
                 sliderGunpowder.Value = _config.RatioGunpowder;
                 sliderAmmo.Value = _config.RatioAmmo;
@@ -470,6 +471,7 @@ namespace IntelOrca.Biohazard.BioRand
             _config.AllowEnemiesAnyRoom = chkEnemyRestrictedRooms.IsChecked == true;
             _config.EnemyQuantity = (byte)sliderEnemyCount.Value;
             _config.EnemyDifficulty = (byte)sliderEnemyDifficulty.Value;
+            _config.EnemyRooms = (byte)sliderEnemyRooms.Value;
 
             _config.RandomItems = chkRngItems.IsChecked == true || _config.RandomDoors;
             _config.RandomEnemyPlacement = chkRandomEnemyPlacements.IsChecked == true;

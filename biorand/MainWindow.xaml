@@ -53,7 +53,7 @@
                 <local:GameMenuItem Game="5" Image="/resources/new.png" />
             </ListView>
             <Grid Grid.Column="1" Margin="4">
-                <Grid x:Name="panelNew" Visibility="Visible">
+                <Grid x:Name="panelNew" Visibility="Hidden">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
@@ -109,7 +109,7 @@
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>
-                <StackPanel x:Name="panelRando" Visibility="Hidden">
+                <StackPanel x:Name="panelRando" Visibility="Visible">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -346,6 +346,8 @@
                                                                 ToolTip="Adjusts the average number of enemies that can occur in a room." />
                                             <local:RandoSlider x:Name="sliderEnemyDifficulty" Heading="Difficulty" LowText="Ez" HighText="Hard" Maximum="3"
                                                                 ToolTip="Adjusts the limit of how many difficult enemies can appear in a single room, and the likelyhood of them being aggravated."/>
+                                            <local:RandoSlider x:Name="sliderEnemyRooms" Heading="Rooms with enemies" LowText="0%" HighText="100%" Maximum="7"
+                                                               ToolTip="Adjusts the percentage of all rooms in the game that contain enemies."/>
                                         </StackPanel>
                                         <ListView Grid.Row="1" x:Name="listEnemies" HorizontalContentAlignment="Stretch" Margin="0 4">
                                             <ListView.ContextMenu>

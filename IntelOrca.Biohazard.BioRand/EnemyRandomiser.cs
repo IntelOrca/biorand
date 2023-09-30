@@ -52,37 +52,34 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void ReadEnemyPlacements()
         {
-            if (_config.RandomEnemyPlacement)
+            var json = _dataManager.GetText(_version, "enemy.json");
+            var enemyPositions = JsonSerializer.Deserialize<EnemyPosition[]>(json, new JsonSerializerOptions()
             {
-                var json = _dataManager.GetText(_version, "enemy.json");
-                var enemyPositions = JsonSerializer.Deserialize<EnemyPosition[]>(json, new JsonSerializerOptions()
-                {
-                    ReadCommentHandling = JsonCommentHandling.Skip,
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                })!.ToList();
+                ReadCommentHandling = JsonCommentHandling.Skip,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            })!.ToList();
 
-                foreach (var room in _map.Rooms!)
-                {
-                    var linkedRoom = room.Value.LinkedRoom;
-                    if (linkedRoom == null)
-                        continue;
+            foreach (var room in _map.Rooms!)
+            {
+                var linkedRoom = room.Value.LinkedRoom;
+                if (linkedRoom == null)
+                    continue;
 
-                    var rdtId = RdtId.Parse(room.Key);
-                    var linkedRdtId = RdtId.Parse(linkedRoom);
-                    if (!enemyPositions.Any(x => x.RdtId == linkedRdtId))
+                var rdtId = RdtId.Parse(room.Key);
+                var linkedRdtId = RdtId.Parse(linkedRoom);
+                if (!enemyPositions.Any(x => x.RdtId == linkedRdtId))
+                {
+                    // Copy positions to linked room
+                    var srcEnemyPositions = enemyPositions.Where(x => x.RdtId == rdtId).ToArray();
+                    foreach (var pos in srcEnemyPositions)
                     {
-                        // Copy positions to linked room
-                        var srcEnemyPositions = enemyPositions.Where(x => x.RdtId == rdtId).ToArray();
-                        foreach (var pos in srcEnemyPositions)
-                        {
-                            var copy = pos;
-                            copy.RdtId = linkedRdtId;
-                            enemyPositions.Add(copy);
-                        }
+                        var copy = pos;
+                        copy.RdtId = linkedRdtId;
+                        enemyPositions.Add(copy);
                     }
                 }
-                _enemyPositions = enemyPositions.ToArray();
             }
+            _enemyPositions = enemyPositions.ToArray();
         }
 
         private void GatherEsps()
@@ -234,30 +231,25 @@ namespace IntelOrca.Biohazard.BioRand
                 .Shuffle(_rng)
                 .ToList();
 
-            if (_config.RandomEnemyPlacement)
+            // Clear some rooms of any enemies
+            var maxRooms = rdts.Length;
+            var populatedRooms = (int)((_config.EnemyRooms / 7.0) * maxRooms);
+            var numEmptyRdts = maxRooms - populatedRooms;
+            var numRdtsCleared = 0;
+            for (int i = enemyRdts.Count - 1; i >= 0; i--)
             {
-                var maxArray = new[] { 3, 5, 8, 10 };
-                var maxQuantity = maxArray[_config.EnemyQuantity];
-                var numEmptyRdts = Enumerable.Range(0, enemyRdts.Count)
-                    .Count(x => _rng.Next(0, maxQuantity) == 0);
-                numEmptyRdts = Math.Min(numEmptyRdts, enemyRdts.Count);
-                numEmptyRdts = 0;
+                if (numRdtsCleared >= numEmptyRdts)
+                    break;
 
-                var numRdtsCleared = 0;
-                for (int i = enemyRdts.Count - 1; i >= 0; i--)
+                var rdt = enemyRdts[i];
+                if (RemoveAllEnemiesFromRoom(rdt))
                 {
-                    if (numRdtsCleared >= numEmptyRdts)
-                        break;
-
-                    var rdt = enemyRdts[i];
-                    if (RemoveAllEnemiesFromRoom(rdt))
-                    {
-                        enemyRdts.RemoveAt(i);
-                        numRdtsCleared++;
-                    }
+                    enemyRdts.RemoveAt(i);
+                    numRdtsCleared++;
                 }
             }
 
+            // Now randomize each populated room's enemies
             var roomRandomized = true;
             var enemyRatioTotal = _config.EnemyRatios.Sum(x => x);
             if (enemyRatioTotal == 0)

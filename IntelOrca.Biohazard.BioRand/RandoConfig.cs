@@ -59,6 +59,7 @@ namespace IntelOrca.Biohazard.BioRand
         public byte RatioGunpowder { get; set; } = 16;
         public byte AmmoQuantity { get; set; } = 4;
         public byte EnemyDifficulty { get; set; } = 2;
+        public byte EnemyRooms { get; set; } = 5;
         public byte AreaCount { get; set; } = 3;
         public byte AreaSize { get; set; } = 7;
 
@@ -100,6 +101,8 @@ namespace IntelOrca.Biohazard.BioRand
 
             result.AmmoQuantity = reader.ReadByte(3);
             result.EnemyDifficulty = reader.ReadByte(2);
+            result.EnemyRooms = reader.ReadByte(3);
+            reader.ReadByte(2);
 
             result.AreaCount = reader.ReadByte(2);
             result.AreaSize = reader.ReadByte(3);
@@ -186,6 +189,8 @@ namespace IntelOrca.Biohazard.BioRand
 
             writer.Write(3, AmmoQuantity);
             writer.Write(2, EnemyDifficulty);
+            writer.Write(3, EnemyRooms);
+            writer.Write(2, 0);
 
             writer.Write(2, AreaCount);
             writer.Write(3, AreaSize);
