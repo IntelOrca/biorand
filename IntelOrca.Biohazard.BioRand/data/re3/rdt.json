@@ -1783,7 +1783,8 @@
       ],
       "enemies": [
         {
-          "condition": "$39 != 5"
+          "condition": "$39 != 5",
+          "excludeTypes": [ 32 ]
         }
       ]
     },
