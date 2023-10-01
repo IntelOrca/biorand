@@ -769,7 +769,8 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 0x40B476,
                 0x40B483,
                 0x414103,
-                0x414022
+                0x414022,
+                0x4142CC
             };
             foreach (var addr in addresses)
             {
@@ -799,6 +800,10 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             pw.Write(0x00);
             pw.Write(0x90);
             pw.Write(0x90);
+            pw.End();
+
+            pw.Begin(0x1006F0C2 + 3);
+            pw.Write(0x8);
             pw.End();
         }
 
