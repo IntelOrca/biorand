@@ -157,7 +157,7 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             config.RandomItems = true;
             config.IncludeDocuments = true;
             config.AlternativeRoutes = false;
-            config.ProtectFromSoftLock = true;
+            config.Segmented = true;
             config.ShuffleItems = false;
 
             config.RandomEnemies = true;

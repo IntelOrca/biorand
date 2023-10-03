@@ -1352,7 +1352,8 @@
     "307": {
       "doors": [
         {
-          "target": "302"
+          "target": "302",
+          "doorRando": true
         },
         {
           "target": "308"

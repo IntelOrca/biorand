@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using IntelOrca.Biohazard.BioRand.RE1;
 using IntelOrca.Biohazard.BioRand.RE2;
 using IntelOrca.Biohazard.BioRand.RE3;
 using IntelOrca.Biohazard.Script.Opcodes;
@@ -67,7 +68,7 @@ namespace IntelOrca.Biohazard.BioRand
                 if (newCheckpoint != checkpoint && _requiredItems.Count == 0)
                 {
                     _logger.WriteLine("    ------------ checkpoint ------------");
-                    if (_config.RandomDoors || _config.ProtectFromSoftLock)
+                    if (_config.RandomDoors || _config.Segmented)
                     {
                         _shufflePool.AddRange(_currentPool.Where(x => x.Priority != ItemPriority.Fixed));
                         _currentPool.Clear();
@@ -79,6 +80,11 @@ namespace IntelOrca.Biohazard.BioRand
                         {
                             _haveItems.Add(item);
                         }
+                    }
+                    else if (_config.Game == 1)
+                    {
+                        // HACK RE 1 battery needs placing in the lab
+                        _haveItems.Remove(Re1ItemIds.Battery);
                     }
                     checkpoint = newCheckpoint;
                 }

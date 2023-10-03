@@ -25,7 +25,7 @@ namespace IntelOrca.Biohazard.BioRand
         public int Seed { get; set; }
 
         // Flags
-        public bool ProtectFromSoftLock { get; set; } = true;
+        public bool Segmented { get; set; } = true;
         public bool ChangePlayer { get; set; } = true;
         public bool RandomPlayer { get; set; } = true;
         public bool RandomDoors { get; set; }
@@ -82,7 +82,7 @@ namespace IntelOrca.Biohazard.BioRand
 
             result.Seed = reader.ReadInt32(20);
 
-            result.ProtectFromSoftLock = reader.ReadFlag();
+            result.Segmented = reader.ReadFlag();
             result.RandomDoors = reader.ReadFlag();
             result.RandomNPCs = reader.ReadFlag();
             result.RandomEnemies = reader.ReadFlag();
@@ -170,7 +170,7 @@ namespace IntelOrca.Biohazard.BioRand
             writer.Write(20, Seed);
             writer.Write('-');
 
-            writer.Write(ProtectFromSoftLock);
+            writer.Write(Segmented);
             writer.Write(RandomDoors);
             writer.Write(RandomNPCs);
             writer.Write(RandomEnemies);
