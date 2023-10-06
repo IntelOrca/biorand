@@ -579,9 +579,14 @@ namespace IntelOrca.Biohazard.BioRand
             if (possibleTypes.Length == 0)
                 return;
 
+            var randomEnemiesToChange = new SceEmSetOpcode[0];
             if (_config.RandomEnemyPlacement && !enemySpec.KeepPositions)
             {
-                enemiesToChange = GenerateRandomEnemies(rng, rdt, enemySpec, enemiesToChange, possibleTypes[0]);
+                randomEnemiesToChange = GenerateRandomEnemies(rng, rdt, enemySpec, enemiesToChange, possibleTypes[0]);
+            }
+            if (randomEnemiesToChange.Length != 0)
+            {
+                enemiesToChange = randomEnemiesToChange;
             }
             else
             {
@@ -603,8 +608,9 @@ namespace IntelOrca.Biohazard.BioRand
 
             _enemyHelper.BeginRoom(rdt);
 
-            foreach (var enemy in enemiesToChange)
+            for (var i = 0; i < enemiesToChange.Length; i++)
             {
+                var enemy = enemiesToChange[i];
                 var index = Array.IndexOf(ids, enemy.Id);
                 var enemyType = enemyTypesId[index];
                 enemy.Type = enemyType;
@@ -616,6 +622,14 @@ namespace IntelOrca.Biohazard.BioRand
                 if (enemySpec.Y != null)
                     enemy.Y = enemySpec.Y.Value;
                 _enemyHelper.SetEnemy(_config, rng, enemy, enemySpec, enemyType);
+
+                foreach (var dependencyType in _enemyHelper.GetEnemyDependencies(enemyType))
+                {
+                    i++;
+                    enemy = enemiesToChange[i];
+                    enemy.Type = dependencyType;
+                    _enemyHelper.SetEnemy(_config, rng, enemy, enemySpec, enemyType);
+                }
             }
         }
 
@@ -626,7 +640,7 @@ namespace IntelOrca.Biohazard.BioRand
                 .Shuffle(rng);
 
             if (relevantPlacements.Length == 0)
-                return currentEnemies;
+                return new SceEmSetOpcode[0];
 
             var maxArray = new[] { 3, 5, 8, 10 };
             var avgArray = new[] { 1, 2, 4, 6 };
@@ -648,7 +662,6 @@ namespace IntelOrca.Biohazard.BioRand
 
             var enemies = new List<SceEmSetOpcode>();
             byte enemyId = 0;
-            byte killId = 0;
 
             var enemyOpcodes = new List<OpcodeBase>();
             var firstEnemyOpcodeIndex = rdt.AdditionalOpcodes.Count;
@@ -659,11 +672,19 @@ namespace IntelOrca.Biohazard.BioRand
                     enemyId++;
                 }
 
-                var newEnemy = CreateEnemy(enemyId, ep);
+                var killId = GetNextKillId();
+                var newEnemy = CreateEnemy(enemyId, killId, ep);
                 enemyOpcodes.Add(newEnemy);
                 enemies.Add(newEnemy);
                 enemyId++;
-                killId++;
+
+                var dependencies = _enemyHelper.GetEnemyDependencies(enemyType);
+                foreach (var d in dependencies)
+                {
+                    newEnemy = CreateEnemy(enemyId, killId, ep);
+                    enemyOpcodes.Add(newEnemy);
+                    enemies.Add(newEnemy);
+                }
             }
 
             InsertConditions(rdt, enemyOpcodes, enemySpec.Condition);
@@ -671,7 +692,7 @@ namespace IntelOrca.Biohazard.BioRand
             return enemies.ToArray();
         }
 
-        private SceEmSetOpcode CreateEnemy(byte id, EnemyPosition ep)
+        private SceEmSetOpcode CreateEnemy(byte id, byte killId, EnemyPosition ep)
         {
             if (_version == BioVersion.Biohazard1)
             {
@@ -681,7 +702,7 @@ namespace IntelOrca.Biohazard.BioRand
                     Opcode = (byte)OpcodeV1.SceEmSet,
                     Type = Re1EnemyIds.Zombie,
                     State = 0,
-                    KillId = GetNextKillId(),
+                    KillId = killId,
                     Re1Unk04 = 1,
                     Re1Unk05 = 2,
                     Re1Unk06 = 0,
@@ -713,7 +734,7 @@ namespace IntelOrca.Biohazard.BioRand
                     Floor = (byte)ep.F,
                     SoundBank = (byte)(_config.Game == 2 ? 9 : 32),
                     Texture = 0,
-                    KillId = GetNextKillId(),
+                    KillId = killId,
                     X = (short)ep.X,
                     Y = (short)ep.Y,
                     Z = (short)ep.Z,

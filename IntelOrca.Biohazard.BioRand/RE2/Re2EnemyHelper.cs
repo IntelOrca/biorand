@@ -62,6 +62,10 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             {
                 exclude(Re2EnemyIds.Birkin1);
             }
+            if (!config.RandomEnemyPlacement)
+            {
+                exclude(Re2EnemyIds.GAdult);
+            }
         }
 
         public void BeginRoom(RandomizedRdt rdt)
@@ -176,6 +180,22 @@ namespace IntelOrca.Biohazard.BioRand.RE2
                     enemy.State = 1;
                     enemy.SoundBank = 24;
                     break;
+                case Re2EnemyIds.GEmbryo:
+                    enemy.State = 3;
+                    enemy.SoundBank = 20;
+                    break;
+                case Re2EnemyIds.GAdult:
+                    if (enemy.Type == Re2EnemyIds.GEmbryo)
+                    {
+                        enemy.State = 0;
+                        enemy.SoundBank = 20;
+                    }
+                    else
+                    {
+                        enemy.State = 1;
+                        enemy.SoundBank = 21;
+                    }
+                    break;
             }
         }
 
@@ -253,6 +273,7 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             switch (type)
             {
                 case Re2EnemyIds.Birkin1:
+                case Re2EnemyIds.GAdult:
                     limit = new byte[] { 1 };
                     break;
                 case Re2EnemyIds.ZombieDog:
@@ -274,10 +295,20 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             return limit[index];
         }
 
+        public byte[] GetEnemyDependencies(byte enemyType)
+        {
+            if (enemyType == Re2EnemyIds.GAdult)
+            {
+                return new[] { Re2EnemyIds.GEmbryo };
+            }
+            return new byte[0];
+        }
+
         public SelectableEnemy[] GetSelectableEnemies() => new[]
         {
             new SelectableEnemy("Arms", "LightGray", new[] { Re2EnemyIds.ZombieArms }),
             new SelectableEnemy("Crow", "Black", new[] { Re2EnemyIds.Crow }),
+            new SelectableEnemy("G-Embryo", "DarkOliveGreen", new[] { Re2EnemyIds.GEmbryo }),
             new SelectableEnemy("Spider", "YellowGreen", new[] { Re2EnemyIds.Spider }),
             new SelectableEnemy("Zombie", "LightGray", _zombieTypes),
             new SelectableEnemy("Moth", "DarkOliveGreen", new[] { Re2EnemyIds.GiantMoth }),
@@ -286,6 +317,7 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             new SelectableEnemy("Zombie Dog", "Black", new[] { Re2EnemyIds.ZombieDog }),
             new SelectableEnemy("Tyrant", "DarkGray", new[] { Re2EnemyIds.Tyrant1 }),
             new SelectableEnemy("Birkin", "IndianRed", new[] { Re2EnemyIds.Birkin1 }),
+            new SelectableEnemy("G-Adult", "DarkOliveGreen", new[] { Re2EnemyIds.GAdult }),
         };
 
         public byte GetEnemySapNumber(byte enemyType)

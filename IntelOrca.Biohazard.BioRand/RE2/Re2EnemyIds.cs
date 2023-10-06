@@ -19,8 +19,8 @@
         public const byte LickerGrey = 36;
         public const byte Spider = 37;
         public const byte BabySpider = 38;
-        public const byte BirkinGoo = 39;
-        public const byte BirkinGooChild = 40;
+        public const byte GEmbryo = 39;
+        public const byte GAdult = 40;
         public const byte Cockroach = 41;
         public const byte Tyrant1 = 42;
         public const byte Tyrant2 = 43;

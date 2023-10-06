@@ -222,6 +222,8 @@ namespace IntelOrca.Biohazard.BioRand.RE3
 
         public byte[] GetReservedEnemyIds() => new byte[] { 98, 143, 144 };
 
+        public byte[] GetEnemyDependencies(byte enemyType) => new byte[0];
+
         private static byte GetZombieSoundBank(byte type)
         {
             switch (type)
