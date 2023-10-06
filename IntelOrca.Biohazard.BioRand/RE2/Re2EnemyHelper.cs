@@ -281,7 +281,7 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             new SelectableEnemy("Spider", "YellowGreen", new[] { Re2EnemyIds.Spider }),
             new SelectableEnemy("Zombie", "LightGray", _zombieTypes),
             new SelectableEnemy("Moth", "DarkOliveGreen", new[] { Re2EnemyIds.GiantMoth }),
-            new SelectableEnemy("Ivy", "SpringGreen", new[] { Re2EnemyIds.Ivy }),
+            new SelectableEnemy("Ivy", "SpringGreen", new[] { Re2EnemyIds.Ivy, Re2EnemyIds.IvyPurple }),
             new SelectableEnemy("Licker", "IndianRed", new[] { Re2EnemyIds.LickerRed, Re2EnemyIds.LickerGrey }),
             new SelectableEnemy("Zombie Dog", "Black", new[] { Re2EnemyIds.ZombieDog }),
             new SelectableEnemy("Tyrant", "DarkGray", new[] { Re2EnemyIds.Tyrant1 }),
@@ -319,7 +319,16 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             }
         }
 
-        public byte[] GetRequiredEsps(byte enemyType) => new byte[0];
+        public byte[] GetRequiredEsps(byte enemyType)
+        {
+            if (enemyType == Re2EnemyIds.Spider ||
+                enemyType == Re2EnemyIds.Ivy ||
+                enemyType == Re2EnemyIds.IvyPurple)
+            {
+                return new byte[] { 0x1D };
+            }
+            return new byte[0];
+        }
 
         public byte[] GetReservedEnemyIds() => new byte[0];
 

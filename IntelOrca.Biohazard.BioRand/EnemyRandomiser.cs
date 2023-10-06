@@ -84,12 +84,14 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void GatherEsps()
         {
-            if (_version != BioVersion.Biohazard1)
-                return;
+            // var a = _gameData.GetRdt(RdtId.Parse("201"));
+            // var b = _gameData.GetRdt(RdtId.Parse("302"));
+            // var c = _gameData.GetRdt(RdtId.Parse("405"));
+            // var d = _gameData.GetRdt(RdtId.Parse("407"));
 
             foreach (var rdt in _gameData.Rdts)
             {
-                var embeddedEffects = ((Rdt1)rdt.RdtFile).EmbeddedEffects;
+                var embeddedEffects = rdt.RdtFile.EmbeddedEffects;
                 for (var i = 0; i < embeddedEffects.Count; i++)
                 {
                     var ee = embeddedEffects[i];
@@ -443,12 +445,16 @@ namespace IntelOrca.Biohazard.BioRand
                 }
             }
 
+            if (fixType != null)
+            {
+                AddRequiredEsps(rdt, fixType.Value);
+            }
+
             if (rdt.Version == BioVersion.Biohazard1)
             {
                 if (fixType != null)
                 {
                     FixRE1Sounds(rdt.RdtId, fixType.Value);
-                    AddRequiredEsps(rdt, fixType.Value);
                     if (_config.Player == 0)
                     {
                         g_stickyEnemies.Add(rdt.RdtId, targetEnemy);
@@ -475,7 +481,7 @@ namespace IntelOrca.Biohazard.BioRand
             if (espIds.Length == 0)
                 return;
 
-            var rdtFile = (Rdt1)rdt.RdtFile;
+            var rdtFile = rdt.RdtFile;
             var embeddedEffects = rdtFile.EmbeddedEffects;
             var missingIds = espIds.Except(embeddedEffects.Ids).ToArray();
             if (missingIds.Length == 0)
@@ -489,7 +495,7 @@ namespace IntelOrca.Biohazard.BioRand
             }
 
             var rdtBuilder = rdtFile.ToBuilder();
-            rdtBuilder.EmbeddedEffects = new EmbeddedEffectList(existingEffects.ToArray());
+            rdtBuilder.EmbeddedEffects = new EmbeddedEffectList(rdtFile.Version, existingEffects.ToArray());
             rdt.RdtFile = rdtBuilder.ToRdt();
         }
 
