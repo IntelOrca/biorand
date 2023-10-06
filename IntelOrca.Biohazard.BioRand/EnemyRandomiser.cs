@@ -251,12 +251,18 @@ namespace IntelOrca.Biohazard.BioRand
 
             // Now randomize each populated room's enemies
             var roomRandomized = true;
-            var enemyRatioTotal = _config.EnemyRatios.Sum(x => x);
+            var selectableEnemies = _enemyHelper.GetSelectableEnemies();
+            var enemyRatios = _config.EnemyRatios
+                .Take(selectableEnemies.Length)
+                .ToArray();
+            var enemyRatioTotal = enemyRatios.Sum(x => x);
             if (enemyRatioTotal == 0)
                 throw new BioRandUserException("No enemy ratios set.");
 
-            var enemyRooms = _config.EnemyRatios.Select(x => (x * enemyRdts.Count) / enemyRatioTotal).ToArray();
-            var enemies = _enemyHelper.GetSelectableEnemies()
+            var enemyRooms = enemyRatios
+                .Select(x => (x * enemyRdts.Count) / enemyRatioTotal)
+                .ToArray();
+            var enemies = selectableEnemies
                 .Zip(enemyRooms, (e, q) => (e, q))
                 .Where(x => x.q != 0)
                 .OrderBy(x => x.q)
