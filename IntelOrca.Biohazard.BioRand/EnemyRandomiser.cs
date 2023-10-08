@@ -261,12 +261,18 @@ namespace IntelOrca.Biohazard.BioRand
             if (enemyRatioTotal == 0)
                 throw new BioRandUserException("No enemy ratios set.");
 
-            var enemyRooms = enemyRatios
-                .Select(x => (x * enemyRdts.Count) / enemyRatioTotal)
-                .ToArray();
+            // Pair up enemy and ratio, remove any with zero ratio
             var enemies = selectableEnemies
-                .Zip(enemyRooms, (e, q) => (e, q))
+                .Zip(enemyRatios, (e, q) => (e, q: (int)q))
                 .Where(x => x.q != 0)
+                .ToList();
+
+            // Remove rooms that don't support any of our enemies from the list
+            enemyRdts.RemoveAll(rdt => !enemies.Any(x => RdtSupportsEnemyType(rdt, x.e.Types)));
+
+            // Multply the ratios by the remaining room count
+            enemies = enemies
+                .Select(x => (x.e, q: (x.q * enemyRdts.Count) / enemyRatioTotal))
                 .OrderBy(x => x.q)
                 .ToList();
 
