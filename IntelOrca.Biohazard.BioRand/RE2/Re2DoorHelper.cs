@@ -20,6 +20,8 @@
             Nop(0x408, 0x2974);
             Nop(0x615, 0x2FD8, 0x3562);
 
+            FixDarkRoomLocker(config, gameData);
+
             void Nop(ushort rdtId, int address0, int address1 = -1)
             {
                 var rdt = gameData.GetRdt(RdtId.FromInteger(rdtId));
@@ -39,6 +41,32 @@
 
             rdt.Nop(0x0894);
             rdt.Nop(0x08BA);
+        }
+
+        private void FixDarkRoomLocker(RandoConfig config, GameData gameData)
+        {
+            var rdt = gameData.GetRdt(new RdtId(1, 0x08));
+            if (rdt != null)
+            {
+                if (config.Player == 0)
+                {
+                    // Allow Leon to use Claire's locker and disable outfit change
+                    rdt.Nop(0x14A2, 0x14AA);
+                    rdt.Nop(0x14E6);
+                    rdt.Nop(0x1758, 0x1762);
+                    rdt.Nop(0x178E, 0x1798);
+                    rdt.Nop(0x1940, 0x197E);
+                    rdt.Nop(0x198A, 0x1990);
+                    rdt.Nop(0x1996, 0x19B8);
+                }
+                else
+                {
+                    // Disable outfit change
+                    rdt.Nop(0x1948, 0x1986);
+                    rdt.Nop(0x1992, 0x1998);
+                    rdt.Nop(0x199E, 0x19C0);
+                }
+            }
         }
     }
 }

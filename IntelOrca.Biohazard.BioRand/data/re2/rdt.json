@@ -100,7 +100,7 @@
         },
         {
           "id": 31,
-          "type": 0
+          "priority": "low"
         }
       ]
     },
@@ -1106,7 +1106,9 @@
         },
         {
           "id": 12,
-          "type": 0
+          "requires": [ 83 ],
+          "type": 13,
+          "quantity": 6
         },
         {
           "id": 13,
