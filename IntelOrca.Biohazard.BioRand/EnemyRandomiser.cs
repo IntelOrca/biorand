@@ -84,11 +84,6 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void GatherEsps()
         {
-            // var a = _gameData.GetRdt(RdtId.Parse("201"));
-            // var b = _gameData.GetRdt(RdtId.Parse("302"));
-            // var c = _gameData.GetRdt(RdtId.Parse("405"));
-            // var d = _gameData.GetRdt(RdtId.Parse("407"));
-
             foreach (var rdt in _gameData.Rdts)
             {
                 var embeddedEffects = rdt.RdtFile.EmbeddedEffects;

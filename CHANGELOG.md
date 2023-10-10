@@ -1,3 +1,44 @@
+BioRand v3.1.4 (2023-10-10)
+
+* [Feature] Add new slider for % of rooms with enemies.
+* [Feature] RE 1, add many more playable character.
+* [Feature] RE 1, show warning if bio1dc is found.
+* [Feature] RE 1, Add Orca (Neptune skin).
+* [Feature] RE 1, Add piano melodies from RE 0, and RE:CV.
+* [Feature] RE 2, add G-adult, and G-embryo.
+* [Feature] RE 2, add room 408, 409 pair to door randomizer.
+* [Feature] RE 2, enable spider and ivy poison in every room.
+* [Feature] RE 2, guest registration now required to open door.
+* [Feature] RE 2, room 208, enable special key locker.
+* [Change] RE 1, improve enemy balancing.
+* [Change] Improve random enemy proportions.
+* [Change] Disable title screen demos that auto-play if idle.
+* [Fix] #566: RE 1, Yawn poison can not be healed with blue herb.
+* [Fix] #574: RE 2, room 21B, Irons might not have a gun.
+* [Fix] #575: RE 1, room 406, crash due to enemy in cutscene.
+* [Fix] #577: RE 1, room 40A, small key not placed for desk.
+* [Fix] #579: RE 1, room 20E, crash when enemy is Neptune.
+* [Fix] #580: RE 3, Wesker (RE1R) + shotgun causes crash in some rooms.
+* [Fix] #583: RE 1, room 306, crash during cutscene due to baby spiders.
+* [Fix] #584, #588: scripted enemy IDs not unique.
+* [Fix] #585: RE 1, room 61A, enemies can attack you during radio cutscene.
+* [Fix] #586: RE 1, room 60F bar, enemies during cutscene.
+* [Fix] #587: RE 3, room 20C, Nikolai might not have a gun.
+* [Fix] #593: RE 1, room 205, crash due to snake bite in cutscene.
+* [Fix] #598: RE 3, room 315, crash due to enemy change.
+* [Fix] #599: RE 1, room 50C, Rebecca NPC has incorrect voice.
+* [Fix] #603: RE 3, room 218, killing dogs can crash the game.
+* [Fix] #611: RE 3, room 205, NPC EM67 crashes the game.
+* [Fix] RE 1, battery is not placed in lab segment.
+* [Fix] RE 1, issues with Chris 8-slot stacking.
+* [Fix] RE 1, room 306, typo in exclude name.
+* [Fix] RE 1, room 307, crash due to snake bit during cutscene.
+* [Fix] RE 1, room 30F, crash due to snake bit during cutscene.
+* [Fix] RE 2, incorrect enemy ratios.
+* [Fix] RE 3, incorrect enemy ratios.
+* [Fix] RE 3, room 205, crash due to Marvin 2 NPC.
+* [Fix] RE 3, room 300, enemy spawns during cutscene.
+
 BioRand v3.1.3 (2023-09-07)
 
 * [Feature] RE 1, add Carlos, Irons, Marvin, Nikolai, and Wesker (RE 5) as playable characters.
