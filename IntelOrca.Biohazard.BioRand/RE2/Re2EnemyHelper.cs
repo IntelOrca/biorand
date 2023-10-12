@@ -87,11 +87,13 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             {
                 case Re2EnemyIds.Crow:
                 case Re2EnemyIds.Spider:
+                case Re2EnemyIds.BabySpider:
                 case Re2EnemyIds.GiantMoth:
                 case Re2EnemyIds.LickerRed:
                 case Re2EnemyIds.LickerGrey:
                 case Re2EnemyIds.ZombieDog:
                 case Re2EnemyIds.Ivy:
+                case Re2EnemyIds.Vines:
                 case Re2EnemyIds.IvyPurple:
                 case Re2EnemyIds.ZombieBrad:
                     return true;

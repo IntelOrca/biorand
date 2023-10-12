@@ -245,7 +245,7 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 34, 36, 42, 45, 46, 57, 58 ],
+          "excludeTypes": [ 34, 36, 40, 42, 45, 46, 57, 58 ],
           "keepAi": true,
           "y": 0
         }
@@ -361,6 +361,11 @@
           "id": 12,
           "priority": "low"
         }
+      ],
+      "enemies": [
+        {
+          "nop": [ "0x191A" ]
+        }
       ]
     },
     "10D": {
@@ -388,10 +393,12 @@
       ],
       "enemies": [
         {
+          "nop": [ "0x838" ],
           "scenario": 0,
           "player": 0
         },
         {
+          "nop": [ "0x830" ],
           "player": 1
         }
       ]
@@ -665,10 +672,12 @@
       ],
       "enemies": [
         {
+          "excludeTypes": [ 40 ],
           "player": 0,
           "scenario": 1
         },
         {
+          "excludeTypes": [ 40 ],
           "player": 1,
           "scenario": 0
         }
@@ -712,6 +721,7 @@
           "player": 0
         },
         {
+          "nop": [ "0x0D76" ],
           "scenario": 0,
           "player": 1
         }
@@ -980,7 +990,7 @@
       "enemies": [
         {
           "excludeOffsets": [ 6836, 7422, 7490 ],
-          "excludeTypes": [ 34, 36, 42, 47, 57, 58 ],
+          "excludeTypes": [ 34, 36, 40, 42, 47, 57, 58 ],
           "keepPositions": true,
           "randomPlacements": false,
           "scenario": 0
@@ -988,11 +998,13 @@
         {
           "nop": [ "0x1CEA" ],
           "excludeOffsets": [ 6836 ],
+          "excludeTypes": [ 40 ],
           "randomPlacements": true,
           "scenario": 0
         },
         {
           "excludeOffsets": [ 6836 ],
+          "excludeTypes": [ 40 ],
           "scenario": 1
         }
       ]
@@ -1012,7 +1024,7 @@
       "enemies": [
         {
           "nop": [ "0x1940-0x1C09", "0x1CBA-0x1D35" ],
-          "excludeTypes": [ 42, 46, 57, 58 ],
+          "excludeTypes": [ 40, 42, 46, 57, 58 ],
           "randomPlacements": true
         }
       ]
@@ -1180,7 +1192,7 @@
       "enemies": [
         {
           "excludeOffsets": [ 12368 ],
-          "excludeTypes": [ 58 ],
+          "excludeTypes": [ 40, 58 ],
           "maxDifficulty":  2
         }
       ],
@@ -1231,7 +1243,14 @@
       ],
       "enemies": [
         {
-          "maxDifficulty":  1
+          "nop": [ "0x1CA8" ],
+          "maxDifficulty": 1,
+          "scenario": 0
+        },
+        {
+          "excludeTypes": [ 40 ],
+          "maxDifficulty": 1,
+          "scenario": 1
         }
       ]
     },
@@ -1257,6 +1276,7 @@
       ],
       "enemies": [
         {
+          "nop": [ "0x1262", "0x127C" ],
           "scenario": 0
         }
       ]
@@ -1686,6 +1706,7 @@
       ],
       "enemies": [
         {
+          "excludeTypes": [ 40 ],
           "player": 1
         }
       ],
@@ -3440,7 +3461,7 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 58 ],
+          "excludeTypes": [ 40, 58 ],
           "player": 0
         }
       ]
@@ -3617,6 +3638,11 @@
         {
           "id": 1,
           "requires": [ 77 ]
+        }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 40 ]
         }
       ]
     },
