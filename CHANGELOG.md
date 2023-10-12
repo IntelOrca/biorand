@@ -1,3 +1,7 @@
+BioRand v3.1.5 (2023-10-13)
+
+* [Fix] RE 2, some rooms crash when G-Adult is present.
+
 BioRand v3.1.4 (2023-10-10)
 
 * [Feature] Add new slider for % of rooms with enemies.
