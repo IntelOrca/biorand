@@ -2673,6 +2673,12 @@
     "609": {
       "enemies": [
         {
+          "nop": [ "0x1CB8E-0x1CBC0" ],
+          "excludeTypes": [ 4, 12 ],
+          "maxDifficulty": 0
+        },
+        {
+          "nop": [ "0x1CB52-0x1CB84" ],
           "excludeTypes": [ 4, 12 ],
           "maxDifficulty": 0
         }
