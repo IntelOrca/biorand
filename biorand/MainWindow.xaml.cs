@@ -613,6 +613,10 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 _config.Scenario = 0;
             }
+            if (_config.Game == 3)
+            {
+                _config.SwapCharacters = false;
+            }
 
             UpdateUi();
             txtSeed.Text = _config.ToString();
