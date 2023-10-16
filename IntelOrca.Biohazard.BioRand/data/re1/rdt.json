@@ -1420,11 +1420,6 @@
         {
           "excludeTypes": [ 4 ],
           "player": 0
-        },
-        {
-          "condition": "!(1:72 && 3:75)",
-          "excludeTypes": [ 4 ],
-          "player": 1
         }
       ]
     },
