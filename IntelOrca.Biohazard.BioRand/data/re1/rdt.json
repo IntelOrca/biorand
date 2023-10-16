@@ -1598,7 +1598,7 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 3, 4, 10 ]
+          "excludeTypes": [ 3, 4, 7, 10 ]
         }
       ]
     },
