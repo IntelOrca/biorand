@@ -3552,13 +3552,13 @@
     "60C": {
       "doorRando": [
         {
-          "nop": [ 5894, "0x1396-0x14A6", "0x14BC-0x15BA" ],
+          "nop": [ "0x102C", "0x1706", "0x1396-0x14A6", "0x14BC-0x15BA", "0x17FC-0x1806" ],
           "cutscene": true,
           "player": 0,
           "scenario": 0
         },
         {
-          "nop": [ 5894, "0x1396-0x14A6", "0x14BC-0x15BA" ],
+          "nop": [ "0x102C", "0x1706", "0x1396-0x14A6", "0x14BC-0x15BA", "0x17FC-0x1806" ],
           "player": 0,
           "scenario": 1
         },
