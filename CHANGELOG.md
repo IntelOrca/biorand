@@ -1,3 +1,20 @@
+BioRand v3.1.6 (2023-10-18)
+
+* [Fix] #541: RE 3, Sheva model is glitched in HD.
+* [Fix] #563: RE 3, Murphy model is glitched in HD.
+* [Fix] #610: RE 3, room 10D, crash when playing as Regina.
+* [Fix] #615: RE 3, swap player character can be enabled via pasting a seed.
+* [Fix] #617: RE 3, room 30F, crash due to random enemies.
+* [Fix] #619: RE 3, room 504, crash in middle of cutscene.
+* [Fix] #620: RE 1, room 30F, crash due to wasp attack during cutscene.
+* [Fix] #621: RE 2, room 409, unable to use valve handle.
+* [Fix] #622: RE 3, Claire model is glitched in HD.
+* [Fix] #623: RE 3, room 508, crash due to EM67.
+* [Fix] #626: RE 2, room 60C, door not randomized.
+* [Fix] RE 1, room 308, enemies in Jill cutscene.
+* [Fix] RE 1, room 609, crash due to hunter ambush.
+* [Fix] RE 2, room 60A, vines replaced with zombies.
+
 BioRand v3.1.5 (2023-10-13)
 
 * [Fix] RE 2, some rooms crash when G-Adult is present.
