@@ -220,7 +220,7 @@ namespace IntelOrca.Biohazard.BioRand.RE3
             return _zombieTypes.Contains(type);
         }
 
-        public byte[] GetReservedEnemyIds() => new byte[] { 98, 143, 144 };
+        public byte[] GetReservedEnemyIds() => new byte[] { 55, 56, 57, 58, 98, 143, 144 };
 
         public byte[] GetEnemyDependencies(byte enemyType) => new byte[0];
 
