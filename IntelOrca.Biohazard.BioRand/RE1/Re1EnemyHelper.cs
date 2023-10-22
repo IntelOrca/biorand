@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
@@ -9,6 +10,9 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 {
     internal class Re1EnemyHelper : IEnemyHelper
     {
+        private readonly Dictionary<RdtId, byte> _rdtEnemies = new Dictionary<RdtId, byte>();
+        private RdtId _currentRdtId;
+
         private static readonly byte[] _zombieTypes = new byte[]
         {
             Re1EnemyIds.Zombie,
@@ -64,10 +68,13 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 
         public void BeginRoom(RandomizedRdt rdt)
         {
+            _currentRdtId = rdt.RdtId;
         }
 
         public void SetEnemy(RandoConfig config, Rng rng, SceEmSetOpcode enemy, MapRoomEnemies enemySpec, byte enemyType)
         {
+            _rdtEnemies[_currentRdtId] = enemyType;
+
             var originalState = enemy.State;
             switch (enemyType)
             {
@@ -280,6 +287,15 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 
             Directory.CreateDirectory(Path.GetDirectoryName(dstPath));
             srcEmd.Save(dstPath);
+        }
+
+        public byte? GetEnemyInRdt(RdtId id)
+        {
+            if (_rdtEnemies.TryGetValue(id, out var result))
+            {
+                return result;
+            }
+            return null;
         }
     }
 }

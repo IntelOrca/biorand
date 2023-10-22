@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.BioRand.RE1
@@ -33,23 +34,37 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 
         public void End(RandoConfig config, GameData gameData, Map map)
         {
-            if (!config.RandomDoors)
-                return;
-
-            // Revert the door ID changes we made in begin
-            // It probably isn't necessary that we do this, but it seems neater
-            foreach (var rdt in gameData.Rdts)
+            if (config.RandomDoors)
             {
-                if (!ShouldFixRE1Rdt(config, map, rdt.RdtId))
-                    continue;
-
-                foreach (var door in rdt.Doors)
+                // Revert the door ID changes we made in begin
+                // It probably isn't necessary that we do this, but it seems neater
+                foreach (var rdt in gameData.Rdts)
                 {
-                    var target = door.Target;
-                    if (target.Stage == rdt.RdtId.Stage)
+                    if (!ShouldFixRE1Rdt(config, map, rdt.RdtId))
+                        continue;
+
+                    foreach (var door in rdt.Doors)
                     {
-                        target = new RdtId(255, target.Room);
-                        door.Target = target;
+                        var target = door.Target;
+                        if (target.Stage == rdt.RdtId.Stage)
+                        {
+                            target = new RdtId(255, target.Room);
+                            door.Target = target;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                var rdt104 = gameData.GetRdt(new RdtId(0, 0x04));
+                if (rdt104 != null)
+                {
+                    var door = rdt104.Doors.FirstOrDefault(x => x.Id == 2);
+                    if (door != null)
+                    {
+                        door.NextX = 12700;
+                        door.NextY = -7200;
+                        door.NextZ = 3300;
                     }
                 }
             }

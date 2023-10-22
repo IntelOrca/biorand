@@ -28,7 +28,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         protected abstract string GetDataPath(string installPath);
         protected abstract RdtId[] GetRdtIds(string dataPath);
-        protected abstract string GetRdtPath(string dataPath, RdtId rdtId, int player);
+        protected abstract string GetRdtPath(string dataPath, RdtId rdtId, int player, bool mod);
 
         public BaseRandomiser(IBgCreator? bgCreator)
         {
@@ -126,7 +126,7 @@ namespace IntelOrca.Biohazard.BioRand
             var result = new Dictionary<RdtId, ulong>();
             foreach (var rdtId in rdtIds)
             {
-                var rdtPath = GetRdtPath(dataPath, rdtId, player);
+                var rdtPath = GetRdtPath(dataPath, rdtId, player, false);
                 try
                 {
                     if (fileRepo.Exists(rdtPath))
@@ -146,13 +146,13 @@ namespace IntelOrca.Biohazard.BioRand
             var rdts = new List<RandomizedRdt>();
             foreach (var rdtId in rdtIds)
             {
-                var rdtPath = GetRdtPath(fileRepository.DataPath, rdtId, player);
-                var modRdtPath = GetRdtPath(fileRepository.ModPath, rdtId, player);
+                var rdtPath = GetRdtPath(fileRepository.DataPath, rdtId, player, false);
+                var modRdtPath = GetRdtPath(fileRepository.ModPath, rdtId, player, true);
                 try
                 {
                     var srcPath = mod ? modRdtPath : rdtPath;
                     var rdtBytes = fileRepository.GetBytes(srcPath);
-                    var rdt = GameDataReader.ReadRdt(BiohazardVersion, rdtBytes, srcPath, modRdtPath);
+                    var rdt = GameDataReader.ReadRdt(BiohazardVersion, rdtId, rdtBytes, srcPath, modRdtPath);
                     rdts.Add(rdt);
                 }
                 catch
@@ -318,7 +318,7 @@ namespace IntelOrca.Biohazard.BioRand
                 {
                     using (progress.BeginTask(config.Player, "Randomizing enemies"))
                     {
-                        var enemyRandomiser = new EnemyRandomiser(BiohazardVersion, logger, config, gameData, map, randomEnemies, EnemyHelper, fileRepository.ModPath, DataManager);
+                        var enemyRandomiser = new EnemyRandomiser(BiohazardVersion, logger, config, gameData, map, randomEnemies, EnemyHelper, DataManager);
                         enemyRandomiser.Randomise(graph);
                     }
                 }

@@ -85,7 +85,7 @@ namespace IntelOrca.Biohazard.BioRand.RE2
                 .ToArray();
         }
 
-        protected override string GetRdtPath(string dataPath, RdtId rdtId, int player)
+        protected override string GetRdtPath(string dataPath, RdtId rdtId, int player, bool mod)
         {
             var path = Path.Combine(dataPath, @$"Pl{player}\Rdt\ROOM{rdtId}{player}.RDT");
             return path;

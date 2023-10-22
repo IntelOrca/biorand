@@ -564,6 +564,9 @@
         }
       ]
     },
+    "110": {
+      "enemies": []
+    },
     "111": {
       "linkedRoom": "611",
       "doors": [
@@ -731,6 +734,14 @@
           "excludeTypes": [ 4, 12 ],
           "maxDifficulty": 0,
           "restricted": true
+        }
+      ]
+    },
+    "119": {
+      "enemies": [
+        {
+          "excludeTypes": [ 4, 12 ],
+          "maxDifficulty": 0
         }
       ]
     },
@@ -1059,6 +1070,20 @@
         }
       ]
     },
+    "20C": {
+      "enemies": [
+        {
+          "keepState": true,
+          "includeTypes": [ 11, 12, 18 ],
+          "ignoreRatio": true
+        }
+      ],
+      "npcs": [
+        {
+          "player": 1
+        }
+      ]
+    },
     "20D": {
       "doorRando": [
         {
@@ -1195,6 +1220,85 @@
           "includeOffsets": [ 149348 ],
           "excludeTypes": [ 39 ],
           "player": 1
+        }
+      ]
+    },
+    "213": {
+      "enemies": [
+        {
+          "excludeTypes": [ 4 ]
+        }
+      ]
+    },
+    "214": {
+      "enemies": [
+        {
+          "excludeTypes": [ 4 ]
+        }
+      ]
+    },
+    "215": {
+      "enemies": [
+        {
+          "excludeTypes": [ 4 ],
+          "maxDifficulty": 0
+        }
+      ]
+    },
+    "216": {
+      "enemies": [
+        {
+          "excludeTypes": [ 4 ]
+        }
+      ]
+    },
+    "217": {
+      "enemies": [
+        {
+          "excludeTypes": [ 4 ]
+        }
+      ]
+    },
+    "218": {
+      "enemies": [
+        {
+          "excludeTypes": [ 4 ],
+          "maxDifficulty": 1
+        }
+      ]
+    },
+    "219": {
+      "enemies": [
+        {
+          "excludeTypes": [ 4 ],
+          "maxDifficulty": 0
+        }
+      ]
+    },
+    "21A": {
+      "enemies": [
+        {
+          "excludeTypes": [ 4 ]
+        }
+      ]
+    },
+    "21B": {
+      "enemies": [
+        {
+          "excludeTypes": [ 4 ]
+        }
+      ]
+    },
+    "21C": {
+      "enemies": [
+        {
+          "excludeTypes": [ 4 ],
+          "randomPlacements": false
+        },
+        {
+          "excludeTypes": [ 4 ],
+          "keepPositions": true,
+          "randomPlacements": true
         }
       ]
     },
@@ -2729,6 +2833,7 @@
       ]
     },
     "610": {
+      "linkedRoom": "110",
       "doors": [
         {
           "target": "104",
@@ -2792,6 +2897,7 @@
       ]
     },
     "619": {
+      "linkedRoom": "119",
       "doors": [
         {
           "target": "10A",
@@ -2829,6 +2935,7 @@
       ]
     },
     "700": {
+      "linkedRoom": "200",
       "doorRando": [
         {
           "category": "exclude"
@@ -2928,6 +3035,7 @@
       ]
     },
     "70C": {
+      "linkedRoom": "20C",
       "doorRando": [
         {
           "category": "bridge"
@@ -2963,6 +3071,7 @@
       ],
       "npcs": [
         {
+          "use": "20C;0x96BC",
           "player": 1
         }
       ]
@@ -3011,6 +3120,7 @@
       "enemies": []
     },
     "713": {
+      "linkedRoom": "213",
       "doors": [
         {
           "target": "700"
@@ -3032,6 +3142,7 @@
       ]
     },
     "714": {
+      "linkedRoom": "214",
       "doors": [
         // {
         //   "target": "201"
@@ -3047,6 +3158,7 @@
       ]
     },
     "715": {
+      "linkedRoom": "215",
       "doors": [
         {
           "target": "201",
@@ -3067,6 +3179,7 @@
       ]
     },
     "716": {
+      "linkedRoom": "216",
       "doors": [
         {
           "target": "713"
@@ -3093,6 +3206,7 @@
       ]
     },
     "717": {
+      "linkedRoom": "217",
       "doors": [
         {
           "target": "716"
@@ -3105,6 +3219,7 @@
       ]
     },
     "718": {
+      "linkedRoom": "218",
       "doors": [
         {
           "target": "716"
@@ -3118,6 +3233,7 @@
       ]
     },
     "719": {
+      "linkedRoom": "219",
       "doors": [
         {
           "target": "713"
@@ -3131,6 +3247,7 @@
       ]
     },
     "71A": {
+      "linkedRoom": "21A",
       "doors": [
         {
           "target": "70C",
@@ -3147,6 +3264,7 @@
       ]
     },
     "71B": {
+      "linkedRoom": "21B",
       "doors": [
         {
           "target": "71A"
@@ -3162,6 +3280,7 @@
       ]
     },
     "71C": {
+      "linkedRoom": "21C",
       "doors": [
         {
           "target": "700"

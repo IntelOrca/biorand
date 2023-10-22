@@ -112,27 +112,33 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             return rdtIds
                 .OrderBy(x => x.Stage)
                 .ThenBy(x => x.Room)
-                .Except(new[] {
-                    new RdtId(0, 0x10),
-                    new RdtId(0, 0x19),
-                    new RdtId(1, 0x00),
-                    new RdtId(1, 0x0C),
-                    new RdtId(1, 0x13),
-                    new RdtId(1, 0x14),
-                    new RdtId(1, 0x15),
-                    new RdtId(1, 0x16),
-                    new RdtId(1, 0x17),
-                    new RdtId(1, 0x18),
-                    new RdtId(1, 0x19),
-                    new RdtId(1, 0x1A),
-                    new RdtId(1, 0x1B),
-                    new RdtId(1, 0x1C)
-                })
                 .ToArray();
         }
 
-        protected override string GetRdtPath(string dataPath, RdtId rdtId, int player)
+        internal static RdtId[] MissingRooms { get; } = new[]
         {
+            new RdtId(0, 0x10),
+            new RdtId(0, 0x19),
+            new RdtId(1, 0x00),
+            new RdtId(1, 0x0C),
+            new RdtId(1, 0x13),
+            new RdtId(1, 0x14),
+            new RdtId(1, 0x15),
+            new RdtId(1, 0x16),
+            new RdtId(1, 0x17),
+            new RdtId(1, 0x18),
+            new RdtId(1, 0x19),
+            new RdtId(1, 0x1A),
+            new RdtId(1, 0x1B),
+            new RdtId(1, 0x1C)
+        };
+
+        protected override string GetRdtPath(string dataPath, RdtId rdtId, int player, bool mod)
+        {
+            if (!mod && MissingRooms.Contains(rdtId))
+            {
+                rdtId = new RdtId(rdtId.Stage + 5, rdtId.Room);
+            }
             var path = Path.Combine(dataPath, @$"STAGE{rdtId.Stage + 1}\ROOM{rdtId}{player}.RDT");
             return path;
         }
@@ -169,6 +175,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 () => GenerateRdts(config.WithPlayerScenario(0, 0), progress, fileRepository),
                 () => GenerateRdts(config.WithPlayerScenario(1, 0), progress, fileRepository));
 
+            FixRoomSounds(fileRepository);
             DisableDemo();
             FixFlamethrowerCombine();
             FixWasteHeal();
@@ -681,6 +688,106 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 emdFile.SetEmr(0, emdFile.GetEmr(0).Scale(scale));
                 emdFile.Save(newEmdPath);
             }
+        }
+
+        private void FixRoomSounds(FileRepository fileRepository)
+        {
+            var xml = DataManager.GetText(BiohazardVersion, "sounds.xml");
+            var doc = new XmlDocument();
+            doc.LoadXml(xml);
+
+            var roomNodes = doc.SelectNodes("Rooms/Room");
+            foreach (XmlNode roomNode in roomNodes)
+            {
+                var idAttribute = roomNode.Attributes["id"];
+                if (idAttribute == null)
+                    continue;
+
+                if (!RdtId.TryParse(idAttribute.Value, out var roomId))
+                    continue;
+
+                var enemyType = ((Re1EnemyHelper)EnemyHelper).GetEnemyInRdt(roomId);
+                FixRoomSounds(fileRepository, roomId, enemyType, roomNode);
+            }
+        }
+
+        private void FixRoomSounds(FileRepository fileRepository, RdtId rdtId, byte? enemyType, XmlNode roomNode)
+        {
+            var xmlPath = fileRepository.GetModPath($"tables/room_{rdtId}.xml");
+            if (enemyType != null)
+            {
+                var template = GetTemplateXml(enemyType.Value);
+                var entryNodes = roomNode.SelectNodes("Sound/Entry");
+                for (int i = 0; i < 16; i++)
+                {
+                    entryNodes[i].InnerText = template[i] ?? "";
+                }
+            }
+
+            var xml = roomNode.InnerXml;
+            Directory.CreateDirectory(Path.GetDirectoryName(xmlPath));
+            File.WriteAllText(xmlPath, xml);
+        }
+
+        private string[] GetTemplateXml(byte enemyType)
+        {
+            string[]? result = null;
+            switch (enemyType)
+            {
+                case Re1EnemyIds.Zombie:
+                    result = new[] { "z_taore", "z_ftL", "z_ftR", "z_kamu", "z_k02", "z_k01", "z_head", "z_haki", "z_sanj", "z_k03" };
+                    break;
+                case Re1EnemyIds.ZombieNaked:
+                    result = new[] { "z_taore", "zep_ftL", "z_ftR", "ze_kamu", "z_nisi2", "z_nisi1", "ze_head", "ze_haki", "ze_sanj", "z_nisi3", "FL_walk", "FL_jump", "steam_b", "FL_ceil", "FL_fall", "FL_slash" };
+                    break;
+                case Re1EnemyIds.Cerberus:
+                    result = new[] { "cer_foot", "cer_taoA", "cer_unar", "cer_bite", "cer_cryA", "cer_taoB", "cer_jkMX", "cer_kamu", "cer_cryB", "cer_runMX" };
+                    break;
+                case Re1EnemyIds.WebSpinner:
+                    result = new[] { "kuasi_A", "kuasi_B", "kuasi_C", "sp_rakk", "sp_atck", "sp_bomb", "sp_fumu", "sp_Doku", "sp_sanj2" };
+                    break;
+                case Re1EnemyIds.BlackTiger:
+                    result = new[] { "kuasi_A", "kuasi_B", "kuasi_C", "sp_rakk", "sp_atck", "sp_bomb", "sp_fumu", "sp_Doku", "poison" };
+                    break;
+                case Re1EnemyIds.Crow:
+                    result = new[] { "RVcar1", "RVpat", "RVcar2", "RVwing1", "RVwing2", "RVfryed" };
+                    break;
+                case Re1EnemyIds.Hunter:
+                    result = new[] { "HU_walkA", "HU_walkB", "HU_jump", "HU_att", "HU_land", "HU_smash", "HU_dam", "HU_Nout" };
+                    break;
+                case Re1EnemyIds.Wasp:
+                    result = new[] { "bee4_ed", "hatinage", "bee_fumu" };
+                    break;
+                case Re1EnemyIds.Plant42:
+                    break;
+                case Re1EnemyIds.Chimera:
+                    result = new[] { "FL_walk", "FL_jump", "steam_b", "FL_ceil", "FL_fall", "FL_slash", "FL_att", "FL_dam", "FL_out" };
+                    break;
+                case Re1EnemyIds.Snake:
+                    result = new[] { "PY_mena", "PY_hit2", "PY_fall" };
+                    break;
+                case Re1EnemyIds.Neptune:
+                    result = new[] { "nep_attB", "nep_attA", "nep_nomu", "nep_tura", "nep_twis", "nep_jump" };
+                    break;
+                case Re1EnemyIds.Tyrant1:
+                    result = new[] { "TY_foot", "TY_kaze", "TY_slice", "TY_HIT", "TY_trust", "", "TY_taore", "TY_nage" };
+                    break;
+                case Re1EnemyIds.Yawn1:
+                    break;
+                case Re1EnemyIds.Plant42Roots:
+                    break;
+                case Re1EnemyIds.Plant42Vines:
+                    break;
+                case Re1EnemyIds.Tyrant2:
+                    break;
+                case Re1EnemyIds.ZombieResearcher:
+                    result = new[] { "z_taore", "z_ftL", "z_ftR", "z_kamu", "z_mika02", "z_mika01", "z_head", "z_Hkick", "z_Ugoron", "z_mika03" };
+                    break;
+                case Re1EnemyIds.Yawn2:
+                    break;
+            }
+            Array.Resize(ref result, 16);
+            return result;
         }
 
         private void DisableDemo()

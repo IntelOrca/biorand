@@ -46,12 +46,10 @@ namespace IntelOrca.Biohazard.BioRand
             return map;
         }
 
-        public static RandomizedRdt ReadRdt(BioVersion version, byte[] data, string path, string? modPath)
+        public static RandomizedRdt ReadRdt(BioVersion version, RdtId rdtId, byte[] data, string path, string? modPath)
         {
             var rdtFile = Rdt.FromData(version, data);
-            var rdt = Path.GetFileName(path).StartsWith("ROOM", System.StringComparison.OrdinalIgnoreCase) ?
-                new RandomizedRdt(rdtFile, RdtId.Parse(Path.GetFileNameWithoutExtension(path).Substring(4, 3))) :
-                new RandomizedRdt(rdtFile, RdtId.Parse(Path.GetFileNameWithoutExtension(path).Substring(1, 3)));
+            var rdt = new RandomizedRdt(rdtFile, rdtId);
 
             rdt.OriginalPath = path;
             rdt.ModifiedPath = modPath;

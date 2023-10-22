@@ -917,6 +917,7 @@
       <Entry></Entry>
       <!-- block 2 -->
       <Entry></Entry>
+      <Entry>key_indr</Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
@@ -925,11 +926,10 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>ft_wdA</Entry>
+      <Entry>ft_wdB</Entry>
+      <Entry>taore_wd</Entry>
+      <Entry>ft_stwd</Entry>
       <Entry></Entry>
       <Entry></Entry>
     </Sound>
@@ -1401,7 +1401,7 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
-      <Entry></Entry>
+      <Entry>sw_btn</Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
@@ -1415,18 +1415,18 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
+      <Entry>drw_opwd</Entry>
+      <Entry>drw_shwd</Entry>
+      <Entry>key_desk</Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>ft_cpA</Entry>
+      <Entry>ft_cpB</Entry>
+      <Entry>taore_cp</Entry>
+      <Entry>ft_wdA</Entry>
+      <Entry>ft_wdB</Entry>
+      <Entry>taore_wd</Entry>
     </Sound>
   </Room>
   <Room id="11A">
@@ -1644,9 +1644,9 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>ft_wdA</Entry>
+      <Entry>ft_wdB</Entry>
+      <Entry>taore_wd</Entry>
     </Sound>
   </Room>
   <Room id="201">
@@ -2257,14 +2257,14 @@
   <Room id="20C">
     <Sound>
       <!-- enemy -->
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>GV_move</Entry>
+      <Entry>GV_dino</Entry>
+      <Entry>GV_p_at</Entry>
+      <Entry>GV_swing</Entry>
+      <Entry>GV_bite</Entry>
+      <Entry>GV_blood</Entry>
+      <Entry>GV_gulpA</Entry>
+      <Entry>GV_gulpB</Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
@@ -2281,9 +2281,9 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>ch_nom</Entry>
+      <Entry>ji_nom</Entry>
+      <Entry>GV_hakai</Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
@@ -2294,19 +2294,19 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
+      <Entry>ft_lad</Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>ft_linA</Entry>
+      <Entry>ft_linB</Entry>
+      <Entry>taore_st</Entry>
+      <Entry>ft_caveA</Entry>
+      <Entry>ft_caveB</Entry>
+      <Entry>taore_ca</Entry>
     </Sound>
   </Room>
   <Room id="20D">
@@ -2642,16 +2642,16 @@
   <Room id="213">
     <Sound>
       <!-- enemy -->
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>z_taore</Entry>
+      <Entry>z_ftL</Entry>
+      <Entry>z_ftR</Entry>
+      <Entry>z_kamu</Entry>
+      <Entry>z_osou</Entry>
+      <Entry>z_unaruA</Entry>
+      <Entry>z_head</Entry>
+      <Entry>z_Hkick</Entry>
+      <Entry>z_Ugoron</Entry>
+      <Entry>z_unaruB</Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
@@ -2689,24 +2689,24 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>ft_wdA</Entry>
+      <Entry>ft_wdB</Entry>
+      <Entry>taore_wd</Entry>
     </Sound>
   </Room>
   <Room id="214">
     <Sound>
       <!-- enemy -->
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>z_taore</Entry>
+      <Entry>z_ftL</Entry>
+      <Entry>z_ftR</Entry>
+      <Entry>z_kamu</Entry>
+      <Entry>z_isi301</Entry>
+      <Entry>z_isi302</Entry>
+      <Entry>z_head</Entry>
+      <Entry>z_Hkick</Entry>
+      <Entry>z_Ugoron</Entry>
+      <Entry>z_isi303</Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
@@ -2718,7 +2718,7 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
-      <Entry></Entry>
+      <Entry>D_gacha</Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
@@ -2744,9 +2744,9 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>ft_linA</Entry>
+      <Entry>ft_linB</Entry>
+      <Entry>taore_st</Entry>
     </Sound>
   </Room>
   <Room id="215">
@@ -2807,16 +2807,16 @@
   <Room id="216">
     <Sound>
       <!-- enemy -->
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>z_taore</Entry>
+      <Entry>z_ftL</Entry>
+      <Entry>z_ftR</Entry>
+      <Entry>z_kamu</Entry>
+      <Entry>z_osou</Entry>
+      <Entry>z_unaruA</Entry>
+      <Entry>z_head</Entry>
+      <Entry>z_Hkick</Entry>
+      <Entry>z_Ugoron</Entry>
+      <Entry>z_unaruB</Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
@@ -2830,7 +2830,7 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
-      <Entry></Entry>
+      <Entry>mv_cp</Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
@@ -2845,18 +2845,18 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
+      <Entry>drw_opwd</Entry>
+      <Entry>drw_shwd</Entry>
+      <Entry>key_desk</Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>ft_linA</Entry>
+      <Entry>ft_linB</Entry>
+      <Entry>taore_st</Entry>
     </Sound>
   </Room>
   <Room id="217">
@@ -2885,9 +2885,9 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>mv_stn</Entry>
+      <Entry>panel02</Entry>
+      <Entry>slide_b2</Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
@@ -2909,9 +2909,9 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>ft_linA</Entry>
+      <Entry>ft_linB</Entry>
+      <Entry>taore_st</Entry>
     </Sound>
   </Room>
   <Room id="218">
@@ -2964,9 +2964,9 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>ft_linA</Entry>
+      <Entry>ft_linB</Entry>
+      <Entry>taore_st</Entry>
     </Sound>
   </Room>
   <Room id="219">
@@ -3019,35 +3019,35 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>ft_floA</Entry>
+      <Entry>ft_floB</Entry>
+      <Entry>taore_wd</Entry>
     </Sound>
   </Room>
   <Room id="21A">
     <Sound>
       <!-- enemy -->
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>z_taore</Entry>
+      <Entry>z_ftL</Entry>
+      <Entry>z_ftR</Entry>
+      <Entry>z_kamu</Entry>
+      <Entry>z_suzu02</Entry>
+      <Entry>z_suzu01</Entry>
+      <Entry>z_head</Entry>
+      <Entry>z_Hkick</Entry>
+      <Entry>z_Ugoron</Entry>
+      <Entry>z_suzu03</Entry>
+      <Entry>z_taore</Entry>
+      <Entry>z_ftL</Entry>
+      <Entry>z_ftR</Entry>
+      <Entry>z_kamu</Entry>
+      <Entry>z_suzu02</Entry>
+      <Entry>z_suzu01</Entry>
       <!-- block 1 -->
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>z_head</Entry>
+      <Entry>z_Hkick</Entry>
+      <Entry>z_Ugoron</Entry>
+      <Entry>z_suzu03</Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
@@ -3064,6 +3064,7 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
+      <Entry>ft_lad</Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
@@ -3073,10 +3074,9 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>ft_coefA</Entry>
+      <Entry>ft_coefB</Entry>
+      <Entry>taore_st</Entry>
     </Sound>
   </Room>
   <Room id="21B">
@@ -3092,17 +3092,17 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>z_taore</Entry>
+      <Entry>z_ftL</Entry>
+      <Entry>z_ftR</Entry>
+      <Entry>z_kamu</Entry>
+      <Entry>z_k02</Entry>
+      <Entry>z_k01</Entry>
       <!-- block 1 -->
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>z_head</Entry>
+      <Entry>z_Hkick</Entry>
+      <Entry>z_Ugoron</Entry>
+      <Entry>z_k03</Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
@@ -3117,6 +3117,7 @@
       <Entry></Entry>
       <!-- block 2 -->
       <Entry></Entry>
+      <Entry>key_indr</Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
@@ -3128,25 +3129,24 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>ft_coefA</Entry>
+      <Entry>ft_coefB</Entry>
+      <Entry>taore_st</Entry>
     </Sound>
   </Room>
   <Room id="21C">
     <Sound>
       <!-- enemy -->
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>z_taore</Entry>
+      <Entry>z_ftL</Entry>
+      <Entry>z_ftR</Entry>
+      <Entry>z_kamu</Entry>
+      <Entry>z_isi02</Entry>
+      <Entry>z_isi01</Entry>
+      <Entry>z_head</Entry>
+      <Entry>z_Hkick</Entry>
+      <Entry>z_Ugoron</Entry>
+      <Entry>z_isi03</Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
@@ -3158,7 +3158,7 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
-      <Entry></Entry>
+      <Entry>D_gacha</Entry>
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
@@ -3184,9 +3184,9 @@
       <Entry></Entry>
       <Entry></Entry>
       <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
-      <Entry></Entry>
+      <Entry>ft_concA</Entry>
+      <Entry>ft_concB</Entry>
+      <Entry>taore_st</Entry>
     </Sound>
   </Room>
   <Room id="300">
