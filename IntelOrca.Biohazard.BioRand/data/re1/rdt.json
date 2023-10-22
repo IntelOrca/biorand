@@ -1369,8 +1369,8 @@
         },
         {
           "target": "307",
-          "noUnlock": true,
-          "noReturn": true
+          "noUnlock": true
+          // "noReturn": true
         }
       ]
     },
@@ -2069,11 +2069,12 @@
         }
       ],
       "items": [
-        {
-          "id": 3,
-          "priority": "fixed",
-          "doorRando": false
-        },
+        // Keep Helmet key here for Mansion 2 switch
+        // {
+        //   "id": 3,
+        //   "priority": "fixed",
+        //   "doorRando": false
+        // },
         {
           "id": 3,
           "requiresRoom": [ "409", "40F" ],
