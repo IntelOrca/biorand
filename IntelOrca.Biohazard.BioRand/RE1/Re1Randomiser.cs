@@ -692,6 +692,9 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 
         private void FixRoomSounds(FileRepository fileRepository)
         {
+            var bgmTable = DataManager.GetPath(BiohazardVersion, "bgm_tbl.xml");
+            File.Copy(bgmTable, fileRepository.GetModPath("bgm_tbl.xml"), true);
+
             var xml = DataManager.GetText(BiohazardVersion, "sounds.xml");
             var doc = new XmlDocument();
             doc.LoadXml(xml);
