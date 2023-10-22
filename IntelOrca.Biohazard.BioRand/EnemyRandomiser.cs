@@ -638,23 +638,16 @@ namespace IntelOrca.Biohazard.BioRand
         {
             var relevantPlacements = _enemyPositions
                 .Where(x => x.RdtId == rdt.RdtId)
-                .Shuffle(rng);
+                .ToEndlessBag(_rng);
 
-            if (relevantPlacements.Length == 0)
+            if (relevantPlacements.Count == 0)
                 return new SceEmSetOpcode[0];
 
-            var maxArray = new[] { 3, 5, 8, 10 };
-            var avgArray = new[] { 1, 2, 4, 6 };
-            var max = maxArray[Math.Min(_config.EnemyQuantity, maxArray.Length - 1)];
-            var avg = avgArray[Math.Min(_config.EnemyQuantity, avgArray.Length - 1)];
-            max = Math.Min(max, relevantPlacements.Length);
-            var quantity = rng.Next(1, avg * 2);
-            quantity = Math.Min(quantity, max);
             var difficulty = Math.Min(enemySpec.MaxDifficulty ?? 3, _config.EnemyDifficulty);
-            quantity = Math.Min(quantity, _enemyHelper.GetEnemyTypeLimit(_config, difficulty, enemyType));
-            relevantPlacements = relevantPlacements
-                .Take(quantity)
-                .ToArray();
+            var enemyTypeLimit = _enemyHelper.GetEnemyTypeLimit(_config, difficulty, enemyType);
+            var avg = 1 + _config.EnemyQuantity;
+            var quantity = rng.Next(1, avg * 2);
+            quantity = Math.Min(quantity, relevantPlacements.Count * 3);
 
             foreach (var enemy in currentEnemies)
                 rdt.Nop(enemy.Offset);
@@ -666,8 +659,9 @@ namespace IntelOrca.Biohazard.BioRand
 
             var enemyOpcodes = new List<OpcodeBase>();
             var firstEnemyOpcodeIndex = rdt.AdditionalOpcodes.Count;
-            foreach (var ep in relevantPlacements)
+            for (var i = 0; i < quantity; i++)
             {
+                var ep = relevantPlacements.Next();
                 while (usedIds.Contains(enemyId))
                 {
                     enemyId++;

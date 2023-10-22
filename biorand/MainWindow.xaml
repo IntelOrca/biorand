@@ -341,8 +341,8 @@
                                             <local:RandoSlider x:Name="sliderEnemyCount"
                                                                 Heading="Average number of enemies per room"
                                                                 LowText="1"
-                                                                HighText="6"
-                                                                Maximum="3"
+                                                                HighText="16"
+                                                                Maximum="15"
                                                                 ToolTip="Adjusts the average number of enemies that can occur in a room." />
                                             <local:RandoSlider x:Name="sliderEnemyDifficulty" Heading="Difficulty" LowText="Ez" HighText="Hard" Maximum="3"
                                                                 ToolTip="Adjusts the limit of how many difficult enemies can appear in a single room, and the likelyhood of them being aggravated."/>

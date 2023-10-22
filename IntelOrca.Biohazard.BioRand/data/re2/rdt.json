@@ -177,6 +177,7 @@
         },
         {
           "restricted": true,
+          "maxDifficulty": 2,
           "randomPlacements": true,
           "doorRando": true
         }
@@ -394,11 +395,13 @@
       "enemies": [
         {
           "nop": [ "0x838" ],
+          "maxDifficulty": 1,
           "scenario": 0,
           "player": 0
         },
         {
           "nop": [ "0x830" ],
+          "maxDifficulty": 1,
           "player": 1
         }
       ]
@@ -442,7 +445,8 @@
       ],
       "enemies": [
         {
-          "restricted": true
+          "restricted": true,
+          "maxDifficulty": 1
         }
       ]
     },
@@ -673,11 +677,13 @@
       "enemies": [
         {
           "excludeTypes": [ 40 ],
+          "maxDifficulty": 2,
           "player": 0,
           "scenario": 1
         },
         {
           "excludeTypes": [ 40 ],
+          "maxDifficulty": 2,
           "player": 1,
           "scenario": 0
         }
@@ -691,6 +697,11 @@
         {
           "target": "109",
           "lock": "side"
+        }
+      ],
+      "enemies": [
+        {
+          "maxDifficulty": 1
         }
       ]
     },
@@ -718,10 +729,12 @@
       ],
       "enemies": [
         {
+          "maxDifficulty": 1,
           "player": 0
         },
         {
           "nop": [ "0x0D76" ],
+          "maxDifficulty": 1,
           "scenario": 0,
           "player": 1
         }
@@ -740,6 +753,11 @@
         {
           "id": 4,
           "priority": "low"
+        }
+      ],
+      "enemies": [
+        {
+          "maxDifficulty": 1
         }
       ]
     },
@@ -776,7 +794,8 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 42, 46, 48, 57, 58 ]
+          "excludeTypes": [ 40, 42, 46, 48, 57, 58 ],
+          "maxDifficulty": 0
         }
       ]
     },
@@ -879,7 +898,7 @@
         {
           "nop": [ 3532, 3516 ],
           "randomPlacements": true,
-          "restricted": true,
+          "maxDifficulty": 2,
           "player": 0
         },
         {
@@ -890,7 +909,7 @@
         {
           "nop": [ 3434, 3450 ],
           "randomPlacements": true,
-          "restricted": true,
+          "maxDifficulty": 2,
           "player": 1
         }
       ]
@@ -968,7 +987,8 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 42 ]
+          "excludeTypes": [ 40, 42 ],
+          "maxDifficulty": 0
         }
       ]
     },
@@ -1138,7 +1158,8 @@
       ],
       "enemies": [
         {
-          "restricted": true
+          "restricted": true,
+          "maxDifficulty": 1
         }
       ]
     },
@@ -1153,7 +1174,8 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 34, 36, 42, 46, 57, 58 ]
+          "excludeTypes": [ 34, 36, 40, 42, 46, 57, 58 ],
+          "maxDifficulty": 1
         }
       ]
     },
@@ -1429,6 +1451,11 @@
           "priority": "low",
           "scenario": 1
         }
+      ],
+      "enemies": [
+        {
+          "maxDifficulty": 1
+        }
       ]
     },
     "215": {
@@ -1440,10 +1467,12 @@
       "enemies": [
         {
           "excludeTypes": [ 34, 36, 42, 46, 57, 58 ],
+          "maxDifficulty": 2,
           "y": 0,
           "scenario": 0
         },
         {
+          "maxDifficulty": 2,
           "y": 0,
           "scenario": 1
         }
@@ -1639,6 +1668,8 @@
       ],
       "enemies": [
         {
+          "excludeTypes": [ 40 ],
+          "maxDifficulty": 1,
           "player": 0
         }
       ]
@@ -1750,6 +1781,7 @@
       ],
       "enemies": [
         {
+          "maxDifficulty": 0,
           "y": 0
         }
       ]
@@ -1903,6 +1935,7 @@
       ],
       "enemies": [
         {
+          "maxDifficulty": 0,
           "player": 0
         }
       ]
@@ -2117,7 +2150,8 @@
       ],
       "enemies": [
         {
-          "restricted": true
+          "restricted": true,
+          "maxDifficulty": 0
         }
       ]
     },
@@ -2140,7 +2174,8 @@
       ],
       "enemies": [
         {
-          "restricted": true
+          "restricted": true,
+          "maxDifficulty": 0
         }
       ]
     },
@@ -2907,7 +2942,8 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 34, 36, 42, 46, 57, 58 ]
+          "excludeTypes": [ 34, 36, 42, 46, 57, 58 ],
+          "maxDifficulty": 1
         }
       ],
       "npcs": [
@@ -2949,7 +2985,8 @@
       ],
       "enemies": [
         {
-          "restricted": true
+          "restricted": true,
+          "maxDifficulty": 1
         }
       ]
     },
@@ -3105,7 +3142,8 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 34, 36, 42, 46, 57, 58 ]
+          "excludeTypes": [ 34, 36, 42, 46, 57, 58 ],
+          "maxDifficulty": 1
         }
       ],
       "npcs": [
@@ -3407,6 +3445,12 @@
           "emrScale": false,
           "player": 1
         }
+      ],
+      "enemies": [
+        {
+          "restricted": true,
+          "maxDifficulty": 0
+        }
       ]
     },
     "608": {
@@ -3484,6 +3528,11 @@
         {
           "id": 9,
           "priority": "low"
+        }
+      ],
+      "enemies": [
+        {
+          "maxDifficulty": 1
         }
       ]
     },
@@ -3658,7 +3707,8 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 34, 36 ]
+          "excludeTypes": [ 34, 36 ],
+          "maxDifficulty": 0
         }
       ]
     },

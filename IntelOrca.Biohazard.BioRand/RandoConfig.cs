@@ -40,7 +40,6 @@ namespace IntelOrca.Biohazard.BioRand
         public bool RandomInventory { get; set; } = true;
         public bool RandomEnemyPlacement { get; set; } = true;
         public bool AllowEnemiesAnyRoom { get; set; } = true;
-        public byte EnemyQuantity { get; set; } = 2;
         public bool PrioritiseCutscenes { get; set; } = true;
         public bool RandomCutscenes { get; set; } = true;
         public bool AllowAnyVoice { get; set; }
@@ -59,6 +58,7 @@ namespace IntelOrca.Biohazard.BioRand
         public byte RatioGunpowder { get; set; } = 16;
         public byte AmmoQuantity { get; set; } = 4;
         public byte EnemyDifficulty { get; set; } = 2;
+        public byte EnemyQuantity { get; set; } = 2;
         public byte EnemyRooms { get; set; } = 5;
         public byte AreaCount { get; set; } = 3;
         public byte AreaSize { get; set; } = 7;
@@ -120,7 +120,7 @@ namespace IntelOrca.Biohazard.BioRand
             result.RandomInventory = reader.ReadFlag();
             result.RandomEnemyPlacement = reader.ReadFlag();
             result.AllowEnemiesAnyRoom = reader.ReadFlag();
-            result.EnemyQuantity = reader.ReadByte(2);
+            reader.ReadByte(2);
 
             result.RandomCutscenes = reader.ReadFlag();
             result.AllowAnyVoice = reader.ReadFlag();
@@ -133,7 +133,7 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 values.Add(reader.ReadByte(3));
             }
-            reader.ReadByte(4);
+            result.EnemyQuantity = reader.ReadByte(4);
             result.EnemyRatios = values.ToArray();
             result.EnabledNPCs = reader.ReadBooleanArray(MaxNPCs);
             result.EnabledBGMs = reader.ReadBooleanArray(MaxBGMs);
@@ -208,7 +208,7 @@ namespace IntelOrca.Biohazard.BioRand
             writer.Write(RandomInventory);
             writer.Write(RandomEnemyPlacement);
             writer.Write(AllowEnemiesAnyRoom);
-            writer.Write(2, EnemyQuantity);
+            writer.Write(2, 0);
 
             writer.Write(RandomCutscenes);
             writer.Write(AllowAnyVoice);
@@ -227,7 +227,7 @@ namespace IntelOrca.Biohazard.BioRand
                     writer.Write(3, 7);
                 }
             }
-            writer.Write(4, 0);
+            writer.Write(4, EnemyQuantity);
             writer.WriteArray(MaxNPCs, EnabledNPCs);
             writer.WriteArray(MaxBGMs, EnabledBGMs);
             writer.WriteArray(MaxEnemySkins, EnabledEnemySkins);
