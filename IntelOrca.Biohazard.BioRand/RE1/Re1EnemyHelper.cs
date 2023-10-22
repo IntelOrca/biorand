@@ -130,7 +130,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 case Re1EnemyIds.Zombie:
                 case Re1EnemyIds.ZombieResearcher:
                 case Re1EnemyIds.ZombieNaked:
-                    limit = new byte[] { 4, 6, 8, 12 };
+                    limit = new byte[] { 4, 6, 8, 10 };
                     break;
                 case Re1EnemyIds.Cerberus:
                 case Re1EnemyIds.Chimera:
@@ -151,7 +151,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                     limit = new byte[] { 1 };
                     break;
                 default:
-                    limit = new byte[] { 16 };
+                    limit = new byte[] { 10 };
                     break;
             }
             var index = Math.Min(limit.Length - 1, difficulty);

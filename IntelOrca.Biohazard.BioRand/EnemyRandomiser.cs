@@ -647,7 +647,7 @@ namespace IntelOrca.Biohazard.BioRand
             var enemyTypeLimit = _enemyHelper.GetEnemyTypeLimit(_config, difficulty, enemyType);
             var avg = 1 + _config.EnemyQuantity;
             var quantity = rng.Next(1, avg * 2);
-            quantity = Math.Min(quantity, relevantPlacements.Count * 3);
+            quantity = Math.Min(quantity, Math.Min(enemyTypeLimit, relevantPlacements.Count * 3));
 
             foreach (var enemy in currentEnemies)
                 rdt.Nop(enemy.Offset);
