@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using IntelOrca.Biohazard.Script.Opcodes;
 
@@ -67,7 +68,96 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                         door.NextZ = 3300;
                     }
                 }
+
+
+                // FixStageDoor(gameData, new RdtId(1, 0x0B), 5, 6);
+                // FixStageDoor(gameData, new RdtId(6, 0x0C), 0);
+                // 
+                // FixStageDoor(gameData, new RdtId(5, 0x04), 1, 0);
+                // FixStageDoor(gameData, new RdtId(5, 0x0F), 0);
+
+                // var rdt104 = gameData.GetRdt(new RdtId(0, 0x04));
+                // if (rdt104 != null)
+                // {
+                //     var barDoor = (DoorAotSeOpcode)rdt104.Doors.First(x => x.Target.Room == 0x0F);
+                //     rdt104.Nop(barDoor.Offset);
+                //     rdt104.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x01, new byte[] { 0x20 }));
+                //     rdt104.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x04, new byte[] { 0x00, 0x00, 0x00 }));
+                //     rdt104.AdditionalOpcodes.Add(barDoor);
+                //     barDoor.NextStage = 5;
+                //     rdt104.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x02, new byte[] { 0x1C }));
+                //     barDoor = CloneDoor(barDoor);
+                //     barDoor.NextStage = 0;
+                //     rdt104.AdditionalOpcodes.Add(barDoor);
+                // }
+
+                // var missingRooms = Re1Randomiser.MissingRooms.ToHashSet();
+                // foreach (var rdt in gameData.Rdts)
+                // {
+                //     var currentStage = rdt.RdtId.Stage;
+                //     if (missingRooms.Contains(rdt.RdtId))
+                //     {
+                //         // foreach (var door in rdt.Doors)
+                //         // {
+                //         //     var target = door.Target;
+                //         //     door.Target = new RdtId(rdt.RdtId.Stage, target.Room);
+                //         // }
+                //     }
+                //     else
+                //     {
+                //         foreach (var door in rdt.Doors)
+                //         {
+                //             var target = door.Target;
+                //             if (target.Stage == 0xFF)
+                //                 target = new RdtId(currentStage, target.Room);
+                //             if (missingRooms.Contains(target))
+                //             {
+                //                 door.Target = new RdtId(currentStage + 5, target.Room);
+                //             }
+                //         }
+                //     }
+                // }
             }
+        }
+
+        private static void FixStageDoor(GameData gameData, RdtId rdtId, int doorId, int? forceStage = null)
+        {
+            var stageM1 = (byte)(rdtId.Stage == 0 || rdtId.Stage == 5 ? 0 : 1);
+            var stageM2 = (byte)(stageM1 + 5);
+
+            var rdt = gameData.GetRdt(rdtId);
+            if (rdt != null)
+            {
+                var door = (DoorAotSeOpcode)rdt.Doors.First(x => x.Id == doorId);
+                if (forceStage != null)
+                {
+                    door.NextStage = (byte)forceStage.Value;
+                }
+                else
+                {
+                    rdt.Nop(door.Offset);
+                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x01, new byte[] { 0x20 }));
+                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x04, new byte[] { 0x00, 0x00, 0x00 }));
+                    rdt.AdditionalOpcodes.Add(door);
+                    door.NextStage = stageM2;
+                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x02, new byte[] { 0x1C }));
+                    door = CloneDoor(door);
+                    door.NextStage = stageM1;
+                    rdt.AdditionalOpcodes.Add(door);
+                }
+            }
+        }
+
+        private static DoorAotSeOpcode CloneDoor(IDoorAotSetOpcode src)
+        {
+            using var ms = new MemoryStream();
+            var bw = new BinaryWriter(ms);
+            ((OpcodeBase)src).Write(bw);
+
+            ms.Position = 0;
+            var br = new BinaryReader(ms);
+            var result = DoorAotSeOpcode.Read(br, 0);
+            return result;
         }
 
         private bool ShouldFixRE1Rdt(RandoConfig config, Map map, RdtId rdtId)

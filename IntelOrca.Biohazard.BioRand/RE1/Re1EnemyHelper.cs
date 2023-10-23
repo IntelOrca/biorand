@@ -50,6 +50,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 case Re1EnemyIds.ZombieResearcher:
                 case Re1EnemyIds.Cerberus:
                 case Re1EnemyIds.WebSpinner:
+                case Re1EnemyIds.BlackTiger:
                 case Re1EnemyIds.Crow:
                 case Re1EnemyIds.Hunter:
                 case Re1EnemyIds.Wasp:
@@ -117,7 +118,6 @@ namespace IntelOrca.Biohazard.BioRand.RE1
         {
             switch (type)
             {
-                case Re1EnemyIds.BlackTiger:
                 case Re1EnemyIds.Plant42:
                 case Re1EnemyIds.Yawn1:
                 case Re1EnemyIds.Yawn2:
