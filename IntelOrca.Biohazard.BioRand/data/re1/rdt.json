@@ -2637,7 +2637,13 @@
       "items": [
         {
           "id": 2,
-          "priority": "low"
+          "priority": "fixed",
+          "doorRando": false
+        },
+        {
+          "id": 2,
+          "priority": "low",
+          "doorRando": true
         }
       ],
       "enemies": [],
