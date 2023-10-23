@@ -607,6 +607,11 @@
           "requires": [ 56 ],
           "doorRando": true
         }
+      ],
+      "enemies": [
+        {
+          "maxDifficulty": 1
+        }
       ]
     },
     "113": {
