@@ -223,20 +223,23 @@ namespace IntelOrca.Biohazard.BioRand
                 .ToList();
 
             // Clear some rooms of any enemies
-            var maxRooms = rdts.Length;
-            var populatedRooms = (int)((_config.EnemyRooms / 7.0) * maxRooms);
-            var numEmptyRdts = maxRooms - populatedRooms;
-            var numRdtsCleared = 0;
-            for (int i = enemyRdts.Count - 1; i >= 0; i--)
+            if (_config.RandomEnemyPlacement)
             {
-                if (numRdtsCleared >= numEmptyRdts)
-                    break;
-
-                var rdt = enemyRdts[i];
-                if (RemoveAllEnemiesFromRoom(rdt))
+                var maxRooms = rdts.Length;
+                var populatedRooms = (int)((_config.EnemyRooms / 7.0) * maxRooms);
+                var numEmptyRdts = maxRooms - populatedRooms;
+                var numRdtsCleared = 0;
+                for (int i = enemyRdts.Count - 1; i >= 0; i--)
                 {
-                    enemyRdts.RemoveAt(i);
-                    numRdtsCleared++;
+                    if (numRdtsCleared >= numEmptyRdts)
+                        break;
+
+                    var rdt = enemyRdts[i];
+                    if (RemoveAllEnemiesFromRoom(rdt))
+                    {
+                        enemyRdts.RemoveAt(i);
+                        numRdtsCleared++;
+                    }
                 }
             }
 
