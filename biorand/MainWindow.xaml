@@ -64,12 +64,14 @@
                         <TextBlock FontSize="16">Please now use this link for BioRand when sharing the mod.</TextBlock>
                         <TextBlock FontSize="16" Margin="0,16,0,0">Chris (RE 1) can now have 8 item slots. Enable this in the settings panel.</TextBlock>
                     </StackPanel>
-                    <TextBox Grid.Row="1" x:Name="textChangelog"
-                             Margin="0,16,0,0"
-                             FontSize="14"
-                             IsReadOnly="True"
-                             MaxHeight="500"
-                             VerticalScrollBarVisibility="Visible" />
+                    <local:TopDownContainer Grid.Row="1">
+                        <TextBox x:Name="textChangelog"
+                                 Margin="0,16,0,0"
+                                 FontSize="14"
+                                 IsReadOnly="True"
+                                 HorizontalScrollBarVisibility="Visible"
+                                 VerticalScrollBarVisibility="Visible" />
+                    </local:TopDownContainer>
                 </Grid>
                 <StackPanel x:Name="panelInfo" Visibility="Hidden">
                     <TextBlock FontSize="24">Contributors</TextBlock>
@@ -316,18 +318,7 @@
                             </local:CheckGroupBox>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-                                <local:CheckGroupBox Grid.Row="0" x:Name="chkCutscenes" Header="Randomize Cutscenes" ToolTip="Randomize the voices of the player and NPCs during cutscenes.">
-                                    <StackPanel>
-                                        <CheckBox x:Name="chkAllowAnyVoice" ToolTip="If enabled, characters can speak other character's voice line.">Allow any character voice</CheckBox>
-                                        <CheckBox x:Name="chkReduceSilences" ToolTip="If enabled, voice lines are chosen to best match the length of the original line. This can however reduce the RNG.">Reduce awkward silences</CheckBox>
-                                    </StackPanel>
-                                </local:CheckGroupBox>
-                                <local:CheckGroupBox Grid.Row="1" x:Name="chkRngEnemies" Header="Randomize Enemies" Width="300">
+                            <local:CheckGroupBox Grid.Row="1" x:Name="chkRngEnemies" Header="Randomize Enemies" Width="300">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
@@ -389,15 +380,28 @@
                                         <TextBlock Grid.Row="3">Note: Some rooms can only contain certain enemies.</TextBlock>
                                     </Grid>
                                 </local:CheckGroupBox>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <local:CheckGroupBox Grid.Row="0" x:Name="chkCutscenes" Header="Randomize Cutscenes" ToolTip="Randomize the voices of the player and NPCs during cutscenes.">
+                                    <StackPanel>
+                                        <CheckBox x:Name="chkAllowAnyVoice" ToolTip="If enabled, characters can speak other character's voice line.">Allow any character voice</CheckBox>
+                                        <CheckBox x:Name="chkReduceSilences" ToolTip="If enabled, voice lines are chosen to best match the length of the original line. This can however reduce the RNG.">Reduce awkward silences</CheckBox>
+                                    </StackPanel>
+                                </local:CheckGroupBox>
+                                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                                    <local:CheckGroupBox x:Name="chkEnemySkins" MinWidth="150" Header="Enemy Skins">
+                                        <local:CheckBoxList x:Name="listEnemySkins" />
+                                    </local:CheckGroupBox>
+                                    <local:CheckGroupBox x:Name="chkRngBgm" Header="Randomize Music">
+                                        <local:CheckBoxList x:Name="listBGMs" />
+                                    </local:CheckGroupBox>
+                                </StackPanel>
                             </Grid>
-                            <local:CheckGroupBox x:Name="chkEnemySkins" MinWidth="150" Header="Enemy Skins">
-                                <local:CheckBoxList x:Name="listEnemySkins" />
-                            </local:CheckGroupBox>
                             <local:CheckGroupBox x:Name="chkRngChars" MinWidth="150" Header="Randomize NPCs">
                                 <local:CheckBoxList x:Name="listNPCs" />
-                            </local:CheckGroupBox>
-                            <local:CheckGroupBox x:Name="chkRngBgm" Header="Randomize Music">
-                                <local:CheckBoxList x:Name="listBGMs" />
                             </local:CheckGroupBox>
                         </StackPanel>
                     </local:LeftPriorityContainer>
