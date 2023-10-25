@@ -336,18 +336,21 @@
                                             <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
                                         <StackPanel Grid.Row="0">
-                                            <CheckBox x:Name="chkRandomEnemyPlacements" ToolTip="When checked, enemy quantity and positions will be random.">Random enemy placements</CheckBox>
-                                            <CheckBox x:Name="chkEnemyRestrictedRooms" ToolTip="When checked, enemies can be in save rooms.">Allow enemies in save rooms</CheckBox>
-                                            <local:RandoSlider x:Name="sliderEnemyCount"
-                                                                Heading="Average number of enemies per room"
-                                                                LowText="1"
-                                                                HighText="16"
-                                                                Maximum="15"
-                                                                ToolTip="Adjusts the average number of enemies that can occur in a room." />
+                                            <local:CheckGroupBox x:Name="chkRandomEnemyPlacements" Header="Random enemy placements" ToolTip="When checked, enemy quantity and positions will be random.">
+                                                <StackPanel>
+                                                    <CheckBox x:Name="chkEnemyRestrictedRooms" ToolTip="When checked, enemies can be in save rooms.">Allow enemies in save rooms</CheckBox>
+                                                    <local:RandoSlider x:Name="sliderEnemyCount"
+                                                                        Heading="Average number of enemies per room"
+                                                                        LowText="1"
+                                                                        HighText="16"
+                                                                        Maximum="15"
+                                                                        ToolTip="Adjusts the average number of enemies that can occur in a room." />
+                                                    <local:RandoSlider x:Name="sliderEnemyRooms" Heading="Rooms with enemies" LowText="0%" HighText="100%" Maximum="7"
+                                                                       ToolTip="Adjusts the percentage of all rooms in the game that contain enemies."/>
+                                                </StackPanel>
+                                            </local:CheckGroupBox>
                                             <local:RandoSlider x:Name="sliderEnemyDifficulty" Heading="Difficulty" LowText="Ez" HighText="Hard" Maximum="3"
                                                                 ToolTip="Adjusts the limit of how many difficult enemies can appear in a single room, and the likelyhood of them being aggravated."/>
-                                            <local:RandoSlider x:Name="sliderEnemyRooms" Heading="Rooms with enemies" LowText="0%" HighText="100%" Maximum="7"
-                                                               ToolTip="Adjusts the percentage of all rooms in the game that contain enemies."/>
                                         </StackPanel>
                                         <ListView Grid.Row="1" x:Name="listEnemies" HorizontalContentAlignment="Stretch" Margin="0 4">
                                             <ListView.ContextMenu>
