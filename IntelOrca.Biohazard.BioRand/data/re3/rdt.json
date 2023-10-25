@@ -2893,6 +2893,11 @@
           "requires": [ 96 ]
         }
       ],
+      "npcs": [
+        {
+          "excludeTypes": [ 87 ]
+        }
+      ],
       "enemies": [
         {
           "condition": "!(!3:235 && 3:88 && !8:42)",
