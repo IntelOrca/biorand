@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="BioRand: A Resident Evil Randomizer"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize"
+        ResizeMode="CanMinimize"
         SizeToContent="WidthAndHeight">
     <Window.Resources>
         <Style TargetType="local:RandoSlider">
