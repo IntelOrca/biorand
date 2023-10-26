@@ -1346,6 +1346,7 @@
       "enemies": [
         {
           "excludeOffsets": [ 6070, 6116, 6146 ],
+          "excludeTypes": [ 40 ],
           "y": 0
         }
       ]
