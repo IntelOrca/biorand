@@ -28,7 +28,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                     var target = door.Target;
                     if (target.Stage == 255)
                         target = new RdtId(rdt.RdtId.Stage, target.Room);
-                    door.Target = GetRE1FixedId(map, target);
+                    door.Target = GetRE1FixedId(target);
                 }
             }
         }
@@ -185,17 +185,13 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             return true;
         }
 
-        private RdtId GetRE1FixedId(Map map, RdtId rdtId)
+        private RdtId GetRE1FixedId(RdtId rdtId)
         {
-            var rooms = map.Rooms!;
-            if (rdtId.Stage == 0 || rdtId.Stage == 1)
+            if (Re1Randomiser.MissingRooms.Contains(rdtId))
             {
-                if (!rooms.ContainsKey(rdtId.ToString()))
+                if (rdtId.Stage == 0 || rdtId.Stage == 1)
                     return new RdtId(rdtId.Stage + 5, rdtId.Room);
-            }
-            else if (rdtId.Stage == 5 || rdtId.Stage == 6)
-            {
-                if (!rooms.ContainsKey(rdtId.ToString()))
+                else if (rdtId.Stage == 5 || rdtId.Stage == 6)
                     return new RdtId(rdtId.Stage - 5, rdtId.Room);
             }
             return rdtId;
