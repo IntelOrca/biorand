@@ -201,6 +201,7 @@ namespace IntelOrca.Biohazard.BioRand.RE3
                 case Re3EnemyIds.Hunter:
                 case Re3EnemyIds.BS23:
                 case Re3EnemyIds.Nemesis:
+                case Re3EnemyIds.SlidingWorm:
                     return true;
             }
 

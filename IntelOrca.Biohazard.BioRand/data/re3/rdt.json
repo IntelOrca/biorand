@@ -139,7 +139,8 @@
       ],
       "enemies": [
         {
-          "nop": [ 23870, 23918, 24010 ]
+          "nop": [ 23870, 23918, 24010 ],
+          "excludeTypes": [ 50 ]
         }
       ]
     },
@@ -167,7 +168,8 @@
       "enemies": [
         {
           "keepAi": true,
-          "keepState": true
+          "keepState": true,
+          "excludeTypes": [ 50 ]
         }
       ]
     },
@@ -293,6 +295,13 @@
         }
       ],
       "enemies": []
+    },
+    "109": {
+      "enemies": [
+        {
+          "excludeTypes": [ 50 ]
+        }
+      ]
     },
     "10A": {
       "enemies": [
@@ -771,7 +780,8 @@
       ],
       "enemies": [
         {
-          "nop": [ 23986 ]
+          "nop": [ 23986 ],
+          "excludeTypes": [ 50 ]
         }
       ]
     },
@@ -2587,7 +2597,8 @@
           "id": 5,
           "requires": [ 88 ]
         }
-      ]
+      ],
+      "enemies": []
     },
     "40C": {
       "doors": [
