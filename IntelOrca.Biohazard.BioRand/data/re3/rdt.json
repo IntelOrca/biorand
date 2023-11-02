@@ -169,7 +169,7 @@
         {
           "keepAi": true,
           "keepState": true,
-          "excludeTypes": [ 50 ]
+          "excludeTypes": [ 37, 50 ]
         }
       ]
     },
@@ -299,7 +299,7 @@
     "109": {
       "enemies": [
         {
-          "excludeTypes": [ 50 ]
+          "includeTypes": [ 32, 34, 36 ]
         }
       ]
     },
@@ -735,6 +735,11 @@
           "includeOffsets": [ 17196 ],
           "includeTypes": [ 90 ],
           "cutscene": 2
+        }
+      ],
+      "enemies": [
+        {
+          "excludeOffsets": [ 20226 ]
         }
       ]
     },
@@ -2581,8 +2586,7 @@
       ],
       "enemies": [
         {
-          "condition": "!(!3:90 && !3:91)",
-          "includeTypes": [ 34 ]
+          "condition": "!(!3:90 && !3:91)"
         }
       ]
     },
@@ -2748,7 +2752,7 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 52 ],
+          "excludeTypes": [ 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 52 ],
           "restricted": true
         }
       ]
