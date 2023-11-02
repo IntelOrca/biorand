@@ -1454,7 +1454,7 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 3, 4, 10 ],
+          "excludeTypes": [ 3, 4, 7, 10 ],
           "maxDifficulty": 1
         }
       ]
@@ -1488,12 +1488,12 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 3, 4, 10 ],
+          "excludeTypes": [ 3, 4, 7, 10 ],
           "player": 0
         },
         {
           "condition": "!(!1:92 && !1:72)",
-          "excludeTypes": [ 3, 4, 10 ],
+          "excludeTypes": [ 3, 4, 7, 10 ],
           "player": 1
         }
       ]
