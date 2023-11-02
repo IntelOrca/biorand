@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
+using IntelOrca.Biohazard.Room;
 using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
 
@@ -54,6 +55,7 @@ namespace IntelOrca.Biohazard.BioRand.RE3
             new SelectableEnemy("Spider", "YellowGreen", Re3EnemyIds.Spider),
             new SelectableEnemy("Zombie", "LightGray", _zombieTypes),
             new SelectableEnemy("Hunter", "IndianRed", Re3EnemyIds.Hunter),
+            new SelectableEnemy("Hunter \u03B3", "Cyan", Re3EnemyIds.HunterGamma),
             new SelectableEnemy("Brain Sucker", "DarkOliveGreen", Re3EnemyIds.BS23),
             new SelectableEnemy("Zombie Dog", "Black", Re3EnemyIds.ZombieDog),
             new SelectableEnemy("Nemesis", "LightGray", Re3EnemyIds.Nemesis),
@@ -69,7 +71,6 @@ namespace IntelOrca.Biohazard.BioRand.RE3
             switch (type)
             {
                 case Re3EnemyIds.GraveDigger:
-                case Re3EnemyIds.HunterGamma:
                 case Re3EnemyIds.Nemesis:
                 case Re3EnemyIds.Nemesis3:
                     return true;
@@ -180,6 +181,7 @@ namespace IntelOrca.Biohazard.BioRand.RE3
                 case Re3EnemyIds.ZombieGuy8:
                 case Re3EnemyIds.ZombieDog:
                 case Re3EnemyIds.Hunter:
+                case Re3EnemyIds.HunterGamma:
                 case Re3EnemyIds.BS23:
                 case Re3EnemyIds.Spider:
                 case Re3EnemyIds.MiniSpider:
@@ -198,21 +200,21 @@ namespace IntelOrca.Biohazard.BioRand.RE3
             {
                 case Re3EnemyIds.Hunter:
                 case Re3EnemyIds.BS23:
-                case Re3EnemyIds.ZombieDog:
                 case Re3EnemyIds.Nemesis:
                     return true;
             }
 
-            // Enemies that can already be in the room will work
-            var existingEnemyTypes = rdt.Enemies
-                .Select(x => x.Type)
-                .Where(IsEnemy)
-                .ToArray();
-
-            if (existingEnemyTypes.Contains(enemyType))
-                return true;
-
-            return false;
+            // Other enemies require certain ESPs to be in the RDT
+            var requiredEsps = GetRequiredEsps(enemyType);
+            var espTable = ((Rdt2)rdt.RdtFile).EspTable;
+            foreach (var esp in requiredEsps)
+            {
+                if (!espTable.ContainsId(esp))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         private static bool IsZombie(byte type)
@@ -264,7 +266,39 @@ namespace IntelOrca.Biohazard.BioRand.RE3
             }
         }
 
-        public byte[] GetRequiredEsps(byte enemyType) => new byte[0];
+        public byte[] GetRequiredEsps(byte enemyType)
+        {
+            switch (enemyType)
+            {
+                case Re3EnemyIds.ZombieGuy1:
+                case Re3EnemyIds.ZombieGirl1:
+                case Re3EnemyIds.ZombieFat:
+                case Re3EnemyIds.ZombieGirl2:
+                case Re3EnemyIds.ZombieRpd1:
+                case Re3EnemyIds.ZombieGuy2:
+                case Re3EnemyIds.ZombieGuy3:
+                case Re3EnemyIds.ZombieGuy4:
+                case Re3EnemyIds.ZombieNaked:
+                case Re3EnemyIds.ZombieGuy5:
+                case Re3EnemyIds.ZombieGuy6:
+                case Re3EnemyIds.ZombieLab:
+                case Re3EnemyIds.ZombieGirl3:
+                case Re3EnemyIds.ZombieRpd2:
+                case Re3EnemyIds.ZombieGuy7:
+                case Re3EnemyIds.ZombieGuy8:
+                    return new byte[] { 0x08, 0x09 };
+                case Re3EnemyIds.ZombieDog:
+                    return new byte[] { 0x09 };
+                case Re3EnemyIds.Crow:
+                    return new byte[] { 0x09, 0x0F };
+                case Re3EnemyIds.HunterGamma:
+                    return new byte[] { 0x39 };
+                case Re3EnemyIds.Spider:
+                    return new byte[] { 0x09, 0x1A };
+                default:
+                    return new byte[0];
+            }
+        }
 
         public void CreateZombie(byte type, PldFile srcPld, EmdFile srcEmd, string dstPath)
         {

@@ -32,6 +32,7 @@ namespace IntelOrca.Biohazard.BioRand
         private Queue<byte> _killIds = new Queue<byte>();
         private Dictionary<byte, EmbeddedEffect> _effects = new Dictionary<byte, EmbeddedEffect>();
 
+
         public EnemyRandomiser(BioVersion version, RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng rng, IEnemyHelper enemyHelper, DataManager dataManager)
         {
             _version = version;
@@ -493,6 +494,42 @@ namespace IntelOrca.Biohazard.BioRand
 
             var rdtBuilder = rdtFile.ToBuilder();
             rdtBuilder.EmbeddedEffects = new EmbeddedEffectList(rdtFile.Version, existingEffects.ToArray());
+            if (rdt.Version == BioVersion.Biohazard3)
+            {
+                var bb = (Rdt2.Builder)rdtBuilder;
+                bb.EspTable = default;
+
+                var etdb = bb.ETD.ToBuilder();
+                foreach (var id in missingIds)
+                {
+                    // Add empty palette and sprite data so that RE 3 does not crash
+                    if (id == 0x08)
+                    {
+                        etdb.AppendData(new byte[0x20 * 1], new byte[72 * 128]);
+                    }
+                    else if (id == 0x09)
+                    {
+                        etdb.AppendData(new byte[0x20 * 3], new byte[32 * 128]);
+                    }
+                    else if (id == 0x0F)
+                    {
+                        etdb.AppendData(new byte[0x20 * 1], new byte[120 * 128]);
+                    }
+                    else if (id == 0x18)
+                    {
+                        etdb.AppendData(new byte[0x20 * 1], new byte[32 * 128]);
+                    }
+                    else if (id == 0x1A)
+                    {
+                        etdb.AppendData(new byte[0x20 * 1], new byte[32 * 128]);
+                    }
+                    else if (id == 0x39)
+                    {
+                        etdb.AppendData(new byte[0x20 * 1], new byte[24 * 128]);
+                    }
+                }
+                bb.ETD = etdb.ToEtd();
+            }
             rdt.RdtFile = rdtBuilder.ToRdt();
         }
 
