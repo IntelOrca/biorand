@@ -406,7 +406,9 @@ namespace IntelOrca.Biohazard.BioRand
             _logger.WriteLine($"Randomizing room {rdt} with enemy: {targetEnemy.Name}");
 
             byte? fixType = null;
-            var enemies = rdt.Enemies.ToArray();
+            var enemies = rdt.Enemies
+                .Where(x => _enemyHelper.IsEnemy(x.Type))
+                .ToArray();
             var logEnemies = enemies.Select(GetEnemyLogText).ToArray();
 
             var enemySpecs = GetEnemySpecs(rdt.RdtId);
@@ -416,7 +418,9 @@ namespace IntelOrca.Biohazard.BioRand
             }
 
             // Force log if enemy count changed
-            var newEnemies = rdt.Enemies.ToArray();
+            var newEnemies = rdt.Enemies
+                .Where(x => _enemyHelper.IsEnemy(x.Type))
+                .ToArray();
             if (newEnemies.Length != logEnemies.Length)
             {
                 foreach (var enemy in newEnemies)
