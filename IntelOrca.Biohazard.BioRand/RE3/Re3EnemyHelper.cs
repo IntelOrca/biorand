@@ -29,18 +29,22 @@ namespace IntelOrca.Biohazard.BioRand.RE3
             switch (type)
             {
                 case Re3EnemyIds.ZombieDog:
+                    limit = new byte[] { 3, 5, 7, 10 };
+                    break;
                 case Re3EnemyIds.BS23:
                 case Re3EnemyIds.BS28:
-                    limit = new byte[] { 2, 4, 6, 8 };
+                    limit = new byte[] { 2, 4, 6, 10 };
                     break;
                 case Re3EnemyIds.Hunter:
                 case Re3EnemyIds.HunterGamma:
+                    limit = new byte[] { 2, 4, 7, 10 };
+                    break;
                 case Re3EnemyIds.Nemesis:
                 case Re3EnemyIds.Nemesis3:
                     limit = new byte[] { 2, 3, 4, 6 };
                     break;
                 default:
-                    limit = new byte[] { 16 };
+                    limit = new byte[] { 4, 8, 12, 16 };
                     break;
             }
             var index = Math.Min(limit.Length - 1, difficulty);
