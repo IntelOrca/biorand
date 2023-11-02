@@ -1,3 +1,28 @@
+BioRand v3.1.7 (2023-11-03)
+
+* [Feature] Increase maximum average number of enemies to 16.
+* [Feature] RE 1, helmet key now available in mansion 1.
+* [Feature] RE 1, keep escape lab key in Tyrant room.
+* [Feature] RE 1, mansion 2 only rooms now accessible in mansion 1.
+* [Feature] RE 2, add Carlos, Mikhail, Nikolai, Jill from RE3R as playable characters.
+* [Feature] RE 2, add Misty as playable character.
+* [Feature] RE 2, add Zombies (RE 1.5), Gorilla (RE 1.5), Hunter (RE 3).
+* [Enhancement] Marvin, add lines from RE 2 trial.
+* [Enhancement] RE 2, Nemesis enemy skin now has faster RE 3-like animations.
+* [Fix] #629: RE 2, room 103, G-Adult out of bounds.
+* [Fix] #630: RE 3, room 30E, crash.
+* [Fix] #630: RE 3, room 500, crash.
+* [Fix] #632: RE 2, Room 119, crash when random placements is disabled.
+* [Fix] #637: RE 3, room 414, crash due to NPC.
+* [Fix] #638: RE 1, room 112, player is invisible.
+* [Fix] #639: RE 3, room 50A, crash due to Carlos NPC change.
+* [Fix] #640, BioRand has no minimize button.
+* [Fix] RE 1, crash when lots of enemies in a room.
+* [Fix] RE 1, improve enemy placement in a few small rooms.
+* [Fix] RE 1, player sometimes invisible in rooms containing a mirror.
+* [Fix] RE 1, web spinner had no room limit.
+* [Fix] RE 2, room 20E, crash due to G-Adult.
+
 BioRand v3.1.6 (2023-10-18)
 
 * [Fix] #541: RE 3, Sheva model is glitched in HD.
