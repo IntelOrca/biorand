@@ -299,7 +299,12 @@
     "109": {
       "enemies": [
         {
-          "includeTypes": [ 32, 34, 36 ]
+          "includeTypes": [ 32, 34, 36 ],
+          "randomPlacements": false
+        },
+        {
+          "nop": [ "0x17D0" ],
+          "randomPlacements": true
         }
       ]
     },
