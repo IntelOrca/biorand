@@ -7,6 +7,7 @@ BioRand v3.1.7 (2023-11-03)
 * [Feature] RE 2, add Carlos, Mikhail, Nikolai, Jill from RE3R as playable characters.
 * [Feature] RE 2, add Misty as playable character.
 * [Feature] RE 2, add Zombies (RE 1.5), Gorilla (RE 1.5), Hunter (RE 3).
+* [Feature] RE 3, enable all enemy types in all rooms.
 * [Enhancement] Marvin, add lines from RE 2 trial.
 * [Enhancement] RE 2, Nemesis enemy skin now has faster RE 3-like animations.
 * [Fix] #629: RE 2, room 103, G-Adult out of bounds.
