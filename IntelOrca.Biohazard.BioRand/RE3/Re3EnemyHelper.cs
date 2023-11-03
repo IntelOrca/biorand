@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
-using IntelOrca.Biohazard.Room;
 using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
 
@@ -199,6 +198,7 @@ namespace IntelOrca.Biohazard.BioRand.RE3
 
         public bool SupportsEnemyType(RandoConfig config, RandomizedRdt rdt, bool hasEnemyPlacements, byte enemyType)
         {
+#if RE3_NO_ESP_CHANGE
             // These enemies always work
             switch (enemyType)
             {
@@ -219,6 +219,7 @@ namespace IntelOrca.Biohazard.BioRand.RE3
                     return false;
                 }
             }
+#endif
             return true;
         }
 
