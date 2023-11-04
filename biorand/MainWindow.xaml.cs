@@ -384,15 +384,12 @@ namespace IntelOrca.Biohazard.BioRand
                 Value = keyItems,
                 Color = Colors.LightBlue
             });
-            if (SelectedGame == 2)
+            pieItemRatios.Records.Add(new PieChart.Record()
             {
-                pieItemRatios.Records.Add(new PieChart.Record()
-                {
-                    Name = "Gunp...",
-                    Value = gunpowder,
-                    Color = Colors.Gray
-                });
-            }
+                Name = "Gunp...",
+                Value = gunpowder,
+                Color = Colors.Gray
+            });
             pieItemRatios.Records.Add(new PieChart.Record()
             {
                 Name = "Ammo",
