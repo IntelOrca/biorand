@@ -258,9 +258,11 @@ namespace IntelOrca.Biohazard.BioRand
             return ((color.R / 255.0) * 0.2126) + ((color.G / 255.0) * 0.7152) + ((color.B / 255.0) * 0.0722);
         }
 
-        private static string GetRecordToolTip(Record record, double total)
+        private static object GetRecordToolTip(Record record, double total)
         {
-            double p = record.Value / total * 100;
+            if (record.Name == String.Empty)
+                return null; // Ignore padding records.
+			double p = record.Value / total * 100;
             return $"{record.Name}: {Math.Round(p, 2)}%";
         }
 
