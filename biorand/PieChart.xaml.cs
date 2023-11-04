@@ -131,7 +131,7 @@ namespace IntelOrca.Biohazard.BioRand
         {
             var grid = new Grid();
             var index = 0;
-            var total = records.Sum(x => x.Value);
+            var total = Records.Sum(x => x.Value);
             foreach (var record in records)
             {
                 if (record.Value == 0)
