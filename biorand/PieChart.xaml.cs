@@ -262,7 +262,7 @@ namespace IntelOrca.Biohazard.BioRand
         {
             if (record.Name == String.Empty)
                 return null; // Ignore padding records.
-			double p = record.Value / total * 100;
+            double p = record.Value / total * 100;
             return $"{record.Name}: {Math.Round(p, 2)}%";
         }
 
