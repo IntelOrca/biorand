@@ -47,6 +47,7 @@ namespace IntelOrca.Biohazard.BioRand
                 circle.Fill = new SolidColorBrush(record.Color);
                 circle.Width = radius * 2;
                 circle.Height = radius * 2;
+                circle.ToolTip = GetRecordToolTip(record, total);
                 gridItems.Add(circle);
                 gridItems.Add(CreatePieLabel(record, new Point()));
             }
@@ -86,6 +87,7 @@ namespace IntelOrca.Biohazard.BioRand
                     var path = new Path();
                     path.Fill = new SolidColorBrush(record.Color);
                     path.Data = pathGeometry;
+                    path.ToolTip = GetRecordToolTip(record, total);
                     gridItems.Add(path);
                     gridItems.Add(CreatePieLabel(record, new Point(textPosition.X - radius, textPosition.Y - radius)));
 
@@ -129,6 +131,7 @@ namespace IntelOrca.Biohazard.BioRand
         {
             var grid = new Grid();
             var index = 0;
+            var total = Records.Sum(x => x.Value);
             foreach (var record in records)
             {
                 if (record.Value == 0)
@@ -149,7 +152,7 @@ namespace IntelOrca.Biohazard.BioRand
                     new SolidColorBrush(Colors.White);
                 textBlock.Text = record.Name;
                 textBlock.TextAlignment = TextAlignment.Center;
-                textBlock.ToolTip = record.Name;
+                textBlock.ToolTip = GetRecordToolTip(record, total);
                 textBlock.Padding = new Thickness(2, 0, 2, 0);
                 textBlock.TextTrimming = TextTrimming.CharacterEllipsis;
 
@@ -246,12 +249,21 @@ namespace IntelOrca.Biohazard.BioRand
             textBlock.TextAlignment = TextAlignment.Center;
             textBlock.Height = 12;
             textBlock.FontSize = 8;
+            textBlock.IsHitTestVisible = false;
             return textBlock;
         }
 
         private static double GetLuma(Color color)
         {
             return ((color.R / 255.0) * 0.2126) + ((color.G / 255.0) * 0.7152) + ((color.B / 255.0) * 0.0722);
+        }
+
+        private static object GetRecordToolTip(Record record, double total)
+        {
+            if (record.Name == String.Empty)
+                return null; // Ignore padding records.
+            double p = record.Value / total * 100;
+            return $"{record.Name}: {Math.Round(p, 2)}%";
         }
 
         [DebuggerDisplay("({Name}, {Value})")]
