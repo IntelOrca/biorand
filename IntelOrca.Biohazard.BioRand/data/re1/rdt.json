@@ -195,7 +195,6 @@
         {
           "id": 4,
           "type": 31,
-          "priority": "fixed",
           "player": 0
         },
         {
@@ -206,7 +205,6 @@
         {
           "id": 7,
           "type": 31,
-          "priority": "fixed",
           "player": 1
         },
         {
@@ -540,14 +538,7 @@
         {
           "id": 4,
           "type": 32,
-          "priority": "fixed",
           "requires": [ 31, 35 ]
-        },
-        {
-          "id": 5,
-          "type": 35,
-          "priority": "fixed",
-          "player": 1
         }
       ],
       "npcs": [
