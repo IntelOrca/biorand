@@ -261,6 +261,7 @@ namespace IntelOrca.Biohazard.BioRand
             var randomEnemies = new Rng(baseSeed + 3);
             var randomNpcs = new Rng(baseSeed + 4);
             var randomVoices = new Rng(baseSeed + 5);
+            var randomCutscenes = new Rng(baseSeed + 6);
 
             // In RE1, room sounds are not in the RDT, so enemies must be same for both players
             if (BiohazardVersion == BioVersion.Biohazard1)
@@ -313,6 +314,19 @@ namespace IntelOrca.Biohazard.BioRand
                         graph.GenerateDgml(dgmlPath, ItemHelper);
                     }
                 }
+
+#if DEBUG
+                if (config.RandomEvents)
+                {
+                    var cutscene = new CutsceneRandomiser(logger, DataManager, config, gameData, map, randomCutscenes, EnemyHelper, NpcHelper);
+                    cutscene.Randomise(graph);
+                }
+#else
+                if (config.RandomCutscenes && config.RandomEvents)
+                {
+                    throw new BioRandUserException("Random events are not yet ready for testing.");
+                }
+#endif
 
                 if (config.RandomEnemies)
                 {

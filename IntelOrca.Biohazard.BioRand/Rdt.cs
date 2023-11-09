@@ -6,6 +6,7 @@ using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
 using IntelOrca.Biohazard.Room;
 using IntelOrca.Biohazard.Script;
+using IntelOrca.Biohazard.Script.Compilation;
 using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.BioRand
@@ -26,6 +27,7 @@ namespace IntelOrca.Biohazard.BioRand
         public ScriptAst? Ast { get; set; }
         public List<KeyValuePair<int, byte>> Patches { get; } = new List<KeyValuePair<int, byte>>();
         public List<OpcodeBase> AdditionalOpcodes { get; } = new List<OpcodeBase>();
+        public string? CustomAdditionalScript { get; set; }
 
         public IEnumerable<OpcodeBase> AllOpcodes => AdditionalOpcodes.Concat(Opcodes);
         public IEnumerable<IDoorAotSetOpcode> Doors => AllOpcodes.OfType<IDoorAotSetOpcode>();
@@ -322,6 +324,7 @@ namespace IntelOrca.Biohazard.BioRand
             if (!(Version == BioVersion.Biohazard2 && RdtId == new RdtId(3, 9)))
                 UpdateEmrs();
             PrependOpcodes();
+            AddCustomScript();
 
             Directory.CreateDirectory(Path.GetDirectoryName(ModifiedPath!)!);
             File.WriteAllBytes(ModifiedPath!, RdtFile.Data.ToArray());
@@ -387,6 +390,58 @@ namespace IntelOrca.Biohazard.BioRand
                 rdtBuilder.SCDINIT = scdBuilder.ToProcedureList();
                 RdtFile = rdtBuilder.ToRdt();
             }
+        }
+
+        public void AddCustomScript()
+        {
+            if (string.IsNullOrEmpty(CustomAdditionalScript))
+                return;
+
+            var scd = ((Rdt2)RdtFile).SCDMAIN;
+            var scdReader = new ScdReader();
+            var disassembly = scdReader.Diassemble(scd, Version, BioScriptKind.Main);
+
+            var insertIndex = disassembly.LastIndexOf("evt_end");
+            if (insertIndex == -1)
+                throw new Exception("Unable to insert custom script");
+
+            insertIndex = FindNextLine(disassembly, insertIndex);
+            disassembly = disassembly.Insert(insertIndex, CustomAdditionalScript);
+
+            var findText = ".proc main";
+            insertIndex = disassembly.IndexOf(findText);
+            if (insertIndex == -1)
+                throw new Exception("Unable to insert custom script");
+
+            insertIndex = FindNextLine(disassembly, insertIndex);
+            disassembly = disassembly.Insert(insertIndex, "    gosub                   biorand_custom\n");
+
+            var scdAssembler = new ScdAssembler();
+            var includer = new StringFileIncluder("custom.s", disassembly);
+            var ret = scdAssembler.Generate(includer, "custom.s");
+            if (ret != 0)
+                throw new Exception("Unable to insert custom script");
+
+            var newScd = scdAssembler.Operations
+                .OfType<ScdRdtEditOperation>()
+                .FirstOrDefault(x => x.Kind == BioScriptKind.Main)
+                .Data;
+
+            RdtFile = RdtFile.WithScd(BioScriptKind.Main, newScd);
+        }
+
+        private static int FindNextLine(string s, int startIndex)
+        {
+            var index = startIndex;
+            while (index < s.Length && s[index] != '\n' && s[index] != '\r')
+            {
+                index++;
+            }
+            while (index < s.Length && (s[index] == '\n' || s[index] == '\r'))
+            {
+                index++;
+            }
+            return index;
         }
 
         public void Print()

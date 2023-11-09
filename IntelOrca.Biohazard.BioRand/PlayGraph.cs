@@ -135,6 +135,45 @@ namespace IntelOrca.Biohazard.BioRand
                 }
             }
         }
+
+        public RandomizedRdt[] GetAccessibleRdts(GameData gameData)
+        {
+            if (Start == null)
+                return gameData.Rdts;
+
+            var visited = new HashSet<PlayNode>();
+            var q = new Queue<PlayNode>();
+            q.Enqueue(Start);
+            while (q.Count > 0)
+            {
+                var node = q.Dequeue();
+                if (visited.Add(node))
+                {
+                    foreach (var e in node.Edges)
+                    {
+                        if (e.Node != null)
+                        {
+                            q.Enqueue(e.Node);
+                        }
+                    }
+                }
+            }
+
+            var result = visited
+                .Select(x => gameData.GetRdt(x.RdtId)!)
+                .ToHashSet();
+
+            // Add linked RDTs as well
+            foreach (var v in visited)
+            {
+                if (v.LinkedRdtId != null)
+                {
+                    result.Add(gameData.GetRdt(v.LinkedRdtId.Value)!);
+                }
+            }
+
+            return result.ToArray();
+        }
     }
 
     internal class PlayNode

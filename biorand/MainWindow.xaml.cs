@@ -302,6 +302,7 @@ namespace IntelOrca.Biohazard.BioRand
                 chkCutscenes.IsChecked = _config.RandomCutscenes;
                 chkAllowAnyVoice.IsChecked = _config.AllowAnyVoice;
                 chkReduceSilences.IsChecked = _config.ReduceSilences;
+                chkRandomEvents.IsChecked = _config.RandomEvents;
 
                 dropdownVariant.SelectedIndex = Math.Min(_config.GameVariant, dropdownVariant.Items.Count - 1);
 
@@ -495,6 +496,7 @@ namespace IntelOrca.Biohazard.BioRand
             _config.RandomCutscenes = chkCutscenes.IsChecked == true;
             _config.AllowAnyVoice = chkAllowAnyVoice.IsChecked == true;
             _config.ReduceSilences = chkReduceSilences.IsChecked == true;
+            _config.RandomEvents = chkRandomEvents.IsChecked == true;
 
             _config.GameVariant = (byte)dropdownVariant.SelectedIndex;
 

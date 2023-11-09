@@ -44,6 +44,7 @@ namespace IntelOrca.Biohazard.BioRand
         public bool RandomCutscenes { get; set; } = true;
         public bool AllowAnyVoice { get; set; }
         public bool ReduceSilences { get; set; }
+        public bool RandomEvents { get; set; }
 
         // Numbers
         public byte Player0 { get; set; }
@@ -125,7 +126,7 @@ namespace IntelOrca.Biohazard.BioRand
             result.RandomCutscenes = reader.ReadFlag();
             result.AllowAnyVoice = reader.ReadFlag();
             result.ReduceSilences = reader.ReadFlag();
-            reader.ReadByte(1);
+            result.RandomEvents = reader.ReadFlag();
             result.RandomEnemySkins = reader.ReadFlag();
 
             var values = new List<byte>();
@@ -213,7 +214,7 @@ namespace IntelOrca.Biohazard.BioRand
             writer.Write(RandomCutscenes);
             writer.Write(AllowAnyVoice);
             writer.Write(ReduceSilences);
-            writer.Write(1, 0);
+            writer.Write(RandomEvents);
             writer.Write(RandomEnemySkins);
 
             for (int i = 0; i < MaxEnemies; i++)
