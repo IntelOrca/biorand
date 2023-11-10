@@ -315,10 +315,20 @@ namespace IntelOrca.Biohazard.BioRand
                     }
                 }
 
+                EnemyRandomiser enemyRandomiser = null;
+                if (config.RandomEnemies)
+                {
+                    using (progress.BeginTask(config.Player, "Randomizing enemies"))
+                    {
+                        enemyRandomiser = new EnemyRandomiser(BiohazardVersion, logger, config, gameData, map, randomEnemies, EnemyHelper, DataManager);
+                        enemyRandomiser.Randomise(graph);
+                    }
+                }
+
 #if DEBUG
                 if (config.RandomEvents)
                 {
-                    var cutscene = new CutsceneRandomiser(logger, DataManager, config, gameData, map, randomCutscenes, EnemyHelper, NpcHelper);
+                    var cutscene = new CutsceneRandomiser(logger, DataManager, config, gameData, map, randomCutscenes, enemyRandomiser, EnemyHelper, NpcHelper);
                     cutscene.Randomise(graph);
                 }
 #else
@@ -328,12 +338,11 @@ namespace IntelOrca.Biohazard.BioRand
                 }
 #endif
 
-                if (config.RandomEnemies)
+                if (enemyRandomiser != null)
                 {
-                    using (progress.BeginTask(config.Player, "Randomizing enemies"))
+                    using (progress.BeginTask(config.Player, "Replacing enemies"))
                     {
-                        var enemyRandomiser = new EnemyRandomiser(BiohazardVersion, logger, config, gameData, map, randomEnemies, EnemyHelper, DataManager);
-                        enemyRandomiser.Randomise(graph);
+                        enemyRandomiser.Apply();
                     }
                 }
 

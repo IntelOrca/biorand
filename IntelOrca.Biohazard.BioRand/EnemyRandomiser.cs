@@ -32,6 +32,7 @@ namespace IntelOrca.Biohazard.BioRand
         private Queue<byte> _killIds = new Queue<byte>();
         private Dictionary<byte, EmbeddedEffect> _effects = new Dictionary<byte, EmbeddedEffect>();
 
+        public Dictionary<RandomizedRdt, SelectableEnemy> ChosenEnemies { get; } = new Dictionary<RandomizedRdt, SelectableEnemy>();
 
         public EnemyRandomiser(BioVersion version, RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng rng, IEnemyHelper enemyHelper, DataManager dataManager)
         {
@@ -93,7 +94,7 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
-        private byte GetNextKillId()
+        public byte GetNextKillId()
         {
             if (_killIds.Count == 0)
             {
@@ -152,6 +153,15 @@ namespace IntelOrca.Biohazard.BioRand
             finally
             {
                 EndStickyEnemies();
+            }
+        }
+
+        public void Apply()
+        {
+            _logger.WriteHeading("Replacing enemies:");
+            foreach (var kvp in ChosenEnemies)
+            {
+                ReplaceEnemiesInRoom(kvp.Key, kvp.Value);
             }
         }
 
@@ -235,8 +245,8 @@ namespace IntelOrca.Biohazard.BioRand
             for (var i = 0; i < enemyRdts.Count; i++)
             {
                 var rdt = enemyRdts[i];
-                var firstSpec = GetEnemySpecs(rdt.RdtId).FirstOrDefault();
-                if (firstSpec == null || !firstSpec.IgnoreRatio)
+                var spec = GetEnemySpec(rdt.RdtId);
+                if (spec == null || !spec.IgnoreRatio)
                     continue;
 
                 var allowedEnemies = enemies
@@ -307,30 +317,31 @@ namespace IntelOrca.Biohazard.BioRand
                 _config.RandomEnemyPlacement &&
                 _enemyPositions.Any(x => x.RdtId == rdt.RdtId);
 
-            foreach (var enemySpec in GetEnemySpecs(rdt.RdtId))
-            {
-                foreach (var type in enemyTypes)
-                {
-                    if (!_enemyHelper.SupportsEnemyType(_config, rdt, hasEnemyPlacements && !enemySpec.KeepPositions, type))
-                        continue;
+            var enemySpec = GetEnemySpec(rdt.RdtId);
+            if (enemySpec == null)
+                return false;
 
-                    if (enemySpec.IncludeTypes != null)
-                    {
-                        if (!enemySpec.IncludeTypes.Contains(type))
-                            return false;
-                    }
-                    else if (enemySpec.ExcludeTypes != null)
-                    {
-                        if (enemySpec.ExcludeTypes.Contains(type))
-                            return false;
-                    }
-                    return true;
+            foreach (var type in enemyTypes)
+            {
+                if (!_enemyHelper.SupportsEnemyType(_config, rdt, hasEnemyPlacements && !enemySpec.KeepPositions, type))
+                    continue;
+
+                if (enemySpec.IncludeTypes != null)
+                {
+                    if (!enemySpec.IncludeTypes.Contains(type))
+                        return false;
                 }
+                else if (enemySpec.ExcludeTypes != null)
+                {
+                    if (enemySpec.ExcludeTypes.Contains(type))
+                        return false;
+                }
+                return true;
             }
             return false;
         }
 
-        private MapRoomEnemies[] GetEnemySpecs(RdtId rdtId)
+        private MapRoomEnemies GetEnemySpec(RdtId rdtId)
         {
             var enemySpecs = _map.GetRoom(rdtId)?.Enemies;
             if (enemySpecs == null)
@@ -338,8 +349,7 @@ namespace IntelOrca.Biohazard.BioRand
                 enemySpecs = new[] { new MapRoomEnemies() };
             }
             return enemySpecs
-                .Where(IsEnemySpecValid)
-                .ToArray();
+                .FirstOrDefault(IsEnemySpecValid);
         }
 
         private bool IsEnemySpecValid(MapRoomEnemies enemySpec)
@@ -362,21 +372,72 @@ namespace IntelOrca.Biohazard.BioRand
             return true;
         }
 
-        private bool RandomizeRoomWithEnemy(RandomizedRdt rdt, SelectableEnemy targetEnemy)
+        private void RandomizeRoomWithEnemy(RandomizedRdt rdt, SelectableEnemy targetEnemy)
+        {
+            _logger.WriteLine($"{rdt.RdtId} shall have {targetEnemy.Name}");
+
+            var enemySpec = GetEnemySpec(rdt.RdtId);
+            NopOutOpcodes(rdt, enemySpec);
+
+            // Make other alterations for this enemy to work
+            var fixType = targetEnemy.Types[0];
+            AddRequiredEsps(rdt, fixType);
+            if (rdt.Version == BioVersion.Biohazard1)
+            {
+                if (_config.Player == 0)
+                {
+                    g_stickyEnemies.Add(rdt.RdtId, targetEnemy);
+                }
+            }
+            else
+            {
+                // Mute all NPCs in the room so that we can hear enemies
+                foreach (var em in rdt.Enemies)
+                {
+                    if (!_enemyHelper.IsEnemy(em.Type))
+                    {
+                        em.SoundBank = 0;
+                    }
+                }
+            }
+
+            ChosenEnemies[rdt] = targetEnemy;
+        }
+
+        private void NopOutOpcodes(RandomizedRdt rdt, MapRoomEnemies enemySpec)
+        {
+            if (enemySpec.Nop != null)
+            {
+                var nopArray = Map.ParseNopArray(enemySpec.Nop, rdt);
+                foreach (var offset in nopArray)
+                {
+                    rdt.Nop(offset);
+                    if (g_debugLogging)
+                        _logger.WriteLine($"{rdt.RdtId} (0x{offset:X2}) opcode removed");
+                }
+            }
+        }
+
+        private SceEmSetOpcode[] GetEnemiesToReplace(RandomizedRdt rdt, MapRoomEnemies enemySpec)
+        {
+            var currentEnemies = rdt.Enemies
+                .Where(e => enemySpec.ExcludeOffsets?.Contains(e.Offset) != true)
+                .Where(e => _enemyHelper.ShouldChangeEnemy(_config, e))
+                .ToArray();
+            return currentEnemies;
+        }
+
+        private void ReplaceEnemiesInRoom(RandomizedRdt rdt, SelectableEnemy targetEnemy)
         {
             _logger.WriteLine($"Randomizing room {rdt} with enemy: {targetEnemy.Name}");
 
-            byte? fixType = null;
             var enemies = rdt.Enemies
                 .Where(x => _enemyHelper.IsEnemy(x.Type))
                 .ToArray();
             var logEnemies = enemies.Select(GetEnemyLogText).ToArray();
 
-            var enemySpecs = GetEnemySpecs(rdt.RdtId);
-            foreach (var enemySpec in enemySpecs)
-            {
-                RandomiseRoom(_rng, rdt, enemySpec, targetEnemy);
-            }
+            var enemySpec = GetEnemySpec(rdt.RdtId);
+            RandomiseRoom(_rng, rdt, enemySpec, targetEnemy);
 
             // Force log if enemy count changed
             var newEnemies = rdt.Enemies
@@ -391,7 +452,6 @@ namespace IntelOrca.Biohazard.BioRand
 
                     var newLog = GetNewEnemyLogText(enemy);
                     _logger.WriteLine($"  Created {rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) {newLog}");
-                    fixType ??= enemy.Type;
                 }
             }
             else
@@ -404,38 +464,9 @@ namespace IntelOrca.Biohazard.BioRand
                     if (oldLog != newLog)
                     {
                         _logger.WriteLine($"  {rdt.RdtId}:{enemy.Id} (0x{enemy.Offset:X}) {oldLog} becomes {newLog}");
-                        fixType ??= enemy.Type;
                     }
                 }
             }
-
-            if (fixType != null)
-            {
-                AddRequiredEsps(rdt, fixType.Value);
-            }
-
-            if (rdt.Version == BioVersion.Biohazard1)
-            {
-                if (fixType != null)
-                {
-                    if (_config.Player == 0)
-                    {
-                        g_stickyEnemies.Add(rdt.RdtId, targetEnemy);
-                    }
-                }
-            }
-            else
-            {
-                // Mute all NPCs in the room so that we can hear enemies
-                foreach (var em in rdt.Enemies)
-                {
-                    if (!_enemyHelper.IsEnemy(em.Type))
-                    {
-                        em.SoundBank = 0;
-                    }
-                }
-            }
-            return fixType != null;
         }
 
         private void AddRequiredEsps(RandomizedRdt rdt, byte enemyType)
@@ -515,55 +546,26 @@ namespace IntelOrca.Biohazard.BioRand
             if (newPlacements == 0)
                 return false;
 
-            var numEnemiesRemoved = 0;
-            var enemySpecs = GetEnemySpecs(rdt.RdtId);
-            foreach (var enemySpec in enemySpecs)
+            var enemySpec = GetEnemySpec(rdt.RdtId);
+            if (enemySpec == null)
+                return false;
+
+            NopOutOpcodes(rdt, enemySpec);
+            var currentEnemies = GetEnemiesToReplace(rdt, enemySpec);
+            foreach (var enemy in currentEnemies)
             {
-                if (enemySpec.Nop != null)
-                {
-                    var nopArray = Map.ParseNopArray(enemySpec.Nop, rdt);
-                    foreach (var offset in nopArray)
-                    {
-                        rdt.Nop(offset);
-                        if (g_debugLogging)
-                            _logger.WriteLine($"{rdt.RdtId} (0x{offset:X2}) opcode removed");
-                    }
-                }
-
-                var currentEnemies = rdt.Enemies
-                    .Where(e => enemySpec.ExcludeOffsets?.Contains(e.Offset) != true)
-                    .Where(e => _enemyHelper.ShouldChangeEnemy(_config, e))
-                    .ToArray();
-
-                foreach (var enemy in currentEnemies)
-                {
-                    rdt.Nop(enemy.Offset);
-                    numEnemiesRemoved++;
-                }
+                rdt.Nop(enemy.Offset);
             }
-            if (numEnemiesRemoved != 0)
-                _logger.WriteLine($"{rdt.RdtId}, {numEnemiesRemoved} enemies removed");
+            if (currentEnemies.Length != 0)
+            {
+                _logger.WriteLine($"{rdt.RdtId}, {currentEnemies.Length} enemies removed");
+            }
             return true;
         }
 
         private void RandomiseRoom(Rng rng, RandomizedRdt rdt, MapRoomEnemies enemySpec, SelectableEnemy targetEnemy)
         {
-            if (enemySpec.Nop != null)
-            {
-                var nopArray = Map.ParseNopArray(enemySpec.Nop, rdt);
-                foreach (var offset in nopArray)
-                {
-                    rdt.Nop(offset);
-                    if (g_debugLogging)
-                        _logger.WriteLine($"{rdt.RdtId} (0x{offset:X2}) opcode removed");
-                }
-            }
-
-            var enemiesToChange = rdt.Enemies
-                .Where(e => enemySpec.ExcludeOffsets?.Contains(e.Offset) != true)
-                .Where(e => _enemyHelper.ShouldChangeEnemy(_config, e))
-                .ToArray();
-
+            var enemiesToChange = GetEnemiesToReplace(rdt, enemySpec);
             var possibleTypes = targetEnemy.Types.Shuffle(_rng);
             if (enemySpec.IncludeTypes != null)
             {

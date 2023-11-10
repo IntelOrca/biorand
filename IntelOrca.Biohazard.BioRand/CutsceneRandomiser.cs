@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using IntelOrca.Biohazard.BioRand.RE2;
+using IntelOrca.Biohazard.Script.Opcodes;
 using static IntelOrca.Biohazard.BioRand.EnemyRandomiser;
 
 namespace IntelOrca.Biohazard.BioRand
@@ -16,6 +18,7 @@ namespace IntelOrca.Biohazard.BioRand
         private readonly GameData _gameData;
         private readonly Map _map;
         private readonly Rng _rng;
+        private readonly EnemyRandomiser? _enemyRandomiser;
         private readonly IEnemyHelper _enemyHelper;
         private readonly INpcHelper _npcHelper;
         private readonly Dictionary<RdtId, CutsceneRoomInfo> _cutsceneRoomInfoMap = new Dictionary<RdtId, CutsceneRoomInfo>();
@@ -24,6 +27,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         // Current room
         private CutsceneBuilder _cb = new CutsceneBuilder();
+        private RandomizedRdt? _rdt;
         private RdtId _rdtId;
         private int _plotId;
         private int _lastPlotId;
@@ -31,7 +35,16 @@ namespace IntelOrca.Biohazard.BioRand
         private int[] _allKnownCuts = new int[0];
         private REPosition[] _enemyPositions = new REPosition[0];
 
-        public CutsceneRandomiser(RandoLogger logger, DataManager dataManager, RandoConfig config, GameData gameData, Map map, Rng rng, IEnemyHelper enemyHelper, INpcHelper npcHelper)
+        public CutsceneRandomiser(
+            RandoLogger logger,
+            DataManager dataManager,
+            RandoConfig config,
+            GameData gameData,
+            Map map,
+            Rng rng,
+            EnemyRandomiser? enemyRandomiser,
+            IEnemyHelper enemyHelper,
+            INpcHelper npcHelper)
         {
             _logger = logger;
             _dataManager = dataManager;
@@ -39,6 +52,7 @@ namespace IntelOrca.Biohazard.BioRand
             _gameData = gameData;
             _map = map;
             _rng = rng;
+            _enemyRandomiser = enemyRandomiser;
             _enemyHelper = enemyHelper;
             _npcHelper = npcHelper;
 
@@ -81,6 +95,7 @@ namespace IntelOrca.Biohazard.BioRand
             cb.Begin();
 
             _cb = cb;
+            _rdt = rdt;
             _rdtId = rdt.RdtId;
             _lastPlotId = -1;
             _poi = info.Poi ?? new PointOfInterest[0];
@@ -93,12 +108,21 @@ namespace IntelOrca.Biohazard.BioRand
             // ChainRandomPlot<EnemyWakeUpPlot>();
             // ChainRandomPlot<EnemyWalksInPlot>();
 
-            ChainRandomPlot<AllyWalksInPlot>();
-            ChainRandomPlot<EnemyWalksInPlot>();
-            ChainRandomPlot<EnemyWalksInPlot>();
+            // ChainRandomPlot<AllyWalksInPlot>();
+
+            if (_enemyRandomiser?.ChosenEnemies.ContainsKey(_rdt) == true)
+            {
+                ChainRandomPlot<EnemyWalksInPlot>();
+                ChainRandomPlot<EnemyWalksInPlot>();
+            }
 
             cb.End();
             rdt.CustomAdditionalScript = cb.ToString();
+
+            if (_enemyRandomiser != null)
+            {
+                _enemyRandomiser.ChosenEnemies.Remove(_rdt);
+            }
         }
 
         private void ClearEnemies(RandomizedRdt rdt)
@@ -300,6 +324,32 @@ namespace IntelOrca.Biohazard.BioRand
 
             protected virtual void Build()
             {
+            }
+
+            protected SceEmSetOpcode GenerateEnemy(int id, REPosition position)
+            {
+                var enemyRandomiser = Cr._enemyRandomiser;
+                var enemyHelper = Cr._enemyHelper;
+
+                var type = Re2EnemyIds.ZombieRandom;
+                if (enemyRandomiser!.ChosenEnemies.TryGetValue(Cr._rdt!, out var selectedEnemy))
+                {
+                    type = selectedEnemy.Types[0];
+                }
+
+                var opcode = new SceEmSetOpcode();
+                opcode.Id = (byte)id;
+                opcode.X = (short)position.X;
+                opcode.Y = (short)position.Y;
+                opcode.Z = (short)position.Z;
+                opcode.D = (short)position.D;
+                opcode.Floor = (byte)position.Floor;
+                opcode.KillId = enemyRandomiser.GetNextKillId();
+                opcode.Type = type;
+
+                var enemySpec = new MapRoomEnemies();
+                enemyHelper.SetEnemy(Cr._config, Cr._rng, opcode, enemySpec, type);
+                return opcode;
             }
 
             protected PointOfInterest? AddTriggers(int[]? notCuts)
@@ -528,7 +578,8 @@ namespace IntelOrca.Biohazard.BioRand
                 LogTrigger("re-enter room");
                 for (int i = 0; i < enemyIds.Length; i++)
                 {
-                    Builder.Enemy(enemyIds[i], Cr._enemyPositions[i], 6, 0);
+                    var opcode = GenerateEnemy(enemyIds[i], Cr._enemyPositions[i]);
+                    Builder.Enemy(opcode);
                 }
                 LogAction($"{enemyIds.Length}x enemy");
             }
@@ -548,7 +599,8 @@ namespace IntelOrca.Biohazard.BioRand
                 // Setup enemies in woken up positions
                 for (int i = 0; i < placements.Length; i++)
                 {
-                    Builder.Enemy(enemyIds[i], placements[i], Rng.NextOf(0, 6), 0);
+                    var opcode = GenerateEnemy(enemyIds[i], placements[i]);
+                    Builder.Enemy(opcode);
                 }
 
                 Builder.ElseBeginTriggerThread();
@@ -556,7 +608,10 @@ namespace IntelOrca.Biohazard.BioRand
                 // Setup initial enemy positions
                 for (int i = 0; i < placements.Length; i++)
                 {
-                    Builder.Enemy(enemyIds[i], placements[i], 4, 128);
+                    var opcode = GenerateEnemy(enemyIds[i], placements[i]);
+                    opcode.State = 4;
+                    opcode.Ai = 128;
+                    Builder.Enemy(opcode);
                 }
 
                 // Wait for triggers
@@ -590,14 +645,21 @@ namespace IntelOrca.Biohazard.BioRand
                     {
                         pos = Cr._enemyPositions[i % Cr._enemyPositions.Length];
                     }
-                    Builder.Enemy(eid, pos, 6, 0);
+                    var opcode = GenerateEnemy(eid, pos);
+                    if (opcode.Type <= Re2EnemyIds.ZombieRandom)
+                        opcode.State = 6;
+                    Builder.Enemy(opcode);
                 }
 
                 Builder.ElseBeginTriggerThread();
 
                 foreach (var eid in enemyIds)
                 {
-                    Builder.Enemy(eid, REPosition.OutOfBounds.WithY(door.Position.Y), 6, 128);
+                    var opcode = GenerateEnemy(eid, REPosition.OutOfBounds.WithY(door.Position.Y));
+                    if (opcode.Type <= Re2EnemyIds.ZombieRandom)
+                        opcode.State = 6;
+                    opcode.Ai = 128;
+                    Builder.Enemy(opcode);
                 }
 
                 AddTriggers(door.Cuts);

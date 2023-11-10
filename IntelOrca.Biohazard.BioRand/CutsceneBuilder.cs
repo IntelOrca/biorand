@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.BioRand
 {
@@ -106,9 +107,10 @@ namespace IntelOrca.Biohazard.BioRand
             return Enumerable.Range(start, count).ToArray();
         }
 
-        public void Enemy(int id, REPosition position, int pose, int state)
+        public void Enemy(SceEmSetOpcode opcode)
         {
-            AppendLine("sce_em_set", 0, id, "ENEMY_ZOMBIE_RANDOM", pose, state, position.Floor, 3, 0, 255, position.X, position.Y, position.Z, position.D, 0, 0);
+            AppendLine("sce_em_set", 0, opcode.Id, opcode.Type, opcode.State, opcode.Ai, opcode.Floor, opcode.SoundBank, 0, opcode.KillId,
+                opcode.X, opcode.Y, opcode.Z, opcode.D, 0, 0);
         }
 
         public void Ally(int id, REPosition position)
