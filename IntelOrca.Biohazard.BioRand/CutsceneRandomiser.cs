@@ -8,6 +8,8 @@ namespace IntelOrca.Biohazard.BioRand
 {
     internal class CutsceneRandomiser
     {
+        private static bool g_debugLogging = false;
+
         private readonly RandoLogger _logger;
         private readonly DataManager _dataManager;
         private readonly RandoConfig _config;
@@ -121,6 +123,53 @@ namespace IntelOrca.Biohazard.BioRand
                     }
                 }
             }
+
+            RemoveAllEnemiesFromRoom(rdt);
+        }
+
+        private bool RemoveAllEnemiesFromRoom(RandomizedRdt rdt)
+        {
+            var numEnemiesRemoved = 0;
+            var enemySpecs = GetEnemySpecs(rdt.RdtId);
+            foreach (var enemySpec in enemySpecs)
+            {
+                if (enemySpec.Nop != null)
+                {
+                    var nopArray = Map.ParseNopArray(enemySpec.Nop, rdt);
+                    foreach (var offset in nopArray)
+                    {
+                        rdt.Nop(offset);
+                        if (g_debugLogging)
+                            _logger.WriteLine($"{rdt.RdtId} (0x{offset:X2}) opcode removed");
+                    }
+                }
+
+                var currentEnemies = rdt.Enemies
+                    .Where(e => enemySpec.ExcludeOffsets?.Contains(e.Offset) != true)
+                    .Where(e => _enemyHelper.ShouldChangeEnemy(_config, e))
+                    .ToArray();
+
+                foreach (var enemy in currentEnemies)
+                {
+                    rdt.Nop(enemy.Offset);
+                    numEnemiesRemoved++;
+                }
+            }
+            if (numEnemiesRemoved != 0)
+                _logger.WriteLine($"{rdt.RdtId}, {numEnemiesRemoved} enemies removed");
+            return true;
+        }
+
+        private MapRoomEnemies[] GetEnemySpecs(RdtId rdtId)
+        {
+            var enemySpecs = _map.GetRoom(rdtId)?.Enemies;
+            if (enemySpecs == null)
+            {
+                enemySpecs = new[] { new MapRoomEnemies() };
+            }
+            return enemySpecs
+                .Where(IsEnemySpecValid)
+                .ToArray();
         }
 
         private bool IsEnemySpecValid(MapRoomEnemies enemySpec)
