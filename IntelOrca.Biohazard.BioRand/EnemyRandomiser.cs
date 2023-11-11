@@ -236,7 +236,7 @@ namespace IntelOrca.Biohazard.BioRand
 
             // Multply the ratios by the remaining room count
             enemies = enemies
-                .Select(x => (x.e, q: (x.q * enemyRdts.Count) / enemyRatioTotal))
+                .Select(x => (x.e, q: ((x.q * enemyRdts.Count) + (enemyRatioTotal - 1)) / enemyRatioTotal))
                 .OrderBy(x => x.q)
                 .ToList();
 

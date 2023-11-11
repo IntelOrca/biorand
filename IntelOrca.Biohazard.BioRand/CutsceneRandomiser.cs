@@ -87,9 +87,9 @@ namespace IntelOrca.Biohazard.BioRand
                 .Shuffle(_rng)
                 .ToArray();
 
-            var doors = info.Poi?.Where(x => x.Kind == PoiKind.Door).ToArray() ?? new PointOfInterest[0];
-            var triggers = info.Poi?.Where(x => x.Kind == PoiKind.Trigger).ToArray() ?? new PointOfInterest[0];
-            var meets = info.Poi?.Where(x => x.Kind == PoiKind.Meet).ToArray() ?? new PointOfInterest[0];
+            var doors = info.Poi?.Where(x => x.HasTag(PoiKind.Door)).ToArray() ?? new PointOfInterest[0];
+            var triggers = info.Poi?.Where(x => x.HasTag(PoiKind.Trigger)).ToArray() ?? new PointOfInterest[0];
+            var meets = info.Poi?.Where(x => x.HasTag(PoiKind.Meet)).ToArray() ?? new PointOfInterest[0];
 
             var cb = new CutsceneBuilder();
             cb.Begin();
@@ -385,7 +385,7 @@ namespace IntelOrca.Biohazard.BioRand
                     return null;
 
                 // Random cut
-                var triggerPoi = GetRandomPoi(x => x.Kind == PoiKind.Trigger && !notCuts.Contains(x.Cut));
+                var triggerPoi = GetRandomPoi(x => x.HasTag(PoiKind.Trigger) && !notCuts.Contains(x.Cut));
                 if (triggerPoi == null)
                     throw new Exception("Unable to find cut trigger");
 
@@ -415,7 +415,7 @@ namespace IntelOrca.Biohazard.BioRand
             protected void DoDoorOpenClose(PointOfInterest door)
             {
                 var pos = door.Position;
-                if (door.Kind == "door")
+                if (door.HasTag("door"))
                 {
                     Builder.PlayDoorSoundOpen(pos);
                     Builder.Sleep(30);
@@ -450,7 +450,7 @@ namespace IntelOrca.Biohazard.BioRand
                     Builder.Sleep(2);
                     if (cutFollow)
                         Builder.CutChange(poi.Cut);
-                    LogAction($"{GetCharLogName(enemyId)} travel to {poi}");
+                    LogAction($"{GetCharLogName(enemyId)} travel to {{ {poi} }}");
                 }
                 if (overrideDestination != null)
                 {
@@ -539,7 +539,7 @@ namespace IntelOrca.Biohazard.BioRand
 
             protected PointOfInterest? GetRandomDoor()
             {
-                return GetRandomPoi(x => x.Kind == PoiKind.Door || x.Kind == PoiKind.Stairs);
+                return GetRandomPoi(x => x.HasTag(PoiKind.Door) || x.HasTag(PoiKind.Stairs));
             }
 
             protected PointOfInterest? GetRandomPoi(Predicate<PointOfInterest> predicate)
@@ -685,13 +685,13 @@ namespace IntelOrca.Biohazard.BioRand
         {
             protected override bool Check()
             {
-                return GetRandomPoi(x => x.Kind == PoiKind.Meet || x.Kind == PoiKind.Npc) != null;
+                return GetRandomPoi(x => x.HasTag(PoiKind.Meet) || x.HasTag(PoiKind.Npc)) != null;
             }
 
             protected override void Build()
             {
                 var npcId = Builder.AllocateEnemies(1).FirstOrDefault();
-                var meetup = GetRandomPoi(x => x.Kind == PoiKind.Meet || x.Kind == PoiKind.Npc)!;
+                var meetup = GetRandomPoi(x => x.HasTag(PoiKind.Meet) || x.HasTag(PoiKind.Npc))!;
 
                 Builder.BeginSubProcedure();
                 Builder.BeginCutsceneMode();
@@ -718,7 +718,7 @@ namespace IntelOrca.Biohazard.BioRand
         {
             protected override bool Check()
             {
-                return GetRandomPoi(x => x.Kind == PoiKind.Meet) != null;
+                return GetRandomPoi(x => x.HasTag(PoiKind.Meet)) != null;
             }
 
             protected override void Build()
@@ -729,7 +729,7 @@ namespace IntelOrca.Biohazard.BioRand
                 var entranceDoors = Enumerable.Range(0, numAllys).Select(x => GetRandomDoor()!).ToArray();
                 var exitDoors = Enumerable.Range(0, numAllys).Select(x => GetRandomDoor()!).ToArray();
 
-                var meetup = GetRandomPoi(x => x.Kind == PoiKind.Meet)!;
+                var meetup = GetRandomPoi(x => x.HasTag(PoiKind.Meet))!;
                 var meetA = new REPosition(meetup.X + 1000, meetup.Y, meetup.Z, 2000);
                 var meetB = new REPosition(meetup.X - 1000, meetup.Y, meetup.Z, 0);
                 var meetC = new REPosition(meetup.X, meetup.Y, meetup.Z + 1000, 1000);
@@ -769,7 +769,7 @@ namespace IntelOrca.Biohazard.BioRand
                 Builder.WaitForFlag(100);
                 Builder.WaitForFlag(101);
 
-                LogAction($"Focus on {meetup}");
+                LogAction($"Focus on {{ {meetup} }}");
                 var meetCut = meetup.CloseCut ?? meetup.Cut;
                 Builder.CutChange(meetCut);
                 LongConversation();
@@ -852,7 +852,7 @@ namespace IntelOrca.Biohazard.BioRand
     public class PointOfInterest
     {
         public int Id { get; set; }
-        public string? Kind { get; set; }
+        public string[]? Tags { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
         public int Z { get; set; }
@@ -877,7 +877,12 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
-        public override string ToString() => $"Id = {Id} Kind = {Kind} Cut = {Cut} Position = {Position}";
+        public bool HasTag(string tag)
+        {
+            return Tags.Contains(tag);
+        }
+
+        public override string ToString() => $"Id = {Id} Tags = [{string.Join(", ", Tags)}] Cut = {Cut} Position = {Position}";
     }
 
     public static class PoiKind
