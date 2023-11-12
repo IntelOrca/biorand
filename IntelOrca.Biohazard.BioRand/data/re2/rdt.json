@@ -105,7 +105,10 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 40 ]
+          "excludeTypes": [ 40 ],
+          "nop": [
+            "0x3746-0x3778"
+          ]
         }
       ]
     },

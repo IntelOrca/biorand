@@ -8,6 +8,11 @@ namespace IntelOrca.Biohazard.BioRand
 {
     public class CutsceneBuilder
     {
+        internal const int FG_STATUS = 1;
+        internal const int FG_STOP = 2;
+        internal const int FG_COMMON = 4;
+        internal const int FG_ROOM = 5;
+
         private StringBuilder _sb;
         private StringBuilder _sbMain = new StringBuilder();
         private StringBuilder _sbSub = new StringBuilder();
@@ -15,7 +20,6 @@ namespace IntelOrca.Biohazard.BioRand
 
         private int _enemyCount;
         private int _labelCount;
-        private int _flagCount = 16;
         private int _plotCount;
         private Stack<int> _labelStack = new Stack<int>();
         private bool _else;
@@ -46,10 +50,10 @@ namespace IntelOrca.Biohazard.BioRand
             EndProcedure();
         }
 
-        public int BeginPlot()
+        public int BeginPlot(int flag)
         {
             BeginProcedure($"plot_{_plotCount}");
-            _plotFlagIndex = CreateFlag();
+            _plotFlagIndex = flag;
             _plotCount++;
             _ifPlotTriggered = false;
             _hasPlotTrigger = false;
@@ -59,7 +63,7 @@ namespace IntelOrca.Biohazard.BioRand
         public void IfPlotTriggered()
         {
             BeginIf();
-            CheckFlag(4, _plotFlagIndex);
+            CheckFlag(FG_COMMON, _plotFlagIndex);
             _ifPlotTriggered = true;
         }
 
@@ -84,12 +88,12 @@ namespace IntelOrca.Biohazard.BioRand
         {
             if (_hasPlotTrigger)
             {
-                SetFlag(4, _plotFlagIndex);
+                SetFlag(FG_COMMON, _plotFlagIndex);
             }
             else if (_ifPlotTriggered)
             {
                 Else();
-                SetFlag(4, _plotFlagIndex);
+                SetFlag(FG_COMMON, _plotFlagIndex);
                 EndIf();
             }
             EndProcedure();
@@ -171,7 +175,7 @@ namespace IntelOrca.Biohazard.BioRand
         public void WaitForEnemyTravel(int id)
         {
             BeginWhileLoop(4);
-            CheckFlag(5, id == -1 ? 32 : 33, false);
+            CheckFlag(FG_ROOM, id == -1 ? 32 : 33, false);
             AppendLine("evt_next");
             AppendLine("nop");
             EndLoop();
@@ -222,14 +226,14 @@ namespace IntelOrca.Biohazard.BioRand
 
         public void BeginCutsceneMode()
         {
-            SetFlag(1, 27, true);
-            SetFlag(2, 7, true);
+            SetFlag(FG_STATUS, 27, true);
+            SetFlag(FG_STOP, 7, true);
         }
 
         public void EndCutsceneMode()
         {
-            SetFlag(2, 7, false);
-            SetFlag(1, 27, false);
+            SetFlag(FG_STOP, 7, false);
+            SetFlag(FG_STATUS, 27, false);
         }
 
         public void PlayMusic(RdtId rdtId, byte main, byte sub)
@@ -253,12 +257,6 @@ namespace IntelOrca.Biohazard.BioRand
             AppendLine("ck", group, index, value ? 1 : 0);
         }
 
-        public int CreateFlag()
-        {
-            _flagCount++;
-            return _flagCount - 1;
-        }
-
         public void SetFlag(int group, int index, bool value = true)
         {
             AppendLine("set", group, index, value ? 1 : 0);
@@ -273,17 +271,19 @@ namespace IntelOrca.Biohazard.BioRand
             EndLoop();
         }
 
-        public void WaitForPlot(int id) => WaitForFlag(id);
+        public void WaitForPlot(int id) => WaitForFlag(FG_COMMON, id);
 
         public void WaitForPlotUnlock()
         {
-            WaitForFlag(15, false);
+            WaitForFlag(FG_ROOM, 23, false);
+            WaitForFlag(FG_STATUS, 27, false);
+            WaitForFlag(FG_STOP, 7, false);
         }
 
-        public void WaitForFlag(int flag, bool value = true)
+        public void WaitForFlag(int flagGroup, int flag, bool value = true)
         {
             BeginWhileLoop(4);
-            CheckFlag(4, flag, !value);
+            CheckFlag(flagGroup, flag, !value);
             AppendLine("evt_next");
             AppendLine("nop");
             EndLoop();
@@ -291,12 +291,12 @@ namespace IntelOrca.Biohazard.BioRand
 
         public void LockPlot()
         {
-            SetFlag(4, 15);
+            SetFlag(FG_ROOM, 23);
         }
 
         public void UnlockPlot()
         {
-            SetFlag(4, 15, false);
+            SetFlag(FG_ROOM, 23, false);
         }
 
         public void EndTrigger()
