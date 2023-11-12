@@ -330,6 +330,11 @@ namespace IntelOrca.Biohazard.BioRand
                 {
                     if (config.RandomEvents)
                     {
+                        if (BiohazardVersion != BioVersion.Biohazard2)
+                        {
+                            throw new BioRandUserException("Random events are only supported for RE 2.");
+                        }
+
                         var cutscene = new CutsceneRandomiser(logger, DataManager, config, gameData, map, randomCutscenes, enemyRandomiser, EnemyHelper, NpcHelper);
                         cutscene.Randomise(graph);
                     }
@@ -340,10 +345,6 @@ namespace IntelOrca.Biohazard.BioRand
                     {
                         throw new BioRandUserException("Random events are not yet ready for testing.");
                     }
-                }
-                if (BiohazardVersion != BioVersion.Biohazard2)
-                {
-                    throw new BioRandUserException("Random events are only supported for RE 2.");
                 }
 
                 if (enemyRandomiser != null)
