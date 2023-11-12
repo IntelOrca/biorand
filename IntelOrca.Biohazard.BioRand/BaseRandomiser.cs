@@ -325,18 +325,22 @@ namespace IntelOrca.Biohazard.BioRand
                     }
                 }
 
-#if DEBUG
-                if (config.RandomEvents)
+                var path = DataManager.GetPath(BiohazardVersion, "enable_events");
+                if (File.Exists(path))
                 {
-                    var cutscene = new CutsceneRandomiser(logger, DataManager, config, gameData, map, randomCutscenes, enemyRandomiser, EnemyHelper, NpcHelper);
-                    cutscene.Randomise(graph);
+                    if (config.RandomEvents)
+                    {
+                        var cutscene = new CutsceneRandomiser(logger, DataManager, config, gameData, map, randomCutscenes, enemyRandomiser, EnemyHelper, NpcHelper);
+                        cutscene.Randomise(graph);
+                    }
                 }
-#else
-                if (config.RandomCutscenes && config.RandomEvents)
+                else
                 {
-                    throw new BioRandUserException("Random events are not yet ready for testing.");
+                    if (config.RandomCutscenes && config.RandomEvents)
+                    {
+                        throw new BioRandUserException("Random events are not yet ready for testing.");
+                    }
                 }
-#endif
 
                 if (enemyRandomiser != null)
                 {
