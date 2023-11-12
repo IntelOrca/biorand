@@ -341,6 +341,10 @@ namespace IntelOrca.Biohazard.BioRand
                         throw new BioRandUserException("Random events are not yet ready for testing.");
                     }
                 }
+                if (BiohazardVersion != BioVersion.Biohazard2)
+                {
+                    throw new BioRandUserException("Random events are only supported for RE 2.");
+                }
 
                 if (enemyRandomiser != null)
                 {

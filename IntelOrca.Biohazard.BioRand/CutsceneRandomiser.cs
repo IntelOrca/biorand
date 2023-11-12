@@ -114,7 +114,17 @@ namespace IntelOrca.Biohazard.BioRand
                 if (!enemy.Types.Contains(Re2EnemyIds.ZombieArms) &&
                     !enemy.Types.Contains(Re2EnemyIds.GAdult))
                 {
-                    if (_rng.NextProbability(50))
+                    var wakeUp = false;
+                    if (enemy.Types.Any(x => x <= Re2EnemyIds.ZombieRandom))
+                    {
+                        if (_rng.NextProbability(25))
+                        {
+                            ChainRandomPlot<EnemyWakeUpPlot>();
+                            wakeUp = true;
+                        }
+                    }
+
+                    if (!wakeUp && _rng.NextProbability(50))
                     {
                         ChainRandomPlot<StaticEnemyPlot>();
                         _lastPlotId = -1;
