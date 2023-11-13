@@ -10,6 +10,7 @@ namespace IntelOrca.Biohazard.BioRand
     {
         internal const int FG_STATUS = 1;
         internal const int FG_STOP = 2;
+        internal const int FG_SCENARIO = 3;
         internal const int FG_COMMON = 4;
         internal const int FG_ROOM = 5;
 
@@ -50,7 +51,7 @@ namespace IntelOrca.Biohazard.BioRand
             EndProcedure();
         }
 
-        public int BeginPlot(int flag)
+        public int BeginPlot(ushort flag)
         {
             BeginProcedure($"plot_{_plotCount}");
             _plotFlagIndex = flag;
@@ -63,7 +64,7 @@ namespace IntelOrca.Biohazard.BioRand
         public void IfPlotTriggered()
         {
             BeginIf();
-            CheckFlag(FG_COMMON, _plotFlagIndex);
+            CheckFlag(_plotFlagIndex >> 8, _plotFlagIndex & 0xFF);
             _ifPlotTriggered = true;
         }
 
@@ -88,12 +89,12 @@ namespace IntelOrca.Biohazard.BioRand
         {
             if (_hasPlotTrigger)
             {
-                SetFlag(FG_COMMON, _plotFlagIndex);
+                SetFlag(_plotFlagIndex >> 8, _plotFlagIndex & 0xFF);
             }
             else if (_ifPlotTriggered)
             {
                 Else();
-                SetFlag(FG_COMMON, _plotFlagIndex);
+                SetFlag(_plotFlagIndex >> 8, _plotFlagIndex & 0xFF);
                 EndIf();
             }
             EndProcedure();
@@ -271,7 +272,7 @@ namespace IntelOrca.Biohazard.BioRand
             EndLoop();
         }
 
-        public void WaitForPlot(int id) => WaitForFlag(FG_COMMON, id);
+        public void WaitForPlot(int id) => WaitForFlag(id >> 8, id & 0xFF);
 
         public void WaitForPlotUnlock()
         {

@@ -24,7 +24,7 @@ namespace IntelOrca.Biohazard.BioRand
         private readonly Dictionary<RdtId, CutsceneRoomInfo> _cutsceneRoomInfoMap = new Dictionary<RdtId, CutsceneRoomInfo>();
         private EnemyPosition[] _allEnemyPositions = new EnemyPosition[0];
         private Plot[] _registeredPlots = new Plot[0];
-        private Queue<byte> _flagQueue = new Queue<byte>();
+        private Queue<ushort> _flagQueue = new Queue<ushort>();
 
         // Current room
         private CutsceneBuilder _cb = new CutsceneBuilder();
@@ -78,7 +78,7 @@ namespace IntelOrca.Biohazard.BioRand
             if (!_cutsceneRoomInfoMap.TryGetValue(rdt.RdtId, out var info))
                 return;
 
-            _logger.WriteLine($"  {rdt}:");
+            _logger.WriteLine($"{rdt}:");
 
             ClearEnemies(rdt);
 
@@ -109,6 +109,10 @@ namespace IntelOrca.Biohazard.BioRand
             // ChainRandomPlot<EnemyWalksInPlot>();
             // ChainRandomPlot<AllyWalksInPlot>();
 
+            // for (var i = 0; i < 4; i++)
+            // {
+            //     ChainRandomPlot<AllyStaticPlot>();
+            // }
             if (_enemyRandomiser?.ChosenEnemies.TryGetValue(_rdt, out var enemy) == true)
             {
                 if (!enemy.Types.Contains(Re2EnemyIds.ZombieArms) &&
@@ -129,6 +133,7 @@ namespace IntelOrca.Biohazard.BioRand
                         ChainRandomPlot<StaticEnemyPlot>();
                         _lastPlotId = -1;
                     }
+                    ChainRandomPlot<EnemyWalksInPlot>();
                     for (var i = 0; i < 3; i++)
                     {
                         if (_rng.NextProbability(50))
@@ -161,7 +166,8 @@ namespace IntelOrca.Biohazard.BioRand
                         foreach (var offset in nopArray)
                         {
                             rdt.Nop(offset);
-                            _logger.WriteLine($"    {rdt.RdtId} (0x{offset:X2}) opcode removed");
+                            if (g_debugLogging)
+                                _logger.WriteLine($"    {rdt.RdtId} (0x{offset:X2}) opcode removed");
                         }
                     }
                 }
@@ -199,7 +205,7 @@ namespace IntelOrca.Biohazard.BioRand
                 }
             }
             if (numEnemiesRemoved != 0)
-                _logger.WriteLine($"{rdt.RdtId}, {numEnemiesRemoved} enemies removed");
+                _logger.WriteLine($"  {numEnemiesRemoved} enemies removed");
             return true;
         }
 
@@ -315,19 +321,23 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
-        private byte GetNextFlag()
+        private ushort GetNextFlag()
         {
             if (_flagQueue.Count == 0)
             {
-                foreach (var value in _availableFlags)
+                foreach (var value in _availableFlags4)
                 {
-                    _flagQueue.Enqueue(value);
+                    _flagQueue.Enqueue((ushort)(value | (CutsceneBuilder.FG_COMMON << 8)));
+                }
+                foreach (var value in _availableFlags5)
+                {
+                    _flagQueue.Enqueue((ushort)(value | (CutsceneBuilder.FG_SCENARIO << 8)));
                 }
             }
             return _flagQueue.Dequeue();
         }
 
-        private readonly static byte[] _availableFlags = new byte[]
+        private readonly static byte[] _availableFlags4 = new byte[]
         {
             4, 8, 11, 12, 13, 16, 17, 20, 21, 22, 25, 28, 29, 42, 44, 45, 56,
             66, 71, 81, 82, 104, 123, 126, 127, 132, 134, 150, 157, 158, 166,
@@ -336,6 +346,30 @@ namespace IntelOrca.Biohazard.BioRand
             216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228,
             229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241,
             242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 255,
+        };
+
+        private readonly static byte[] _availableFlags5 = new byte[]
+        {
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+            16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+            29, 30, 31, 32, 34, 38, 39, 40, 41, 42, 43, 44, 45,
+            46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58,
+            59, 60, 61, 62, 63, 69, 70, 71, 72, 73, 74, 75, 76,
+            77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+            90, 91, 92, 93, 94, 95, 96, 99, 100, 105, 108, 109,
+            110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120,
+            121, 122, 123, 124, 125, 126, 127, 132, 133, 134, 135,
+            136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146,
+            147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157,
+            158, 159, 161, 162, 163, 164, 165, 166, 167, 168, 169,
+            170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180,
+            181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191,
+            194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204,
+            205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215,
+            216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226,
+            227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237,
+            238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248,
+            249, 250, 251, 252, 253, 254, 255
         };
 
         private abstract class Plot
@@ -354,7 +388,7 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 Cr._plotId = Builder.BeginPlot(Cr.GetNextFlag());
 
-                Logger.WriteLine($"    [plot] #{Cr._plotId}: {GetType().Name}");
+                Logger.WriteLine($"    [plot] #{Cr._plotId - 0x0400}: {GetType().Name}");
                 Build();
                 Builder.EndPlot();
                 Cr._lastPlotId = Cr._plotId;
@@ -399,18 +433,18 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 if (Cr._lastPlotId != -1)
                 {
-                    LogTrigger($"after plot {Cr._lastPlotId}");
+                    LogTrigger($"after plot {Cr._lastPlotId - 0x0400}");
                     Builder.WaitForPlot(Cr._lastPlotId);
                 }
 
-                var sleepTime = Rng.Next(0, 10);
+                var sleepTime = 0;
                 var justSleep = false;
                 if (notCuts == null || notCuts.Length == 0)
                 {
                     if (Rng.NextProbability(50))
                     {
                         // Just a sleep trigger
-                        sleepTime = Rng.Next(5, 30);
+                        sleepTime = Rng.Next(5, 20);
                         justSleep = true;
                     }
                 }
@@ -428,7 +462,7 @@ namespace IntelOrca.Biohazard.BioRand
                     return null;
 
                 // Random cut
-                var triggerPoi = GetRandomPoi(x => x.HasTag(PoiKind.Trigger) && !notCuts.Contains(x.Cut));
+                var triggerPoi = GetRandomPoi(x => x.HasTag(PoiKind.Trigger) && notCuts?.Contains(x.Cut) != true);
                 if (triggerPoi == null)
                     throw new Exception("Unable to find cut trigger");
 
@@ -738,6 +772,11 @@ namespace IntelOrca.Biohazard.BioRand
                 Builder.Sleep(60);
                 Builder.CutRevert();
                 Builder.EndCutsceneMode();
+                Builder.SetFlag(Cr._plotId >> 8, Cr._plotId & 0xFF);
+
+                // Delay next plot for at least 4s
+                Builder.Sleep(30 * 4);
+
                 Builder.UnlockPlot();
             }
         }
@@ -757,7 +796,7 @@ namespace IntelOrca.Biohazard.BioRand
                 Builder.BeginSubProcedure();
                 Builder.BeginCutsceneMode();
                 Builder.BeginIf();
-                Builder.CheckFlag(CutsceneBuilder.FG_COMMON, Cr._plotId);
+                Builder.CheckFlag(Cr._plotId >> 8, Cr._plotId & 0xFF);
                 Builder.PlayVoice(21);
                 Builder.Else();
                 if (meetup.CloseCut != null)
@@ -765,7 +804,7 @@ namespace IntelOrca.Biohazard.BioRand
                 LongConversation();
                 if (meetup.CloseCut != null)
                     Builder.CutRevert();
-                Builder.SetFlag(CutsceneBuilder.FG_COMMON, Cr._plotId);
+                Builder.SetFlag(Cr._plotId >> 8, Cr._plotId & 0xFF);
                 Builder.EndIf();
                 Builder.EndCutsceneMode();
                 var eventProc = Builder.EndSubProcedure();
@@ -811,7 +850,7 @@ namespace IntelOrca.Biohazard.BioRand
                 Builder.LockPlot();
 
                 // Mark the cutscene as done in case it softlocks
-                Builder.SetFlag(CutsceneBuilder.FG_COMMON, Cr._plotId);
+                Builder.SetFlag(Cr._plotId >> 8, Cr._plotId & 0xFF);
 
                 DoDoorOpenCloseCut(entranceDoors[0]);
                 Builder.BeginCutsceneMode();
