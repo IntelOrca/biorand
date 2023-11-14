@@ -15,7 +15,7 @@ namespace IntelOrca.Biohazard.BioRand
 {
     internal class EnemyRandomiser
     {
-        private static bool g_debugLogging = false;
+        private static bool g_debugLogging = true;
         private static readonly Dictionary<RdtId, SelectableEnemy> g_stickyEnemies = new Dictionary<RdtId, SelectableEnemy>();
         private static int g_player;
 
@@ -239,6 +239,15 @@ namespace IntelOrca.Biohazard.BioRand
                 .Select(x => (x.e, q: ((x.q * enemyRdts.Count) + (enemyRatioTotal - 1)) / enemyRatioTotal))
                 .OrderBy(x => x.q)
                 .ToList();
+
+            if (g_debugLogging)
+            {
+                _logger.WriteLine("Random room order:");
+                foreach (var r in enemyRdts)
+                {
+                    _logger.WriteLine($"  {r.RdtId}");
+                }
+            }
 
             // First randomize rooms that ignore enemy ratios
             // This was added for RE 1 to stop Yawn (who can only be in two rooms) always appearing in those rooms
