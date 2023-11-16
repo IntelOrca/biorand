@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using IntelOrca.Biohazard.Script.Opcodes;
 
@@ -19,7 +18,6 @@ namespace IntelOrca.Biohazard.BioRand
         private StringBuilder _sbSub = new StringBuilder();
         private string? _subProcedureName;
 
-        private int _enemyCount;
         private int _labelCount;
         private int _plotCount;
         private Stack<int> _labelStack = new Stack<int>();
@@ -28,6 +26,8 @@ namespace IntelOrca.Biohazard.BioRand
         private int _genericProcIndex;
         private bool _ifPlotTriggered;
         private bool _hasPlotTrigger;
+
+        public Queue<int> AvailableEnemyIds { get; } = new Queue<int>();
 
         public override string ToString() => _sb.ToString();
 
@@ -70,12 +70,17 @@ namespace IntelOrca.Biohazard.BioRand
 
         public void ElseBeginTriggerThread()
         {
+            Else();
+            BeginTriggerThread();
+        }
+
+        public void BeginTriggerThread()
+        {
             if (!_ifPlotTriggered)
                 throw new InvalidOperationException("Plot not activated");
 
             var plotLoopName = $"plot_loop_{_plotCount - 1}";
 
-            Else();
             CallThread(plotLoopName);
             EndIf();
             EndProcedure();
@@ -107,9 +112,15 @@ namespace IntelOrca.Biohazard.BioRand
 
         public int[] AllocateEnemies(int count)
         {
-            var start = _enemyCount;
-            _enemyCount += count;
-            return Enumerable.Range(start, count).ToArray();
+            var result = new List<int>();
+            for (var i = 0; i < count; i++)
+            {
+                if (AvailableEnemyIds.Count == 0)
+                    break;
+
+                result.Add(AvailableEnemyIds.Dequeue());
+            }
+            return result.ToArray();
         }
 
         public void Enemy(SceEmSetOpcode opcode)

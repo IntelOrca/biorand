@@ -103,6 +103,20 @@ namespace IntelOrca.Biohazard.BioRand
             _allKnownCuts = _poi.SelectMany(x => x.AllCuts).ToArray();
             TidyPoi();
 
+            var reservedIds = _rdt.Enemies
+                .Select(x => x.Id)
+                .Distinct()
+                .ToArray();
+            var availableIds = Enumerable
+                .Range(0, 32)
+                .Select(x => (byte)x)
+                .Except(reservedIds)
+                .ToArray();
+            foreach (var id in availableIds)
+            {
+                _cb.AvailableEnemyIds.Enqueue(id);
+            }
+
             // ChainRandomPlot<EnemyChangePlot>();
             // ChainRandomPlot<AllyStaticPlot>();
             // ChainRandomPlot<EnemyWakeUpPlot>();
@@ -746,8 +760,7 @@ namespace IntelOrca.Biohazard.BioRand
                     Builder.Enemy(opcode);
                 }
 
-                Builder.ElseBeginTriggerThread();
-
+                Builder.Else();
                 foreach (var eid in enemyIds)
                 {
                     var opcode = GenerateEnemy(eid, REPosition.OutOfBounds.WithY(door.Position.Y));
@@ -757,6 +770,7 @@ namespace IntelOrca.Biohazard.BioRand
                     Builder.Enemy(opcode);
                 }
 
+                Builder.BeginTriggerThread();
                 AddTriggers(door.Cuts);
 
                 // Move enemies into position and cut to them
