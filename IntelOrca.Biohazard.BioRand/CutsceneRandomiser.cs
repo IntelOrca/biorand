@@ -520,7 +520,6 @@ namespace IntelOrca.Biohazard.BioRand
 
             protected void DoDoorOpenCloseCut(PointOfInterest door)
             {
-                Builder.SetFlag(CutsceneBuilder.FG_STOP, 7, true);
                 DoDoorOpenClose(door);
                 Builder.CutChange(door.Cut);
                 LogAction($"door cut {door.Cut}");
@@ -777,6 +776,10 @@ namespace IntelOrca.Biohazard.BioRand
                 Builder.LockPlot();
                 DoDoorOpenCloseCut(door);
                 Builder.BeginCutsceneMode();
+
+                var previousEnemies = Builder.PlacedEnemyIds.ToArray();
+                LockEnemies(previousEnemies);
+
                 foreach (var eid in enemyIds)
                 {
                     var pos = door.Position + new REPosition(
@@ -788,6 +791,7 @@ namespace IntelOrca.Biohazard.BioRand
                 }
                 LogAction($"{enemyIds.Length}x enemy walk in");
                 Builder.Sleep(60);
+                UnlockEnemies(previousEnemies);
                 Builder.CutRevert();
                 Builder.EndCutsceneMode();
                 Builder.SetFlag(Cr._plotId >> 8, Cr._plotId & 0xFF);
@@ -796,6 +800,22 @@ namespace IntelOrca.Biohazard.BioRand
                 Builder.Sleep(30 * 4);
 
                 Builder.UnlockPlot();
+            }
+
+            private void LockEnemies(int[] enemies)
+            {
+                foreach (var eid in enemies)
+                {
+                    Builder.DeactivateEnemy(eid);
+                }
+            }
+
+            private void UnlockEnemies(int[] enemies)
+            {
+                foreach (var eid in enemies)
+                {
+                    Builder.ActivateEnemy(eid);
+                }
             }
 
             private int GetMaxEnemiesToWalkIn()

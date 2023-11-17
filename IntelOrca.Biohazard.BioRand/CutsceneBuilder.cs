@@ -28,6 +28,7 @@ namespace IntelOrca.Biohazard.BioRand
         private bool _hasPlotTrigger;
 
         public Queue<int> AvailableEnemyIds { get; } = new Queue<int>();
+        public HashSet<int> PlacedEnemyIds { get; } = new HashSet<int>();
 
         public override string ToString() => _sb.ToString();
 
@@ -127,6 +128,7 @@ namespace IntelOrca.Biohazard.BioRand
         {
             AppendLine("sce_em_set", 0, opcode.Id, opcode.Type, opcode.State, opcode.Ai, opcode.Floor, opcode.SoundBank, 0, opcode.KillId,
                 opcode.X, opcode.Y, opcode.Z, opcode.D, 0, 0);
+            PlacedEnemyIds.Add(opcode.Id);
         }
 
         public void Ally(int id, REPosition position)
@@ -139,6 +141,14 @@ namespace IntelOrca.Biohazard.BioRand
             WorkOnEnemy(id);
             AppendLine("pos_set", 0, pos.X, pos.Y, pos.Z);
             AppendLine("dir_set", 0, 0, pos.D, 0);
+        }
+
+        public void DeactivateEnemy(int id)
+        {
+            WorkOnEnemy(id);
+            AppendLine("member_copy", 16, 7);
+            AppendLine("calc", 0, "OP_OR", 16, "0x8000");
+            AppendLine("member_set2", 7, 16);
         }
 
         public void ActivateEnemy(int id)
