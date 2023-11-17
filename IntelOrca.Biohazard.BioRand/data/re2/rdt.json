@@ -587,11 +587,13 @@
           "randomPlacements": false
         },
         {
+          "nop": [ "0x10A8" ],
           "randomPlacements": true,
           "scenario": 0,
           "player": 0
         },
         {
+          "nop": [ "0x0F90" ],
           "randomPlacements": true,
           "scenario": 1,
           "player": 1
