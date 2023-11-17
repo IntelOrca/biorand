@@ -743,7 +743,7 @@ namespace IntelOrca.Biohazard.BioRand
             protected override void Build()
             {
                 var door = GetRandomDoor()!;
-                var enemyIds = Builder.AllocateEnemies(Rng.Next(1, 5));
+                var enemyIds = Builder.AllocateEnemies(Rng.Next(1, GetMaxEnemiesToWalkIn() + 1));
 
                 Builder.IfPlotTriggered();
                 for (int i = 0; i < enemyIds.Length; i++)
@@ -779,7 +779,11 @@ namespace IntelOrca.Biohazard.BioRand
                 Builder.BeginCutsceneMode();
                 foreach (var eid in enemyIds)
                 {
-                    Builder.MoveEnemy(eid, door.Position);
+                    var pos = door.Position + new REPosition(
+                        Rng.Next(-50, 50),
+                        0,
+                        Rng.Next(-50, 50));
+                    Builder.MoveEnemy(eid, pos);
                     Builder.ActivateEnemy(eid);
                 }
                 LogAction($"{enemyIds.Length}x enemy walk in");
@@ -792,6 +796,40 @@ namespace IntelOrca.Biohazard.BioRand
                 Builder.Sleep(30 * 4);
 
                 Builder.UnlockPlot();
+            }
+
+            private int GetMaxEnemiesToWalkIn()
+            {
+                var type = Re2EnemyIds.ZombieRandom;
+                if (Cr._enemyRandomiser!.ChosenEnemies.TryGetValue(Cr._rdt!, out var selectedEnemy))
+                {
+                    type = selectedEnemy.Types.FirstOrDefault();
+                }
+                switch (type)
+                {
+                    case Re2EnemyIds.ZombieDog:
+                        return 4;
+                    case Re2EnemyIds.Crow:
+                        return 6;
+                    case Re2EnemyIds.LickerRed:
+                    case Re2EnemyIds.LickerGrey:
+                        return 2;
+                    case Re2EnemyIds.Spider:
+                        return 3;
+                    case Re2EnemyIds.GEmbryo:
+                        return 8;
+                    case Re2EnemyIds.Tyrant1:
+                        return 4;
+                    case Re2EnemyIds.Ivy:
+                    case Re2EnemyIds.IvyPurple:
+                        return 2;
+                    case Re2EnemyIds.Birkin1:
+                        return 1;
+                    case Re2EnemyIds.GiantMoth:
+                        return 1;
+                    default:
+                        return 4;
+                }
             }
         }
 
@@ -954,6 +992,9 @@ namespace IntelOrca.Biohazard.BioRand
         }
 
         public static REPosition OutOfBounds { get; } = new REPosition(-32000, -10000, -32000);
+
+        public static REPosition operator +(REPosition a, REPosition b)
+            => new REPosition(a.X + b.X, a.Y + b.Y, a.Z + b.Z, a.D + b.D);
 
         public override string ToString() => $"({X},{Y},{Z},{D})";
     }
