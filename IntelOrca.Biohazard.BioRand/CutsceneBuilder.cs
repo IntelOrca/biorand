@@ -141,6 +141,7 @@ namespace IntelOrca.Biohazard.BioRand
             WorkOnEnemy(id);
             AppendLine("pos_set", 0, pos.X, pos.Y, pos.Z);
             AppendLine("dir_set", 0, 0, pos.D, 0);
+            AppendLine("member_set", "M_FLOOR", pos.Y / -1800);
         }
 
         public void DeactivateEnemy(int id)
@@ -272,6 +273,21 @@ namespace IntelOrca.Biohazard.BioRand
         public void ResumeMusic()
         {
             AppendLine("sce_bgm_control", 0, 3, 0, 0, 0);
+        }
+
+        public void SetFade(int a, int b, int c, int d, int e)
+        {
+            AppendLine("sce_fade_set", a, b, c, d, e);
+        }
+
+        public void AdjustFade(int a, int b, int c)
+        {
+            AppendLine("sce_fade_adjust", a, b, c);
+        }
+
+        public void Sleep1()
+        {
+            AppendLine("evt_next");
         }
 
         public void CheckFlag(int group, int index, bool value = true)

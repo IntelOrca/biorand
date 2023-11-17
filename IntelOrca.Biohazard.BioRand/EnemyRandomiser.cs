@@ -15,7 +15,7 @@ namespace IntelOrca.Biohazard.BioRand
 {
     internal class EnemyRandomiser
     {
-        private static bool g_debugLogging = true;
+        private static bool g_debugLogging = false;
         private static readonly Dictionary<RdtId, SelectableEnemy> g_stickyEnemies = new Dictionary<RdtId, SelectableEnemy>();
         private static int g_player;
 

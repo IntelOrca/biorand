@@ -34,7 +34,7 @@ namespace IntelOrca.Biohazard.BioRand
         private int _lastPlotId;
         private PointOfInterest[] _poi = new PointOfInterest[0];
         private int[] _allKnownCuts = new int[0];
-        private REPosition[] _enemyPositions = new REPosition[0];
+        private EndlessBag<REPosition> _enemyPositions;
 
         public CutsceneRandomiser(
             RandoLogger logger,
@@ -56,6 +56,7 @@ namespace IntelOrca.Biohazard.BioRand
             _enemyRandomiser = enemyRandomiser;
             _enemyHelper = enemyHelper;
             _npcHelper = npcHelper;
+            _enemyPositions = new EndlessBag<REPosition>(_rng, new REPosition[0]);
 
             LoadCutsceneRoomInfo();
             ReadEnemyPlacements();
@@ -78,15 +79,17 @@ namespace IntelOrca.Biohazard.BioRand
             if (!_cutsceneRoomInfoMap.TryGetValue(rdt.RdtId, out var info))
                 return;
 
-            _logger.WriteLine($"{rdt}:");
-
-            ClearEnemies(rdt);
-
             _enemyPositions = _allEnemyPositions
                 .Where(x => x.RdtId == rdt.RdtId)
                 .Select(p => new REPosition(p.X, p.Y, p.Z, p.D))
-                .Shuffle(_rng)
-                .ToArray();
+                .ToEndlessBag(_rng);
+
+            if (_enemyPositions.Count == 0)
+                return;
+
+            _logger.WriteLine($"{rdt}:");
+
+            ClearEnemies(rdt);
 
             var doors = info.Poi?.Where(x => x.HasTag(PoiKind.Door)).ToArray() ?? new PointOfInterest[0];
             var triggers = info.Poi?.Where(x => x.HasTag(PoiKind.Trigger)).ToArray() ?? new PointOfInterest[0];
@@ -132,20 +135,27 @@ namespace IntelOrca.Biohazard.BioRand
                 if (!enemy.Types.Contains(Re2EnemyIds.ZombieArms) &&
                     !enemy.Types.Contains(Re2EnemyIds.GAdult))
                 {
-                    var wakeUp = false;
-                    if (enemy.Types.Any(x => x <= Re2EnemyIds.ZombieRandom))
+                    if (_rng.NextProbability(10))
                     {
-                        if (_rng.NextProbability(25))
-                        {
-                            ChainRandomPlot<EnemyWakeUpPlot>();
-                            wakeUp = true;
-                        }
+                        ChainRandomPlot<EnemyFromDarkPlot>();
                     }
-
-                    if (!wakeUp && _rng.NextProbability(50))
+                    else
                     {
-                        ChainRandomPlot<StaticEnemyPlot>();
-                        _lastPlotId = -1;
+                        var wakeUp = false;
+                        if (enemy.Types.Any(x => x <= Re2EnemyIds.ZombieRandom))
+                        {
+                            if (_rng.NextProbability(25))
+                            {
+                                ChainRandomPlot<EnemyWakeUpPlot>();
+                                wakeUp = true;
+                            }
+                        }
+
+                        if (!wakeUp && _rng.NextProbability(50))
+                        {
+                            ChainRandomPlot<StaticEnemyPlot>();
+                            _lastPlotId = -1;
+                        }
                     }
                     ChainRandomPlot<EnemyWalksInPlot>();
                     for (var i = 0; i < 3; i++)
@@ -325,6 +335,7 @@ namespace IntelOrca.Biohazard.BioRand
                 new StaticEnemyPlot(),
                 new EnemyChangePlot(),
                 new EnemyWakeUpPlot(),
+                new EnemyFromDarkPlot(),
                 new EnemyWalksInPlot(),
                 new AllyStaticPlot(),
                 new AllyWalksInPlot()
@@ -402,7 +413,7 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 Cr._plotId = Builder.BeginPlot(Cr.GetNextFlag());
 
-                Logger.WriteLine($"    [plot] #{Cr._plotId - 0x0400}: {GetType().Name}");
+                Logger.WriteLine($"    [plot] #{Cr._plotId - 0x0300}: {GetType().Name}");
                 Build();
                 Builder.EndPlot();
                 Cr._lastPlotId = Cr._plotId;
@@ -443,11 +454,11 @@ namespace IntelOrca.Biohazard.BioRand
                 return opcode;
             }
 
-            protected PointOfInterest? AddTriggers(int[]? notCuts)
+            protected PointOfInterest? AddTriggers(int[]? notCuts = null)
             {
                 if (Cr._lastPlotId != -1)
                 {
-                    LogTrigger($"after plot {Cr._lastPlotId - 0x0400}");
+                    LogTrigger($"after plot {Cr._lastPlotId - 0x0300}");
                     Builder.WaitForPlot(Cr._lastPlotId);
                 }
 
@@ -459,7 +470,7 @@ namespace IntelOrca.Biohazard.BioRand
                     {
                         // Just a sleep trigger
                         sleepTime = Rng.Next(5, 20);
-                        justSleep = true;
+                        // justSleep = true;
                     }
                 }
 
@@ -660,12 +671,11 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 var numPlacements = Rng.Next(2, 6);
                 var placements = Cr._enemyPositions
-                    .Take(numPlacements)
-                    .ToArray();
+                    .Next(numPlacements);
                 var enemyIds = Builder.AllocateEnemies(placements.Length);
                 for (int i = 0; i < enemyIds.Length; i++)
                 {
-                    var opcode = GenerateEnemy(enemyIds[i], Cr._enemyPositions[i]);
+                    var opcode = GenerateEnemy(enemyIds[i], Cr._enemyPositions.Next());
                     Builder.Enemy(opcode);
                 }
                 LogAction($"{enemyIds.Length}x enemy");
@@ -678,15 +688,14 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 var numPlacements = Rng.Next(6, 12);
                 var placements = Cr._enemyPositions
-                    .Take(numPlacements)
-                    .ToArray();
+                    .Next(numPlacements);
                 var enemyIds = Builder.AllocateEnemies(placements.Length);
 
                 Builder.IfPlotTriggered();
                 LogTrigger("re-enter room");
                 for (int i = 0; i < enemyIds.Length; i++)
                 {
-                    var opcode = GenerateEnemy(enemyIds[i], Cr._enemyPositions[i]);
+                    var opcode = GenerateEnemy(enemyIds[i], Cr._enemyPositions.Next());
                     Builder.Enemy(opcode);
                 }
                 LogAction($"{enemyIds.Length}x enemy");
@@ -699,8 +708,7 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 var numPlacements = Rng.Next(6, 12);
                 var placements = Cr._enemyPositions
-                    .Take(numPlacements)
-                    .ToArray();
+                    .Next(numPlacements);
                 var enemyIds = Builder.AllocateEnemies(placements.Length);
 
                 Builder.IfPlotTriggered();
@@ -723,7 +731,7 @@ namespace IntelOrca.Biohazard.BioRand
                 }
 
                 // Wait for triggers
-                AddTriggers(new int[0]);
+                AddTriggers();
 
                 // Wake up enemies incrementally
                 Builder.LockPlot();
@@ -734,6 +742,56 @@ namespace IntelOrca.Biohazard.BioRand
                 }
                 Builder.UnlockPlot();
                 LogAction($"{enemyIds.Length}x enemy wake up");
+            }
+        }
+
+        private class EnemyFromDarkPlot : Plot
+        {
+            protected override void Build()
+            {
+                var maxUsualPlacements = Cr._enemyPositions.Count;
+                var numPlacements = Rng.Next(maxUsualPlacements - 2, maxUsualPlacements + 2);
+                var placements = Cr._enemyPositions
+                    .Next(numPlacements);
+                var enemyIds = Builder.AllocateEnemies(placements.Length);
+
+                Builder.IfPlotTriggered();
+                for (int i = 0; i < enemyIds.Length; i++)
+                {
+                    var opcode = GenerateEnemy(enemyIds[i], Cr._enemyPositions.Next());
+                    Builder.Enemy(opcode);
+                }
+
+                Builder.Else();
+                for (int i = 0; i < enemyIds.Length; i++)
+                {
+                    var opcode = GenerateEnemy(enemyIds[i], REPosition.OutOfBounds);
+                    opcode.Ai = 128;
+                    Builder.Enemy(opcode);
+                }
+
+                Builder.BeginTriggerThread();
+                AddTriggers();
+                Builder.LockPlot();
+
+                Builder.SetFade(0, 2, 7, 0, 0);
+                for (var i = 0; i < 5; i++)
+                {
+                    Builder.AdjustFade(0, 0, ((i & 1) == 0) ? 0 : 127);
+                    Builder.Sleep1();
+                }
+                Builder.AdjustFade(0, 0, 127);
+                Builder.Sleep(30);
+                foreach (var eid in enemyIds)
+                {
+                    Builder.MoveEnemy(eid, Cr._enemyPositions.Next());
+                    Builder.ActivateEnemy(eid);
+                }
+                Builder.AdjustFade(0, 0, 0);
+                Builder.Sleep1();
+
+                Builder.UnlockPlot();
+                LogAction($"{enemyIds.Length}x enemy spawn in from dark");
             }
         }
 
@@ -749,9 +807,9 @@ namespace IntelOrca.Biohazard.BioRand
                 {
                     int eid = enemyIds[i];
                     var pos = door.Position;
-                    if (Cr._enemyPositions.Length != 0)
+                    if (Cr._enemyPositions.Count != 0)
                     {
-                        pos = Cr._enemyPositions[i % Cr._enemyPositions.Length];
+                        pos = Cr._enemyPositions.Next();
                     }
                     var opcode = GenerateEnemy(eid, pos);
                     if (opcode.Type <= Re2EnemyIds.ZombieRandom)

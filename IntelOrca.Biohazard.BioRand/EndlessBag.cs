@@ -32,5 +32,15 @@ namespace IntelOrca.Biohazard.BioRand
             }
             return _items.Dequeue();
         }
+
+        public T[] Next(int count)
+        {
+            var result = new T[count];
+            for (var i = 0; i < count; i++)
+            {
+                result[i] = Next();
+            }
+            return result;
+        }
     }
 }
