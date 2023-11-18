@@ -131,9 +131,9 @@ namespace IntelOrca.Biohazard.BioRand
             PlacedEnemyIds.Add(opcode.Id);
         }
 
-        public void Ally(int id, REPosition position)
+        public void Ally(int id, byte type, REPosition position)
         {
-            AppendLine("sce_em_set", 0, id, "ENEMY_CLAIRE_REDFIELD", 0, 64, position.Floor, 3, 0, 255, position.X, position.Y, position.Z, position.D, 0, 0);
+            AppendLine("sce_em_set", 0, id, type, 0, 64, position.Floor, 3, 0, 255, position.X, position.Y, position.Z, position.D, 0, 0);
         }
 
         public void MoveEnemy(int id, REPosition pos)

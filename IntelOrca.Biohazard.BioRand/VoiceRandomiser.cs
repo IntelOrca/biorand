@@ -37,6 +37,9 @@ namespace IntelOrca.Biohazard.BioRand
         private List<RoomVoices> _roomVoices = new List<RoomVoices>();
         private RdtId? _lastRdtId;
 
+        private List<int> _newStageVoiceCount = new List<int>();
+        private int _randomEventCutsceneCount = 256;
+
         public HashSet<string> SelectedActors { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         public VoiceRandomiser(
@@ -206,7 +209,29 @@ namespace IntelOrca.Biohazard.BioRand
             ScanCustomSamples();
             PopulateRoomVoices();
             RandomizeRooms(_rng.NextFork());
-            SetVoices();
+        }
+
+        public int[] AllocateConversation(Rng rng, RdtId rdtId, int count, string[] speakers, string[] actors)
+        {
+            var stage = rdtId.Stage;
+            while (_newStageVoiceCount.Count <= stage)
+            {
+                _newStageVoiceCount.Add(0);
+            }
+
+            var vId = 100 + _newStageVoiceCount[stage];
+            _newStageVoiceCount[stage] += count;
+
+            var cutscene = _randomEventCutsceneCount++;
+            for (var i = 0; i < count; i++)
+            {
+                var voiceSample = new VoiceSample();
+                voiceSample.Path = $"pl{_config.Player}/voice/stage{stage + 1}/v{vId + i:000}.sap";
+                voiceSample.Player = _config.Player;
+                voiceSample.Cutscene = cutscene;
+                RandomizeVoice(rng, voiceSample, "n/a", _rng.NextOf(speakers), null, actors);
+            }
+            return Enumerable.Range(vId, count).ToArray();
         }
 
         private void ScanCustomSamples()
@@ -458,9 +483,9 @@ namespace IntelOrca.Biohazard.BioRand
 
         private enum SampleCheckResult { Bad, Good, Clip }
 
-        private void SetVoices()
+        public void SetVoices()
         {
-            var groups = _voiceSamples.GroupBy(x => (x.Path, x.SapIndex));
+            var groups = _randomized.GroupBy(x => (x.Path, x.SapIndex));
             foreach (var group in groups)
             {
                 var sampleOrder = group.OrderBy(x => x.Start).ToArray();

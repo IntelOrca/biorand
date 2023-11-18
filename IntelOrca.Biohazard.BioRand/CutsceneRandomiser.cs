@@ -19,8 +19,8 @@ namespace IntelOrca.Biohazard.BioRand
         private readonly Map _map;
         private readonly Rng _rng;
         private readonly EnemyRandomiser? _enemyRandomiser;
-        private readonly IEnemyHelper _enemyHelper;
-        private readonly INpcHelper _npcHelper;
+        private readonly NPCRandomiser? _npcRandomiser;
+        private readonly VoiceRandomiser? _voiceRandomiser;
         private readonly Dictionary<RdtId, CutsceneRoomInfo> _cutsceneRoomInfoMap = new Dictionary<RdtId, CutsceneRoomInfo>();
         private EnemyPosition[] _allEnemyPositions = new EnemyPosition[0];
         private Plot[] _registeredPlots = new Plot[0];
@@ -44,8 +44,8 @@ namespace IntelOrca.Biohazard.BioRand
             Map map,
             Rng rng,
             EnemyRandomiser? enemyRandomiser,
-            IEnemyHelper enemyHelper,
-            INpcHelper npcHelper)
+            NPCRandomiser? npcRandomiser,
+            VoiceRandomiser? voiceRandomiser)
         {
             _logger = logger;
             _dataManager = dataManager;
@@ -54,8 +54,8 @@ namespace IntelOrca.Biohazard.BioRand
             _map = map;
             _rng = rng;
             _enemyRandomiser = enemyRandomiser;
-            _enemyHelper = enemyHelper;
-            _npcHelper = npcHelper;
+            _npcRandomiser = npcRandomiser;
+            _voiceRandomiser = voiceRandomiser;
             _enemyPositions = new EndlessBag<REPosition>(_rng, new REPosition[0]);
 
             LoadCutsceneRoomInfo();
@@ -121,10 +121,10 @@ namespace IntelOrca.Biohazard.BioRand
             }
 
             // ChainRandomPlot<EnemyChangePlot>();
-            // ChainRandomPlot<AllyStaticPlot>();
             // ChainRandomPlot<EnemyWakeUpPlot>();
             // ChainRandomPlot<EnemyWalksInPlot>();
             // ChainRandomPlot<AllyWalksInPlot>();
+            ChainRandomPlot<AllyStaticPlot>();
 
             // for (var i = 0; i < 4; i++)
             // {
@@ -135,6 +135,7 @@ namespace IntelOrca.Biohazard.BioRand
                 if (!enemy.Types.Contains(Re2EnemyIds.ZombieArms) &&
                     !enemy.Types.Contains(Re2EnemyIds.GAdult))
                 {
+#if false
                     if (_rng.NextProbability(10))
                     {
                         ChainRandomPlot<EnemyFromDarkPlot>();
@@ -165,6 +166,7 @@ namespace IntelOrca.Biohazard.BioRand
                             ChainRandomPlot<EnemyWalksInPlot>();
                         }
                     }
+#endif
                     _enemyRandomiser.ChosenEnemies.Remove(_rdt);
                 }
             }
@@ -219,7 +221,7 @@ namespace IntelOrca.Biohazard.BioRand
 
                 var currentEnemies = rdt.Enemies
                     .Where(e => enemySpec.ExcludeOffsets?.Contains(e.Offset) != true)
-                    .Where(e => _enemyHelper.ShouldChangeEnemy(_config, e))
+                    .Where(e => _enemyRandomiser!.EnemyHelper.ShouldChangeEnemy(_config, e))
                     .ToArray();
 
                 foreach (var enemy in currentEnemies)
@@ -430,8 +432,8 @@ namespace IntelOrca.Biohazard.BioRand
 
             protected SceEmSetOpcode GenerateEnemy(int id, REPosition position)
             {
-                var enemyRandomiser = Cr._enemyRandomiser;
-                var enemyHelper = Cr._enemyHelper;
+                var enemyRandomiser = Cr._enemyRandomiser!;
+                var enemyHelper = enemyRandomiser.EnemyHelper;
 
                 var type = Re2EnemyIds.ZombieRandom;
                 if (enemyRandomiser!.ChosenEnemies.TryGetValue(Cr._rdt!, out var selectedEnemy))
@@ -624,13 +626,13 @@ namespace IntelOrca.Biohazard.BioRand
                     .ToArray();
             }
 
-            protected void LongConversation()
+            protected void LongConversation(int[] vids)
             {
                 Builder.FadeOutMusic();
                 Builder.Sleep(60);
-                for (int i = 0; i < 2; i++)
+                for (int i = 0; i < vids.Length; i++)
                 {
-                    Builder.PlayVoice(Rng.Next(0, 30));
+                    Builder.PlayVoice(vids[i]);
                     Builder.Sleep(15);
                 }
                 Builder.Sleep(60);
@@ -923,15 +925,25 @@ namespace IntelOrca.Biohazard.BioRand
                 var npcId = Builder.AllocateEnemies(1).FirstOrDefault();
                 var meetup = GetRandomPoi(x => x.HasTag(PoiKind.Meet) || x.HasTag(PoiKind.Npc))!;
 
+                var npcRando = Cr._npcRandomiser!;
+                var enemyType = npcRando.GetRandomNpc(Cr._rdt!, Rng);
+                var actor0 = npcRando.PlayerActor!;
+                var actor1 = npcRando.GetActor(enemyType)!;
+
+                var voiceRando = Cr._voiceRandomiser!;
+                var actors = new[] { actor0, actor1 };
+                var vIds0 = voiceRando.AllocateConversation(Rng, Cr._rdtId, 1, actors.Skip(1).ToArray(), actors);
+                var vIds1 = voiceRando.AllocateConversation(Rng, Cr._rdtId, Rng.Next(2, 6), actors, actors);
+
                 Builder.BeginSubProcedure();
                 Builder.BeginCutsceneMode();
                 Builder.BeginIf();
                 Builder.CheckFlag(Cr._plotId >> 8, Cr._plotId & 0xFF);
-                Builder.PlayVoice(21);
+                Builder.PlayVoice(vIds0[0]);
                 Builder.Else();
                 if (meetup.CloseCut != null)
                     Builder.CutChange(meetup.CloseCut.Value);
-                LongConversation();
+                LongConversation(vIds1);
                 if (meetup.CloseCut != null)
                     Builder.CutRevert();
                 Builder.SetFlag(Cr._plotId >> 8, Cr._plotId & 0xFF);
@@ -939,7 +951,7 @@ namespace IntelOrca.Biohazard.BioRand
                 Builder.EndCutsceneMode();
                 var eventProc = Builder.EndSubProcedure();
 
-                Builder.Ally(npcId, meetup.Position);
+                Builder.Ally(npcId, enemyType, meetup.Position);
                 Builder.Event(meetup.Position, 2000, eventProc);
             }
         }
@@ -970,7 +982,8 @@ namespace IntelOrca.Biohazard.BioRand
                 Builder.ElseBeginTriggerThread();
                 for (var i = 0; i < numAllys; i++)
                 {
-                    Builder.Ally(allyIds[i], REPosition.OutOfBounds.WithY(entranceDoors[i].Position.Y));
+                    var enemyType = Cr._npcRandomiser!.GetRandomNpc(Cr._rdt!, Rng);
+                    Builder.Ally(allyIds[i], enemyType, REPosition.OutOfBounds.WithY(entranceDoors[i].Position.Y));
                 }
 
                 var triggerCut = AddTriggers(entranceDoors[0].Cuts);
@@ -1002,7 +1015,7 @@ namespace IntelOrca.Biohazard.BioRand
                 LogAction($"Focus on {{ {meetup} }}");
                 var meetCut = meetup.CloseCut ?? meetup.Cut;
                 Builder.CutChange(meetCut);
-                LongConversation();
+                LongConversation(new[] { 1, 2, 3, 4, 5 });
 
                 for (var i = 1; i < numAllys; i++)
                 {
@@ -1016,7 +1029,7 @@ namespace IntelOrca.Biohazard.BioRand
 
                     LogAction($"Focus on {meetup}");
                     Builder.CutChange(meetCut);
-                    LongConversation();
+                    LongConversation(new[] { 2, 4, 6, 7, 8 });
                 }
 
                 if (Rng.NextProbability(50))

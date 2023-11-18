@@ -315,7 +315,59 @@ namespace IntelOrca.Biohazard.BioRand
                     }
                 }
 
-                EnemyRandomiser enemyRandomiser = null;
+                string[]? playerActors;
+                using (progress.BeginTask(config.Player, $"Changing player character"))
+                    playerActors = ChangePlayerCharacters(config, logger, gameData, fileRepository);
+
+                var voiceRandomiser = new VoiceRandomiser(
+                    BiohazardVersion,
+                    logger,
+                    fileRepository,
+                    config,
+                    fileRepository.DataPath,
+                    fileRepository.ModPath,
+                    gameData,
+                    map,
+                    randomVoices,
+                    NpcHelper,
+                    DataManager,
+                    playerActors);
+
+                NPCRandomiser? npcRandomiser = null;
+                if (config.RandomNPCs)
+                {
+                    using (progress.BeginTask(config.Player, "Randomizing NPCs"))
+                    {
+                        npcRandomiser = new NPCRandomiser(
+                            BiohazardVersion,
+                            logger,
+                            fileRepository,
+                            config,
+                            fileRepository.ModPath,
+                            gameData,
+                            map,
+                            randomNpcs,
+                            NpcHelper,
+                            DataManager,
+                            playerActors,
+                            voiceRandomiser);
+                        var selectedActors = GetSelectedActors(config);
+                        if (selectedActors.Length == 0)
+                        {
+                            throw new BioRandUserException("No NPCs selected.");
+                        }
+                        npcRandomiser.SelectedActors.AddRange(selectedActors);
+                        RandomizeNPCs(config, npcRandomiser, voiceRandomiser);
+                        npcRandomiser.Randomise();
+                    }
+                }
+
+                if (config.RandomCutscenes)
+                {
+                    voiceRandomiser.Randomise();
+                }
+
+                EnemyRandomiser? enemyRandomiser = null;
                 if (config.RandomEnemies)
                 {
                     using (progress.BeginTask(config.Player, "Randomizing enemies"))
@@ -335,7 +387,16 @@ namespace IntelOrca.Biohazard.BioRand
                             throw new BioRandUserException("Random events are only supported for RE 2.");
                         }
 
-                        var cutscene = new CutsceneRandomiser(logger, DataManager, config, gameData, map, randomCutscenes, enemyRandomiser, EnemyHelper, NpcHelper);
+                        var cutscene = new CutsceneRandomiser(
+                            logger,
+                            DataManager,
+                            config,
+                            gameData,
+                            map,
+                            randomCutscenes,
+                            enemyRandomiser,
+                            npcRandomiser,
+                            voiceRandomiser);
                         cutscene.Randomise(graph);
                     }
                 }
@@ -363,55 +424,9 @@ namespace IntelOrca.Biohazard.BioRand
                     }
                 }
 
-                string[]? playerActors;
-                using (progress.BeginTask(config.Player, $"Changing player character"))
-                    playerActors = ChangePlayerCharacters(config, logger, gameData, fileRepository);
-
-                var voiceRandomiser = new VoiceRandomiser(
-                    BiohazardVersion,
-                    logger,
-                    fileRepository,
-                    config,
-                    fileRepository.DataPath,
-                    fileRepository.ModPath,
-                    gameData,
-                    map,
-                    randomVoices,
-                    NpcHelper,
-                    DataManager,
-                    playerActors);
-
-                if (config.RandomNPCs)
-                {
-                    using (progress.BeginTask(config.Player, "Randomizing NPCs"))
-                    {
-                        var npcRandomiser = new NPCRandomiser(
-                            BiohazardVersion,
-                            logger,
-                            fileRepository,
-                            config,
-                            fileRepository.ModPath,
-                            gameData,
-                            map,
-                            randomNpcs,
-                            NpcHelper,
-                            DataManager,
-                            playerActors,
-                            voiceRandomiser);
-                        var selectedActors = GetSelectedActors(config);
-                        if (selectedActors.Length == 0)
-                        {
-                            throw new BioRandUserException("No NPCs selected.");
-                        }
-                        npcRandomiser.SelectedActors.AddRange(selectedActors);
-                        RandomizeNPCs(config, npcRandomiser, voiceRandomiser);
-                        npcRandomiser.Randomise();
-                    }
-                }
-
                 if (config.RandomCutscenes)
                 {
-                    voiceRandomiser.Randomise();
+                    voiceRandomiser.SetVoices();
                 }
 
                 // Copy EMD to EMD08

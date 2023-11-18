@@ -32,6 +32,7 @@ namespace IntelOrca.Biohazard.BioRand
         private Queue<byte> _killIds = new Queue<byte>();
         private Dictionary<byte, EmbeddedEffect> _effects = new Dictionary<byte, EmbeddedEffect>();
 
+        public IEnemyHelper EnemyHelper => _enemyHelper;
         public Dictionary<RandomizedRdt, SelectableEnemy> ChosenEnemies { get; } = new Dictionary<RandomizedRdt, SelectableEnemy>();
 
         public EnemyRandomiser(BioVersion version, RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng rng, IEnemyHelper enemyHelper, DataManager dataManager)

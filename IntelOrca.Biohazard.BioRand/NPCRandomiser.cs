@@ -32,6 +32,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         private VoiceRandomiser? _voiceRandomiser;
 
+        public string PlayerActor => _playerActors[0];
         public HashSet<string> SelectedActors { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         public NPCRandomiser(
@@ -90,6 +91,26 @@ namespace IntelOrca.Biohazard.BioRand
         {
             RandomizeExternalNPCs(_rng.NextFork());
             RandomizeRooms(_rng.NextFork());
+        }
+
+        public byte GetRandomNpc(RandomizedRdt rdt, Rng rng)
+        {
+            var defaultIncludeTypes = _npcHelper.GetDefaultIncludeTypes(rdt)
+                .Shuffle(rng)
+                .DistinctBy(x => _npcHelper.GetActor(x))
+                .ToArray();
+            if (rng.Next(0, 8) != 0)
+            {
+                // Make it rare for player to also be an NPC
+                var newDefaultIncludeTypes = defaultIncludeTypes
+                    .Where(x => GetActor(x) != _playerActors[0])
+                    .ToArray();
+                if (newDefaultIncludeTypes.Length != 0)
+                {
+                    defaultIncludeTypes = newDefaultIncludeTypes;
+                }
+            }
+            return defaultIncludeTypes[0];
         }
 
         private void RandomizeExternalNPCs(Rng rng)
@@ -178,7 +199,6 @@ namespace IntelOrca.Biohazard.BioRand
         private void RandomizeRoom(Rng rng, RandomizedRdt rdt)
         {
             var npcRng = rng.NextFork();
-            var voiceRng = rng.NextFork();
 
             var defaultIncludeTypes = _npcHelper.GetDefaultIncludeTypes(rdt)
                 .Shuffle(rng)
@@ -421,7 +441,7 @@ namespace IntelOrca.Biohazard.BioRand
             return actorToNewActorMap;
         }
 
-        private string? GetActor(byte enemyType, bool originalOnly = false)
+        public string? GetActor(byte enemyType, bool originalOnly = false)
         {
             if (!originalOnly && _extraNpcMap.TryGetValue(enemyType, out var actor))
                 return actor;
