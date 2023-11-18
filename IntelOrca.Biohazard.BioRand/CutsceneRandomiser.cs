@@ -140,18 +140,22 @@ namespace IntelOrca.Biohazard.BioRand
             // ChainRandomPlot<EnemyWakeUpPlot>();
             // ChainRandomPlot<EnemyWalksInPlot>();
             // ChainRandomPlot<AllyWalksInPlot>();
-            ChainRandomPlot<AllyStaticPlot>();
 
             // for (var i = 0; i < 4; i++)
             // {
             //     ChainRandomPlot<AllyStaticPlot>();
             // }
+
+            if (_rng.NextProbability(50))
+            {
+                ChainRandomPlot<AllyStaticPlot>();
+                _lastPlotId = -1;
+            }
             if (_enemyRandomiser?.ChosenEnemies.TryGetValue(_rdt, out var enemy) == true)
             {
                 if (!enemy.Types.Contains(Re2EnemyIds.ZombieArms) &&
                     !enemy.Types.Contains(Re2EnemyIds.GAdult))
                 {
-#if false
                     if (_rng.NextProbability(10))
                     {
                         ChainRandomPlot<EnemyFromDarkPlot>();
@@ -182,7 +186,6 @@ namespace IntelOrca.Biohazard.BioRand
                             ChainRandomPlot<EnemyWalksInPlot>();
                         }
                     }
-#endif
                     _enemyRandomiser.ChosenEnemies.Remove(_rdt);
                 }
             }
@@ -752,7 +755,7 @@ namespace IntelOrca.Biohazard.BioRand
                     Builder.Enemy(opcode);
                 }
 
-                Builder.ElseBeginTriggerThread();
+                Builder.Else();
 
                 // Setup initial enemy positions
                 for (int i = 0; i < placements.Length; i++)
@@ -764,6 +767,7 @@ namespace IntelOrca.Biohazard.BioRand
                 }
 
                 // Wait for triggers
+                Builder.BeginTriggerThread();
                 AddTriggers();
 
                 // Wake up enemies incrementally
@@ -978,7 +982,12 @@ namespace IntelOrca.Biohazard.BioRand
                 }
 
                 var interactId = Builder.AllocateAots(1)[0];
-                var itemId = Builder.AllocateAots(1)[0];
+                int? itemId = null;
+                if (Rng.NextProbability(75))
+                {
+                    itemId = Builder.AllocateAots(1).FirstOrDefault();
+                }
+
 
                 Builder.BeginSubProcedure();
                 Builder.BeginCutsceneMode();
@@ -990,7 +999,10 @@ namespace IntelOrca.Biohazard.BioRand
                     Builder.CutChange(meetup.CloseCut.Value);
                 BeginConversation();
                 Converse(vIds1.Take(vIds1.Length - 1).ToArray());
-                Builder.AotOn(itemId);
+                if (itemId != null)
+                {
+                    Builder.AotOn(itemId.Value);
+                }
                 Converse(vIds1.Skip(vIds1.Length - 1).ToArray());
                 EndConversation();
                 if (meetup.CloseCut != null)
@@ -1002,8 +1014,11 @@ namespace IntelOrca.Biohazard.BioRand
 
                 Builder.Ally(npcId, enemyType, meetup.Position);
                 Builder.Event(interactId, meetup.Position, 2000, eventProc);
-                RandomItem(255, itemId);
-                Builder.SetFlag(CutsceneBuilder.FG_ITEM, 255, false);
+                if (itemId != null)
+                {
+                    RandomItem(255, itemId.Value);
+                    Builder.SetFlag(CutsceneBuilder.FG_ITEM, 255, false);
+                }
             }
 
             private void RandomItem(int globalId, int aotId)
@@ -1012,10 +1027,10 @@ namespace IntelOrca.Biohazard.BioRand
                 var amount = 1;
 
                 var config = Cr._config;
+                var itemHelper = new Re2ItemHelper();
                 var itemRando = Cr._itemRandomiser;
                 if (itemRando == null)
                 {
-                    var itemHelper = new Re2ItemHelper();
                     var kind = Rng.NextOf(ItemAttribute.Ammo, ItemAttribute.Heal, ItemAttribute.InkRibbon);
                     if (kind == ItemAttribute.Ammo)
                     {
@@ -1058,6 +1073,7 @@ namespace IntelOrca.Biohazard.BioRand
                 }
 
                 Builder.Item(globalId, aotId, type, (byte)amount);
+                LogAction($"item gift [{itemHelper.GetItemName(type)} x{amount}]");
             }
         }
 
