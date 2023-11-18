@@ -344,6 +344,42 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
+        public Item GetRandomGift(Rng rng)
+        {
+            var interestedTypes = ItemAttribute.Ammo | ItemAttribute.Heal | ItemAttribute.InkRibbon;
+            var groups = _definedPool
+                .GroupBy(x => _itemHelper.GetItemAttributes((byte)x.Type))
+                .Where(x => x.Key.HasFlag(interestedTypes))
+                .ToArray();
+            if (groups.Length != 0)
+            {
+                var randomGroup = rng.NextOf(groups);
+                switch (randomGroup.Key)
+                {
+                    case ItemAttribute.Ammo:
+                    {
+                        var item = _rng.NextOf(randomGroup.ToArray());
+                        var maxAmount = _itemHelper.GetMaxAmmoForAmmoType((byte)item.Type);
+                        var amount = (byte)_rng.Next(maxAmount / 2, maxAmount);
+                        return new Item((byte)item.Type, amount);
+                    }
+                    case ItemAttribute.Heal:
+                    {
+                        return new Item(rng.NextOf(
+                            _itemHelper.GetItemId(CommonItemKind.FirstAid),
+                            _itemHelper.GetItemId(CommonItemKind.HerbGRB)), 1);
+                    }
+                    case ItemAttribute.InkRibbon:
+                    {
+                        var inkType = _itemHelper.GetItemId(CommonItemKind.InkRibbon);
+                        return new Item(inkType, (byte)rng.Next(3, 6));
+                    }
+                }
+            }
+            var fasType = _itemHelper.GetItemId(CommonItemKind.FirstAid);
+            return new Item(fasType, 1);
+        }
+
         private bool JustOptionalItemsLeft()
         {
             if (_requiredItems.Count == 0)

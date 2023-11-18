@@ -18,6 +18,7 @@ namespace IntelOrca.Biohazard.BioRand
         private readonly GameData _gameData;
         private readonly Map _map;
         private readonly Rng _rng;
+        private readonly ItemRandomiser? _itemRandomiser;
         private readonly EnemyRandomiser? _enemyRandomiser;
         private readonly NPCRandomiser? _npcRandomiser;
         private readonly VoiceRandomiser? _voiceRandomiser;
@@ -43,6 +44,7 @@ namespace IntelOrca.Biohazard.BioRand
             GameData gameData,
             Map map,
             Rng rng,
+            ItemRandomiser? itemRandomiser,
             EnemyRandomiser? enemyRandomiser,
             NPCRandomiser? npcRandomiser,
             VoiceRandomiser? voiceRandomiser)
@@ -53,6 +55,7 @@ namespace IntelOrca.Biohazard.BioRand
             _gameData = gameData;
             _map = map;
             _rng = rng;
+            _itemRandomiser = itemRandomiser;
             _enemyRandomiser = enemyRandomiser;
             _npcRandomiser = npcRandomiser;
             _voiceRandomiser = voiceRandomiser;
@@ -118,6 +121,19 @@ namespace IntelOrca.Biohazard.BioRand
             foreach (var id in availableIds)
             {
                 _cb.AvailableEnemyIds.Enqueue(id);
+            }
+
+            var aotIds = Enumerable.Range(0, 32).ToHashSet();
+            foreach (var opcode in _rdt.AllOpcodes)
+            {
+                if (opcode is IAot aot)
+                {
+                    aotIds.Remove(aot.Id);
+                }
+            }
+            foreach (var id in aotIds)
+            {
+                _cb.AvailableAotIds.Enqueue(id);
             }
 
             // ChainRandomPlot<EnemyChangePlot>();
@@ -628,13 +644,28 @@ namespace IntelOrca.Biohazard.BioRand
 
             protected void LongConversation(int[] vids)
             {
+                BeginConversation();
+                Converse(vids);
+                EndConversation();
+            }
+
+            protected void BeginConversation()
+            {
                 Builder.FadeOutMusic();
                 Builder.Sleep(60);
+            }
+
+            protected void Converse(int[] vids)
+            {
                 for (int i = 0; i < vids.Length; i++)
                 {
                     Builder.PlayVoice(vids[i]);
                     Builder.Sleep(15);
                 }
+            }
+
+            protected void EndConversation()
+            {
                 Builder.Sleep(60);
                 Builder.ResumeMusic();
                 LogAction($"conversation");
@@ -935,6 +966,9 @@ namespace IntelOrca.Biohazard.BioRand
                 var vIds0 = voiceRando.AllocateConversation(Rng, Cr._rdtId, 1, actors.Skip(1).ToArray(), actors);
                 var vIds1 = voiceRando.AllocateConversation(Rng, Cr._rdtId, Rng.Next(2, 6), actors, actors);
 
+                var interactId = Builder.AllocateAots(1)[0];
+                var itemId = Builder.AllocateAots(1)[0];
+
                 Builder.BeginSubProcedure();
                 Builder.BeginCutsceneMode();
                 Builder.BeginIf();
@@ -943,7 +977,11 @@ namespace IntelOrca.Biohazard.BioRand
                 Builder.Else();
                 if (meetup.CloseCut != null)
                     Builder.CutChange(meetup.CloseCut.Value);
-                LongConversation(vIds1);
+                BeginConversation();
+                Converse(vIds1.Take(vIds1.Length - 1).ToArray());
+                Builder.AotOn(itemId);
+                Converse(vIds1.Skip(vIds1.Length - 1).ToArray());
+                EndConversation();
                 if (meetup.CloseCut != null)
                     Builder.CutRevert();
                 Builder.SetFlag(Cr._plotId >> 8, Cr._plotId & 0xFF);
@@ -952,7 +990,63 @@ namespace IntelOrca.Biohazard.BioRand
                 var eventProc = Builder.EndSubProcedure();
 
                 Builder.Ally(npcId, enemyType, meetup.Position);
-                Builder.Event(meetup.Position, 2000, eventProc);
+                Builder.Event(interactId, meetup.Position, 2000, eventProc);
+                RandomItem(255, itemId);
+                Builder.SetFlag(CutsceneBuilder.FG_ITEM, 255, false);
+            }
+
+            private void RandomItem(int globalId, int aotId)
+            {
+                var type = Re2ItemIds.FAidSpray;
+                var amount = 1;
+
+                var config = Cr._config;
+                var itemRando = Cr._itemRandomiser;
+                if (itemRando == null)
+                {
+                    var itemHelper = new Re2ItemHelper();
+                    var kind = Rng.NextOf(ItemAttribute.Ammo, ItemAttribute.Heal, ItemAttribute.InkRibbon);
+                    if (kind == ItemAttribute.Ammo)
+                    {
+                        if (config.Player == 0)
+                        {
+                            type = Rng.NextOf(
+                                Re2ItemIds.HandgunAmmo,
+                                Re2ItemIds.ShotgunAmmo,
+                                Re2ItemIds.MagnumAmmo);
+                        }
+                        else
+                        {
+                            type = Rng.NextOf(
+                                Re2ItemIds.HandgunAmmo,
+                                Re2ItemIds.BowgunAmmo,
+                                Re2ItemIds.GrenadeLauncherAcid,
+                                Re2ItemIds.GrenadeLauncherExplosive,
+                                Re2ItemIds.GrenadeLauncherFlame);
+                        }
+                        var capacity = itemHelper.GetMaxAmmoForAmmoType(type);
+                        amount = Rng.Next(capacity / 2, capacity);
+                    }
+                    else if (kind == ItemAttribute.Heal)
+                    {
+                        type = Rng.NextOf(
+                            Re2ItemIds.HerbGRB,
+                            Re2ItemIds.FAidSpray);
+                    }
+                    else
+                    {
+                        type = Re2ItemIds.InkRibbon;
+                        amount = Rng.Next(3, 6);
+                    }
+                }
+                else
+                {
+                    var item = itemRando.GetRandomGift(Rng);
+                    type = item.Type;
+                    amount = item.Amount;
+                }
+
+                Builder.Item(globalId, aotId, type, (byte)amount);
             }
         }
 

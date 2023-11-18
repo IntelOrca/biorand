@@ -12,6 +12,7 @@ namespace IntelOrca.Biohazard.BioRand
         internal const int FG_SCENARIO = 3;
         internal const int FG_COMMON = 4;
         internal const int FG_ROOM = 5;
+        internal const int FG_ITEM = 8;
 
         private StringBuilder _sb;
         private StringBuilder _sbMain = new StringBuilder();
@@ -27,6 +28,7 @@ namespace IntelOrca.Biohazard.BioRand
         private bool _ifPlotTriggered;
         private bool _hasPlotTrigger;
 
+        public Queue<int> AvailableAotIds { get; } = new Queue<int>();
         public Queue<int> AvailableEnemyIds { get; } = new Queue<int>();
         public HashSet<int> PlacedEnemyIds { get; } = new HashSet<int>();
 
@@ -106,9 +108,22 @@ namespace IntelOrca.Biohazard.BioRand
             EndProcedure();
         }
 
-        public void Event(REPosition pos, int size, string proc)
+        public void Event(int id, REPosition pos, int size, string proc)
         {
-            AppendLine("aot_set", 20, "SCE_EVENT", "SAT_PL | SAT_MANUAL | SAT_FRONT", pos.Floor, 0, pos.X - (size / 2), pos.Z - (size / 2), size, size, 255, 0, "I_GOSUB", proc, 0, 0);
+            AppendLine("aot_set", id, "SCE_EVENT", "SAT_PL | SAT_MANUAL | SAT_FRONT", pos.Floor, 0, pos.X - (size / 2), pos.Z - (size / 2), size, size, 255, 0, "I_GOSUB", proc, 0, 0);
+        }
+
+        public int[] AllocateAots(int count)
+        {
+            var result = new List<int>();
+            for (var i = 0; i < count; i++)
+            {
+                if (AvailableAotIds.Count == 0)
+                    break;
+
+                result.Add(AvailableAotIds.Dequeue());
+            }
+            return result.ToArray();
         }
 
         public int[] AllocateEnemies(int count)
@@ -288,6 +303,17 @@ namespace IntelOrca.Biohazard.BioRand
         public void Sleep1()
         {
             AppendLine("evt_next");
+        }
+
+        public void Item(int globalId, int id, byte type, byte amount)
+        {
+            AppendLine("item_aot_set", id, "SCE_ITEM", "SAT_PL | SAT_MANUAL | SAT_FRONT", 0, 0, -32000, -32000, 0, 0, type, amount, globalId, 255, 0);
+        }
+
+        public void AotOn(int id)
+        {
+            AppendLine("aot_on", id);
+            Sleep1();
         }
 
         public void CheckFlag(int group, int index, bool value = true)

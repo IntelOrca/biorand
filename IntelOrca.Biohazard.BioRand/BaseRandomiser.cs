@@ -287,11 +287,12 @@ namespace IntelOrca.Biohazard.BioRand
 
                 var map = GetMapFromJson();
                 var graph = null as PlayGraph;
+                ItemRandomiser? itemRandomiser = null;
                 if (config.RandomDoors || config.RandomItems)
                 {
                     var dgmlPath = fileRepository.GetModPath($"graph_pl{config.Player}.dgml");
                     var doorRando = new DoorRandomiser(logger, config, gameData, map, randomDoors, DoorHelper, ItemHelper);
-                    var itemRando = new ItemRandomiser(logger, config, gameData, randomItems, ItemHelper);
+                    itemRandomiser = new ItemRandomiser(logger, config, gameData, randomItems, ItemHelper);
                     using (progress.BeginTask(config.Player, "Randomizing doors"))
                     {
                         graph = config.RandomDoors ?
@@ -302,11 +303,11 @@ namespace IntelOrca.Biohazard.BioRand
                     {
                         using (progress.BeginTask(config.Player, "Randomizing items"))
                         {
-                            itemRando.RandomiseItems(graph);
+                            itemRandomiser.RandomiseItems(graph);
                         }
                         if (config.RandomInventory && !config.ShuffleItems)
                         {
-                            SetInventory(config.Player, itemRando.RandomizeStartInventory());
+                            SetInventory(config.Player, itemRandomiser.RandomizeStartInventory());
                         }
                     }
                     finally
@@ -394,6 +395,7 @@ namespace IntelOrca.Biohazard.BioRand
                             gameData,
                             map,
                             randomCutscenes,
+                            itemRandomiser,
                             enemyRandomiser,
                             npcRandomiser,
                             voiceRandomiser);
