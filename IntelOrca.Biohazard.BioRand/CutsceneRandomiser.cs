@@ -956,15 +956,26 @@ namespace IntelOrca.Biohazard.BioRand
                 var npcId = Builder.AllocateEnemies(1).FirstOrDefault();
                 var meetup = GetRandomPoi(x => x.HasTag(PoiKind.Meet) || x.HasTag(PoiKind.Npc))!;
 
-                var npcRando = Cr._npcRandomiser!;
-                var enemyType = npcRando.GetRandomNpc(Cr._rdt!, Rng);
-                var actor0 = npcRando.PlayerActor!;
-                var actor1 = npcRando.GetActor(enemyType)!;
+                var enemyType = Re2EnemyIds.ClaireRedfield;
+                var actor0 = "leon";
+                var actor1 = "claire";
+                var npcRando = Cr._npcRandomiser;
+                if (npcRando != null)
+                {
+                    enemyType = npcRando.GetRandomNpc(Cr._rdt!, Rng);
+                    actor0 = npcRando.PlayerActor!;
+                    actor1 = npcRando.GetActor(enemyType)!;
+                }
 
-                var voiceRando = Cr._voiceRandomiser!;
-                var actors = new[] { actor0, actor1 };
-                var vIds0 = voiceRando.AllocateConversation(Rng, Cr._rdtId, 1, actors.Skip(1).ToArray(), actors);
-                var vIds1 = voiceRando.AllocateConversation(Rng, Cr._rdtId, Rng.Next(2, 6), actors, actors);
+                var voiceRando = Cr._voiceRandomiser;
+                var vIds0 = new int[0];
+                var vIds1 = new int[0];
+                if (voiceRando != null)
+                {
+                    var actors = new[] { actor0, actor1 };
+                    vIds0 = voiceRando.AllocateConversation(Rng, Cr._rdtId, 1, actors.Skip(1).ToArray(), actors);
+                    vIds1 = voiceRando.AllocateConversation(Rng, Cr._rdtId, Rng.Next(2, 6), actors, actors);
+                }
 
                 var interactId = Builder.AllocateAots(1)[0];
                 var itemId = Builder.AllocateAots(1)[0];
@@ -973,7 +984,7 @@ namespace IntelOrca.Biohazard.BioRand
                 Builder.BeginCutsceneMode();
                 Builder.BeginIf();
                 Builder.CheckFlag(Cr._plotId >> 8, Cr._plotId & 0xFF);
-                Builder.PlayVoice(vIds0[0]);
+                Converse(vIds0);
                 Builder.Else();
                 if (meetup.CloseCut != null)
                     Builder.CutChange(meetup.CloseCut.Value);

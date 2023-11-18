@@ -398,7 +398,7 @@ namespace IntelOrca.Biohazard.BioRand
                             itemRandomiser,
                             enemyRandomiser,
                             npcRandomiser,
-                            voiceRandomiser);
+                            config.RandomCutscenes ? voiceRandomiser : null);
                         cutscene.Randomise(graph);
                     }
                 }
