@@ -175,6 +175,22 @@ namespace IntelOrca.Biohazard.BioRand
             AppendLine("member_set2", 7, 16);
         }
 
+        public void HideEnemy(int id)
+        {
+            WorkOnEnemy(id);
+            AppendLine("member_copy", "V_TEMP", "M_Y_POS");
+            AppendLine("calc", 0, "OP_SUB", "V_TEMP", 32000);
+            AppendLine("member_set2", "M_Y_POS", "V_TEMP");
+        }
+
+        public void UnhideEnemy(int id)
+        {
+            WorkOnEnemy(id);
+            AppendLine("member_copy", 16, 7);
+            AppendLine("calc", 0, "OP_ADD", "V_TEMP", 32000);
+            AppendLine("member_set2", 7, 16);
+        }
+
         public void PlayVoice(int id)
         {
             AppendLine("xa_on", 0, id);

@@ -71,6 +71,7 @@ namespace IntelOrca.Biohazard.BioRand
             _logger.WriteHeading("Randomizing cutscenes");
 
             var rdts = graph?.GetAccessibleRdts(_gameData) ?? _gameData.Rdts;
+            rdts = rdts.OrderBy(x => x.RdtId).ToArray();
             foreach (var rdt in rdts)
             {
                 RandomizeRoom(rdt);
@@ -188,6 +189,10 @@ namespace IntelOrca.Biohazard.BioRand
                     }
                     _enemyRandomiser.ChosenEnemies.Remove(_rdt);
                 }
+            }
+            else
+            {
+                _logger.WriteLine($"  (no enemies defined)");
             }
 
             cb.End();
@@ -449,16 +454,23 @@ namespace IntelOrca.Biohazard.BioRand
             {
             }
 
-            protected SceEmSetOpcode GenerateEnemy(int id, REPosition position)
+            protected byte GetEnemyTypeForRoom()
             {
                 var enemyRandomiser = Cr._enemyRandomiser!;
-                var enemyHelper = enemyRandomiser.EnemyHelper;
-
                 var type = Re2EnemyIds.ZombieRandom;
                 if (enemyRandomiser!.ChosenEnemies.TryGetValue(Cr._rdt!, out var selectedEnemy))
                 {
                     type = selectedEnemy.Types[0];
                 }
+                return type;
+            }
+
+            protected SceEmSetOpcode GenerateEnemy(int id, REPosition position)
+            {
+                var enemyRandomiser = Cr._enemyRandomiser!;
+                var enemyHelper = enemyRandomiser.EnemyHelper;
+
+                var type = GetEnemyTypeForRoom();
 
                 var opcode = new SceEmSetOpcode();
                 opcode.Id = (byte)id;
@@ -786,7 +798,12 @@ namespace IntelOrca.Biohazard.BioRand
         {
             protected override void Build()
             {
-                var maxUsualPlacements = Cr._enemyPositions.Count;
+                var enemyRandomiser = Cr._enemyRandomiser!;
+                var enemyHelper = enemyRandomiser.EnemyHelper;
+                var enemyType = GetEnemyTypeForRoom();
+                var limit = enemyHelper.GetEnemyTypeLimit(Cr._config, Cr._config.EnemyDifficulty, enemyType);
+
+                var maxUsualPlacements = Math.Min(Cr._enemyPositions.Count, limit);
                 var numPlacements = Rng.Next(maxUsualPlacements - 2, maxUsualPlacements + 2);
                 var placements = Cr._enemyPositions
                     .Next(numPlacements);
@@ -904,6 +921,7 @@ namespace IntelOrca.Biohazard.BioRand
                 foreach (var eid in enemies)
                 {
                     Builder.DeactivateEnemy(eid);
+                    // Builder.HideEnemy(eid);
                 }
             }
 
@@ -911,6 +929,7 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 foreach (var eid in enemies)
                 {
+                    // Builder.UnhideEnemy(eid);
                     Builder.ActivateEnemy(eid);
                 }
             }
