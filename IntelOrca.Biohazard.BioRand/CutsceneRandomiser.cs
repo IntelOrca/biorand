@@ -826,6 +826,8 @@ namespace IntelOrca.Biohazard.BioRand
                 }
                 Builder.AdjustFade(0, 0, 0);
                 Builder.Sleep1();
+                Builder.SetFade(0, 2, 7, 255, 127);
+                Builder.Sleep1();
 
                 Builder.UnlockPlot();
                 LogAction($"{enemyIds.Length}x enemy spawn in from dark");
