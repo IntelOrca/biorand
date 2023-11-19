@@ -56,6 +56,7 @@ namespace IntelOrca.Biohazard.BioRand
             _gameData = gameData;
             _map = map;
             _rng = rng;
+            _plotRng = rng;
             _itemRandomiser = itemRandomiser;
             _enemyRandomiser = enemyRandomiser;
             _npcRandomiser = npcRandomiser;
