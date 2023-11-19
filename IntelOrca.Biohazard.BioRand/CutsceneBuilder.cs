@@ -281,12 +281,22 @@ namespace IntelOrca.Biohazard.BioRand
         public void BeginCutsceneMode()
         {
             SetFlag(FG_STATUS, 27, true);
+            LockControls();
+        }
+
+        public void LockControls()
+        {
             SetFlag(FG_STOP, 7, true);
+        }
+
+        public void UnlockControls()
+        {
+            SetFlag(FG_STOP, 7, false);
         }
 
         public void EndCutsceneMode()
         {
-            SetFlag(FG_STOP, 7, false);
+            UnlockControls();
             SetFlag(FG_STATUS, 27, false);
         }
 

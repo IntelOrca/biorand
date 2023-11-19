@@ -489,7 +489,10 @@ namespace IntelOrca.Biohazard.BioRand
                 return opcode;
             }
 
-            protected PointOfInterest? AddTriggers(int[]? notCuts = null)
+            protected PointOfInterest? AddTriggers(
+                int[]? notCuts = null,
+                int minSleepTime = 0,
+                int maxSleepTime = 20)
             {
                 if (Cr._lastPlotId != -1)
                 {
@@ -497,15 +500,15 @@ namespace IntelOrca.Biohazard.BioRand
                     Builder.WaitForPlot(Cr._lastPlotId);
                 }
 
-                var sleepTime = 0;
+                var sleepTime = minSleepTime;
                 var justSleep = false;
                 if (notCuts == null || notCuts.Length == 0)
                 {
                     if (Rng.NextProbability(50))
                     {
                         // Just a sleep trigger
-                        sleepTime = Rng.Next(5, 20);
-                        // justSleep = true;
+                        sleepTime = Rng.Next(minSleepTime, maxSleepTime);
+                        justSleep = true;
                     }
                 }
 
@@ -827,9 +830,10 @@ namespace IntelOrca.Biohazard.BioRand
                 }
 
                 Builder.BeginTriggerThread();
-                AddTriggers();
+                AddTriggers(minSleepTime: 5);
                 Builder.LockPlot();
 
+                Builder.LockControls();
                 Builder.SetFade(0, 2, 7, 0, 0);
                 for (var i = 0; i < 5; i++)
                 {
@@ -847,6 +851,7 @@ namespace IntelOrca.Biohazard.BioRand
                 Builder.Sleep1();
                 Builder.SetFade(0, 2, 7, 255, 127);
                 Builder.Sleep1();
+                Builder.UnlockControls();
 
                 Builder.UnlockPlot();
                 LogAction($"{enemyIds.Length}x enemy spawn in from dark");
