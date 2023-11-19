@@ -36,6 +36,7 @@ namespace IntelOrca.Biohazard.BioRand
         private PointOfInterest[] _poi = new PointOfInterest[0];
         private int[] _allKnownCuts = new int[0];
         private EndlessBag<REPosition> _enemyPositions;
+        private Rng _plotRng;
 
         public CutsceneRandomiser(
             RandoLogger logger,
@@ -59,7 +60,7 @@ namespace IntelOrca.Biohazard.BioRand
             _enemyRandomiser = enemyRandomiser;
             _npcRandomiser = npcRandomiser;
             _voiceRandomiser = voiceRandomiser;
-            _enemyPositions = new EndlessBag<REPosition>(_rng, new REPosition[0]);
+            _enemyPositions = new EndlessBag<REPosition>(new Rng(), new REPosition[0]);
 
             LoadCutsceneRoomInfo();
             ReadEnemyPlacements();
@@ -74,11 +75,11 @@ namespace IntelOrca.Biohazard.BioRand
             rdts = rdts.OrderBy(x => x.RdtId).ToArray();
             foreach (var rdt in rdts)
             {
-                RandomizeRoom(rdt);
+                RandomizeRoom(rdt, _rng.NextFork());
             }
         }
 
-        public void RandomizeRoom(RandomizedRdt rdt)
+        public void RandomizeRoom(RandomizedRdt rdt, Rng rng)
         {
             if (!_cutsceneRoomInfoMap.TryGetValue(rdt.RdtId, out var info))
                 return;
@@ -86,7 +87,7 @@ namespace IntelOrca.Biohazard.BioRand
             _enemyPositions = _allEnemyPositions
                 .Where(x => x.RdtId == rdt.RdtId)
                 .Select(p => new REPosition(p.X, p.Y, p.Z, p.D))
-                .ToEndlessBag(_rng);
+                .ToEndlessBag(rng);
 
             if (_enemyPositions.Count == 0)
                 return;
@@ -105,6 +106,7 @@ namespace IntelOrca.Biohazard.BioRand
             _cb = cb;
             _rdt = rdt;
             _rdtId = rdt.RdtId;
+            _plotRng = rng;
             _lastPlotId = -1;
             _poi = info.Poi ?? new PointOfInterest[0];
             _allKnownCuts = _poi.SelectMany(x => x.AllCuts).ToArray();
@@ -147,7 +149,7 @@ namespace IntelOrca.Biohazard.BioRand
             //     ChainRandomPlot<AllyStaticPlot>();
             // }
 
-            if (_rng.NextProbability(50))
+            if (rng.NextProbability(50))
             {
                 ChainRandomPlot<AllyStaticPlot>();
                 _lastPlotId = -1;
@@ -157,7 +159,7 @@ namespace IntelOrca.Biohazard.BioRand
                 if (!enemy.Types.Contains(Re2EnemyIds.ZombieArms) &&
                     !enemy.Types.Contains(Re2EnemyIds.GAdult))
                 {
-                    if (_rng.NextProbability(10))
+                    if (rng.NextProbability(10))
                     {
                         ChainRandomPlot<EnemyFromDarkPlot>();
                     }
@@ -166,14 +168,14 @@ namespace IntelOrca.Biohazard.BioRand
                         var wakeUp = false;
                         if (enemy.Types.Any(x => x <= Re2EnemyIds.ZombieRandom))
                         {
-                            if (_rng.NextProbability(25))
+                            if (rng.NextProbability(25))
                             {
                                 ChainRandomPlot<EnemyWakeUpPlot>();
                                 wakeUp = true;
                             }
                         }
 
-                        if (!wakeUp && _rng.NextProbability(50))
+                        if (!wakeUp && rng.NextProbability(50))
                         {
                             ChainRandomPlot<StaticEnemyPlot>();
                             _lastPlotId = -1;
@@ -182,7 +184,7 @@ namespace IntelOrca.Biohazard.BioRand
                     ChainRandomPlot<EnemyWalksInPlot>();
                     for (var i = 0; i < 3; i++)
                     {
-                        if (_rng.NextProbability(50))
+                        if (rng.NextProbability(50))
                         {
                             ChainRandomPlot<EnemyWalksInPlot>();
                         }
@@ -430,7 +432,7 @@ namespace IntelOrca.Biohazard.BioRand
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
             public CutsceneBuilder Builder => Cr._cb;
-            public Rng Rng => Cr._rng;
+            public Rng Rng => Cr._plotRng;
             public RandoLogger Logger => Cr._logger;
 
             public bool IsCompatible() => Check();
@@ -483,7 +485,7 @@ namespace IntelOrca.Biohazard.BioRand
                 opcode.Type = type;
 
                 var enemySpec = new MapRoomEnemies();
-                enemyHelper.SetEnemy(Cr._config, Cr._rng, opcode, enemySpec, type);
+                enemyHelper.SetEnemy(Cr._config, Rng, opcode, enemySpec, type);
                 return opcode;
             }
 
