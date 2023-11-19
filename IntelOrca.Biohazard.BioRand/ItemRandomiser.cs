@@ -349,7 +349,7 @@ namespace IntelOrca.Biohazard.BioRand
             var interestedTypes = ItemAttribute.Ammo | ItemAttribute.Heal | ItemAttribute.InkRibbon;
             var groups = _definedPool
                 .GroupBy(x => _itemHelper.GetItemAttributes((byte)x.Type))
-                .Where(x => x.Key.HasFlag(interestedTypes))
+                .Where(x => (x.Key & interestedTypes) != 0)
                 .ToArray();
             if (groups.Length != 0)
             {
