@@ -25,14 +25,14 @@ namespace IntelOrca.Biohazard.BioRand.Events
         private readonly Dictionary<RdtId, CutsceneRoomInfo> _cutsceneRoomInfoMap = new Dictionary<RdtId, CutsceneRoomInfo>();
         private EnemyPosition[] _allEnemyPositions = new EnemyPosition[0];
         private Plot[] _registeredPlots = new Plot[0];
-        private Queue<ushort> _flagQueue = new Queue<ushort>();
+        private Queue<ReFlag> _flagQueue = new Queue<ReFlag>();
 
         // Current room
         private CutsceneBuilder _cb = new CutsceneBuilder();
         private RandomizedRdt? _rdt;
         private RdtId _rdtId;
-        private int _plotId;
-        private int _lastPlotId;
+        private ReFlag _plotFlag;
+        private ReFlag? _lastPlotFlag;
         private PointOfInterest[] _poi = new PointOfInterest[0];
         private int[] _allKnownCuts = new int[0];
         private EndlessBag<REPosition> _enemyPositions;
@@ -114,7 +114,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             _rdt = rdt;
             _rdtId = rdt.RdtId;
             _plotRng = rng;
-            _lastPlotId = -1;
+            _lastPlotFlag = null;
             _poi = info.Poi ?? new PointOfInterest[0];
             _allKnownCuts = _poi.SelectMany(x => x.AllCuts).ToArray();
             _currentEnemyCount = 0;
@@ -180,7 +180,6 @@ namespace IntelOrca.Biohazard.BioRand.Events
             if (rng.NextProbability(50))
             {
                 ChainRandomPlot<AllyStaticPlot>();
-                _lastPlotId = -1;
             }
             if (rng.NextProbability(25))
             {
@@ -210,7 +209,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                         if (!wakeUp && rng.NextProbability(50))
                         {
                             ChainRandomPlot<StaticEnemyPlot>();
-                            _lastPlotId = -1;
+                            _lastPlotFlag = null;
                         }
                     }
 
@@ -417,17 +416,17 @@ namespace IntelOrca.Biohazard.BioRand.Events
             }
         }
 
-        private ushort GetNextFlag()
+        private ReFlag GetNextFlag()
         {
             if (_flagQueue.Count == 0)
             {
                 foreach (var value in _availableFlags4)
                 {
-                    _flagQueue.Enqueue((ushort)(value | CutsceneBuilder.FG_COMMON << 8));
+                    _flagQueue.Enqueue(new ReFlag(CutsceneBuilder.FG_COMMON, value));
                 }
                 foreach (var value in _availableFlags3)
                 {
-                    _flagQueue.Enqueue((ushort)(value | CutsceneBuilder.FG_SCENARIO << 8));
+                    _flagQueue.Enqueue(new ReFlag(CutsceneBuilder.FG_SCENARIO, value));
                 }
             }
             return _flagQueue.Dequeue();

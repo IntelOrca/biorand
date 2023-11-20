@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using IntelOrca.Biohazard.BioRand.RE2;
 
 namespace IntelOrca.Biohazard.BioRand.Events
@@ -35,7 +34,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 Builder.BeginTriggerThread();
                 AddTriggers(doors[0].Cuts);
 
-                Builder.SetFlag(Cr._plotId >> 8, Cr._plotId & 0xFF);
+                Builder.SetFlag(Cr._plotFlag);
 
                 // Move ally into position and cut to them
                 Builder.LockPlot();
@@ -55,32 +54,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
             private PointOfInterest[][] GetConnectedDoors()
             {
-                var doors = Cr._poi.Where(x => x.HasTag(PoiKind.Door)).ToArray();
-                if (doors.Length < 2)
-                {
-                    return new PointOfInterest[0][];
-                }
-
-                var result = new List<PointOfInterest[]>();
-                var seen = new HashSet<PointOfInterest>();
-                foreach (var door in doors)
-                {
-                    if (seen.Contains(door))
-                        continue;
-
-                    var group = GetAllConnected(door)
-                        .Where(x => x.HasTag(PoiKind.Door))
-                        .ToArray();
-                    if (group.Length >= 2)
-                    {
-                        result.Add(group);
-                    }
-                    foreach (var d in group)
-                    {
-                        seen.Add(d);
-                    }
-                }
-                return result.ToArray();
+                return GetGraphsContaining(PoiKind.Door, PoiKind.Door);
             }
         }
     }

@@ -9,14 +9,39 @@ namespace IntelOrca.Biohazard.BioRand.Events
         {
             protected override bool Check()
             {
-                return GetRandomPoi(x => x.HasTag(PoiKind.Meet) || x.HasTag(PoiKind.Npc)) != null;
+                return GetRandomPoi(x => x.HasTag(PoiKind.Npc)) != null;
             }
 
             protected override void Build()
             {
-                var npcId = Builder.AllocateEnemies(1).FirstOrDefault();
-                var meetup = GetRandomPoi(x => x.HasTag(PoiKind.Meet) || x.HasTag(PoiKind.Npc))!;
+                var previousEnemies = Builder.PlacedEnemyIds.ToArray();
 
+                // Can the NPC enter the room via a door
+                var graphs = GetGraphsContaining(PoiKind.Door, PoiKind.Npc).Shuffle(Rng);
+                var graph = graphs.FirstOrDefault();
+                var waitPoi = null as PointOfInterest;
+                var doorEntry = null as PointOfInterest;
+                var doorExit = null as PointOfInterest;
+                if (graph != null)
+                {
+                    doorEntry = graph.Shuffle(Rng).FirstOrDefault(x => x.HasTag(PoiKind.Door));
+                    doorExit = graph.Shuffle(Rng).FirstOrDefault(x => x.HasTag(PoiKind.Door));
+                    waitPoi = graph.Shuffle(Rng).FirstOrDefault(x => x.HasTag(PoiKind.Npc));
+
+                    if (Rng.NextProbability(50))
+                        doorEntry = null;
+                    if (Rng.NextProbability(50))
+                        doorExit = null;
+                }
+                else
+                {
+                    waitPoi = GetRandomPoi(x => x.HasTag(PoiKind.Npc));
+                }
+
+                var plotFlag = Cr._plotFlag;
+                var converseFlag = Cr.GetNextFlag();
+
+                var npcId = Builder.AllocateEnemies(1).FirstOrDefault();
                 var enemyType = Re2EnemyIds.ClaireRedfield;
                 var actor0 = "leon";
                 var actor1 = "claire";
@@ -45,6 +70,61 @@ namespace IntelOrca.Biohazard.BioRand.Events
                     itemId = Builder.AllocateAots(1).FirstOrDefault();
                 }
 
+                // Init
+                if (doorEntry == null)
+                {
+                    Builder.Ally(npcId, enemyType, waitPoi!.Position);
+                }
+                else
+                {
+                    if (doorExit != null)
+                    {
+                        Builder.BeginIf();
+                        Builder.CheckFlag(converseFlag, false);
+                    }
+
+                    Builder.BeginIf();
+                    Builder.CheckFlag(plotFlag);
+                    Builder.Ally(npcId, enemyType, waitPoi!.Position);
+                    Builder.Else();
+                    Builder.Ally(npcId, enemyType, REPosition.OutOfBounds);
+                    Builder.DisableEnemyCollision(npcId);
+                    Builder.EndIf();
+
+                    if (doorExit != null)
+                    {
+                        Builder.EndIf();
+                    }
+                }
+
+                // Trigger thread
+                Builder.BeginSubProcedure();
+                if (doorEntry != null)
+                {
+                    // Triggers
+                    AddTriggers(doorEntry.Cuts);
+
+                    Builder.SetFlag(plotFlag);
+
+                    // Move ally into position and cut to them
+                    Builder.LockPlot();
+                    DoDoorOpenCloseCut(doorEntry);
+                    Builder.BeginCutsceneMode();
+                    LockEnemies(previousEnemies);
+                    Builder.MoveEnemy(npcId, doorEntry.Position);
+                    Builder.Sleep(60);
+                    UnlockEnemies(previousEnemies);
+                    Builder.CutRevert();
+                    Builder.EndCutsceneMode();
+                    IntelliTravelTo(24, npcId, doorEntry, waitPoi, null, PlcDestKind.Run);
+                    Builder.WaitForFlag(CutsceneBuilder.FG_ROOM, 24);
+                    Builder.EnableEnemyCollision(npcId);
+
+                    Builder.Sleep(30 * 4);
+                    Builder.UnlockPlot();
+                }
+                Builder.CallThread(Builder.EndSubProcedure());
+
                 // Continous loop
                 Builder.BeginSubProcedure();
                 var repeatLabel = Builder.CreateLabel();
@@ -52,17 +132,17 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 Builder.SetEnemyNeck(npcId, 64);
                 Builder.Sleep(30);
                 Builder.Goto(repeatLabel);
-                var loopProc = Builder.EndSubProcedure();
+                Builder.CallThread(Builder.EndSubProcedure());
 
                 // Event
                 Builder.BeginSubProcedure();
                 Builder.BeginCutsceneMode();
                 Builder.BeginIf();
-                Builder.CheckFlag(Cr._plotId >> 8, Cr._plotId & 0xFF);
+                Builder.CheckFlag(converseFlag);
                 Converse(vIds0);
                 Builder.Else();
-                if (meetup.CloseCut != null)
-                    Builder.CutChange(meetup.CloseCut.Value);
+                if (waitPoi!.CloseCut != null)
+                    Builder.CutChange(waitPoi.CloseCut.Value);
                 BeginConversation();
                 Converse(vIds1.Take(vIds1.Length - 1).ToArray());
                 if (itemId != null)
@@ -71,22 +151,28 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 }
                 Converse(vIds1.Skip(vIds1.Length - 1).ToArray());
                 EndConversation();
-                if (meetup.CloseCut != null)
+                if (waitPoi.CloseCut != null)
                     Builder.CutRevert();
-                Builder.SetFlag(Cr._plotId >> 8, Cr._plotId & 0xFF);
+                Builder.SetFlag(converseFlag);
                 Builder.EndIf();
+
+                if (doorExit != null)
+                {
+                    Builder.DisableEnemyCollision(npcId);
+                    IntelliTravelTo(24, npcId, waitPoi, doorExit, null, PlcDestKind.Run);
+                    Builder.WaitForFlag(CutsceneBuilder.FG_ROOM, 24);
+                    Builder.MoveEnemy(npcId, REPosition.OutOfBounds);
+                }
+
                 Builder.EndCutsceneMode();
                 var eventProc = Builder.EndSubProcedure();
 
-                // Init
-                Builder.Ally(npcId, enemyType, meetup.Position);
-                Builder.Event(interactId, meetup.Position, 2000, eventProc);
+                Builder.Event(interactId, waitPoi.Position, 2000, eventProc);
                 if (itemId != null)
                 {
                     RandomItem(255, itemId.Value);
                     Builder.SetFlag(CutsceneBuilder.FG_ITEM, 255, false);
                 }
-                Builder.CallThread(loopProc);
             }
 
             private void RandomItem(int globalId, int aotId)

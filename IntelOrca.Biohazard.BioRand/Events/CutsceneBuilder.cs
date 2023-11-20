@@ -7,23 +7,23 @@ namespace IntelOrca.Biohazard.BioRand.Events
 {
     public class CutsceneBuilder
     {
-        internal const int FG_STATUS = 1;
-        internal const int FG_STOP = 2;
-        internal const int FG_SCENARIO = 3;
-        internal const int FG_COMMON = 4;
-        internal const int FG_ROOM = 5;
-        internal const int FG_ITEM = 8;
+        internal const byte FG_STATUS = 1;
+        internal const byte FG_STOP = 2;
+        internal const byte FG_SCENARIO = 3;
+        internal const byte FG_COMMON = 4;
+        internal const byte FG_ROOM = 5;
+        internal const byte FG_ITEM = 8;
 
         private StringBuilder _sb;
         private StringBuilder _sbMain = new StringBuilder();
-        private StringBuilder _sbSub = new StringBuilder();
-        private string? _subProcedureName;
+        private List<Procedure> _subProcedureList = new List<Procedure>();
+        private Stack<Procedure> _subProcedureStack = new Stack<Procedure>();
 
         private int _labelCount;
         private int _plotCount;
         private Stack<int> _labelStack = new Stack<int>();
         private bool _else;
-        private int _plotFlagIndex;
+        private ReFlag _plotFlag;
         private int _genericProcIndex;
         private bool _ifPlotTriggered;
         private bool _hasPlotTrigger;
@@ -54,20 +54,20 @@ namespace IntelOrca.Biohazard.BioRand.Events
             EndProcedure();
         }
 
-        public int BeginPlot(ushort flag)
+        public ReFlag BeginPlot(ReFlag flag)
         {
             BeginProcedure($"plot_{_plotCount}");
-            _plotFlagIndex = flag;
+            _plotFlag = flag;
             _plotCount++;
             _ifPlotTriggered = false;
             _hasPlotTrigger = false;
-            return _plotFlagIndex;
+            return _plotFlag;
         }
 
         public void IfPlotTriggered()
         {
             BeginIf();
-            CheckFlag(_plotFlagIndex >> 8, _plotFlagIndex & 0xFF);
+            CheckFlag(_plotFlag);
             _ifPlotTriggered = true;
         }
 
@@ -97,12 +97,12 @@ namespace IntelOrca.Biohazard.BioRand.Events
         {
             if (_hasPlotTrigger)
             {
-                SetFlag(_plotFlagIndex >> 8, _plotFlagIndex & 0xFF);
+                SetFlag(_plotFlag);
             }
             else if (_ifPlotTriggered)
             {
                 Else();
-                SetFlag(_plotFlagIndex >> 8, _plotFlagIndex & 0xFF);
+                SetFlag(_plotFlag);
                 EndIf();
             }
             EndProcedure();
@@ -359,11 +359,13 @@ namespace IntelOrca.Biohazard.BioRand.Events
             Sleep1();
         }
 
+        public void CheckFlag(ReFlag flag, bool value = true) => CheckFlag(flag.Group, flag.Index, value);
         public void CheckFlag(int group, int index, bool value = true)
         {
             AppendLine("ck", group, index, value ? 1 : 0);
         }
 
+        public void SetFlag(ReFlag flag, bool value = true) => SetFlag(flag.Group, flag.Index, value);
         public void SetFlag(int group, int index, bool value = true)
         {
             AppendLine("set", group, index, value ? 1 : 0);
@@ -378,7 +380,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             EndLoop();
         }
 
-        public void WaitForPlot(int id) => WaitForFlag(id >> 8, id & 0xFF);
+        public void WaitForPlot(ReFlag flag) => WaitForFlag(flag);
 
         public void WaitForPlotUnlock()
         {
@@ -387,6 +389,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             WaitForFlag(FG_STOP, 7, false);
         }
 
+        public void WaitForFlag(ReFlag flag, bool value = true) => WaitForFlag(flag.Group, flag.Index, value);
         public void WaitForFlag(int flagGroup, int flag, bool value = true)
         {
             BeginWhileLoop(4);
@@ -485,11 +488,11 @@ namespace IntelOrca.Biohazard.BioRand.Events
         {
             AppendLine("evt_end", 0);
 
-            if (_subProcedureName == null && _sbSub.Length != 0)
+            foreach (var p in _subProcedureList)
             {
-                _sbMain.Append(_sbSub.ToString());
-                _sbSub.Clear();
+                _sbMain.Append(p.Sb.ToString());
             }
+            _subProcedureList.Clear();
         }
 
         public void Call(string procedureName)
@@ -504,26 +507,32 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public string BeginSubProcedure()
         {
-            if (_subProcedureName != null)
-                throw new InvalidOperationException("Already in a sub procedure");
+            var p = new Procedure(AllocateProcedure());
+            _subProcedureList.Add(p);
+            _subProcedureStack.Push(p);
 
-            _sb = _sbSub;
-            _subProcedureName = AllocateProcedure();
-            BeginProcedure(_subProcedureName);
-            return _subProcedureName;
+            _sb = p.Sb;
+            BeginProcedure(p.Name);
+            return p.Name;
         }
 
         public string EndSubProcedure()
         {
-            var subProcedureName = _subProcedureName;
-            if (subProcedureName == null)
+            if (_subProcedureStack.Count == 0)
                 throw new InvalidOperationException("Not in a sub procedure");
 
-            EndProcedure();
+            var p = _subProcedureStack.Pop();
+            AppendLine("evt_end", 0);
 
-            _sb = _sbMain;
-            _subProcedureName = null;
-            return subProcedureName;
+            if (_subProcedureStack.Count == 0)
+            {
+                _sb = _sbMain;
+            }
+            else
+            {
+                _sb = _subProcedureStack.Peek().Sb;
+            }
+            return p.Name;
         }
 
         public string AllocateProcedure()
@@ -539,6 +548,17 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public void AppendLine(string instruction, params object[] parameters)
         {
             _sb.AppendLine(string.Format("    {0,-24}{1}", instruction, string.Join(", ", parameters)));
+        }
+
+        private class Procedure
+        {
+            public string Name { get; }
+            public StringBuilder Sb { get; } = new StringBuilder();
+
+            public Procedure(string name)
+            {
+                Name = name;
+            }
         }
     }
 

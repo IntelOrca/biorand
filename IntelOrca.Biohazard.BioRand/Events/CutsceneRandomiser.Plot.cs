@@ -21,12 +21,12 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
             public void Create()
             {
-                Cr._plotId = Builder.BeginPlot(Cr.GetNextFlag());
+                Cr._plotFlag = Builder.BeginPlot(Cr.GetNextFlag());
 
-                Logger.WriteLine($"    [plot] #{Cr._plotId - 0x0300}: {GetType().Name}");
+                Logger.WriteLine($"    [plot] #{Cr._plotFlag}: {GetType().Name}");
                 Build();
                 Builder.EndPlot();
-                Cr._lastPlotId = Cr._plotId;
+                Cr._lastPlotFlag = Cr._plotFlag;
             }
 
             protected virtual bool Check()
@@ -64,10 +64,10 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 int minSleepTime = 0,
                 int maxSleepTime = 20)
             {
-                if (Cr._lastPlotId != -1)
+                if (Cr._lastPlotFlag != null)
                 {
-                    LogTrigger($"after plot {Cr._lastPlotId - 0x0300}");
-                    Builder.WaitForPlot(Cr._lastPlotId);
+                    LogTrigger($"after plot {Cr._lastPlotFlag.Value}");
+                    Builder.WaitForPlot(Cr._lastPlotFlag.Value);
                 }
 
                 var sleepTime = minSleepTime;
@@ -232,7 +232,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                     .ToArray();
             }
 
-            protected PointOfInterest[] GetAllConnected(PointOfInterest poi)
+            protected PointOfInterest[] GetGraph(PointOfInterest poi)
             {
                 var seen = new HashSet<PointOfInterest>();
                 var q = new Queue<PointOfInterest>();
@@ -251,6 +251,47 @@ namespace IntelOrca.Biohazard.BioRand.Events
                     }
                 }
                 return seen.ToArray();
+            }
+
+            protected PointOfInterest[][] GetGraphsContaining(params string[] tags)
+            {
+                var result = new List<PointOfInterest[]>();
+                foreach (var group in GetDisconnectedGraphs())
+                {
+                    var remaining = group.ToList();
+                    foreach (var tag in tags)
+                    {
+                        var index = remaining.FindIndex(x => x.HasTag(tag));
+                        if (index == -1)
+                        {
+                            goto nextgroup;
+                        }
+                        remaining.RemoveAt(index);
+                    }
+                    result.Add(group);
+                nextgroup:
+                    ;
+                }
+                return result.ToArray();
+            }
+
+            protected PointOfInterest[][] GetDisconnectedGraphs()
+            {
+                var result = new List<PointOfInterest[]>();
+                var seen = new HashSet<PointOfInterest>();
+                foreach (var poi in Cr._poi)
+                {
+                    if (seen.Contains(poi))
+                        continue;
+
+                    var group = GetGraph(poi);
+                    result.Add(group);
+                    foreach (var d in group)
+                    {
+                        seen.Add(d);
+                    }
+                }
+                return result.ToArray();
             }
 
             protected void LongConversation(int[] vids)
@@ -280,6 +321,26 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 Builder.Sleep(60);
                 Builder.ResumeMusic();
                 LogAction($"conversation");
+            }
+
+            protected void LockEnemies(int[] enemies)
+            {
+                foreach (var eid in enemies)
+                {
+                    Builder.DisableEnemyCollision(eid);
+                    Builder.HideEnemy(eid);
+                    Builder.DeactivateEnemy(eid);
+                }
+            }
+
+            protected void UnlockEnemies(int[] enemies)
+            {
+                foreach (var eid in enemies)
+                {
+                    Builder.EnableEnemyCollision(eid);
+                    Builder.UnhideEnemy(eid);
+                    Builder.ActivateEnemy(eid);
+                }
             }
 
             protected PointOfInterest? GetRandomDoor()

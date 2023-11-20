@@ -42,7 +42,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 Builder.LockPlot();
 
                 // Mark the cutscene as done in case it softlocks
-                Builder.SetFlag(Cr._plotId >> 8, Cr._plotId & 0xFF);
+                Builder.SetFlag(Cr._plotFlag);
 
                 DoDoorOpenCloseCut(entranceDoors[0]);
                 Builder.BeginCutsceneMode();

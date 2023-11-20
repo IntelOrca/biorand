@@ -67,32 +67,12 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 UnlockEnemies(previousEnemies);
                 Builder.CutRevert();
                 Builder.EndCutsceneMode();
-                Builder.SetFlag(Cr._plotId >> 8, Cr._plotId & 0xFF);
+                Builder.SetFlag(Cr._plotFlag);
 
                 // Delay next plot for at least 4s
                 Builder.Sleep(30 * 4);
 
                 Builder.UnlockPlot();
-            }
-
-            private void LockEnemies(int[] enemies)
-            {
-                foreach (var eid in enemies)
-                {
-                    Builder.DisableEnemyCollision(eid);
-                    Builder.HideEnemy(eid);
-                    Builder.DeactivateEnemy(eid);
-                }
-            }
-
-            private void UnlockEnemies(int[] enemies)
-            {
-                foreach (var eid in enemies)
-                {
-                    Builder.EnableEnemyCollision(eid);
-                    Builder.UnhideEnemy(eid);
-                    Builder.ActivateEnemy(eid);
-                }
             }
 
             private int GetMaxEnemiesToWalkIn()
