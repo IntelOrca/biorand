@@ -225,9 +225,10 @@ namespace IntelOrca.Biohazard.BioRand.Events
             AppendLine("plc_dest", 0, (byte)kind, id == -1 ? 32 : 33, pos.X, pos.Z);
         }
 
-        public void SetEnemyNeck(int id)
+        public void SetEnemyNeck(int id, int speed)
         {
-            AppendLine("plc_neck", 5, 1, 0, 0, 148, 206);
+            WorkOnEnemy(id);
+            AppendLine("plc_neck", 5, 1, 0, 0, speed, speed);
         }
 
         public void WorkOnEnemy(int id)
@@ -408,6 +409,11 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public void EndTrigger()
         {
             EndIf();
+        }
+
+        public void Goto(int label)
+        {
+            AppendLine("goto", 255, 255, 0, LabelName(label));
         }
 
         public void BeginWhileLoop(int conditionLength)

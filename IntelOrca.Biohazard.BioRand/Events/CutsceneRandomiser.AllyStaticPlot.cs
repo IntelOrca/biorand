@@ -45,7 +45,16 @@ namespace IntelOrca.Biohazard.BioRand.Events
                     itemId = Builder.AllocateAots(1).FirstOrDefault();
                 }
 
+                // Continous loop
+                Builder.BeginSubProcedure();
+                var repeatLabel = Builder.CreateLabel();
+                Builder.AppendLabel(repeatLabel);
+                Builder.SetEnemyNeck(npcId, 64);
+                Builder.Sleep(30);
+                Builder.Goto(repeatLabel);
+                var loopProc = Builder.EndSubProcedure();
 
+                // Event
                 Builder.BeginSubProcedure();
                 Builder.BeginCutsceneMode();
                 Builder.BeginIf();
@@ -69,6 +78,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 Builder.EndCutsceneMode();
                 var eventProc = Builder.EndSubProcedure();
 
+                // Init
                 Builder.Ally(npcId, enemyType, meetup.Position);
                 Builder.Event(interactId, meetup.Position, 2000, eventProc);
                 if (itemId != null)
@@ -76,6 +86,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                     RandomItem(255, itemId.Value);
                     Builder.SetFlag(CutsceneBuilder.FG_ITEM, 255, false);
                 }
+                Builder.CallThread(loopProc);
             }
 
             private void RandomItem(int globalId, int aotId)
