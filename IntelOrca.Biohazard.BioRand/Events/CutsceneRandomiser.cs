@@ -182,6 +182,10 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 ChainRandomPlot<AllyStaticPlot>();
                 _lastPlotId = -1;
             }
+            if (rng.NextProbability(25))
+            {
+                ChainRandomPlot<AllyPassByPlot>();
+            }
             if (_enemyType != null)
             {
                 if (_enemyType != Re2EnemyIds.ZombieArms &&
@@ -323,10 +327,22 @@ namespace IntelOrca.Biohazard.BioRand.Events
         {
             foreach (var poi in _poi)
             {
-                poi.Edges ??= _poi
+                var reverseEdges = _poi
                     .Where(x => x.Edges?.Contains(poi.Id) == true)
                     .Select(x => x.Id)
                     .ToArray();
+
+                if (poi.Edges == null)
+                {
+                    poi.Edges = reverseEdges;
+                }
+                else
+                {
+                    poi.Edges = poi.Edges
+                        .Concat(reverseEdges)
+                        .Distinct()
+                        .ToArray();
+                }
             }
         }
 
@@ -392,7 +408,8 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 new EnemyFromDarkPlot(),
                 new EnemyWalksInPlot(),
                 new AllyStaticPlot(),
-                new AllyWalksInPlot()
+                new AllyWalksInPlot(),
+                new AllyPassByPlot()
             };
             foreach (var plot in _registeredPlots)
             {

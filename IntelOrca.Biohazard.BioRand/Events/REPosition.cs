@@ -25,7 +25,7 @@
             return new REPosition(X, Y, Z, (D + 2000) % 4000);
         }
 
-        public static REPosition OutOfBounds { get; } = new REPosition(-32000, -10000, -32000);
+        public static REPosition OutOfBounds { get; } = new REPosition(-32000, -32000, -32000);
 
         public static REPosition operator +(REPosition a, REPosition b)
             => new REPosition(a.X + b.X, a.Y + b.Y, a.Z + b.Z, a.D + b.D);

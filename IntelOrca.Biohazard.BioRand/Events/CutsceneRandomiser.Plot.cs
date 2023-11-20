@@ -156,7 +156,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
                     Builder.SetEnemyDestination(enemyId, poi.Position, kind);
                     Builder.WaitForEnemyTravel(enemyId);
-                    Builder.Sleep(2);
+                    Builder.Sleep1();
                     if (cutFollow)
                         Builder.CutChange(poi.Cut);
                     LogAction($"{GetCharLogName(enemyId)} travel to {{ {poi} }}");
@@ -230,6 +230,27 @@ namespace IntelOrca.Biohazard.BioRand.Events
                     .Where(x => x != null)
                     .Select(x => x!)
                     .ToArray();
+            }
+
+            protected PointOfInterest[] GetAllConnected(PointOfInterest poi)
+            {
+                var seen = new HashSet<PointOfInterest>();
+                var q = new Queue<PointOfInterest>();
+
+                seen.Add(poi);
+                q.Enqueue(poi);
+                while (q.Count != 0)
+                {
+                    var n = q.Dequeue();
+                    foreach (var edge in GetEdges(n))
+                    {
+                        if (seen.Add(edge))
+                        {
+                            q.Enqueue(edge);
+                        }
+                    }
+                }
+                return seen.ToArray();
             }
 
             protected void LongConversation(int[] vids)
