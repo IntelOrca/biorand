@@ -223,7 +223,7 @@ namespace IntelOrca.Biohazard.BioRand.RE3
             return true;
         }
 
-        private static bool IsZombie(byte type)
+        public bool IsZombie(byte type)
         {
             return _zombieTypes.Contains(type);
         }

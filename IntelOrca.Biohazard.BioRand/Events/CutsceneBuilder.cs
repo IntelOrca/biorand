@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using IntelOrca.Biohazard.Script.Opcodes;
 
-namespace IntelOrca.Biohazard.BioRand
+namespace IntelOrca.Biohazard.BioRand.Events
 {
     public class CutsceneBuilder
     {
@@ -110,7 +110,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         public void Event(int id, REPosition pos, int size, string proc)
         {
-            AppendLine("aot_set", id, "SCE_EVENT", "SAT_PL | SAT_MANUAL | SAT_FRONT", pos.Floor, 0, pos.X - (size / 2), pos.Z - (size / 2), size, size, 255, 0, "I_GOSUB", proc, 0, 0);
+            AppendLine("aot_set", id, "SCE_EVENT", "SAT_PL | SAT_MANUAL | SAT_FRONT", pos.Floor, 0, pos.X - size / 2, pos.Z - size / 2, size, size, 255, 0, "I_GOSUB", proc, 0, 0);
         }
 
         public int[] AllocateAots(int count)
@@ -175,20 +175,36 @@ namespace IntelOrca.Biohazard.BioRand
             AppendLine("member_set2", 7, 16);
         }
 
+        public void DisableEnemyCollision(int id)
+        {
+            WorkOnEnemy(id);
+            AppendLine("member_copy", "V_TEMP", "M_POINTER");
+            AppendLine("calc", 0, "OP_OR", "V_TEMP", 0x0002);
+            AppendLine("member_set2", "M_POINTER", "V_TEMP");
+        }
+
+        public void EnableEnemyCollision(int id)
+        {
+            WorkOnEnemy(id);
+            AppendLine("member_copy", "V_TEMP", "M_POINTER");
+            AppendLine("calc", 0, "OP_AND", "V_TEMP", 0xFFFD);
+            AppendLine("member_set2", "M_POINTER", "V_TEMP");
+        }
+
         public void HideEnemy(int id)
         {
             WorkOnEnemy(id);
-            AppendLine("member_copy", "V_TEMP", "M_Y_POS");
-            AppendLine("calc", 0, "OP_SUB", "V_TEMP", 32000);
-            AppendLine("member_set2", "M_Y_POS", "V_TEMP");
+            AppendLine("member_copy", "V_TEMP", "M_BE_FLAG");
+            AppendLine("calc", 0, "OP_OR", "V_TEMP", 0x0008);
+            AppendLine("member_set2", "M_BE_FLAG", "V_TEMP");
         }
 
         public void UnhideEnemy(int id)
         {
             WorkOnEnemy(id);
-            AppendLine("member_copy", 16, 7);
-            AppendLine("calc", 0, "OP_ADD", "V_TEMP", 32000);
-            AppendLine("member_set2", 7, 16);
+            AppendLine("member_copy", "V_TEMP", "M_BE_FLAG");
+            AppendLine("calc", 0, "OP_AND", "V_TEMP", 0xFFF7);
+            AppendLine("member_set2", "M_BE_FLAG", "V_TEMP");
         }
 
         public void PlayVoice(int id)
@@ -302,7 +318,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         public void PlayMusic(RdtId rdtId, byte main, byte sub)
         {
-            AppendLine("sce_bgmtbl_set", 0, rdtId.Room, rdtId.Stage, main | (sub << 8), 0);
+            AppendLine("sce_bgmtbl_set", 0, rdtId.Room, rdtId.Stage, main | sub << 8, 0);
             AppendLine("sce_bgm_control", 0, 3, 0, 0, 0);
         }
 

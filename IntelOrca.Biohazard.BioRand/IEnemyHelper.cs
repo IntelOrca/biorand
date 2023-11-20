@@ -16,5 +16,6 @@ namespace IntelOrca.Biohazard.BioRand
         byte[] GetRequiredEsps(byte enemyType);
         byte[] GetReservedEnemyIds();
         byte[] GetEnemyDependencies(byte enemyType);
+        bool IsZombie(byte type);
     }
 }

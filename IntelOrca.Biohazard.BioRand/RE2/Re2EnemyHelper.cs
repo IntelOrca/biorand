@@ -226,7 +226,7 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             }
         }
 
-        private static bool IsZombie(byte type)
+        public bool IsZombie(byte type)
         {
             switch (type)
             {

@@ -114,6 +114,19 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             return type <= Re1EnemyIds.Yawn2;
         }
 
+        public bool IsZombie(byte type)
+        {
+            switch (type)
+            {
+                case Re1EnemyIds.Zombie:
+                case Re1EnemyIds.ZombieNaked:
+                case Re1EnemyIds.ZombieResearcher:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         public bool IsUniqueEnemyType(byte type)
         {
             switch (type)
