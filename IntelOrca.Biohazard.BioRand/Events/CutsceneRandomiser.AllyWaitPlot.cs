@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using IntelOrca.Biohazard.BioRand.RE2;
 
 namespace IntelOrca.Biohazard.BioRand.Events
@@ -12,7 +13,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 return GetRandomPoi(x => x.HasTag(PoiKind.Npc)) != null;
             }
 
-            protected override void Build()
+            private void Build1()
             {
                 var previousEnemies = Builder.PlacedEnemyIds.ToArray();
 
@@ -89,7 +90,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                     UnlockEnemies(previousEnemies);
                     Builder.CutRevert();
                     Builder.EndCutsceneMode();
-                    IntelliTravelTo(24, npcId, doorEntry, waitPoi, null, PlcDestKind.Run);
+                    IntelliTravelTo(24, npcId, doorEntry, waitPoi!, null, PlcDestKind.Run);
                     Builder.WaitForFlag(CutsceneBuilder.FG_ROOM, 24);
                     Builder.EnableEnemyCollision(npcId);
 
@@ -132,9 +133,10 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 if (doorExit != null)
                 {
                     Builder.DisableEnemyCollision(npcId);
-                    IntelliTravelTo(24, npcId, waitPoi, doorExit, null, PlcDestKind.Run);
+                    IntelliTravelTo(24, npcId, waitPoi, doorExit, doorExit.Position.Reverse(), PlcDestKind.Run);
                     Builder.WaitForFlag(CutsceneBuilder.FG_ROOM, 24);
                     Builder.MoveEnemy(npcId, REPosition.OutOfBounds);
+                    DoDoorOpenClose(doorExit);
                 }
 
                 Builder.EndCutsceneMode();
@@ -166,7 +168,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 Builder.Event(interactId, waitPoi.Position, 2000, eventProc);
                 if (itemId != null)
                 {
-                    RandomItem(255, itemId.Value);
+                    // GetRandomItem(255, itemId.Value);
                     Builder.SetFlag(CutsceneBuilder.FG_ITEM, 255, false);
                 }
 
@@ -176,7 +178,121 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 }
             }
 
-            private void RandomItem(int globalId, int aotId)
+            protected override void Build()
+            {
+                var previousEnemies = Builder.PlacedEnemyIds.ToArray();
+
+                // Can the NPC enter the room via a door
+                var graphs = GetGraphsContaining(PoiKind.Door, PoiKind.Npc).Shuffle(Rng);
+                var graph = graphs.FirstOrDefault();
+                var waitPoi = null as PointOfInterest;
+                var doorEntry = null as PointOfInterest;
+                var doorExit = null as PointOfInterest;
+                if (graph != null)
+                {
+                    doorEntry = graph.Shuffle(Rng).FirstOrDefault(x => x.HasTag(PoiKind.Door));
+                    doorExit = graph.Shuffle(Rng).FirstOrDefault(x => x.HasTag(PoiKind.Door));
+                    waitPoi = graph.Shuffle(Rng).FirstOrDefault(x => x.HasTag(PoiKind.Npc));
+
+                    if (Rng.NextProbability(50))
+                        doorEntry = null;
+                    if (Rng.NextProbability(50))
+                        doorExit = null;
+                }
+                else
+                {
+                    waitPoi = GetRandomPoi(x => x.HasTag(PoiKind.Npc));
+                }
+
+                var plotFlag = new CsGlobalFlag();
+                var converseFlag = new CsGlobalFlag();
+
+                var player = CsPlayer.Default;
+                var ally = new CsAlly();
+                var item = Rng.NextProbability(75) ? GetRandomItem() : null;
+                var interaction = new CsAot();
+
+                SbProcedure? triggerProcedure = null;
+                if (doorEntry != null)
+                {
+                    triggerProcedure = new SbProcedure(
+                        // Triggers
+                        new SbSleep(30),
+                        new SbWaitForCut(0),
+                        new SbWaitForFlag(new ReFlag(CutsceneBuilder.FG_ROOM, 23), false),
+                        new SbWaitForFlag(new ReFlag(CutsceneBuilder.FG_STATUS, 27), false),
+                        new SbWaitForFlag(new ReFlag(CutsceneBuilder.FG_STOP, 7), false),
+
+                        new SbSetFlag(plotFlag),
+                            new SbLockPlot(
+                                new SbDoor(doorEntry),
+                                new SbCutsceneBars(
+                                    new SbFreezeEnemies(previousEnemies,
+                                        new SbMoveEntity(ally, doorEntry.Position),
+                                        new SbSleep(60)),
+                                    new SbCutRevert(),
+                                    new SbTravel(ally, doorEntry, waitPoi!, PlcDestKind.Run),
+                                    new SbSleep(30 * 4))));
+                }
+
+                var loopProcedure = new SbProcedure(
+                    new SbLoop(
+                        new SbSetEntityNeck(ally, 64),
+                        new SbSleep(30)));
+
+                var eventProcedure = new SbProcedure(
+                    new SbCutsceneBars(
+                        new SbIf(converseFlag, true,
+                            new SbXaOn(0))
+                        .Else(
+                            CreateInitalConversation(waitPoi!.CloseCut, new ICsHero[] { player, ally }, item),
+                            new SbSetFlag(converseFlag)),
+                        new SbConditionalNode(doorExit != null,
+                            new SbSetEntityCollision(ally, false),
+                            new SbTravel(ally, waitPoi, doorExit!, PlcDestKind.Run, overrideDestination: doorExit!.Position.Reverse()),
+                            new SbMoveEntity(ally, REPosition.OutOfBounds),
+                            new SbDoor(doorExit))));
+
+                var initProcedure = new SbProcedure(
+                    new SbIf(converseFlag, true,
+                        new SbAlly(ally, waitPoi!.Position),
+                        new SbConditionalNode(triggerProcedure != null,
+                            new SbFork(triggerProcedure!)),
+                        new SbFork(loopProcedure),
+                        new SbEvent(interaction, waitPoi.Position, 2000, eventProcedure),
+                        new SbConditionalNode(item != null, new SbItem(item!)),
+                        new SbSetFlag(new CsFlag(CutsceneBuilder.FG_ITEM, 255), false)));
+            }
+
+            private SbNode CreateInitalConversation(int? cut, ICsHero[] participants, CsItem? item)
+            {
+                SbNode result = new SbMuteMusic(
+                    new SbSleep(60),
+                    RandomConversation(2, 4, participants, participants),
+                    new SbConditionalNode(item != null,
+                        new SbAotOn(item!)),
+                    RandomConversation(0, 2, participants, participants),
+                    new SbSleep(60));
+                if (cut != null)
+                {
+                    result = new SbCut(cut.Value, result);
+                }
+                return result;
+            }
+
+            private SbContainerNode RandomConversation(int minLines, int maxLines, ICsHero[] participants, ICsHero[] speakers)
+            {
+                var count = Rng.Next(minLines, maxLines + 1);
+                var nodes = new List<SbNode>();
+                for (var i = 0; i < count; i++)
+                {
+                    var speaker = Rng.NextOf(speakers);
+                    nodes.Add(new SbVoice(speaker, participants));
+                }
+                return new SbContainerNode(nodes.ToArray());
+            }
+
+            private CsItem GetRandomItem()
             {
                 var type = Re2ItemIds.FAidSpray;
                 var amount = 1;
@@ -227,8 +343,10 @@ namespace IntelOrca.Biohazard.BioRand.Events
                     amount = item.Amount;
                 }
 
-                Builder.Item(globalId, aotId, type, (byte)amount);
-                LogAction($"item gift [{itemHelper.GetItemName(type)} x{amount}]");
+                return new CsItem(new Item(type, (byte)amount))
+                {
+                    GlobalId = 255
+                };
             }
         }
     }
