@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using IntelOrca.Biohazard.BioRand.Events;
 using IntelOrca.Biohazard.BioRand.RE2;
 
 namespace IntelOrca.Biohazard.BioRand.Events
@@ -7,6 +8,8 @@ namespace IntelOrca.Biohazard.BioRand.Events
     {
         private Queue<byte> _availableAots = new Queue<byte>();
         private Queue<byte> _availableEnemies = new Queue<byte>();
+        private List<SbEvent> _events = new List<SbEvent>();
+        private List<SbEntity> _entities = new List<SbEntity>();
 
         public byte AllocateAot()
         {
@@ -26,6 +29,82 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public ReFlag AllocateGlobalFlag()
         {
 
+        }
+
+        private void BuildInitCode(CutsceneBuilder builder)
+        {
+            var eventIndex = 0;
+            foreach (var evt in _events)
+            {
+                builder.BeginProcedure($"plot_{eventIndex}");
+                if (evt.Action != null)
+                {
+                    if (evt.StateFlag != null)
+                    {
+                        builder.BeginIf();
+                        builder.CheckFlag(evt.StateFlag.Value, false);
+                        BuildInitCode(builder, evt.Action, false);
+                        builder.Else();
+                        BuildInitCode(builder, evt.Action, true);
+                        builder.EndIf();
+                    }
+                    else
+                    {
+                        BuildInitCode(builder, evt.Action, false);
+                    }
+                }
+                builder.EndProcedure();
+                eventIndex++;
+            }
+        }
+
+        private void BuildInitCode(CutsceneBuilder builder, SbAction? action, bool state)
+        {
+            var found = false;
+            while (action != null)
+            {
+                if (state)
+                {
+                    if (found)
+                    {
+                        BuildCode(builder, action);
+                    }
+                    else if (action is SbNextTime)
+                    {
+                        found = true;
+                    }
+                }
+                else
+                {
+                    if (action is SbNextTime)
+                    {
+                        break;
+                    }
+                }
+                action = action.Next;
+            }
+        }
+
+        private void BuildCode(CutsceneBuilder builder, SbAction action)
+        {
+        }
+
+        public void BuildEvent(SbEvent evt)
+        {
+
+        }
+
+        private IEnumerable<SbAction> EnumerateActions()
+        {
+            foreach (var evt in _events)
+            {
+                var action = evt.Action;
+                while (action != null)
+                {
+                    yield return action;
+                    action = action.Next;
+                }
+            }
         }
     }
 
@@ -66,7 +145,6 @@ namespace IntelOrca.Biohazard.BioRand.Events
             enemy0.Action = new SbBuilder()
                 .Add(new SbEnter() { DoorId = 0 })
                 .Add(new SbNextTime() { })
-                .Add(new SbEnter() { DoorId = 0 })
                 .Add(new SbPosition() { })
                 .Head;
 
@@ -97,6 +175,8 @@ internal class SbEvent
     public int TriggerCut { get; set; }
     public int Delay { get; set; }
     public int Cooldown { get; set; }
+    public bool Reoccuring { get; set; }
+    public ReFlag? StateFlag { get; set; }
     public SbAction? Action { get; set; }
 }
 
@@ -121,18 +201,18 @@ internal class SbBuilder
     }
 }
 
-internal class Entity
+internal class SbEntity
 {
     public byte Id { get; set; }
     public byte Type { get; set; }
     public SbAction? Action { get; set; }
 }
 
-internal class Enemy : Entity
+internal class Enemy : SbEntity
 {
 }
 
-internal class Ally : Entity
+internal class Ally : SbEntity
 {
     public string? Actor { get; set; }
 }
@@ -205,6 +285,6 @@ internal class SbNextTime : SbAction
 
 internal class SbSpawnEntity : SbAction
 {
-    public Entity? Entity { get; set; }
+    public SbEntity? Entity { get; set; }
 }
 }
