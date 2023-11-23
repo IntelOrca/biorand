@@ -70,33 +70,6 @@ namespace IntelOrca.Biohazard.BioRand.Events
                     itemId = Builder.AllocateAots(1).FirstOrDefault();
                 }
 
-                // Init
-                if (doorEntry == null)
-                {
-                    Builder.Ally(npcId, enemyType, waitPoi!.Position);
-                }
-                else
-                {
-                    if (doorExit != null)
-                    {
-                        Builder.BeginIf();
-                        Builder.CheckFlag(converseFlag, false);
-                    }
-
-                    Builder.BeginIf();
-                    Builder.CheckFlag(plotFlag);
-                    Builder.Ally(npcId, enemyType, waitPoi!.Position);
-                    Builder.Else();
-                    Builder.Ally(npcId, enemyType, REPosition.OutOfBounds);
-                    Builder.DisableEnemyCollision(npcId);
-                    Builder.EndIf();
-
-                    if (doorExit != null)
-                    {
-                        Builder.EndIf();
-                    }
-                }
-
                 // Trigger thread
                 Builder.BeginSubProcedure();
                 if (doorEntry != null)
@@ -123,7 +96,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                     Builder.Sleep(30 * 4);
                     Builder.UnlockPlot();
                 }
-                Builder.CallThread(Builder.EndSubProcedure());
+                var triggerThread = Builder.EndSubProcedure();
 
                 // Continous loop
                 Builder.BeginSubProcedure();
@@ -132,7 +105,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 Builder.SetEnemyNeck(npcId, 64);
                 Builder.Sleep(30);
                 Builder.Goto(repeatLabel);
-                Builder.CallThread(Builder.EndSubProcedure());
+                var loopThread = Builder.EndSubProcedure();
 
                 // Event
                 Builder.BeginSubProcedure();
@@ -167,11 +140,39 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 Builder.EndCutsceneMode();
                 var eventProc = Builder.EndSubProcedure();
 
+                // Init
+                if (doorExit != null)
+                {
+                    Builder.BeginIf();
+                    Builder.CheckFlag(converseFlag, false);
+                }
+                if (doorEntry == null)
+                {
+                    Builder.Ally(npcId, enemyType, waitPoi!.Position);
+                }
+                else
+                {
+                    Builder.BeginIf();
+                    Builder.CheckFlag(plotFlag);
+                    Builder.Ally(npcId, enemyType, waitPoi!.Position);
+                    Builder.Else();
+                    Builder.Ally(npcId, enemyType, REPosition.OutOfBounds);
+                    Builder.DisableEnemyCollision(npcId);
+                    Builder.EndIf();
+                }
+                Builder.CallThread(triggerThread);
+                Builder.CallThread(loopThread);
+
                 Builder.Event(interactId, waitPoi.Position, 2000, eventProc);
                 if (itemId != null)
                 {
                     RandomItem(255, itemId.Value);
                     Builder.SetFlag(CutsceneBuilder.FG_ITEM, 255, false);
+                }
+
+                if (doorExit != null)
+                {
+                    Builder.EndIf();
                 }
             }
 
