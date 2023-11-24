@@ -1,67 +1,98 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.BioRand.Events
 {
+    internal class CsPlot
+    {
+        public SbNode Root { get; }
+
+        public CsPlot(SbNode root)
+        {
+            Root = root;
+        }
+    }
+
     internal class CsEntity
     {
-        public int? Id { get; set; }
+        public byte Id { get; set; }
+
+        public CsEntity(byte id)
+        {
+            Id = id;
+        }
     }
 
     internal class CsEnemy : CsEntity
     {
+        public CsEnemy(byte id)
+            : base(id)
+        {
+        }
     }
 
     internal interface ICsHero
     {
-        string? Actor { get; set; }
+        string Actor { get; }
     }
 
     internal class CsAlly : CsEntity, ICsHero
     {
-        public string? Actor { get; set; }
+        public byte Type { get; }
+        public string Actor { get; }
+
+        public CsAlly(byte id, byte type, string actor)
+            : base(id)
+        {
+            Type = type;
+            Actor = actor;
+        }
     }
 
     internal class CsPlayer : ICsHero
     {
-        public static CsPlayer Default { get; } = new CsPlayer();
-
-        public string? Actor { get; set; }
+        public string Actor { get; } = "leon";
     }
 
     internal class CsFlag
     {
-        public ReFlag? Flag { get; set; }
+        public ReFlag Flag { get; set; }
 
         public CsFlag() { }
+
+        public CsFlag(ReFlag flag)
+        {
+            Flag = flag;
+        }
+
         public CsFlag(byte type, byte index)
         {
             Flag = new ReFlag(type, index);
         }
     }
 
-    internal class CsLocalFlag : CsFlag
-    {
-    }
-
-    internal class CsGlobalFlag : CsFlag
-    {
-    }
-
     internal class CsAot
     {
-        public int? Id { get; set; }
+        public byte Id { get; }
+
+        public CsAot(byte id)
+        {
+            Id = id;
+        }
     }
 
     internal class CsItem : CsAot
     {
-        public int? GlobalId { get; set; }
-        public Item Item { get; set; }
+        public byte GlobalId { get; } = 255;
+        public Item Item { get; }
 
-        public CsItem(Item item)
+        public CsItem(byte id, byte globalId, Item item)
+            : base(id)
         {
+            GlobalId = globalId;
             Item = item;
         }
     }
@@ -75,6 +106,11 @@ namespace IntelOrca.Biohazard.BioRand.Events
             {
                 child.Build(builder);
             }
+        }
+
+        public static SbNode Conditional(bool value, Func<SbNode> callback)
+        {
+            return value ? callback() : new SbNop();
         }
     }
 
@@ -92,14 +128,6 @@ namespace IntelOrca.Biohazard.BioRand.Events
         }
 
         public override IEnumerable<SbNode> Children => _children;
-    }
-
-    internal class SbConditionalNode : SbContainerNode
-    {
-        public SbConditionalNode(bool include, params SbNode[] children)
-            : base(include ? children : new SbNode[0])
-        {
-        }
     }
 
     internal class SbSleep : SbNode
@@ -164,10 +192,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public override void Build(CutsceneBuilder builder)
         {
-            if (Aot.Id is int id)
-            {
-                builder.AotOn(id);
-            }
+            builder.AotOn(Aot.Id);
         }
     }
 
@@ -179,35 +204,47 @@ namespace IntelOrca.Biohazard.BioRand.Events
         {
             Poi = poi;
         }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            var poi = Poi;
+            var pos = poi.Position;
+            if (poi.HasTag("door"))
+            {
+                builder.PlayDoorSoundOpen(pos);
+                builder.Sleep(30);
+                builder.PlayDoorSoundClose(pos);
+            }
+            else
+            {
+                builder.Sleep(30);
+            }
+        }
     }
 
-    internal class SbTravel : SbNode
+    internal class SbEntityTravel : SbNode
     {
         public CsEntity Entity { get; }
-        public PointOfInterest From { get; }
-        public PointOfInterest Destination { get; }
-        public REPosition? OverrideDestination { get; }
+        public ReFlag CompletionFlag { get; }
+        public REPosition Destination { get; }
         public PlcDestKind Kind { get; }
-        public bool CutFollow { get; }
 
-        public SbTravel(
+        public SbEntityTravel(
             CsEntity entity,
-            PointOfInterest from,
-            PointOfInterest destination,
-            PlcDestKind kind,
-            REPosition? overrideDestination = null,
-            bool cutFollow = false)
+            ReFlag completionFlag,
+            REPosition destination,
+            PlcDestKind kind)
         {
             Entity = entity;
-            From = from;
+            CompletionFlag = completionFlag;
             Destination = destination;
-            OverrideDestination = overrideDestination;
             Kind = kind;
-            CutFollow = cutFollow;
         }
 
         public override void Build(CutsceneBuilder builder)
         {
+            builder.WorkOnEnemy(Entity.Id);
+            builder.AppendLine("plc_dest", 0, (byte)Kind, CompletionFlag.Index, Destination.X, Destination.Z);
         }
     }
 
@@ -246,14 +283,17 @@ namespace IntelOrca.Biohazard.BioRand.Events
     internal class SbAlly : SbNode
     {
         public CsAlly Ally { get; }
+        public REPosition Position { get; }
 
         public SbAlly(CsAlly ally, REPosition position)
         {
             Ally = ally;
+            Position = position;
         }
 
         public override void Build(CutsceneBuilder builder)
         {
+            builder.Ally(Ally.Id, Ally.Type, Position);
         }
     }
 
@@ -285,10 +325,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public override void Build(CutsceneBuilder builder)
         {
-            if (Entity.Id is int id)
-            {
-                builder.MoveEnemy(id, Position);
-            }
+            builder.MoveEnemy(Entity.Id, Position);
         }
     }
 
@@ -305,13 +342,10 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public override void Build(CutsceneBuilder builder)
         {
-            if (Entity.Id is int id)
-            {
-                if (Value)
-                    builder.EnableEnemyCollision(id);
-                else
-                    builder.DisableEnemyCollision(id);
-            }
+            if (Value)
+                builder.EnableEnemyCollision(Entity.Id);
+            else
+                builder.DisableEnemyCollision(Entity.Id);
         }
     }
 
@@ -328,37 +362,34 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public override void Build(CutsceneBuilder builder)
         {
-            if (Entity.Id != null)
-            {
-                builder.SetEnemyNeck(Entity.Id.Value, Speed);
-            }
+            builder.SetEnemyNeck(Entity.Id, Speed);
         }
     }
 
     internal class SbFreezeEnemies : SbContainerNode
     {
-        private readonly int[] _enemyIds;
+        private readonly CsEnemy[] _enemies;
 
-        public SbFreezeEnemies(int[] enemyIds, params SbNode[] children)
+        public SbFreezeEnemies(CsEnemy[] enemies, params SbNode[] children)
             : base(children)
         {
-            _enemyIds = enemyIds;
+            _enemies = enemies;
         }
 
         public override void Build(CutsceneBuilder builder)
         {
-            foreach (var eid in _enemyIds)
+            foreach (var e in _enemies)
             {
-                builder.DisableEnemyCollision(eid);
-                builder.HideEnemy(eid);
-                builder.DeactivateEnemy(eid);
+                builder.DisableEnemyCollision(e.Id);
+                builder.HideEnemy(e.Id);
+                builder.DeactivateEnemy(e.Id);
             }
             base.Build(builder);
-            foreach (var eid in _enemyIds)
+            foreach (var e in _enemies)
             {
-                builder.EnableEnemyCollision(eid);
-                builder.UnhideEnemy(eid);
-                builder.ActivateEnemy(eid);
+                builder.EnableEnemyCollision(e.Id);
+                builder.UnhideEnemy(e.Id);
+                builder.ActivateEnemy(e.Id);
             }
         }
     }
@@ -376,15 +407,28 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public override void Build(CutsceneBuilder builder)
         {
-            builder.SetFlag(Flag.Flag!.Value, Value);
+            builder.SetFlag(Flag.Flag, Value);
         }
     }
 
     internal class SbProcedure : SbContainerNode
     {
+        private static int g_nextId;
+        private readonly int _id;
+
+        public string Name => $"proc_{_id:x8}";
+
         public SbProcedure(params SbNode[] children)
             : base(children)
         {
+            _id = Interlocked.Increment(ref g_nextId);
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.BeginProcedure(Name);
+            base.Build(builder);
+            builder.EndProcedure();
         }
     }
 
@@ -428,12 +472,12 @@ namespace IntelOrca.Biohazard.BioRand.Events
             return this;
         }
 
-        public override IEnumerable<SbNode> Children => _if.Concat(_else);
+        public override IEnumerable<SbNode> Children => _if.Concat(_else ?? new SbNode[0]);
 
         public override void Build(CutsceneBuilder builder)
         {
             builder.BeginIf();
-            builder.CheckFlag(Flag.Flag!.Value, Value);
+            builder.CheckFlag(Flag.Flag, Value);
             foreach (var child in _if)
             {
                 child.Build(builder);
@@ -458,6 +502,11 @@ namespace IntelOrca.Biohazard.BioRand.Events
         {
             Cut = cut;
         }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.WaitForTriggerCut(Cut);
+        }
     }
 
     internal class SbWaitForFlag : SbNode
@@ -465,10 +514,15 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public ReFlag Flag { get; }
         public bool Value { get; }
 
-        public SbWaitForFlag(ReFlag flag, bool value)
+        public SbWaitForFlag(ReFlag flag, bool value = true)
         {
             Flag = flag;
             Value = value;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.WaitForFlag(Flag, Value);
         }
     }
 
@@ -480,26 +534,25 @@ namespace IntelOrca.Biohazard.BioRand.Events
         {
             Value = value;
         }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.PlayVoiceAsync(Value);
+        }
     }
 
     internal class SbVoice : SbNode
     {
-        public ICsHero Speaker { get; }
-        public ICsHero[] Participants { get; }
-        public int? XaId { get; }
+        public int Value { get; }
 
-        public SbVoice(ICsHero speaker, ICsHero[] participants)
+        public SbVoice(int value)
         {
-            Speaker = speaker;
-            Participants = participants;
+            Value = value;
         }
 
         public override void Build(CutsceneBuilder builder)
         {
-            if (XaId != null)
-            {
-                builder.PlayVoice(XaId.Value);
-            }
+            builder.PlayVoice(Value);
         }
     }
 
@@ -511,21 +564,49 @@ namespace IntelOrca.Biohazard.BioRand.Events
         {
             Procedure = procedure;
         }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.CallThread(Procedure.Name);
+        }
     }
 
-    internal class SbEvent : SbNode
+    internal class SbAot : SbNode
     {
         public CsAot Aot { get; }
         public REPosition Position { get; }
         public int Size { get; }
-        public SbProcedure Procedure { get; }
 
-        public SbEvent(CsAot aot, REPosition pos, int size, SbProcedure procedure)
+        public SbAot(CsAot aot, REPosition pos, int size)
         {
             Aot = aot;
             Position = pos;
             Size = size;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            var id = Aot.Id;
+            var pos = Position;
+            var size = Size;
+            builder.AppendLine("aot_set", id, "SCE_AUTO", "SAT_PL | SAT_MANUAL | SAT_FRONT", pos.Floor, 0, pos.X - size / 2, pos.Z - size / 2, size, size, 0, 0, 0, 0, 0, 0);
+        }
+    }
+
+    internal class SbEnableEvent : SbNode
+    {
+        public CsAot Aot { get; }
+        public SbProcedure Procedure { get; }
+
+        public SbEnableEvent(CsAot aot, SbProcedure procedure)
+        {
+            Aot = aot;
             Procedure = procedure;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.AppendLine("aot_reset", Aot.Id, "SCE_EVENT", "SAT_PL | SAT_MANUAL | SAT_FRONT", 255, 0, "I_GOSUB", Procedure.Name, 0, 0);
         }
     }
 
@@ -536,6 +617,11 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public SbItem(CsItem item)
         {
             Item = item;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.Item(Item.GlobalId, Item.Id, Item.Item.Type, Item.Item.Amount);
         }
     }
 }

@@ -7,6 +7,11 @@ namespace IntelOrca.Biohazard.BioRand.Events
 {
     internal partial class CutsceneRandomiser
     {
+        private interface INewPlot
+        {
+            public CsPlot BuildPlot(PlotBuilder builder);
+        }
+
         private abstract class Plot
         {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

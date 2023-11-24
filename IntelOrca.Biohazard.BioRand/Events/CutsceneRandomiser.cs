@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using IntelOrca.Biohazard.BioRand.RE2;
 using IntelOrca.Biohazard.Script.Opcodes;
 using static IntelOrca.Biohazard.BioRand.EnemyRandomiser;
 
@@ -154,7 +153,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 _cb.AvailableEnemyIds.Enqueue(id);
             }
 
-            var aotIds = Enumerable.Range(0, 32).ToHashSet();
+            var aotIds = Enumerable.Range(0, 32).Select(x => (byte)x).ToHashSet();
             foreach (var opcode in _rdt.AllOpcodes)
             {
                 if (opcode is IAot aot)
@@ -167,6 +166,34 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 _cb.AvailableAotIds.Enqueue(id);
             }
 
+            var flags3 = _availableFlags3.Select(x => new ReFlag(CutsceneBuilder.FG_SCENARIO, x));
+            var flags4 = _availableFlags4.Select(x => new ReFlag(CutsceneBuilder.FG_COMMON, x));
+            var globalFlags = flags3.Concat(flags4).ToArray();
+            var localFlags = Enumerable.Range(24, 64)
+                .Select(x => new ReFlag(CutsceneBuilder.FG_ROOM, (byte)x))
+                .ToArray();
+
+            var plotBuilder = new PlotBuilder(
+                rng,
+                _npcRandomiser,
+                _voiceRandomiser,
+                _rdt,
+                new PoiGraph(_poi),
+                globalFlags,
+                localFlags,
+                availableIds.ToArray(),
+                aotIds.ToArray());
+
+            var plot = ChainRandomPlot<AllyWaitPlot>(plotBuilder);
+            if (plot != null)
+            {
+                var procedures = GetAllProcedures(plot.Root);
+                foreach (var proc in procedures)
+                {
+                    proc.Build(_cb);
+                }
+            }
+
             // ChainRandomPlot<EnemyChangePlot>();
             // ChainRandomPlot<EnemyWakeUpPlot>();
             // ChainRandomPlot<EnemyWalksInPlot>();
@@ -177,6 +204,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             //     ChainRandomPlot<AllyStaticPlot>();
             // }
 
+            /*
             if (rng.NextProbability(50))
             {
                 ChainRandomPlot<AllyStaticPlot>();
@@ -227,9 +255,45 @@ namespace IntelOrca.Biohazard.BioRand.Events
             {
                 _logger.WriteLine($"  (no enemies defined)");
             }
+            */
 
             cb.End();
             rdt.CustomAdditionalScript = cb.ToString();
+        }
+
+        private SbProcedure[] GetAllProcedures(SbNode node)
+        {
+            var procedures = new HashSet<SbProcedure>();
+
+            var q = new Queue<SbNode>();
+            q.Enqueue(node);
+
+            while (q.Count != 0)
+            {
+                node = q.Dequeue();
+                foreach (var child in node.Children)
+                {
+                    q.Enqueue(child);
+                }
+
+                if (node is SbProcedure proc)
+                {
+                    if (procedures.Add(proc))
+                        q.Enqueue(proc);
+                }
+                else if (node is SbEnableEvent evt)
+                {
+                    if (procedures.Add(evt.Procedure))
+                        q.Enqueue(evt.Procedure);
+                }
+                else if (node is SbFork fork)
+                {
+                    if (procedures.Add(fork.Procedure))
+                        q.Enqueue(fork.Procedure);
+                }
+            }
+
+            return procedures.OrderBy(x => x.Name).ToArray();
         }
 
         private void ClearEnemies(RandomizedRdt rdt)
@@ -345,29 +409,31 @@ namespace IntelOrca.Biohazard.BioRand.Events
             }
         }
 
-        private void ChainRandomPlot()
-        {
-            foreach (var plot in _registeredPlots)
-            {
-                ChainRandomPlot(plot);
-            }
-        }
-
         private void ChainRandomPlot<T>() where T : Plot
         {
             var plot = _registeredPlots.FirstOrDefault(x => x.GetType() == typeof(T));
             if (plot == null)
                 throw new ArgumentException("Unknown plot");
 
-            ChainRandomPlot(plot);
-        }
-
-        private void ChainRandomPlot(Plot plot)
-        {
             if (!plot.IsCompatible())
                 return;
 
             plot.Create();
+        }
+
+        private CsPlot? ChainRandomPlot<T>(PlotBuilder builder) where T : Plot
+        {
+            var plot = _registeredPlots.FirstOrDefault(x => x.GetType() == typeof(T));
+            if (plot == null)
+                throw new ArgumentException("Unknown plot");
+
+            if (!plot.IsCompatible())
+                return null;
+
+            if (plot is INewPlot newPlot)
+                return newPlot.BuildPlot(builder);
+
+            return null;
         }
 
         private void LoadCutsceneRoomInfo()
@@ -406,7 +472,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 new EnemyWakeUpPlot(),
                 new EnemyFromDarkPlot(),
                 new EnemyWalksInPlot(),
-                new AllyStaticPlot(),
+                new AllyWaitPlot(),
                 new AllyWalksInPlot(),
                 new AllyPassByPlot()
             };
