@@ -201,10 +201,16 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 //     plots.Add(enemyPlot);
                 // }
 
-                var enemyDarkness = ChainRandomPlot<EnemyFromDarkPlot>(plotBuilder);
-                if (enemyDarkness != null)
+                // var enemyDarkness = ChainRandomPlot<EnemyFromDarkPlot>(plotBuilder);
+                // if (enemyDarkness != null)
+                // {
+                //     plots.Add(enemyDarkness);
+                // }
+
+                var enemyWakeUp = ChainRandomPlot<EnemyWakeUpPlot>(plotBuilder);
+                if (enemyWakeUp != null)
                 {
-                    plots.Add(enemyDarkness);
+                    plots.Add(enemyWakeUp);
                 }
             }
 

@@ -395,17 +395,19 @@ namespace IntelOrca.Biohazard.BioRand.Events
         private readonly CsEnemy _enemy;
         private readonly REPosition _position;
         private readonly bool _enabled;
+        private readonly byte? _pose;
 
-        public SbEnemy(CsEnemy enemy)
-            : this(enemy, enemy.DefaultPosition)
+        public SbEnemy(CsEnemy enemy, bool enabled = true, byte? pose = null)
+            : this(enemy, enemy.DefaultPosition, enabled, pose)
         {
         }
 
-        public SbEnemy(CsEnemy enemy, REPosition position, bool enabled = true)
+        public SbEnemy(CsEnemy enemy, REPosition position, bool enabled = true, byte? pose = null)
         {
             _enemy = enemy;
             _position = position;
             _enabled = enabled;
+            _pose = pose;
         }
 
         public override void Build(CutsceneBuilder builder)
@@ -421,6 +423,10 @@ namespace IntelOrca.Biohazard.BioRand.Events
             opcode.KillId = _enemy.GlobalId;
             opcode.Type = _enemy.Type;
             _enemy.ProcessFunc(opcode);
+            if (_pose is byte pose)
+            {
+                opcode.State = pose;
+            }
             builder.Enemy(opcode);
         }
     }
