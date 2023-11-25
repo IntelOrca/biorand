@@ -25,6 +25,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public Rng Rng { get; }
         public PoiGraph PoiGraph { get; }
         public int MaximumEnemyCount { get; }
+        public IEnemyHelper EnemyHelper => _enemyRandomiser?.EnemyHelper ?? new Re2EnemyHelper();
 
         public PlotBuilder(
             RandoConfig config,
