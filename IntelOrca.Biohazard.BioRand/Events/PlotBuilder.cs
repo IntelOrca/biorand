@@ -21,10 +21,10 @@ namespace IntelOrca.Biohazard.BioRand.Events
         private readonly List<CsEnemy> _enemies = new List<CsEnemy>();
         private readonly byte? _enemyType;
         private int _currentEnemyCount;
-        private int _maximumEnemyCount;
 
         public Rng Rng { get; }
         public PoiGraph PoiGraph { get; }
+        public int MaximumEnemyCount { get; }
 
         public PlotBuilder(
             RandoConfig config,
@@ -55,7 +55,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             _availableEntityIds = entityIds.ToQueue();
             _availableAotIds = aotIds.ToQueue();
             _enemyType = enemyType;
-            _maximumEnemyCount = maximumEnemyCount;
+            MaximumEnemyCount = maximumEnemyCount;
         }
 
         public CsFlag AllocateLocalFlag()
@@ -128,7 +128,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         private int TakeEnemyCountForEvent(int min = 1, int max = int.MaxValue)
         {
-            var max2 = Math.Min(max, Math.Max(min, _maximumEnemyCount - _currentEnemyCount));
+            var max2 = Math.Min(max, Math.Max(min, MaximumEnemyCount - _currentEnemyCount));
             var count = Rng.Next(min, max2 + 1);
             _currentEnemyCount += count;
             return count;
@@ -208,6 +208,45 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 new SbFork(travelProcedure),
                 new SbWaitForFlag(completeFlag.Flag),
                 new SbSetEntityCollision(entity, true));
+        }
+
+        public SbNode CreateTrigger(
+            int[]? notCuts = null,
+            int minSleepTime = 0,
+            int maxSleepTime = 20)
+        {
+            int? triggerTime = null;
+            int? triggerCut = null;
+
+            var triggerPoi = PoiGraph.GetRandomPoi(Rng, x => x.HasTag(PoiKind.Trigger) && notCuts?.Contains(x.Cut) != true);
+            if (triggerPoi != null && Rng.NextProbability(75))
+            {
+                triggerCut = triggerPoi.Cut;
+            }
+
+            if (triggerCut == null && Rng.NextProbability(50))
+            {
+                triggerTime = Rng.Next(minSleepTime, maxSleepTime) * 30;
+            }
+
+            var result = new List<SbNode>();
+            if (triggerTime != null)
+            {
+                result.Add(new SbCommentNode($"[trigger] wait {triggerTime / 30} seconds",
+                    new SbSleep(triggerTime.Value)));
+            }
+
+            if (triggerCut != null)
+            {
+                result.Add(new SbCommentNode($"[trigger] wait for cut {triggerCut.Value}",
+                    new SbWaitForCut(triggerCut.Value)));
+            }
+
+            result.Add(new SbWaitForFlag(new ReFlag(CutsceneBuilder.FG_ROOM, 23), false));
+            result.Add(new SbWaitForFlag(new ReFlag(CutsceneBuilder.FG_STATUS, 27), false));
+            result.Add(new SbWaitForFlag(new ReFlag(CutsceneBuilder.FG_STOP, 7), false));
+
+            return new SbContainerNode(result.ToArray());
         }
     }
 }

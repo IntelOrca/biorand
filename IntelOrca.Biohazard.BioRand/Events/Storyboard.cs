@@ -216,6 +216,48 @@ namespace IntelOrca.Biohazard.BioRand.Events
         }
     }
 
+    internal class SbSetFade : SbNode
+    {
+        private byte _a;
+        private byte _b;
+        private byte _c;
+        private byte _d;
+        private byte _e;
+
+        public SbSetFade(byte a, byte b, byte c, byte d, byte e)
+        {
+            _a = a;
+            _b = b;
+            _c = c;
+            _d = d;
+            _e = e;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.SetFade(_a, _b, _c, _d, _e);
+        }
+    }
+
+    internal class SbAdjustFade : SbNode
+    {
+        private byte _a;
+        private byte _b;
+        private byte _c;
+
+        public SbAdjustFade(byte a, byte b, byte c)
+        {
+            _a = a;
+            _b = b;
+            _c = c;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.AdjustFade(_a, _b, _c);
+        }
+    }
+
     internal class SbAotOn : SbNode
     {
         public CsAot Aot { get; }
@@ -299,6 +341,21 @@ namespace IntelOrca.Biohazard.BioRand.Events
         }
     }
 
+    internal class SbLockControls : SbContainerNode
+    {
+        public SbLockControls(params SbNode[] children)
+            : base(children)
+        {
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.SetFlag(CutsceneBuilder.FG_STOP, 7, true);
+            base.Build(builder);
+            builder.SetFlag(CutsceneBuilder.FG_STOP, 7, false);
+        }
+    }
+
     internal class SbCutsceneBars : SbContainerNode
     {
         public SbCutsceneBars(params SbNode[] children)
@@ -337,22 +394,25 @@ namespace IntelOrca.Biohazard.BioRand.Events
     {
         private readonly CsEnemy _enemy;
         private readonly REPosition _position;
+        private readonly bool _enabled;
 
         public SbEnemy(CsEnemy enemy)
             : this(enemy, enemy.DefaultPosition)
         {
         }
 
-        public SbEnemy(CsEnemy enemy, REPosition position)
+        public SbEnemy(CsEnemy enemy, REPosition position, bool enabled = true)
         {
             _enemy = enemy;
             _position = position;
+            _enabled = enabled;
         }
 
         public override void Build(CutsceneBuilder builder)
         {
             var opcode = new SceEmSetOpcode();
             opcode.Id = _enemy.Id;
+            opcode.Ai = (byte)(_enabled ? 0 : 128);
             opcode.X = (short)_position.X;
             opcode.Y = (short)_position.Y;
             opcode.Z = (short)_position.Z;
@@ -416,6 +476,27 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public override void Build(CutsceneBuilder builder)
         {
             builder.SetEnemyNeck(Entity.Id, Speed);
+        }
+    }
+
+    internal class SbSetEntityEnabled : SbNode
+    {
+        public CsEntity Entity { get; }
+        public bool Enabled { get; }
+
+        public SbSetEntityEnabled(CsEntity entity, bool enabled)
+        {
+            Entity = entity;
+            Enabled = enabled;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            var id = Entity.Id;
+            if (Enabled)
+                builder.ActivateEnemy(id);
+            else
+                builder.DeactivateEnemy(id);
         }
     }
 

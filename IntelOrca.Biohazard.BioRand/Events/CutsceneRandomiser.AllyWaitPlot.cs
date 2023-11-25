@@ -235,14 +235,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 if (doorEntry != null)
                 {
                     triggerProcedure = new SbProcedure(
-                        // Triggers
-                        new SbCommentNode("[trigger] wait 1s",
-                            new SbSleep(30)),
-                        new SbCommentNode("[trigger] cut 0",
-                            new SbWaitForCut(0)),
-                        new SbWaitForFlag(new ReFlag(CutsceneBuilder.FG_ROOM, 23), false),
-                        new SbWaitForFlag(new ReFlag(CutsceneBuilder.FG_STATUS, 27), false),
-                        new SbWaitForFlag(new ReFlag(CutsceneBuilder.FG_STOP, 7), false),
+                        builder.CreateTrigger(doorEntry.Cuts),
 
                         new SbSetFlag(plotFlag),
                             new SbLockPlot(
