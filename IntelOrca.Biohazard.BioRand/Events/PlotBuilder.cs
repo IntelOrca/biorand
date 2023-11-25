@@ -141,9 +141,9 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 if (overrideDestination != null && poi == destination)
                     break;
 
+                nodes.Add(new SbSetFlag(subCompleteFlag, false));
                 nodes.Add(new SbEntityTravel(entity, subCompleteFlag.Flag, poi.Position, kind));
                 nodes.Add(new SbWaitForFlag(subCompleteFlag.Flag));
-                nodes.Add(new SbSleep(1));
                 if (cutFollow)
                 {
                     nodes.Add(new SbCut(poi.Cut));
@@ -166,8 +166,10 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
             return new SbContainerNode(
                 new SbSetFlag(completeFlag, false),
+                new SbSetEntityCollision(entity, false),
                 new SbFork(travelProcedure),
-                new SbWaitForFlag(completeFlag.Flag));
+                new SbWaitForFlag(completeFlag.Flag),
+                new SbSetEntityCollision(entity, true));
         }
     }
 }

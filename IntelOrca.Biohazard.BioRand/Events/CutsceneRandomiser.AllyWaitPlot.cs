@@ -222,11 +222,13 @@ namespace IntelOrca.Biohazard.BioRand.Events
                             builder.Voice(new ICsHero[] { player, ally }))
                         .Else(
                             CreateInitalConversation(builder, waitPoi!.CloseCut, new ICsHero[] { player, ally }, item),
-                            new SbSetFlag(converseFlag)),
-                        SbNode.Conditional(doorExit != null, () => new SbContainerNode(
-                            new SbSetEntityCollision(ally, false),
-                            builder.Travel(ally, waitPoi, doorExit!, PlcDestKind.Run, overrideDestination: doorExit!.Position.Reverse()),
-                            new SbMoveEntity(ally, REPosition.OutOfBounds),
+                            new SbSetFlag(converseFlag))),
+                    SbNode.Conditional(doorExit != null, () => new SbContainerNode(
+                        new SbSetEntityCollision(ally, false),
+                        new SbCommentNode($"[action] ally travel to {{ {waitPoi} }}",
+                            builder.Travel(ally, waitPoi, doorExit!, PlcDestKind.Run, overrideDestination: doorExit!.Position.Reverse())),
+                        new SbMoveEntity(ally, REPosition.OutOfBounds),
+                        new SbCommentNode($"[action] ally leave at {{ {doorExit} }}",
                             new SbDoor(doorExit)))));
 
                 SbProcedure? triggerProcedure = null;
@@ -234,38 +236,49 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 {
                     triggerProcedure = new SbProcedure(
                         // Triggers
-                        new SbSleep(30),
-                        new SbWaitForCut(0),
+                        new SbCommentNode("[trigger] wait 1s",
+                            new SbSleep(30)),
+                        new SbCommentNode("[trigger] cut 0",
+                            new SbWaitForCut(0)),
                         new SbWaitForFlag(new ReFlag(CutsceneBuilder.FG_ROOM, 23), false),
                         new SbWaitForFlag(new ReFlag(CutsceneBuilder.FG_STATUS, 27), false),
                         new SbWaitForFlag(new ReFlag(CutsceneBuilder.FG_STOP, 7), false),
 
                         new SbSetFlag(plotFlag),
                             new SbLockPlot(
-                                new SbDoor(doorEntry),
-                                new SbCutsceneBars(
-                                    new SbFreezeEnemies(previousEnemies,
-                                        new SbMoveEntity(ally, doorEntry.Position),
-                                        new SbSleep(60)),
-                                    new SbCutRevert(),
-                                    builder.Travel(ally, doorEntry, waitPoi!, PlcDestKind.Run),
-                                    new SbEnableEvent(interaction, eventProcedure),
-                                    new SbSleep(30 * 4))));
+                                new SbCommentNode($"[action] ally enter at {{ {doorEntry} }}",
+                                    new SbDoor(doorEntry),
+                                    new SbCutsceneBars(
+                                        new SbCut(doorEntry.Cut,
+                                            new SbFreezeEnemies(previousEnemies,
+                                                new SbMoveEntity(ally, doorEntry.Position),
+                                                new SbSleep(60))))),
+                                new SbCommentNode($"[action] ally travel to {{ {waitPoi} }}",
+                                    builder.Travel(ally, doorEntry, waitPoi!, PlcDestKind.Run)),
+                                new SbCommentNode($"[action] ally enable interaction",
+                                    new SbEnableEvent(interaction, eventProcedure)),
+                                new SbSleep(30 * 4)));
                 }
 
-                var initProcedure = new SbProcedure(
-                    new SbIf(converseFlag, false,
+                SbNode initBlock = new SbContainerNode(
+                    new SbIf(plotFlag, false,
+                        SbNode.Conditional(doorEntry != null, () => new SbContainerNode(
+                            new SbAlly(ally, REPosition.OutOfBounds),
+                            new SbAot(interaction, waitPoi.Position, 2000),
+                            new SbFork(triggerProcedure!))))
+                    .Else(
                         new SbAlly(ally, waitPoi!.Position),
                         new SbAot(interaction, waitPoi.Position, 2000),
-                        new SbIf(plotFlag, false,
-                            SbNode.Conditional(triggerProcedure != null, () => new SbContainerNode(
-                                new SbFork(triggerProcedure!))))
-                        .Else(
-                            new SbEnableEvent(interaction, eventProcedure)),
-                        new SbFork(loopProcedure),
-                        SbNode.Conditional(item != null, () => new SbContainerNode(
-                            new SbItem(item!))),
-                        new SbSetFlag(new CsFlag(CutsceneBuilder.FG_ITEM, 255), false)));
+                        new SbEnableEvent(interaction, eventProcedure)),
+                    new SbFork(loopProcedure),
+                    SbNode.Conditional(item != null, () => new SbContainerNode(
+                        new SbItem(item!))),
+                    new SbSetFlag(new CsFlag(CutsceneBuilder.FG_ITEM, 255), false));
+                if (doorExit != null)
+                {
+                    initBlock = new SbIf(converseFlag, false, initBlock);
+                }
+                var initProcedure = new SbProcedure(initBlock);
 
                 return new CsPlot(initProcedure);
             }

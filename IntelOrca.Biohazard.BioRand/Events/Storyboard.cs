@@ -8,9 +8,9 @@ namespace IntelOrca.Biohazard.BioRand.Events
 {
     internal class CsPlot
     {
-        public SbNode Root { get; }
+        public SbProcedure Root { get; }
 
-        public CsPlot(SbNode root)
+        public CsPlot(SbProcedure root)
         {
             Root = root;
         }
@@ -130,6 +130,17 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public override IEnumerable<SbNode> Children => _children;
     }
 
+    internal class SbCommentNode : SbContainerNode
+    {
+        public string Description { get; }
+
+        public SbCommentNode(string description, params SbNode[] children)
+            : base(children)
+        {
+            Description = description;
+        }
+    }
+
     internal class SbSleep : SbNode
     {
         public int Ticks { get; }
@@ -137,6 +148,21 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public SbSleep(int ticks)
         {
             Ticks = ticks;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            if (Ticks == 0)
+            {
+            }
+            else if (Ticks == 1)
+            {
+                builder.Sleep1();
+            }
+            else
+            {
+                builder.Sleep(Ticks);
+            }
         }
     }
 
@@ -245,6 +271,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
         {
             builder.WorkOnEnemy(Entity.Id);
             builder.AppendLine("plc_dest", 0, (byte)Kind, CompletionFlag.Index, Destination.X, Destination.Z);
+            builder.AppendLine("plc_rot", 0, 256);
         }
     }
 
@@ -416,12 +443,20 @@ namespace IntelOrca.Biohazard.BioRand.Events
         private static int g_nextId;
         private readonly int _id;
 
-        public string Name => $"proc_{_id:x8}";
+        public string Name { get; }
 
         public SbProcedure(params SbNode[] children)
             : base(children)
         {
             _id = Interlocked.Increment(ref g_nextId);
+            Name = $"proc_{_id:x8}";
+        }
+
+        public SbProcedure(string name, params SbNode[] children)
+            : base(children)
+        {
+            _id = Interlocked.Increment(ref g_nextId);
+            Name = name;
         }
 
         public override void Build(CutsceneBuilder builder)
@@ -556,7 +591,27 @@ namespace IntelOrca.Biohazard.BioRand.Events
         }
     }
 
-    internal class SbFork : SbNode
+    internal interface ISbSubProcedure
+    {
+        public SbProcedure Procedure { get; }
+    }
+
+    internal class SbCall : SbNode, ISbSubProcedure
+    {
+        public SbProcedure Procedure { get; }
+
+        public SbCall(SbProcedure procedure)
+        {
+            Procedure = procedure;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.Call(Procedure.Name);
+        }
+    }
+
+    internal class SbFork : SbNode, ISbSubProcedure
     {
         public SbProcedure Procedure { get; }
 
@@ -593,7 +648,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
         }
     }
 
-    internal class SbEnableEvent : SbNode
+    internal class SbEnableEvent : SbNode, ISbSubProcedure
     {
         public CsAot Aot { get; }
         public SbProcedure Procedure { get; }

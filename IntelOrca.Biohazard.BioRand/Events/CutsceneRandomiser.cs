@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using IntelOrca.Biohazard.BioRand.RE2;
 using IntelOrca.Biohazard.Script.Opcodes;
 using static IntelOrca.Biohazard.BioRand.EnemyRandomiser;
 
@@ -184,6 +185,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 availableIds.ToArray(),
                 aotIds.ToArray());
 
+            var plots = new List<CsPlot>();
             var plot = ChainRandomPlot<AllyWaitPlot>(plotBuilder);
             if (plot != null)
             {
@@ -192,7 +194,15 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 {
                     proc.Build(_cb);
                 }
+                plots.Add(plot);
+                LogPlot(plot);
             }
+
+            var entryProc = new SbProcedure("biorand_custom",
+                plots
+                    .Select(x => new SbCall(x.Root))
+                    .ToArray());
+            entryProc.Build(_cb);
 
             // ChainRandomPlot<EnemyChangePlot>();
             // ChainRandomPlot<EnemyWakeUpPlot>();
@@ -204,20 +214,20 @@ namespace IntelOrca.Biohazard.BioRand.Events
             //     ChainRandomPlot<AllyStaticPlot>();
             // }
 
-            /*
-            if (rng.NextProbability(50))
-            {
-                ChainRandomPlot<AllyStaticPlot>();
-            }
-            if (rng.NextProbability(25))
-            {
-                ChainRandomPlot<AllyPassByPlot>();
-            }
+            // if (rng.NextProbability(50))
+            // {
+            //     ChainRandomPlot<AllyStaticPlot>();
+            // }
+            // if (rng.NextProbability(25))
+            // {
+            //     ChainRandomPlot<AllyPassByPlot>();
+            // }
             if (_enemyType != null)
             {
                 if (_enemyType != Re2EnemyIds.ZombieArms &&
                     _enemyType != Re2EnemyIds.GAdult)
                 {
+                    /*
                     if (rng.NextProbability(10))
                     {
                         ChainRandomPlot<EnemyFromDarkPlot>();
@@ -245,19 +255,19 @@ namespace IntelOrca.Biohazard.BioRand.Events
                     {
                         ChainRandomPlot<EnemyWalksInPlot>();
                     }
+                    */
                     _enemyRandomiser!.ChosenEnemies.Remove(_rdt);
                 }
 
-                _logger.WriteLine($"  Enemy type: {enemyHelper!.GetEnemyName(_enemyType.Value)}");
-                _logger.WriteLine($"  {_currentEnemyCount} / {_maximumEnemyCount} enemies placed");
+                // _logger.WriteLine($"  Enemy type: {enemyHelper!.GetEnemyName(_enemyType.Value)}");
+                // _logger.WriteLine($"  {_currentEnemyCount} / {_maximumEnemyCount} enemies placed");
             }
             else
             {
                 _logger.WriteLine($"  (no enemies defined)");
             }
-            */
 
-            cb.End();
+            // cb.End();
             rdt.CustomAdditionalScript = cb.ToString();
         }
 
@@ -276,24 +286,46 @@ namespace IntelOrca.Biohazard.BioRand.Events
                     q.Enqueue(child);
                 }
 
-                if (node is SbProcedure proc)
+                if (node is SbProcedure sbProc)
                 {
+                    if (procedures.Add(sbProc))
+                    {
+                        q.Enqueue(sbProc);
+                    }
+                }
+                else if (node is ISbSubProcedure sbSubProc)
+                {
+                    var proc = sbSubProc.Procedure;
                     if (procedures.Add(proc))
+                    {
                         q.Enqueue(proc);
-                }
-                else if (node is SbEnableEvent evt)
-                {
-                    if (procedures.Add(evt.Procedure))
-                        q.Enqueue(evt.Procedure);
-                }
-                else if (node is SbFork fork)
-                {
-                    if (procedures.Add(fork.Procedure))
-                        q.Enqueue(fork.Procedure);
+                    }
                 }
             }
 
             return procedures.OrderBy(x => x.Name).ToArray();
+        }
+
+        private void LogPlot(CsPlot plot)
+        {
+            LogNode(plot.Root, 0);
+
+            void LogNode(SbNode node, int level)
+            {
+                if (node is SbCommentNode commentNode)
+                {
+                    _logger.WriteLine(new string(' ', 2 + (level * 2)) + commentNode.Description);
+                    level++;
+                }
+                if (node is ISbSubProcedure sbSubProc)
+                {
+                    LogNode(sbSubProc.Procedure, level);
+                }
+                foreach (var child in node.Children)
+                {
+                    LogNode(child, level);
+                }
+            }
         }
 
         private void ClearEnemies(RandomizedRdt rdt)
