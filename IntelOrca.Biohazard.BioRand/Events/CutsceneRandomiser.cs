@@ -25,7 +25,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
         private readonly Dictionary<RdtId, CutsceneRoomInfo> _cutsceneRoomInfoMap = new Dictionary<RdtId, CutsceneRoomInfo>();
         private EnemyPosition[] _allEnemyPositions = new EnemyPosition[0];
         private Plot[] _registeredPlots = new Plot[0];
-        private Queue<ReFlag> _flagQueue = new Queue<ReFlag>();
+        private EndlessBag<ReFlag> _globalFlags;
 
         // Current room
         private CutsceneBuilder _cb = new CutsceneBuilder();
@@ -65,6 +65,10 @@ namespace IntelOrca.Biohazard.BioRand.Events
             _npcRandomiser = npcRandomiser;
             _voiceRandomiser = voiceRandomiser;
             _enemyPositions = new EndlessBag<REPosition>(new Rng(), new REPosition[0]);
+
+            var flags3 = _availableFlags3.Select(x => new ReFlag(CutsceneBuilder.FG_SCENARIO, x));
+            var flags4 = _availableFlags4.Select(x => new ReFlag(CutsceneBuilder.FG_COMMON, x));
+            _globalFlags = flags3.Concat(flags4).ToEndlessBag(rng);
 
             LoadCutsceneRoomInfo();
             ReadEnemyPlacements();
@@ -167,34 +171,50 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 _cb.AvailableAotIds.Enqueue(id);
             }
 
-            var flags3 = _availableFlags3.Select(x => new ReFlag(CutsceneBuilder.FG_SCENARIO, x));
-            var flags4 = _availableFlags4.Select(x => new ReFlag(CutsceneBuilder.FG_COMMON, x));
-            var globalFlags = flags3.Concat(flags4).ToArray();
             var localFlags = Enumerable.Range(24, 64)
                 .Select(x => new ReFlag(CutsceneBuilder.FG_ROOM, (byte)x))
                 .ToArray();
 
             var plotBuilder = new PlotBuilder(
+                _config,
                 rng,
+                _enemyRandomiser,
                 _npcRandomiser,
                 _voiceRandomiser,
                 _rdt,
                 new PoiGraph(_poi),
-                globalFlags,
+                _enemyPositions,
+                _globalFlags,
                 localFlags,
                 availableIds.ToArray(),
-                aotIds.ToArray());
+                aotIds.ToArray(),
+                _enemyType,
+                _maximumEnemyCount);
 
             var plots = new List<CsPlot>();
-            var plot = ChainRandomPlot<AllyWaitPlot>(plotBuilder);
-            if (plot != null)
+
+            if (_enemyType.HasValue)
+            {
+                var enemyPlot = ChainRandomPlot<StaticEnemyPlot>(plotBuilder);
+                if (enemyPlot != null)
+                {
+                    plots.Add(enemyPlot);
+                }
+            }
+
+            var allyPlot = ChainRandomPlot<AllyWaitPlot>(plotBuilder);
+            if (allyPlot != null)
+            {
+                plots.Add(allyPlot);
+            }
+
+            foreach (var plot in plots)
             {
                 var procedures = GetAllProcedures(plot.Root);
                 foreach (var proc in procedures)
                 {
                     proc.Build(_cb);
                 }
-                plots.Add(plot);
                 LogPlot(plot);
             }
 
@@ -514,21 +534,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             }
         }
 
-        private ReFlag GetNextFlag()
-        {
-            if (_flagQueue.Count == 0)
-            {
-                foreach (var value in _availableFlags4)
-                {
-                    _flagQueue.Enqueue(new ReFlag(CutsceneBuilder.FG_COMMON, value));
-                }
-                foreach (var value in _availableFlags3)
-                {
-                    _flagQueue.Enqueue(new ReFlag(CutsceneBuilder.FG_SCENARIO, value));
-                }
-            }
-            return _flagQueue.Dequeue();
-        }
+        private ReFlag GetNextFlag() => throw new NotImplementedException();
 
         private int TakeEnemyCountForEvent(int min = 1, int max = int.MaxValue)
         {

@@ -28,9 +28,18 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
     internal class CsEnemy : CsEntity
     {
-        public CsEnemy(byte id)
+        public byte Type { get; }
+        public byte GlobalId { get; }
+        public REPosition DefaultPosition { get; }
+        public Action<SceEmSetOpcode> ProcessFunc { get; }
+
+        public CsEnemy(byte id, byte globalId, byte type, REPosition defaultPosition, Action<SceEmSetOpcode> processFunc)
             : base(id)
         {
+            GlobalId = globalId;
+            Type = type;
+            DefaultPosition = defaultPosition;
+            ProcessFunc = processFunc;
         }
     }
 
@@ -326,16 +335,33 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
     internal class SbEnemy : SbNode
     {
-        public SceEmSetOpcode Opcode { get; }
+        private readonly CsEnemy _enemy;
+        private readonly REPosition _position;
 
-        public SbEnemy(SceEmSetOpcode opcode)
+        public SbEnemy(CsEnemy enemy)
+            : this(enemy, enemy.DefaultPosition)
         {
-            Opcode = opcode;
+        }
+
+        public SbEnemy(CsEnemy enemy, REPosition position)
+        {
+            _enemy = enemy;
+            _position = position;
         }
 
         public override void Build(CutsceneBuilder builder)
         {
-            builder.Enemy(Opcode);
+            var opcode = new SceEmSetOpcode();
+            opcode.Id = _enemy.Id;
+            opcode.X = (short)_position.X;
+            opcode.Y = (short)_position.Y;
+            opcode.Z = (short)_position.Z;
+            opcode.D = (short)_position.D;
+            opcode.Floor = (byte)_position.Floor;
+            opcode.KillId = _enemy.GlobalId;
+            opcode.Type = _enemy.Type;
+            _enemy.ProcessFunc(opcode);
+            builder.Enemy(opcode);
         }
     }
 

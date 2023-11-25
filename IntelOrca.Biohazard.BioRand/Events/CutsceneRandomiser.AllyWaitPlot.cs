@@ -260,25 +260,34 @@ namespace IntelOrca.Biohazard.BioRand.Events
                                 new SbSleep(30 * 4)));
                 }
 
+                SbNode waitBlock = new SbContainerNode(
+                    new SbAlly(ally, waitPoi!.Position),
+                    new SbAot(interaction, waitPoi.Position, 2000),
+                    new SbEnableEvent(interaction, eventProcedure));
+                if (doorEntry != null)
+                {
+                    waitBlock =
+                        new SbIf(plotFlag, false,
+                            SbNode.Conditional(doorEntry != null, () => new SbContainerNode(
+                                new SbAlly(ally, REPosition.OutOfBounds),
+                                new SbAot(interaction, waitPoi.Position, 2000),
+                                new SbFork(triggerProcedure!))))
+                        .Else(waitBlock);
+                }
+
                 SbNode initBlock = new SbContainerNode(
-                    new SbIf(plotFlag, false,
-                        SbNode.Conditional(doorEntry != null, () => new SbContainerNode(
-                            new SbAlly(ally, REPosition.OutOfBounds),
-                            new SbAot(interaction, waitPoi.Position, 2000),
-                            new SbFork(triggerProcedure!))))
-                    .Else(
-                        new SbAlly(ally, waitPoi!.Position),
-                        new SbAot(interaction, waitPoi.Position, 2000),
-                        new SbEnableEvent(interaction, eventProcedure)),
+                    waitBlock,
                     new SbFork(loopProcedure),
                     SbNode.Conditional(item != null, () => new SbContainerNode(
-                        new SbItem(item!))),
-                    new SbSetFlag(new CsFlag(CutsceneBuilder.FG_ITEM, 255), false));
+                        new SbItem(item!),
+                        new SbSetFlag(new CsFlag(CutsceneBuilder.FG_ITEM, 255), false))));
                 if (doorExit != null)
                 {
                     initBlock = new SbIf(converseFlag, false, initBlock);
                 }
-                var initProcedure = new SbProcedure(initBlock);
+                var initProcedure = new SbProcedure(
+                    new SbCommentNode($"[plot] ally wait {{ flag {plotFlag.Flag} }}",
+                        initBlock));
 
                 return new CsPlot(initProcedure);
             }
