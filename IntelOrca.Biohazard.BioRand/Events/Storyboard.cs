@@ -946,6 +946,21 @@ namespace IntelOrca.Biohazard.BioRand.Events
         }
     }
 
+    internal class SbDisableAot : SbNode
+    {
+        public CsAot Aot { get; }
+
+        public SbDisableAot(CsAot aot)
+        {
+            Aot = aot;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.AppendLine("aot_reset", Aot.Id, "SCE_AUTO", "SAT_AUTO", 0, 0, 0, 0, 0, 0);
+        }
+    }
+
     internal class SbEnableEvent : SbNode, ISbSubProcedure
     {
         public CsAot Aot { get; }

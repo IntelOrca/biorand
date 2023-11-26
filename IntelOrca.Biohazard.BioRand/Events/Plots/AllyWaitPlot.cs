@@ -60,6 +60,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                                     new SbSetFlag(converseFlag)))),
                         new SbSleep(2 * 30)),
                     SbNode.Conditional(doorExit != null, () => new SbContainerNode(
+                        new SbDisableAot(interaction),
                         new SbSetEntityCollision(ally, false),
                         new SbCommentNode($"[action] ally travel to {{ {waitPoi} }}",
                             builder.Travel(ally, waitPoi, doorExit!, PlcDestKind.Run, overrideDestination: doorExit!.Position.Reverse())),
