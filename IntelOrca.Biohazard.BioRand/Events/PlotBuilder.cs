@@ -16,8 +16,8 @@ namespace IntelOrca.Biohazard.BioRand.Events
         private readonly Queue<ReFlag> _availableLocalFlags = new Queue<ReFlag>();
         private readonly Queue<byte> _availableEntityIds = new Queue<byte>();
         private readonly Queue<byte> _availableAotIds = new Queue<byte>();
-        private readonly CsPlayer _player = new CsPlayer();
         private readonly List<CsEnemy> _enemies = new List<CsEnemy>();
+        private CsPlayer? _player;
 
         public RandoConfig Config { get; }
         public Rng Rng { get; }
@@ -81,6 +81,11 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public CsPlayer GetPlayer()
         {
+            if (_player == null)
+            {
+                var actor = _npcRandomiser?.PlayerActor ?? "leon";
+                _player = new CsPlayer(actor);
+            }
             return _player;
         }
 
@@ -154,7 +159,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             {
                 var participantsActors = participants.Select(x => x.Actor).ToArray();
                 var speakerActors = speakers.Select(x => x.Actor).ToArray();
-                var result = _voiceRandomiser.AllocateConversation(Rng, _rdt.RdtId, 1, participantsActors, speakerActors);
+                var result = _voiceRandomiser.AllocateConversation(Rng, _rdt.RdtId, 1, speakerActors, participantsActors);
                 return new SbVoice(result[0]);
             }
         }

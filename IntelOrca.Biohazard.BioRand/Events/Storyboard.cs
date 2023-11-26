@@ -63,7 +63,12 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
     internal class CsPlayer : ICsHero
     {
-        public string Actor { get; } = "leon";
+        public string Actor { get; }
+
+        public CsPlayer(string actor)
+        {
+            Actor = actor;
+        }
     }
 
     internal class CsFlag

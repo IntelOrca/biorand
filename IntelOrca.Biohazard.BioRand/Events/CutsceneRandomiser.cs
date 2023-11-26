@@ -144,7 +144,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 cb.AvailableAotIds.Enqueue(id);
             }
 
-            var localFlags = Enumerable.Range(32, 64)
+            var localFlags = Enumerable.Range(25, 32 - 25)
                 .Select(x => new ReFlag(CutsceneBuilder.FG_ROOM, (byte)x))
                 .ToArray();
 
