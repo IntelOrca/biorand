@@ -25,6 +25,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                     new SbCommentNode($"[action] {enemies.Length} enemies enter at {{ {door} }}",
                         new SbDoor(door),
                         new SbFreezeAllEnemies(
+                            // new SbWaitForCut(door.Cuts, false),
                             new SbCutsceneBars(
                                 new SbCut(door.Cut,
                                     new SbContainerNode(

@@ -49,15 +49,17 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                     new SbSleep(30)));
 
             var eventProcedure = new SbProcedure(
-                new SbLockPlot(
-                    new SbFreezeAllEnemies(
-                        new SbCutsceneBars(
-                            new SbIf(converseFlag, true,
-                                builder.Voice(new ICsHero[] { player, ally }))
-                            .Else(
-                                CreateInitalConversation(builder, waitPoi!.CloseCut, new ICsHero[] { player, ally }, item),
-                                new SbSetFlag(converseFlag)))),
-                    new SbSleep(2 * 30)),
+                    //new SbIf(builder.GetPlotLockFlag(), false,
+                    new SbLockPlot(
+                        new SbFreezeAllEnemies(
+                            new SbCutsceneBars(
+                                new SbIf(converseFlag, true,
+                                    builder.Voice(new ICsHero[] { player, ally }))
+                                .Else(
+                                    CreateInitalConversation(builder, waitPoi!.CloseCut, new ICsHero[] { player, ally }, item),
+                                    new SbSetFlag(converseFlag)))),
+                        new SbSleep(2 * 30)),
+                //),
                 SbNode.Conditional(doorExit != null, () => new SbContainerNode(
                     new SbSetEntityCollision(ally, false),
                     new SbCommentNode($"[action] ally travel to {{ {waitPoi} }}",
@@ -75,6 +77,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                     new SbLockPlot(
                         new SbCommentNode($"[action] ally enter at {{ {doorEntry} }}",
                             new SbDoor(doorEntry),
+                            // new SbWaitForCut(doorEntry.Cuts, false),
                             new SbCutsceneBars(
                                 new SbCut(doorEntry.Cut,
                                     new SbFreezeAllEnemies(

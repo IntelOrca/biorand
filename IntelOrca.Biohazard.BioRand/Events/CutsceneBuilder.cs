@@ -331,6 +331,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public void Sleep1()
         {
             AppendLine("evt_next");
+            AppendLine("nop");
         }
 
         public void Item(int globalId, int id, byte type, byte amount)
@@ -412,6 +413,23 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public void EndLoop()
         {
             AppendLine("ewhile", 0);
+            AppendLabel();
+        }
+
+        public int BeginDoWhileLoop()
+        {
+            var label = CreateLabel();
+            AppendLine("do", 0, LabelName(label));
+            return label;
+        }
+
+        public void BeginDoWhileConditions(int label)
+        {
+            AppendLine("edwhile", LabelName(label));
+        }
+
+        public void EndDoLoop()
+        {
             AppendLabel();
         }
 

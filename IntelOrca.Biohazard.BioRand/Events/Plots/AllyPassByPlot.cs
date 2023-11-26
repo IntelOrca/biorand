@@ -26,6 +26,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                                 new SbSetFlag(plotFlag),
                                 new SbLockPlot(
                                     new SbDoor(doors[0]),
+                                    // new SbWaitForCut(doors[0].Cuts, false),
                                     new SbMoveEntity(ally, doors[0].Position),
                                     builder.Travel(ally, doors[0], doors[1], PlcDestKind.Run, overrideDestination: doors[1].Position.Reverse()),
                                     new SbMoveEntity(ally, REPosition.OutOfBounds),

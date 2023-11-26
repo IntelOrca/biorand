@@ -613,17 +613,20 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
     internal class SbIf : SbNode
     {
+        private ISbCondition _condition;
         private readonly SbNode[] _if;
         private SbNode[]? _else = null;
 
-        public CsFlag Flag { get; }
-        public bool Value { get; }
-
         public SbIf(CsFlag flag, bool value, params SbNode[] children)
         {
+            _condition = new SbCk(flag.Flag, value);
             _if = children;
-            Flag = flag;
-            Value = value;
+        }
+
+        public SbIf(ISbCondition condition, params SbNode[] children)
+        {
+            _condition = condition;
+            _if = children;
         }
 
         public SbIf Else(params SbNode[] children)
@@ -640,7 +643,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public override void Build(CutsceneBuilder builder)
         {
             builder.BeginIf();
-            builder.CheckFlag(Flag.Flag, Value);
+            _condition.Build(builder);
             foreach (var child in _if)
             {
                 child.Build(builder);
@@ -659,16 +662,40 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
     internal class SbWaitForCut : SbNode
     {
-        public int Cut { get; }
+        public int[] Cuts { get; }
+        public bool Equal { get; }
 
-        public SbWaitForCut(int cut)
+        public SbWaitForCut(int cut, bool equal = true)
         {
-            Cut = cut;
+            Cuts = new[] { cut };
+            Equal = equal;
+        }
+
+        public SbWaitForCut(int[]? cuts, bool equal = true)
+        {
+            Cuts = cuts ?? new int[0];
+            Equal = equal;
         }
 
         public override void Build(CutsceneBuilder builder)
         {
-            builder.WaitForTriggerCut(Cut);
+            if (Cuts.Length == 0)
+                return;
+
+            if (Equal)
+            {
+                new SbWaitUnlessAny(
+                    Cuts
+                        .Select(x => new SbCmpCut(x))
+                        .ToArray()).Build(builder);
+            }
+            else
+            {
+                new SbWaitIfAny(
+                    Cuts
+                        .Select(x => new SbCmpCut(x))
+                        .ToArray()).Build(builder);
+            }
         }
     }
 
@@ -686,6 +713,129 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public override void Build(CutsceneBuilder builder)
         {
             builder.WaitForFlag(Flag, Value);
+        }
+    }
+
+    internal interface ISbCondition
+    {
+        public int Size { get; }
+        public void Build(CutsceneBuilder builder);
+    }
+
+    internal class SbCk : ISbCondition
+    {
+        private readonly ReFlag _flag;
+        private readonly bool _value;
+
+        public int Size => 4;
+
+        public SbCk(ReFlag flag, bool value)
+        {
+            _flag = flag;
+            _value = value;
+        }
+
+        public void Build(CutsceneBuilder builder)
+        {
+            builder.CheckFlag(_flag, _value);
+        }
+    }
+
+    internal class SbCmpCut : ISbCondition
+    {
+        private readonly int _cut;
+        private readonly bool _equal;
+
+        public int Size => 6;
+
+        public SbCmpCut(int cut, bool equal = true)
+        {
+            _cut = cut;
+            _equal = equal;
+        }
+
+        public void Build(CutsceneBuilder builder)
+        {
+            var op = _equal ? "CMP_EQ" : "CMP_NE";
+            builder.AppendLine("cmp", 0, 26, op, _cut);
+        }
+    }
+
+    internal class SbWaitIfAll : SbNode
+    {
+        public ISbCondition[] Conditions { get; }
+
+        public SbWaitIfAll(params ISbCondition[] condtions)
+        {
+            Conditions = condtions;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.BeginWhileLoop(Conditions.Sum(x => x.Size));
+            foreach (var condition in Conditions)
+            {
+                condition.Build(builder);
+            }
+            builder.AppendLine("evt_next");
+            builder.AppendLine("nop");
+            builder.EndLoop();
+        }
+    }
+
+    internal class SbWaitIfAny : SbNode
+    {
+        public ISbCondition[] Conditions { get; }
+
+        public SbWaitIfAny(params ISbCondition[] condtions)
+        {
+            Conditions = condtions;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            var combineFlag = new CsFlag(new ReFlag(CutsceneBuilder.FG_ROOM, 24));
+
+            var label = builder.BeginDoWhileLoop();
+            builder.AppendLine("evt_next");
+            builder.AppendLine("nop");
+            new SbSetFlag(combineFlag, false).Build(builder);
+            foreach (var condition in Conditions)
+            {
+                new SbIf(condition,
+                    new SbSetFlag(combineFlag)).Build(builder);
+            }
+            builder.BeginDoWhileConditions(label);
+            builder.CheckFlag(combineFlag.Flag);
+            builder.EndDoLoop();
+        }
+    }
+
+    internal class SbWaitUnlessAny : SbNode
+    {
+        public ISbCondition[] Conditions { get; }
+
+        public SbWaitUnlessAny(params ISbCondition[] condtions)
+        {
+            Conditions = condtions;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            var combineFlag = new CsFlag(new ReFlag(CutsceneBuilder.FG_ROOM, 24));
+
+            var label = builder.BeginDoWhileLoop();
+            builder.AppendLine("evt_next");
+            builder.AppendLine("nop");
+            new SbSetFlag(combineFlag).Build(builder);
+            foreach (var condition in Conditions)
+            {
+                new SbIf(condition,
+                    new SbSetFlag(combineFlag, false)).Build(builder);
+            }
+            builder.BeginDoWhileConditions(label);
+            builder.CheckFlag(combineFlag.Flag);
+            builder.EndDoLoop();
         }
     }
 

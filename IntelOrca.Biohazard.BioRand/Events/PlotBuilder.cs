@@ -74,6 +74,11 @@ namespace IntelOrca.Biohazard.BioRand.Events
             return new CsFlag(flag);
         }
 
+        public CsFlag GetPlotLockFlag()
+        {
+            return new CsFlag(new ReFlag(CutsceneBuilder.FG_ROOM, 23));
+        }
+
         public CsPlayer GetPlayer()
         {
             return _player;
@@ -241,15 +246,18 @@ namespace IntelOrca.Biohazard.BioRand.Events
                     new SbSleep(triggerTime.Value)));
             }
 
+            var conditions = new List<ISbCondition>();
             if (triggerCut != null)
             {
-                result.Add(new SbCommentNode($"[trigger] wait for cut {triggerCut.Value}",
-                    new SbWaitForCut(triggerCut.Value)));
+                result.Add(new SbCommentNode($"[trigger] wait for cut {triggerCut.Value}"));
+                conditions.Add(new SbCmpCut(triggerCut.Value, false));
             }
 
-            result.Add(new SbWaitForFlag(new ReFlag(CutsceneBuilder.FG_STATUS, 27), false));
-            result.Add(new SbWaitForFlag(new ReFlag(CutsceneBuilder.FG_STOP, 7), false));
-            result.Add(new SbWaitForFlag(new ReFlag(CutsceneBuilder.FG_ROOM, 23), false));
+            conditions.Add(new SbCk(new ReFlag(CutsceneBuilder.FG_STATUS, 27), true));
+            conditions.Add(new SbCk(new ReFlag(CutsceneBuilder.FG_STOP, 7), true));
+            conditions.Add(new SbCk(GetPlotLockFlag().Flag, true));
+
+            result.Add(new SbWaitIfAny(conditions.ToArray()));
 
             return new SbContainerNode(result.ToArray());
         }
