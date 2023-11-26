@@ -192,9 +192,24 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public override void Build(CutsceneBuilder builder)
         {
-            builder.CutChange(Cut);
+            builder.AppendLine("cut_chg", Cut);
             base.Build(builder);
-            builder.CutRevert();
+            builder.AppendLine("cut_old");
+        }
+    }
+
+    internal class SbCutSequence : SbContainerNode
+    {
+        public SbCutSequence(params SbNode[] children)
+            : base(children)
+        {
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.AppendLine("cut_auto", 0);
+            base.Build(builder);
+            builder.AppendLine("cut_auto", 1);
         }
     }
 

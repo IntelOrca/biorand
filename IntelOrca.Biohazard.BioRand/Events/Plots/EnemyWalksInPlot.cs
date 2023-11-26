@@ -23,18 +23,18 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                 new SbSetFlag(plotFlag),
                 new SbLockPlot(
                     new SbCommentNode($"[action] {enemies.Length} enemies enter at {{ {door} }}",
-                        new SbDoor(door),
-                        new SbFreezeAllEnemies(
-                            // new SbWaitForCut(door.Cuts, false),
-                            new SbCutsceneBars(
-                                new SbCut(door.Cut,
-                                    new SbContainerNode(
-                                        enemies.Select(e =>
-                                            new SbContainerNode(
-                                                new SbMoveEntity(e, GetEntryPosition(builder, door)),
-                                                new SbSetEntityEnabled(e, true))).ToArray()),
-                                    new SbSleep(60))))),
-                    new SbSleep(4 * 30)));
+                        new SbCutSequence(
+                            new SbDoor(door),
+                            new SbFreezeAllEnemies(
+                                new SbCutsceneBars(
+                                    new SbCut(door.Cut,
+                                        new SbContainerNode(
+                                            enemies.Select(e =>
+                                                new SbContainerNode(
+                                                    new SbMoveEntity(e, GetEntryPosition(builder, door)),
+                                                    new SbSetEntityEnabled(e, true))).ToArray()),
+                                        new SbSleep(60))))),
+                    new SbSleep(4 * 30))));
 
             var init = new SbProcedure(
                 new SbCommentNode($"[plot] {enemies.Length} enemies walk in",

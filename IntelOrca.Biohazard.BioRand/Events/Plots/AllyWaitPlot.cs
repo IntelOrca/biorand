@@ -49,7 +49,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                     new SbSleep(30)));
 
             var eventProcedure = new SbProcedure(
-                    //new SbIf(builder.GetPlotLockFlag(), false,
+                new SbIf(builder.GetPlotLockFlag(), false,
                     new SbLockPlot(
                         new SbFreezeAllEnemies(
                             new SbCutsceneBars(
@@ -59,14 +59,13 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                                     CreateInitalConversation(builder, waitPoi!.CloseCut, new ICsHero[] { player, ally }, item),
                                     new SbSetFlag(converseFlag)))),
                         new SbSleep(2 * 30)),
-                //),
-                SbNode.Conditional(doorExit != null, () => new SbContainerNode(
-                    new SbSetEntityCollision(ally, false),
-                    new SbCommentNode($"[action] ally travel to {{ {waitPoi} }}",
-                        builder.Travel(ally, waitPoi, doorExit!, PlcDestKind.Run, overrideDestination: doorExit!.Position.Reverse())),
-                    new SbMoveEntity(ally, REPosition.OutOfBounds),
-                    new SbCommentNode($"[action] ally leave at {{ {doorExit} }}",
-                        new SbDoor(doorExit)))));
+                    SbNode.Conditional(doorExit != null, () => new SbContainerNode(
+                        new SbSetEntityCollision(ally, false),
+                        new SbCommentNode($"[action] ally travel to {{ {waitPoi} }}",
+                            builder.Travel(ally, waitPoi, doorExit!, PlcDestKind.Run, overrideDestination: doorExit!.Position.Reverse())),
+                        new SbMoveEntity(ally, REPosition.OutOfBounds),
+                        new SbCommentNode($"[action] ally leave at {{ {doorExit} }}",
+                            new SbDoor(doorExit))))));
 
             SbProcedure? triggerProcedure = null;
             if (doorEntry != null)
@@ -76,18 +75,18 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                     new SbSetFlag(plotFlag),
                     new SbLockPlot(
                         new SbCommentNode($"[action] ally enter at {{ {doorEntry} }}",
-                            new SbDoor(doorEntry),
-                            // new SbWaitForCut(doorEntry.Cuts, false),
-                            new SbCutsceneBars(
-                                new SbCut(doorEntry.Cut,
-                                    new SbFreezeAllEnemies(
-                                        new SbMoveEntity(ally, doorEntry.Position),
-                                        builder.Voice(new ICsHero[] { ally, player }, new[] { ally }))))),
+                            new SbCutSequence(
+                                new SbDoor(doorEntry),
+                                new SbCutsceneBars(
+                                    new SbCut(doorEntry.Cut,
+                                        new SbFreezeAllEnemies(
+                                            new SbMoveEntity(ally, doorEntry.Position),
+                                            builder.Voice(new ICsHero[] { ally, player }, new[] { ally })))))),
                         new SbCommentNode($"[action] ally travel to {{ {waitPoi} }}",
                             builder.Travel(ally, doorEntry, waitPoi!, PlcDestKind.Run)),
                         new SbCommentNode($"[action] ally enable interaction",
                             new SbEnableEvent(interaction, eventProcedure)),
-                        new SbSleep(30 * 4)));
+                        new SbSleep(30 * 2)));
             }
 
             SbNode waitBlock = new SbContainerNode(
