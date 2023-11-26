@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using IntelOrca.Biohazard.BioRand.Events.Plots;
 using IntelOrca.Biohazard.BioRand.RE2;
 using IntelOrca.Biohazard.Script.Opcodes;
 using static IntelOrca.Biohazard.BioRand.EnemyRandomiser;
@@ -24,22 +25,8 @@ namespace IntelOrca.Biohazard.BioRand.Events
         private readonly VoiceRandomiser? _voiceRandomiser;
         private readonly Dictionary<RdtId, CutsceneRoomInfo> _cutsceneRoomInfoMap = new Dictionary<RdtId, CutsceneRoomInfo>();
         private EnemyPosition[] _allEnemyPositions = new EnemyPosition[0];
-        private Plot[] _registeredPlots = new Plot[0];
-        private Queue<ReFlag> _flagQueue = new Queue<ReFlag>();
-
-        // Current room
-        private CutsceneBuilder _cb = new CutsceneBuilder();
-        private RandomizedRdt? _rdt;
-        private RdtId _rdtId;
-        private ReFlag _plotFlag;
-        private ReFlag? _lastPlotFlag;
-        private PointOfInterest[] _poi = new PointOfInterest[0];
-        private int[] _allKnownCuts = new int[0];
-        private EndlessBag<REPosition> _enemyPositions;
-        private Rng _plotRng;
-        private int _currentEnemyCount;
-        private int _maximumEnemyCount;
-        private byte? _enemyType;
+        private IPlot[] _registeredPlots = new IPlot[0];
+        private EndlessBag<ReFlag> _globalFlags;
 
         public CutsceneRandomiser(
             RandoLogger logger,
@@ -59,12 +46,14 @@ namespace IntelOrca.Biohazard.BioRand.Events
             _gameData = gameData;
             _map = map;
             _rng = rng;
-            _plotRng = rng;
             _itemRandomiser = itemRandomiser;
             _enemyRandomiser = enemyRandomiser;
             _npcRandomiser = npcRandomiser;
             _voiceRandomiser = voiceRandomiser;
-            _enemyPositions = new EndlessBag<REPosition>(new Rng(), new REPosition[0]);
+
+            var flags3 = _availableFlags3.Select(x => new ReFlag(CutsceneBuilder.FG_SCENARIO, x));
+            var flags4 = _availableFlags4.Select(x => new ReFlag(CutsceneBuilder.FG_COMMON, x));
+            _globalFlags = flags3.Concat(flags4).ToEndlessBag(rng);
 
             LoadCutsceneRoomInfo();
             ReadEnemyPlacements();
@@ -88,12 +77,12 @@ namespace IntelOrca.Biohazard.BioRand.Events
             if (!_cutsceneRoomInfoMap.TryGetValue(rdt.RdtId, out var info))
                 return;
 
-            _enemyPositions = _allEnemyPositions
+            var enemyPositions = _allEnemyPositions
                 .Where(x => x.RdtId == rdt.RdtId)
                 .Select(p => new REPosition(p.X, p.Y, p.Z, p.D))
                 .ToEndlessBag(rng);
 
-            if (_enemyPositions.Count == 0)
+            if (enemyPositions.Count == 0)
                 return;
 
             _logger.WriteLine($"{rdt}:");
@@ -108,40 +97,28 @@ namespace IntelOrca.Biohazard.BioRand.Events
             var meets = info.Poi?.Where(x => x.HasTag(PoiKind.Meet)).ToArray() ?? new PointOfInterest[0];
 
             var cb = new CutsceneBuilder();
-            cb.Begin();
-
-            _cb = cb;
-            _rdt = rdt;
-            _rdtId = rdt.RdtId;
-            _plotRng = rng;
-            _lastPlotFlag = null;
-            _poi = info.Poi ?? new PointOfInterest[0];
-            _allKnownCuts = _poi.SelectMany(x => x.AllCuts).ToArray();
-            _currentEnemyCount = 0;
-
+            var maximumEnemyCount = 0;
             var enemyHelper = _enemyRandomiser?.EnemyHelper;
-            if (_enemyRandomiser?.ChosenEnemies.TryGetValue(_rdt, out var enemy) == true)
+            var enemyType = (byte?)null;
+            if (_enemyRandomiser?.ChosenEnemies.TryGetValue(rdt, out var enemy) == true)
             {
-                _enemyType = enemy.Types[0];
+                enemyType = enemy.Types[0];
 
-                var spec = GetEnemySpecs(_rdtId);
+                var spec = GetEnemySpecs(rdt.RdtId);
                 var difficulty = Math.Min(_config.EnemyDifficulty, spec.MaxDifficulty ?? _config.EnemyDifficulty);
-                var enemyTypeLimit = enemyHelper!.GetEnemyTypeLimit(_config, difficulty, _enemyType.Value);
+                var enemyTypeLimit = enemyHelper!.GetEnemyTypeLimit(_config, difficulty, enemyType.Value);
 
                 var avg = 1 + _config.EnemyQuantity;
                 var quantity = rng.Next(1, avg * 2);
-                _maximumEnemyCount = Math.Min(quantity, Math.Min(enemyTypeLimit, _enemyPositions.Count * 3));
+                maximumEnemyCount = Math.Min(quantity, Math.Min(enemyTypeLimit, enemyPositions.Count * 3));
             }
             else
             {
-                _enemyType = null;
-                _maximumEnemyCount = 0;
+                enemyType = null;
+                maximumEnemyCount = 0;
             }
 
-            TidyPoi();
-
-            var reservedIds = _rdt.Enemies
-                .Select(x => x.Id)
+            var reservedIds = Enumerable.Select(rdt.Enemies, x => x.Id)
                 .Distinct()
                 .ToArray();
             var availableIds = Enumerable
@@ -151,11 +128,11 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 .ToArray();
             foreach (var id in availableIds)
             {
-                _cb.AvailableEnemyIds.Enqueue(id);
+                cb.AvailableEnemyIds.Enqueue(id);
             }
 
-            var aotIds = Enumerable.Range(0, 32).ToHashSet();
-            foreach (var opcode in _rdt.AllOpcodes)
+            var aotIds = Enumerable.Range(0, 32).Select(x => (byte)x).ToHashSet();
+            foreach (var opcode in rdt.AllOpcodes)
             {
                 if (opcode is IAot aot)
                 {
@@ -164,72 +141,158 @@ namespace IntelOrca.Biohazard.BioRand.Events
             }
             foreach (var id in aotIds)
             {
-                _cb.AvailableAotIds.Enqueue(id);
+                cb.AvailableAotIds.Enqueue(id);
             }
 
-            // ChainRandomPlot<EnemyChangePlot>();
-            // ChainRandomPlot<EnemyWakeUpPlot>();
-            // ChainRandomPlot<EnemyWalksInPlot>();
-            // ChainRandomPlot<AllyWalksInPlot>();
+            var localFlags = Enumerable.Range(24, 64)
+                .Select(x => new ReFlag(CutsceneBuilder.FG_ROOM, (byte)x))
+                .ToArray();
 
-            // for (var i = 0; i < 4; i++)
-            // {
-            //     ChainRandomPlot<AllyStaticPlot>();
-            // }
+            var plotBuilder = new PlotBuilder(
+                _config,
+                rng,
+                _itemRandomiser,
+                _enemyRandomiser,
+                _npcRandomiser,
+                _voiceRandomiser,
+                rdt,
+                new PoiGraph(info.Poi ?? new PointOfInterest[0]),
+                enemyPositions,
+                _globalFlags,
+                localFlags,
+                availableIds.ToArray(),
+                aotIds.ToArray(),
+                enemyType,
+                maximumEnemyCount);
 
+            var plots = new List<CsPlot>();
             if (rng.NextProbability(50))
             {
-                ChainRandomPlot<AllyStaticPlot>();
+                ChainRandomPlot<AllyWaitPlot>(plots, plotBuilder);
             }
             if (rng.NextProbability(25))
             {
-                ChainRandomPlot<AllyPassByPlot>();
+                ChainRandomPlot<AllyPassByPlot>(plots, plotBuilder);
             }
-            if (_enemyType != null)
+            if (enemyType != null)
             {
-                if (_enemyType != Re2EnemyIds.ZombieArms &&
-                    _enemyType != Re2EnemyIds.GAdult)
+                if (enemyType != Re2EnemyIds.ZombieArms &&
+                    enemyType != Re2EnemyIds.GAdult)
                 {
                     if (rng.NextProbability(10))
                     {
-                        ChainRandomPlot<EnemyFromDarkPlot>();
+                        ChainRandomPlot<EnemyFromDarkPlot>(plots, plotBuilder);
                     }
                     else
                     {
                         var wakeUp = false;
-                        if (enemyHelper!.IsZombie(_enemyType.Value))
+                        if (enemyHelper!.IsZombie(enemyType.Value))
                         {
                             if (rng.NextProbability(25))
                             {
-                                ChainRandomPlot<EnemyWakeUpPlot>();
+                                ChainRandomPlot<EnemyWakeUpPlot>(plots, plotBuilder);
                                 wakeUp = true;
                             }
                         }
 
                         if (!wakeUp && rng.NextProbability(50))
                         {
-                            ChainRandomPlot<StaticEnemyPlot>();
-                            _lastPlotFlag = null;
+                            ChainRandomPlot<StaticEnemyPlot>(plots, plotBuilder);
                         }
                     }
 
-                    while (_currentEnemyCount < _maximumEnemyCount)
+                    while (plotBuilder.CurrentEnemyCount < maximumEnemyCount)
                     {
-                        ChainRandomPlot<EnemyWalksInPlot>();
+                        ChainRandomPlot<EnemyWalksInPlot>(plots, plotBuilder);
                     }
-                    _enemyRandomiser!.ChosenEnemies.Remove(_rdt);
+
+                    _enemyRandomiser!.ChosenEnemies.Remove(rdt);
                 }
 
-                _logger.WriteLine($"  Enemy type: {enemyHelper!.GetEnemyName(_enemyType.Value)}");
-                _logger.WriteLine($"  {_currentEnemyCount} / {_maximumEnemyCount} enemies placed");
+                _logger.WriteLine($"  Enemy type: {enemyHelper!.GetEnemyName(enemyType.Value)}");
+                _logger.WriteLine($"  {plotBuilder.CurrentEnemyCount} / {maximumEnemyCount} enemies placed");
             }
             else
             {
                 _logger.WriteLine($"  (no enemies defined)");
             }
 
-            cb.End();
+            foreach (var plot in plots)
+            {
+                var procedures = GetAllProcedures(plot.Root);
+                foreach (var proc in procedures)
+                {
+                    proc.Build(cb);
+                }
+                LogPlot(plot);
+            }
+
+            var entryProc = new SbProcedure("biorand_custom",
+                plots
+                    .Select(x => new SbCall(x.Root))
+                    .ToArray());
+            entryProc.Build(cb);
+
+            plotBuilder.BuildHelpers(cb);
+
             rdt.CustomAdditionalScript = cb.ToString();
+        }
+
+        private SbProcedure[] GetAllProcedures(SbNode node)
+        {
+            var procedures = new HashSet<SbProcedure>();
+
+            var q = new Queue<SbNode>();
+            q.Enqueue(node);
+
+            while (q.Count != 0)
+            {
+                node = q.Dequeue();
+                foreach (var child in node.Children)
+                {
+                    q.Enqueue(child);
+                }
+
+                if (node is SbProcedure sbProc)
+                {
+                    if (procedures.Add(sbProc))
+                    {
+                        q.Enqueue(sbProc);
+                    }
+                }
+                else if (node is ISbSubProcedure sbSubProc)
+                {
+                    var proc = sbSubProc.Procedure;
+                    if (procedures.Add(proc))
+                    {
+                        q.Enqueue(proc);
+                    }
+                }
+            }
+
+            return procedures.OrderBy(x => x.Name).ToArray();
+        }
+
+        private void LogPlot(CsPlot plot)
+        {
+            LogNode(plot.Root, 0);
+
+            void LogNode(SbNode node, int level)
+            {
+                if (node is SbCommentNode commentNode)
+                {
+                    _logger.WriteLine(new string(' ', 2 + (level * 2)) + commentNode.Description);
+                    level++;
+                }
+                if (node is ISbSubProcedure sbSubProc)
+                {
+                    LogNode(sbSubProc.Procedure, level);
+                }
+                foreach (var child in node.Children)
+                {
+                    LogNode(child, level);
+                }
+            }
         }
 
         private void ClearEnemies(RandomizedRdt rdt)
@@ -322,52 +385,17 @@ namespace IntelOrca.Biohazard.BioRand.Events
             return true;
         }
 
-        private void TidyPoi()
-        {
-            foreach (var poi in _poi)
-            {
-                var reverseEdges = _poi
-                    .Where(x => x.Edges?.Contains(poi.Id) == true)
-                    .Select(x => x.Id)
-                    .ToArray();
-
-                if (poi.Edges == null)
-                {
-                    poi.Edges = reverseEdges;
-                }
-                else
-                {
-                    poi.Edges = poi.Edges
-                        .Concat(reverseEdges)
-                        .Distinct()
-                        .ToArray();
-                }
-            }
-        }
-
-        private void ChainRandomPlot()
-        {
-            foreach (var plot in _registeredPlots)
-            {
-                ChainRandomPlot(plot);
-            }
-        }
-
-        private void ChainRandomPlot<T>() where T : Plot
+        private CsPlot? ChainRandomPlot<T>(List<CsPlot> plots, PlotBuilder builder) where T : IPlot
         {
             var plot = _registeredPlots.FirstOrDefault(x => x.GetType() == typeof(T));
-            if (plot == null)
-                throw new ArgumentException("Unknown plot");
-
-            ChainRandomPlot(plot);
-        }
-
-        private void ChainRandomPlot(Plot plot)
-        {
-            if (!plot.IsCompatible())
-                return;
-
-            plot.Create();
+            var result = plot == null ?
+                throw new ArgumentException("Unknown plot") :
+                plot.BuildPlot(builder);
+            if (result != null)
+            {
+                plots.Add(result);
+            }
+            return result;
         }
 
         private void LoadCutsceneRoomInfo()
@@ -399,50 +427,15 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         private void InitialisePlots()
         {
-            _registeredPlots = new Plot[]
+            _registeredPlots = new IPlot[]
             {
                 new StaticEnemyPlot(),
-                new EnemyChangePlot(),
                 new EnemyWakeUpPlot(),
                 new EnemyFromDarkPlot(),
                 new EnemyWalksInPlot(),
-                new AllyStaticPlot(),
-                new AllyWalksInPlot(),
+                new AllyWaitPlot(),
                 new AllyPassByPlot()
             };
-            foreach (var plot in _registeredPlots)
-            {
-                plot.Cr = this;
-            }
-        }
-
-        private ReFlag GetNextFlag()
-        {
-            if (_flagQueue.Count == 0)
-            {
-                foreach (var value in _availableFlags4)
-                {
-                    _flagQueue.Enqueue(new ReFlag(CutsceneBuilder.FG_COMMON, value));
-                }
-                foreach (var value in _availableFlags3)
-                {
-                    _flagQueue.Enqueue(new ReFlag(CutsceneBuilder.FG_SCENARIO, value));
-                }
-            }
-            return _flagQueue.Dequeue();
-        }
-
-        private int TakeEnemyCountForEvent(int min = 1, int max = int.MaxValue)
-        {
-            var max2 = Math.Min(max, Math.Max(min, _maximumEnemyCount - _currentEnemyCount));
-            var count = _plotRng.Next(min, max2 + 1);
-            _currentEnemyCount += count;
-            return count;
-        }
-
-        public REPosition[] GetEnemyPlacements(int count)
-        {
-            return _enemyPositions.Next(count);
         }
 
         private readonly static byte[] _availableFlags4 = new byte[]

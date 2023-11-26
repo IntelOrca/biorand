@@ -22,7 +22,7 @@
 
         public REPosition Reverse()
         {
-            return new REPosition(X, Y, Z, (D + 2000) % 4000);
+            return new REPosition(X, Y, Z, (D + 2048) % 4096);
         }
 
         public static REPosition OutOfBounds { get; } = new REPosition(-32000, -32000, -32000);

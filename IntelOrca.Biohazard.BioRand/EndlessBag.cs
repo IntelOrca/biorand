@@ -5,11 +5,15 @@ namespace IntelOrca.Biohazard.BioRand
 {
     internal class EndlessBag<T>
     {
-        private readonly Rng _rng;
+        private readonly Rng _rng = new Rng();
         private readonly List<T> _allItems = new List<T>();
         private readonly Queue<T> _items = new Queue<T>();
 
         public int Count => _allItems.Count;
+
+        public EndlessBag()
+        {
+        }
 
         public EndlessBag(Rng rng, IEnumerable<T> items)
         {
