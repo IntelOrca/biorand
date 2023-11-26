@@ -39,21 +39,6 @@ namespace IntelOrca.Biohazard.BioRand.Events
             _sb = _sbMain;
         }
 
-        public void Begin()
-        {
-        }
-
-        public void End()
-        {
-            BeginProcedure("biorand_custom");
-            UnlockPlot();
-            for (int i = 0; i < _plotCount; i++)
-            {
-                Call($"plot_{i}");
-            }
-            EndProcedure();
-        }
-
         public ReFlag BeginPlot(ReFlag flag)
         {
             BeginProcedure($"plot_{_plotCount}");

@@ -10,7 +10,31 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public PoiGraph(PointOfInterest[] poi)
         {
-            _poi = poi;
+            _poi = TidyPoi(poi);
+        }
+
+        private static PointOfInterest[] TidyPoi(PointOfInterest[] pois)
+        {
+            foreach (var poi in pois)
+            {
+                var reverseEdges = pois
+                    .Where(x => x.Edges?.Contains(poi.Id) == true)
+                    .Select(x => x.Id)
+                    .ToArray();
+
+                if (poi.Edges == null)
+                {
+                    poi.Edges = reverseEdges;
+                }
+                else
+                {
+                    poi.Edges = poi.Edges
+                        .Concat(reverseEdges)
+                        .Distinct()
+                        .ToArray();
+                }
+            }
+            return pois;
         }
 
         public PointOfInterest? GetRandomDoor(Rng rng)

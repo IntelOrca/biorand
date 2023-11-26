@@ -7,7 +7,6 @@ namespace IntelOrca.Biohazard.BioRand.Events
 {
     internal class PlotBuilder
     {
-        private readonly RandoConfig _config;
         private readonly EnemyRandomiser? _enemyRandomiser;
         private readonly NPCRandomiser? _npcRandomiser;
         private readonly VoiceRandomiser? _voiceRandomiser;
@@ -19,17 +18,20 @@ namespace IntelOrca.Biohazard.BioRand.Events
         private readonly Queue<byte> _availableAotIds = new Queue<byte>();
         private readonly CsPlayer _player = new CsPlayer();
         private readonly List<CsEnemy> _enemies = new List<CsEnemy>();
-        private readonly byte? _enemyType;
-        private int _currentEnemyCount;
 
+        public RandoConfig Config { get; }
         public Rng Rng { get; }
+        public ItemRandomiser ItemRandomiser { get; }
         public PoiGraph PoiGraph { get; }
+        public int CurrentEnemyCount { get; private set; }
         public int MaximumEnemyCount { get; }
         public IEnemyHelper EnemyHelper => _enemyRandomiser?.EnemyHelper ?? new Re2EnemyHelper();
+        public byte? EnemyType { get; }
 
         public PlotBuilder(
             RandoConfig config,
             Rng rng,
+            ItemRandomiser? itemRandomiser,
             EnemyRandomiser? enemyRandomiser,
             NPCRandomiser? npcRandomiser,
             VoiceRandomiser? voiceRandomiser,
@@ -43,11 +45,12 @@ namespace IntelOrca.Biohazard.BioRand.Events
             byte? enemyType,
             int maximumEnemyCount)
         {
-            _config = config;
+            Config = config;
             Rng = rng;
             _rdt = rdt;
             PoiGraph = poiGraph;
             _enemyPositions = enemyPositions;
+            ItemRandomiser = itemRandomiser;
             _enemyRandomiser = enemyRandomiser;
             _npcRandomiser = npcRandomiser;
             _voiceRandomiser = voiceRandomiser;
@@ -55,7 +58,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             _availableLocalFlags = localFlags.ToQueue();
             _availableEntityIds = entityIds.ToQueue();
             _availableAotIds = aotIds.ToQueue();
-            _enemyType = enemyType;
+            EnemyType = enemyType;
             MaximumEnemyCount = maximumEnemyCount;
         }
 
@@ -80,11 +83,11 @@ namespace IntelOrca.Biohazard.BioRand.Events
         {
             var id = _availableEntityIds.Dequeue();
             var globalId = _enemyRandomiser?.GetNextKillId() ?? 255;
-            var type = _enemyType ?? Re2EnemyIds.ZombieRandom;
+            var type = EnemyType ?? Re2EnemyIds.ZombieRandom;
             var position = _enemyPositions.Next();
             var enemyHelper = _enemyRandomiser?.EnemyHelper ?? new Re2EnemyHelper();
             var result = new CsEnemy(id, globalId, type, position,
-                opcode => enemyHelper.SetEnemy(_config, Rng, opcode, new MapRoomEnemies(), opcode.Type));
+                opcode => enemyHelper.SetEnemy(Config, Rng, opcode, new MapRoomEnemies(), opcode.Type));
             _enemies.Add(result);
             return result;
         }
@@ -129,9 +132,9 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         private int TakeEnemyCountForEvent(int min = 1, int max = int.MaxValue)
         {
-            var max2 = Math.Min(max, Math.Max(min, MaximumEnemyCount - _currentEnemyCount));
+            var max2 = Math.Min(max, Math.Max(min, MaximumEnemyCount - CurrentEnemyCount));
             var count = Rng.Next(min, max2 + 1);
-            _currentEnemyCount += count;
+            CurrentEnemyCount += count;
             return count;
         }
 
