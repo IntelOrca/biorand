@@ -534,6 +534,21 @@ namespace IntelOrca.Biohazard.BioRand.Events
         }
     }
 
+    internal class SbFreezeAllEnemies : SbContainerNode
+    {
+        public SbFreezeAllEnemies(params SbNode[] children)
+            : base(children)
+        {
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.Call("freeze_all_enemies");
+            base.Build(builder);
+            builder.Call("unfreeze_all_enemies");
+        }
+    }
+
     internal class SbSetFlag : SbNode
     {
         public CsFlag Flag { get; }

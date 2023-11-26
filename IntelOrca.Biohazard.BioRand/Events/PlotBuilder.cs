@@ -21,7 +21,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public RandoConfig Config { get; }
         public Rng Rng { get; }
-        public ItemRandomiser ItemRandomiser { get; }
+        public ItemRandomiser? ItemRandomiser { get; }
         public PoiGraph PoiGraph { get; }
         public int CurrentEnemyCount { get; private set; }
         public int MaximumEnemyCount { get; }
@@ -193,6 +193,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             }
             if (overrideDestination != null)
             {
+                nodes.Add(new SbSetFlag(subCompleteFlag, false));
                 nodes.Add(new SbEntityTravel(entity, subCompleteFlag.Flag, overrideDestination.Value, kind));
                 nodes.Add(new SbWaitForFlag(subCompleteFlag.Flag));
                 nodes.Add(new SbMoveEntity(entity, overrideDestination.Value));
@@ -246,11 +247,42 @@ namespace IntelOrca.Biohazard.BioRand.Events
                     new SbWaitForCut(triggerCut.Value)));
             }
 
-            result.Add(new SbWaitForFlag(new ReFlag(CutsceneBuilder.FG_ROOM, 23), false));
             result.Add(new SbWaitForFlag(new ReFlag(CutsceneBuilder.FG_STATUS, 27), false));
             result.Add(new SbWaitForFlag(new ReFlag(CutsceneBuilder.FG_STOP, 7), false));
+            result.Add(new SbWaitForFlag(new ReFlag(CutsceneBuilder.FG_ROOM, 23), false));
 
             return new SbContainerNode(result.ToArray());
+        }
+
+        public void BuildHelpers(CutsceneBuilder builder)
+        {
+            builder.BeginProcedure("freeze_all_enemies");
+            foreach (var enemy in _enemies)
+            {
+                var i = enemy.Id;
+                builder.WorkOnEnemy(i);
+                builder.BeginIf();
+                builder.AppendLine("member_cmp", 0, "M_X_POS", "CMP_NE", 0, 0x83);
+                builder.DisableEnemyCollision(i);
+                builder.HideEnemy(i);
+                builder.DeactivateEnemy(i);
+                builder.EndIf();
+            }
+            builder.EndProcedure();
+
+            builder.BeginProcedure("unfreeze_all_enemies");
+            foreach (var enemy in _enemies)
+            {
+                var i = enemy.Id;
+                builder.WorkOnEnemy(i);
+                builder.BeginIf();
+                builder.AppendLine("member_cmp", 0, "M_X_POS", "CMP_NE", 0, 0x83);
+                builder.EnableEnemyCollision(i);
+                builder.UnhideEnemy(i);
+                builder.ActivateEnemy(i);
+                builder.EndIf();
+            }
+            builder.EndProcedure();
         }
     }
 }

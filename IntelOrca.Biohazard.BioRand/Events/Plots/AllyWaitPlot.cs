@@ -5,10 +5,9 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
 {
     internal class AllyWaitPlot : IPlot
     {
-        public CsPlot BuildPlot(PlotBuilder builder)
+        public CsPlot? BuildPlot(PlotBuilder builder)
         {
             var rng = builder.Rng;
-            var previousEnemies = builder.GetEnemies();
 
             // Can the NPC enter the room via a door
             var graphs = builder.PoiGraph
@@ -50,12 +49,15 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                     new SbSleep(30)));
 
             var eventProcedure = new SbProcedure(
-                new SbCutsceneBars(
-                    new SbIf(converseFlag, true,
-                        builder.Voice(new ICsHero[] { player, ally }))
-                    .Else(
-                        CreateInitalConversation(builder, waitPoi!.CloseCut, new ICsHero[] { player, ally }, item),
-                        new SbSetFlag(converseFlag))),
+                new SbLockPlot(
+                    new SbFreezeAllEnemies(
+                        new SbCutsceneBars(
+                            new SbIf(converseFlag, true,
+                                builder.Voice(new ICsHero[] { player, ally }))
+                            .Else(
+                                CreateInitalConversation(builder, waitPoi!.CloseCut, new ICsHero[] { player, ally }, item),
+                                new SbSetFlag(converseFlag)))),
+                    new SbSleep(2 * 30)),
                 SbNode.Conditional(doorExit != null, () => new SbContainerNode(
                     new SbSetEntityCollision(ally, false),
                     new SbCommentNode($"[action] ally travel to {{ {waitPoi} }}",
@@ -69,21 +71,20 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
             {
                 triggerProcedure = new SbProcedure(
                     builder.CreateTrigger(doorEntry.Cuts),
-
                     new SbSetFlag(plotFlag),
-                        new SbLockPlot(
-                            new SbCommentNode($"[action] ally enter at {{ {doorEntry} }}",
-                                new SbDoor(doorEntry),
-                                new SbCutsceneBars(
-                                    new SbCut(doorEntry.Cut,
-                                        new SbFreezeEnemies(previousEnemies,
-                                            new SbMoveEntity(ally, doorEntry.Position),
-                                            new SbSleep(60))))),
-                            new SbCommentNode($"[action] ally travel to {{ {waitPoi} }}",
-                                builder.Travel(ally, doorEntry, waitPoi!, PlcDestKind.Run)),
-                            new SbCommentNode($"[action] ally enable interaction",
-                                new SbEnableEvent(interaction, eventProcedure)),
-                            new SbSleep(30 * 4)));
+                    new SbLockPlot(
+                        new SbCommentNode($"[action] ally enter at {{ {doorEntry} }}",
+                            new SbDoor(doorEntry),
+                            new SbCutsceneBars(
+                                new SbCut(doorEntry.Cut,
+                                    new SbFreezeAllEnemies(
+                                        new SbMoveEntity(ally, doorEntry.Position),
+                                        builder.Voice(new ICsHero[] { ally, player }, new[] { ally }))))),
+                        new SbCommentNode($"[action] ally travel to {{ {waitPoi} }}",
+                            builder.Travel(ally, doorEntry, waitPoi!, PlcDestKind.Run)),
+                        new SbCommentNode($"[action] ally enable interaction",
+                            new SbEnableEvent(interaction, eventProcedure)),
+                        new SbSleep(30 * 4)));
             }
 
             SbNode waitBlock = new SbContainerNode(
@@ -120,13 +121,17 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
 
         private SbNode CreateInitalConversation(PlotBuilder builder, int? cut, ICsHero[] participants, CsItem? item)
         {
+            var itemHelper = new Re2ItemHelper();
+
             SbNode result = new SbMuteMusic(
-                new SbSleep(60),
-                builder.Conversation(2, 4, participants, participants),
-                SbNode.Conditional(item != null, () => new SbContainerNode(
-                    new SbAotOn(item!))),
-                builder.Conversation(0, 2, participants, participants),
-                new SbSleep(60));
+                new SbCommentNode("[action] conversation",
+                    new SbSleep(60),
+                    builder.Conversation(2, 4, participants, participants),
+                    SbNode.Conditional(item != null, () => new SbContainerNode(
+                        new SbCommentNode($"[action] gift {{ {itemHelper.GetItemName(item!.Item.Type)} x{item!.Item.Amount} }}",
+                            new SbAotOn(item!)))),
+                    builder.Conversation(0, 2, participants, participants),
+                    new SbSleep(60)));
             if (cut != null)
             {
                 result = new SbCut(cut.Value, result);

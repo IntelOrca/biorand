@@ -10,7 +10,6 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
 
         public CsPlot? BuildPlot(PlotBuilder builder)
         {
-            var previousEnemies = builder.GetEnemies();
             var typeMax = GetMaxEnemiesToWalkIn(builder);
             var enemies = builder.AllocateEnemies(max: typeMax);
             var door = builder.PoiGraph.GetRandomDoor(builder.Rng);
@@ -25,9 +24,9 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                 new SbLockPlot(
                     new SbCommentNode($"[action] {enemies.Length} enemies enter at {{ {door} }}",
                         new SbDoor(door),
-                        new SbCutsceneBars(
-                            new SbCut(door.Cut,
-                                new SbFreezeEnemies(previousEnemies,
+                        new SbFreezeAllEnemies(
+                            new SbCutsceneBars(
+                                new SbCut(door.Cut,
                                     new SbContainerNode(
                                         enemies.Select(e =>
                                             new SbContainerNode(

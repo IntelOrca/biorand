@@ -118,8 +118,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 maximumEnemyCount = 0;
             }
 
-            var reservedIds = Enumerable.Select<SceEmSetOpcode, byte>(rdt.Enemies
-, x => x.Id)
+            var reservedIds = Enumerable.Select(rdt.Enemies, x => x.Id)
                 .Distinct()
                 .ToArray();
             var availableIds = Enumerable
@@ -233,6 +232,8 @@ namespace IntelOrca.Biohazard.BioRand.Events
                     .Select(x => new SbCall(x.Root))
                     .ToArray());
             entryProc.Build(cb);
+
+            plotBuilder.BuildHelpers(cb);
 
             rdt.CustomAdditionalScript = cb.ToString();
         }
