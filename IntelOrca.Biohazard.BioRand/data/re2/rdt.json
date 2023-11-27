@@ -3860,6 +3860,7 @@
       ],
       "enemies": [
         {
+          "excludeTypes": [ 40 ],
           "y": 0
         }
       ]
