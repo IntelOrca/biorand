@@ -408,6 +408,13 @@
           "player": 0
         },
         {
+          "condition": "!8:106",
+          "excludeTypes": [ 40 ],
+          "maxDifficulty": 1,
+          "scenario": 1,
+          "player": 0
+        },
+        {
           "nop": [ "0x830" ],
           "maxDifficulty": 1,
           "player": 1
@@ -1566,6 +1573,10 @@
         }
       ],
       "enemies": [
+        {
+          "condition": "3:33 && 4:89 && 3:67",
+          "player": 0
+        },
         {
           "player": 1
         }
