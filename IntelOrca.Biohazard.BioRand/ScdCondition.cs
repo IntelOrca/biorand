@@ -21,7 +21,7 @@ namespace IntelOrca.Biohazard.BioRand
             return version switch
             {
                 BioVersion.Biohazard1 => Generate1(children),
-                BioVersion.Biohazard2 => throw new NotImplementedException(),
+                BioVersion.Biohazard2 => Generate2(children),
                 BioVersion.Biohazard3 => Generate3(children),
                 _ => throw new NotImplementedException(),
             };
@@ -96,6 +96,81 @@ namespace IntelOrca.Biohazard.BioRand
                 ifAddress = offset - ifAddress - 2;
             }
             ifOpcode.Data[0] = (byte)ifAddress;
+
+            return result.ToArray();
+        }
+
+        public OpcodeBase[] Generate2(IEnumerable<OpcodeBase> children)
+        {
+            var result = new List<OpcodeBase>();
+
+            var ifOpcode = new UnknownOpcode(0, (byte)OpcodeV2.IfelCk, new byte[] { 0x00, 0x00, 0x00 });
+            result.Add(ifOpcode);
+
+            var negated = false;
+            var expr = Expression;
+            if (expr is Negated negatedNandExpression)
+            {
+                expr = negatedNandExpression.Child;
+                negated = true;
+            }
+
+            var expressions = new Stack<IExpression>();
+            while (expr is And and)
+            {
+                expressions.Push(and.Right);
+                expr = and.Left;
+            }
+            expressions.Push(expr);
+
+            while (expressions.Count != 0)
+            {
+                expr = expressions.Pop();
+                if (expr is Flag flagExpr)
+                {
+                    result.Add(new UnknownOpcode(0, (byte)OpcodeV2.Ck, new byte[] { flagExpr.Group, flagExpr.Index, (byte)(flagExpr.Value ? 1 : 0) }));
+                }
+                else if (expr is Variable varExpr)
+                {
+                    result.Add(new UnknownOpcode(0, (byte)OpcodeV2.Cmp, new byte[] { 0x00, varExpr.Index, (byte)(varExpr.Negated ? 5 : 0), (byte)(varExpr.Value & 0xFF), (byte)((varExpr.Value >> 8) & 0xFF) }));
+                }
+            }
+
+            UnknownOpcode? elseOpcode = null;
+            if (negated)
+            {
+                // Insert else opcodes
+                elseOpcode = new UnknownOpcode(0, (byte)OpcodeV2.ElseCk, new byte[] { 0, 0, 0 });
+                result.Add(elseOpcode);
+                result.AddRange(children);
+            }
+            else
+            {
+                result.AddRange(children);
+                result.Add(new UnknownOpcode(0, (byte)OpcodeV2.EndIf, new byte[] { 0 }));
+            }
+
+            var offset = 0;
+            foreach (var opcode in result)
+            {
+                opcode.Offset = offset;
+                offset += opcode.Length;
+            }
+
+            var ifAddress = ifOpcode.Offset;
+            if (negated)
+            {
+                ifAddress = (elseOpcode!.Offset + elseOpcode.Length) - (ifAddress + 4);
+                var elseAddress = offset - elseOpcode.Offset;
+                elseOpcode.Data[1] = (byte)(elseAddress & 0xFF);
+                elseOpcode.Data[2] = (byte)((elseAddress >> 8) & 0xFF);
+            }
+            else
+            {
+                ifAddress = offset - (ifAddress + 4);
+            }
+            ifOpcode.Data[1] = (byte)(ifAddress & 0xFF);
+            ifOpcode.Data[2] = (byte)((ifAddress >> 8) & 0xFF);
 
             return result.ToArray();
         }

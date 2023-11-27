@@ -434,6 +434,10 @@
       "enemies": [
         {
           "player": 0
+        },
+        {
+          "condition": "3:64",
+          "player": 1
         }
       ]
     },
@@ -587,13 +591,25 @@
           "randomPlacements": false
         },
         {
-          "nop": [ "0x10A8" ],
+          "nop": [ "0x10A8", "0x0F86-0x0F94" ],
           "randomPlacements": true,
           "scenario": 0,
           "player": 0
         },
         {
-          "nop": [ "0x0F90" ],
+          "condition": "4:15",
+          "randomPlacements": true,
+          "scenario": 1,
+          "player": 0
+        },
+        {
+          "condition": "4:15",
+          "randomPlacements": true,
+          "scenario": 0,
+          "player": 1
+        },
+        {
+          "nop": [ "0x0F90", "0x0F3C-0x0F4A" ],
           "randomPlacements": true,
           "scenario": 1,
           "player": 1
@@ -643,6 +659,10 @@
       "enemies": [
         {
           "player": 0
+        },
+        {
+          "condition": "4:40",
+          "player": 1
         }
       ]
     },
@@ -686,6 +706,13 @@
       ],
       "enemies": [
         {
+          "condition": "4:15 && 4:33",
+          "excludeTypes": [ 40 ],
+          "maxDifficulty": 2,
+          "player": 0,
+          "scenario": 0
+        },
+        {
           "excludeTypes": [ 40 ],
           "maxDifficulty": 2,
           "player": 0,
@@ -696,6 +723,13 @@
           "maxDifficulty": 2,
           "player": 1,
           "scenario": 0
+        },
+        {
+          "condition": "4:15 && 4:33",
+          "excludeTypes": [ 40 ],
+          "maxDifficulty": 2,
+          "player": 1,
+          "scenario": 1
         }
       ]
     },
@@ -746,6 +780,13 @@
           "nop": [ "0x0D76" ],
           "maxDifficulty": 1,
           "scenario": 0,
+          "player": 1
+        },
+        {
+          "condition": "!4:55",
+          "excludeTypes": [ 40 ],
+          "maxDifficulty": 1,
+          "scenario": 1,
           "player": 1
         }
       ]
