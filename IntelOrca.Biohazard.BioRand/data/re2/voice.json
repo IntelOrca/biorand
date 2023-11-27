@@ -407,7 +407,7 @@
     "pl1/voice/stage3/v015.sap": { "rdt": "300", "player": 1, "actor": "claire" },
     "pl1/voice/stage3/v016.sap": { "rdt": "300", "player": 1, "actor": "irons" },
     "pl1/voice/stage3/v017.sap": { "rdt": "300", "player": 1, "actor": "irons", "kind": "death" },
-    "pl1/voice/stage3/v018.sap": { "rdt": "301", "player": 1, "actor": "ben" },
+    "pl1/voice/stage3/v018.sap": { "rdt": "300", "player": 1, "actor": "irons" },
 
     "pl1/voice/stage3/v021.sap": { "rdt": "307", "player": 1, "cutscene": 0, "actor": "claire", "condition": "@sherry", "nameClipped": { "start": 0.94 } },
     "pl1/voice/stage3/v022.sap": { "rdt": "307", "player": 1, "cutscene": 0, "actor": "sherry" },
