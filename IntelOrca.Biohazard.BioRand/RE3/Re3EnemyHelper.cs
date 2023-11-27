@@ -292,7 +292,7 @@ namespace IntelOrca.Biohazard.BioRand.RE3
                 case Re3EnemyIds.ZombieRpd2:
                 case Re3EnemyIds.ZombieGuy7:
                 case Re3EnemyIds.ZombieGuy8:
-                    return new byte[] { 0x08, 0x09 };
+                    return new byte[] { 0x08, 0x09, 0x18 };
                 case Re3EnemyIds.ZombieDog:
                     return new byte[] { 0x09 };
                 case Re3EnemyIds.Crow:
