@@ -716,7 +716,7 @@ namespace IntelOrca.Biohazard.BioRand.RE2
                 return;
 
             var filename = Path.Combine("common", "data", $"st{config.Player}_jp.tim");
-            var inputTimPath = fileRepository.GetDataPath(filename);
+            var inputTimPath = DataManager.GetPath(BiohazardVersion, Path.GetFileName(filename));
             var outputTimPath = fileRepository.GetModPath(filename);
             if (File.Exists(outputTimPath))
                 inputTimPath = outputTimPath;
