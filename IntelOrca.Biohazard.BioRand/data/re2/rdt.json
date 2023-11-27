@@ -3892,7 +3892,17 @@
           "player": 1
         }
       ],
-      "enemies": [],
+      "enemies": [
+        {
+          "excludeTypes": [ 40 ],
+          "player": 0
+        },
+        {
+          "excludeTypes": [ 40 ],
+          "player": 1,
+          "scenario": 1
+        }
+      ],
       "npcs": [
         {
           "includeTypes": [ 65, 67, 71, 72, 73 ]
