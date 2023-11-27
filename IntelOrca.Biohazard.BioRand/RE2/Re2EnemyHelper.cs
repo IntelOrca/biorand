@@ -74,7 +74,9 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             // will be heard
             foreach (var enemy in rdt.Enemies)
             {
-                if (enemy.Type == Re2EnemyIds.Vines || (IsZombie(enemy.Type) && enemy.State == 2))
+                if (enemy.Type == Re2EnemyIds.Vines ||
+                    enemy.Type == Re2EnemyIds.Maggots ||
+                    (IsZombie(enemy.Type) && enemy.State == 2))
                 {
                     enemy.SoundBank = 0;
                 }
