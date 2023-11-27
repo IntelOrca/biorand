@@ -560,6 +560,9 @@ namespace IntelOrca.Biohazard.BioRand
             if (enemySpec == null)
                 return false;
 
+            if (enemySpec.KeepPositions)
+                return false;
+
             NopOutOpcodes(rdt, enemySpec);
             var currentEnemies = GetEnemiesToReplace(rdt, enemySpec);
             foreach (var enemy in currentEnemies)
