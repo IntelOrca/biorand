@@ -288,7 +288,7 @@ namespace IntelOrca.Biohazard.BioRand
                     {
                         var var = byte.Parse(m.Groups[1].Value);
                         var op = m.Groups[2].Value == "==" ? (byte)0 : (byte)5;
-                        var value = byte.Parse(m.Groups[3].Value);
+                        var value = short.Parse(m.Groups[3].Value);
                         IExpression expr = new Variable(var, value, op != 0);
                         leftExpr = leftExpr == null ? expr : new And(leftExpr, expr);
                     }
