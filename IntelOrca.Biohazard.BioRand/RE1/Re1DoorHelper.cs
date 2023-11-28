@@ -6,6 +6,8 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 {
     internal class Re1DoorHelper : IDoorHelper
     {
+        private const byte PassCodeDoorLockId = 209;
+
         public byte[] GetReservedLockIds() => new byte[0];
 
         public void Begin(RandoConfig config, GameData gameData, Map map)
@@ -109,6 +111,8 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 
         private void ApplyPatches(RandoConfig config, GameData gameData)
         {
+            FixPassCodeDoor(config, gameData);
+            AllowRoughPassageDoorUnlock(config, gameData);
             ShotgunOnWallFix(config, gameData);
             AllowPartnerItemBoxes(gameData);
 
@@ -116,6 +120,76 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 return;
 
             ForceTyrant2(gameData);
+        }
+
+        private void FixPassCodeDoor(RandoConfig config, GameData gameData)
+        {
+            for (var mansion = 0; mansion < 2; mansion++)
+            {
+                var mansionOffset = mansion == 0 ? 0 : 5;
+                var rdt = gameData.GetRdt(new RdtId(1 + mansionOffset, 0x01));
+                if (rdt == null)
+                    return;
+
+                var door = rdt.Doors.FirstOrDefault(x => x.Id == 1) as DoorAotSeOpcode;
+                if (door == null)
+                    return;
+
+                door.LockId = PassCodeDoorLockId;
+                door.NextX = 11200;
+                door.NextZ = 28000;
+                door.LockType = 255;
+                door.Free = 129;
+
+                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x01, new byte[] { 0x0A }));
+                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x04, new byte[] { 0x00, 0x46, 0x01 }));
+                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x0E, new byte[] { 0x0E }));
+                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x0E, new byte[] { 0x0E }));
+                // rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x05, new byte[] { 0x02, PassCodeDoorLockId - 192, 0 }));
+                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x02, new byte[] { 0x06 }));
+                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x05, new byte[] { 0x02, PassCodeDoorLockId - 192, 0 }));
+
+                rdt.Nop(0x41A34);
+
+                if (mansion == 1)
+                {
+                    if (config.Player == 0)
+                    {
+                        rdt.Nop(0x41A92);
+                    }
+                    else
+                    {
+                        rdt.Nop(0x41A5C, 0x41A68);
+                    }
+                }
+            }
+        }
+
+        private void AllowRoughPassageDoorUnlock(RandoConfig config, GameData gameData)
+        {
+            for (var mansion = 0; mansion < 2; mansion++)
+            {
+                var mansionOffset = mansion == 0 ? 0 : 5;
+                var rdt = gameData.GetRdt(new RdtId(1 + mansionOffset, 0x14));
+                if (rdt == null)
+                    return;
+
+                var doorId = config.Player == 0 ? 1 : 5;
+                var door = (DoorAotSeOpcode)rdt.ConvertToDoor((byte)doorId, 0, 254, PassCodeDoorLockId);
+                door.Re1UnkA = 2;
+                door.Re1UnkC = 1;
+                door.Target = new RdtId(0xFF, 0x01);
+                door.NextX = 15500;
+                door.NextZ = 25400;
+                door.NextD = 1024;
+
+                if (config.Player == 1)
+                {
+                    rdt.Nop(0x19F3A);
+                    rdt.Nop(0x1A016);
+                    rdt.Nop(0x1A01C);
+                }
+            }
         }
 
         private void ShotgunOnWallFix(RandoConfig config, GameData gameData)
