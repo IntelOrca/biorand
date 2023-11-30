@@ -141,13 +141,13 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 door.LockType = 255;
                 door.Free = 129;
 
-                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x01, new byte[] { 0x0A }));
-                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x04, new byte[] { 0x00, 0x46, 0x01 }));
-                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x0E, new byte[] { 0x0E }));
-                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x0E, new byte[] { 0x0E }));
-                // rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x05, new byte[] { 0x02, PassCodeDoorLockId - 192, 0 }));
-                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x02, new byte[] { 0x06 }));
-                rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x05, new byte[] { 0x02, PassCodeDoorLockId - 192, 0 }));
+                if (config.Player == 1)
+                {
+                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x01, new byte[] { 0x0A }));
+                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x04, new byte[] { 0x01, 0x25, 0x00 }));
+                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x05, new byte[] { 0x02, PassCodeDoorLockId - 192, 0 }));
+                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x03, new byte[] { 0x00 }));
+                }
 
                 rdt.Nop(0x41A34);
 
