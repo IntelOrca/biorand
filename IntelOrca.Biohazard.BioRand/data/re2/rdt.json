@@ -3952,11 +3952,13 @@
       ],
       "enemies": [
         {
+          "excludeTypes": [ 58 ],
           "restricted": true,
           "player": 0
         },
         {
           "condition": "!3:67",
+          "excludeTypes": [ 58 ],
           "restricted": true,
           "doorRando": false,
           "scenario": 0,
@@ -3964,6 +3966,7 @@
         },
         {
           "condition": "!34:43",
+          "excludeTypes": [ 58 ],
           "restricted": true,
           "doorRando": false,
           "scenario": 1,
@@ -3971,6 +3974,7 @@
         },
         {
           "condition": "3:133",
+          "excludeTypes": [ 58 ],
           "restricted": true,
           "doorRando": true,
           "scenario": 0,
@@ -3978,6 +3982,7 @@
         },
         {
           "condition": "3:132",
+          "excludeTypes": [ 58 ],
           "restricted": true,
           "doorRando": true,
           "scenario": 1,
