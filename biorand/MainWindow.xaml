@@ -121,7 +121,7 @@
                         <TextBlock Grid.Column="0" x:Name="versionLabel" />
                         <StackPanel Grid.Column="2" Margin="4 0" Orientation="Horizontal">
                             <TextBlock Margin="0 0 8 0"><Hyperlink Click="Link_Click" NavigateUri="https://biorand.net">Website</Hyperlink></TextBlock>
-                            <TextBlock Margin="0 0 8 0"><Hyperlink Click="Link_Click" NavigateUri="https://discord.gg/zNeTSxxHU5">Discord</Hyperlink></TextBlock>
+                            <TextBlock Margin="0 0 8 0"><Hyperlink Click="Link_Click" NavigateUri="https://discord.gg/8WAr38Svxd">Discord</Hyperlink></TextBlock>
                             <TextBlock Margin="0 0 8 0"><Hyperlink Click="Link_Click" NavigateUri="https://github.com/IntelOrca/biorand">GitHub</Hyperlink></TextBlock>
                             <TextBlock Margin="0 0 8 0"><Hyperlink Click="Link_Click" NavigateUri="https://x.com/re_biorand">X</Hyperlink></TextBlock>
                             <TextBlock><Hyperlink Click="Link_Click" NavigateUri="https://github.com/IntelOrca/biorand#readme">View Documentation</Hyperlink></TextBlock>
