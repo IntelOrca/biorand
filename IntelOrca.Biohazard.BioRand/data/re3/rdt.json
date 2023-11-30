@@ -169,7 +169,7 @@
         {
           "keepAi": true,
           "keepState": true,
-          "excludeTypes": [ 37, 50 ]
+          "excludeTypes": [ 37, 45, 50 ]
         }
       ]
     },
