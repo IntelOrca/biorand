@@ -100,6 +100,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             var maximumEnemyCount = 0;
             var enemyHelper = _enemyRandomiser?.EnemyHelper;
             var enemyType = (byte?)null;
+            var enemyCondition = null as ScdCondition;
             if (_enemyRandomiser?.ChosenEnemies.TryGetValue(rdt, out var enemy) == true)
             {
                 enemyType = enemy.Types[0];
@@ -111,6 +112,11 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 var avg = 1 + _config.EnemyQuantity;
                 var quantity = rng.Next(1, avg * 2);
                 maximumEnemyCount = Math.Min(quantity, Math.Min(enemyTypeLimit, enemyPositions.Count * 3));
+
+                if (spec.Condition != null)
+                {
+                    enemyCondition = ScdCondition.Parse(spec.Condition);
+                }
             }
             else
             {
@@ -163,6 +169,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 availableIds.ToArray(),
                 aotIds.ToArray(),
                 enemyType,
+                enemyCondition,
                 maximumEnemyCount);
 
             var plots = new List<CsPlot>();

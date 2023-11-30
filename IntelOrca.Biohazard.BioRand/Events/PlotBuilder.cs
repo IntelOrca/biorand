@@ -17,6 +17,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
         private readonly Queue<byte> _availableEntityIds = new Queue<byte>();
         private readonly Queue<byte> _availableAotIds = new Queue<byte>();
         private readonly List<CsEnemy> _enemies = new List<CsEnemy>();
+        private readonly ScdCondition? _enemyCondition;
         private CsPlayer? _player;
 
         public RandoConfig Config { get; }
@@ -43,6 +44,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             byte[] entityIds,
             byte[] aotIds,
             byte? enemyType,
+            ScdCondition? enemyCondition,
             int maximumEnemyCount)
         {
             Config = config;
@@ -59,6 +61,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             _availableEntityIds = entityIds.ToQueue();
             _availableAotIds = aotIds.ToQueue();
             EnemyType = enemyType;
+            _enemyCondition = enemyCondition;
             MaximumEnemyCount = maximumEnemyCount;
         }
 
@@ -262,9 +265,52 @@ namespace IntelOrca.Biohazard.BioRand.Events
             conditions.Add(new SbCk(new ReFlag(CutsceneBuilder.FG_STOP, 7), true));
             conditions.Add(new SbCk(GetPlotLockFlag().Flag, true));
 
+            var enemyCondition = GetEnemyWaitCondition();
+            if (enemyCondition != null)
+            {
+                result.Add(new SbWaitUnlessAny(enemyCondition));
+            }
             result.Add(new SbWaitIfAny(conditions.ToArray()));
 
             return new SbContainerNode(result.ToArray());
+        }
+
+        public ISbCondition? GetEnemyWaitCondition()
+        {
+            if (_enemyCondition == null)
+                return null;
+
+            return Get(_enemyCondition.Expression);
+
+            static ISbCondition Get(ScdCondition.IExpression expr)
+            {
+                switch (expr)
+                {
+                    case ScdCondition.Flag flagExpr:
+                        return new SbCk(new ReFlag(flagExpr.Group, flagExpr.Index), true);
+                    case ScdCondition.Variable varExpr:
+                        return new SbCmp(varExpr.Index, varExpr.Value, true);
+                    case ScdCondition.And andExpr:
+                        return new SbAnd(Get(andExpr.Left), Get(andExpr.Right));
+                    case ScdCondition.Negated nExpr:
+                    {
+                        if (nExpr.Child is ScdCondition.Flag flagExpr)
+                        {
+                            return new SbCk(new ReFlag(flagExpr.Group, flagExpr.Index), false);
+                        }
+                        else if (nExpr.Child is ScdCondition.Variable varExpr)
+                        {
+                            return new SbCmp(varExpr.Index, varExpr.Value, false);
+                        }
+                        else
+                        {
+                            throw new NotImplementedException();
+                        }
+                    }
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
         }
 
         public void BuildHelpers(CutsceneBuilder builder)

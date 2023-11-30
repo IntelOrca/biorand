@@ -7,9 +7,18 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
         public CsPlot BuildPlot(PlotBuilder builder)
         {
             var enemies = builder.AllocateEnemies();
+            SbNode node =
+                new SbContainerNode(
+                    enemies.Select(x => new SbEnemy(x)).ToArray());
+
+            var enemyCondition = builder.GetEnemyWaitCondition();
+            if (enemyCondition != null)
+            {
+                node = new SbIf(enemyCondition, node);
+            }
+
             return new CsPlot(new SbProcedure(
-                new SbCommentNode($"[plot] {enemies.Length} enemies",
-                    enemies.Select(x => new SbEnemy(x)).ToArray())));
+                new SbCommentNode($"[plot] {enemies.Length} enemies", node)));
         }
     }
 }

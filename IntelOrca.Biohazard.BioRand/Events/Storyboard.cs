@@ -742,6 +742,26 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public void Build(CutsceneBuilder builder);
     }
 
+    internal class SbAnd : ISbCondition
+    {
+        private readonly ISbCondition _left;
+        private readonly ISbCondition _right;
+
+        public int Size => _left.Size + _right.Size;
+
+        public SbAnd(ISbCondition a, ISbCondition b)
+        {
+            _left = a;
+            _right = b;
+        }
+
+        public void Build(CutsceneBuilder builder)
+        {
+            _left.Build(builder);
+            _right.Build(builder);
+        }
+    }
+
     internal class SbCk : ISbCondition
     {
         private readonly ReFlag _flag;
@@ -758,6 +778,28 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public void Build(CutsceneBuilder builder)
         {
             builder.CheckFlag(_flag, _value);
+        }
+    }
+
+    internal class SbCmp : ISbCondition
+    {
+        private readonly int _variable;
+        private readonly int _value;
+        private readonly bool _equal;
+
+        public int Size => 6;
+
+        public SbCmp(int variable, int value, bool equal = true)
+        {
+            _variable = variable;
+            _value = value;
+            _equal = equal;
+        }
+
+        public void Build(CutsceneBuilder builder)
+        {
+            var op = _equal ? "CMP_EQ" : "CMP_NE";
+            builder.AppendLine("cmp", 0, _variable, op, _value);
         }
     }
 
@@ -858,6 +900,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             builder.EndDoLoop();
         }
     }
+
 
     internal class SbXaOn : SbNode
     {
