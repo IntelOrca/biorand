@@ -1,3 +1,47 @@
+BioRand v3.1.8 (in development)
+
+* [Feature] Add and improve BGM for RE:CV, RE 0, RE 4, RE 5, RE1R, RE2R.
+* [Feature] Add BGM for RE 1.5, RE Survivor.
+* [Feature] Add more radio voice lines.
+* [Feature] RE 1, allow pass code door to be unlocked from other side.
+* [Feature] RE 2, add Andy (RESURV) as playable character.
+* [Feature] RE 2, add Lady D (RE8), Neptune (RE1), zombies (RE1), zombie (RE1R) enemy skins.
+* [Feature] RE 2, enemies can now spawn in cutscene rooms.
+* [Enhancement] Add tooltips to item distribution chart.
+* [Enhancement] Improve audio quality for Ark, Ashley, Krauser, Lott, William.
+* [Enhancement] RE 2, room 614, enable enemies.
+* [Enhancement] RE 3, allow sliding worm in all rooms.
+* [Enhancement] RE 3, room 109, room 123, randomize enemy placements.
+* [Change] RE 2, room 200, no longer classified as safe room.
+* [Change] RE 3, alter enemy limits.
+* [Change] RE 3, update enemy constraints.
+* [Fix] #93: RE 1, two music books placed for Jill.
+* [Fix] #507: RE 2, room 613, silent enemies.
+* [Fix] #595: RE 2, Irons voice line labeled as Ben.
+* [Fix] #652: RE 3, room 508, crash due to Jill NPC.
+* [Fix] #663: RE 3, room 111, crash when zombie uses spit attack.
+* [Fix] #664: RE 2, room 613, crash due to G-Adult.
+* [Fix] #665: RE 2, Spider spawned when slider was set to none.
+* [Fix] #666: RE 1, room 513, incorrect voice.
+* [Fix] #668: RE 2, room 612, crash due to moths.
+* [Fix] #671: RE 2, room 106, crash when opening door with no enemies.
+* [Fix] #673: RE 1, room 40F, crash if hurt when using V-JOLT.
+* [Fix] #676: RE 1, pass code door does not work in Mansion 1.
+* [Fix] #678: RE 1, room 405, crash due to snakes during door cutscene.
+* [Fix] #682: RE 3, crash at basement door due to arms.
+* [Fix] enemy randomization logging in some rooms.
+* [Fix] generate fail for RE 1 and 3.
+* [Fix] muted enemies when NPC is in room.
+* [Fix] NPC gifts always being FAS.
+* [Fix] player voice and local variables.
+* [Fix] random events when npc or voice rando is off.
+* [Fix] RE 1, crash in crank rooms due to wasps.
+* [Fix] RE 1, emblems not randomized.
+* [Fix] RE 1, music score not randomized for Jill.
+* [Fix] RE 1, prevent battery from being placed in caves.
+* [Fix] RE 2, inventory menu is in JPN.
+* [Fix] RE 2, room 300, Ben heard instead of Irons replacement.
+
 BioRand v3.1.7 (2023-11-03)
 
 * [Feature] Increase maximum average number of enemies to 16.
