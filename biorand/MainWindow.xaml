@@ -60,6 +60,7 @@
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="0">
                         <TextBlock x:Name="txtWhatsNewTitle" FontSize="24">What's New - BioRand {VERSION}</TextBlock>
+                        <TextBlock FontSize="16">BioRand has a new discord server: <Hyperlink Click="Link_Click" NavigateUri="https://discord.gg/8WAr38Svxd">https://discord.gg/8WAr38Svxd</Hyperlink></TextBlock>
                         <TextBlock FontSize="16">BioRand has a new website: <Hyperlink Click="Link_Click" NavigateUri="https://biorand.net">https://biorand.net</Hyperlink></TextBlock>
                         <TextBlock FontSize="16">Please now use this link for BioRand when sharing the mod.</TextBlock>
                         <TextBlock FontSize="16" Margin="0,16,0,0">Chris (RE 1) can now have 8 item slots. Enable this in the settings panel.</TextBlock>
