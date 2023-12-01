@@ -812,7 +812,8 @@
           "target": "202"
         },
         {
-          "target": "714"
+          "target": "714",
+          "lock": "side"
         },
         {
           "target": "715",
