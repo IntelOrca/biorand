@@ -114,6 +114,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             FixPassCodeDoor(config, gameData);
             AllowRoughPassageDoorUnlock(config, gameData);
             ShotgunOnWallFix(config, gameData);
+            DisableBarryEvesdrop(config, gameData);
             AllowPartnerItemBoxes(gameData);
 
             if (!config.RandomDoors)
@@ -141,7 +142,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 door.LockType = 255;
                 door.Free = 129;
 
-                if (config.Player == 1)
+                if (!config.RandomDoors && config.Player == 1)
                 {
                     rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x01, new byte[] { 0x0A }));
                     rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x04, new byte[] { 0x01, 0x25, 0x00 }));
@@ -202,6 +203,18 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 return;
 
             rdt.Nop(0x1FE16);
+        }
+
+        private void DisableBarryEvesdrop(RandoConfig config, GameData gameData)
+        {
+            if (config.Player != 1)
+                return;
+
+            var rdt = gameData.GetRdt(new RdtId(3, 0x05));
+            if (rdt == null)
+                return;
+
+            rdt.Nop(0x194A2);
         }
 
         private void AllowPartnerItemBoxes(GameData gameData)
