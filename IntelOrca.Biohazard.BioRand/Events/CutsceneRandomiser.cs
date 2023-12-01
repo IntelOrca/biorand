@@ -103,7 +103,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             var enemyCondition = null as ScdCondition;
             if (_enemyRandomiser?.ChosenEnemies.TryGetValue(rdt, out var enemy) == true)
             {
-                enemyType = enemy.Types[0];
+                enemyType = rng.NextOf(enemy.Types);
 
                 var spec = GetEnemySpecs(rdt.RdtId);
                 var difficulty = Math.Min(_config.EnemyDifficulty, spec.MaxDifficulty ?? _config.EnemyDifficulty);
