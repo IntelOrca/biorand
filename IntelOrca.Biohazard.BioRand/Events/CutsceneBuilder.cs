@@ -148,48 +148,60 @@ namespace IntelOrca.Biohazard.BioRand.Events
         {
             WorkOnEnemy(id);
             AppendLine("member_copy", 16, 7);
+            AppendLine("nop");
             AppendLine("calc", 0, "OP_OR", 16, "0x8000");
             AppendLine("member_set2", 7, 16);
+            AppendLine("nop");
         }
 
         public void ActivateEnemy(int id)
         {
             WorkOnEnemy(id);
             AppendLine("member_copy", 16, 7);
+            AppendLine("nop");
             AppendLine("calc", 0, "OP_AND", 16, "0x7FFF");
             AppendLine("member_set2", 7, 16);
+            AppendLine("nop");
         }
 
         public void DisableEnemyCollision(int id)
         {
             WorkOnEnemy(id);
             AppendLine("member_copy", "V_TEMP", "M_POINTER");
+            AppendLine("nop");
             AppendLine("calc", 0, "OP_OR", "V_TEMP", 0x0002);
             AppendLine("member_set2", "M_POINTER", "V_TEMP");
+            AppendLine("nop");
         }
 
         public void EnableEnemyCollision(int id)
         {
             WorkOnEnemy(id);
             AppendLine("member_copy", "V_TEMP", "M_POINTER");
+            AppendLine("nop");
             AppendLine("calc", 0, "OP_AND", "V_TEMP", 0xFFFD);
             AppendLine("member_set2", "M_POINTER", "V_TEMP");
+            AppendLine("nop");
         }
 
         public void HideEnemy(int id)
         {
             WorkOnEnemy(id);
             AppendLine("member_copy", "V_TEMP", "M_BE_FLAG");
+            AppendLine("nop");
             AppendLine("calc", 0, "OP_OR", "V_TEMP", 0x0008);
             AppendLine("member_set2", "M_BE_FLAG", "V_TEMP");
+            AppendLine("nop");
         }
 
         public void UnhideEnemy(int id)
         {
             WorkOnEnemy(id);
             AppendLine("member_copy", "V_TEMP", "M_BE_FLAG");
+            AppendLine("nop");
             AppendLine("calc", 0, "OP_AND", "V_TEMP", 0xFFF7);
             AppendLine("member_set2", "M_BE_FLAG", "V_TEMP");
+            AppendLine("nop");
         }
 
         public void PlayVoice(int id)
@@ -226,6 +238,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             {
                 AppendLine("work_set", "WK_ENEMY", id);
             }
+            AppendLine("nop");
         }
 
         public void WaitForEnemyTravel(int id)
@@ -267,6 +280,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public void CutRevert()
         {
             AppendLine("cut_old");
+            AppendLine("nop");
             CutAuto();
         }
 
@@ -452,8 +466,6 @@ namespace IntelOrca.Biohazard.BioRand.Events
             if (_else)
             {
                 _else = false;
-                AppendLine("nop");
-                AppendLine("nop");
             }
             else
             {

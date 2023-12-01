@@ -195,6 +195,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             builder.AppendLine("cut_chg", Cut);
             base.Build(builder);
             builder.AppendLine("cut_old");
+            builder.AppendLine("nop");
         }
     }
 

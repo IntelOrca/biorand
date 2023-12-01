@@ -163,7 +163,9 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 var participantsActors = participants.Select(x => x.Actor).ToArray();
                 var speakerActors = speakers.Select(x => x.Actor).ToArray();
                 var result = _voiceRandomiser.AllocateConversation(Rng, _rdt.RdtId, 1, speakerActors, participantsActors);
-                return new SbVoice(result[0]);
+                return new SbContainerNode(
+                    new SbVoice(result[0]),
+                    new SbSleep(Rng.Next(5, 30)));
             }
         }
 
