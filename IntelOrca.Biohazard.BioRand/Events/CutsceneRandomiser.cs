@@ -184,6 +184,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             if (enemyType != null)
             {
                 if (enemyType != Re2EnemyIds.ZombieArms &&
+                    enemyType != Re2EnemyIds.Birkin1 &&
                     enemyType != Re2EnemyIds.GAdult)
                 {
                     if (rng.NextProbability(10))
