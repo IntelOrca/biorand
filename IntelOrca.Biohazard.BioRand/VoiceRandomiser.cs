@@ -319,41 +319,36 @@ namespace IntelOrca.Biohazard.BioRand
             var roomVoices = _roomVoices.GroupBy(x => x.RdtId);
             foreach (var g in roomVoices)
             {
-                var rdt = _gameData.GetRdt(g.Key);
-                if (rdt == null)
-                    continue;
-
-                var voices = g;
-                RandomizeRoom(rng.NextFork(), rdt, g.ToArray());
+                RandomizeRoom(rng.NextFork(), g.Key, g.ToArray());
             }
         }
 
-        private void RandomizeRoom(Rng rng, RandomizedRdt rdt, RoomVoices[] roomVoices)
+        private void RandomizeRoom(Rng rng, RdtId rdtId, RoomVoices[] roomVoices)
         {
             foreach (var v in roomVoices)
             {
-                RandomizeVoices(rdt, rng, v.Cutscene, v.PlayerActor, v.ActorToActorMap);
+                RandomizeVoices(rdtId, rng, v.Cutscene, v.PlayerActor, v.ActorToActorMap);
             }
         }
 
-        private void RandomizeVoices(RandomizedRdt rdt, Rng rng, int cutscene, string pc, Dictionary<string, string> actorToNewActorMap)
+        private void RandomizeVoices(RdtId rdtId, Rng rng, int cutscene, string pc, Dictionary<string, string> actorToNewActorMap)
         {
             var first = true;
 
-            string? radioActor = null;
+            string? kindActor = null;
             var actors = actorToNewActorMap.Values.ToArray();
             foreach (var sample in _voiceSamples)
             {
                 if (sample.Player == _config.Player &&
                     sample.Cutscene == cutscene &&
-                    sample.IsPlayedIn(rdt.RdtId))
+                    sample.IsPlayedIn(rdtId))
                 {
                     if (first)
                     {
-                        if (_lastRdtId != rdt.RdtId)
+                        if (_lastRdtId != rdtId)
                         {
-                            _logger.WriteLine($"{rdt.RdtId}:");
-                            _lastRdtId = rdt.RdtId;
+                            _logger.WriteLine($"{rdtId}:");
+                            _lastRdtId = rdtId;
                         }
                         _logger.WriteLine($"  cutscene #{cutscene} contains {string.Join(", ", actorToNewActorMap.Values)}");
                         first = false;
@@ -361,10 +356,10 @@ namespace IntelOrca.Biohazard.BioRand
 
                     var actor = sample.Actor!;
                     var kind = sample.Kind;
-                    if (kind == "radio")
+                    if (IsOmnipresentKind(kind))
                     {
-                        radioActor ??= GetRandomRadioActor(_rng, pc) ?? actor;
-                        RandomizeVoice(rng, sample, actor, radioActor, sample.Kind, actors);
+                        kindActor ??= GetRandomActor(_rng, pc, kind!) ?? actor;
+                        RandomizeVoice(rng, sample, actor, kindActor, sample.Kind, actors);
                     }
                     else if (actorToNewActorMap.TryGetValue(actor, out var newActor))
                     {
@@ -378,10 +373,15 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
-        private string? GetRandomRadioActor(Rng rng, string pc)
+        private static bool IsOmnipresentKind(string? kind)
+        {
+            return kind == "radio" || kind == "narrator" || kind == "announcer";
+        }
+
+        private string? GetRandomActor(Rng rng, string pc, string kind)
         {
             var actors = _uniqueSamples
-                .Where(x => x.Kind == "radio" && x.Actor != pc)
+                .Where(x => x.Kind == kind && x.Actor != pc)
                 .Select(x => x.Actor)
                 .Distinct()
                 .Shuffle(rng);
