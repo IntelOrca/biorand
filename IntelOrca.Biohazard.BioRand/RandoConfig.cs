@@ -15,8 +15,8 @@ namespace IntelOrca.Biohazard.BioRand
         public const int MaxSeed = 0b11111_11111_11111_11111;
         public const byte LatestVersion = 7;
         public const int MaxEnemies = 12;
-        public const int MaxEnemySkins = 25;
-        public const int MaxNPCs = 65;
+        public const int MaxEnemySkins = 35;
+        public const int MaxNPCs = 75;
         public const int MaxBGMs = 15;
 
         public byte Version { get; set; } = LatestVersion;
