@@ -3,13 +3,16 @@ BioRand v3.1.8 (in development)
 * [Feature] Add and improve BGM for RE:CV, RE 0, RE 4, RE 5, RE1R, RE2R.
 * [Feature] Add BGM for RE 1.5, RE Survivor.
 * [Feature] Add more radio voice lines.
+* [Feature] RE 1, randomize lab announcer.
+* [Feature] RE 2, randomize lab announcer, narrator, and monster/screams.
 * [Feature] RE 1, allow pass code door to be unlocked from other side.
-* [Feature] RE 2, add Andy (RESURV) as playable character.
-* [Feature] RE 2, add Lady D (RE8), Neptune (RE1), zombies (RE1), zombie (RE1R) enemy skins.
+* [Feature] RE 2, add Andy (Survivor), Jessica (Revelations), Mark (Outbreak), Rodrigo (CV) as playable characters.
+* [Feature] RE 2, add Lady D (RE8), Nemesis (RE3R) Neptune (RE1), zombies (RE1), zombie (RE1R) enemy skins.
 * [Feature] RE 2, enemies can now spawn in cutscene rooms.
 * [Enhancement] Add tooltips to item distribution chart.
 * [Enhancement] Improve audio quality for Ark, Ashley, Krauser, Lott, William.
 * [Enhancement] RE 2, room 614, enable enemies.
+* [Enhancement] RE 2, update Lott model.
 * [Enhancement] RE 3, allow sliding worm in all rooms.
 * [Enhancement] RE 3, room 109, room 123, randomize enemy placements.
 * [Change] RE 2, room 200, no longer classified as safe room.
@@ -24,6 +27,7 @@ BioRand v3.1.8 (in development)
 * [Fix] #665: RE 2, Spider spawned when slider was set to none.
 * [Fix] #666: RE 1, room 513, incorrect voice.
 * [Fix] #668: RE 2, room 612, crash due to moths.
+* [Fix] #670: RE 3, room 205, crash due to incompatible NPC.
 * [Fix] #671: RE 2, room 106, crash when opening door with no enemies.
 * [Fix] #673: RE 1, room 40F, crash if hurt when using V-JOLT.
 * [Fix] #676: RE 1, pass code door does not work in Mansion 1.
