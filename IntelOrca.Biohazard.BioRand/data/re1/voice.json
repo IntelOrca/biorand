@@ -1,4 +1,5 @@
 {
+  "voice/ANNOUNCE.wav": { "rdt": "505", "player": 0, "actor": "announcer", "kind": "announcer" },
   "voice/V001_00.wav": { "rdt": "106", "cutscene": 0, "player": 0, "actor": "jill" },
   "voice/V001_01.wav": {
     "rdt": "106",
@@ -106,9 +107,9 @@
   "voice/V005_07.wav": { "rdt": "20D", "player": 0, "actor": "chris" },
   "voice/V005_08.wav": { "rdt": "20D", "player": 0, "actor": "rebecca" },
   "voice/V005_09.wav": { "rdt": "20D", "player": 0, "actor": "chris" },
-  "voice/V005_0A.wav": { "rdt": "20D", "player": 0, "actor": "chris" },
+  "voice/V005_0A.wav": { "rdt": "20D", "player": 0, "actor": "chris", "kind": "item" },
   "voice/V005_0B.wav": { "rdt": "20D", "player": 0, "actor": "rebecca", "condition": "@richard", "nameClipped": { "end": 2.0 } }, // start : 3.9 for alternate
-  "voice/V005_0C.wav": { "rdt": "20D", "player": 0, "actor": "richard", "condition": "@chris", "nameClipped": { "start": 2.0 } },
+  "voice/V005_0C.wav": { "rdt": "20D", "player": 0, "actor": "richard", "condition": "@chris", "nameClipped": { "start": 2.0 }, "kind": "item" },
   "voice/V005_0D.wav": {
     "rdt": "20D",
     "player": 0,
@@ -384,9 +385,9 @@
   "voice/V013_07.wav": { "rdt": "513", "player": 0, "actor": "wesker" }, // Sounds like Chris, but is also played for Jill
   "voice/V013_08.wav": { "rdt": "513", "player": 0, "actor": "wesker", "kind": "doom" },
   "voice/V013_09.wav": { "rdt": "513", "player": 0, "actor": "chris" },
-  "voice/V013_0A.wav": { "rdt": "513", "player": 0, "actor": "wesker", "kind": "doom" },
+  "voice/V013_0A.wav": { "rdt": "513", "player": 0, "actor": "wesker" },
   "voice/V013_02A.wav": { "rdt": "513", "player": 0, "actor": "wesker", "condition": "@chris" },
-  "voice/V013_02B.wav": { "rdt": "513", "player": 0, "actor": "wesker", "kind": "doom" },
+  "voice/V013_02B.wav": { "rdt": "513", "player": 0, "actor": "wesker" },
   "voice/V014_00.wav": { "rdt": "514", "player": 0, "actor": "chris" },
   "voice/V014_01.wav": { "rdt": "514", "player": 0, "actor": "rebecca" },
   "voice/V014_02.wav": { "rdt": "514", "player": 0, "actor": "chris" },
@@ -671,7 +672,8 @@
       {
         "actor": "barry",
         "condition": "@jill",
-        "nameClipped": { "start": 35.5 }
+        "nameClipped": { "start": 35.5 },
+        "kind": "item"
       }
     ] // end: 34.5 for alternate
   },
@@ -689,7 +691,7 @@
   "voice/V104_06.wav": { "rdt": "212", "player": 1, "actor": "barry" },
   "voice/V104_07.wav": { "rdt": "212", "player": 1, "actor": "barry", "condition": "@jill", "nameClipped": { "end": 1.75 } },
   "voice/V104_08.wav": { "rdt": "212", "player": 1, "actor": "jill" },
-  "voice/V104_09.wav": { "rdt": "212", "player": 1, "actor": "barry", "condition": "@jill", "nameClipped": { "start": 0.83 } },
+  "voice/V104_09.wav": { "rdt": "212", "player": 1, "actor": "barry", "condition": "@jill", "nameClipped": { "start": 0.83 }, "kind": "item" },
   "voice/V104_0A.wav": { "rdt": "212", "player": 1, "actor": "barry" },
 
   "voice/V105_00.wav": { "rdt": "115", "player": 1, "actor": "jill" },
@@ -773,7 +775,8 @@
       },
       {
         "actor": "barry",
-        "split": 15.6
+        "split": 15.6,
+        "kind": "item"
       },
       {
         "actor": "jill",
@@ -792,7 +795,7 @@
   "voice/V107_00.wav": { "rdt": "100", "player": 1, "actor": "jill", "condition": "@barry", "nameClipped": { "end": 1.5 } },
   "voice/V108_00.wav": { "rdt": "20A", "player": 1, "actor": "barry", "condition": "@jill" },
   "voice/V108_01.wav": { "rdt": "20A", "player": 1, "actor": "jill" },
-  "voice/V108_02.wav": { "rdt": "20A", "player": 1, "actor": "barry" },
+  "voice/V108_02.wav": { "rdt": "20A", "player": 1, "actor": "barry", "kind": "item" },
   "voice/V108_03.wav": { "rdt": "20A", "player": 1, "actor": "barry" },
   "voice/V108_04.wav": { "rdt": "20A", "player": 1, "actor": "jill" },
   "voice/V108_05.wav": { "rdt": "20A", "player": 1, "actor": "barry" },
@@ -853,7 +856,7 @@
   "voice/V10D_04.wav": { "rdt": "70C", "player": 1, "actor": "barry" },
   "voice/V10D_05.wav": { "rdt": "70C", "player": 1, "actor": "barry", "condition": "!richard", "nameClipped": { "start": 2.8 } },
   "voice/V10D_06.wav": { "rdt": "70C", "player": 1, "actor": "jill", "condition": "@richard" },
-  "voice/V10D_07.wav": { "rdt": "70C", "player": 1, "actor": "barry" },
+  "voice/V10D_07.wav": { "rdt": "70C", "player": 1, "actor": "barry", "kind": "item" },
   "voice/V10D_10.wav": { "rdt": "70C", "player": 1, "actor": "jill" },
   "voice/V10D_11.wav": { "rdt": "70C", "player": 1, "actor": "barry", "condition": "@jill", "nameClipped": { "end": 1.63 } }, // start : 2.6 for alternate
   "voice/V10D_12.wav": { "rdt": "70C", "player": 1, "actor": "jill", "condition": "@barry" },
@@ -1074,7 +1077,8 @@
         "actor": "barry",
         "split": 45,
         "condition": "@jill",
-        "nameClipped": { "start": 19.1 }
+        "nameClipped": { "start": 19.1 },
+        "kind": "item"
       },
       {
         "actor": "jill",
@@ -1178,8 +1182,8 @@
   "voice/V116_03.wav": { "rdt": "513", "player": 1, "actor": "jill" },
   "voice/V116_04.wav": { "rdt": "513", "player": 1, "actor": "wesker" },
   "voice/V116_05.wav": { "rdt": "513", "player": 1, "actor": "jill" },
-  "voice/V116_06.wav": { "rdt": "513", "player": 1, "actor": "barry" },
-  "voice/V116_10.wav": { "rdt": "513", "player": 1, "actor": "wesker" },
+  "voice/V116_06.wav": { "rdt": "513", "player": 1, "actor": "barry", "kind": "death" },
+  "voice/V116_10.wav": { "rdt": "513", "player": 1, "actor": "wesker", "kind": "doom" },
   "voice/V117_00.wav": { "rdt": "513", "player": 1, "actor": "jill" },
   "voice/V117_01.wav": { "rdt": "513", "player": 1, "actor": "barry" },
   "voice/V117_02.wav": { "rdt": "513", "player": 1, "actor": "jill" },
@@ -1189,7 +1193,7 @@
   "voice/V117_10.wav": { "rdt": "513", "player": 1, "actor": "jill", "condition": "@barry" },
   "voice/V117_11.wav": { "rdt": "513", "player": 1, "actor": "jill" },
   "voice/V117_12.wav": { "rdt": "513", "player": 1, "actor": "barry" },
-  "voice/V117_13.wav": { "rdt": "513", "player": 1, "actor": "barry" },
+  "voice/V117_13.wav": { "rdt": "513", "player": 1, "actor": "barry", "kind": "hurt" },
   "voice/V118_00.wav": { "rdt": "514", "player": 1, "actor": "jill", "condition": "!wesker" },
   "voice/V118_01.wav": { "rdt": "514", "player": 1, "actor": "barry", "condition": "!wesker", "nameClipped": { "start": 2.5 } },
   "voice/V119_00.wav": {
@@ -1365,7 +1369,7 @@
   "voice/VA01_07.wav": { "rdt": "20D", "player": 1, "actor": "jill" },
   "voice/VA01_08.wav": { "rdt": "20D", "player": 1, "actor": "richard" },
   "voice/VA01_09.wav": { "rdt": "20D", "player": 1, "actor": "jill", "condition": "@richard", "nameClipped": { "start": 2.38 } }, // end : 1.2 for alternate
-  "voice/VA01_0A.wav": { "rdt": "20D", "player": 1, "actor": "richard", "condition": "@jill", "nameClipped": { "start": 0.8 } },
+  "voice/VA01_0A.wav": { "rdt": "20D", "player": 1, "actor": "richard", "condition": "@jill", "nameClipped": { "start": 0.8 }, "kind": "item" },
   "voice/VA01_0B.wav": { "rdt": "20D", "player": 1, "actor": "jill", "condition": "@richard", "nameClipped": { "end": 1.0 } },
   "voice/VA01_0C.wav": { "rdt": "20D", "player": 1, "actor": "richard", "condition": "@jill", "nameClipped": { "start": 1.0 } },
   "voice/VA01_0D.wav": { "rdt": "20D", "player": 1, "actor": "richard" },
