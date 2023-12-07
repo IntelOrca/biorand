@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define HIDE_RANDOM_EVENTS
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -497,6 +499,9 @@ namespace IntelOrca.Biohazard.BioRand
             _config.AllowAnyVoice = chkAllowAnyVoice.IsChecked == true;
             _config.ReduceSilences = chkReduceSilences.IsChecked == true;
             _config.RandomEvents = chkRandomEvents.IsChecked == true;
+#if HIDE_RANDOM_EVENTS
+            _config.RandomEvents = false;
+#endif
 
             _config.GameVariant = (byte)dropdownVariant.SelectedIndex;
 
@@ -918,6 +923,16 @@ namespace IntelOrca.Biohazard.BioRand
                     dropdownVariant.Visibility = index == 1 ?
                         Visibility.Visible :
                         Visibility.Hidden;
+#if !HIDE_RANDOM_EVENTS
+                    if (index == 1)
+                    {
+                        chkRandomEvents.Visibility = Visibility.Visible;
+                    }
+                    else
+#endif
+                    {
+                        chkRandomEvents.Visibility = Visibility.Collapsed;
+                    }
                     UpdatePlayerDropdowns();
                     UpdateEnemies();
                     UpdateEnemySkinList();
