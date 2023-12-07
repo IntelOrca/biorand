@@ -1,4 +1,4 @@
-BioRand v3.1.8 (in development)
+BioRand v3.1.8 (2023-12-07)
 
 * [Feature] Add and improve BGM for RE:CV, RE 0, RE 4, RE 5, RE1R, RE2R.
 * [Feature] Add BGM for RE 1.5, RE Survivor.
@@ -6,11 +6,12 @@ BioRand v3.1.8 (in development)
 * [Feature] RE 1, randomize lab announcer.
 * [Feature] RE 2, randomize lab announcer, narrator, and monster/screams.
 * [Feature] RE 1, allow pass code door to be unlocked from other side.
-* [Feature] RE 2, add Andy (Survivor), Jessica (Revelations), Mark (Outbreak), Rodrigo (CV) as playable characters.
+* [Feature] RE 2, add Andy (Survivor), Jessica (Revelations), Lily (Survivor), Mark (Outbreak), Rodrigo (CV), Vincent (Survivor) as playable characters.
 * [Feature] RE 2, add Lady D (RE8), Nemesis (RE3R) Neptune (RE1), zombies (RE1), zombie (RE1R) enemy skins.
 * [Feature] RE 2, enemies can now spawn in cutscene rooms.
 * [Enhancement] Add tooltips to item distribution chart.
 * [Enhancement] Improve audio quality for Ark, Ashley, Krauser, Lott, William.
+* [Enhancement] Increase NPC and enemy skin limit.
 * [Enhancement] RE 2, room 614, enable enemies.
 * [Enhancement] RE 2, update Lott model.
 * [Enhancement] RE 3, allow sliding worm in all rooms.
