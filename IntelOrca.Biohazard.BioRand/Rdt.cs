@@ -413,7 +413,10 @@ namespace IntelOrca.Biohazard.BioRand
             if (insertIndex == -1)
                 throw new Exception("Unable to insert custom script");
 
-            insertIndex = FindNextLine(disassembly, insertIndex);
+            var nextProc = disassembly.IndexOf(".proc", insertIndex + 1);
+            var endOfFirstProc = disassembly.LastIndexOf("evt_end", nextProc);
+
+            insertIndex = FindStartOfLine(disassembly, endOfFirstProc);
             disassembly = disassembly.Insert(insertIndex, "    gosub                   biorand_custom\n");
 
             var scdAssembler = new ScdAssembler();
@@ -428,6 +431,16 @@ namespace IntelOrca.Biohazard.BioRand
                 .Data;
 
             RdtFile = RdtFile.WithScd(BioScriptKind.Main, newScd);
+        }
+
+        private static int FindStartOfLine(string s, int startIndex)
+        {
+            var index = startIndex;
+            while (index < s.Length && s[index] != '\n' && s[index] != '\r')
+            {
+                index--;
+            }
+            return index + 1;
         }
 
         private static int FindNextLine(string s, int startIndex)
