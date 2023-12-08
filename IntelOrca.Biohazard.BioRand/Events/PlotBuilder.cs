@@ -239,9 +239,19 @@ namespace IntelOrca.Biohazard.BioRand.Events
             int? triggerCut = null;
 
             var triggerPoi = PoiGraph.GetRandomPoi(Rng, x => x.HasTag(PoiKind.Trigger) && notCuts?.Contains(x.Cut) != true);
-            if (triggerPoi != null && Rng.NextProbability(75))
+            if (triggerPoi != null)
             {
                 triggerCut = triggerPoi.Cut;
+
+                // If event can be shown in any cut,
+                // we don't always need a trigger cut
+                if (notCuts?.Any() != true)
+                {
+                    if (Rng.NextProbability(75))
+                    {
+                        triggerCut = null;
+                    }
+                }
             }
 
             if (triggerCut == null && Rng.NextProbability(50))
