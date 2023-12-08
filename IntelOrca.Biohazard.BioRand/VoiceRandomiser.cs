@@ -211,8 +211,20 @@ namespace IntelOrca.Biohazard.BioRand
             RandomizeRooms(_rng.NextFork());
         }
 
-        public int[] AllocateConversation(Rng rng, RdtId rdtId, int count, string[] speakers, string[] actors)
+        public int[] AllocateConversation(Rng rng, RdtId rdtId, int count, string[] speakers, string[] actors, string? kind = null)
         {
+            if (IsOmnipresentKind(kind) && speakers.Length == 0)
+            {
+                var pc = _playerActors[0];
+                var randomActor = GetRandomActor(_rng, pc, kind!);
+                if (randomActor == null)
+                {
+                    return new int[0];
+                }
+
+                speakers = new[] { randomActor };
+            }
+
             var stage = rdtId.Stage;
             while (_newStageVoiceCount.Count <= stage)
             {
@@ -229,7 +241,13 @@ namespace IntelOrca.Biohazard.BioRand
                 voiceSample.Path = $"pl{_config.Player}/voice/stage{stage + 1}/v{vId + i:000}.sap";
                 voiceSample.Player = _config.Player;
                 voiceSample.Cutscene = cutscene;
-                RandomizeVoice(rng, voiceSample, "n/a", _rng.NextOf(speakers), null, actors);
+                RandomizeVoice(
+                    rng,
+                    voiceSample,
+                    "n/a",
+                    speakers.Length == 0 ? "unknown" : _rng.NextOf(speakers),
+                    kind,
+                    actors);
             }
             return Enumerable.Range(vId, count).ToArray();
         }
@@ -375,7 +393,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         private static bool IsOmnipresentKind(string? kind)
         {
-            return kind == "radio" || kind == "narrator" || kind == "announcer";
+            return kind == "radio" || kind == "narrator" || kind == "announcer" || kind == "jumpscare";
         }
 
         private string? GetRandomActor(Rng rng, string pc, string kind)

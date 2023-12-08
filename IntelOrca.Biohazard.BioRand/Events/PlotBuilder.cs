@@ -151,8 +151,8 @@ namespace IntelOrca.Biohazard.BioRand.Events
             return count;
         }
 
-        public SbNode Voice(ICsHero[] participants) => Voice(participants, participants);
-        public SbNode Voice(ICsHero[] participants, ICsHero[] speakers)
+        public SbNode Voice(ICsHero[] participants, string? kind = null) => Voice(participants, participants, kind);
+        public SbNode Voice(ICsHero[] participants, ICsHero[] speakers, string? kind = null)
         {
             if (_voiceRandomiser == null)
             {
@@ -162,7 +162,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             {
                 var participantsActors = participants.Select(x => x.Actor).ToArray();
                 var speakerActors = speakers.Select(x => x.Actor).ToArray();
-                var result = _voiceRandomiser.AllocateConversation(Rng, _rdt.RdtId, 1, speakerActors, participantsActors);
+                var result = _voiceRandomiser.AllocateConversation(Rng, _rdt.RdtId, 1, speakerActors, participantsActors, kind);
                 return new SbContainerNode(
                     new SbVoice(result[0]),
                     new SbSleep(Rng.Next(5, 30)));

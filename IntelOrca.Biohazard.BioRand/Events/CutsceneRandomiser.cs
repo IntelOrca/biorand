@@ -181,6 +181,10 @@ namespace IntelOrca.Biohazard.BioRand.Events
             {
                 ChainRandomPlot<AllyPassByPlot>(plots, plotBuilder);
             }
+            if (rng.NextProbability(25))
+            {
+                ChainRandomPlot<NoisePlot>(plots, plotBuilder);
+            }
             if (enemyType != null)
             {
                 if (enemyType != Re2EnemyIds.ZombieArms &&
@@ -442,7 +446,8 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 new EnemyFromDarkPlot(),
                 new EnemyWalksInPlot(),
                 new AllyWaitPlot(),
-                new AllyPassByPlot()
+                new AllyPassByPlot(),
+                new NoisePlot()
             };
         }
 
