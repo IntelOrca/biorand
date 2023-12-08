@@ -198,6 +198,10 @@ namespace IntelOrca.Biohazard.BioRand.RE2
                     {
                         enemy.State = 1;
                         enemy.SoundBank = 21;
+                        if (enemy.Id != 0)
+                        {
+                            throw new Exception("G-Adult not set for ID_EM_0");
+                        }
                     }
                     break;
             }
