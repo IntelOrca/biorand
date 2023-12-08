@@ -12,26 +12,33 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                 return null;
 
             var doorGroup = rng.NextOf(connectedDoorGraph);
-            var doors = doorGroup.Shuffle(rng).Take(2).ToArray();
+            var doors = doorGroup
+                .Where(x => x.HasTag("door"))
+                .Shuffle(rng)
+                .Take(2)
+                .ToArray();
             var ally = builder.AllocateAlly();
             var plotFlag = builder.AllocateGlobalFlag();
             return new CsPlot(
                 new SbProcedure(
-                    new SbIf(plotFlag, false,
-                        new SbAlly(ally, REPosition.OutOfBounds),
-                        new SbSetEntityCollision(ally, false),
-                        new SbFork(
-                            new SbProcedure(
-                                builder.CreateTrigger(doors[0].Cuts),
-                                new SbSetFlag(plotFlag),
-                                new SbLockPlot(
-                                    new SbDoor(doors[0]),
-                                    // new SbWaitForCut(doors[0].Cuts, false),
-                                    new SbMoveEntity(ally, doors[0].Position),
-                                    builder.Travel(ally, doors[0], doors[1], PlcDestKind.Run, overrideDestination: doors[1].Position.Reverse()),
-                                    new SbMoveEntity(ally, REPosition.OutOfBounds),
-                                    new SbDoor(doors[1]),
-                                    new SbSleep(4 * 30)))))));
+                    new SbCommentNode($"[plot] ally pass by {{ flag {plotFlag.Flag} }}",
+                        new SbIf(plotFlag, false,
+                            new SbAlly(ally, REPosition.OutOfBounds),
+                            new SbSetEntityCollision(ally, false),
+                            new SbFork(
+                                new SbProcedure(
+                                    builder.CreateTrigger(doors[0].Cuts),
+                                    new SbSetFlag(plotFlag),
+                                    new SbLockPlot(
+                                        new SbCommentNode($"[action] ally enter at {{ {doors[0]} }}",
+                                            new SbDoor(doors[0]),
+                                            // new SbWaitForCut(doors[0].Cuts, false),
+                                            new SbMoveEntity(ally, doors[0].Position),
+                                            new SbCommentNode($"[action] ally travel to {{ {doors[1]} }}",
+                                                builder.Travel(ally, doors[0], doors[1], PlcDestKind.Run, overrideDestination: doors[1].Position.Reverse())),
+                                            new SbMoveEntity(ally, REPosition.OutOfBounds),
+                                            new SbDoor(doors[1]),
+                                            new SbSleep(4 * 30)))))))));
         }
     }
 }
