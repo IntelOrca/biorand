@@ -82,12 +82,9 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 .Select(p => new REPosition(p.X, p.Y, p.Z, p.D))
                 .ToEndlessBag(rng);
 
-            if (enemyPositions.Count == 0)
-                return;
-
             _logger.WriteLine($"{rdt}:");
 
-            if (_enemyRandomiser != null)
+            if (_enemyRandomiser != null && enemyPositions.Count != 0)
             {
                 ClearEnemies(rdt);
             }
@@ -101,7 +98,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             var enemyHelper = _enemyRandomiser?.EnemyHelper;
             var enemyType = (byte?)null;
             var enemyCondition = null as ScdCondition;
-            if (_enemyRandomiser?.ChosenEnemies.TryGetValue(rdt, out var enemy) == true)
+            if (enemyPositions.Count != 0 && _enemyRandomiser?.ChosenEnemies.TryGetValue(rdt, out var enemy) == true)
             {
                 enemyType = rng.NextOf(enemy.Types);
 

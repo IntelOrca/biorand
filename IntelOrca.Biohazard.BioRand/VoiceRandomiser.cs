@@ -213,7 +213,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         public int[] AllocateConversation(Rng rng, RdtId rdtId, int count, string[] speakers, string[] actors, string? kind = null)
         {
-            if (IsOmnipresentKind(kind) && speakers.Length == 0)
+            if (speakers.Length == 0)
             {
                 var pc = _playerActors[0];
                 var randomActor = GetRandomActor(_rng, pc, kind!);
@@ -245,7 +245,7 @@ namespace IntelOrca.Biohazard.BioRand
                     rng,
                     voiceSample,
                     "n/a",
-                    speakers.Length == 0 ? "unknown" : _rng.NextOf(speakers),
+                    _rng.NextOf(speakers),
                     kind,
                     actors);
             }

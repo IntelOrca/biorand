@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using IntelOrca.Biohazard.BioRand.RE2;
+using IntelOrca.Biohazard.Room;
 
 namespace IntelOrca.Biohazard.BioRand.Events
 {
@@ -128,6 +129,24 @@ namespace IntelOrca.Biohazard.BioRand.Events
         {
             var id = _availableAotIds.Dequeue();
             return new CsAot(id);
+        }
+
+        internal CsMessage AllocateMessage(string message)
+        {
+            var builder = ((Rdt2)_rdt.RdtFile).ToBuilder();
+
+            var en = builder.MSGEN.ToBuilder();
+            var id = en.Messages.Count;
+            en.Messages.Add(new Msg(BioVersion.Biohazard2, MsgLanguage.English, message));
+            builder.MSGEN = en.ToMsgList();
+
+            var ja = builder.MSGJA.ToBuilder();
+            ja.Messages.Add(new Msg(BioVersion.Biohazard2, MsgLanguage.Japanese, message));
+            builder.MSGJA = ja.ToMsgList();
+
+            _rdt.RdtFile = builder.ToRdt();
+
+            return new CsMessage(id, message);
         }
 
         public CsEnemy[] GetEnemies()

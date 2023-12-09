@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using IntelOrca.Biohazard.BioRand.RE2;
 
 namespace IntelOrca.Biohazard.BioRand.Events.Plots
@@ -6,6 +7,21 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
     internal class AllyWaitPlot : IPlot
     {
         public CsPlot? BuildPlot(PlotBuilder builder)
+        {
+            var subplots = new Func<SubPlot>[]
+            {
+                () => new ChatSubPlot(),
+                () => new HelpSubPlot(),
+                () => new ItemGiftSubPlot(),
+                () => new TradeSubPlot(),
+                () => new CurePoisonSubPlot(),
+                () => new CureSubPlot()
+            };
+            var subPlotFactory = builder.Rng.NextOf(subplots);
+            return BuildPlot(builder, subPlotFactory());
+        }
+
+        private CsPlot? BuildPlot(PlotBuilder builder, SubPlot subPlot)
         {
             var rng = builder.Rng;
 
@@ -25,7 +41,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
 
                 if (rng.NextProbability(50))
                     doorEntry = null;
-                if (rng.NextProbability(50))
+                if (!subPlot.CanExit || rng.NextProbability(50))
                     doorExit = null;
             }
             else
@@ -40,8 +56,13 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
 
             var player = builder.GetPlayer();
             var ally = builder.AllocateAlly();
-            var item = rng.NextProbability(75) ? GetRandomItem(builder) : null;
             var interaction = builder.AllocateEvent();
+
+            subPlot.PlotBuilder = builder;
+            subPlot.Player = player;
+            subPlot.Ally = ally;
+            subPlot.Cut = waitPoi!.CloseCut;
+            subPlot.ConverseFlag = converseFlag;
 
             var loopProcedure = new SbProcedure(
                 new SbLoop(
@@ -50,15 +71,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
 
             var eventProcedure = new SbProcedure(
                 new SbIf(builder.GetPlotLockFlag(), false,
-                    new SbLockPlot(
-                        new SbFreezeAllEnemies(
-                            new SbCutsceneBars(
-                                new SbIf(converseFlag, true,
-                                    builder.Voice(new ICsHero[] { player, ally }))
-                                .Else(
-                                    CreateInitalConversation(builder, waitPoi!.CloseCut, new ICsHero[] { player, ally }, item),
-                                    new SbSetFlag(converseFlag)))),
-                        new SbSleep(2 * 30)),
+                    subPlot.OnConversation(),
                     SbNode.Conditional(doorExit != null, () => new SbContainerNode(
                         new SbDisableAot(interaction),
                         new SbSetEntityCollision(ally, false),
@@ -108,9 +121,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
             SbNode initBlock = new SbContainerNode(
                 waitBlock,
                 new SbFork(loopProcedure),
-                SbNode.Conditional(item != null, () => new SbContainerNode(
-                    new SbItem(item!),
-                    new SbSetFlag(new CsFlag(CutsceneBuilder.FG_ITEM, 255), false))));
+                subPlot.OnInit());
             if (doorExit != null)
             {
                 initBlock = new SbIf(converseFlag, false, initBlock);
@@ -122,78 +133,243 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
             return new CsPlot(initProcedure);
         }
 
-        private SbNode CreateInitalConversation(PlotBuilder builder, int? cut, ICsHero[] participants, CsItem? item)
+        private static string PrettyActorName(string s)
         {
-            var itemHelper = new Re2ItemHelper();
-
-            SbNode result = new SbMuteMusic(
-                new SbCommentNode("[action] conversation",
-                    new SbSleep(60),
-                    builder.Conversation(2, 4, participants, participants),
-                    SbNode.Conditional(item != null, () => new SbContainerNode(
-                        new SbCommentNode($"[action] gift {{ {itemHelper.GetItemName(item!.Item.Type)} x{item!.Item.Amount} }}",
-                            new SbAotOn(item!)))),
-                    builder.Conversation(0, 2, participants, participants),
-                    new SbSleep(60)));
-            if (cut != null)
+            var dot = s.IndexOf('.');
+            if (dot != -1)
             {
-                result = new SbCut(cut.Value, result);
+                s = s.Substring(0, dot);
             }
-            return result;
+            return s.ToTitle();
         }
 
-        private CsItem GetRandomItem(PlotBuilder builder)
+        private class SubPlot
         {
-            var rng = builder.Rng;
-            var amount = 1;
-            var config = builder.Config;
-            var itemHelper = new Re2ItemHelper();
-            var itemRando = builder.ItemRandomiser;
-            byte type;
-            if (itemRando == null)
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+            public PlotBuilder PlotBuilder { get; set; }
+            public ICsHero Player { get; set; }
+            public ICsHero Ally { get; set; }
+            public int? Cut { get; set; }
+            public CsFlag ConverseFlag { get; set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
+            public ICsHero[] Participants => new[] { Player, Ally };
+            public virtual bool CanExit => true;
+
+            public virtual SbNode OnInit() => new SbNop();
+
+            public virtual SbNode OnConversation()
             {
-                var kind = rng.NextOf(ItemAttribute.Ammo, ItemAttribute.Heal, ItemAttribute.InkRibbon);
-                if (kind == ItemAttribute.Ammo)
+                return
+                    new SbLockPlot(
+                        new SbIf(ConverseFlag, true,
+                            OnQuickConversation())
+                        .Else(
+                            OnFullConversation(),
+                            new SbSetFlag(ConverseFlag),
+                            new SbSleep(2 * 30)));
+            }
+
+            public virtual SbNode OnFullConversation()
+            {
+                var builder = PlotBuilder;
+                SbNode result = new SbMuteMusic(
+                    new SbCommentNode("[action] conversation",
+                        new SbSleep(60),
+                        builder.Conversation(2, 4, Participants, Participants),
+                        OnAfterChat(),
+                        new SbSleep(60)));
+                if (Cut is int cut)
                 {
-                    if (config.Player == 0)
+                    result = new SbCut(cut, result);
+                }
+                return
+                    new SbFreezeAllEnemies(
+                        new SbCutsceneBars(
+                            result));
+            }
+
+            public virtual SbNode OnQuickConversation()
+            {
+                return
+                    new SbFreezeAllEnemies(
+                        new SbCutsceneBars(
+                            PlotBuilder.Voice(Participants, new[] { Ally })));
+            }
+
+            public virtual SbNode OnAfterChat() => new SbNop();
+        }
+
+        private class ChatSubPlot : SubPlot
+        {
+        }
+
+        private class HelpSubPlot : SubPlot
+        {
+            public override SbNode OnAfterChat()
+            {
+                var builder = PlotBuilder;
+                var msg = builder.AllocateMessage($"Will you help {PrettyActorName(Ally.Actor)}?@");
+                var msg2 = builder.AllocateMessage($"You helped {PrettyActorName(Ally.Actor)}.");
+                return new SbCommentNode("[action] question",
+                    new SbMessage(msg,
+                        new SbContainerNode(
+                            new SbMessage(msg2),
+                            builder.Voice(Participants, new[] { Ally })),
+                        builder.Voice(Participants, new[] { Ally }, "doom")));
+            }
+        }
+
+        private class ItemGiftSubPlot : SubPlot
+        {
+            private CsItem? _item;
+
+            public CsItem GetOrCreateItem()
+            {
+                _item ??= GetRandomItem();
+                return _item;
+            }
+
+            public override SbNode OnInit()
+            {
+                var item = GetOrCreateItem();
+                return new SbContainerNode(
+                    new SbItem(item),
+                    new SbSetFlag(new CsFlag(CutsceneBuilder.FG_ITEM, 255), false));
+            }
+
+            public override SbNode OnAfterChat()
+            {
+                var builder = PlotBuilder;
+                var item = GetOrCreateItem();
+                var itemHelper = new Re2ItemHelper();
+                return new SbContainerNode(
+                    builder.Voice(Participants, new[] { Ally }, "item"),
+                    new SbCommentNode($"[action] gift {{ {itemHelper.GetItemName(item.Item.Type)} x{item.Item.Amount} }}",
+                        new SbAotOn(item)),
+                    builder.Conversation(0, 2, Participants, Participants));
+            }
+
+            private CsItem GetRandomItem()
+            {
+                var builder = PlotBuilder;
+                var rng = builder.Rng;
+                var amount = 1;
+                var config = builder.Config;
+                var itemHelper = new Re2ItemHelper();
+                var itemRando = builder.ItemRandomiser;
+                byte type;
+                if (itemRando == null)
+                {
+                    var kind = rng.NextOf(ItemAttribute.Ammo, ItemAttribute.Heal, ItemAttribute.InkRibbon);
+                    if (kind == ItemAttribute.Ammo)
+                    {
+                        if (config.Player == 0)
+                        {
+                            type = rng.NextOf(
+                                Re2ItemIds.HandgunAmmo,
+                                Re2ItemIds.ShotgunAmmo,
+                                Re2ItemIds.MagnumAmmo);
+                        }
+                        else
+                        {
+                            type = rng.NextOf(
+                                Re2ItemIds.HandgunAmmo,
+                                Re2ItemIds.BowgunAmmo,
+                                Re2ItemIds.GrenadeLauncherAcid,
+                                Re2ItemIds.GrenadeLauncherExplosive,
+                                Re2ItemIds.GrenadeLauncherFlame);
+                        }
+                        var capacity = itemHelper.GetMaxAmmoForAmmoType(type);
+                        amount = rng.Next(capacity / 2, capacity);
+                    }
+                    else if (kind == ItemAttribute.Heal)
                     {
                         type = rng.NextOf(
-                            Re2ItemIds.HandgunAmmo,
-                            Re2ItemIds.ShotgunAmmo,
-                            Re2ItemIds.MagnumAmmo);
+                            Re2ItemIds.HerbGRB,
+                            Re2ItemIds.FAidSpray);
                     }
                     else
                     {
-                        type = rng.NextOf(
-                            Re2ItemIds.HandgunAmmo,
-                            Re2ItemIds.BowgunAmmo,
-                            Re2ItemIds.GrenadeLauncherAcid,
-                            Re2ItemIds.GrenadeLauncherExplosive,
-                            Re2ItemIds.GrenadeLauncherFlame);
+                        type = Re2ItemIds.InkRibbon;
+                        amount = rng.Next(3, 6);
                     }
-                    var capacity = itemHelper.GetMaxAmmoForAmmoType(type);
-                    amount = rng.Next(capacity / 2, capacity);
-                }
-                else if (kind == ItemAttribute.Heal)
-                {
-                    type = rng.NextOf(
-                        Re2ItemIds.HerbGRB,
-                        Re2ItemIds.FAidSpray);
                 }
                 else
                 {
-                    type = Re2ItemIds.InkRibbon;
-                    amount = rng.Next(3, 6);
+                    var item = itemRando.GetRandomGift(rng);
+                    type = item.Type;
+                    amount = item.Amount;
                 }
-            }
-            else
-            {
-                var item = itemRando.GetRandomGift(rng);
-                type = item.Type;
-                amount = item.Amount;
-            }
 
-            return builder.AllocateItem(new Item(type, (byte)amount));
+                return builder.AllocateItem(new Item(type, (byte)amount));
+            }
+        }
+
+        private class TradeSubPlot : SubPlot
+        {
+            public override bool CanExit => false;
+
+            public override SbNode OnQuickConversation() => OnAfterChat();
+
+            public override SbNode OnAfterChat()
+            {
+                var builder = PlotBuilder;
+                var msg0 = builder.AllocateMessage("Will trade {herb} for {ink}.");
+                var msg1 = builder.AllocateMessage("Trade {ink} for {herb}?@");
+                return
+                    new SbIf(new SbCkItem(Re2ItemIds.InkRibbon),
+                        new SbCommentNode("[action] question - trade",
+                            new SbMessage(msg1,
+                                new SbContainerNode(
+                                    new SbRemoveItem(Re2ItemIds.InkRibbon),
+                                    new SbGetItem(Re2ItemIds.HerbG, 1)))))
+                    .Else(
+                        new SbCommentNode("[action] message - trade",
+                            new SbMessage(msg0)));
+            }
+        }
+
+        private class CurePoisonSubPlot : SubPlot
+        {
+            public override bool CanExit => false;
+
+            public override SbNode OnQuickConversation() => OnAfterChat();
+
+            public override SbNode OnAfterChat()
+            {
+                var builder = PlotBuilder;
+                var msg0 = builder.AllocateMessage("I can treat poison wounds.");
+                var msg1 = builder.AllocateMessage("You poisoned wounds\nhave been treated.");
+                return
+                    new SbIf(new SbCkPoison(),
+                        new SbCommentNode("[action] heal player (poison)",
+                            new SbHealPoison(),
+                            new SbMessage(msg1)))
+                    .Else(
+                        new SbCommentNode("[action] message - poison",
+                            new SbMessage(msg0)));
+            }
+        }
+
+        private class CureSubPlot : SubPlot
+        {
+            public override bool CanExit => false;
+
+            public override SbNode OnQuickConversation() => OnAfterChat();
+
+            public override SbNode OnAfterChat()
+            {
+                var builder = PlotBuilder;
+                var msg0 = builder.AllocateMessage("Would you like me to treat\nyour wounds?@");
+                var msg1 = builder.AllocateMessage("Your wounds have been\ntreated.");
+                return
+                    new SbCommentNode("[action] question - heal",
+                        new SbMessage(msg0,
+                            new SbCommentNode("[action] heal player",
+                                new SbHeal(),
+                                new SbMessage(msg1))));
+            }
         }
     }
 }

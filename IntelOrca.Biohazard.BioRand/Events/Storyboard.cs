@@ -782,6 +782,34 @@ namespace IntelOrca.Biohazard.BioRand.Events
         }
     }
 
+    internal class SbCkItem : ISbCondition
+    {
+        private readonly byte _item;
+
+        public int Size => 2;
+
+        public SbCkItem(byte item)
+        {
+            _item = item;
+        }
+
+        public void Build(CutsceneBuilder builder)
+        {
+            builder.AppendLine("keep_item_ck", _item);
+        }
+    }
+
+    internal class SbCkPoison : ISbCondition
+    {
+        public int Size => 2;
+
+        public void Build(CutsceneBuilder builder)
+        {
+            builder.AppendLine("poison_ck");
+            builder.AppendLine("nop");
+        }
+    }
+
     internal class SbCmp : ISbCondition
     {
         private readonly int _variable;
@@ -1034,6 +1062,102 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public override void Build(CutsceneBuilder builder)
         {
             builder.Item(Item.GlobalId, Item.Id, Item.Item.Type, Item.Item.Amount);
+        }
+    }
+
+    internal class SbMessage : SbNode
+    {
+        private readonly CsMessage _message;
+        private readonly SbNode[] _options;
+
+        public SbMessage(CsMessage message, params SbNode[] options)
+        {
+            _message = message;
+            _options = options;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.AppendLine("message_on", 0, _message.Id, 0, 255, 255);
+            builder.AppendLine("evt_next");
+            builder.AppendLine("nop");
+
+            if (_options.Length >= 1)
+            {
+                builder.BeginIf();
+                builder.AppendLine("ck", "FG_MESSAGE", "F_QUESTION", 0);
+                _options[0].Build(builder);
+                if (_options.Length >= 2)
+                {
+                    builder.Else();
+                    _options[1].Build(builder);
+                }
+                builder.EndIf();
+            }
+        }
+    }
+
+    internal class SbRemoveItem : SbNode
+    {
+        private readonly byte _item;
+        private readonly byte _count;
+
+        public SbRemoveItem(byte item, byte count = 1)
+        {
+            _item = item;
+            _count = count;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.AppendLine("sce_item_ck_lost", _item, _count);
+        }
+    }
+
+    internal class SbGetItem : SbNode
+    {
+        private readonly byte _item;
+        private readonly byte _count;
+
+        public SbGetItem(byte item, byte count)
+        {
+            _item = item;
+            _count = count;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.AppendLine("sce_item_get", _item, _count);
+        }
+    }
+
+    internal class SbHeal : SbNode
+    {
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.AppendLine("heal");
+            builder.AppendLine("nop");
+        }
+    }
+
+    internal class SbHealPoison : SbNode
+    {
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.AppendLine("poison_clr");
+            builder.AppendLine("nop");
+        }
+    }
+
+    internal class CsMessage
+    {
+        public int Id { get; set; }
+        public string Message { get; set; }
+
+        public CsMessage(int id, string message)
+        {
+            Id = id;
+            Message = message;
         }
     }
 }
