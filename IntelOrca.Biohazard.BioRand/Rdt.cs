@@ -413,11 +413,13 @@ namespace IntelOrca.Biohazard.BioRand
             if (insertIndex == -1)
                 throw new Exception("Unable to insert custom script");
 
+            var insertIndexEarly = FindNextLine(disassembly, insertIndex);
+
             var nextProc = disassembly.IndexOf(".proc", insertIndex + 1);
             var endOfFirstProc = disassembly.LastIndexOf("evt_end", nextProc);
-
-            insertIndex = FindStartOfLine(disassembly, endOfFirstProc);
-            disassembly = disassembly.Insert(insertIndex, "    gosub                   biorand_custom\n");
+            var insertIndexLate = FindStartOfLine(disassembly, endOfFirstProc);
+            disassembly = disassembly.Insert(insertIndexLate, "    gosub                   biorand_custom_late\n");
+            disassembly = disassembly.Insert(insertIndexEarly, "    gosub                   biorand_custom_early\n");
 
             var scdAssembler = new ScdAssembler();
             var includer = new StringFileIncluder("custom.s", disassembly);

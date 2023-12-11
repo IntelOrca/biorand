@@ -9,10 +9,12 @@ namespace IntelOrca.Biohazard.BioRand.Events
     internal class CsPlot
     {
         public SbProcedure Root { get; }
+        public bool EndOfScript { get; }
 
-        public CsPlot(SbProcedure root)
+        public CsPlot(SbProcedure root, bool endOfScript = false)
         {
             Root = root;
+            EndOfScript = endOfScript;
         }
     }
 

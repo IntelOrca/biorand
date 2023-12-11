@@ -37,7 +37,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                     new SbSleep(4 * 30))));
 
             var init = new SbProcedure(
-                new SbCommentNode($"[plot] {enemies.Length} enemies walk in",
+                new SbCommentNode($"[plot] {enemies.Length} enemies walk in {{ flag {plotFlag.Flag} }}",
                     new SbIf(plotFlag, false,
                         new SbContainerNode(
                             enemies.Select(e =>
@@ -51,7 +51,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                             enemies.Select(e => new SbEnemy(e,
                                 pose: GetEnterDefaultPose(builder, e))).ToArray()))));
 
-            return new CsPlot(init);
+            return new CsPlot(init, endOfScript: true);
         }
 
         private static REPosition GetEntryPosition(PlotBuilder builder, PointOfInterest door)

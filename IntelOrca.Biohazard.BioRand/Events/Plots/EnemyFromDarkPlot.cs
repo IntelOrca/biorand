@@ -26,7 +26,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                                         new SbSetEntityEnabled(x, true))).ToArray())))));
 
             var init = new SbProcedure(
-                new SbCommentNode($"[plot] {enemies.Length} enemies from darkness",
+                new SbCommentNode($"[plot] {enemies.Length} enemies from darkness {{ flag {plotFlag.Flag} }}",
                     new SbIf(plotFlag, false,
                         new SbContainerNode(
                             enemies.Select(x => new SbEnemy(x, REPosition.OutOfBounds, enabled: false)).ToArray()),
@@ -35,7 +35,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                         new SbContainerNode(
                             enemies.Select(x => new SbEnemy(x)).ToArray()))));
 
-            return new CsPlot(init);
+            return new CsPlot(init, endOfScript: true);
         }
 
         private static SbNode CreateFlicker(params SbNode[] children)

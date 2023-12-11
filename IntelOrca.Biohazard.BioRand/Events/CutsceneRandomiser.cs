@@ -236,15 +236,30 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 LogPlot(plot);
             }
 
-            var entryProc = new SbProcedure("biorand_custom",
-                plots
-                    .Select(x => new SbCall(x.Root))
-                    .ToArray());
-            entryProc.Build(cb);
+            rdt.CustomAdditionalScript = BuildCustomScript(cb, plotBuilder, plots);
+        }
 
+        private string BuildCustomScript(CutsceneBuilder cb, PlotBuilder plotBuilder, List<CsPlot> plots)
+        {
+            // Ally plots should be first
+            // Enemy plots should be last
+            // This is because the game can crash if enemies preceed allies
+            // in the SCD
+            var earlyPlots = plots
+                .Where(x => !x.EndOfScript)
+                .Select(x => new SbCall(x.Root))
+                .ToArray();
+            var latePlots = plots
+                .Where(x => x.EndOfScript)
+                .Select(x => new SbCall(x.Root))
+                .ToArray();
+
+            var earlyProc = new SbProcedure("biorand_custom_early", earlyPlots);
+            var lateProc = new SbProcedure("biorand_custom_late", latePlots);
             plotBuilder.BuildHelpers(cb);
-
-            rdt.CustomAdditionalScript = cb.ToString();
+            earlyProc.Build(cb);
+            lateProc.Build(cb);
+            return cb.ToString();
         }
 
         private SbProcedure[] GetAllProcedures(SbNode node)

@@ -26,7 +26,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                                 new SbSetEntityEnabled(x, true))).ToArray())));
 
             var init = new SbProcedure(
-                new SbCommentNode($"[plot] {enemies.Length} sleeping enemies wake up",
+                new SbCommentNode($"[plot] {enemies.Length} sleeping enemies wake up {{ flag {plotFlag.Flag} }}",
                     new SbIf(plotFlag, false,
                         new SbContainerNode(
                             enemies.Select(e =>
@@ -41,7 +41,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                             enemies.Select(x => new SbEnemy(x,
                                 pose: builder.Rng.NextOf(POSE_ZOMBIE_WAIT, POSE_ZOMBIE_FOLLOW))).ToArray()))));
 
-            return new CsPlot(init);
+            return new CsPlot(init, endOfScript: true);
         }
     }
 }

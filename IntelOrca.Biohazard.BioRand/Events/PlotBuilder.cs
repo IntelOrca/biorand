@@ -251,7 +251,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public SbNode CreateTrigger(
             int[]? notCuts = null,
-            int minSleepTime = 0,
+            int minSleepTime = 3,
             int maxSleepTime = 20)
         {
             int? triggerTime = null;
@@ -273,9 +273,13 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 }
             }
 
-            if (triggerCut == null && Rng.NextProbability(50))
+            if (triggerCut == null || Rng.NextProbability(50))
             {
                 triggerTime = Rng.Next(minSleepTime, maxSleepTime) * 30;
+            }
+            else
+            {
+                triggerTime = minSleepTime * 30;
             }
 
             var result = new List<SbNode>();
@@ -299,11 +303,24 @@ namespace IntelOrca.Biohazard.BioRand.Events
             var enemyCondition = GetEnemyWaitCondition();
             if (enemyCondition != null)
             {
-                result.Add(new SbWaitUnlessAny(enemyCondition));
+                result.Add(
+                    new SbCommentNode($"[trigger] wait for {_enemyCondition!.Expression}",
+                        new SbWaitUnlessAny(enemyCondition)));
             }
             result.Add(new SbWaitIfAny(conditions.ToArray()));
 
             return new SbContainerNode(result.ToArray());
+        }
+
+        public SbNode CreateEnemyConditionGuard(params SbNode[] children)
+        {
+            var enemyCondition = GetEnemyWaitCondition();
+            if (enemyCondition != null)
+            {
+                return new SbCommentNode($"[trigger] wait for {_enemyCondition!.Expression}",
+                    new SbIf(enemyCondition, children));
+            }
+            return new SbContainerNode(children);
         }
 
         public ISbCondition? GetEnemyWaitCondition()
