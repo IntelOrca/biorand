@@ -4060,6 +4060,14 @@
         },
         {
           "excludeTypes": [ 40 ],
+          "doorRando": false,
+          "scenario": 1,
+          "player": 1
+        },
+        {
+          "condition": "3:67",
+          "excludeTypes": [ 40 ],
+          "doorRando": true,
           "scenario": 1,
           "player": 1
         }
