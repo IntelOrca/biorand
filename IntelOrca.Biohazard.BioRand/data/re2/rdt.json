@@ -1122,6 +1122,11 @@
           "id": 3,
           "requires": [ 47 ]
         }
+      ],
+      "enemies": [
+        {
+          "excludeTypes": [ 58 ]
+        }
       ]
     },
     "207": {
@@ -3819,7 +3824,7 @@
       ],
       "enemies": [
         {
-          "excludeTypes": [ 40 ]
+          "excludeTypes": [ 40, 58 ]
         }
       ]
     },
