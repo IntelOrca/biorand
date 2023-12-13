@@ -228,6 +228,12 @@ namespace IntelOrca.Biohazard.BioRand.Events
             AppendLine("plc_neck", 5, 1, 0, 0, speed, speed);
         }
 
+        public void SetEnemyNeck(int id, int speed, int x, int y)
+        {
+            WorkOnEnemy(id);
+            AppendLine("plc_neck", 2, 0, x, y, speed, speed);
+        }
+
         public void WorkOnEnemy(int id)
         {
             if (id == -1)

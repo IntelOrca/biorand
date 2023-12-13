@@ -20,9 +20,9 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
     internal class CsEntity
     {
-        public byte Id { get; set; }
+        public int Id { get; set; }
 
-        public CsEntity(byte id)
+        public CsEntity(int id)
         {
             Id = id;
         }
@@ -47,12 +47,13 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
     internal interface ICsHero
     {
+        int Id { get; }
         string Actor { get; }
     }
 
     internal class CsAlly : CsEntity, ICsHero
     {
-        public byte Type { get; }
+        public int Type { get; }
         public string Actor { get; }
 
         public CsAlly(byte id, byte type, string actor)
@@ -65,6 +66,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
     internal class CsPlayer : ICsHero
     {
+        public int Id => -1;
         public string Actor { get; }
 
         public CsPlayer(string actor)
@@ -409,7 +411,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public override void Build(CutsceneBuilder builder)
         {
-            builder.Ally(Ally.Id, Ally.Type, Position);
+            builder.Ally(Ally.Id, (byte)Ally.Type, Position);
         }
     }
 
@@ -436,7 +438,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public override void Build(CutsceneBuilder builder)
         {
             var opcode = new SceEmSetOpcode();
-            opcode.Id = _enemy.Id;
+            opcode.Id = (byte)_enemy.Id;
             opcode.Ai = (byte)(_enabled ? 0 : 128);
             opcode.X = (short)_position.X;
             opcode.Y = (short)_position.Y;
@@ -493,18 +495,69 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
     internal class SbSetEntityNeck : SbNode
     {
-        public CsEntity Entity { get; }
+        public ICsHero Entity { get; }
         public int Speed { get; }
+        public int? X { get; }
+        public int? Y { get; }
 
-        public SbSetEntityNeck(CsEntity entity, int speed)
+        public SbSetEntityNeck(ICsHero entity, int speed)
         {
             Entity = entity;
             Speed = speed;
         }
 
+        public SbSetEntityNeck(ICsHero entity, int speed, int x, int y)
+        {
+            Entity = entity;
+            Speed = speed;
+            X = x;
+            Y = y;
+        }
+
         public override void Build(CutsceneBuilder builder)
         {
-            builder.SetEnemyNeck(Entity.Id, Speed);
+            if (X == null || Y == null)
+            {
+                builder.SetEnemyNeck(Entity.Id, Speed);
+            }
+            else
+            {
+                builder.SetEnemyNeck(Entity.Id, Speed, X.Value, Y.Value);
+            }
+        }
+    }
+
+    internal class SbReleaseEntity : SbNode
+    {
+        public ICsHero Entity { get; }
+
+        public SbReleaseEntity(ICsHero entity)
+        {
+            Entity = entity;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.WorkOnEnemy(Entity.Id);
+            builder.AppendLine("plc_ret");
+            builder.AppendLine("nop");
+        }
+    }
+
+    internal class SbStopEntity : SbNode
+    {
+        public ICsHero Entity { get; }
+
+        public SbStopEntity(ICsHero entity)
+        {
+            Entity = entity;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.WorkOnEnemy(Entity.Id);
+            builder.AppendLine("plc_stop");
+            builder.AppendLine("nop");
         }
     }
 
@@ -983,18 +1036,29 @@ namespace IntelOrca.Biohazard.BioRand.Events
         }
     }
 
-    internal class SbFork : SbNode, ISbSubProcedure
+    internal class SbFork : SbContainerNode, ISbSubProcedure
     {
         public SbProcedure Procedure { get; }
 
-        public SbFork(SbProcedure procedure)
+        public SbFork(SbProcedure procedure, params SbNode[] children)
+            : base(children)
         {
             Procedure = procedure;
         }
 
         public override void Build(CutsceneBuilder builder)
         {
-            builder.CallThread(Procedure.Name);
+            var children = Children;
+            if (children.Any())
+            {
+                builder.AppendLine("evt_exec", 9, "I_GOSUB", Procedure.Name);
+                base.Build(builder);
+                builder.AppendLine("evt_kill", 9);
+            }
+            else
+            {
+                builder.AppendLine("evt_exec", 255, "I_GOSUB", Procedure.Name);
+            }
         }
     }
 
@@ -1148,6 +1212,28 @@ namespace IntelOrca.Biohazard.BioRand.Events
         {
             builder.AppendLine("poison_clr");
             builder.AppendLine("nop");
+        }
+    }
+
+    internal class SbMotion : SbNode
+    {
+        public ICsHero Entity { get; }
+        public int A { get; set; }
+        public int B { get; set; }
+        public int C { get; set; }
+
+        public SbMotion(ICsHero entity, int a, int b, int c)
+        {
+            Entity = entity;
+            A = a;
+            B = b;
+            C = c;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.WorkOnEnemy(Entity.Id);
+            builder.AppendLine("plc_motion", A, B, C);
         }
     }
 
