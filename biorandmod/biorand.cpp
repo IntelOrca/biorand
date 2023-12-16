@@ -8,6 +8,7 @@
 
 static WCHAR _dataPath[4096];
 static FILETIME _lastDataTimestamp;
+static void* _largeWorkArea;
 
 static bool ReadFileData(HANDLE hFile, void* address, size_t size)
 {
@@ -139,6 +140,12 @@ static void RE2_HookLoadGame()
 		{
 		}
 	}
+
+	// When a stage is loaded, it sets up a work buffer that is used for room storage and operations
+	// This is tiny from PSX days, but we can make it much larger to reduce chance of crashes when
+	// we pack rooms full of stuff like enemies and NPCs
+	_largeWorkArea = malloc(16 * 1024 * 1024);
+	WriteProcessMemory(GetCurrentProcess(), (LPVOID)(0x4DEF10), &_largeWorkArea, sizeof(_largeWorkArea), NULL);
 }
 
 static void ModMain(HMODULE hExecutable)
