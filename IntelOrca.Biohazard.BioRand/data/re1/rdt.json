@@ -42,6 +42,7 @@
       ],
       "enemies": [
         {
+          "condition": "1:34",
           "excludeTypes": [ 4 ],
           "restricted": true,
           "maxDifficulty": 0,
