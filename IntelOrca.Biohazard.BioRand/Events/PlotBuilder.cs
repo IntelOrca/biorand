@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using IntelOrca.Biohazard.BioRand.RE2;
 using IntelOrca.Biohazard.Room;
 
@@ -131,22 +132,56 @@ namespace IntelOrca.Biohazard.BioRand.Events
             return new CsAot(id);
         }
 
-        internal CsMessage AllocateMessage(string message)
+        internal CsMessage AllocateMessage(string message, bool autoBreak = true)
         {
+            var enMessage = autoBreak ? AutoBreak(message, 25) : message;
+            var jaMessage = autoBreak ? AutoBreak(message, 16) : message;
+
             var builder = ((Rdt2)_rdt.RdtFile).ToBuilder();
 
             var en = builder.MSGEN.ToBuilder();
             var id = en.Messages.Count;
-            en.Messages.Add(new Msg(BioVersion.Biohazard2, MsgLanguage.English, message));
+            en.Messages.Add(new Msg(BioVersion.Biohazard2, MsgLanguage.English, enMessage));
             builder.MSGEN = en.ToMsgList();
 
             var ja = builder.MSGJA.ToBuilder();
-            ja.Messages.Add(new Msg(BioVersion.Biohazard2, MsgLanguage.Japanese, message));
+            ja.Messages.Add(new Msg(BioVersion.Biohazard2, MsgLanguage.Japanese, jaMessage));
             builder.MSGJA = ja.ToMsgList();
 
             _rdt.RdtFile = builder.ToRdt();
 
             return new CsMessage(id, message);
+        }
+
+        private static string AutoBreak(string s, int maxLineLength)
+        {
+            var words = s.Split(' ');
+            var sb = new StringBuilder();
+            var lineLength = 0;
+            var lines = 0;
+            foreach (var word in words)
+            {
+                if (lineLength + word.Length > maxLineLength)
+                {
+                    if (lines % 2 == 1)
+                    {
+                        sb.Append('#');
+                    }
+                    else
+                    {
+                        sb.Append('\n');
+                    }
+                    lines++;
+                    lineLength = 0;
+                }
+                if (lineLength != 0)
+                {
+                    sb.Append(' ');
+                }
+                sb.Append(word);
+                lineLength += word.Length;
+            }
+            return sb.ToString();
         }
 
         public CsEnemy[] GetEnemies()
@@ -170,8 +205,24 @@ namespace IntelOrca.Biohazard.BioRand.Events
             return count;
         }
 
+        public SbNode SoundEffect(string? kind = null)
+        {
+            if (_voiceRandomiser == null)
+            {
+                return new SbNop();
+            }
+            else
+            {
+                var participantsActors = new string[0];
+                var speakerActors = new string[0];
+                var result = _voiceRandomiser.AllocateConversation(Rng, _rdt.RdtId, 1, speakerActors, participantsActors, kind);
+                return new SbContainerNode(
+                    new SbVoice(result[0], true));
+            }
+        }
+
         public SbNode Voice(ICsHero[] participants, string? kind = null) => Voice(participants, participants, kind);
-        public SbNode Voice(ICsHero[] participants, ICsHero[] speakers, string? kind = null)
+        public SbNode Voice(ICsHero[] participants, ICsHero[] speakers, string? kind = null, bool trailingSilence = true)
         {
             if (_voiceRandomiser == null)
             {
@@ -184,7 +235,8 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 var result = _voiceRandomiser.AllocateConversation(Rng, _rdt.RdtId, 1, speakerActors, participantsActors, kind);
                 return new SbContainerNode(
                     new SbVoice(result[0]),
-                    new SbSleep(Rng.Next(5, 30)));
+                    SbNode.Conditional(trailingSilence,
+                        () => new SbSleep(Rng.Next(5, 30))));
             }
         }
 
@@ -252,24 +304,19 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public SbNode CreateTrigger(
             int[]? notCuts = null,
             int minSleepTime = 3,
-            int maxSleepTime = 20)
+            int maxSleepTime = 20,
+            bool allowCutTrigger = true)
         {
             int? triggerTime = null;
             int? triggerCut = null;
 
-            var triggerPoi = PoiGraph.GetRandomPoi(Rng, x => x.HasTag(PoiKind.Trigger) && notCuts?.Contains(x.Cut) != true);
-            if (triggerPoi != null)
+            // Use a trigger cut if we can't show event in all cuts
+            if (allowCutTrigger && (notCuts?.Any() == true || Rng.NextProbability(75)))
             {
-                triggerCut = triggerPoi.Cut;
-
-                // If event can be shown in any cut,
-                // we don't always need a trigger cut
-                if (notCuts?.Any() != true)
+                var triggerPoi = PoiGraph.GetRandomPoi(Rng, x => x.HasTag(PoiKind.Trigger) && notCuts?.Contains(x.Cut) != true);
+                if (triggerPoi != null)
                 {
-                    if (Rng.NextProbability(75))
-                    {
-                        triggerCut = null;
-                    }
+                    triggerCut = triggerPoi.Cut;
                 }
             }
 
@@ -283,7 +330,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             }
 
             var result = new List<SbNode>();
-            if (triggerTime != null)
+            if (triggerTime != null && triggerTime != 0)
             {
                 result.Add(new SbCommentNode($"[trigger] wait {triggerTime / 30} seconds",
                     new SbSleep(triggerTime.Value)));
@@ -292,13 +339,20 @@ namespace IntelOrca.Biohazard.BioRand.Events
             var conditions = new List<ISbCondition>();
             if (triggerCut != null)
             {
-                result.Add(new SbCommentNode($"[trigger] wait for cut {triggerCut.Value}"));
+                result.Add(new SbCommentNode($"[trigger] wait for cut to be {triggerCut.Value}"));
                 conditions.Add(new SbCmpCut(triggerCut.Value, false));
             }
 
             conditions.Add(new SbCk(new ReFlag(CutsceneBuilder.FG_STATUS, 27), true));
             conditions.Add(new SbCk(new ReFlag(CutsceneBuilder.FG_STOP, 7), true));
             conditions.Add(new SbCk(GetPlotLockFlag().Flag, true));
+            if (notCuts?.Any() == true)
+            {
+                foreach (var cut in notCuts)
+                {
+                    conditions.Add(new SbCmpCut(cut));
+                }
+            }
 
             var enemyCondition = GetEnemyWaitCondition();
             if (enemyCondition != null)

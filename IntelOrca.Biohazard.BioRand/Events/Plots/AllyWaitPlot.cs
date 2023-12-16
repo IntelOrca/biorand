@@ -133,27 +133,17 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
             return new CsPlot(initProcedure);
         }
 
-        private static string PrettyActorName(string s)
-        {
-            var dot = s.IndexOf('.');
-            if (dot != -1)
-            {
-                s = s.Substring(0, dot);
-            }
-            return s.ToTitle();
-        }
-
         private class SubPlot
         {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
             public PlotBuilder PlotBuilder { get; set; }
-            public ICsHero Player { get; set; }
-            public ICsHero Ally { get; set; }
+            public CsPlayer Player { get; set; }
+            public CsAlly Ally { get; set; }
             public int? Cut { get; set; }
             public CsFlag ConverseFlag { get; set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
-            public ICsHero[] Participants => new[] { Player, Ally };
+            public ICsHero[] Participants => new ICsHero[] { Player, Ally };
             public virtual bool CanExit => true;
 
             public virtual SbNode OnInit() => new SbNop();
@@ -209,8 +199,8 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
             public override SbNode OnAfterChat()
             {
                 var builder = PlotBuilder;
-                var msg = builder.AllocateMessage($"Will you help {PrettyActorName(Ally.Actor)}?@");
-                var msg2 = builder.AllocateMessage($"You helped {PrettyActorName(Ally.Actor)}.");
+                var msg = builder.AllocateMessage($"Will you help {Ally.DisplayName}?@");
+                var msg2 = builder.AllocateMessage($"You helped {Ally.DisplayName}.");
                 return new SbCommentNode("[action] question",
                     new SbMessage(msg,
                         new SbContainerNode(
@@ -340,7 +330,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
             {
                 var builder = PlotBuilder;
                 var msg0 = builder.AllocateMessage("I can treat poison wounds.");
-                var msg1 = builder.AllocateMessage("You poisoned wounds\nhave been treated.");
+                var msg1 = builder.AllocateMessage("You poisoned wounds have been treated.");
                 return
                     new SbIf(new SbCkPoison(),
                         new SbCommentNode("[action] heal player (poison)",
@@ -361,8 +351,8 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
             public override SbNode OnAfterChat()
             {
                 var builder = PlotBuilder;
-                var msg0 = builder.AllocateMessage("Would you like me to treat\nyour wounds?@");
-                var msg1 = builder.AllocateMessage("Your wounds have been\ntreated.");
+                var msg0 = builder.AllocateMessage("Would you like me to treat your wounds?@");
+                var msg1 = builder.AllocateMessage("Your wounds have been treated.");
                 return
                     new SbCommentNode("[action] question - heal",
                         new SbMessage(msg0,

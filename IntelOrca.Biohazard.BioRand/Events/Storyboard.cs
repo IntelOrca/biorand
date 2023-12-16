@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 using IntelOrca.Biohazard.Script.Opcodes;
@@ -61,6 +62,20 @@ namespace IntelOrca.Biohazard.BioRand.Events
         {
             Type = type;
             Actor = actor;
+        }
+
+        public string DisplayName
+        {
+            get
+            {
+                var s = Actor;
+                var dot = s.IndexOf('.');
+                if (dot != -1)
+                {
+                    s = s.Substring(0, dot);
+                }
+                return s.ToTitle();
+            }
         }
     }
 
@@ -1004,15 +1019,20 @@ namespace IntelOrca.Biohazard.BioRand.Events
     internal class SbVoice : SbNode
     {
         public int Value { get; }
+        public bool Async { get; }
 
-        public SbVoice(int value)
+        public SbVoice(int value, bool async = false)
         {
             Value = value;
+            Async = async;
         }
 
         public override void Build(CutsceneBuilder builder)
         {
-            builder.PlayVoice(Value);
+            if (Async)
+                builder.PlayVoiceAsync(Value);
+            else
+                builder.PlayVoice(Value);
         }
     }
 
@@ -1218,22 +1238,66 @@ namespace IntelOrca.Biohazard.BioRand.Events
     internal class SbMotion : SbNode
     {
         public ICsHero Entity { get; }
-        public int A { get; set; }
-        public int B { get; set; }
-        public int C { get; set; }
+        public int Group { get; set; }
+        public int Animation { get; set; }
+        public int Flags { get; set; }
 
-        public SbMotion(ICsHero entity, int a, int b, int c)
+        public SbMotion(ICsHero entity, int group, int animation, int flags)
         {
             Entity = entity;
-            A = a;
-            B = b;
-            C = c;
+            Group = group;
+            Animation = animation;
+            Flags = flags;
         }
 
         public override void Build(CutsceneBuilder builder)
         {
             builder.WorkOnEnemy(Entity.Id);
-            builder.AppendLine("plc_motion", A, B, C);
+            builder.AppendLine("plc_motion", Group, Animation, Flags);
+        }
+    }
+
+    internal class SbKageSet : SbNode
+    {
+        public CsEntity Entity { get; }
+        public Color Colour { get; }
+        public int Size { get; set; }
+
+        public SbKageSet(CsEntity entity, Color colour, int size)
+        {
+            Entity = entity;
+            Colour = colour;
+            Size = size;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.AppendLine(
+                "kage_set",
+                3,
+                Entity.Id,
+                255 - Colour.R,
+                255 - Colour.G,
+                255 - Colour.B,
+                Size,
+                Size,
+                0,
+                0);
+        }
+    }
+
+    internal class SbCustom : SbNode
+    {
+        public Action<CutsceneBuilder> Builder { get; }
+
+        public SbCustom(Action<CutsceneBuilder> builder)
+        {
+            Builder = builder;
+        }
+
+        public override void Build(CutsceneBuilder builder)
+        {
+            Builder?.Invoke(builder);
         }
     }
 

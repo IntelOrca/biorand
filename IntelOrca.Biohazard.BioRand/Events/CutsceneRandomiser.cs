@@ -170,7 +170,35 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 maximumEnemyCount);
 
             var plots = new List<CsPlot>();
-            if (rng.NextProbability(50))
+            AddAllyPlots(rng, plotBuilder, plots);
+            AddEnemyPlots(rdt, rng, maximumEnemyCount, enemyHelper, enemyType, plotBuilder, plots);
+
+            foreach (var plot in plots)
+            {
+                var procedures = GetAllProcedures(plot.Root);
+                foreach (var proc in procedures)
+                {
+                    proc.Build(cb);
+                }
+                LogPlot(plot);
+            }
+
+            rdt.CustomAdditionalScript = BuildCustomScript(cb, plotBuilder, plots);
+        }
+
+        private void TestPlot<T>(RandomizedRdt rdt, PlotBuilder plotBuilder, List<CsPlot> plots) where T : IPlot
+        {
+            ChainRandomPlot<T>(plots, plotBuilder);
+            _enemyRandomiser!.ChosenEnemies.Remove(rdt);
+        }
+
+        private void AddAllyPlots(Rng rng, PlotBuilder plotBuilder, List<CsPlot> plots)
+        {
+            if (rng.NextProbability(20))
+            {
+                ChainRandomPlot<MurderPlot>(plots, plotBuilder);
+            }
+            else if (rng.NextProbability(50))
             {
                 ChainRandomPlot<AllyWaitPlot>(plots, plotBuilder);
             }
@@ -186,6 +214,10 @@ namespace IntelOrca.Biohazard.BioRand.Events
             {
                 ChainRandomPlot<AnnouncerPlot>(plots, plotBuilder);
             }
+        }
+
+        private void AddEnemyPlots(RandomizedRdt rdt, Rng rng, int maximumEnemyCount, IEnemyHelper? enemyHelper, byte? enemyType, PlotBuilder plotBuilder, List<CsPlot> plots)
+        {
             if (enemyType != null)
             {
                 if (enemyType != Re2EnemyIds.ZombieArms &&
@@ -229,18 +261,6 @@ namespace IntelOrca.Biohazard.BioRand.Events
             {
                 _logger.WriteLine($"  (no enemies defined)");
             }
-
-            foreach (var plot in plots)
-            {
-                var procedures = GetAllProcedures(plot.Root);
-                foreach (var proc in procedures)
-                {
-                    proc.Build(cb);
-                }
-                LogPlot(plot);
-            }
-
-            rdt.CustomAdditionalScript = BuildCustomScript(cb, plotBuilder, plots);
         }
 
         private string BuildCustomScript(CutsceneBuilder cb, PlotBuilder plotBuilder, List<CsPlot> plots)
@@ -464,7 +484,8 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 new AllyWaitPlot(),
                 new AllyPassByPlot(),
                 new NoisePlot(),
-                new AnnouncerPlot()
+                new AnnouncerPlot(),
+                new MurderPlot()
             };
         }
 
