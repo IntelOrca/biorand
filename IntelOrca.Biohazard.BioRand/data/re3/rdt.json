@@ -474,7 +474,8 @@
           }
         },
         {
-          "target": "111"
+          "target": "111",
+          "noUnlock": true
         }
       ],
       "items": [
