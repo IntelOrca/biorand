@@ -134,7 +134,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         internal CsMessage AllocateMessage(string message, bool autoBreak = true)
         {
-            var enMessage = autoBreak ? AutoBreak(message, 25) : message;
+            var enMessage = autoBreak ? AutoBreak(message, 23) : message;
             var jaMessage = autoBreak ? AutoBreak(message, 16) : message;
 
             var builder = ((Rdt2)_rdt.RdtFile).ToBuilder();
