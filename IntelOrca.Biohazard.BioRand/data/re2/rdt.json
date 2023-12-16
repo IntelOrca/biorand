@@ -373,7 +373,8 @@
       ],
       "enemies": [
         {
-          "nop": [ "0x191A" ]
+          "nop": [ "0x191A" ],
+          "excludeTypes": [ 58 ]
         }
       ]
     },
