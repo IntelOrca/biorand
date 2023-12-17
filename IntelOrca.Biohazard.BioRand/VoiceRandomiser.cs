@@ -490,7 +490,7 @@ namespace IntelOrca.Biohazard.BioRand
                 return SampleCheckResult.Bad;
             if (_config.ReduceSilences && originalLength != 0 && sample.Length < originalLength - 1) // Allow 1 second of silence
                 return SampleCheckResult.Bad;
-            if (!_config.AllowAnyVoice && sample.Actor != actor)
+            if (!_config.AllowAnyVoice && sample.Actor != actor.StripActorSkin())
                 return SampleCheckResult.Bad;
             if (sample.Kind != kind)
                 return SampleCheckResult.Bad;

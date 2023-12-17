@@ -68,7 +68,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
         {
             get
             {
-                var s = Actor;
+                var s = Actor.StripActorSkin();
                 var dot = s.IndexOf('.');
                 if (dot != -1)
                 {

@@ -161,20 +161,6 @@ namespace IntelOrca.Biohazard.BioRand.RE3
             return result.ToArray();
         }
 
-        public override string[] GetPlayerCharacters(int index)
-        {
-            var result = new List<string>();
-            var pldFiles = DataManager
-                .GetDirectories(BiohazardVersion, $"pld{index}")
-                .ToArray();
-            foreach (var pldPath in pldFiles)
-            {
-                var actor = Path.GetFileName(pldPath);
-                result.Add(actor.ToActorString());
-            }
-            return result.ToArray();
-        }
-
         public override EnemySkin[] GetEnemySkins()
         {
             var emdRegex = new Regex("em([0-9a-f][0-9a-f]).emd", RegexOptions.IgnoreCase);
@@ -281,7 +267,7 @@ namespace IntelOrca.Biohazard.BioRand.RE3
                 var faceIndex = pldIndex == 0 ? 0 : 1;
                 ChangePlayerInventoryFace(config, fileRepository, faceIndex, actor);
 
-                var allHurtFiles = DataManager.GetHurtFiles(actor)
+                var allHurtFiles = DataManager.GetHurtFiles(actor.StripActorSkin())
                     .Where(x => x.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase) || x.EndsWith(".wav", StringComparison.OrdinalIgnoreCase))
                     .ToArray();
                 var hurtFiles = new string[4];

@@ -630,7 +630,16 @@ namespace IntelOrca.Biohazard.BioRand
 
         public virtual string[] GetPlayerCharacters(int index)
         {
-            return new string[0];
+            var result = new HashSet<string>();
+            var pldFiles = DataManager
+                .GetDirectories(BiohazardVersion, $"pld{index}")
+                .ToArray();
+            foreach (var pldPath in pldFiles)
+            {
+                var actor = Path.GetFileName(pldPath);
+                result.Add(actor.ToActorString());
+            }
+            return result.OrderBy(x => x).ToArray();
         }
 
         protected string GetSelectedActor(RandoConfig config)
@@ -652,6 +661,7 @@ namespace IntelOrca.Biohazard.BioRand
             var pldIndex = GetSelectedPldIndex(config, player);
             var pldDirectoryIndex = config.SwapCharacters ? player ^ 1 : player;
             var pldPath = DataManager.GetDirectories(BiohazardVersion, $"pld{pldDirectoryIndex}")
+                .OrderBy(x => Path.GetFileName(x).ToActorString())
                 .Skip(pldIndex)
                 .FirstOrDefault();
             return pldPath;

@@ -36,9 +36,29 @@ namespace IntelOrca.Biohazard.BioRand
             return x;
         }
 
+        public static string StripActorSkin(this string x)
+        {
+            var skinIndex = x.IndexOf('$');
+            if (skinIndex != -1)
+            {
+                return x.Substring(0, skinIndex);
+            }
+            return x;
+        }
+
+        public static string? GetActorSkin(this string x)
+        {
+            var skinIndex = x.IndexOf('$');
+            if (skinIndex != -1)
+            {
+                return x.Substring(skinIndex + 1);
+            }
+            return null;
+        }
+
         public static string ToActorString(this string x)
         {
-            var actor = x;
+            var actor = StripActorSkin(x);
             var fsIndex = actor.IndexOf('.');
             if (fsIndex != -1)
             {
@@ -49,6 +69,12 @@ namespace IntelOrca.Biohazard.BioRand
             else
             {
                 actor = actor.ToTitle();
+            }
+
+            var skin = GetActorSkin(x);
+            if (skin != null)
+            {
+                actor += $" [{skin}]";
             }
             return actor;
         }
