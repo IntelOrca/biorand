@@ -19,6 +19,7 @@
         }
 
         public REPosition WithY(int y) => new REPosition(X, y, Z, D);
+        public REPosition WithD(int d) => new REPosition(X, Y, Z, d);
 
         public REPosition Reverse()
         {

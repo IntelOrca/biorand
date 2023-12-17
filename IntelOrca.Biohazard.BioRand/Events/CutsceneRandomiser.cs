@@ -208,7 +208,14 @@ namespace IntelOrca.Biohazard.BioRand.Events
             }
             else if (rng.NextProbability(50))
             {
-                ChainRandomPlot<AllyWaitPlot>(plots, plotBuilder);
+                if (rng.NextProbability(10))
+                {
+                    ChainRandomPlot<AllyPatrolPlot>(plots, plotBuilder);
+                }
+                else
+                {
+                    ChainRandomPlot<AllyWaitPlot>(plots, plotBuilder);
+                }
             }
             if (rng.NextProbability(25))
             {
@@ -493,7 +500,8 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 new AllyPassByPlot(),
                 new NoisePlot(),
                 new AnnouncerPlot(),
-                new MurderPlot()
+                new MurderPlot(),
+                new AllyPatrolPlot()
             };
         }
 

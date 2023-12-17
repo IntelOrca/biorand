@@ -257,10 +257,13 @@ namespace IntelOrca.Biohazard.BioRand.Events
             PointOfInterest destination,
             PlcDestKind kind,
             REPosition? overrideDestination = null,
-            bool cutFollow = false)
+            bool cutFollow = false,
+            bool strict = true,
+            CsFlag? completeFlag = null,
+            CsFlag? subCompleteFlag = null)
         {
-            var completeFlag = AllocateLocalFlag();
-            var subCompleteFlag = AllocateLocalFlag();
+            completeFlag ??= AllocateLocalFlag();
+            subCompleteFlag ??= AllocateLocalFlag();
             var route = PoiGraph.GetTravelRoute(from, destination);
 
             var nodes = new List<SbNode>();
@@ -282,11 +285,17 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 nodes.Add(new SbSetFlag(subCompleteFlag, false));
                 nodes.Add(new SbEntityTravel(entity, subCompleteFlag.Flag, overrideDestination.Value, kind));
                 nodes.Add(new SbWaitForFlag(subCompleteFlag.Flag));
-                nodes.Add(new SbMoveEntity(entity, overrideDestination.Value));
+                if (strict)
+                {
+                    nodes.Add(new SbMoveEntity(entity, overrideDestination.Value));
+                }
             }
             else
             {
-                nodes.Add(new SbMoveEntity(entity, destination.Position));
+                if (strict)
+                {
+                    nodes.Add(new SbMoveEntity(entity, destination.Position));
+                }
             }
             nodes.Add(new SbSetFlag(completeFlag));
 

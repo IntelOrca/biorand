@@ -7,6 +7,11 @@ namespace IntelOrca.Biohazard.BioRand.Events
     {
         private List<SbNode> _list = new List<SbNode>();
 
+        public void Prepend(SbNode node)
+        {
+            _list.Insert(0, node);
+        }
+
         public void Append(SbNode node)
         {
             _list.Add(node);
