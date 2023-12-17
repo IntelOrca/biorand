@@ -146,6 +146,9 @@ static void RE2_HookLoadGame()
 	// we pack rooms full of stuff like enemies and NPCs
 	_largeWorkArea = malloc(16 * 1024 * 1024);
 	WriteProcessMemory(GetCurrentProcess(), (LPVOID)(0x4DEF10), &_largeWorkArea, sizeof(_largeWorkArea), NULL);
+	b = 0xEB;
+	WriteProcessMemory(GetCurrentProcess(), (LPVOID)(0x4B1AE8), &b, sizeof(b), NULL);
+
 }
 
 static void ModMain(HMODULE hExecutable)
