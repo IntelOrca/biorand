@@ -14,6 +14,7 @@ namespace IntelOrca.Biohazard.BioRand
 {
     public abstract class BaseRandomiser
     {
+        protected ReInstallConfig InstallConfig { get; }
         protected IBgCreator? BgCreator { get; }
 
         protected MemoryStream ExePatch { get; } = new MemoryStream();
@@ -31,8 +32,9 @@ namespace IntelOrca.Biohazard.BioRand
         protected abstract RdtId[] GetRdtIds(string dataPath);
         protected abstract string GetRdtPath(string dataPath, RdtId rdtId, int player, bool mod);
 
-        public BaseRandomiser(IBgCreator? bgCreator)
+        public BaseRandomiser(ReInstallConfig installConfig, IBgCreator? bgCreator)
         {
+            InstallConfig = installConfig;
             BgCreator = bgCreator;
         }
 
@@ -50,8 +52,22 @@ namespace IntelOrca.Biohazard.BioRand
 #endif
                     dataPath = Path.Combine(basePath, "data");
                 }
-                return new DataManager(dataPath);
+
+                var dataPaths = new List<string>();
+                if (InstallConfig.EnableCustomContent)
+                {
+                    var userDataPath = Path.Combine(GetSettingsDirectory(), "data");
+                    dataPaths.Add(userDataPath);
+                }
+                dataPaths.Add(dataPath);
+                return new DataManager(dataPaths.ToArray());
             }
+        }
+
+        private static string GetSettingsDirectory()
+        {
+            var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            return Path.Combine(appData, "biorand");
         }
 
         private void SetInventory(int player, RandomInventory? inventory)
@@ -163,7 +179,7 @@ namespace IntelOrca.Biohazard.BioRand
             return new GameData(rdts.ToArray());
         }
 
-        public void Generate(RandoConfig config, ReInstallConfig reConfig, IRandoProgress progress)
+        public void Generate(RandoConfig config, IRandoProgress progress)
         {
             config = config.Clone();
             if (config.Version < RandoConfig.LatestVersion)
@@ -175,6 +191,7 @@ namespace IntelOrca.Biohazard.BioRand
                 throw new BioRandVersionException($"This seed was generated with a newer version of the randomizer and cannot be played.");
             }
 
+            var reConfig = InstallConfig;
             var installPath = reConfig.GetInstallPath(BiohazardVersion);
             var originalDataPath = GetDataPath(installPath);
             var modPath = Path.Combine(installPath, @"mod_biorand");
@@ -182,7 +199,7 @@ namespace IntelOrca.Biohazard.BioRand
             if (reConfig!.IsEnabled(BioVersion.Biohazard3))
             {
                 var dataPath = GetDataPath(reConfig.GetInstallPath(BioVersion.Biohazard3));
-                var re3randomizer = new Re3Randomiser(null);
+                var re3randomizer = new Re3Randomiser(reConfig, null);
                 re3randomizer.AddArchives(dataPath, fileRepo);
             }
 
@@ -204,7 +221,7 @@ namespace IntelOrca.Biohazard.BioRand
             using (progress.BeginTask(config.Player, $"Generating seed"))
             {
                 PreGenerate(config);
-                Generate(config, reConfig, progress, fileRepo);
+                Generate(config, progress, fileRepo);
             }
 
             using (progress.BeginTask(null, $"Writing manifest"))
@@ -233,8 +250,9 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
-        public virtual void Generate(RandoConfig config, ReInstallConfig reConfig, IRandoProgress progress, FileRepository fileRepository)
+        public virtual void Generate(RandoConfig config, IRandoProgress progress, FileRepository fileRepository)
         {
+            var reConfig = InstallConfig;
             if (config.RandomItems && config.RandomInventory && !config.ShuffleItems)
             {
                 SerialiseInventory(fileRepository);
@@ -480,17 +498,17 @@ namespace IntelOrca.Biohazard.BioRand
             }
             if (enabledBgms.Contains("RE1", StringComparer.OrdinalIgnoreCase))
             {
-                var r = new Re1Randomiser(BgCreator);
+                var r = new Re1Randomiser(reConfig, BgCreator);
                 r.AddMusicSelection(bgmRandomizer, reConfig, 1.0);
             }
             if (enabledBgms.Contains("RE2", StringComparer.OrdinalIgnoreCase))
             {
-                var r = new Re2Randomiser(BgCreator);
+                var r = new Re2Randomiser(reConfig, BgCreator);
                 r.AddMusicSelection(bgmRandomizer, reConfig, 1.0);
             }
             if (enabledBgms.Contains("RE3", StringComparer.OrdinalIgnoreCase))
             {
-                var r = new Re3Randomiser(BgCreator);
+                var r = new Re3Randomiser(reConfig, BgCreator);
                 r.AddMusicSelection(bgmRandomizer, reConfig, 0.75);
             }
 
@@ -693,7 +711,7 @@ namespace IntelOrca.Biohazard.BioRand
                 "re3"
             };
             result.AddRange(DataManager
-                .GetDirectoriesIn("bgm")
+                .GetDirectories("bgm")
                 .Select(Path.GetFileName));
             return result
                 .Select(x => x.ToUpper())

@@ -17,7 +17,6 @@ namespace IntelOrca.Biohazard.BioRand.RE1
     public class Re1Randomiser : BaseRandomiser
     {
         private readonly Re1EnemyHelper _enemyHelper = new Re1EnemyHelper();
-        private ReInstallConfig? _reInstallConfig;
         private Re1ItemHelper? _itemHelper;
         private object _playerFaceSync = new object();
 
@@ -27,14 +26,15 @@ namespace IntelOrca.Biohazard.BioRand.RE1
         {
             get
             {
-                _itemHelper ??= new Re1ItemHelper(_reInstallConfig!.MaxInventorySize);
+                _itemHelper ??= new Re1ItemHelper(InstallConfig!.MaxInventorySize);
                 return _itemHelper;
             }
         }
         internal override IEnemyHelper EnemyHelper => _enemyHelper;
         internal override INpcHelper NpcHelper { get; } = new Re1NpcHelper();
 
-        public Re1Randomiser(IBgCreator? bgCreator) : base(bgCreator)
+        public Re1Randomiser(ReInstallConfig installConfig, IBgCreator? bgCreator)
+            : base(installConfig, bgCreator)
         {
         }
 
@@ -143,10 +143,9 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             return path;
         }
 
-        public override void Generate(RandoConfig config, ReInstallConfig reConfig, IRandoProgress progress, FileRepository fileRepository)
+        public override void Generate(RandoConfig config, IRandoProgress progress, FileRepository fileRepository)
         {
-            _reInstallConfig = reConfig;
-
+            var reConfig = InstallConfig;
             if (!reConfig.IsEnabled(BioVersion.Biohazard1))
             {
                 throw new BioRandUserException("RE1 installation must be enabled to randomize RE1.");
@@ -187,7 +186,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             FixWeaponHitScan(config);
             FixYawnPoison(config);
 
-            base.Generate(config, reConfig, progress, fileRepository);
+            base.Generate(config, progress, fileRepository);
         }
 
         protected override string[] TitleCardSoundFiles { get; } =
@@ -432,9 +431,9 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 
         internal override void RandomizeNPCs(RandoConfig config, NPCRandomiser npcRandomiser, VoiceRandomiser voiceRandomiser)
         {
-            if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard2))
+            if (InstallConfig!.IsEnabled(BioVersion.Biohazard2))
             {
-                var dataPath = GetDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard2));
+                var dataPath = GetDataPath(InstallConfig.GetInstallPath(BioVersion.Biohazard2));
                 // HACK should be helper function from RE 2 randomizer
                 if (Directory.Exists(Path.Combine(dataPath, "data", "pl0", "rdt")))
                 {
@@ -442,11 +441,11 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 }
                 voiceRandomiser.AddToSelection(BioVersion.Biohazard2, new FileRepository(dataPath));
             }
-            if (_reInstallConfig!.IsEnabled(BioVersion.Biohazard3))
+            if (InstallConfig!.IsEnabled(BioVersion.Biohazard3))
             {
-                var dataPath = GetDataPath(_reInstallConfig.GetInstallPath(BioVersion.Biohazard3));
+                var dataPath = GetDataPath(InstallConfig.GetInstallPath(BioVersion.Biohazard3));
                 var fileRepository = new FileRepository(dataPath);
-                var re3randomizer = new Re3Randomiser(null);
+                var re3randomizer = new Re3Randomiser(InstallConfig, null);
                 re3randomizer.AddArchives(dataPath, fileRepository);
                 voiceRandomiser.AddToSelection(BioVersion.Biohazard3, fileRepository);
             }

@@ -6,22 +6,31 @@ namespace IntelOrca.Biohazard.BioRand
 {
     internal class DataManager
     {
-        public string BasePath { get; }
+        public string[] BasePaths { get; }
 
-        public DataManager(string basePath)
+        public DataManager(string[] basePaths)
         {
-            BasePath = basePath;
+            BasePaths = basePaths;
         }
 
         public string GetPath(string baseName)
         {
-            return Path.Combine(BasePath, baseName);
+            string? best = null;
+            foreach (var basePath in BasePaths)
+            {
+                var result = Path.Combine(basePath, baseName);
+                var exists = Directory.Exists(result) || File.Exists(result);
+                if (best == null || exists)
+                {
+                    best = result;
+                    if (exists)
+                        break;
+                }
+            }
+            return best!;
         }
 
-        public string GetPath(string baseName, string path)
-        {
-            return Path.Combine(BasePath, baseName, path);
-        }
+        public string GetPath(string baseName, string path) => GetPath(Path.Combine(baseName, path));
 
         public string GetPath(BioVersion version, string path)
         {
@@ -50,31 +59,30 @@ namespace IntelOrca.Biohazard.BioRand
             return File.ReadAllText(fullPath);
         }
 
-        public string[] GetDirectories(BioVersion version, string baseName)
+        public string[] GetDirectories(BioVersion version, string baseName) => GetDirectories(GetSubPath(version, baseName));
+        public string[] GetDirectories(string baseName)
         {
-            var fullPath = GetPath(version, baseName);
-            return GetDirectoriesSafe(fullPath);
+            var result = new List<string>();
+            foreach (var basePath in BasePaths)
+            {
+                var path = Path.Combine(basePath, baseName);
+                var dirs = GetDirectoriesSafe(path);
+                result.AddRange(dirs);
+            }
+            return result.ToArray();
         }
 
+        public string[] GetFiles(BioVersion version, string baseName) => GetFiles(GetSubPath(version, baseName));
+        public string[] GetFiles(string a, string b) => GetFiles(Path.Combine(a, b));
         public string[] GetFiles(string baseName)
         {
-            return GetFilesSafe(GetPath(baseName));
-        }
-
-        public string[] GetFiles(BioVersion version, string baseName)
-        {
-            return GetFilesSafe(GetPath(version, baseName));
-        }
-
-        public string[] GetFiles(string a, string b)
-        {
-            return GetFilesSafe(Path.Combine(BasePath, a, b));
-        }
-
-        public string[] GetDirectoriesIn(string baseName)
-        {
-            var basePath = GetPath(baseName);
-            return GetDirectoriesSafe(basePath);
+            var result = new List<string>();
+            foreach (var basePath in BasePaths)
+            {
+                var part = GetFilesSafe(Path.Combine(basePath, baseName));
+                result.AddRange(part);
+            }
+            return result.ToArray();
         }
 
         public string[] GetBgmFiles(string tag) => GetTaggedFiles("bgm", tag);
@@ -84,13 +92,16 @@ namespace IntelOrca.Biohazard.BioRand
         public string[] GetTaggedFiles(string baseName, string tag)
         {
             var files = new List<string>();
-            var top = Path.Combine(BasePath, baseName);
-            var directories = GetDirectoriesSafe(top);
-            foreach (var directory in directories)
+            foreach (var basePath in BasePaths)
             {
-                var dir = Path.Combine(directory, tag);
-                var subFiles = GetFilesSafe(dir);
-                files.AddRange(subFiles);
+                var top = Path.Combine(basePath, baseName);
+                var directories = GetDirectoriesSafe(top);
+                foreach (var directory in directories)
+                {
+                    var dir = Path.Combine(directory, tag);
+                    var subFiles = GetFilesSafe(dir);
+                    files.AddRange(subFiles);
+                }
             }
             return files.ToArray();
         }
@@ -111,6 +122,17 @@ namespace IntelOrca.Biohazard.BioRand
                 return Directory.GetDirectories(path);
             }
             return new string[0];
+        }
+
+        private string GetSubPath(BioVersion version, string basePath)
+        {
+            return version switch
+            {
+                BioVersion.Biohazard1 => Path.Combine("re1", basePath),
+                BioVersion.Biohazard2 => Path.Combine("re2", basePath),
+                BioVersion.Biohazard3 => Path.Combine("re3", basePath),
+                _ => throw new NotImplementedException(),
+            };
         }
     }
 }

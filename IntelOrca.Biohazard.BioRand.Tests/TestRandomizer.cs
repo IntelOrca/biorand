@@ -122,21 +122,21 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             var dataPath = Path.Combine(Environment.CurrentDirectory, "..", "..", "..", "..", "IntelOrca.Biohazard.BioRand", "data");
             Environment.SetEnvironmentVariable("BIORAND_DATA", dataPath);
 
-            var reInstall = GetInstallConfig();
             var rando = GetRandomizer();
-            rando.Generate(config, reInstall, new NullProgress());
+            rando.Generate(config, new NullProgress());
         }
 
         private BaseRandomiser GetRandomizer()
         {
+            var installConfig = GetInstallConfig();
             switch (Game)
             {
                 case 1:
-                    return new Re1Randomiser(null);
+                    return new Re1Randomiser(installConfig, null);
                 case 2:
-                    return new Re2Randomiser(null);
+                    return new Re2Randomiser(installConfig, null);
                 case 3:
-                    return new Re3Randomiser(null);
+                    return new Re3Randomiser(installConfig, null);
                 default:
                     throw new Exception("Invalid game");
             }

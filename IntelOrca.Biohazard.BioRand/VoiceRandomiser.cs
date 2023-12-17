@@ -91,7 +91,7 @@ namespace IntelOrca.Biohazard.BioRand
         private VoiceSample[] AddCustom(FileRepository fileRepository)
         {
             var samples = new List<VoiceSample>();
-            foreach (var actorPath in _dataManager.GetDirectoriesIn("hurt"))
+            foreach (var actorPath in _dataManager.GetDirectories("hurt"))
             {
                 var actor = Path.GetFileName(actorPath);
                 var sampleFiles = Directory.GetFiles(actorPath);
@@ -114,7 +114,7 @@ namespace IntelOrca.Biohazard.BioRand
             }
 
             var voiceLines = _dataManager
-                .GetDirectoriesIn("voice")
+                .GetDirectories("voice")
                 .SelectMany(x =>
                 {
                     var actor = Path.GetFileName(x);

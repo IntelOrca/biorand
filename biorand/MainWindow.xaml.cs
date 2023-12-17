@@ -90,6 +90,7 @@ namespace IntelOrca.Biohazard.BioRand
                 gameLocation2.IsSettingsLoaded = true;
                 gameLocation3.IsSettingsLoaded = true;
 
+                chkEnableCustomContent.IsChecked = !_settings.DisableCustomContent;
                 chkRandomizeTitleVoice.IsChecked = _settings.RandomizeTitleVoice;
                 chkMaxInventorySize.IsChecked = _settings.MaxInventorySize;
             }
@@ -130,6 +131,7 @@ namespace IntelOrca.Biohazard.BioRand
             _settings.GameExecutable2 = gameLocation2.SelectedExecutable;
             _settings.GameExecutable3 = gameLocation3.SelectedExecutable;
 
+            _settings.DisableCustomContent = chkEnableCustomContent.IsChecked != true;
             _settings.RandomizeTitleVoice = chkRandomizeTitleVoice.IsChecked == true;
             _settings.MaxInventorySize = chkMaxInventorySize.IsChecked == true;
 
@@ -630,7 +632,10 @@ namespace IntelOrca.Biohazard.BioRand
 
         private ReInstallConfig GetInstallConfig()
         {
+            SaveSettings();
+
             var config = new ReInstallConfig();
+            config.EnableCustomContent = !_settings.DisableCustomContent;
             config.RandomizeTitleVoice = _settings.RandomizeTitleVoice;
             config.MaxInventorySize = _settings.MaxInventorySize;
             config.SetEnabled(0, _settings.GameEnabled1);
@@ -729,7 +734,7 @@ namespace IntelOrca.Biohazard.BioRand
                 btn.Content = "Generating...";
                 IsEnabled = false;
                 var randomiser = GetRandomizer();
-                await Task.Run(() => randomiser.Generate(_config, GetInstallConfig(), new RandoProgress(this)));
+                await Task.Run(() => randomiser.Generate(_config, new RandoProgress(this)));
                 progressLabel.Text = string.Empty;
                 RandoAppSettings.LogGeneration(_config.ToString(), GetGameLocation());
                 ShowGenerateCompleteMessage();
@@ -853,6 +858,10 @@ namespace IntelOrca.Biohazard.BioRand
         {
             var version = UrlEncoder.Default.Encode(string.Format("{0} ({1})", Program.CurrentVersionNumber, Program.GitHash));
             var seed = UrlEncoder.Default.Encode(_config.ToString());
+            if (HasCustomContent())
+            {
+                version += " with custom content";
+            }
             Process.Start($"https://github.com/IntelOrca/biorand/issues/new?template=bug_report.yml&version={version}&seed={seed}");
         }
 
@@ -957,14 +966,15 @@ namespace IntelOrca.Biohazard.BioRand
 
         private BaseRandomiser GetRandomizer(int index)
         {
+            var installConfig = GetInstallConfig();
             switch (index)
             {
                 case 0:
-                    return new Re1Randomiser(new BiorandBgCreator());
+                    return new Re1Randomiser(installConfig, new BiorandBgCreator());
                 case 1:
-                    return new Re2Randomiser(new BiorandBgCreator());
+                    return new Re2Randomiser(installConfig, new BiorandBgCreator());
                 case 2:
-                    return new Re3Randomiser(new BiorandBgCreator());
+                    return new Re3Randomiser(installConfig, new BiorandBgCreator());
                 default:
                     return null;
             }
@@ -1349,6 +1359,40 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 MessageBox.Show($"Unable to start the game.{Environment.NewLine}{Environment.NewLine}{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
+            }
+        }
+
+        private void BrowseCustomContentButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var directory = new DirectoryInfo(RandoAppSettings.GetCustomContentDirectory());
+                if (!directory.Exists)
+                {
+                    directory.Create();
+                }
+                Process.Start(directory.FullName);
+            }
+            catch
+            {
+                ShowFailedMessage("Biorand", "Unable to create or open custom content directory.");
+            }
+        }
+
+        private bool HasCustomContent()
+        {
+            if (chkEnableCustomContent.IsChecked != true)
+            {
+                return false;
+            }
+            try
+            {
+                var directory = new DirectoryInfo(RandoAppSettings.GetCustomContentDirectory());
+                return directory.GetDirectories().Any();
+            }
+            catch
+            {
+                return false;
             }
         }
     }

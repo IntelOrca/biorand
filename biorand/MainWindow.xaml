@@ -100,11 +100,17 @@
                         <TextBlock FontSize="16">Special thanks to all BioRand streamers and bug reporters!</TextBlock>
                     </StackPanel>
                 </StackPanel>
-                <StackPanel x:Name="panelConfig" Visibility="Hidden">
+                <StackPanel x:Name="panelConfig" Visibility="Visible">
                     <TextBlock>In order to generate a seed, set the location of where each Resident Evil game is installed on your system. All games need to be specified in order for content from all games to be used in the seed.</TextBlock>
                     <local:GameLocationBox x:Name="gameLocation1" Tag="0" Header="Resident Evil 1" Validate="gameLocation_Validate" Changed="gameLocation_Changed" />
                     <local:GameLocationBox x:Name="gameLocation2" Tag="1" Header="Resident Evil 2" Validate="gameLocation_Validate" Changed="gameLocation_Changed" />
                     <local:GameLocationBox x:Name="gameLocation3" Tag="2" Header="Resident Evil 3" Validate="gameLocation_Validate" Changed="gameLocation_Changed" />
+                    <GroupBox Header="Custom Content">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
+                            <CheckBox x:Name="chkEnableCustomContent" Margin="0,0,0,4">Enable</CheckBox>
+                            <Button MinWidth="100" Click="BrowseCustomContentButton_Click">Browse...</Button>
+                        </StackPanel>
+                    </GroupBox>
                     <GroupBox Header="In-game tweaks">
                         <StackPanel>
                             <CheckBox x:Name="chkMaxInventorySize" Checked="globalCheckBox_Changed" Unchecked="globalCheckBox_Changed">Max inventory size (RE 1)</CheckBox>
@@ -112,7 +118,7 @@
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>
-                <StackPanel x:Name="panelRando" Visibility="Visible">
+                <StackPanel x:Name="panelRando" Visibility="Hidden">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />

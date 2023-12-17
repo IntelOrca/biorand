@@ -85,7 +85,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void AddCustomMusicToSelection(BgmList bgmList, string directory)
         {
-            var tags = _dataManager.GetDirectoriesIn(directory);
+            var tags = _dataManager.GetDirectories(directory);
             foreach (var tagPath in tags)
             {
                 var tag = Path.GetFileName(tagPath);

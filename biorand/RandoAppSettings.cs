@@ -25,6 +25,8 @@ namespace IntelOrca.Biohazard.BioRand
         public string GameExecutable2 { get; set; }
         public string GameExecutable3 { get; set; }
 
+        public bool DisableCustomContent { get; set; }
+
         public bool RandomizeTitleVoice { get; set; } = true;
         public bool MaxInventorySize { get; set; }
 
@@ -45,6 +47,12 @@ namespace IntelOrca.Biohazard.BioRand
         {
             var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             return Path.Combine(appData, "biorand");
+        }
+
+        public static string GetCustomContentDirectory()
+        {
+            var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            return Path.Combine(appData, "biorand", "data");
         }
 
         private static JsonSerializerOptions GetJsonSerializerOptions()
