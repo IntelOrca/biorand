@@ -147,6 +147,7 @@ static void RE2_HookLoadGame()
 	_largeWorkArea = malloc(16 * 1024 * 1024);
 	WriteProcessMemory(GetCurrentProcess(), (LPVOID)(0x4DEF10), &_largeWorkArea, sizeof(_largeWorkArea), NULL);
 	b = 0xEB;
+	WriteProcessMemory(GetCurrentProcess(), (LPVOID)(0x4AC5D1), &b, sizeof(b), NULL);
 	WriteProcessMemory(GetCurrentProcess(), (LPVOID)(0x4B1AE8), &b, sizeof(b), NULL);
 
 }

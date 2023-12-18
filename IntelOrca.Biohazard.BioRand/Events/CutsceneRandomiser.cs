@@ -77,6 +77,9 @@ namespace IntelOrca.Biohazard.BioRand.Events
             if (!_cutsceneRoomInfoMap.TryGetValue(rdt.RdtId, out var info))
                 return;
 
+            if (rdt.RdtId == new RdtId(6, 0x04) && _config.Scenario == 1)
+                return;
+
             var enemyPositions = _allEnemyPositions
                 .Where(x => x.RdtId == rdt.RdtId)
                 .Select(p => new REPosition(p.X, p.Y, p.Z, p.D))
