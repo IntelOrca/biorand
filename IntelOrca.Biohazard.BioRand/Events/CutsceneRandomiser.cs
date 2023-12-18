@@ -87,6 +87,14 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
             _logger.WriteLine($"{rdt}:");
 
+            // Don't add enemies if positions are fixed
+            var enemySpec = GetEnemySpecs(rdt.RdtId);
+            if (enemySpec == null || enemySpec.KeepPositions)
+            {
+                enemyPositions = new EndlessBag<REPosition>();
+            }
+
+            // Clear enemies if we can add new ones
             var enemyHelper = _enemyRandomiser?.EnemyHelper;
             if (_enemyRandomiser != null && enemyPositions.Count != 0)
             {
@@ -367,21 +375,15 @@ namespace IntelOrca.Biohazard.BioRand.Events
             var room = _map.GetRoom(rdt.RdtId);
             if (room?.Enemies != null)
             {
-                var enemySpecs = room.Enemies
-                    .Where(IsEnemySpecValid)
-                    .ToArray();
-
-                foreach (var enemySpec in enemySpecs)
+                var enemySpec = GetEnemySpecs(rdt.RdtId);
+                if (enemySpec.Nop != null)
                 {
-                    if (enemySpec.Nop != null)
+                    var nopArray = Map.ParseNopArray(enemySpec.Nop, rdt);
+                    foreach (var offset in nopArray)
                     {
-                        var nopArray = Map.ParseNopArray(enemySpec.Nop, rdt);
-                        foreach (var offset in nopArray)
-                        {
-                            rdt.Nop(offset);
-                            if (g_debugLogging)
-                                _logger.WriteLine($"    {rdt.RdtId} (0x{offset:X2}) opcode removed");
-                        }
+                        rdt.Nop(offset);
+                        if (g_debugLogging)
+                            _logger.WriteLine($"    {rdt.RdtId} (0x{offset:X2}) opcode removed");
                     }
                 }
             }
