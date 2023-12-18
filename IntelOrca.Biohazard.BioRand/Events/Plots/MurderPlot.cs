@@ -69,7 +69,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                         new SbIf(plotFlag, false,
                             new SbFork(trigger)
                         ).Else(
-                            new SbCall(setupVictim)))));
+                            new SbFork(setupVictim)))));
         }
 
         private readonly string[] _inspectionMessages = new[]
