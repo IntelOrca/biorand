@@ -84,9 +84,11 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
             _logger.WriteLine($"{rdt}:");
 
+            var enemyHelper = _enemyRandomiser?.EnemyHelper;
             if (_enemyRandomiser != null && enemyPositions.Count != 0)
             {
                 ClearEnemies(rdt);
+                enemyHelper!.BeginRoom(rdt);
             }
 
             var doors = info.Poi?.Where(x => x.HasTag(PoiKind.Door)).ToArray() ?? new PointOfInterest[0];
@@ -95,7 +97,6 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
             var cb = new CutsceneBuilder();
             var maximumEnemyCount = 0;
-            var enemyHelper = _enemyRandomiser?.EnemyHelper;
             var enemyType = (byte?)null;
             var enemyCondition = null as ScdCondition;
             if (enemyPositions.Count != 0 && _enemyRandomiser?.ChosenEnemies.TryGetValue(rdt, out var enemy) == true)

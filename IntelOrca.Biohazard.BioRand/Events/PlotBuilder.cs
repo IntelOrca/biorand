@@ -94,14 +94,14 @@ namespace IntelOrca.Biohazard.BioRand.Events
             return _player;
         }
 
-        public CsEnemy AllocateEnemy()
+        public CsEnemy AllocateEnemy(byte? type = null, bool hasGlobalId = true)
         {
             var id = _availableEntityIds.Dequeue();
-            var globalId = _enemyRandomiser?.GetNextKillId() ?? 255;
-            var type = EnemyType ?? Re2EnemyIds.ZombieRandom;
+            var globalId = hasGlobalId ? _enemyRandomiser?.GetNextKillId() ?? 255 : (byte)255;
+            type ??= EnemyType ?? Re2EnemyIds.ZombieRandom;
             var position = _enemyPositions.Next();
             var enemyHelper = _enemyRandomiser?.EnemyHelper ?? new Re2EnemyHelper();
-            var result = new CsEnemy(id, globalId, type, position,
+            var result = new CsEnemy(id, globalId, type.Value, position,
                 opcode => enemyHelper.SetEnemy(Config, Rng, opcode, new MapRoomEnemies(), opcode.Type));
             _enemies.Add(result);
             return result;

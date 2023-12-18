@@ -436,25 +436,29 @@ namespace IntelOrca.Biohazard.BioRand.Events
         private readonly REPosition _position;
         private readonly bool _enabled;
         private readonly byte? _pose;
+        private readonly byte _ai;
+        private readonly byte? _sound;
 
-        public SbEnemy(CsEnemy enemy, bool enabled = true, byte? pose = null)
-            : this(enemy, enemy.DefaultPosition, enabled, pose)
+        public SbEnemy(CsEnemy enemy, bool enabled = true, byte? pose = null, byte ai = 0, byte? sound = null)
+            : this(enemy, enemy.DefaultPosition, enabled, pose, ai, sound)
         {
         }
 
-        public SbEnemy(CsEnemy enemy, REPosition position, bool enabled = true, byte? pose = null)
+        public SbEnemy(CsEnemy enemy, REPosition position, bool enabled = true, byte? pose = null, byte ai = 0, byte? sound = null)
         {
             _enemy = enemy;
             _position = position;
             _enabled = enabled;
             _pose = pose;
+            _ai = ai;
+            _sound = sound;
         }
 
         public override void Build(CutsceneBuilder builder)
         {
             var opcode = new SceEmSetOpcode();
             opcode.Id = (byte)_enemy.Id;
-            opcode.Ai = (byte)(_enabled ? 0 : 128);
+            opcode.Ai = (byte)(_enabled ? _ai : _ai | 0x80);
             opcode.X = (short)_position.X;
             opcode.Y = (short)_position.Y;
             opcode.Z = (short)_position.Z;
@@ -466,6 +470,10 @@ namespace IntelOrca.Biohazard.BioRand.Events
             if (_pose is byte pose)
             {
                 opcode.State = pose;
+            }
+            if (_sound is byte sound)
+            {
+                opcode.SoundBank = sound;
             }
             builder.Enemy(opcode);
         }
