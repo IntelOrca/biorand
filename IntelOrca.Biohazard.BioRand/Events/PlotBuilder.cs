@@ -453,6 +453,22 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 builder.EndIf();
             }
             builder.EndProcedure();
+
+            builder.BeginProcedure("get_msg_answer");
+            builder.AppendLine("save", "V_TEMP", 0);
+            builder.BeginIf();
+            builder.AppendLine("ck", "FG_MESSAGE", 29, 1);
+            builder.AppendLine("calc", 0, "OP_OR", "V_TEMP", 4);
+            builder.EndIf();
+            builder.BeginIf();
+            builder.AppendLine("ck", "FG_MESSAGE", 30, 1);
+            builder.AppendLine("calc", 0, "OP_OR", "V_TEMP", 2);
+            builder.EndIf();
+            builder.BeginIf();
+            builder.AppendLine("ck", "FG_MESSAGE", 31, 1);
+            builder.AppendLine("calc", 0, "OP_OR", "V_TEMP", 1);
+            builder.EndIf();
+            builder.EndProcedure();
         }
     }
 }

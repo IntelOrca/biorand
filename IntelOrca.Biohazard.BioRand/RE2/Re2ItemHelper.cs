@@ -31,6 +31,66 @@ namespace IntelOrca.Biohazard.BioRand.RE2
                 .Replace("_", " ");
         }
 
+        public string GetFriendlyItemName(byte type)
+        {
+            var friendlyItemNames = new[] {
+                null,
+                null,
+                null,
+                null,
+                "Handgun (Upgraded)",
+                "Magnum",
+                "Magnum (Upgraded)",
+                "Shotgun",
+                "Shotgun (Upgraded)",
+                "Grenade Launcher (Explosive)",
+                "Grenade Launcher (Flame)",
+                "Grenade Launcher (Acid)",
+                "Bowgun",
+                "Colt SAA",
+                "Sparkshot",
+                "SMG",
+                "Flamethrower",
+                "Rocket Launcher",
+                "Gatling Gun",
+                "Beretta",
+                "Handgun Bullets",
+                "Shotgun Shells",
+                "Magnum Rounds",
+                "Fuel Tank",
+                "Explosive Rounds",
+                "Flame Rounds",
+                "Acid Rounds",
+                "SMG Bullets",
+                "Sparkshot Ammo",
+                "Bowgun Bolts",
+                "Ink Ribbons",
+                "Small Key",
+                "Handgun Parts",
+                "Magnum Parts",
+                "ShotgunParts",
+                "F-Aid Spray",
+                null,
+                null,
+                "Green Herb",
+                "Red Herb",
+                "Blue Herb",
+                "GG Herb Mix",
+                "GR Herb Mix",
+                "GB Herb Mix",
+                "GGG Herb Mix",
+                "GGB Herb Mix",
+                "GRB Herb Mix"
+            };
+            if (friendlyItemNames.Length > type)
+            {
+                var result = friendlyItemNames[type];
+                if (result != null)
+                    return result;
+            }
+            return GetItemName(type);
+        }
+
         public byte GetItemId(CommonItemKind kind)
         {
             switch (kind)

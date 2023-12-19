@@ -481,6 +481,30 @@ namespace IntelOrca.Biohazard.BioRand.Events
             AppendLabel();
         }
 
+        public void Switch(object variable)
+        {
+            var labelIndex = CreateLabel();
+            AppendLine("switch", variable, LabelName(labelIndex));
+        }
+
+        public void BeginSwitchCase(int value)
+        {
+            var labelIndex = CreateLabel();
+            AppendLine("case", 0, LabelName(labelIndex), value);
+        }
+
+        public void EndSwitchCase()
+        {
+            AppendLine("break", 0);
+            AppendLabel();
+        }
+
+        public void EndSwitch()
+        {
+            AppendLine("eswitch", 0);
+            AppendLabel();
+        }
+
         public int CreateLabel()
         {
             _labelStack.Push(_labelCount);

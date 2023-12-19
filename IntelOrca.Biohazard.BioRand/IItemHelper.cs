@@ -23,5 +23,6 @@
         bool HasInkRibbons(RandoConfig config);
         bool HasGunPowder(RandoConfig config);
         int[]? GetInventorySize(RandoConfig config);
+        string GetFriendlyItemName(byte type);
     }
 }

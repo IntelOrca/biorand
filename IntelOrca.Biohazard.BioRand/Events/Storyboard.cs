@@ -1175,8 +1175,19 @@ namespace IntelOrca.Biohazard.BioRand.Events
             builder.AppendLine("message_on", 0, _message.Id, 0, 255, 255);
             builder.AppendLine("evt_next");
             builder.AppendLine("nop");
-
-            if (_options.Length >= 1)
+            if (_options.Length >= 3)
+            {
+                builder.Call("get_msg_answer");
+                builder.Switch("V_TEMP");
+                for (var i = 0; i < _options.Length; i++)
+                {
+                    builder.BeginSwitchCase(i);
+                    _options[i].Build(builder);
+                    builder.EndSwitchCase();
+                }
+                builder.EndSwitch();
+            }
+            else if (_options.Length >= 1)
             {
                 builder.BeginIf();
                 builder.AppendLine("ck", "FG_MESSAGE", "F_QUESTION", 0);
@@ -1213,6 +1224,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
         private readonly byte _item;
         private readonly byte _count;
 
+        public SbGetItem(Item item) : this(item.Type, item.Amount) { }
         public SbGetItem(byte item, byte count)
         {
             _item = item;

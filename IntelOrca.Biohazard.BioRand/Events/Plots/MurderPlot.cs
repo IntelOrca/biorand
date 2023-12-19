@@ -79,7 +79,6 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
             "{0} has nothing of value.",
             "Good riddance.",
             "Rest in peace.",
-            "Press 'F' to pay respects.",
             "I promise to avenge you.",
             "{1} will pay for this!",
             "{1} was behind this!",

@@ -16,7 +16,6 @@ namespace IntelOrca.Biohazard.BioRand
         private RandoConfig _config;
         private GameData _gameData;
         private Rng _rng;
-        private IItemHelper _itemHelper;
 
         private PlayNode[] _nodes = new PlayNode[0];
         private List<ItemPoolEntry> _currentPool = new List<ItemPoolEntry>();
@@ -32,13 +31,15 @@ namespace IntelOrca.Biohazard.BioRand
         private List<RandomInventory.Entry> _startingWeapons = new List<RandomInventory.Entry>();
         private List<byte> _availableGunpowder = new List<byte>();
 
+        public IItemHelper ItemHelper { get; }
+
         public ItemRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Rng random, IItemHelper itemHelper)
         {
             _logger = logger;
             _config = config;
             _gameData = gameData;
             _rng = random;
-            _itemHelper = itemHelper;
+            ItemHelper = itemHelper;
         }
 
         public void RandomiseItems(PlayGraph graph)
@@ -152,7 +153,7 @@ namespace IntelOrca.Biohazard.BioRand
             else
             {
                 _specialItem = 0;
-                foreach (var item in _itemHelper.GetInitialKeyItems(_config))
+                foreach (var item in ItemHelper.GetInitialKeyItems(_config))
                 {
                     _startKeyItems.Add(item);
                 }
@@ -161,7 +162,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         public RandomInventory? RandomizeStartInventory()
         {
-            var size = _itemHelper.GetInventorySize(_config);
+            var size = ItemHelper.GetInventorySize(_config);
             if (size == null)
                 return null;
 
@@ -184,11 +185,11 @@ namespace IntelOrca.Biohazard.BioRand
                     {
                         var possibleItems = _startingWeapons
                             .Select(x => x.Type)
-                            .Where(x => _itemHelper.GetItemSize(x) <= 1)
+                            .Where(x => ItemHelper.GetItemSize(x) <= 1)
                             .ToArray();
                         if (possibleItems.Length == 0 || _rng.NextProbability(25))
                         {
-                            _specialItem = _itemHelper.GetItemId(CommonItemKind.Knife);
+                            _specialItem = ItemHelper.GetItemId(CommonItemKind.Knife);
                         }
                         else
                         {
@@ -212,7 +213,7 @@ namespace IntelOrca.Biohazard.BioRand
                     foreach (var weapon in _startingWeapons)
                     {
                         var weaponType = weapon.Type;
-                        var ammoType = _itemHelper
+                        var ammoType = ItemHelper
                             .GetAmmoTypeForWeapon(weaponType)
                             .Shuffle(_rng)
                             .FirstOrDefault();
@@ -221,8 +222,8 @@ namespace IntelOrca.Biohazard.BioRand
                         var extra = (byte)0;
                         if (_rng.NextProbability(75))
                         {
-                            amount = _itemHelper.GetMaxAmmoForAmmoType(weaponType);
-                            var max = (int)Math.Max(1, _itemHelper.GetMaxAmmoForAmmoType(ammoType) * (_config.AmmoQuantity / 8.0));
+                            amount = ItemHelper.GetMaxAmmoForAmmoType(weaponType);
+                            var max = (int)Math.Max(1, ItemHelper.GetMaxAmmoForAmmoType(ammoType) * (_config.AmmoQuantity / 8.0));
                             extra = (byte)_rng.Next(0, Math.Min(max * 2, 100));
                         }
                         AddToInventory(weaponType, amount);
@@ -287,7 +288,7 @@ namespace IntelOrca.Biohazard.BioRand
                 // Maybe an ink ribbon or two
                 if (_config.RatioInkRibbons != 0)
                 {
-                    if (_itemHelper.HasInkRibbons(_config) && _rng.NextProbability(50))
+                    if (ItemHelper.HasInkRibbons(_config) && _rng.NextProbability(50))
                         AddToInventoryCommon(CommonItemKind.InkRibbon, (byte)_rng.Next(1, 3));
                 }
 
@@ -311,7 +312,7 @@ namespace IntelOrca.Biohazard.BioRand
 
             void AddToInventoryCommon(CommonItemKind commonType, byte count)
             {
-                var type = _itemHelper.GetItemId(commonType);
+                var type = ItemHelper.GetItemId(commonType);
                 AddToInventory(type, count);
             }
 
@@ -320,11 +321,11 @@ namespace IntelOrca.Biohazard.BioRand
                 if (specialEntry == null && _specialItem == type)
                 {
                     specialEntry = new RandomInventory.Entry(type, count, 0);
-                    _logger.WriteLine($"Adding {_itemHelper.GetItemName(type)} x{count} as special item");
+                    _logger.WriteLine($"Adding {ItemHelper.GetItemName(type)} x{count} as special item");
                 }
                 else
                 {
-                    var size = _itemHelper.GetItemSize(type);
+                    var size = ItemHelper.GetItemSize(type);
                     if (remaining >= size)
                     {
                         if (size == 2)
@@ -337,18 +338,18 @@ namespace IntelOrca.Biohazard.BioRand
                         {
                             entries.Add(new RandomInventory.Entry(type, count, 0));
                         }
-                        _logger.WriteLine($"Adding {_itemHelper.GetItemName(type)} x{count}");
+                        _logger.WriteLine($"Adding {ItemHelper.GetItemName(type)} x{count}");
                         remaining -= size;
                     }
                 }
             }
         }
 
-        public Item GetRandomGift(Rng rng)
+        public Item GetRandomGift(Rng rng, int generosity)
         {
             var interestedTypes = ItemAttribute.Ammo | ItemAttribute.Heal | ItemAttribute.InkRibbon;
             var groups = _definedPool
-                .GroupBy(x => _itemHelper.GetItemAttributes((byte)x.Type))
+                .GroupBy(x => ItemHelper.GetItemAttributes((byte)x.Type))
                 .Where(x => (x.Key & interestedTypes) != 0)
                 .ToArray();
             if (groups.Length != 0)
@@ -359,24 +360,46 @@ namespace IntelOrca.Biohazard.BioRand
                     case ItemAttribute.Ammo:
                     {
                         var item = _rng.NextOf(randomGroup.ToArray());
-                        var maxAmount = _itemHelper.GetMaxAmmoForAmmoType((byte)item.Type);
+                        var maxAmount = ItemHelper.GetMaxAmmoForAmmoType((byte)item.Type);
                         var amount = (byte)_rng.Next(maxAmount / 2, maxAmount);
+                        if (generosity == 0)
+                        {
+                            amount /= 2;
+                        }
                         return new Item((byte)item.Type, amount);
                     }
                     case ItemAttribute.Heal:
                     {
-                        return new Item(rng.NextOf(
-                            _itemHelper.GetItemId(CommonItemKind.FirstAid),
-                            _itemHelper.GetItemId(CommonItemKind.HerbGRB)), 1);
+                        if (generosity == 0)
+                        {
+                            return new Item(rng.NextOf(
+                                ItemHelper.GetItemId(CommonItemKind.HerbG),
+                                ItemHelper.GetItemId(CommonItemKind.HerbGG),
+                                ItemHelper.GetItemId(CommonItemKind.HerbGGB),
+                                ItemHelper.GetItemId(CommonItemKind.HerbR),
+                                ItemHelper.GetItemId(CommonItemKind.HerbB),
+                                ItemHelper.GetItemId(CommonItemKind.HerbGB),
+                                ItemHelper.GetItemId(CommonItemKind.FirstAid),
+                                ItemHelper.GetItemId(CommonItemKind.HerbGRB)), 1);
+                        }
+                        else
+                        {
+                            return new Item(rng.NextOf(
+                                ItemHelper.GetItemId(CommonItemKind.FirstAid),
+                                ItemHelper.GetItemId(CommonItemKind.HerbGRB)), 1);
+                        }
                     }
                     case ItemAttribute.InkRibbon:
                     {
-                        var inkType = _itemHelper.GetItemId(CommonItemKind.InkRibbon);
-                        return new Item(inkType, (byte)rng.Next(3, 6));
+                        var inkType = ItemHelper.GetItemId(CommonItemKind.InkRibbon);
+                        var count = (byte)rng.Next(3, 6);
+                        if (generosity == 0)
+                            count = (byte)(count / 2);
+                        return new Item(inkType, count);
                     }
                 }
             }
-            var fasType = _itemHelper.GetItemId(CommonItemKind.FirstAid);
+            var fasType = ItemHelper.GetItemId(CommonItemKind.FirstAid);
             return new Item(fasType, 1);
         }
 
@@ -385,7 +408,7 @@ namespace IntelOrca.Biohazard.BioRand
             if (_requiredItems.Count == 0)
                 return true;
 
-            return _requiredItems.All(x => !x.IsDoor && (x.Item == null || _itemHelper.IsOptionalItem(_config, (byte)x.Item.Value.Type)));
+            return _requiredItems.All(x => !x.IsDoor && (x.Item == null || ItemHelper.IsOptionalItem(_config, (byte)x.Item.Value.Type)));
         }
 
         private void ClearItems()
@@ -465,7 +488,7 @@ namespace IntelOrca.Biohazard.BioRand
                         continue;
 
                     var requiredItems = edge.Requires == null ? new byte[0] : edge.Requires.Except(_haveItems).ToArray()!;
-                    var justOptionalLeft = requiredItems.All(x => _itemHelper.IsOptionalItem(_config, (byte)x));
+                    var justOptionalLeft = requiredItems.All(x => ItemHelper.IsOptionalItem(_config, (byte)x));
                     if (requiredItems.Length == 0 || justOptionalLeft)
                     {
                         if (seen.Contains(edge.Node.RdtId))
@@ -495,7 +518,7 @@ namespace IntelOrca.Biohazard.BioRand
                     {
                         if (g_debugLogging)
                         {
-                            var items = requiredItems!.Select(x => _itemHelper.GetItemName((byte)x)).ToArray();
+                            var items = requiredItems!.Select(x => ItemHelper.GetItemName((byte)x)).ToArray();
                             _logger.WriteLine($"        Key requirement [{string.Join(", ", items)}] for {node} -> {edge.Node}");
                         }
                         _requiredItems.Add(new KeyRequirement(requiredItems, null, isDoor: true));
@@ -536,7 +559,7 @@ namespace IntelOrca.Biohazard.BioRand
                 if (!HasAllRequiredItems(item.Requires))
                     continue;
 
-                if (!includeKeyItems && (_itemHelper.GetItemAttributes((byte)item.Type) & ItemAttribute.Key) != 0)
+                if (!includeKeyItems && (ItemHelper.GetItemAttributes((byte)item.Type) & ItemAttribute.Key) != 0)
                     continue;
 
                 if (item.Type == type)
@@ -571,12 +594,12 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 if (PlaceKeyItem(req, alternativeRoutes))
                 {
-                    var quantity = _itemHelper.GetItemQuantity(_config, (byte)req);
+                    var quantity = ItemHelper.GetItemQuantity(_config, (byte)req);
                     for (int i = 1; i < quantity; i++)
                     {
                         if (!PlaceKeyItem(req, true))
                         {
-                            throw new Exception($"Unable to place {GetNth(i + 1)} {_itemHelper.GetItemName((byte)req)}");
+                            throw new Exception($"Unable to place {GetNth(i + 1)} {ItemHelper.GetItemName((byte)req)}");
                         }
                     }
                     UpdateRequiredItemList();
@@ -595,10 +618,10 @@ namespace IntelOrca.Biohazard.BioRand
             _logger.WriteLine("    Unable to place the following key items:");
             foreach (var item in checkList)
             {
-                _logger.WriteLine($"        {_itemHelper.GetItemName((byte)item)}");
+                _logger.WriteLine($"        {ItemHelper.GetItemName((byte)item)}");
             }
 
-            if (keyItemPlaceOrder.Any(x => !_itemHelper.IsOptionalItem(_config, (byte)x)))
+            if (keyItemPlaceOrder.Any(x => !ItemHelper.IsOptionalItem(_config, (byte)x)))
                 throw new Exception("Unable to find key item to swap");
 
             _requiredItems.Clear();
@@ -654,7 +677,7 @@ namespace IntelOrca.Biohazard.BioRand
                     index = FindNewKeyItemLocation(req, includeLowPriority: true, includeKeyItems: !noOriginalItemLocation);
                     if (index == null)
                     {
-                        throw new Exception($"Unable to find location for {_itemHelper.GetItemName(req)}.");
+                        throw new Exception($"Unable to find location for {ItemHelper.GetItemName(req)}.");
                     }
                 }
             }
@@ -757,7 +780,7 @@ namespace IntelOrca.Biohazard.BioRand
             _definedPool.Add(itemEntry);
             itemParentNode.PlacedKeyItems.Add(itemEntry);
 
-            _logger.WriteLine($"    Placing key item ({_itemHelper.GetItemName((byte)itemEntry.Type)} x{itemEntry.Amount}) in {itemEntry.RdtId}:{itemEntry.Id}");
+            _logger.WriteLine($"    Placing key item ({ItemHelper.GetItemName((byte)itemEntry.Type)} x{itemEntry.Amount}) in {itemEntry.RdtId}:{itemEntry.Id}");
             return true;
         }
 
@@ -783,7 +806,7 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 _currentPool.Add(item);
                 if (g_debugLogging)
-                    _logger.WriteLine($"    Add {item.ToString(_itemHelper)} to current pool");
+                    _logger.WriteLine($"    Add {item.ToString(ItemHelper)} to current pool");
             }
 
             if (_currentPool.DistinctBy(x => x.RdtItemId).Count() != _currentPool.Count())
@@ -812,7 +835,7 @@ namespace IntelOrca.Biohazard.BioRand
             _startingWeapons.Clear();
 
             var availableWeapons = new List<byte>();
-            var weaponPool = _itemHelper
+            var weaponPool = ItemHelper
                 .GetWeapons(_rng, _config)
                 .Shuffle(_rng)
                 .ToList();
@@ -825,7 +848,7 @@ namespace IntelOrca.Biohazard.BioRand
             }
             else
             {
-                availableWeapons.AddRange(_itemHelper.GetDefaultWeapons(_config));
+                availableWeapons.AddRange(ItemHelper.GetDefaultWeapons(_config));
             }
 
             while (availableWeapons.Count < numWeapons && weaponPool.Count != 0)
@@ -844,21 +867,21 @@ namespace IntelOrca.Biohazard.BioRand
             foreach (var weapon in availableWeapons)
             {
                 // Spawn upgrade
-                var upgradeType = _itemHelper.GetWeaponUpgrade(weapon, _rng, _config);
+                var upgradeType = ItemHelper.GetWeaponUpgrade(weapon, _rng, _config);
                 if (upgradeType != null && _rng.NextProbability(50))
                 {
                     SpawnItem(shuffled, upgradeType.Value, 1);
                 }
 
                 // Add supported ammo types
-                var weaponAmmoTypes = _itemHelper.GetAmmoTypeForWeapon(weapon);
+                var weaponAmmoTypes = ItemHelper.GetAmmoTypeForWeapon(weapon);
                 foreach (var ammoType in weaponAmmoTypes)
                 {
                     ammoTypes.Add(ammoType);
                 }
 
                 // Add gunpowder types
-                var weaponGunpowderTypes = _itemHelper.GetWeaponGunpowder(weapon);
+                var weaponGunpowderTypes = ItemHelper.GetWeaponGunpowder(weapon);
                 foreach (var gunpowderType in weaponGunpowderTypes)
                 {
                     gunpowderTypes.Add(gunpowderType);
@@ -870,25 +893,25 @@ namespace IntelOrca.Biohazard.BioRand
             var gunpowderTable = _rng.CreateProbabilityTable<byte>();
             foreach (var gunpowderType in gunpowderTypes)
             {
-                var probability = _itemHelper.GetItemProbability(gunpowderType);
+                var probability = ItemHelper.GetItemProbability(gunpowderType);
                 gunpowderTable.Add(gunpowderType, probability);
             }
 
             var ammoTable = _rng.CreateProbabilityTable<byte>();
             foreach (var ammoType in ammoTypes)
             {
-                var probability = _itemHelper.GetItemProbability(ammoType);
+                var probability = ItemHelper.GetItemProbability(ammoType);
                 ammoTable.Add(ammoType, probability);
             }
 
             var healthTable = _rng.CreateProbabilityTable<byte>();
-            healthTable.Add(_itemHelper.GetItemId(CommonItemKind.HerbG), 0.5);
-            healthTable.Add(_itemHelper.GetItemId(CommonItemKind.HerbR), 0.3);
-            healthTable.Add(_itemHelper.GetItemId(CommonItemKind.HerbB), 0.1);
-            healthTable.Add(_itemHelper.GetItemId(CommonItemKind.FirstAid), 0.1);
+            healthTable.Add(ItemHelper.GetItemId(CommonItemKind.HerbG), 0.5);
+            healthTable.Add(ItemHelper.GetItemId(CommonItemKind.HerbR), 0.3);
+            healthTable.Add(ItemHelper.GetItemId(CommonItemKind.HerbB), 0.1);
+            healthTable.Add(ItemHelper.GetItemId(CommonItemKind.FirstAid), 0.1);
 
             var inkTable = _rng.CreateProbabilityTable<byte>();
-            inkTable.Add(_itemHelper.GetItemId(CommonItemKind.InkRibbon), 1);
+            inkTable.Add(ItemHelper.GetItemId(CommonItemKind.InkRibbon), 1);
 
             var totalRatio = (double)(_config.RatioGunpowder + _config.RatioAmmo + _config.RatioHealth + _config.RatioInkRibbons);
             var numGunpowder = (int)Math.Ceiling((_config.RatioGunpowder / totalRatio) * shuffled.Count);
@@ -897,13 +920,13 @@ namespace IntelOrca.Biohazard.BioRand
             var numInk = (int)Math.Ceiling((_config.RatioInkRibbons / totalRatio) * shuffled.Count);
 
             var proportions = new List<(int, Rng.Table<byte>)>();
-            if (_itemHelper.HasGunPowder(_config))
+            if (ItemHelper.HasGunPowder(_config))
             {
                 proportions.Add((numGunpowder, gunpowderTable));
             }
             proportions.Add((numAmmo, ammoTable));
             proportions.Add((numHealth, healthTable));
-            if (_itemHelper.HasInkRibbons(_config))
+            if (ItemHelper.HasInkRibbons(_config))
             {
                 proportions.Add((numInk, inkTable));
             }
@@ -935,7 +958,7 @@ namespace IntelOrca.Biohazard.BioRand
                 if (weaponKind == WeaponKind.None)
                     continue;
 
-                var itemIndex = weaponPool.FindLastIndex(x => weaponKind == _itemHelper.GetWeaponKind(x));
+                var itemIndex = weaponPool.FindLastIndex(x => weaponKind == ItemHelper.GetWeaponKind(x));
                 if (itemIndex != -1)
                 {
                     var weapon = weaponPool[itemIndex];
@@ -969,7 +992,7 @@ namespace IntelOrca.Biohazard.BioRand
                 var newEntry = oldEntry;
                 newEntry.Type = itemType;
                 newEntry.Amount = amount;
-                _logger.WriteLine($"    Replaced {oldEntry.ToString(_itemHelper)} with {newEntry.ToString(_itemHelper)}");
+                _logger.WriteLine($"    Replaced {oldEntry.ToString(ItemHelper)} with {newEntry.ToString(ItemHelper)}");
                 if (_definedPool.Any(x => x.RdtItemId == newEntry.RdtItemId))
                     throw new Exception();
                 _definedPool.Add(newEntry);
@@ -983,13 +1006,13 @@ namespace IntelOrca.Biohazard.BioRand
 
         private byte GetRandomAmount(byte type, bool fullQuantity)
         {
-            if (type == _itemHelper.GetItemId(CommonItemKind.InkRibbon))
+            if (type == ItemHelper.GetItemId(CommonItemKind.InkRibbon))
             {
                 return (byte)_rng.Next(1, 3);
             }
 
             var multiplier = fullQuantity ? 1 : (_config.AmmoQuantity / 8.0);
-            var max = _itemHelper.GetMaxAmmoForAmmoType(type);
+            var max = ItemHelper.GetMaxAmmoForAmmoType(type);
             return (byte)_rng.Next(1, (int)(max * multiplier) + 1);
         }
 
@@ -999,7 +1022,7 @@ namespace IntelOrca.Biohazard.BioRand
 
             if (_config.RandomInventory && !_config.ShuffleItems)
             {
-                var weaponPool = _itemHelper
+                var weaponPool = ItemHelper
                     .GetWeapons(_rng, _config)
                     .Shuffle(_rng)
                     .ToList();
@@ -1017,7 +1040,7 @@ namespace IntelOrca.Biohazard.BioRand
                 if (!entry.AllowDocuments)
                 {
                     var iteration = 0;
-                    while ((_itemHelper.GetItemAttributes((byte)shuffleEntry.Type) & ItemAttribute.Document) != 0)
+                    while ((ItemHelper.GetItemAttributes((byte)shuffleEntry.Type) & ItemAttribute.Document) != 0)
                     {
                         // We can't replace this item with a document,
                         // put item back on the end and take next one
@@ -1032,7 +1055,7 @@ namespace IntelOrca.Biohazard.BioRand
                 }
                 entry.Type = shuffleEntry.Type;
                 entry.Amount = shuffleEntry.Amount;
-                _logger.WriteLine($"    Swapped {shufflePool[i].ToString(_itemHelper)} with {shuffleEntry.ToString(_itemHelper)}");
+                _logger.WriteLine($"    Swapped {shufflePool[i].ToString(ItemHelper)} with {shuffleEntry.ToString(ItemHelper)}");
                 _definedPool.Add(entry);
             }
             _shufflePool.Clear();
@@ -1069,7 +1092,7 @@ namespace IntelOrca.Biohazard.BioRand
                 var targetItem = sourceItem;
                 targetItem.RdtItemId = target;
                 _definedPool.Add(targetItem);
-                _logger.WriteLine($"    {sourceItem.ToString(_itemHelper)} placed at {target}");
+                _logger.WriteLine($"    {sourceItem.ToString(ItemHelper)} placed at {target}");
             }
         }
 
@@ -1143,10 +1166,10 @@ namespace IntelOrca.Biohazard.BioRand
 
         private byte GetTotalKeyRequirementCount(PlayNode node, byte keyType)
         {
-            if (_itemHelper.IsItemInfinite((byte)keyType))
+            if (ItemHelper.IsItemInfinite((byte)keyType))
                 return 0;
 
-            if (!_itemHelper.IsRe2ItemIdsDiscardable((byte)keyType))
+            if (!ItemHelper.IsRe2ItemIdsDiscardable((byte)keyType))
                 return 1;
 
             byte total = 0;

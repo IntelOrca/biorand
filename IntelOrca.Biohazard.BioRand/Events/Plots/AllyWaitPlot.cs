@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using IntelOrca.Biohazard.BioRand.RE2;
 
 namespace IntelOrca.Biohazard.BioRand.Events.Plots
@@ -15,7 +17,10 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                 () => new ItemGiftSubPlot(),
                 () => new TradeSubPlot(),
                 () => new CurePoisonSubPlot(),
-                () => new CureSubPlot()
+                () => new CureSubPlot(),
+                () => builder.ItemRandomiser == null ?
+                    (SubPlot)new ItemGiftSubPlot() :
+                    new ChoiceSubPlot()
             };
             var subPlotFactory = builder.Rng.NextOf(subplots);
             return BuildPlot(builder, subPlotFactory());
@@ -293,7 +298,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                 }
                 else
                 {
-                    var item = itemRando.GetRandomGift(rng);
+                    var item = itemRando.GetRandomGift(rng, 1);
                     type = item.Type;
                     amount = item.Amount;
                 }
@@ -323,6 +328,74 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                     .Else(
                         new SbCommentNode("[action] message - trade",
                             new SbMessage(msg0)));
+            }
+        }
+
+        private class ChoiceSubPlot : SubPlot
+        {
+            public override bool CanExit => false;
+            public override bool AlwaysExit => false;
+
+            public override SbNode OnQuickConversation() => OnAfterChat();
+
+            public override SbNode OnAfterChat()
+            {
+                var rng = PlotBuilder.Rng;
+                var itemRando = PlotBuilder.ItemRandomiser!;
+                var itemHelper = itemRando.ItemHelper;
+
+                var pool = new List<Choice>();
+                while (pool.Count < 5)
+                {
+                    var item = itemRando.GetRandomGift(rng, 0);
+                    if (!pool.Any(x => x.Item == item))
+                    {
+                        var itemName = itemHelper.GetFriendlyItemName(item.Type);
+                        pool.Add(new Choice(item, itemName));
+                    }
+                }
+                var msgText = new StringBuilder();
+                msgText.Append("Which item would you like?\n");
+                msgText.Append("1. Decide later#");
+                for (var i = 0; i < pool.Count; i++)
+                {
+                    msgText.Append($"{i + 2}. {{{pool[i].Display}}}");
+                    msgText.Append(i % 2 == 0 ? '\n' : '#');
+                }
+                msgText.Append("@02");
+
+                var builder = PlotBuilder;
+                var msg = builder.AllocateMessage(msgText.ToString(), autoBreak: false);
+                var choices =
+                    new SbNode[] { new SbNop() }.Concat(
+                    Enumerable.Range(0, 5).Select(x =>
+                        new SbContainerNode(
+                            new SbSetFlag(ExitFlag),
+                            pool[x].BuildChoiceNode(builder)))).ToArray();
+                return
+                    new SbCommentNode("[action] choice",
+                        new SbMessage(msg, choices));
+            }
+
+            private class Choice
+            {
+                public Item Item { get; }
+                public string ItemName { get; }
+                public string Display => Item.Amount == 1 ? ItemName : $"{Item.Amount}x {ItemName}";
+
+                public Choice(Item item, string itemName)
+                {
+                    Item = item;
+                    ItemName = itemName;
+                }
+
+                public SbNode BuildChoiceNode(PlotBuilder builder)
+                {
+                    var msg = builder.AllocateMessage($"You received {Display}");
+                    return new SbContainerNode(
+                        new SbGetItem(Item),
+                        new SbMessage(msg));
+                }
             }
         }
 

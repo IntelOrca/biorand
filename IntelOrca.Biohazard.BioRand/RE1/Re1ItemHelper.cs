@@ -374,5 +374,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
         {
             return new byte[0];
         }
+
+        public string GetFriendlyItemName(byte type) => GetItemName(type);
     }
 }

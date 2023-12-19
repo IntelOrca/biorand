@@ -501,5 +501,7 @@ namespace IntelOrca.Biohazard.BioRand.RE3
         {
             return true;
         }
+
+        public string GetFriendlyItemName(byte type) => GetItemName(type);
     }
 }
