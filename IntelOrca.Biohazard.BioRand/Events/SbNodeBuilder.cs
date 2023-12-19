@@ -22,9 +22,9 @@ namespace IntelOrca.Biohazard.BioRand.Events
             _list.AddRange(node);
         }
 
-        public void Reparent(Func<SbNode[], SbNode> f)
+        public void Reparent(Func<SbNode, SbNode> f)
         {
-            var result = f(_list.ToArray());
+            var result = f(new SbContainerNode(_list.ToArray()));
             _list.Clear();
             _list.Add(result);
         }

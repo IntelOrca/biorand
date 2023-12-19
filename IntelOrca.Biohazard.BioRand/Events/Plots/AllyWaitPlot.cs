@@ -41,7 +41,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
 
                 if (rng.NextProbability(50))
                     doorEntry = null;
-                if (!subPlot.CanExit || rng.NextProbability(50))
+                if (!subPlot.MustExit && (!subPlot.CanExit || rng.NextProbability(50)))
                     doorExit = null;
             }
             else
@@ -51,8 +51,8 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
             if (waitPoi == null)
                 return null;
 
-            var plotFlag = builder.AllocateGlobalFlag();
-            var converseFlag = builder.AllocateGlobalFlag();
+            var enterFlag = builder.AllocateGlobalFlag();
+            var exitFlag = builder.AllocateGlobalFlag();
 
             var player = builder.GetPlayer();
             var ally = builder.AllocateAlly();
@@ -62,7 +62,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
             subPlot.Player = player;
             subPlot.Ally = ally;
             subPlot.Cut = waitPoi!.CloseCut;
-            subPlot.ConverseFlag = converseFlag;
+            subPlot.ExitFlag = exitFlag;
 
             var loopProcedure = new SbProcedure(
                 new SbLoop(
@@ -73,20 +73,20 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                 new SbIf(builder.GetPlotLockFlag(), false,
                     subPlot.OnConversation(),
                     SbNode.Conditional(doorExit != null, () => new SbContainerNode(
-                        new SbDisableAot(interaction),
-                        new SbSetEntityCollision(ally, false),
-                        new SbCommentNode($"[action] ally travel to {{ {waitPoi} }}",
-                            builder.Travel(ally, waitPoi, doorExit!, PlcDestKind.Run, overrideDestination: doorExit!.Position.Reverse())),
-                        new SbMoveEntity(ally, REPosition.OutOfBounds),
-                        new SbCommentNode($"[action] ally leave at {{ {doorExit} }}",
-                            new SbDoor(doorExit))))));
+                        new SbIf(exitFlag, true,
+                            new SbDisableAot(interaction),
+                            new SbCommentNode($"[action] ally travel to {{ {waitPoi} }}",
+                                builder.Travel(ally, waitPoi, doorExit!, PlcDestKind.Run, overrideDestination: doorExit!.Position.Reverse())),
+                            new SbMoveEntity(ally, REPosition.OutOfBounds),
+                            new SbCommentNode($"[action] ally leave at {{ {doorExit} }}",
+                                new SbDoor(doorExit)))))));
 
             SbProcedure? triggerProcedure = null;
             if (doorEntry != null)
             {
                 triggerProcedure = new SbProcedure(
                     builder.CreateTrigger(doorEntry.Cuts),
-                    new SbSetFlag(plotFlag),
+                    new SbSetFlag(enterFlag),
                     new SbLockPlot(
                         new SbCommentNode($"[action] ally enter at {{ {doorEntry} }}",
                             new SbCutSequence(
@@ -103,34 +103,36 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                         new SbSleep(30 * 2)));
             }
 
-            SbNode waitBlock = new SbContainerNode(
+            var nodeBuilder = new SbNodeBuilder();
+            nodeBuilder.Append(
+                new SbContainerNode(
                 new SbAlly(ally, waitPoi!.Position),
                 new SbAot(interaction, waitPoi.Position, 2000),
-                new SbEnableEvent(interaction, eventProcedure));
+                new SbEnableEvent(interaction, eventProcedure)));
             if (doorEntry != null)
             {
-                waitBlock =
-                    new SbIf(plotFlag, false,
+                nodeBuilder.Reparent(x =>
+                    new SbIf(enterFlag, false,
                         SbNode.Conditional(doorEntry != null, () => new SbContainerNode(
                             new SbAlly(ally, REPosition.OutOfBounds),
                             new SbAot(interaction, waitPoi.Position, 2000),
                             new SbFork(triggerProcedure!))))
-                    .Else(waitBlock);
+                    .Else(x));
             }
 
-            SbNode initBlock = new SbContainerNode(
-                waitBlock,
-                new SbFork(loopProcedure),
-                subPlot.OnInit());
+            nodeBuilder.Reparent(x =>
+                new SbContainerNode(
+                    x,
+                    new SbFork(loopProcedure),
+                    subPlot.OnInit()));
             if (doorExit != null)
             {
-                initBlock = new SbIf(converseFlag, false, initBlock);
+                nodeBuilder.Reparent(x => new SbIf(exitFlag, false, x));
             }
-            var initProcedure = new SbProcedure(
-                new SbCommentNode($"[plot] ally wait {{ flag {plotFlag.Flag} }}",
-                    initBlock));
-
-            return new CsPlot(initProcedure);
+            return new CsPlot(
+                new SbProcedure(
+                    new SbCommentNode($"[plot] ally wait {{ flag {enterFlag.Flag} }}",
+                        nodeBuilder.Build())));
         }
 
         private class SubPlot
@@ -140,11 +142,14 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
             public CsPlayer Player { get; set; }
             public CsAlly Ally { get; set; }
             public int? Cut { get; set; }
-            public CsFlag ConverseFlag { get; set; }
+            public CsFlag ExitFlag { get; set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
             public ICsHero[] Participants => new ICsHero[] { Player, Ally };
             public virtual bool CanExit => true;
+            public virtual bool MustExit => true;
+            public virtual bool AlwaysExit => true;
+            public virtual bool HasQuickConversation => true;
 
             public virtual SbNode OnInit() => new SbNop();
 
@@ -152,11 +157,12 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
             {
                 return
                     new SbLockPlot(
-                        new SbIf(ConverseFlag, true,
+                        new SbIf(ExitFlag, true,
                             OnQuickConversation())
                         .Else(
                             OnFullConversation(),
-                            new SbSetFlag(ConverseFlag),
+                            SbNode.Conditional(AlwaysExit, () =>
+                                new SbSetFlag(ExitFlag)),
                             new SbSleep(2 * 30)));
             }
 
@@ -323,6 +329,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
         private class CurePoisonSubPlot : SubPlot
         {
             public override bool CanExit => false;
+            public override bool MustExit => true;
 
             public override SbNode OnQuickConversation() => OnAfterChat();
 
@@ -331,9 +338,14 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                 var builder = PlotBuilder;
                 var msg0 = builder.AllocateMessage("I can treat poison wounds.");
                 var msg1 = builder.AllocateMessage("You poisoned wounds have been treated.");
+                var use0 = builder.AllocateGlobalFlag();
                 return
                     new SbIf(new SbCkPoison(),
                         new SbCommentNode("[action] heal player (poison)",
+                            new SbIf(use0, true,
+                                new SbSetFlag(ExitFlag))
+                            .Else(
+                                new SbSetFlag(use0)),
                             new SbHealPoison(),
                             new SbMessage(msg1)))
                     .Else(
@@ -344,7 +356,9 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
 
         private class CureSubPlot : SubPlot
         {
-            public override bool CanExit => false;
+            public override bool CanExit => true;
+            public override bool MustExit => true;
+            public override bool AlwaysExit => false;
 
             public override SbNode OnQuickConversation() => OnAfterChat();
 
@@ -353,10 +367,15 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                 var builder = PlotBuilder;
                 var msg0 = builder.AllocateMessage("Would you like me to treat your wounds?@");
                 var msg1 = builder.AllocateMessage("Your wounds have been treated.");
+                var use0 = builder.AllocateGlobalFlag();
                 return
                     new SbCommentNode("[action] question - heal",
                         new SbMessage(msg0,
                             new SbCommentNode("[action] heal player",
+                                new SbIf(use0, true,
+                                    new SbSetFlag(ExitFlag))
+                                .Else(
+                                    new SbSetFlag(use0)),
                                 new SbHeal(),
                                 new SbMessage(msg1))));
             }
