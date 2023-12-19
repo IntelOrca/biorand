@@ -310,6 +310,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
         private class TradeSubPlot : SubPlot
         {
             public override bool CanExit => false;
+            public override bool AlwaysExit => false;
 
             public override SbNode OnQuickConversation() => OnAfterChat();
 
