@@ -25,6 +25,7 @@ namespace IntelOrca.Biohazard.BioRand
             _bw.Write(0);
         }
 
+        public void Write(byte[] bytes) => _bw.Write(bytes);
         public void Write(byte b) => _bw.Write(b);
         public void Write16(short v) => _bw.Write(v);
         public void Write16(ushort v) => _bw.Write(v);

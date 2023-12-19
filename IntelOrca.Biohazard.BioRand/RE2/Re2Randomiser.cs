@@ -136,6 +136,7 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             FixClaireWeapons();
             FixWeaponHitScan(config);
             DisableWaitForSherry();
+            FixPartnerHealth();
 
             // tmoji.bin
             var src = DataManager.GetPath(BiohazardVersion, "tmoji.bin");
@@ -900,6 +901,31 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             var bw = new PatchWriter(ExePatch);
             bw.Begin(0x400000 + 0xE9490);
             bw.Write((byte)0xEB);
+            bw.End();
+        }
+
+        private void FixPartnerHealth()
+        {
+            // Some NPC init. routines (like Ben2 EM44) do not set the current health
+            // meaning it is uninitialised and usually < 0 which is danger
+
+            // Initialise health to 200 before running the specific EM init. routine
+            var instructions = new byte[]
+            {
+                0x66, 0xC7, 0x86, 0x56, 0x01, 0x00, 0x00, 0x00, 0x02,   // mov word ptr [esi+00000156],0200
+
+                0xFF, 0x14, 0x8D, 0xC8, 0xCA, 0x53, 0x00,               // call dword ptr [ecx*4+0053CAC8]
+                0x83, 0xC4, 0x04,                                       // add esp,04
+                0x5F,                                                   // pop edi
+                0x5E,                                                   // pop esi
+                0x5B,                                                   // pop ebx
+                0x81, 0xC4, 0x18, 0x01, 0x00, 0x00,                     // add esp,00000118
+                0xC3                                                    // ret
+            };
+
+            var bw = new PatchWriter(ExePatch);
+            bw.Begin(0x400000 + 0xEF9AD);
+            bw.Write(instructions);
             bw.End();
         }
     }
