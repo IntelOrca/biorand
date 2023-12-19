@@ -122,11 +122,18 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 for (var i = 0; i < 1000; i++)
                 {
                     var suggestedEnemyType = _npcRandomiser.GetRandomNpc(_rdt, Rng);
-                    if (excludePartnerTypes &&
-                        suggestedEnemyType != Re2EnemyIds.AdaWong1 &&
-                        suggestedEnemyType != Re2EnemyIds.AdaWong2 &&
-                        suggestedEnemyType != Re2EnemyIds.SherryWithPendant &&
-                        suggestedEnemyType != Re2EnemyIds.SherryWithClairesJacket)
+                    if (excludePartnerTypes)
+                    {
+                        if (suggestedEnemyType != Re2EnemyIds.AdaWong1 &&
+                            suggestedEnemyType != Re2EnemyIds.AdaWong2 &&
+                            suggestedEnemyType != Re2EnemyIds.SherryWithPendant &&
+                            suggestedEnemyType != Re2EnemyIds.SherryWithClairesJacket)
+                        {
+                            enemyType = suggestedEnemyType;
+                            break;
+                        }
+                    }
+                    else
                     {
                         enemyType = suggestedEnemyType;
                         break;
