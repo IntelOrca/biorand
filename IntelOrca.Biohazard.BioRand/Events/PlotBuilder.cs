@@ -30,6 +30,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public int MaximumEnemyCount { get; }
         public IEnemyHelper EnemyHelper => _enemyRandomiser?.EnemyHelper ?? new Re2EnemyHelper();
         public byte? EnemyType { get; }
+        public RdtId RdtId => _rdt.RdtId;
 
         public PlotBuilder(
             RandoConfig config,
@@ -97,6 +98,9 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public CsEnemy AllocateEnemy(byte? type = null, bool hasGlobalId = true)
         {
             var id = _availableEntityIds.Dequeue();
+            if (id == 255)
+                throw new InvalidOperationException();
+
             var globalId = hasGlobalId ? _enemyRandomiser?.GetNextKillId() ?? 255 : (byte)255;
             type ??= EnemyType ?? Re2EnemyIds.ZombieRandom;
             var position = _enemyPositions.Next();
@@ -113,11 +117,49 @@ namespace IntelOrca.Biohazard.BioRand.Events
             var actor = "claire";
             if (_npcRandomiser != null)
             {
-                enemyType = _npcRandomiser.GetRandomNpc(_rdt, Rng);
+                // HACK partner does not work if another partner type is in room
+                var excludePartnerTypes = !_availableEntityIds.Contains(255);
+                for (var i = 0; i < 1000; i++)
+                {
+                    var suggestedEnemyType = _npcRandomiser.GetRandomNpc(_rdt, Rng);
+                    if (excludePartnerTypes &&
+                        suggestedEnemyType != Re2EnemyIds.AdaWong1 &&
+                        suggestedEnemyType != Re2EnemyIds.AdaWong2 &&
+                        suggestedEnemyType != Re2EnemyIds.SherryWithPendant &&
+                        suggestedEnemyType != Re2EnemyIds.SherryWithClairesJacket)
+                    {
+                        enemyType = suggestedEnemyType;
+                        break;
+                    }
+                }
                 actor = _npcRandomiser.GetActor(enemyType) ?? actor;
             }
             var id = _availableEntityIds.Dequeue();
+            if (id == 255)
+                throw new InvalidOperationException();
             return new CsAlly(id, enemyType, actor);
+        }
+
+        public CsAlly? AllocatePartner()
+        {
+            var enemyType = Re2EnemyIds.AdaWong1;
+            var actor = "ada";
+            if (_npcRandomiser != null)
+            {
+                actor = _npcRandomiser.GetActor(enemyType) ?? actor;
+            }
+            if (_availableEntityIds.Contains(255))
+            {
+                // HACK remove 255 from queue
+                var newQueue = _availableEntityIds
+                    .Except(new byte[] { 255 })
+                    .ToArray();
+                _availableEntityIds.Clear();
+                foreach (var x in newQueue)
+                    _availableEntityIds.Enqueue(x);
+                return new CsAlly(255, enemyType, actor);
+            }
+            return null;
         }
 
         public CsItem AllocateItem(Item item)

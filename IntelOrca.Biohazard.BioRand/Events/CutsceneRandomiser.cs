@@ -27,6 +27,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
         private EnemyPosition[] _allEnemyPositions = new EnemyPosition[0];
         private IPlot[] _registeredPlots = new IPlot[0];
         private EndlessBag<ReFlag> _globalFlags;
+        private HashSet<RdtId> _partnerRooms = new HashSet<RdtId>();
 
         public CutsceneRandomiser(
             RandoLogger logger,
@@ -66,10 +67,49 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
             var rdts = graph?.GetAccessibleRdts(_gameData) ?? _gameData.Rdts;
             rdts = rdts.OrderBy(x => x.RdtId).ToArray();
+            RandomizePartnerRooms(rdts);
             foreach (var rdt in rdts)
             {
                 RandomizeRoom(rdt, _rng.NextFork());
             }
+        }
+
+        private void RandomizePartnerRooms(RandomizedRdt[] rdts)
+        {
+            var allIds = rdts.Select(x => x.RdtId).ToArray();
+            var rng = _rng.NextFork();
+            var prob = rng.Next(0, 6);
+            _partnerRooms.Clear();
+            if (_config.RandomDoors)
+            {
+                var count = (rdts.Length * prob) / 5;
+                _partnerRooms.AddRange(allIds.Shuffle(rng).Take(count));
+            }
+            else
+            {
+                var streets = "100,101,102,103,104,105,118,119,11A,11B"
+                    .Split(',')
+                    .Select(x => RdtId.Parse(x))
+                    .ToArray();
+                var rpd = allIds
+                    .Where(x => x.Stage == 0 || x.Stage == 1 || x.Stage == 2)
+                    .Except(streets)
+                    .ToArray();
+                var sewer = allIds
+                    .Where(x => x.Stage == 3)
+                    .ToArray();
+                var factory = allIds
+                    .Where(x => x.Stage == 4)
+                    .ToArray();
+                var lab = allIds
+                    .Where(x => x.Stage == 5 || x.Stage == 6)
+                    .ToArray();
+                var areas = new[] { streets, rpd, sewer, factory, lab };
+                _partnerRooms.AddRange(areas.Shuffle(rng).Take(prob).SelectMany(x => x));
+            }
+
+            // 0x400 partner has issue with step
+            _partnerRooms.Remove(new RdtId(3, 0x00));
         }
 
         public void RandomizeRoom(RandomizedRdt rdt, Rng rng)
@@ -138,6 +178,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 .ToArray();
             var availableIds = Enumerable
                 .Range(0, 32)
+                .Concat(new[] { 255 })
                 .Select(x => (byte)x)
                 .Except(reservedIds)
                 .ToArray();
@@ -190,7 +231,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 maximumEnemyCount);
 
             var plots = new List<CsPlot>();
-            AddAllyPlots(rng, plotBuilder, plots);
+            AddAllyPlots(rdt, rng, plotBuilder, plots);
             AddEnemyPlots(rdt, rng, maximumEnemyCount, enemyHelper, enemyType, plotBuilder, plots);
 
             foreach (var plot in plots)
@@ -212,8 +253,12 @@ namespace IntelOrca.Biohazard.BioRand.Events
             _enemyRandomiser!.ChosenEnemies.Remove(rdt);
         }
 
-        private void AddAllyPlots(Rng rng, PlotBuilder plotBuilder, List<CsPlot> plots)
+        private void AddAllyPlots(RandomizedRdt rdt, Rng rng, PlotBuilder plotBuilder, List<CsPlot> plots)
         {
+            if (_partnerRooms.Contains(rdt.RdtId))
+            {
+                ChainRandomPlot<PartnerPlot>(plots, plotBuilder);
+            }
             if (rng.NextProbability(20))
             {
                 ChainRandomPlot<MurderPlot>(plots, plotBuilder);
@@ -507,7 +552,8 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 new NoisePlot(),
                 new AnnouncerPlot(),
                 new MurderPlot(),
-                new AllyPatrolPlot()
+                new AllyPatrolPlot(),
+                new PartnerPlot()
             };
         }
 

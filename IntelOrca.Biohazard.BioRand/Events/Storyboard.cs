@@ -415,18 +415,24 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
     internal class SbAlly : SbNode
     {
+        private readonly byte _ai;
+
         public CsAlly Ally { get; }
         public REPosition Position { get; }
 
-        public SbAlly(CsAlly ally, REPosition position)
+        public SbAlly(CsAlly ally, REPosition position, byte ai = 64)
         {
             Ally = ally;
             Position = position;
+            _ai = ai;
         }
 
         public override void Build(CutsceneBuilder builder)
         {
-            builder.Ally(Ally.Id, (byte)Ally.Type, Position);
+            var id = Ally.Id;
+            var type = (byte)Ally.Type;
+            var position = Position;
+            builder.AppendLine("sce_em_set", 0, id, type, 0, _ai, position.Floor, 0, 0, 255, position.X, position.Y, position.Z, position.D, 0, 0);
         }
     }
 
@@ -1242,7 +1248,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public override void Build(CutsceneBuilder builder)
         {
             builder.AppendLine("heal");
-            builder.AppendLine("nop");
+            builder.AppendLine("heal_partner");
         }
     }
 
