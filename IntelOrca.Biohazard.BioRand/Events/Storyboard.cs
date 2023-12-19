@@ -1312,6 +1312,14 @@ namespace IntelOrca.Biohazard.BioRand.Events
         }
     }
 
+    internal class SbEnd : SbNode
+    {
+        public override void Build(CutsceneBuilder builder)
+        {
+            builder.AppendLine("evt_end", 0);
+        }
+    }
+
     internal class SbCustom : SbNode
     {
         public Action<CutsceneBuilder> Builder { get; }

@@ -38,7 +38,16 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                 new SbSleep(1),
                 new SbStopEntity(allyVictim));
 
+            var bailOut = new SbNodeBuilder();
+            foreach (var cut in spot.AllCuts)
+            {
+                bailOut.Append(
+                    new SbIf(new SbCmpCut(cut),
+                        new SbEnd()));
+            }
+
             var trigger = new SbProcedure(
+                bailOut.Build(),
                 builder.CreateTrigger(
                     notCuts: spot.AllCuts,
                     minSleepTime: 1,
