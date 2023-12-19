@@ -349,7 +349,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                 while (pool.Count < 5)
                 {
                     var item = itemRando.GetRandomGift(rng, 0);
-                    if (!pool.Any(x => x.Item == item))
+                    if (!pool.Any(x => IsItemSimilar(x.Item, item)))
                     {
                         var itemName = itemHelper.GetFriendlyItemName(item.Type);
                         pool.Add(new Choice(item, itemName));
@@ -378,11 +378,43 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                         new SbMessage(msg, choices));
             }
 
+            private static bool IsItemSimilar(Item a, Item b)
+            {
+                if (a.Type == b.Type)
+                    return true;
+
+                // For health items, check if any components are the same
+                var aMask = GetGRB(a.Type);
+                var bMask = GetGRB(b.Type);
+                if ((aMask & bMask) != 0)
+                    return true;
+
+                return false;
+
+                static int GetGRB(byte type)
+                {
+                    return type switch
+                    {
+                        Re2ItemIds.HerbG => 0b100,
+                        Re2ItemIds.HerbGG => 0b100,
+                        Re2ItemIds.HerbGGG => 0b100,
+                        Re2ItemIds.HerbGR => 0b110,
+                        Re2ItemIds.HerbGB => 0b100,
+                        Re2ItemIds.HerbGGB => 0b101,
+                        Re2ItemIds.HerbGRB => 0b111,
+                        Re2ItemIds.HerbR => 0b010,
+                        Re2ItemIds.HerbB => 0b001,
+                        Re2ItemIds.FAidSpray => 0b110,
+                        _ => 0b000,
+                    };
+                }
+            }
+
             private class Choice
             {
                 public Item Item { get; }
                 public string ItemName { get; }
-                public string Display => Item.Amount == 1 ? ItemName : $"{Item.Amount}x {ItemName}";
+                public string Display => Item.Amount == 1 ? ItemName.TrimEnd('s') : $"{Item.Amount}x {ItemName}";
 
                 public Choice(Item item, string itemName)
                 {
