@@ -397,36 +397,29 @@ namespace IntelOrca.Biohazard.BioRand
                     }
                 }
 
-                var path = DataManager.GetPath(BiohazardVersion, "enable_events");
-                if (File.Exists(path))
+#if DEBUG
+                if (config.RandomEvents)
+#else
+                if (config.RandomCutscenes && config.RandomEvents)
+#endif
                 {
-                    if (config.RandomEvents)
+                    if (BiohazardVersion != BioVersion.Biohazard2)
                     {
-                        if (BiohazardVersion != BioVersion.Biohazard2)
-                        {
-                            throw new BioRandUserException("Random events are only supported for RE 2.");
-                        }
+                        throw new BioRandUserException("Random events are only supported for RE 2.");
+                    }
 
-                        var cutscene = new CutsceneRandomiser(
-                            logger,
-                            DataManager,
-                            config,
-                            gameData,
-                            map,
-                            randomCutscenes,
-                            itemRandomiser,
-                            enemyRandomiser,
-                            npcRandomiser,
-                            config.RandomCutscenes ? voiceRandomiser : null);
-                        cutscene.Randomise(graph);
-                    }
-                }
-                else
-                {
-                    if (config.RandomCutscenes && config.RandomEvents)
-                    {
-                        throw new BioRandUserException("Random events are not yet ready for testing.");
-                    }
+                    var cutscene = new CutsceneRandomiser(
+                        logger,
+                        DataManager,
+                        config,
+                        gameData,
+                        map,
+                        randomCutscenes,
+                        itemRandomiser,
+                        enemyRandomiser,
+                        npcRandomiser,
+                        config.RandomCutscenes ? voiceRandomiser : null);
+                    cutscene.Randomise(graph);
                 }
 
                 if (enemyRandomiser != null)
