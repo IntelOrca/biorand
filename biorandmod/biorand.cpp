@@ -122,6 +122,17 @@ static BYTE LoadGameHookCallback(LPVOID buffer, LPCSTR filename, DWORD bytes)
 	return result;
 }
 
+typedef void(*fnSplInit)(void*);
+static void Spl_Init_2(void* spl)
+{
+	*((uint16_t*)((uint8_t*)spl + 0x0156)) = 200; // Health
+	*((uint16_t*)((uint8_t*)spl + 0x0162)) = 200; // Max health
+
+	auto cl = *((uint8_t*)spl + 0x0008);
+	auto routine = (fnSplInit*)(0x53CAC8);
+	routine[cl](spl);
+}
+
 static void RE2_HookLoadGame()
 {
 	BYTE b = 0;
@@ -150,6 +161,10 @@ static void RE2_HookLoadGame()
 	WriteProcessMemory(GetCurrentProcess(), (LPVOID)(0x4AC5D1), &b, sizeof(b), NULL);
 	WriteProcessMemory(GetCurrentProcess(), (LPVOID)(0x4B1AE8), &b, sizeof(b), NULL);
 
+	auto address = (uintptr_t)&Spl_Init_2 - 0x4EF9AA - 5;
+	BYTE instr[] = { 0xE8, 0x00, 0x00, 0x00, 0x00, 0x90, 0x90, 0x90, 0x90, 0x90 };
+	memcpy(&instr[1], &address, sizeof(address));
+	WriteProcessMemory(GetCurrentProcess(), (LPVOID)(0x4EF9AA), instr, sizeof(instr), NULL);
 }
 
 static void ModMain(HMODULE hExecutable)
