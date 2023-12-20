@@ -674,7 +674,9 @@
           "player": 0
         },
         {
-          "condition": "4:40",
+          "condition": "6:78",
+          "excludeOffsets": [ 3198, 3232 ],
+          "includeTypes": [ 16 ],
           "player": 1
         }
       ]

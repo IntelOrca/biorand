@@ -370,7 +370,7 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             return new byte[0];
         }
 
-        public byte[] GetReservedEnemyIds() => new byte[0];
+        public byte[] GetReservedEnemyIds() => new byte[] { 78 };
 
         public void CreateZombie(byte type, PldFile srcPld, EmdFile srcEmd, string dstPath)
         {
