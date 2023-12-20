@@ -108,8 +108,9 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 _partnerRooms.AddRange(areas.Shuffle(rng).Take(prob).SelectMany(x => x));
             }
 
-            // 0x400 partner has issue with step
+            // Rooms that have a ledge crash when partner uses it
             _partnerRooms.Remove(new RdtId(3, 0x00));
+            _partnerRooms.Remove(new RdtId(0, 0x18));
         }
 
         public void RandomizeRoom(RandomizedRdt rdt, Rng rng)
