@@ -436,6 +436,7 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
         {
             public override bool CanExit => false;
             public override bool MustExit => true;
+            public override bool AlwaysExit => false;
 
             public override SbNode OnQuickConversation() => OnAfterChat();
 
