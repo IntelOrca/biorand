@@ -137,6 +137,7 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             FixWeaponHitScan(config);
             DisableWaitForSherry();
             FixPartnerHealth();
+            FixMothCrash();
 
             // tmoji.bin
             var src = DataManager.GetPath(BiohazardVersion, "tmoji.bin");
@@ -926,6 +927,14 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             var bw = new PatchWriter(ExePatch);
             bw.Begin(0x400000 + 0xEF9AD);
             bw.Write(instructions);
+            bw.End();
+        }
+
+        private void FixMothCrash()
+        {
+            var bw = new PatchWriter(ExePatch);
+            bw.Begin(0x400000 + 0xAFFB6);
+            bw.Write(new byte[] { 0xE9, 0x86, 0x00, 0x00, 0x00, 0x90 });
             bw.End();
         }
     }
