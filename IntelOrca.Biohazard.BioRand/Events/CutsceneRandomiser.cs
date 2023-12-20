@@ -232,7 +232,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 maximumEnemyCount);
 
             var plots = new List<CsPlot>();
-            AddAllyPlots(rdt, rng, plotBuilder, plots);
+            AddAllyPlots(rdt, rng, enemyType, plotBuilder, plots);
             AddEnemyPlots(rdt, rng, maximumEnemyCount, enemyHelper, enemyType, plotBuilder, plots);
 
             foreach (var plot in plots)
@@ -254,8 +254,15 @@ namespace IntelOrca.Biohazard.BioRand.Events
             _enemyRandomiser!.ChosenEnemies.Remove(rdt);
         }
 
-        private void AddAllyPlots(RandomizedRdt rdt, Rng rng, PlotBuilder plotBuilder, List<CsPlot> plots)
+        private void AddAllyPlots(RandomizedRdt rdt, Rng rng, byte? enemyType, PlotBuilder plotBuilder, List<CsPlot> plots)
         {
+            if (enemyType == Re2EnemyIds.ZombieArms ||
+                enemyType == Re2EnemyIds.Birkin1 ||
+                enemyType == Re2EnemyIds.GAdult)
+            {
+                return;
+            }
+
             if (_partnerRooms.Contains(rdt.RdtId))
             {
                 ChainRandomPlot<PartnerPlot>(plots, plotBuilder);
