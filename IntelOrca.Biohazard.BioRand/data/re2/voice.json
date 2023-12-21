@@ -489,7 +489,7 @@
     "pl1/voice/stage4/v025.sap": { "rdt": "408", "player": 1, "actor": "claire" },
     "pl1/voice/stage4/v026.sap": { "rdt": "408", "player": 1, "actor": "annette" },
     "pl1/voice/stage4/v027.sap": { "rdt": "408", "player": 1, "actor": "annette", "condition": "!sherry" },
-    "pl1/voice/stage4/v028.sap": { "rdt": "408", "player": 1, "actor": "sherry", "kind": "jumpscare" },
+    "pl1/voice/stage4/v028.sap": { "rdt": "408", "player": 1, "actor": "jumpscare", "kind": "jumpscare" },
     "pl1/voice/stage4/v029.sap": { "rdt": "408", "player": 1, "actor": "claire", "condition" : "@sherry" },
     "pl1/voice/stage4/v030.sap": { "rdt": "408", "player": 1, "actor": "claire" },
     "pl1/voice/stage4/v031.sap": { "rdt": "408", "player": 1, "actor": "claire" },
