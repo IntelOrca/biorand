@@ -475,12 +475,15 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public void BuildHelpers(CutsceneBuilder builder)
         {
+            var fgEnemy = RdtId.Stage >= 5 ? "FG_ENEMY_2" : "FG_ENEMY";
+
             builder.BeginProcedure("freeze_all_enemies");
             foreach (var enemy in _enemies)
             {
                 var i = enemy.Id;
                 builder.WorkOnEnemy(i);
                 builder.BeginIf();
+                builder.AppendLine("ck", fgEnemy, enemy.GlobalId, 0);
                 builder.AppendLine("member_cmp", 0, "M_X_POS", "CMP_NE", 0, 0x83);
                 builder.DisableEnemyCollision(i);
                 builder.HideEnemy(i);
@@ -495,6 +498,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 var i = enemy.Id;
                 builder.WorkOnEnemy(i);
                 builder.BeginIf();
+                builder.AppendLine("ck", fgEnemy, enemy.GlobalId, 0);
                 builder.AppendLine("member_cmp", 0, "M_X_POS", "CMP_NE", 0, 0x83);
                 builder.EnableEnemyCollision(i);
                 builder.UnhideEnemy(i);
