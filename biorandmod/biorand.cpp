@@ -196,11 +196,24 @@ static void event_init(SCE_TASK* task, int evt_no)
     f(task, evt_no);
 }
 
+static SCE_TASK* get_empty_task(int min, int max)
+{
+    for (auto i = min; i < max; i++)
+    {
+        auto task = get_task(i);
+        if (task->Status == 0)
+        {
+            return task;
+        }
+    }
+    return nullptr;
+}
+
 // 0x004E3FA0
-static void event_exec(int task, int evt_no)
+static void event_exec(int task_no, int evt_no)
 {
     uint8_t sce_type = *((uint8_t*)0x00695E68);
-    auto min = 2;
+    auto min = 32;
     auto max = 100;
     if (sce_type != 0)
     {
@@ -208,16 +221,14 @@ static void event_exec(int task, int evt_no)
         max = 140;
     }
 
-    for (auto i = min; i < max; i++)
+    auto task = task_no == 255 ?
+        get_empty_task(min, max) :
+        get_task(task_no);
+    if (task != nullptr)
     {
-        auto task = get_task(i);
-        if (task->Status == 0)
-        {
-            task->Sub_ctr = 0;
-            memset(task->Spd, 0, 0x18);
-            event_init(task, evt_no);
-            return;
-        }
+        task->Sub_ctr = 0;
+        memset(task->Spd, 0, 0x18);
+        event_init(task, evt_no);
     }
 }
 
