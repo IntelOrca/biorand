@@ -215,13 +215,17 @@ static void event_exec(int task_no, int evt_no)
     uint8_t sce_type = *((uint8_t*)0x00695E68);
     auto min = 32;
     auto max = 100;
+    auto cap = 10;
     if (sce_type != 0)
     {
         min = 100;
         max = 140;
+        cap = 14;
+        if (task_no < cap)
+            task_no = 100 + task_no;
     }
 
-    auto task = task_no == 255 ?
+    auto task = task_no >= cap ?
         get_empty_task(min, max) :
         get_task(task_no);
     if (task != nullptr)
