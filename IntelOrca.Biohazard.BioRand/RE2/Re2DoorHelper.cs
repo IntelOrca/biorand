@@ -19,7 +19,7 @@
             Nop(0x211, 0x177E);
             Nop(0x408, 0x2974);
             Nop(0x615, 0x2FD8, 0x3562);
-            Nop(0x60B, 0x1432);
+            Nop(0x60B, 0x1432, 0x1414);
 
             FixDarkRoomLocker(config, gameData);
 
