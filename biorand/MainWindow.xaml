@@ -48,9 +48,10 @@
                 <local:GameMenuItem Game="0" Image="/resources/re1.png" />
                 <local:GameMenuItem Game="1" Image="/resources/re2.png" />
                 <local:GameMenuItem Game="2" Image="/resources/re3.png" />
-                <local:GameMenuItem Game="3" Image="/resources/settings.png" />
-                <local:GameMenuItem Game="4" Image="/resources/info.png" />
-                <local:GameMenuItem Game="5" Image="/resources/new.png" />
+                <local:GameMenuItem Game="3" Image="/resources/recvx.png" />
+                <local:GameMenuItem Game="4" Image="/resources/settings.png" />
+                <local:GameMenuItem Game="5" Image="/resources/info.png" />
+                <local:GameMenuItem Game="6" Image="/resources/new.png" />
             </ListView>
             <Grid Grid.Column="1" Margin="4">
                 <Grid x:Name="panelNew" Visibility="Hidden">
@@ -105,6 +106,7 @@
                     <local:GameLocationBox x:Name="gameLocation1" Tag="0" Header="Resident Evil 1" Validate="gameLocation_Validate" Changed="gameLocation_Changed" />
                     <local:GameLocationBox x:Name="gameLocation2" Tag="1" Header="Resident Evil 2" Validate="gameLocation_Validate" Changed="gameLocation_Changed" />
                     <local:GameLocationBox x:Name="gameLocation3" Tag="2" Header="Resident Evil 3" Validate="gameLocation_Validate" Changed="gameLocation_Changed" />
+                    <local:GameLocationBox x:Name="gameLocationCV" Tag="3" Header="Resident Evil CV:X" Validate="gameLocationCV_Validate" Changed="gameLocation_Changed" IsIso="True" />
                     <GroupBox Header="Custom Content">
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
                             <CheckBox x:Name="chkEnableCustomContent" Margin="0,0,0,4">Enable</CheckBox>
@@ -279,23 +281,25 @@
                                                                        ToolTip="Average quantity of ammunition per ammunition pick up.&#xa;Highest setting will allow a maximum of 60 handgun bullets in a pickup, or 30 shotgun shells." />
                                                 </StackPanel>
                                                 <StackPanel Grid.Column="2">
-                                                    <CheckBox x:Name="chkRandomInventory" ToolTip="When checked, your initial inventory will be random.">Random inventory</CheckBox>
-                                                    <TextBlock>Weapon 1:</TextBlock>
-                                                    <ComboBox x:Name="dropdownWeapon0">
-                                                        <ComboBoxItem>None</ComboBoxItem>
-                                                        <ComboBoxItem>Random</ComboBoxItem>
-                                                        <ComboBoxItem>Sidearm</ComboBoxItem>
-                                                        <ComboBoxItem>Primary</ComboBoxItem>
-                                                        <ComboBoxItem>Powerful</ComboBoxItem>
-                                                    </ComboBox>
-                                                    <TextBlock>Weapon 2:</TextBlock>
-                                                    <ComboBox x:Name="dropdownWeapon1">
-                                                        <ComboBoxItem>None</ComboBoxItem>
-                                                        <ComboBoxItem>Random</ComboBoxItem>
-                                                        <ComboBoxItem>Sidearm</ComboBoxItem>
-                                                        <ComboBoxItem>Primary</ComboBoxItem>
-                                                        <ComboBoxItem>Powerful</ComboBoxItem>
-                                                    </ComboBox>
+                                                    <StackPanel x:Name="panelRandomInventory">
+                                                        <CheckBox x:Name="chkRandomInventory" ToolTip="When checked, your initial inventory will be random.">Random inventory</CheckBox>
+                                                        <TextBlock>Weapon 1:</TextBlock>
+                                                        <ComboBox x:Name="dropdownWeapon0">
+                                                            <ComboBoxItem>None</ComboBoxItem>
+                                                            <ComboBoxItem>Random</ComboBoxItem>
+                                                            <ComboBoxItem>Sidearm</ComboBoxItem>
+                                                            <ComboBoxItem>Primary</ComboBoxItem>
+                                                            <ComboBoxItem>Powerful</ComboBoxItem>
+                                                        </ComboBox>
+                                                        <TextBlock>Weapon 2:</TextBlock>
+                                                        <ComboBox x:Name="dropdownWeapon1">
+                                                            <ComboBoxItem>None</ComboBoxItem>
+                                                            <ComboBoxItem>Random</ComboBoxItem>
+                                                            <ComboBoxItem>Sidearm</ComboBoxItem>
+                                                            <ComboBoxItem>Primary</ComboBoxItem>
+                                                            <ComboBoxItem>Powerful</ComboBoxItem>
+                                                        </ComboBox>
+                                                    </StackPanel>
                                                 </StackPanel>
                                             </Grid>
                                             <TextBlock Margin="0,8,0,4">Item Pickup Distribution</TextBlock>

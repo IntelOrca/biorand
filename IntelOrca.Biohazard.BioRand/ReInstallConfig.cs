@@ -4,8 +4,8 @@ namespace IntelOrca.Biohazard.BioRand
 {
     public class ReInstallConfig
     {
-        private string[] _installPath = new string[3];
-        private bool[] _enabled = new bool[3];
+        private string[] _installPath = new string[4];
+        private bool[] _enabled = new bool[4];
 
         public bool EnableCustomContent { get; set; }
         public bool RandomizeTitleVoice { get; set; } = true;
@@ -42,6 +42,8 @@ namespace IntelOrca.Biohazard.BioRand
                     return GetInstallPath(1);
                 case BioVersion.Biohazard3:
                     return GetInstallPath(2);
+                case BioVersion.BiohazardCv:
+                    return GetInstallPath(3);
                 default:
                     throw new InvalidOperationException();
             }
@@ -57,6 +59,8 @@ namespace IntelOrca.Biohazard.BioRand
                     return IsEnabled(1);
                 case BioVersion.Biohazard3:
                     return IsEnabled(2);
+                case BioVersion.BiohazardCv:
+                    return IsEnabled(3);
                 default:
                     throw new InvalidOperationException();
             }

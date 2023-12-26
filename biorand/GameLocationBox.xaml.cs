@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -52,6 +49,8 @@ namespace IntelOrca.Biohazard.BioRand
             get => cbExecutables.SelectedItem?.ToString();
         }
 
+        public bool IsIso { get; set; }
+
         public GameLocationBox()
         {
             InitializeComponent();
@@ -81,7 +80,10 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 if (File.Exists(path))
                 {
-                    path = Path.GetDirectoryName(path);
+                    if (!IsIso)
+                    {
+                        path = Path.GetDirectoryName(path);
+                    }
                 }
 
                 var eventArgs = new PathValidateEventArgs();
@@ -111,18 +113,34 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void btnBrowse_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new OpenFileDialog();
-            dialog.Title = $"Select {Header} / Biohazard Game Location";
-            if (Directory.Exists(txtGameDataLocation.Text))
-                dialog.InitialDirectory = txtGameDataLocation.Text;
-            dialog.Filter = "Executable Files (*.exe)|*.exe";
-            dialog.CheckFileExists = false;
-            dialog.CheckPathExists = false;
-            var window = Window.GetWindow(this);
-            if (dialog.ShowDialog(window) == true)
+            if (IsIso)
             {
-                ValidatePath(dialog.FileName);
-                SetExecutableList(Path.GetDirectoryName(dialog.FileName), Path.GetFileName(dialog.FileName));
+                var dialog = new OpenFileDialog();
+                dialog.Title = $"Select {Header} / Biohazard Game Location";
+                if (Directory.Exists(txtGameDataLocation.Text))
+                    dialog.InitialDirectory = txtGameDataLocation.Text;
+                dialog.Filter = "ISO image (*.iso)|*.iso";
+                var window = Window.GetWindow(this);
+                if (dialog.ShowDialog(window) == true)
+                {
+                    ValidatePath(dialog.FileName);
+                }
+            }
+            else
+            {
+                var dialog = new OpenFileDialog();
+                dialog.Title = $"Select {Header} / Biohazard Game Location";
+                if (Directory.Exists(txtGameDataLocation.Text))
+                    dialog.InitialDirectory = txtGameDataLocation.Text;
+                dialog.Filter = "Executable Files (*.exe)|*.exe";
+                dialog.CheckFileExists = false;
+                dialog.CheckPathExists = false;
+                var window = Window.GetWindow(this);
+                if (dialog.ShowDialog(window) == true)
+                {
+                    ValidatePath(dialog.FileName);
+                    SetExecutableList(Path.GetDirectoryName(dialog.FileName), Path.GetFileName(dialog.FileName));
+                }
             }
         }
 

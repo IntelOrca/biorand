@@ -83,7 +83,7 @@ namespace IntelOrca.Biohazard.BioRand
         {
             foreach (var rdt in _gameData.Rdts)
             {
-                var embeddedEffects = rdt.RdtFile.EmbeddedEffects;
+                var embeddedEffects = GetEmbeddedEffects(rdt.RdtFile);
                 for (var i = 0; i < embeddedEffects.Count; i++)
                 {
                     var ee = embeddedEffects[i];
@@ -486,7 +486,7 @@ namespace IntelOrca.Biohazard.BioRand
                 return;
 
             var rdtFile = rdt.RdtFile;
-            var embeddedEffects = rdtFile.EmbeddedEffects;
+            var embeddedEffects = GetEmbeddedEffects(rdtFile);
             var missingIds = espIds.Except(embeddedEffects.Ids).ToArray();
             if (missingIds.Length == 0)
                 return;
@@ -499,7 +499,7 @@ namespace IntelOrca.Biohazard.BioRand
             }
 
             var rdtBuilder = rdtFile.ToBuilder();
-            rdtBuilder.EmbeddedEffects = new EmbeddedEffectList(rdtFile.Version, existingEffects.ToArray());
+            SetEmbeddedEffects(rdtBuilder, new EmbeddedEffectList(rdtFile.Version, existingEffects.ToArray()));
             if (rdt.Version == BioVersion.Biohazard3)
             {
                 var bb = (Rdt2.Builder)rdtBuilder;
@@ -804,6 +804,23 @@ namespace IntelOrca.Biohazard.BioRand
             if (rdt != null && rdt.Version == BioVersion.Biohazard2)
             {
                 rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x22, new byte[] { 0x01, 0x03, 0x00 }));
+            }
+        }
+
+        private EmbeddedEffectList GetEmbeddedEffects(IRdt rdt)
+        {
+            if (rdt is Rdt2 rdt2)
+            {
+                return rdt2.EmbeddedEffects;
+            }
+            throw new NotSupportedException();
+        }
+
+        private void SetEmbeddedEffects(IRdtBuilder builder, EmbeddedEffectList value)
+        {
+            if (builder is Rdt2.Builder builder2)
+            {
+                builder2.EmbeddedEffects = value;
             }
         }
 
