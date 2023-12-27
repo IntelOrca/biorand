@@ -35,7 +35,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
         public byte[] GetDefaultWeapons(RandoConfig config)
         {
-            return new byte[0];
+            return new[] { ReCvItemIds.Handgun };
         }
 
         public string GetFriendlyItemName(byte type)

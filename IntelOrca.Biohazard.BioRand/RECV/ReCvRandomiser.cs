@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Room;
 using IntelOrca.Biohazard.Script;
 using Ps2IsoTools.UDF;
@@ -145,6 +146,16 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                     _rdxAfs = ReadRdxAfs(udfEditor, afsFileId);
                 }
 
+#if DEBUG
+                var rdxPath = Path.Combine(fileRepository.ModPath, "rdx_lnk");
+                Directory.CreateDirectory(rdxPath);
+                Parallel.For(0, _rdxAfs.Count, i =>
+                {
+                    var prs = new PrsFile(_rdxAfs.GetFileData(i));
+                    prs.Uncompressed.WriteToFile(Path.Combine(rdxPath, $"{i:000}"));
+                });
+#endif
+
                 GenerateRdts(config, progress, fileRepository);
 
                 // base.Generate(config, progress, fileRepository);
@@ -211,10 +222,10 @@ namespace IntelOrca.Biohazard.BioRand.RECV
         {
             "100",
             "101",
-            "102",
-            "", // 102 again
-            "103",
-            "", // 103 again
+            "",
+            "102", // 102 again
+            "", // 103 with handgun
+            "103", // 103 with bullets
             "104",
             "105",
             "106",
@@ -226,8 +237,8 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             "10C",
             "", // "10D",
             "10F",
-            // "10F", again
-            // green, 2 herbs
+            "", // "10F", again
+            "110" // green, 2 herbs
             // navy proof, 2 hebs
             // navy proof, 2 hebs
             // navy proof, 2 hebs

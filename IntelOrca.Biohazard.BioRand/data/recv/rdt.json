@@ -11,6 +11,23 @@
         {
           "target": "101"
         }
+      ],
+      "items": [
+        {
+          "id": 0,
+          "type": 8,
+          "amount": 0
+        },
+        {
+          "id": 4,
+          "type": 12,
+          "amount": 15
+        },
+        {
+          "id": 6,
+          "type": 21,
+          "amount": 1
+        }
       ]
     },
     "101": {
@@ -43,6 +60,14 @@
         {
           "target": "103"
         }
+      ],
+      "items": [
+        {
+          "id": 0,
+          "type": 83,
+          "amount": 1,
+          "requires": [ 82 ]
+        }
       ]
     },
     "103": {
@@ -54,7 +79,15 @@
           "target": "105"
         },
         {
-          "target": "10A"
+          "target": "10A",
+          "requires": [ 86 ]
+        }
+      ],
+      "items": [
+        {
+          "id": 1,
+          "type": 12,
+          "amount": 15
         }
       ]
     },
@@ -62,6 +95,26 @@
       "doors": [
         {
           "target": "109"
+        }
+      ],
+      "items": [
+        // {
+        //   "id": 0,
+        //   "type": 59,
+        //   "amount": 1,
+        //   "priority": "low"
+        // },
+        // {
+        //   "id": 1,
+        //   "type": 132,
+        //   "amount": 1,
+        //   "priority": "low"
+        // },
+        {
+          "id": 2,
+          "type": 31,
+          "amount": 3,
+          "priority": "low"
         }
       ]
     },
@@ -76,7 +129,15 @@
         {
           "target": "108"
         }
-      ]
+      ],
+      "items": [
+        {
+          "id": 0,
+          "type": 21,
+          "amount": 1
+        }
+      ],
+      "requires": [ 84 ]
     },
     "106": {
       "doors": [
@@ -86,12 +147,51 @@
         {
           "target": "107"
         }
+      ],
+      "items": [
+        // {
+        //   "id": 0,
+        //   "type": 12,
+        //   "amount": 15
+        // },
+        // {
+        //   "id": 1,
+        //   "type": 74,
+        //   "amount": 1
+        // },
+        {
+          "id": 2,
+          "type": 21,
+          "amount": 1
+        }
       ]
     },
     "107": {
       "doors": [
         {
           "target": "106"
+        }
+      ],
+      "items": [
+        {
+          "id": 0,
+          "type": 12,
+          "amount": 15
+        },
+        {
+          "id": 1,
+          "type": 142,
+          "amount": 100
+        },
+        // {
+        //   "id": 3,
+        //   "type": 48,
+        //   "amount": 1
+        // },
+        {
+          "id": 4,
+          "type": 12,
+          "amount": 15
         }
       ]
     },
@@ -102,6 +202,18 @@
         },
         {
           "target": "109"
+        },
+        {
+          "target": "110",
+          "requires": [ 56 ]
+        }
+      ],
+      "items": [
+        {
+          "id": 0,
+          "type": 82,
+          "amount": 1,
+          "requiresRoom": [ "104" ]
         }
       ]
     },
@@ -113,9 +225,69 @@
         {
           "target": "108"
         }
+      ],
+      "items": [
+        // {
+        //   "id": 0,
+        //   "type": 49,
+        //   "amount": 1,
+        //   "priority": "low"
+        // },
+        // {
+        //   "id": 1,
+        //   "type": 86,
+        //   "amount": 1,
+        //   "requires": [ 59, 83 ],
+        //   "priority": "low"
+        // },
+        {
+          "id": 3,
+          "type": 37,
+          "amount": 3,
+          "priority": "low"
+        },
+        {
+          "id": 5,
+          "type": 20,
+          "amount": 1,
+          "priority": "low"
+        },
+        {
+          "id": 6,
+          "type": 17,
+          "amount": 6,
+          "priority": "low"
+        }
       ]
     },
     "10A": {
+      "doors": [
+        {
+          "target": "103"
+        }
+      ],
+      "items": [
+        {
+          "id": 0,
+          "type": 21,
+          "amount": 1,
+          "priority": "low"
+        },
+        {
+          "id": 1,
+          "type": 21,
+          "amount": 1,
+          "priority": "low"
+        },
+        {
+          "id": 2,
+          "type": 12,
+          "amount": 15,
+          "priority": "low"
+        }
+      ]
+    },
+    "110": {
       "doors": [
         {
           "target": "103"
