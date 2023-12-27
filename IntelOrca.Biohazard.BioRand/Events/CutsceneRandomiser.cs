@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using IntelOrca.Biohazard.BioRand.Events.Plots;
 using IntelOrca.Biohazard.BioRand.RE2;
@@ -28,6 +29,8 @@ namespace IntelOrca.Biohazard.BioRand.Events
         private IPlot[] _registeredPlots = new IPlot[0];
         private EndlessBag<ReFlag> _globalFlags;
         private HashSet<RdtId> _partnerRooms = new HashSet<RdtId>();
+        private HashSet<RdtId> _partnerJoinRooms = new HashSet<RdtId>();
+        private ReFlag _partnerJoinFlag;
 
         public CutsceneRandomiser(
             RandoLogger logger,
@@ -66,8 +69,8 @@ namespace IntelOrca.Biohazard.BioRand.Events
             _logger.WriteHeading("Randomizing cutscenes");
 
             var rdts = graph?.GetAccessibleRdts(_gameData) ?? _gameData.Rdts;
-            rdts = rdts.OrderBy(x => x.RdtId).ToArray();
             RandomizePartnerRooms(rdts);
+            rdts = rdts.OrderBy(x => x.RdtId).ToArray();
             foreach (var rdt in rdts)
             {
                 RandomizeRoom(rdt, _rng.NextFork());
@@ -76,6 +79,8 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         private void RandomizePartnerRooms(RandomizedRdt[] rdts)
         {
+            _partnerJoinFlag = _globalFlags.Next();
+
             var allIds = rdts.Select(x => x.RdtId).ToArray();
             var rng = _rng.NextFork();
             var prob = rng.Next(0, 6);
@@ -84,28 +89,28 @@ namespace IntelOrca.Biohazard.BioRand.Events
             {
                 var count = (rdts.Length * prob) / 5;
                 _partnerRooms.AddRange(allIds.Shuffle(rng).Take(count));
+
+                // Random 3 from first 8 rooms
+                var joinRdts = rdts
+                    .Take(8)
+                    .Shuffle(rng)
+                    .Take(3)
+                    .Select(x => x.RdtId)
+                    .ToArray();
+                _partnerJoinRooms.AddRange(joinRdts);
             }
             else
             {
-                var streets = "100,101,102,103,104,105,118,119,11A,11B"
+                // Random 4 rooms
+                var joinRooms = "100,102,103,104,105,106,107,112,114,200"
                     .Split(',')
+                    .Shuffle(rng)
+                    .Take(4)
                     .Select(x => RdtId.Parse(x))
                     .ToArray();
-                var rpd = allIds
-                    .Where(x => x.Stage == 0 || x.Stage == 1 || x.Stage == 2)
-                    .Except(streets)
-                    .ToArray();
-                var sewer = allIds
-                    .Where(x => x.Stage == 3)
-                    .ToArray();
-                var factory = allIds
-                    .Where(x => x.Stage == 4)
-                    .ToArray();
-                var lab = allIds
-                    .Where(x => x.Stage == 5 || x.Stage == 6)
-                    .ToArray();
-                var areas = new[] { streets, rpd, sewer, factory, lab };
-                _partnerRooms.AddRange(areas.Shuffle(rng).Take(prob).SelectMany(x => x));
+
+                _partnerRooms.AddRange(allIds);
+                _partnerJoinRooms.AddRange(joinRooms);
             }
 
             // Rooms that have a ledge crash when partner uses it
@@ -230,7 +235,8 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 aotIds.ToArray(),
                 enemyType,
                 enemyCondition,
-                maximumEnemyCount);
+                maximumEnemyCount,
+                _partnerJoinFlag);
 
             var plots = new List<CsPlot>();
             AddAllyPlots(rdt, rng, enemyType, plotBuilder, plots);
@@ -264,9 +270,18 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 return;
             }
 
+            var noAllyWait = false;
             if (_partnerRooms.Contains(rdt.RdtId))
             {
-                ChainRandomPlot<PartnerPlot>(plots, plotBuilder);
+                if (_partnerJoinRooms.Contains(rdt.RdtId))
+                {
+                    ChainRandomPlot<PartnerPlotJoinable>(plots, plotBuilder);
+                    noAllyWait = true;
+                }
+                else
+                {
+                    ChainRandomPlot<PartnerPlot>(plots, plotBuilder);
+                }
             }
             if (rng.NextProbability(20))
             {
@@ -274,7 +289,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             }
             else if (rng.NextProbability(50))
             {
-                if (rng.NextProbability(10))
+                if (noAllyWait || rng.NextProbability(10))
                 {
                     ChainRandomPlot<AllyPatrolPlot>(plots, plotBuilder);
                 }
@@ -550,20 +565,12 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         private void InitialisePlots()
         {
-            _registeredPlots = new IPlot[]
-            {
-                new StaticEnemyPlot(),
-                new EnemyWakeUpPlot(),
-                new EnemyFromDarkPlot(),
-                new EnemyWalksInPlot(),
-                new AllyWaitPlot(),
-                new AllyPassByPlot(),
-                new NoisePlot(),
-                new AnnouncerPlot(),
-                new MurderPlot(),
-                new AllyPatrolPlot(),
-                new PartnerPlot()
-            };
+            _registeredPlots = Assembly
+                .GetExecutingAssembly()
+                .GetTypes()
+                .Where(x => x.Implements(typeof(IPlot)))
+                .Select(x => (IPlot)Activator.CreateInstance(x))
+                .ToArray();
         }
 
         private readonly static byte[] _availableFlags4 = new byte[]

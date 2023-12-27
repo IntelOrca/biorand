@@ -97,6 +97,10 @@ namespace IntelOrca.Biohazard.BioRand.Events
             {
                 AppendLine("work_set", "WK_PLAYER", 0);
             }
+            else if (id == 255)
+            {
+                AppendLine("work_set", "WK_SPLAYER", 0);
+            }
             else
             {
                 AppendLine("work_set", "WK_ENEMY", id);

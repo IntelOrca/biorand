@@ -31,6 +31,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
         public IEnemyHelper EnemyHelper => _enemyRandomiser?.EnemyHelper ?? new Re2EnemyHelper();
         public byte? EnemyType { get; }
         public RdtId RdtId => _rdt.RdtId;
+        public ReFlag PartnerJoinFlag { get; }
 
         public PlotBuilder(
             RandoConfig config,
@@ -48,7 +49,8 @@ namespace IntelOrca.Biohazard.BioRand.Events
             byte[] aotIds,
             byte? enemyType,
             ScdCondition? enemyCondition,
-            int maximumEnemyCount)
+            int maximumEnemyCount,
+            ReFlag partnerJoinFlag)
         {
             Config = config;
             Rng = rng;
@@ -66,6 +68,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             EnemyType = enemyType;
             _enemyCondition = enemyCondition;
             MaximumEnemyCount = maximumEnemyCount;
+            PartnerJoinFlag = partnerJoinFlag;
         }
 
         public CsFlag AllocateLocalFlag()

@@ -177,5 +177,10 @@ namespace IntelOrca.Biohazard.BioRand
 
             return result;
         }
+
+        public static bool Implements(this Type t, Type i)
+        {
+            return t.GetInterfaces().Contains(i);
+        }
     }
 }
