@@ -71,6 +71,8 @@ namespace IntelOrca.Biohazard.BioRand
             // For RE 2, room 216 and 301 need the partner removed to prevent cutscene softlock
             DetachPartner(new RdtId(1, 0x16));
             DetachPartner(new RdtId(2, 0x01));
+            DetachPartner(new RdtId(2, 0x07));
+            DetachPartner(new RdtId(2, 0x0B));
         }
 
         private void DetachPartner(RdtId rdtId)
