@@ -2,9 +2,10 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Room;
 using IntelOrca.Biohazard.Script;
+using Ps2IsoTools.UDF;
+using Ps2IsoTools.UDF.Files;
 
 namespace IntelOrca.Biohazard.BioRand.RECV
 {
@@ -59,16 +60,11 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
         protected override RandomizedRdt ReadRdt(FileRepository fileRepository, RdtId rdtId, string path, string modPath)
         {
-            if (_rdxAfs == null)
-            {
-                _rdxAfs = new AfsFile(File.ReadAllBytes(path));
-            }
-
             var fileIndex = GetRdxFileIndex(rdtId);
             if (_rdts[fileIndex] != null)
                 return _rdts[fileIndex];
 
-            var prs = new PrsFile(_rdxAfs.GetFileData(fileIndex));
+            var prs = new PrsFile(_rdxAfs!.GetFileData(fileIndex));
             var rdt = new RdtCv(prs.Uncompressed);
             var rrdt = new RandomizedRdt(rdt, rdtId);
             rrdt.Ast = CreateAst(rdt);
@@ -131,15 +127,51 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             config.RandomEvents = false;
             config.RandomBgm = false;
 
-            GenerateRdts(config, progress, fileRepository);
+            var isoDirectory = Path.GetDirectoryName(fileRepository.DataPath);
+            var input = Path.Combine(isoDirectory, "recvx.iso");
+            var output = Path.Combine(isoDirectory, "recvx_biorand.iso");
 
-            // base.Generate(config, progress, fileRepository);
-
-            using (progress.BeginTask(null, "Compressing room files"))
+            UdfEditor? udfEditor = null;
+            try
             {
-                Directory.CreateDirectory(Path.Combine(fileRepository.ModPath, "data"));
-                WriteRdxAfs().Data.WriteToFile(Path.Combine(fileRepository.ModPath, "data", "RDX_LNK.AFS"));
+                FileIdentifier? afsFileId;
+                using (progress.BeginTask(null, "Reading ISO file"))
+                {
+                    udfEditor = new Ps2IsoTools.UDF.UdfEditor(input, output);
+                    afsFileId = udfEditor.GetFileByName("RDX_LNK.AFS");
+                    if (afsFileId == null)
+                        throw new BioRandUserException("RDX_LNK.AFS not found in ISO");
+
+                    _rdxAfs = ReadRdxAfs(udfEditor, afsFileId);
+                }
+
+                GenerateRdts(config, progress, fileRepository);
+
+                // base.Generate(config, progress, fileRepository);
+
+                using (progress.BeginTask(null, "Compressing room files"))
+                {
+                    _rdxAfs = WriteRdxAfs();
+                }
+
+                using (progress.BeginTask(null, "Creating ISO file"))
+                {
+                    udfEditor.ReplaceFileStream(afsFileId, new MemoryStream(_rdxAfs!.Data.ToArray()));
+                    udfEditor.Rebuild(output);
+                }
             }
+            finally
+            {
+                udfEditor?.Dispose();
+            }
+        }
+
+        private AfsFile ReadRdxAfs(UdfEditor editor, FileIdentifier fileId)
+        {
+            var stream = editor.GetFileStream(fileId);
+            var data = new byte[stream.Length];
+            stream.Read(data, 0, data.Length);
+            return new AfsFile(data);
         }
 
         private AfsFile WriteRdxAfs()

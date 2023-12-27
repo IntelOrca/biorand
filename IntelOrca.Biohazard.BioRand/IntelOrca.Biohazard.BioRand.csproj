@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\biohazard-utils\src\IntelOrca.Biohazard\IntelOrca.Biohazard.csproj" />
+    <ProjectReference Include="..\Ps2IsoTools\Ps2IsoTools\Ps2IsoTools.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Resources.Designer.cs">

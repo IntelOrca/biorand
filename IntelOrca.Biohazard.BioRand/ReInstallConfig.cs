@@ -16,6 +16,8 @@ namespace IntelOrca.Biohazard.BioRand
             var result = _installPath[index];
             if (result == null)
             {
+                if (index == 3)
+                    throw new Exception($"RE:CVX path not set up.");
                 throw new Exception($"RE {index + 1} path not set up.");
             }
             return result;
