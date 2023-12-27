@@ -190,11 +190,12 @@ namespace IntelOrca.Biohazard.BioRand.Events
             }
             else if (Ticks == 1)
             {
-                builder.Sleep1();
+                builder.AppendLine("evt_next");
+                builder.AppendLine("nop");
             }
             else
             {
-                builder.Sleep(Ticks);
+                builder.AppendLine("sleep", 10, Ticks);
             }
         }
     }
@@ -237,7 +238,9 @@ namespace IntelOrca.Biohazard.BioRand.Events
     {
         public override void Build(CutsceneBuilder builder)
         {
-            builder.CutRevert();
+            builder.AppendLine("cut_old");
+            builder.AppendLine("nop");
+            builder.AppendLine("cut_auto", 1);
         }
     }
 
@@ -250,9 +253,9 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public override void Build(CutsceneBuilder builder)
         {
-            builder.FadeOutMusic();
+            builder.AppendLine("sce_bgm_control", 0, 5, 0, 0, 0);
             base.Build(builder);
-            builder.ResumeMusic();
+            builder.AppendLine("sce_bgm_control", 0, 3, 0, 0, 0);
         }
     }
 
@@ -275,7 +278,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public override void Build(CutsceneBuilder builder)
         {
-            builder.SetFade(_a, _b, _c, _d, _e);
+            builder.AppendLine("sce_fade_set", _a, _b, _c, _d, _e);
         }
     }
 
@@ -294,7 +297,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public override void Build(CutsceneBuilder builder)
         {
-            builder.AdjustFade(_a, _b, _c);
+            builder.AppendLine("sce_fade_adjust", _a, _b, _c);
         }
     }
 
@@ -309,7 +312,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public override void Build(CutsceneBuilder builder)
         {
-            builder.AotOn(Aot.Id);
+            builder.AppendLine("aot_on", Aot.Id);
         }
     }
 
@@ -328,13 +331,13 @@ namespace IntelOrca.Biohazard.BioRand.Events
             var pos = poi.Position;
             if (poi.HasTag("door"))
             {
-                builder.PlayDoorSoundOpen(pos);
-                builder.Sleep(30);
-                builder.PlayDoorSoundClose(pos);
+                builder.AppendLine("se_on", 0, 0, 772, pos.X, pos.Y, pos.Z);
+                builder.AppendLine("sleep", 10, 30);
+                builder.AppendLine("se_on", 0, 1, 772, pos.X, pos.Y, pos.Z);
             }
             else
             {
-                builder.Sleep(30);
+                builder.AppendLine("sleep", 10, 30);
             }
         }
     }
@@ -481,7 +484,23 @@ namespace IntelOrca.Biohazard.BioRand.Events
             {
                 opcode.SoundBank = sound;
             }
-            builder.Enemy(opcode);
+
+            builder.AppendLine("sce_em_set",
+                0,
+                opcode.Id,
+                opcode.Type,
+                opcode.State,
+                opcode.Ai,
+                opcode.Floor,
+                opcode.SoundBank,
+                0,
+                opcode.KillId,
+                opcode.X,
+                opcode.Y,
+                opcode.Z,
+                opcode.D,
+                0,
+                0);
         }
     }
 
@@ -498,7 +517,11 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public override void Build(CutsceneBuilder builder)
         {
-            builder.MoveEnemy(Entity.Id, Position);
+            var pos = Position;
+            builder.WorkOnEnemy(Entity.Id);
+            builder.AppendLine("pos_set", 0, pos.X, pos.Y, pos.Z);
+            builder.AppendLine("dir_set", 0, 0, pos.D, 0);
+            builder.AppendLine("member_set", "M_FLOOR", pos.Y / -1800);
         }
     }
 
@@ -547,11 +570,13 @@ namespace IntelOrca.Biohazard.BioRand.Events
         {
             if (X == null || Y == null)
             {
-                builder.SetEnemyNeck(Entity.Id, Speed);
+                builder.WorkOnEnemy(Entity.Id);
+                builder.AppendLine("plc_neck", 5, 1, 0, 0, Speed, Speed);
             }
             else
             {
-                builder.SetEnemyNeck(Entity.Id, Speed, X.Value, Y.Value);
+                builder.WorkOnEnemy(Entity.Id);
+                builder.AppendLine("plc_neck", 2, 0, X.Value, Y.Value, Speed, Speed);
             }
         }
     }
@@ -817,7 +842,11 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public override void Build(CutsceneBuilder builder)
         {
-            builder.WaitForFlag(Flag, Value);
+            builder.BeginWhileLoop(4);
+            builder.CheckFlag(Flag.Group, Flag.Index, !Value);
+            builder.AppendLine("evt_next");
+            builder.AppendLine("nop");
+            builder.EndLoop();
         }
     }
 
@@ -1026,7 +1055,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public override void Build(CutsceneBuilder builder)
         {
-            builder.PlayVoiceAsync(Value);
+            builder.AppendLine("xa_on", 0, Value);
         }
     }
 
@@ -1043,10 +1072,12 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public override void Build(CutsceneBuilder builder)
         {
-            if (Async)
-                builder.PlayVoiceAsync(Value);
-            else
-                builder.PlayVoice(Value);
+            builder.AppendLine("xa_on", 0, Value);
+            if (!Async)
+            {
+                builder.AppendLine("wsleep");
+                builder.AppendLine("wsleeping");
+            }
         }
     }
 
@@ -1161,7 +1192,22 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         public override void Build(CutsceneBuilder builder)
         {
-            builder.Item(Item.GlobalId, Item.Id, Item.Item.Type, Item.Item.Amount);
+            builder.AppendLine(
+                "item_aot_set",
+                Item.Id,
+                "SCE_ITEM",
+                "SAT_PL | SAT_MANUAL | SAT_FRONT",
+                0,
+                0,
+                -32000,
+                -32000,
+                0,
+                0,
+                Item.Item.Type,
+                Item.Item.Amount,
+                Item.GlobalId,
+                255,
+                0);
         }
     }
 
