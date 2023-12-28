@@ -127,10 +127,13 @@ namespace IntelOrca.Biohazard.BioRand
             if (Version == BioVersion.BiohazardCv)
             {
                 var rdtBuilder = ((RdtCv)RdtFile).ToBuilder();
-                var item = rdtBuilder.Items[id];
-                item.Type = type;
-                rdtBuilder.Items[id] = item;
-                RdtFile = rdtBuilder.ToRdt();
+                if (rdtBuilder.Items.Count > id)
+                {
+                    var item = rdtBuilder.Items[id];
+                    item.Type = type;
+                    rdtBuilder.Items[id] = item;
+                    RdtFile = rdtBuilder.ToRdt();
+                }
             }
             else
             {

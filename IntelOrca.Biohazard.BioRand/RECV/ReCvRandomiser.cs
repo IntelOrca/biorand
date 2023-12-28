@@ -157,6 +157,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 #endif
 
                 GenerateRdts(config, progress, fileRepository);
+                TestEdits();
 
                 // base.Generate(config, progress, fileRepository);
 
@@ -175,6 +176,35 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             {
                 udfEditor?.Dispose();
             }
+        }
+
+        private void TestEdits()
+        {
+            var rrdt = _rdts[10];
+            var builder = ((RdtCv)rrdt.RdtFile).ToBuilder();
+
+            // var other = builder.Aots[11];
+            // var a = builder.Aots[10];
+            // a.Flags = other.Flags;
+            // a.Unk08 = other.Unk08;
+            // a.Unk10 = other.Unk10;
+            // a.Unk14 = other.Unk14;
+            // a.Unk1C = other.Unk1C;
+            // a.Room = other.Room;
+            // builder.Aots[10] = a;
+            // builder.Aots[10] = other;
+
+            rrdt.RdtFile = builder.ToRdt();
+
+            var data = rrdt.RdtFile.Data.ToArray();
+            for (var i = 0; i < 0x7E40; i++)
+            {
+                if (data[i] == 0x54)
+                {
+                    data[i]--;
+                }
+            }
+            rrdt.RdtFile = new RdtCv(data);
         }
 
         private AfsFile ReadRdxAfs(UdfEditor editor, FileIdentifier fileId)
@@ -198,7 +228,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             Parallel.For(0, _rdts.Length, parellelOptions, i =>
             {
                 var rrdt = _rdts[i];
-                if (rrdt != null)
+                if (rrdt != null && rrdt.RdtId != new RdtId(0x0, 0x0B))
                 {
                     var prs = PrsFile.Compress(rrdt.RdtFile.Data);
                     builder.Replace(i, prs.Data);
@@ -218,14 +248,21 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             return result;
         }
 
+
+
+
+
+
+
+
         private static string[] _rdxLnkRdtIdOrder = new[]
         {
             "100",
             "101",
-            "",
-            "102", // 102 again
-            "", // 103 with handgun
-            "103", // 103 with bullets
+            "102",
+            "", // 102 again
+            "103", // 103 with handgun (not right)
+            "", // 103 with bullets (not right)
             "104",
             "105",
             "106",
@@ -235,10 +272,10 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             "10A",
             "10B",
             "10C",
-            "", // "10D",
+            "10D",
+            "10E",
             "10F",
-            "", // "10F", again
-            "110" // green, 2 herbs
+            "110",
             // navy proof, 2 hebs
             // navy proof, 2 hebs
             // navy proof, 2 hebs
