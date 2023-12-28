@@ -180,31 +180,36 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
         private void TestEdits()
         {
-            var rrdt = _rdts[10];
-            var builder = ((RdtCv)rrdt.RdtFile).ToBuilder();
+            // var a = _rdts[1].RdtFile;
+            // var b = _rdts[10].RdtFile;
+            // _rdts[1].RdtFile = b;
+            // _rdts[10].RdtFile = a;
 
-            // var other = builder.Aots[11];
-            // var a = builder.Aots[10];
-            // a.Flags = other.Flags;
-            // a.Unk08 = other.Unk08;
-            // a.Unk10 = other.Unk10;
-            // a.Unk14 = other.Unk14;
-            // a.Unk1C = other.Unk1C;
-            // a.Room = other.Room;
-            // builder.Aots[10] = a;
-            // builder.Aots[10] = other;
-
-            rrdt.RdtFile = builder.ToRdt();
-
-            var data = rrdt.RdtFile.Data.ToArray();
-            for (var i = 0; i < 0x7E40; i++)
-            {
-                if (data[i] == 0x54)
-                {
-                    data[i]--;
-                }
-            }
-            rrdt.RdtFile = new RdtCv(data);
+            // var rrdt = _rdts[10];
+            // var builder = ((RdtCv)rrdt.RdtFile).ToBuilder();
+            // 
+            // // var other = builder.Aots[11];
+            // // var a = builder.Aots[10];
+            // // a.Flags = other.Flags;
+            // // a.Unk08 = other.Unk08;
+            // // a.Unk10 = other.Unk10;
+            // // a.Unk14 = other.Unk14;
+            // // a.Unk1C = other.Unk1C;
+            // // a.Room = other.Room;
+            // // builder.Aots[10] = a;
+            // // builder.Aots[10] = other;
+            // 
+            // rrdt.RdtFile = builder.ToRdt();
+            // 
+            // var data = rrdt.RdtFile.Data.ToArray();
+            // for (var i = 0; i < 0x7E40; i++)
+            // {
+            //     if (data[i] == 0x54)
+            //     {
+            //         data[i]--;
+            //     }
+            // }
+            // rrdt.RdtFile = new RdtCv(data);
         }
 
         private AfsFile ReadRdxAfs(UdfEditor editor, FileIdentifier fileId)
