@@ -346,10 +346,15 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                 var itemHelper = itemRando.ItemHelper;
 
                 var pool = new List<Choice>();
+                var limit = 0;
                 while (pool.Count < 5)
                 {
                     var item = itemRando.GetRandomGift(rng, 0);
-                    if (!pool.Any(x => IsItemSimilar(x.Item, item)))
+                    if (limit < 1000 && pool.Any(x => IsItemSimilar(x.Item, item)))
+                    {
+                        limit++;
+                    }
+                    else
                     {
                         var itemName = itemHelper.GetFriendlyItemName(item.Type);
                         pool.Add(new Choice(item, itemName));
