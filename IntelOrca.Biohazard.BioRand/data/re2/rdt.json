@@ -1024,16 +1024,12 @@
         {
           "nop": [ 7810, 7854, 7858, 7862, 7868, 8166, 8170, 8174, 8180, 8184 ],
           "maxDifficulty": 1,
-          "excludeTypes": [ 58 ],
-          "keepPositions": true,
           "player": 0,
           "scenario": 1
         },
         {
           "nop": [ 7772, 7816, 7820, 7824, 7830, 8128, 8132, 8136, 8142, 8146 ],
-          "excludeTypes": [ 58 ],
           "maxDifficulty": 1,
-          "keepPositions": true,
           "player": 1,
           "scenario": 1
         }
