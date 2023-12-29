@@ -180,36 +180,17 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
         private void TestEdits()
         {
-            // var a = _rdts[1].RdtFile;
-            // var b = _rdts[10].RdtFile;
-            // _rdts[1].RdtFile = b;
-            // _rdts[10].RdtFile = a;
-
-            // var rrdt = _rdts[10];
-            // var builder = ((RdtCv)rrdt.RdtFile).ToBuilder();
-            // 
-            // // var other = builder.Aots[11];
-            // // var a = builder.Aots[10];
-            // // a.Flags = other.Flags;
-            // // a.Unk08 = other.Unk08;
-            // // a.Unk10 = other.Unk10;
-            // // a.Unk14 = other.Unk14;
-            // // a.Unk1C = other.Unk1C;
-            // // a.Room = other.Room;
-            // // builder.Aots[10] = a;
-            // // builder.Aots[10] = other;
-            // 
-            // rrdt.RdtFile = builder.ToRdt();
-            // 
-            // var data = rrdt.RdtFile.Data.ToArray();
-            // for (var i = 0; i < 0x7E40; i++)
-            // {
-            //     if (data[i] == 0x54)
-            //     {
-            //         data[i]--;
-            //     }
-            // }
-            // rrdt.RdtFile = new RdtCv(data);
+#if DEBUG
+            // Change 101 door to 10A
+            var a = (RdtCv)_rdts[1].RdtFile;
+            var ab = a.ToBuilder();
+            var d = ab.Aots[4];
+            d.Room = 10;
+            d.ExitId = 0;
+            ab.Aots[4] = d;
+            a = ab.ToRdt();
+            _rdts[1].RdtFile = a;
+#endif
         }
 
         private AfsFile ReadRdxAfs(UdfEditor editor, FileIdentifier fileId)
@@ -272,7 +253,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             "105",
             "106",
             "107",
-            "108",
+            "108", // (10)
             "109",
             "10A",
             "10B",
@@ -281,11 +262,25 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             "10E",
             "10F",
             "110",
-            // navy proof, 2 hebs
-            // navy proof, 2 hebs
-            // navy proof, 2 hebs
-            // HG ammo
-            // HG ammo
+            "200",
+            "", // 200 again (20)
+            "", // 200 again
+            "202",
+            "", // HG ammo
+            "203",
+            "204",
+            "205",
+            "206",
+            "207",
+            "208",
+            "209", // (30)
+            "20A",
+            "20B",
+            "20C",
+            "",
+            "",
+            "20D",
+            "20E",
         };
     }
 }

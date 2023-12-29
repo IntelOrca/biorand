@@ -277,19 +277,22 @@
       "doors": [
         {
           "target": "103"
+        },
+        {
+          "target": "20C"
         }
       ],
       "items": [
-        // {
-        //   "id": 0,
-        //   "type": 21,
-        //   "amount": 1
-        // },
-        // {
-        //   "id": 1,
-        //   "type": 21,
-        //   "amount": 1
-        // },
+        {
+          "id": 0,
+          "type": 21,
+          "amount": 1
+        },
+        {
+          "id": 1,
+          "type": 21,
+          "amount": 1
+        }
         // {
         //   "id": 2,
         //   "type": 12,
@@ -452,6 +455,343 @@
         //   "id": 2,
         //   "type": 12,
         //   "amount": 15
+        // }
+      ]
+    },
+    "200": {
+      "doors": [
+        {
+          "target": "202"
+        },
+        {
+          "target": "20D"
+        },
+        {
+          "target": "20C"
+        }
+      ],
+      "items": [
+        {
+          "id": 0,
+          "type": 70,
+          "amount": 1
+        },
+        {
+          "id": 1,
+          "type": 21,
+          "amount": 1
+        }
+      ]
+    },
+    "202": {
+      "doors": [
+        {
+          "target": "200"
+        },
+        {
+          "target": "203"
+        },
+        {
+          "target": "207",
+          "requires": [ 73 ]
+        },
+        {
+          "target": "208"
+        },
+        {
+          "target": "20B",
+          "requires": [ 67 ]
+        }
+      ],
+      "items": [
+        {
+          "id": 0,
+          "type": 12,
+          "amount": 15
+        }
+      ]
+    },
+    "203": {
+      "doors": [
+        {
+          "target": "202"
+        }
+      ],
+      "items": [
+        {
+          "id": 0,
+          "type": 128,
+          "amount": 1
+        },
+        {
+          "id": 1,
+          "type": 20,
+          "amount": 1
+        },
+        {
+          "id": 2,
+          "type": 12,
+          "amount": 15
+        }
+      ]
+    },
+    "204": {
+      "doors": [
+        {
+          "target": "207"
+        }
+      ],
+      "items": [
+        {
+          "id": 0,
+          "type": 116,
+          "amount": 1,
+          "priority": "fixed"
+        }
+        // {
+        //   "id": 1,
+        //   "type": 58,
+        //   "amount": 1
+        // }
+      ]
+    },
+    "205": {
+      "doors": [
+        {
+          "target": "207"
+        }
+      ],
+      "items": [
+        {
+          "id": 0,
+          "type": 33,
+          "amount": 1,
+          "priority": "fixed"
+        },
+        {
+          "id": 2,
+          "type": 53,
+          "amount": 1
+        },
+        {
+          "id": 3,
+          "type": 12,
+          "amount": 15
+        }
+      ]
+    },
+    "206": {
+      "doors": [
+        {
+          "target": "207"
+        }
+      ],
+      "items": [
+        {
+          "id": 0,
+          "type": 56,
+          "amount": 1
+        },
+        // {
+        //   "id": 1,
+        //   "type": 133,
+        //   "amount": 1
+        // },
+        {
+          "id": 2,
+          "type": 12,
+          "amount": 15
+        }
+      ]
+    },
+    "207": {
+      "doors": [
+        {
+          "target": "202"
+        },
+        {
+          "target": "204",
+          "requires": [ 68 ]
+        },
+        {
+          "target": "205"
+        },
+        {
+          "target": "206",
+          "requires": [ 67 ]
+        }
+      ],
+      "items": [
+        // {
+        //   "id": 0,
+        //   "type": 12,
+        //   "amount": 15
+        // },
+        {
+          "id": 1,
+          "type": 22,
+          "amount": 1
+        }
+      ]
+    },
+    "208": {
+      "doorRando": [
+        {
+          "category": "box"
+        }
+      ],
+      "doors": [
+        {
+          "target": "202"
+        },
+        {
+          "target": "209",
+          "requires": [ 33 ]
+        }
+      ],
+      "items": [
+        {
+          "id": 0,
+          "type": 73,
+          "amount": 1
+        },
+        {
+          "id": 3,
+          "type": 31,
+          "amount": 3
+        },
+        // {
+        //   "id": 4,
+        //   "type": 47,
+        //   "amount": 1
+        // },
+        // {
+        //   "id": 5,
+        //   "type": 12,
+        //   "amount": 15
+        // },
+        {
+          "id": 6,
+          "type": 21,
+          "amount": 1
+        }
+      ]
+    },
+    "209": {
+      "doors": [
+        {
+          "target": "208"
+        },
+        {
+          "target": "20A",
+          "lock": "unblock"
+        }
+      ],
+      "items": [
+        {
+          "id": 0,
+          "type": 12,
+          "amount": 15
+        },
+        {
+          "id": 1,
+          "type": 23,
+          "amount": 1
+        }
+      ]
+    },
+    "20A": {
+      "doors": [
+        {
+          "target": "209"
+        }
+      ]
+    },
+    "20B": {
+      "doors": [
+        {
+          "target": "202"
+        }
+      ],
+      "items": [
+        {
+          "id": 0,
+          "type": 21,
+          "amount": 1
+        },
+        {
+          "id": 2,
+          "type": 61,
+          "amount": 1,
+          "requires": [ 52 ],
+          "priority": "fixed"
+        },
+        {
+          "id": 3,
+          "type": 12,
+          "amount": 15
+        },
+        {
+          "id": 4,
+          "type": 130,
+          "amount": 1
+        },
+        {
+          "id": 5,
+          "type": 21,
+          "amount": 1
+        }
+      ]
+    },
+    "20C": {
+      "doors": [
+        {
+          "target": "10A"
+        },
+        {
+          "target": "200"
+        }
+      ]
+    },
+    "20D": {
+      "doors": [
+        {
+          "target": "200"
+        },
+        {
+          "target": "20E",
+          "requires": [ 53 ]
+        }
+      ],
+      "items": [
+        // {
+        //   "id": 0,
+        //   "type": 74,
+        //   "amount": 1
+        // },
+        {
+          "id": 2,
+          "type": 12,
+          "amount": 15
+        },
+        {
+          "id": 3,
+          "type": 18,
+          "amount": 30
+        }
+      ]
+    },
+    "20E": {
+      "doors": [
+        {
+          "target": "20D"
+        }
+      ],
+      "items": [
+        // {
+        //   "id": 0,
+        //   "type": 57,
+        //   "amount": 1
         // }
       ]
     }
