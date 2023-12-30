@@ -188,6 +188,21 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             d.Room = 10;
             d.ExitId = 0;
             ab.Aots[4] = d;
+            var script = ab.Script;
+
+            var data = script.Data.ToArray();
+            data[0] = 0x04;
+            data[1] = 0x00;
+            data[2] = 0x00;
+            data[3] = 0x00;
+            data[4] = 0x95;
+            data[5] = 0x01;
+            data[6] = 0x00;
+            data[7] = 0x00;
+            for (var i = 8; i < data.Length; i++)
+                data[i] = 0x00;
+
+            ab.Script = new CvScript(data);
             a = ab.ToRdt();
             _rdts[1].RdtFile = a;
 #endif
