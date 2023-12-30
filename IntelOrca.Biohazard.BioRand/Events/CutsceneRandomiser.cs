@@ -87,8 +87,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             _partnerRooms.Clear();
             if (_config.RandomDoors)
             {
-                var count = (rdts.Length * prob) / 5;
-                _partnerRooms.AddRange(allIds.Shuffle(rng).Take(count));
+                _partnerRooms.AddRange(allIds);
 
                 // Random 3 from first 8 rooms
                 var joinRdts = rdts
