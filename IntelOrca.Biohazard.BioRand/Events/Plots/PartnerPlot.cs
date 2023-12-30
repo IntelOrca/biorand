@@ -46,10 +46,13 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                                 AskToFollow(builder, waitPoi, partner))));
 
                     node = new SbIf(new CsFlag(builder.PartnerJoinFlag), false,
-                        new SbAlly(partner, waitPoi.Position, AI_FOLLOW),
+                        new SbAlly(partner, waitPoi.Position, AI_WAIT),
                         new SbFork(new SbProcedure(
                             new SbSleep(1),
-                            new SbEntityTravel(partner, new ReFlag(0, 32), waitPoi.Position, PlcDestKind.Walk))),
+                            new SbEntityTravel(partner, new ReFlag(0, 32), waitPoi.Position, PlcDestKind.Walk),
+                            new SbLoop(
+                                new SbSetEntityNeck(partner, 64),
+                                new SbSleep(30)))),
                         new SbAot(interaction, waitPoi.Position, 2000),
                         new SbEnableEvent(interaction, eventProcedure))
                     .Else(
@@ -72,8 +75,8 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
                     builder.Conversation(2, 4, participants, participants),
                     new SbMessage(msg,
                         new SbContainerNode(
-                        new SbSetFlag(new CsFlag(builder.PartnerJoinFlag)),
-                        new SbReleaseEntity(ally))),
+                        // new SbReleaseEntity(ally)
+                        new SbSetFlag(new CsFlag(builder.PartnerJoinFlag)))),
                     new SbSleep(60))));
             if (poi.CloseCut is int cut)
             {

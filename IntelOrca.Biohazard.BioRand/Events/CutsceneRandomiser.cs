@@ -102,10 +102,10 @@ namespace IntelOrca.Biohazard.BioRand.Events
             else
             {
                 // Random 4 rooms
-                var joinRooms = "100,102,103,104,105,106,107,112,114,200"
+                var joinRooms = "100,101,102,103,104,105,106,107,112,114,200"
                     .Split(',')
                     .Shuffle(rng)
-                    .Take(4)
+                    .Take(8)
                     .Select(x => RdtId.Parse(x))
                     .ToArray();
 
