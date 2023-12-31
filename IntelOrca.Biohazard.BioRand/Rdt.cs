@@ -124,20 +124,34 @@ namespace IntelOrca.Biohazard.BioRand
 
         public void SetItem(byte id, ushort type, ushort amount)
         {
-            foreach (var item in Items)
+            if (Version == BioVersion.BiohazardCv)
             {
-                if (item.Id == id)
+                var rdtBuilder = ((RdtCv)RdtFile).ToBuilder();
+                if (rdtBuilder.Items.Count > id)
                 {
+                    var item = rdtBuilder.Items[id];
                     item.Type = type;
-                    item.Amount = amount;
+                    rdtBuilder.Items[id] = item;
+                    RdtFile = rdtBuilder.ToRdt();
                 }
             }
-            foreach (var reset in Resets)
+            else
             {
-                if (reset.Id == id && reset.SCE == 2 && reset.Data0 != 0)
+                foreach (var item in Items)
                 {
-                    reset.Data0 = type;
-                    reset.Data1 = amount;
+                    if (item.Id == id)
+                    {
+                        item.Type = type;
+                        item.Amount = amount;
+                    }
+                }
+                foreach (var reset in Resets)
+                {
+                    if (reset.Id == id && reset.SCE == 2 && reset.Data0 != 0)
+                    {
+                        reset.Data0 = type;
+                        reset.Data1 = amount;
+                    }
                 }
             }
         }
@@ -314,7 +328,9 @@ namespace IntelOrca.Biohazard.BioRand
                     ms.Position = patch.Key;
                     bw.Write(patch.Value);
                 }
-                if (Version == BioVersion.Biohazard1)
+                if (Version == BioVersion.BiohazardCv)
+                    RdtFile = new RdtCv(ms.ToArray());
+                else if (Version == BioVersion.Biohazard1)
                     RdtFile = new Rdt1(ms.ToArray());
                 else
                     RdtFile = new Rdt2(Version, ms.ToArray());
@@ -326,8 +342,11 @@ namespace IntelOrca.Biohazard.BioRand
             PrependOpcodes();
             AddCustomScript();
 
-            Directory.CreateDirectory(Path.GetDirectoryName(ModifiedPath!)!);
-            File.WriteAllBytes(ModifiedPath!, RdtFile.Data.ToArray());
+            if (ModifiedPath != null)
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(ModifiedPath)!);
+                File.WriteAllBytes(ModifiedPath, RdtFile.Data.ToArray());
+            }
         }
 
         private void UpdateEmrs()

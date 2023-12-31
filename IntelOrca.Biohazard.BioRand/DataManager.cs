@@ -42,6 +42,8 @@ namespace IntelOrca.Biohazard.BioRand
                     return GetPath("re2", path);
                 case BioVersion.Biohazard3:
                     return GetPath("re3", path);
+                case BioVersion.BiohazardCv:
+                    return GetPath("recv", path);
                 default:
                     throw new NotImplementedException();
             }
@@ -131,6 +133,7 @@ namespace IntelOrca.Biohazard.BioRand
                 BioVersion.Biohazard1 => Path.Combine("re1", basePath),
                 BioVersion.Biohazard2 => Path.Combine("re2", basePath),
                 BioVersion.Biohazard3 => Path.Combine("re3", basePath),
+                BioVersion.BiohazardCv => Path.Combine("recv", basePath),
                 _ => throw new NotImplementedException(),
             };
         }

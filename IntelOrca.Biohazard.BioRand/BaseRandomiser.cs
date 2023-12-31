@@ -158,6 +158,13 @@ namespace IntelOrca.Biohazard.BioRand
             return result;
         }
 
+        protected virtual RandomizedRdt ReadRdt(FileRepository fileRepository, RdtId rdtId, string path, string modPath)
+        {
+            var rdtBytes = fileRepository.GetBytes(path);
+            var rdt = GameDataReader.ReadRdt(BiohazardVersion, rdtId, rdtBytes, path, modPath);
+            return rdt;
+        }
+
         private GameData ReadGameData(FileRepository fileRepository, int player, RdtId[] rdtIds, bool mod)
         {
             var rdts = new List<RandomizedRdt>();
@@ -168,8 +175,7 @@ namespace IntelOrca.Biohazard.BioRand
                 try
                 {
                     var srcPath = mod ? modRdtPath : rdtPath;
-                    var rdtBytes = fileRepository.GetBytes(srcPath);
-                    var rdt = GameDataReader.ReadRdt(BiohazardVersion, rdtId, rdtBytes, srcPath, modRdtPath);
+                    var rdt = ReadRdt(fileRepository, rdtId, srcPath, modRdtPath);
                     rdts.Add(rdt);
                 }
                 catch
@@ -193,13 +199,18 @@ namespace IntelOrca.Biohazard.BioRand
 
             var reConfig = InstallConfig;
             var installPath = reConfig.GetInstallPath(BiohazardVersion);
+            if (BiohazardVersion == BioVersion.BiohazardCv)
+            {
+                installPath = Path.GetDirectoryName(installPath);
+            }
+
             var originalDataPath = GetDataPath(installPath);
             var modPath = Path.Combine(installPath, @"mod_biorand");
             var fileRepo = new FileRepository(originalDataPath, modPath);
             if (reConfig!.IsEnabled(BioVersion.Biohazard3))
             {
-                var dataPath = GetDataPath(reConfig.GetInstallPath(BioVersion.Biohazard3));
                 var re3randomizer = new Re3Randomiser(reConfig, null);
+                var dataPath = re3randomizer.GetDataPath(reConfig.GetInstallPath(BioVersion.Biohazard3));
                 re3randomizer.AddArchives(dataPath, fileRepo);
             }
 
@@ -339,19 +350,23 @@ namespace IntelOrca.Biohazard.BioRand
                 using (progress.BeginTask(config.Player, $"Changing player character"))
                     playerActors = ChangePlayerCharacters(config, logger, gameData, fileRepository);
 
-                var voiceRandomiser = new VoiceRandomiser(
-                    BiohazardVersion,
-                    logger,
-                    fileRepository,
-                    config,
-                    fileRepository.DataPath,
-                    fileRepository.ModPath,
-                    gameData,
-                    map,
-                    randomVoices,
-                    NpcHelper,
-                    DataManager,
-                    playerActors);
+                VoiceRandomiser? voiceRandomiser = null;
+                if (config.RandomNPCs || config.RandomEvents)
+                {
+                    voiceRandomiser = new VoiceRandomiser(
+                        BiohazardVersion,
+                        logger,
+                        fileRepository,
+                        config,
+                        fileRepository.DataPath,
+                        fileRepository.ModPath,
+                        gameData,
+                        map,
+                        randomVoices,
+                        NpcHelper,
+                        DataManager,
+                        playerActors);
+                }
 
                 NPCRandomiser? npcRandomiser = null;
                 if (config.RandomNPCs)
@@ -370,21 +385,21 @@ namespace IntelOrca.Biohazard.BioRand
                             NpcHelper,
                             DataManager,
                             playerActors,
-                            voiceRandomiser);
+                            voiceRandomiser!);
                         var selectedActors = GetSelectedActors(config);
                         if (selectedActors.Length == 0)
                         {
                             throw new BioRandUserException("No NPCs selected.");
                         }
                         npcRandomiser.SelectedActors.AddRange(selectedActors);
-                        RandomizeNPCs(config, npcRandomiser, voiceRandomiser);
+                        RandomizeNPCs(config, npcRandomiser, voiceRandomiser!);
                         npcRandomiser.Randomise();
                     }
                 }
 
                 if (config.RandomCutscenes)
                 {
-                    voiceRandomiser.Randomise();
+                    voiceRandomiser!.Randomise();
                 }
 
                 EnemyRandomiser? enemyRandomiser = null;
@@ -763,19 +778,21 @@ namespace IntelOrca.Biohazard.BioRand
         {
             try
             {
-                var src = DataManager.GetData(BiohazardVersion, "bg.png");
                 if (BiohazardVersion == BioVersion.Biohazard1)
                 {
+                    var src = DataManager.GetData(BiohazardVersion, "bg.png");
                     CreateBackgroundRaw(config, src, fileRepository.GetModPath("data/title.pix"));
                     CreateBackgroundPng(config, src, fileRepository.GetModPath("type.png"));
                 }
                 else if (BiohazardVersion == BioVersion.Biohazard2)
                 {
+                    var src = DataManager.GetData(BiohazardVersion, "bg.png");
                     CreateBackgroundPng(config, src, fileRepository.GetModPath("common/data/title_bg.png"));
                     CreateBackgroundPng(config, src, fileRepository.GetModPath("common/data/type00.png"));
                 }
-                else
+                else if (BiohazardVersion == BioVersion.Biohazard3)
                 {
+                    var src = DataManager.GetData(BiohazardVersion, "bg.png");
                     CreateBackgroundRaw(config, src, fileRepository.GetModPath("data/etc/type00.pix"));
                     CreateBackgroundTim(config, src, fileRepository.GetModPath("data_j/etc2/titlej.dat"));
                     CreateBackgroundTim(config, src, fileRepository.GetModPath("data_j/etc2/titletgs.dat"));

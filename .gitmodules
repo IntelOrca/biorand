@@ -1,3 +1,7 @@
 [submodule "biohazard-utils"]
 	path = biohazard-utils
 	url = https://github.com/IntelOrca/biohazard-utils
+[submodule "Ps2IsoTools"]
+	path = Ps2IsoTools
+	url = https://github.com/IntelOrca/Ps2IsoTools.git
+	branch = netstandard2

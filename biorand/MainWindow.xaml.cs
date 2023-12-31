@@ -17,6 +17,7 @@ using System.Windows.Media;
 using IntelOrca.Biohazard.BioRand.RE1;
 using IntelOrca.Biohazard.BioRand.RE2;
 using IntelOrca.Biohazard.BioRand.RE3;
+using IntelOrca.Biohazard.BioRand.RECV;
 
 namespace IntelOrca.Biohazard.BioRand
 {
@@ -49,6 +50,11 @@ namespace IntelOrca.Biohazard.BioRand
             SelectedGame = _settings.LastSelectedGame;
             versionLabel.Text = Program.CurrentVersionInfo;
             txtWhatsNewTitle.Text = txtWhatsNewTitle.Text.Replace("{VERSION}", Program.CurrentVersionNumber);
+
+#if DISABLE_CVX
+            gameListView.Items.RemoveAt(3);
+            gameLocationCV.Visibility = Visibility.Collapsed;
+#endif
         }
 
         private void PopulateChangelog()
@@ -77,10 +83,12 @@ namespace IntelOrca.Biohazard.BioRand
                 gameLocation1.Location = _settings.GamePath1;
                 gameLocation2.Location = _settings.GamePath2;
                 gameLocation3.Location = _settings.GamePath3;
+                gameLocationCV.Location = _settings.GamePathCv;
 
                 gameLocation1.IsChecked = _settings.GameEnabled1;
                 gameLocation2.IsChecked = _settings.GameEnabled2;
                 gameLocation3.IsChecked = _settings.GameEnabled3;
+                gameLocationCV.IsChecked = _settings.GameEnabledCv;
 
                 gameLocation1.SetExecutableList(_settings.GamePath1, _settings.GameExecutable1);
                 gameLocation2.SetExecutableList(_settings.GamePath2, _settings.GameExecutable2);
@@ -89,6 +97,7 @@ namespace IntelOrca.Biohazard.BioRand
                 gameLocation1.IsSettingsLoaded = true;
                 gameLocation2.IsSettingsLoaded = true;
                 gameLocation3.IsSettingsLoaded = true;
+                gameLocationCV.IsSettingsLoaded = true;
 
                 chkEnableCustomContent.IsChecked = !_settings.DisableCustomContent;
                 chkRandomizeTitleVoice.IsChecked = _settings.RandomizeTitleVoice;
@@ -100,13 +109,14 @@ namespace IntelOrca.Biohazard.BioRand
                 _settings.Seed1 = new RandoConfig().WithSeed(_random.Next(0, RandoConfig.MaxSeed)).ToString();
                 _settings.Seed2 = new RandoConfig().WithSeed(_random.Next(0, RandoConfig.MaxSeed)).ToString();
                 _settings.Seed3 = new RandoConfig().WithSeed(_random.Next(0, RandoConfig.MaxSeed)).ToString();
+                _settings.SeedCv = new RandoConfig().WithSeed(_random.Next(0, RandoConfig.MaxSeed)).ToString();
                 if (lastVersion != default)
                 {
                     SelectedGame = 5;
                 }
             }
 
-            var seed = SelectedGame == 0 ? _settings.Seed1 : SelectedGame == 1 ? _settings.Seed2 : _settings.Seed3;
+            var seed = SelectedGame == 0 ? _settings.Seed1 : SelectedGame == 1 ? _settings.Seed2 : SelectedGame == 2 ? _settings.Seed3 : _settings.SeedCv;
             if (seed == null)
             {
                 RandomizeSeed();
@@ -122,10 +132,12 @@ namespace IntelOrca.Biohazard.BioRand
             _settings.GamePath1 = gameLocation1.Location;
             _settings.GamePath2 = gameLocation2.Location;
             _settings.GamePath3 = gameLocation3.Location;
+            _settings.GamePathCv = gameLocationCV.Location;
 
             _settings.GameEnabled1 = gameLocation1.IsChecked == true;
             _settings.GameEnabled2 = gameLocation2.IsChecked == true;
             _settings.GameEnabled3 = gameLocation3.IsChecked == true;
+            _settings.GameEnabledCv = gameLocationCV.IsChecked == true;
 
             _settings.GameExecutable1 = gameLocation1.SelectedExecutable;
             _settings.GameExecutable2 = gameLocation2.SelectedExecutable;
@@ -147,6 +159,9 @@ namespace IntelOrca.Biohazard.BioRand
                     break;
                 case 2:
                     _settings.Seed3 = _config.ToString();
+                    break;
+                case 3:
+                    _settings.SeedCv = _config.ToString();
                     break;
             }
             _settings.Save();
@@ -638,9 +653,11 @@ namespace IntelOrca.Biohazard.BioRand
             config.SetEnabled(0, _settings.GameEnabled1);
             config.SetEnabled(1, _settings.GameEnabled2);
             config.SetEnabled(2, _settings.GameEnabled3);
+            config.SetEnabled(3, _settings.GameEnabledCv);
             config.SetInstallPath(0, _settings.GamePath1);
             config.SetInstallPath(1, _settings.GamePath2);
             config.SetInstallPath(2, _settings.GamePath3);
+            config.SetInstallPath(3, _settings.GamePathCv);
             return config;
         }
 
@@ -888,21 +905,21 @@ namespace IntelOrca.Biohazard.BioRand
 
             using (SuspendEvents())
             {
-                if (index == 5)
+                if (index == -3)
                 {
                     panelNew.Visibility = Visibility.Visible;
                     panelInfo.Visibility = Visibility.Hidden;
                     panelConfig.Visibility = Visibility.Hidden;
                     panelRando.Visibility = Visibility.Hidden;
                 }
-                else if (index == 4)
+                else if (index == -2)
                 {
                     panelNew.Visibility = Visibility.Hidden;
                     panelInfo.Visibility = Visibility.Visible;
                     panelConfig.Visibility = Visibility.Hidden;
                     panelRando.Visibility = Visibility.Hidden;
                 }
-                else if (index == 3)
+                else if (index == -1)
                 {
                     panelNew.Visibility = Visibility.Hidden;
                     panelInfo.Visibility = Visibility.Hidden;
@@ -915,36 +932,22 @@ namespace IntelOrca.Biohazard.BioRand
                     panelInfo.Visibility = Visibility.Hidden;
                     panelConfig.Visibility = Visibility.Hidden;
                     panelRando.Visibility = Visibility.Visible;
-                    if (index == 2)
-                    {
-                        sliderGunpowder.Visibility = Visibility.Visible;
-                    }
-                    else
-                    {
-                        _config.RatioGunpowder = 0;
-                        sliderGunpowder.Visibility = Visibility.Hidden;
-                    }
+
                     dropdownVariant.Visibility = index == 1 ?
                         Visibility.Visible :
                         Visibility.Hidden;
-                    if (index == 1)
-                    {
-                        chkRandomEvents.Visibility = Visibility.Visible;
-                    }
-                    else
-                    {
-                        chkRandomEvents.Visibility = Visibility.Collapsed;
-                    }
                     UpdatePlayerDropdowns();
+                    UpdateItems();
                     UpdateEnemies();
                     UpdateEnemySkinList();
-                    UpdateNPCList();
+                    UpdateCutscenes();
                     UpdateBGMList();
+                    UpdateNPCList();
                     UpdateLogButtons();
                 }
             }
 
-            if (index >= 0 && index <= 2)
+            if (index >= 0 && index <= 3)
                 _config.Game = (byte)(index + 1);
             _settings.LastSelectedGame = index;
             _settings.Save();
@@ -970,6 +973,8 @@ namespace IntelOrca.Biohazard.BioRand
                     return new Re2Randomiser(installConfig, new BiorandBgCreator());
                 case 2:
                     return new Re3Randomiser(installConfig, new BiorandBgCreator());
+                case 3:
+                    return new ReCvRandomiser(installConfig, new BiorandBgCreator());
                 default:
                     return null;
             }
@@ -985,6 +990,8 @@ namespace IntelOrca.Biohazard.BioRand
                     return _settings.GamePath2;
                 case 2:
                     return _settings.GamePath3;
+                case 3:
+                    return _settings.GamePathCv;
                 default:
                     return null;
             }
@@ -1041,6 +1048,27 @@ namespace IntelOrca.Biohazard.BioRand
             e.Message = "Directory looks good!";
         }
 
+        private void gameLocationCV_Validate(object sender, PathValidateEventArgs e)
+        {
+            if (!File.Exists(e.Path))
+            {
+                e.Message = "File does not exist!";
+                e.IsValid = false;
+                return;
+            }
+
+            if (new FileInfo(e.Path).Length != 1883996160)
+            {
+                e.Message = "Image is not the expected version!";
+                e.IsValid = false;
+                return;
+            }
+
+
+            e.IsValid = true;
+            e.Message = "ISO looks good!";
+        }
+
         private void gameLocation_Changed(object sender, EventArgs e)
         {
             SaveSettings();
@@ -1059,7 +1087,7 @@ namespace IntelOrca.Biohazard.BioRand
             get
             {
                 var index = (gameListView.SelectedItem as GameMenuItem)?.Game;
-                if (index > 2)
+                if (index > 3)
                     return null;
                 return index;
             }
@@ -1088,34 +1116,61 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void UpdatePlayerDropdowns()
         {
-            var randomizer = GetRandomizer();
-            chkPlayer.Visibility = Visibility.Visible;
-
-            var dropdownLabels = new[] { lblPlayer0, lblPlayer1 };
-            var dropdowns = new[] { dropdownPlayer0, dropdownPlayer1 };
-            for (int i = 0; i < 2; i++)
+            if (SelectedGame >= 2)
             {
-                var label = dropdownLabels[i];
-                var dropdown = dropdowns[i];
-                label.Text = $"{randomizer.GetPlayerName(i)} becomes:";
-                var items = new List<string>() { "Random" };
-                items.AddRange(randomizer.GetPlayerCharacters(i));
-                dropdown.ItemsSource = items;
-                if (dropdown.SelectedIndex == -1)
-                    dropdown.SelectedIndex = 0;
-            }
-
-            if (SelectedGame == 2)
-            {
-                lblPlayer1.Visibility = Visibility.Collapsed;
-                dropdownPlayer1.Visibility = Visibility.Collapsed;
+                chkPlayer.Visibility = Visibility.Hidden;
             }
             else
             {
-                lblPlayer1.Visibility = Visibility.Visible;
-                dropdownPlayer1.Visibility = Visibility.Visible;
+                var randomizer = GetRandomizer();
+                var dropdownLabels = new[] { lblPlayer0, lblPlayer1 };
+                var dropdowns = new[] { dropdownPlayer0, dropdownPlayer1 };
+                for (int i = 0; i < 2; i++)
+                {
+                    var label = dropdownLabels[i];
+                    var dropdown = dropdowns[i];
+                    label.Text = $"{randomizer.GetPlayerName(i)} becomes:";
+                    var items = new List<string>() { "Random" };
+                    items.AddRange(randomizer.GetPlayerCharacters(i));
+                    dropdown.ItemsSource = items;
+                    if (dropdown.SelectedIndex == -1)
+                        dropdown.SelectedIndex = 0;
+                }
+
+                if (SelectedGame >= 2)
+                {
+                    lblPlayer1.Visibility = Visibility.Collapsed;
+                    dropdownPlayer1.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    lblPlayer1.Visibility = Visibility.Visible;
+                    dropdownPlayer1.Visibility = Visibility.Visible;
+                }
+                chkSwapCharacters.Visibility = SelectedGame != 2 ? Visibility.Visible : Visibility.Hidden;
+                chkPlayer.Visibility = Visibility.Visible;
             }
-            chkSwapCharacters.Visibility = SelectedGame != 2 ? Visibility.Visible : Visibility.Hidden;
+        }
+
+        private void UpdateItems()
+        {
+            if (SelectedGame == 2)
+            {
+                sliderGunpowder.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                _config.RatioGunpowder = 0;
+                sliderGunpowder.Visibility = Visibility.Hidden;
+            }
+            if (SelectedGame == 3)
+            {
+                panelRandomInventory.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                panelRandomInventory.Visibility = Visibility.Visible;
+            }
         }
 
         private void UpdateEnemies()
@@ -1127,18 +1182,54 @@ namespace IntelOrca.Biohazard.BioRand
                 items.Add(new SliderListItem(enemy.Name, 4, 7));
             }
             listEnemies.ItemsSource = items;
+            if (SelectedGame == 3)
+            {
+                chkRandomEnemyPlacements.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                chkRandomEnemyPlacements.Visibility = Visibility.Visible;
+            }
         }
 
         private void UpdateEnemySkinList()
         {
-            var randomizer = GetRandomizer();
-            var enemySkins = randomizer.GetEnemySkins();
-            listEnemySkins.Names = enemySkins
-                .Select(x => x.Name)
-                .ToArray();
-            listEnemySkins.ToolTips = enemySkins
-                .Select(x => x.ToolTip)
-                .ToArray();
+            if (SelectedGame == 3)
+            {
+                chkEnemySkins.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                var randomizer = GetRandomizer();
+                var enemySkins = randomizer.GetEnemySkins();
+                listEnemySkins.Names = enemySkins
+                    .Select(x => x.Name)
+                    .ToArray();
+                listEnemySkins.ToolTips = enemySkins
+                    .Select(x => x.ToolTip)
+                    .ToArray();
+                chkEnemySkins.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void UpdateCutscenes()
+        {
+            if (SelectedGame == 3)
+            {
+                chkCutscenes.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                chkCutscenes.Visibility = Visibility.Visible;
+                if (SelectedGame == 1)
+                {
+                    chkRandomEvents.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    chkRandomEvents.Visibility = Visibility.Collapsed;
+                }
+            }
         }
 
         private void UpdateNPCList()
@@ -1152,8 +1243,16 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void UpdateBGMList()
         {
-            var randomizer = GetRandomizer();
-            listBGMs.Names = randomizer.GetMusicAlbums();
+            if (SelectedGame == 3)
+            {
+                chkRngBgm.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                var randomizer = GetRandomizer();
+                listBGMs.Names = randomizer.GetMusicAlbums();
+                chkRngBgm.Visibility = Visibility.Visible;
+            }
         }
 
         private void UpdateLogButtons()
@@ -1168,7 +1267,7 @@ namespace IntelOrca.Biohazard.BioRand
                 var hyperlink = btn.Inlines.FirstInline as Hyperlink;
                 hyperlink.Inlines.Clear();
                 hyperlink.Inlines.Add($"{randomizer.GetPlayerName(i)} Log");
-                btn.Visibility = i == 1 && SelectedGame == 2 ? Visibility.Collapsed : Visibility.Visible;
+                btn.Visibility = i == 1 && SelectedGame >= 2 ? Visibility.Collapsed : Visibility.Visible;
             }
         }
 
