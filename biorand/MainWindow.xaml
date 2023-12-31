@@ -400,7 +400,7 @@
                                     <StackPanel>
                                         <CheckBox x:Name="chkAllowAnyVoice" ToolTip="If enabled, characters can speak other character's voice line.">Allow any character voice</CheckBox>
                                         <CheckBox x:Name="chkReduceSilences" ToolTip="If enabled, voice lines are chosen to best match the length of the original line. This can however reduce the RNG.">Reduce awkward silences</CheckBox>
-                                        <CheckBox x:Name="chkRandomEvents" ToolTip="If enabled, random events, such as enemy encounters or custom cutscenes, can occur.">Random events (experimental)</CheckBox>
+                                        <CheckBox x:Name="chkRandomEvents" ToolTip="If enabled, random events, such as enemy encounters or custom cutscenes, can occur.">Random events</CheckBox>
                                     </StackPanel>
                                 </local:CheckGroupBox>
                                 <StackPanel Grid.Row="1" Orientation="Horizontal">

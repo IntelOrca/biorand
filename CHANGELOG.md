@@ -1,3 +1,26 @@
+BioRand v3.1.9 (2023-12-31)
+
+* [Feature] Add custom content folder (`%APPDATA%\biorand\data`).
+* [Feature] Add support for alternative PLD skins.
+* [Feature] RE 2, add Ethan, Eveline, and William (G1) as playable characters.
+* [Feature] RE 2, add random events.
+* [Enhancement] RE 2, Update Kendo with zombie texture.
+* [Enhancement] RE 2, Update Mark, and Regina PLD.
+* [Change] Move RE 4 regenerator BGM to danger category.
+* [Change] RE 2, room 20B, make item behind desk low priority.
+* [Fix] #502: RE 2, Leon's partner character health is danger in some rooms.
+* [Fix] #687: RE 2, room 219, crash due to G-Adult.
+* [Fix] #694: RE 3, room 110, locked RPD causes softlock.
+* [Fix] #703: RE 2, room 10C, moths crash game.
+* [Fix] #705: RE 1, room 100, crash during Jill poison cutscene.
+* [Fix] #711: RE 2, room 309, crash due to enemies.
+* [Fix] RE 2, moths can crash the game.
+* [Fix] RE 2, room 106, fix door crash.
+* [Fix] RE 2, room 114, Claire zombie cutscene and random events.
+* [Fix] RE 2, room 206, 60D, exclude moths.
+* [Fix] RE 2, room 60B for Claire.
+* [Fix] RE 2, room 614, enemies during cutscene.
+
 BioRand v3.1.8 (2023-12-07)
 
 * [Feature] Add and improve BGM for RE:CV, RE 0, RE 4, RE 5, RE1R, RE2R.
