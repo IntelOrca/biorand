@@ -1,4 +1,6 @@
-﻿namespace IntelOrca.Biohazard.BioRand.RE2
+﻿using System.Collections.Generic;
+
+namespace IntelOrca.Biohazard.BioRand.RE2
 {
     internal class Re2DoorHelper : IDoorHelper
     {
@@ -22,6 +24,7 @@
             Nop(0x60B, 0x1432, 0x1414);
 
             FixDarkRoomLocker(config, gameData);
+            FixClaireElevator(config, gameData);
 
             void Nop(ushort rdtId, int address0, int address1 = -1)
             {
@@ -68,6 +71,24 @@
                     rdt.Nop(0x199E, 0x19C0);
                 }
             }
+        }
+
+        /// <summary>
+        /// Change flag check to item pickup rather than partner status.
+        /// </summary>
+        /// <param name="config"></param>
+        /// <param name="gameData"></param>
+        private void FixClaireElevator(RandoConfig config, GameData gameData)
+        {
+            if (config.RandomDoors)
+                return;
+
+            var rdt = gameData.GetRdt(new RdtId(5, 0x01));
+            if (rdt == null)
+                return;
+
+            rdt.Patches.Add(new KeyValuePair<int, byte>(0x056A + 1, 0x22));
+            rdt.Patches.Add(new KeyValuePair<int, byte>(0x056A + 2, 0x1D));
         }
     }
 }
