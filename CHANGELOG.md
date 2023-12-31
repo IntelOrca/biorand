@@ -1,4 +1,4 @@
-BioRand v3.1.9 (2023-12-31)
+BioRand v3.2.0 (2023-12-31)
 
 * [Feature] Add custom content folder (`%APPDATA%\biorand\data`).
 * [Feature] Add support for alternative PLD skins.
