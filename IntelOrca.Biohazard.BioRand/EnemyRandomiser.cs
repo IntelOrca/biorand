@@ -819,7 +819,11 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void SetEmbeddedEffects(IRdtBuilder builder, EmbeddedEffectList value)
         {
-            if (builder is Rdt2.Builder builder2)
+            if (builder is Rdt1.Builder builder1)
+            {
+                builder1.EmbeddedEffects = value;
+            }
+            else if (builder is Rdt2.Builder builder2)
             {
                 builder2.EmbeddedEffects = value;
             }
