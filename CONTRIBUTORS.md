@@ -3,18 +3,20 @@
 * **IntelOrca** - programmer
 * **Snipz** -  testing, animations, models, voices
 * **Kashup** - testing, models, textures, voices
+* **Zky3sdge** - models
 * **Shannon** - testing
 * **baesik** - testing
 * **otamega72** - testing
 * **PMCDC** - UI enhancements
-* **ALSOP** - Kendo texture
-* **AndrewC** - Barry, Enrico, Jill, and extra models
-* **Komizo** - Misc.
-* **Leigi** - Chris (RE 5), Sheva, Ashley, Krauser models
-* **Rusty** - Ark, Kevin, Richard, William, Wesker (RE 5), and extra models
-* **StarringRole** - Rebecca model
-* **Komizo** - RE 2/3 remake models
-* **ncf** - RE 3 models
+* **ALSOP** - textures
+* **AndrewC** - models
+* **Komizo** - models
+* **Leigi** - models
+* **ncf** - models
+* **Rusty** - models
+* **StarringRole** - models
+* **UniComics** - textures
+* **Us3r_Cr0ft** - animations, models
 * **HazNut** - a bugfix
 * **re_duke** - RDT information
 * **Classic RE Modding community discord**
