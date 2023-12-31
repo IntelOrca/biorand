@@ -50,6 +50,11 @@ namespace IntelOrca.Biohazard.BioRand
             SelectedGame = _settings.LastSelectedGame;
             versionLabel.Text = Program.CurrentVersionInfo;
             txtWhatsNewTitle.Text = txtWhatsNewTitle.Text.Replace("{VERSION}", Program.CurrentVersionNumber);
+
+#if DISABLE_CVX
+            gameListView.Items.RemoveAt(3);
+            gameLocationCV.Visibility = Visibility.Collapsed;
+#endif
         }
 
         private void PopulateChangelog()
@@ -900,21 +905,21 @@ namespace IntelOrca.Biohazard.BioRand
 
             using (SuspendEvents())
             {
-                if (index == 6)
+                if (index == -3)
                 {
                     panelNew.Visibility = Visibility.Visible;
                     panelInfo.Visibility = Visibility.Hidden;
                     panelConfig.Visibility = Visibility.Hidden;
                     panelRando.Visibility = Visibility.Hidden;
                 }
-                else if (index == 5)
+                else if (index == -2)
                 {
                     panelNew.Visibility = Visibility.Hidden;
                     panelInfo.Visibility = Visibility.Visible;
                     panelConfig.Visibility = Visibility.Hidden;
                     panelRando.Visibility = Visibility.Hidden;
                 }
-                else if (index == 4)
+                else if (index == -1)
                 {
                     panelNew.Visibility = Visibility.Hidden;
                     panelInfo.Visibility = Visibility.Hidden;

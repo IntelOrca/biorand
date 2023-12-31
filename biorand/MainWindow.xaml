@@ -49,9 +49,9 @@
                 <local:GameMenuItem Game="1" Image="/resources/re2.png" />
                 <local:GameMenuItem Game="2" Image="/resources/re3.png" />
                 <local:GameMenuItem Game="3" Image="/resources/recvx.png" />
-                <local:GameMenuItem Game="4" Image="/resources/settings.png" />
-                <local:GameMenuItem Game="5" Image="/resources/info.png" />
-                <local:GameMenuItem Game="6" Image="/resources/new.png" />
+                <local:GameMenuItem Game="-1" Image="/resources/settings.png" />
+                <local:GameMenuItem Game="-2" Image="/resources/info.png" />
+                <local:GameMenuItem Game="-3" Image="/resources/new.png" />
             </ListView>
             <Grid Grid.Column="1" Margin="4">
                 <Grid x:Name="panelNew" Visibility="Hidden">
