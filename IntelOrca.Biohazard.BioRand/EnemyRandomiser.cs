@@ -809,11 +809,12 @@ namespace IntelOrca.Biohazard.BioRand
 
         private EmbeddedEffectList GetEmbeddedEffects(IRdt rdt)
         {
-            if (rdt is Rdt2 rdt2)
+            return rdt switch
             {
-                return rdt2.EmbeddedEffects;
-            }
-            throw new NotSupportedException();
+                Rdt1 rdt1 => rdt1.EmbeddedEffects,
+                Rdt2 rdt2 => rdt2.EmbeddedEffects,
+                _ => throw new NotSupportedException(),
+            };
         }
 
         private void SetEmbeddedEffects(IRdtBuilder builder, EmbeddedEffectList value)

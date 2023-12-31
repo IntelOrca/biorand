@@ -1116,7 +1116,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void UpdatePlayerDropdowns()
         {
-            if (SelectedGame >= 2)
+            if (SelectedGame == 3)
             {
                 chkPlayer.Visibility = Visibility.Hidden;
             }
