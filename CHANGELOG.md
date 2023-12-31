@@ -14,6 +14,7 @@ BioRand v3.1.9 (2023-12-31)
 * [Fix] #703: RE 2, room 10C, moths crash game.
 * [Fix] #705: RE 1, room 100, crash during Jill poison cutscene.
 * [Fix] #711: RE 2, room 309, crash due to enemies.
+* [Fix] #747: RE 1, mini spiders crash game during first Hunter cutscene.
 * [Fix] RE 2, moths can crash the game.
 * [Fix] RE 2, room 106, fix door crash.
 * [Fix] RE 2, room 114, Claire zombie cutscene and random events.
