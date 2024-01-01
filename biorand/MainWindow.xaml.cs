@@ -112,7 +112,7 @@ namespace IntelOrca.Biohazard.BioRand
                 _settings.SeedCv = new RandoConfig().WithSeed(_random.Next(0, RandoConfig.MaxSeed)).ToString();
                 if (lastVersion != default)
                 {
-                    SelectedGame = 5;
+                    SelectedGame = -3;
                 }
             }
 
@@ -1093,7 +1093,7 @@ namespace IntelOrca.Biohazard.BioRand
             }
             set
             {
-                value = value ?? 3;
+                value = value ?? -3;
                 foreach (GameMenuItem item in gameListView.Items)
                 {
                     if (item.Game == value)
