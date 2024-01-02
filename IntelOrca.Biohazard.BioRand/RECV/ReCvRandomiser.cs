@@ -68,6 +68,11 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             var prs = new PrsFile(_rdxAfs!.GetFileData(fileIndex));
             var rdt = new RdtCv(prs.Uncompressed);
             var rrdt = new RandomizedRdt(rdt, rdtId);
+
+            var scdReader = new ScdReader();
+            rrdt.ScriptDisassembly = scdReader.Diassemble(rdt.Script, BiohazardVersion, BioScriptKind.Main, listing: false);
+            rrdt.ScriptListing = scdReader.Diassemble(rdt.Script, BiohazardVersion, BioScriptKind.Main, listing: true);
+
             rrdt.Ast = CreateAst(rdt);
             _rdts[fileIndex] = rrdt;
             return rrdt;
@@ -188,24 +193,48 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             d.Room = 10;
             d.ExitId = 0;
             ab.Aots[4] = d;
-            var script = ab.Script;
+            {
+                var script = ab.Script;
+                var data = script.Data.ToArray();
 
-            var data = script.Data.ToArray();
-            data[0] = 0x04;
-            data[1] = 0x00;
-            data[2] = 0x00;
-            data[3] = 0x00;
-            data[4] = 0x95;
-            data[5] = 0x01;
-            data[6] = 0x00;
-            data[7] = 0x00;
-            for (var i = 8; i < data.Length; i++)
-                data[i] = 0x00;
+                // data[0x0C] = 0x95;
+                // data[0x0D] = 0x01;
+                // data[0x0F] = 0x00;
+                // data[0x10] = 0x00;
+                // for (var i = 0x4A; i < 0x50; i += 2)
+                // {
+                //     data[i + 0] = 0x95;
+                //     data[i + 1] = 0x01;
+                // }
 
-            ab.Script = new CvScript(data);
-            a = ab.ToRdt();
-            _rdts[1].RdtFile = a;
+                ab.Script = new ScdProcedureList(BiohazardVersion, data);
+                a = ab.ToRdt();
+                _rdts[1].RdtFile = a;
+            }
+            {
+                var rdt10A = ((RdtCv)_rdts[12].RdtFile).ToBuilder();
+                var data = rdt10A.Script.Data.ToArray();
+                data[0x166] = 0xCD;
+                data[0x167] = 0x00;
+                data[0x168] = 0xCD;
+                data[0x169] = 0x00;
+                // data[0x168] = 54;
+                // for (var i = 0x08; i < 0x112; i += 2)
+                // {
+                //     data[i + 0] = 0x95;
+                //     data[i + 1] = 0x01;
+                // }
+                rdt10A.Script = new ScdProcedureList(BiohazardVersion, data);
+                _rdts[12].RdtFile = rdt10A.ToRdt();
+            }
 #endif
+        }
+
+        private ScdProcedureList Replace(ScdProcedureList src, byte[] data)
+        {
+            var data2 = new byte[src.Data.Length];
+            Array.Copy(data, data2, data.Length);
+            return new ScdProcedureList(BiohazardVersion, data2);
         }
 
         private AfsFile ReadRdxAfs(UdfEditor editor, FileIdentifier fileId)
