@@ -624,17 +624,23 @@ namespace IntelOrca.Biohazard.BioRand
             if (_config.Game != (SelectedGame + 1))
             {
                 if (_config.Game >= 1 && _config.Game <= 3)
+                {
                     SelectedGame = _config.Game - 1;
+                    _config = RandoConfig.FromString(txt);
+                }
                 else
+                {
                     _config.Game = (byte)(SelectedGame + 1);
+                }
             }
-            if (_config.Game == 1)
+            if (_config.Game != 2)
             {
                 _config.Scenario = 0;
-            }
-            if (_config.Game == 3)
-            {
-                _config.SwapCharacters = false;
+                if (_config.Game != 1)
+                {
+                    _config.SwapCharacters = false;
+                }
+                _config.RandomEvents = false;
             }
 
             UpdateUi();
