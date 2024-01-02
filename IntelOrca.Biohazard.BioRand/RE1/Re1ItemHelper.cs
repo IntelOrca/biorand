@@ -55,6 +55,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
         {
             switch (type)
             {
+                case Re1ItemIds.MusicNotes: // If not 0, Jill will softlock when using the item
                 case Re1ItemIds.SquareCrank:
                 case Re1ItemIds.HexCrank:
                     return true;
@@ -173,6 +174,8 @@ namespace IntelOrca.Biohazard.BioRand.RE1
         {
             switch (item)
             {
+                case Re1ItemIds.MusicNotes:
+                    return 0; // If not 0, Jill will softlock when using the item
                 case Re1ItemIds.Battery:
                     return config.RandomDoors ? 2 : 1;
                 case Re1ItemIds.SmallKey:
