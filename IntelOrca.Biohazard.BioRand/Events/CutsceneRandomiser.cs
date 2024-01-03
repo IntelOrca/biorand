@@ -124,6 +124,10 @@ namespace IntelOrca.Biohazard.BioRand.Events
             if (!_cutsceneRoomInfoMap.TryGetValue(rdt.RdtId, out var info))
                 return;
 
+            if (rdt.RdtId == new RdtId(2, 0x03) && _config.Player == 0 && _config.Scenario == 0)
+                return;
+            if (rdt.RdtId == new RdtId(2, 0x09) && _config.Player == 1 && _config.Scenario == 0)
+                return;
             if (rdt.RdtId == new RdtId(6, 0x04) && _config.Scenario == 1)
                 return;
 
