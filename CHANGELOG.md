@@ -1,3 +1,13 @@
+BioRand v3.2.1 (2023-01-04)
+
+* [Fix] #756: RE 1, room 10F, Jill softlock when using music notes.
+* [Fix] #757: RE 2, room 309, random event crash.
+* [Fix] #759: RE 2, room 304, Claire crash when partner uses ledge.
+* [Fix] #760: RE 2, room 10C, arms can prevent statue push.
+* [Fix] #769: RE 2, room 601, Leon B crash.
+* [Fix] launch when no settings file.
+* [Fix] pasting of seed.
+
 BioRand v3.2.0 (2023-12-31)
 
 * [Feature] Add custom content folder (`%APPDATA%\biorand\data`).
