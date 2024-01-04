@@ -80,7 +80,7 @@ namespace IntelOrca.Biohazard.BioRand.RE2
         /// <param name="gameData"></param>
         private void FixClaireElevator(RandoConfig config, GameData gameData)
         {
-            if (config.RandomDoors)
+            if (config.RandomDoors || config.Player == 0)
                 return;
 
             var rdt = gameData.GetRdt(new RdtId(5, 0x01));

@@ -128,6 +128,8 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 return;
             if (rdt.RdtId == new RdtId(2, 0x09) && _config.Player == 1 && _config.Scenario == 0)
                 return;
+            if (rdt.RdtId == new RdtId(5, 0x01))
+                return;
             if (rdt.RdtId == new RdtId(6, 0x04) && _config.Scenario == 1)
                 return;
 
