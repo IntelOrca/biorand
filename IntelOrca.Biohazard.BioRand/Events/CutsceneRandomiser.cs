@@ -115,6 +115,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             // Rooms that have a ledge crash when partner uses it
             _partnerRooms.Remove(new RdtId(0, 0x18));
             _partnerRooms.Remove(new RdtId(0, 0x12));
+            _partnerRooms.Remove(new RdtId(2, 0x04));
             _partnerRooms.Remove(new RdtId(3, 0x00));
             _partnerRooms.Remove(new RdtId(5, 0x00));
         }
