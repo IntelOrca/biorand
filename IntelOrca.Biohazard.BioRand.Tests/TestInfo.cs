@@ -12,9 +12,9 @@ namespace IntelOrca.Biohazard.BioRand.Tests
                 fileName = "recvx";
             var places = new[]
             {
-                $@"D:\games\re{fileName}",
-                $@"F:\games\re{fileName}",
-                $@"M:\games\re{fileName}"
+                $@"D:\games\{fileName}",
+                $@"F:\games\{fileName}",
+                $@"M:\games\{fileName}"
             };
 
             foreach (var place in places)
