@@ -132,15 +132,20 @@ namespace IntelOrca.Biohazard.BioRand
             var numAreas = _config.AreaCount + 1;
 
             _nodesLeft.AddRange(_allNodes);
-            _nodesLeft.Remove(graph.Start);
-            _nodesLeft.Remove(graph.End);
-            var bridgeSuperNodes = GetBridgeSuperNodes();
-            var areaSuperNodes = GetAreaSuperNodes(numAreas);
 
             var beginNode = graph.Start;
             beginNode.Visited = true;
             var pool = new List<PlayNode>() { beginNode };
             AddStickyNodeGroup(beginNode, pool);
+
+            // Remove the begin (+ required nodes)
+            foreach (var node in pool)
+            {
+                _nodesLeft.Remove(node);
+            }
+
+            var bridgeSuperNodes = GetBridgeSuperNodes();
+            var areaSuperNodes = GetAreaSuperNodes(numAreas);
             for (int i = 0; i < numAreas; i++)
             {
                 pool.AddRange(areaSuperNodes[i]);
