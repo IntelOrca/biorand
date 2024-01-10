@@ -2194,19 +2194,22 @@
           "offset": 12334,
           "id": 200,
           "type": 70,
-          "amount": 1
+          "amount": 1,
+          "priority": "low"
         },
         {
           "offset": 12440,
           "id": 201,
           "type": 71,
-          "amount": 1
+          "amount": 1,
+          "priority": "low"
         },
         {
           "offset": 12546,
           "id": 202,
           "type": 72,
-          "amount": 1
+          "amount": 1,
+          "priority": "low"
         }
       ]
     },
