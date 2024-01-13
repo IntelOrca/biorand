@@ -910,8 +910,8 @@ namespace IntelOrca.Biohazard.BioRand
 
             var healthTable = _rng.CreateProbabilityTable<byte>();
             healthTable.Add(ItemHelper.GetItemId(CommonItemKind.HerbG), 0.5);
-            healthTable.Add(ItemHelper.GetItemId(CommonItemKind.HerbR), 0.3);
-            healthTable.Add(ItemHelper.GetItemId(CommonItemKind.HerbB), 0.1);
+            healthTable.Add(ItemHelper.GetItemId(CommonItemKind.HerbR), 0.15);
+            healthTable.Add(ItemHelper.GetItemId(CommonItemKind.HerbB), 0.25);
             healthTable.Add(ItemHelper.GetItemId(CommonItemKind.FirstAid), 0.1);
 
             var inkTable = _rng.CreateProbabilityTable<byte>();
