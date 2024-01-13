@@ -3145,7 +3145,8 @@
         {
           "excludeTypes": [ 47, 87, 91, 95, 103 ]
         }
-      ]
+      ],
+      "enemies": []
     },
     "50B": {
       "doorRando": [
