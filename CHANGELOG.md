@@ -1,3 +1,16 @@
+BioRand v3.2.2 (2023-01-13)
+
+* [Change] RE 2, improve trade NPC message.
+* [Change] Tweak health item ratio.
+* [Fix] #697: RE 3, room 309, statue items unavailable after puzzle.
+* [Fix] #706: RE 3, text 50A, text disappears.
+* [Fix] #773: RE 2, room 113, 614, enemies attack in cutscene.
+* [Fix] #783: RE 3, room 200, crash when enemy is spider.
+* [Fix] RE 1, potential soft lock in door randomizer.
+* [Fix] RE 1, room 10F, potential softlock in door rando.
+* [Fix] RE 1, room 205, dogs crash game during cutscene.
+* [Fix] RE 3, room 20F, crash when NPC is Irons.
+
 BioRand v3.2.1 (2023-01-04)
 
 * [Fix] #756: RE 1, room 10F, Jill softlock when using music notes.
