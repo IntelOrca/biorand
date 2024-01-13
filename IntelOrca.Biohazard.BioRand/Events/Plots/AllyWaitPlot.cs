@@ -317,8 +317,8 @@ namespace IntelOrca.Biohazard.BioRand.Events.Plots
             public override SbNode OnAfterChat()
             {
                 var builder = PlotBuilder;
-                var msg0 = builder.AllocateMessage("Will trade {herb} for {ink}.");
-                var msg1 = builder.AllocateMessage("Trade {ink} for {herb}?@");
+                var msg0 = builder.AllocateMessage("I will give you a {herb} for an {ink}.");
+                var msg1 = builder.AllocateMessage("Will you give an {ink} for a {herb}?@");
                 return
                     new SbIf(new SbCkItem(Re2ItemIds.InkRibbon),
                         new SbCommentNode("[action] question - trade",
