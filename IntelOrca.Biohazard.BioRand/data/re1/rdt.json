@@ -539,7 +539,23 @@
         {
           "id": 4,
           "type": 32,
-          "requires": [ 31, 35 ]
+          "requires": [ 31, 35 ],
+          "player": 0,
+          "doorRando": false
+        },
+        {
+          "id": 4,
+          "type": 32,
+          "requires": [ 31, 35 ],
+          "player": 0,
+          "doorRando": true,
+          "priority": "low"
+        },
+        {
+          "id": 4,
+          "type": 32,
+          "requires": [ 31, 35 ],
+          "player": 1
         }
       ],
       "npcs": [
