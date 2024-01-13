@@ -10,6 +10,7 @@ BioRand v3.2.2 (2023-01-13)
 * [Fix] RE 1, room 10F, potential softlock in door rando.
 * [Fix] RE 1, room 205, dogs crash game during cutscene.
 * [Fix] RE 3, room 20F, crash when NPC is Irons.
+* [Fix] generation error when randomize NPCs is disabled.
 
 BioRand v3.2.1 (2023-01-04)
 

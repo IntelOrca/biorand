@@ -351,7 +351,7 @@ namespace IntelOrca.Biohazard.BioRand
                     playerActors = ChangePlayerCharacters(config, logger, gameData, fileRepository);
 
                 VoiceRandomiser? voiceRandomiser = null;
-                if (config.RandomNPCs || config.RandomEvents)
+                if (config.RandomNPCs || config.RandomCutscenes || config.RandomEvents)
                 {
                     voiceRandomiser = new VoiceRandomiser(
                         BiohazardVersion,
