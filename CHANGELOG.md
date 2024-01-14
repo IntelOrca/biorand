@@ -1,3 +1,8 @@
+BioRand v3.2.3 (2023-01-14)
+
+* [Fix] #786: RE 1, room 301, crash due to bees.
+* [Fix] Last room appearing in any segment.
+
 BioRand v3.2.2 (2023-01-13)
 
 * [Change] RE 2, improve trade NPC message.
