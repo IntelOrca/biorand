@@ -139,6 +139,7 @@ namespace IntelOrca.Biohazard.BioRand
             AddStickyNodeGroup(beginNode, pool);
 
             // Remove the begin (+ required nodes)
+            _nodesLeft.Remove(graph.End);
             foreach (var node in pool)
             {
                 _nodesLeft.Remove(node);
