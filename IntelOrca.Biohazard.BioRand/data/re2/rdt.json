@@ -2503,32 +2503,32 @@
           "player": 1
         },
         {
+          "id": 16,
+          "priorty": "low",
+          "requires": [ 47 ],
+          "doorRando": false,
+          "player": 1
+        },
+        {
+          "id": 19,
+          "priorty": "low",
+          "requires": [ 47 ],
+          "doorRando": false,
+          "player": 1
+        },
+        {
           "id": 20,
           "priorty": "low",
           "doorRando": false,
           "player": 1
         },
         {
-          "id": 16,
-          "priorty": "low",
-          "requires": [ 47 ],
-          "doorRando": false,
-          "player": 1
-        },
-        {
           "id": 19,
-          "priorty": "low",
-          "requires": [ 47 ],
-          "doorRando": false,
-          "player": 1
-        },
-        {
-          "id": 16,
           "requires": [ 47 ],
           "doorRando": true
         },
         {
-          "id": 19,
+          "id": 20,
           "requires": [ 47 ],
           "doorRando": true
         }
