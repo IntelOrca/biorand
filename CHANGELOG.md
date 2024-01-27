@@ -1,3 +1,17 @@
+BioRand v3.2.4 (2023-01-27)
+
+* [Feature] RE 2, add orca dog enemy skin.
+* [Change] RE 2, room 613, larvae removed from room due to #797.
+* [Fix] #791: RE 3, room 217, text disappears.
+* [Fix] #794: RE 3, room 408, shooting explosive box with hunter gammas crashes the game.
+* [Fix] #795: RE 2, room 409, potential softlock with fan vent.
+* [Fix] #797: RE 2, room 613, crash due to larvae and random events.
+* [Fix] #800: RE 2, room 614, enemies in cutscene for Claire A door rando.
+* [Fix] #805: RE 3, Room 113, crash due to Hunters Gamma.
+* [Fix] #806: RE 3, room 417, hospital explodes in door rando causing softlock.
+* [Fix] #810: RE 3, room 103, arms crash.
+* [Fix] RE 2, room 403, lighter placed in dark.
+
 BioRand v3.2.3 (2023-01-14)
 
 * [Fix] #786: RE 1, room 301, crash due to bees.
