@@ -548,7 +548,8 @@
       ],
       "enemies": [
         {
-          "condition": "!3:3"
+          "condition": "!3:3",
+          "excludeTypes": [ 36 ]
         }
       ]
     },
