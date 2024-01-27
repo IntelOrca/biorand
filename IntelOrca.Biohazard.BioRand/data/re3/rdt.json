@@ -140,7 +140,7 @@
       "enemies": [
         {
           "nop": [ 23870, 23918, 24010 ],
-          "excludeTypes": [ 50 ]
+          "excludeTypes": [ 45, 50 ]
         }
       ]
     },
