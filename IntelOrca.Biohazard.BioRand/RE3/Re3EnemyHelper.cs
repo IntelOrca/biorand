@@ -298,7 +298,7 @@ namespace IntelOrca.Biohazard.BioRand.RE3
                 case Re3EnemyIds.Crow:
                     return new byte[] { 0x09, 0x0F };
                 case Re3EnemyIds.HunterGamma:
-                    return new byte[] { 0x39 };
+                    return new byte[] { 0x09, 0x39 };
                 case Re3EnemyIds.Spider:
                     return new byte[] { 0x09, 0x1A };
                 default:
