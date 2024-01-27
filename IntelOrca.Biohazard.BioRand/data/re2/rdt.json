@@ -4032,7 +4032,7 @@
       ],
       "enemies": [
         {
-          "nop": [ "0x0ECC-0x0F3A" ],
+          "nop": [ "0x0ECC-0x0F3A", "0x0F96-0x0FC2", "0x0FCA-0x0FD5" ],
           "excludeTypes": [ 40 ],
           "y": 0
         }
