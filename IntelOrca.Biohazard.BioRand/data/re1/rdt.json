@@ -350,7 +350,12 @@
           "target": "109"
         }
       ],
-      "enemies": []
+      "enemies": [
+        {
+          "nop": [ "0x19754-0x197EE" ],
+          "maxDifficulty": 1
+        }
+      ]
     },
     "109": {
       "linkedRoom": "609",
