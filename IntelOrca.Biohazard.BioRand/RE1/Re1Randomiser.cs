@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using IntelOrca.Biohazard.BioRand.RE3;
@@ -170,9 +171,32 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             po.MaxDegreeOfParallelism = 1;
 #endif
             // Chris / Jill
+            var cts = new CancellationTokenSource();
             Parallel.Invoke(po,
-                () => GenerateRdts(config.WithPlayerScenario(0, 0), progress, fileRepository),
-                () => GenerateRdts(config.WithPlayerScenario(1, 0), progress, fileRepository));
+                () =>
+                {
+                    try
+                    {
+                        GenerateRdts(config.WithPlayerScenario(0, 0), progress, fileRepository, cts.Token);
+                    }
+                    catch
+                    {
+                        cts.Cancel();
+                        throw;
+                    }
+                },
+                () =>
+                {
+                    try
+                    {
+                        GenerateRdts(config.WithPlayerScenario(1, 0), progress, fileRepository, cts.Token);
+                    }
+                    catch
+                    {
+                        cts.Cancel();
+                        throw;
+                    }
+                });
 
             FixRoomSounds(fileRepository);
             DisableDemo();

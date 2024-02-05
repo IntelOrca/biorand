@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using IntelOrca.Biohazard.BioRand.Events;
 using IntelOrca.Biohazard.BioRand.RE1;
 using IntelOrca.Biohazard.BioRand.RE2;
@@ -283,7 +284,7 @@ namespace IntelOrca.Biohazard.BioRand
                 CreateDataModule(fileRepository);
         }
 
-        public void GenerateRdts(RandoConfig config, IRandoProgress progress, FileRepository fileRepository)
+        public void GenerateRdts(RandoConfig config, IRandoProgress progress, FileRepository fileRepository, CancellationToken ct = default)
         {
             var baseSeed = config.Seed + config.Player;
             var randomDoors = new Rng(baseSeed + 1);
@@ -408,7 +409,7 @@ namespace IntelOrca.Biohazard.BioRand
                     using (progress.BeginTask(config.Player, "Randomizing enemies"))
                     {
                         enemyRandomiser = new EnemyRandomiser(BiohazardVersion, logger, config, gameData, map, randomEnemies, EnemyHelper, DataManager);
-                        enemyRandomiser.Randomise(graph);
+                        enemyRandomiser.Randomise(graph, ct);
                     }
                 }
 

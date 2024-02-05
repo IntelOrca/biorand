@@ -139,10 +139,10 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
-        public void Randomise(PlayGraph? graph)
+        public void Randomise(PlayGraph? graph, CancellationToken ct)
         {
             _logger.WriteHeading("Randomizing enemies:");
-            ResetStickyEnemies();
+            ResetStickyEnemies(ct);
             try
             {
                 ReadEnemyPlacements();
@@ -166,7 +166,7 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
-        private void ResetStickyEnemies()
+        private void ResetStickyEnemies(CancellationToken ct)
         {
             if (_config.Game != 1)
                 return;
@@ -174,6 +174,7 @@ namespace IntelOrca.Biohazard.BioRand
             // Wait for player to switch
             while (_config.Player != g_player)
             {
+                ct.ThrowIfCancellationRequested();
                 Thread.Sleep(100);
             }
 
