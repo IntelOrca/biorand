@@ -977,7 +977,11 @@ namespace IntelOrca.Biohazard.BioRand
                     {
                         var key = ParseLiteral(door.Lock);
                         var lockId = door.LockId == null ? (byte?)null : (byte?)door.LockId;
-                        rdt.ConvertToDoor((byte)door.Id!, (byte)door.Texture, key == null ? (byte?)null : (byte?)key.Value, lockId);
+                        var doorOpcode = rdt.ConvertToDoor((byte)door.Id!, (byte)door.Texture, key == null ? (byte?)null : (byte?)key.Value, lockId);
+                        if (door.Special.HasValue)
+                        {
+                            ((DoorAotSeOpcode)doorOpcode).Special = (byte)door.Special.Value;
+                        }
                         door.Lock = null;
                     }
 

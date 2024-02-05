@@ -177,7 +177,7 @@ namespace IntelOrca.Biohazard.BioRand.RE1
 
                 var doorId = config.Player == 0 ? 1 : 5;
                 var door = (DoorAotSeOpcode)rdt.ConvertToDoor((byte)doorId, 0, 254, PassCodeDoorLockId);
-                door.Re1UnkA = 2;
+                door.Special = 2;
                 door.Re1UnkC = 1;
                 door.Target = new RdtId(0xFF, 0x01);
                 door.NextX = 15500;

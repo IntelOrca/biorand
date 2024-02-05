@@ -232,7 +232,7 @@ namespace IntelOrca.Biohazard.BioRand
                         Z = aotSet2p.Z,
                         W = aotSet2p.W,
                         D = aotSet2p.D,
-                        Re1UnkA = 3,
+                        Special = 3,
                         Re1UnkB = 0,
                         Animation = texture,
                         Re1UnkC = 7,

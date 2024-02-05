@@ -88,6 +88,7 @@ namespace IntelOrca.Biohazard.BioRand
     {
         public bool Create { get; set; }
         public int Texture { get; set; }
+        public int? Special { get; set; }
         public int? Id { get; set; }
         public byte? Cut { get; set; }
         public MapRoomDoorEntrance? Entrance { get; set; }

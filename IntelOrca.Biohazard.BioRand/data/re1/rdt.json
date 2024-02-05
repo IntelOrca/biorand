@@ -263,6 +263,22 @@
         {
           "target": "203",
           "randomize": false
+        },
+        {
+          "create": true,
+          "id": 3,
+          "texture": 3,
+          "special": 6,
+          "target": "100",
+          "doorRando": true,
+          "entrance": {
+            "x": 17200,
+            "y": 0,
+            "z": 3000,
+            "d": -1024,
+            "floor": 0,
+            "cut": 0
+          }
         }
       ],
       "items": [
