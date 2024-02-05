@@ -172,7 +172,9 @@ namespace IntelOrca.Biohazard.BioRand
                 }
             }
 
-            return result.ToArray();
+            return result
+                .OrderBy(x => x.RdtId)
+                .ToArray();
         }
     }
 
