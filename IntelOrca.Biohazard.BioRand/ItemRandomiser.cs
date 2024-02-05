@@ -553,7 +553,7 @@ namespace IntelOrca.Biohazard.BioRand
                 if (item.Priority == ItemPriority.Fixed)
                     continue;
 
-                if (!includeLowPriority && item.Priority == ItemPriority.Low)
+                if (!includeLowPriority && GetTruePriority(item.Priority) == ItemPriority.Low)
                     continue;
 
                 if (!HasAllRequiredItems(item.Requires))
@@ -831,7 +831,7 @@ namespace IntelOrca.Biohazard.BioRand
             var shuffled = _shufflePool
                 .Where(x => x.Priority == ItemPriority.Normal)
                 .Shuffle(_rng)
-                .Concat(_shufflePool.Where(x => x.Priority == ItemPriority.Low))
+                .Concat(_shufflePool.Where(x => GetTruePriority(x.Priority) == ItemPriority.Low))
                 .ToQueue();
             _shufflePool.Clear();
 
@@ -1034,7 +1034,7 @@ namespace IntelOrca.Biohazard.BioRand
             }
 
             var shufflePool = _shufflePool
-                .Where(x => x.Priority != ItemPriority.Low)
+                .Where(x => GetTruePriority(x.Priority) != ItemPriority.Low)
                 .ToArray();
             var shuffled = shufflePool.Shuffle(_rng).ToQueue();
             for (int i = 0; i < shufflePool.Length; i++)
@@ -1204,6 +1204,13 @@ namespace IntelOrca.Biohazard.BioRand
                 }
             }
             return total;
+        }
+
+        private ItemPriority GetTruePriority(ItemPriority priority)
+        {
+            if (!_config.HiddenKeyItems && priority == ItemPriority.Hidden)
+                return ItemPriority.Low;
+            return priority;
         }
 
         private class KeyRequirement : IEquatable<KeyRequirement>

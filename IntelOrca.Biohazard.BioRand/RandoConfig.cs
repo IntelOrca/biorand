@@ -26,6 +26,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         // Flags
         public bool Segmented { get; set; } = true;
+        public bool HiddenKeyItems { get; set; } = true;
         public bool ChangePlayer { get; set; } = true;
         public bool RandomPlayer { get; set; } = true;
         public bool RandomDoors { get; set; }
@@ -103,7 +104,8 @@ namespace IntelOrca.Biohazard.BioRand
             result.AmmoQuantity = reader.ReadByte(3);
             result.EnemyDifficulty = reader.ReadByte(2);
             result.EnemyRooms = reader.ReadByte(3);
-            reader.ReadByte(2);
+            result.HiddenKeyItems = reader.ReadFlag();
+            reader.ReadByte(1);
 
             result.AreaCount = reader.ReadByte(2);
             result.AreaSize = reader.ReadByte(3);
@@ -190,8 +192,10 @@ namespace IntelOrca.Biohazard.BioRand
 
             writer.Write(3, AmmoQuantity);
             writer.Write(2, EnemyDifficulty);
+
             writer.Write(3, EnemyRooms);
-            writer.Write(2, 0);
+            writer.Write(HiddenKeyItems);
+            writer.Write(1, 0);
 
             writer.Write(2, AreaCount);
             writer.Write(3, AreaSize);

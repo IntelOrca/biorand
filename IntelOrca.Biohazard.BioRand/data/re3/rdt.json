@@ -179,6 +179,12 @@
           "category": "exclude"
         }
       ],
+      "items": [
+        {
+          "id": 8,
+          "priority": "hidden"
+        }
+      ],
       "npcs": [
         {
           "excludeTypes": [ 47, 87, 91, 95, 96, 103 ]
@@ -620,6 +626,10 @@
         {
           "id": 2,
           "priority": "low"
+        },
+        {
+          "id": 3,
+          "priority": "hidden"
         }
       ]
     },
@@ -705,6 +715,12 @@
         {
           "target": "119"
         }
+      ],
+      "items": [
+        {
+          "id": 17,
+          "priority": "hidden"
+        }
       ]
     },
     "11B": {
@@ -722,6 +738,16 @@
           "target": "11C",
           "lock": "unblock",
           "noUnlock": true
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "priority": "hidden"
+        },
+        {
+          "id": 8,
+          "priority": "hidden"
         }
       ],
       "npcs": [
@@ -982,6 +1008,12 @@
           "target": "201"
         }
       ],
+      "items": [
+        {
+          "id": 7,
+          "priority": "hidden"
+        }
+      ],
       "enemies": [
         {
           "nop": [ "0x3958", "0x3A76-0x3BEF" ],
@@ -1063,6 +1095,10 @@
         {
           "id": 14,
           "type": 0
+        },
+        {
+          "id": 15,
+          "priority": "hidden"
         }
       ],
       "enemies": [
@@ -1083,6 +1119,12 @@
         {
           "target": "214",
           "lock": "side"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "priority": "hidden"
         }
       ],
       "enemies": [
@@ -1176,6 +1218,12 @@
         },
         {
           "target": "210"
+        }
+      ],
+      "items": [
+        {
+          "id": 14,
+          "priority": "hidden"
         }
       ],
       "enemies": [
@@ -1285,6 +1333,12 @@
         {
           "id": 2,
           "target": "20C:1"
+        }
+      ],
+      "items": [
+        {
+          "id": 6,
+          "priority": "hidden"
         }
       ],
       "enemies": [
@@ -1528,6 +1582,12 @@
         {
           "target": "20F",
           "lock": "unblock"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "priority": "hidden"
         }
       ],
       "enemies": [
@@ -2683,6 +2743,10 @@
       ],
       "items": [
         {
+          "id": 4,
+          "priority": "hidden"
+        },
+        {
           "id": 13,
           "type": 0
         }
@@ -2773,6 +2837,12 @@
       "doors": [
         {
           "target": "412"
+        }
+      ],
+      "items": [
+        {
+          "id": 6,
+          "priority": "hidden"
         }
       ]
     },
@@ -3141,6 +3211,16 @@
         {
           "target": "50B",
           "lock": "unblock"
+        }
+      ],
+      "items": [
+        {
+          "id": 6,
+          "priority": "hidden"
+        },
+        {
+          "id": 7,
+          "priority": "hidden"
         }
       ],
       "npcs": [

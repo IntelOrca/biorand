@@ -258,6 +258,7 @@
                                         </StackPanel>
                                         <StackPanel Grid.Column="2">
                                             <CheckBox x:Name="chkProtectSoftLock" ToolTip="When checked, restricts keys to the area they are required. For example, in RE 2, lab keys will not appear in the police station.">Segmented placement</CheckBox>
+                                            <CheckBox x:Name="chkHiddenKeyItems" ToolTip="When checked, hidden items, including arrange mode items (USA/EU/PSX) can be key items.">Hidden Key Items</CheckBox>
                                         </StackPanel>
                                     </Grid>
                                     <local:CheckGroupBox x:Name="chkCustomItemPool" Header="Custom item pool" ToolTip="When not checked, shuffles the vanilla pool of items. If checked, all items are replaced with random pickups.">

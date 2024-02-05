@@ -15,5 +15,10 @@
         /// causes issues.
         /// </summary>
         Fixed,
+
+        /// <summary>
+        /// The item is hidden and will only be a key item if the preference is set.
+        /// </summary>
+        Hidden,
     }
 }
