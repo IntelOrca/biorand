@@ -27,6 +27,7 @@ namespace IntelOrca.Biohazard.BioRand
         public ScriptAst? Ast { get; set; }
         public List<KeyValuePair<int, byte>> Patches { get; } = new List<KeyValuePair<int, byte>>();
         public List<OpcodeBase> AdditionalOpcodes { get; } = new List<OpcodeBase>();
+        public List<OpcodeBase> AdditionalOpcodes2 { get; } = new List<OpcodeBase>();
         public string? CustomAdditionalScript { get; set; }
 
         public IEnumerable<OpcodeBase> AllOpcodes => AdditionalOpcodes.Concat(Opcodes);
@@ -340,6 +341,7 @@ namespace IntelOrca.Biohazard.BioRand
             if (!(Version == BioVersion.Biohazard2 && RdtId == new RdtId(3, 9)))
                 UpdateEmrs();
             PrependOpcodes();
+            AppendOpcodes();
             AddCustomScript();
 
             if (ModifiedPath != null)
@@ -408,6 +410,48 @@ namespace IntelOrca.Biohazard.BioRand
                 scdBuilder.Procedures[0] = new ScdProcedure(scdBuilder.Version, ms.ToArray());
                 rdtBuilder.SCDINIT = scdBuilder.ToProcedureList();
                 RdtFile = rdtBuilder.ToRdt();
+            }
+        }
+
+        private void AppendOpcodes()
+        {
+            if (AdditionalOpcodes2.Count == 0)
+                return;
+
+            var ms = new MemoryStream();
+            var bw = new BinaryWriter(ms);
+
+            var ms2 = new MemoryStream();
+            var bw2 = new BinaryWriter(ms2);
+            foreach (var opcode in AdditionalOpcodes2)
+            {
+                opcode.Write(bw2);
+            }
+            var newData = ms2.ToArray();
+
+            if (RdtFile is Rdt1 rdt1)
+            {
+                var rdtBuilder = rdt1.ToBuilder();
+                var scdBuilder = rdtBuilder.InitSCD.ToBuilder();
+                bw.Write(scdBuilder.Procedures[0].Data);
+
+                // remove end opcode
+                ms.Position -= 2;
+
+                // add new opcodes
+                bw.Write(newData.ToArray());
+
+                // end
+                bw.Write((byte)0x00);
+                bw.Write((byte)0x00);
+
+                scdBuilder.Procedures[0] = new ScdProcedure(BioVersion.Biohazard1, ms.ToArray());
+                rdtBuilder.InitSCD = scdBuilder.ToContainer();
+                RdtFile = rdtBuilder.ToRdt();
+            }
+            else
+            {
+                throw new NotImplementedException();
             }
         }
 

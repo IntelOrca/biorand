@@ -248,6 +248,11 @@
     },
     "106": {
       "linkedRoom": "606",
+      "doorRando": [
+        {
+          "nop": [ "0x2FC22-0x2FD84", "0x2FD8E-0x2FDD8" ]
+        }
+      ],
       "doors": [
         {
           "target": "105",
@@ -264,6 +269,22 @@
           "target": "203",
           "randomize": false
         }
+        // ,
+        // {
+        //   "create": true,
+        //   "id": 7,
+        //   "texture": 62,
+        //   "target": "FFF",
+        //   "doorRando": true,
+        //   "entrance": {
+        //     "x": 17200,
+        //     "y": 0,
+        //     "z": 3000,
+        //     "d": 0,
+        //     "floor": 0,
+        //     "cut": 0
+        //   }
+        // }
       ],
       "items": [
         {

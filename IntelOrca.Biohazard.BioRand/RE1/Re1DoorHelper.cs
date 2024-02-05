@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using IntelOrca.Biohazard.Script;
 using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.BioRand.RE1
@@ -121,6 +122,37 @@ namespace IntelOrca.Biohazard.BioRand.RE1
                 return;
 
             ForceTyrant2(gameData);
+            AddMainHallDoor(config, gameData);
+        }
+
+        private void AddMainHallDoor(RandoConfig config, GameData gameData)
+        {
+            var rdt = gameData.GetRdt(new RdtId(0, 0x06));
+            if (rdt == null)
+                return;
+
+            rdt.AdditionalOpcodes2.Add(new DoorAotSeOpcode()
+            {
+                Opcode = (byte)OpcodeV1.DoorAotSe,
+                Id = 5,
+                X = 14500,
+                Z = 2000,
+                W = 5000,
+                D = 500,
+                Re1UnkA = 2,
+                Re1UnkB = 0,
+                Animation = 0,
+                Re1UnkC = 1,
+                LockId = 0,
+                NextStage = 0,
+                NextRoom = 0,
+                NextX = 3500,
+                NextY = 0,
+                NextZ = 2600,
+                NextD = 3072,
+                LockType = 0,
+                Free = 129
+            });
         }
 
         private void FixPassCodeDoor(RandoConfig config, GameData gameData)
