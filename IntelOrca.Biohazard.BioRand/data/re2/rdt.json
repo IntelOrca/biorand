@@ -96,7 +96,7 @@
       "items": [
         {
           "id": 5,
-          "priority": "low"
+          "priority": "hidden"
         },
         {
           "id": 31,
@@ -218,7 +218,7 @@
       "items": [
         {
           "id": 5,
-          "priority": "low"
+          "priority": "hidden"
         }
       ]
     },
@@ -305,7 +305,7 @@
       "items": [
         {
           "id": 5,
-          "priority": "low"
+          "priority": "hidden"
         },
         {
           "id": 16,
@@ -368,7 +368,7 @@
       "items": [
         {
           "id": 12,
-          "priority": "low"
+          "priority": "hidden"
         }
       ],
       "enemies": [
@@ -818,7 +818,7 @@
       "items": [
         {
           "id": 4,
-          "priority": "low"
+          "priority": "hidden"
         }
       ],
       "enemies": [
@@ -1287,11 +1287,11 @@
       "items": [
         {
           "id": 28,
-          "priority": "low"
+          "priority": "hidden"
         },
         {
           "id": 29,
-          "priority": "low"
+          "priority": "hidden"
         }
       ]
     },
@@ -1359,7 +1359,7 @@
         },
         {
           "id": 11,
-          "priority": "low"
+          "priority": "hidden"
         },
         {
           "id": 20,
@@ -1433,7 +1433,7 @@
       "items": [
         {
           "id": 6,
-          "priority": "low"
+          "priority": "hidden"
         }
       ]
     },
@@ -1446,12 +1446,12 @@
       "items": [
         {
           "id": 4,
-          "priority": "low",
+          "priority": "hidden",
           "player": 0
         },
         {
           "id": 3,
-          "priority": "low",
+          "priority": "hidden",
           "player": 1
         }
       ]
@@ -1706,6 +1706,11 @@
         }
       ],
       "items": [
+        {
+          "id": 5,
+          "priority": "hidden",
+          "player": 0
+        },
         {
           "id": 6,
           "priority": "low",
@@ -3011,7 +3016,8 @@
       "items": [
         {
           "id": 2,
-          "requires": [ 47 ]
+          "requires": [ 47 ],
+          "priority": "low"
         }
       ],
       "enemies": [
