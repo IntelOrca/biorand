@@ -158,16 +158,25 @@ namespace IntelOrca.Biohazard.BioRand
 
         public void SetItemAt(int offset, ushort type, ushort amount)
         {
-            var opcode = Opcodes.FirstOrDefault(x => x.Offset == offset);
-            if (opcode is IItemAotSetOpcode item)
+            if (Version == BioVersion.BiohazardCv)
             {
-                item.Type = type;
-                item.Amount = amount;
+                var data = RdtFile.Data.ToArray();
+                data[offset + 2] = (byte)type;
+                RdtFile = new RdtCv(data);
             }
-            else if (opcode is AotResetOpcode reset)
+            else
             {
-                reset.Data0 = type;
-                reset.Data1 = amount;
+                var opcode = Opcodes.FirstOrDefault(x => x.Offset == offset);
+                if (opcode is IItemAotSetOpcode item)
+                {
+                    item.Type = type;
+                    item.Amount = amount;
+                }
+                else if (opcode is AotResetOpcode reset)
+                {
+                    reset.Data0 = type;
+                    reset.Data1 = amount;
+                }
             }
         }
 

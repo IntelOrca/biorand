@@ -70,6 +70,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             var rrdt = new RandomizedRdt(rdt, rdtId);
 
             var scdReader = new ScdReader();
+            scdReader.BaseOffset = ((RdtCv)rrdt.RdtFile).ScriptOffset;
             rrdt.ScriptDisassembly = scdReader.Diassemble(rdt.Script, BiohazardVersion, BioScriptKind.Main, listing: false);
             rrdt.ScriptListing = scdReader.Diassemble(rdt.Script, BiohazardVersion, BioScriptKind.Main, listing: true);
 
@@ -196,48 +197,62 @@ namespace IntelOrca.Biohazard.BioRand.RECV
         private void TestEdits()
         {
 #if DEBUG
+            QuickDoor(RdtId.Parse("106"), 0);
             // Change 101 door to 10A
-            var a = (RdtCv)_rdts[1].RdtFile;
-            var ab = a.ToBuilder();
-            var d = ab.Aots[4];
-            d.Room = 10;
-            d.ExitId = 0;
-            ab.Aots[4] = d;
-            {
-                var script = ab.Script;
-                var data = script.Data.ToArray();
-
-                // data[0x0C] = 0x95;
-                // data[0x0D] = 0x01;
-                // data[0x0F] = 0x00;
-                // data[0x10] = 0x00;
-                // for (var i = 0x4A; i < 0x50; i += 2)
-                // {
-                //     data[i + 0] = 0x95;
-                //     data[i + 1] = 0x01;
-                // }
-
-                ab.Script = new ScdProcedureList(BiohazardVersion, data);
-                a = ab.ToRdt();
-                _rdts[1].RdtFile = a;
-            }
-            {
-                var rdt10A = ((RdtCv)_rdts[12].RdtFile).ToBuilder();
-                var data = rdt10A.Script.Data.ToArray();
-                data[0x166] = 0xCD;
-                data[0x167] = 0x00;
-                data[0x168] = 0xCD;
-                data[0x169] = 0x00;
-                // data[0x168] = 54;
-                // for (var i = 0x08; i < 0x112; i += 2)
-                // {
-                //     data[i + 0] = 0x95;
-                //     data[i + 1] = 0x01;
-                // }
-                rdt10A.Script = new ScdProcedureList(BiohazardVersion, data);
-                _rdts[12].RdtFile = rdt10A.ToRdt();
-            }
+            // var a = (RdtCv)_rdts[1].RdtFile;
+            // var ab = a.ToBuilder();
+            // var d = ab.Aots[4];
+            // d.Room = 10;
+            // d.ExitId = 0;
+            // ab.Aots[4] = d;
+            // {
+            //     var script = ab.Script;
+            //     var data = script.Data.ToArray();
+            // 
+            //     // data[0x0C] = 0x95;
+            //     // data[0x0D] = 0x01;
+            //     // data[0x0F] = 0x00;
+            //     // data[0x10] = 0x00;
+            //     // for (var i = 0x4A; i < 0x50; i += 2)
+            //     // {
+            //     //     data[i + 0] = 0x95;
+            //     //     data[i + 1] = 0x01;
+            //     // }
+            // 
+            //     ab.Script = new ScdProcedureList(BiohazardVersion, data);
+            //     a = ab.ToRdt();
+            //     _rdts[1].RdtFile = a;
+            // }
+            // {
+            //     var rdt10A = ((RdtCv)_rdts[12].RdtFile).ToBuilder();
+            //     var data = rdt10A.Script.Data.ToArray();
+            //     data[0x166] = 0xCD;
+            //     data[0x167] = 0x00;
+            //     data[0x168] = 0xCD;
+            //     data[0x169] = 0x00;
+            //     // data[0x168] = 54;
+            //     // for (var i = 0x08; i < 0x112; i += 2)
+            //     // {
+            //     //     data[i + 0] = 0x95;
+            //     //     data[i + 1] = 0x01;
+            //     // }
+            //     rdt10A.Script = new ScdProcedureList(BiohazardVersion, data);
+            //     _rdts[12].RdtFile = rdt10A.ToRdt();
+            // }
 #endif
+        }
+
+        private void QuickDoor(RdtId destination, int exitId)
+        {
+            var rdt = (RdtCv)_rdts[1].RdtFile;
+            var rdtBuilder = rdt.ToBuilder();
+            var aot = rdtBuilder.Aots[4];
+            aot.Stage = (byte)destination.Stage;
+            aot.Room = (byte)destination.Room;
+            aot.ExitId = (byte)exitId;
+            rdtBuilder.Aots[4] = aot;
+            rdt = rdtBuilder.ToRdt();
+            _rdts[1].RdtFile = rdt;
         }
 
         private ScdProcedureList Replace(ScdProcedureList src, byte[] data)
