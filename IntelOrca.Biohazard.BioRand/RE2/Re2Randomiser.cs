@@ -923,20 +923,18 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             if (!File.Exists(enable))
                 return;
 
-            var files = Directory.GetFiles(Path.Combine(srcPath, "common"), "*", SearchOption.AllDirectories)
-                .Select(x => x.Remove(0, srcPath.Length + 1))
-                .ToArray();
-            foreach (var f in files)
-            {
-                var srcFile = Path.Combine(srcPath, f);
-                var dstFile = Path.Combine(dstPath, f);
-                var dstFolder = Path.GetDirectoryName(dstFile);
-                Directory.CreateDirectory(dstFolder);
-                File.Copy(srcFile, dstFile, true);
-            }
+            CopyFolder(Path.Combine(srcPath, "common"), dstPath);
             File.Copy(
                 Path.Combine(srcPath, "footsteps.xml"),
                 Path.Combine(dstPath, "footsteps.xml"));
+
+            // HD
+            var dstHiRes = Path.GetFullPath(Path.Combine(dstPath, "..", "hires"));
+            if (Directory.Exists(dstHiRes))
+            {
+                var srcHiRes = Path.Combine(srcPath, "hires");
+                CopyFolder(srcHiRes, Path.GetDirectoryName(dstHiRes));
+            }
 
             // Music
             var musicFiles = Directory.GetFiles(Path.Combine(srcPath, "music"), "*.ogg");
@@ -987,6 +985,22 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             {
                 ModifyRdt(fileRepository, p, new RdtId(6, 0x00), 7, 51);
                 ModifyRdt(fileRepository, p, new RdtId(6, 0x03), p == 0 ? 0x0A : 0x0B, 132);
+            }
+        }
+
+        private static void CopyFolder(string src, string dstPath)
+        {
+            var srcPath = Path.GetDirectoryName(src);
+            var files = Directory.GetFiles(src, "*", SearchOption.AllDirectories)
+                .Select(x => x.Remove(0, srcPath.Length + 1))
+                .ToArray();
+            foreach (var f in files)
+            {
+                var srcFile = Path.Combine(srcPath, f);
+                var dstFile = Path.Combine(dstPath, f);
+                var dstFolder = Path.GetDirectoryName(dstFile);
+                Directory.CreateDirectory(dstFolder);
+                File.Copy(srcFile, dstFile, true);
             }
         }
 
