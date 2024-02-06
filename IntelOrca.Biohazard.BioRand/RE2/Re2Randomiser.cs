@@ -10,6 +10,7 @@ using IntelOrca.Biohazard.BioRand.RE1;
 using IntelOrca.Biohazard.BioRand.RE3;
 using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Model;
+using IntelOrca.Biohazard.Room;
 using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.BioRand.RE2
@@ -137,6 +138,7 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             FixWeaponHitScan(config);
             DisableWaitForSherry();
             FixMothCrash();
+            AddCreditsRoom(fileRepository, new Rng(config.Seed));
 
             // tmoji.bin
             var src = DataManager.GetPath(BiohazardVersion, "tmoji.bin");
@@ -910,6 +912,123 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             bw.Begin(0x400000 + 0xAFFB6);
             bw.Write(new byte[] { 0xE9, 0x86, 0x00, 0x00, 0x00, 0x90 });
             bw.End();
+        }
+
+        private void AddCreditsRoom(FileRepository fileRepository, Rng rng)
+        {
+            var srcPath = DataManager.GetPath(BiohazardVersion, "credits");
+            var dstPath = fileRepository.GetModPath("");
+
+            var enable = Path.Combine(srcPath, "enable");
+            if (!File.Exists(enable))
+                return;
+
+            var files = Directory.GetFiles(Path.Combine(srcPath, "common"), "*", SearchOption.AllDirectories)
+                .Select(x => x.Remove(0, srcPath.Length + 1))
+                .ToArray();
+            foreach (var f in files)
+            {
+                var srcFile = Path.Combine(srcPath, f);
+                var dstFile = Path.Combine(dstPath, f);
+                var dstFolder = Path.GetDirectoryName(dstFile);
+                Directory.CreateDirectory(dstFolder);
+                File.Copy(srcFile, dstFile, true);
+            }
+            File.Copy(
+                Path.Combine(srcPath, "footsteps.xml"),
+                Path.Combine(dstPath, "footsteps.xml"));
+
+            // Music
+            var musicFiles = Directory.GetFiles(Path.Combine(srcPath, "music"), "*.ogg");
+            var musicDst = Path.Combine(dstPath, "pl0", "voice", "stage2");
+            var sapIdStart = 304;
+            Directory.CreateDirectory(musicDst);
+            Parallel.For(0, musicFiles.Length, i =>
+            {
+                var musicFile = musicFiles[i];
+                var sapId = sapIdStart + i;
+                var sapDst = Path.Combine(musicDst, $"v{sapId:000}.sap");
+                var waveBuilder = new WaveformBuilder();
+                waveBuilder.Append(musicFile);
+                waveBuilder.Save(sapDst);
+            });
+
+            var rdtBuilder = ((Rdt2)Rdt.FromFile(BiohazardVersion, Path.Combine(srcPath, "room2170.rdt"))).ToBuilder();
+            var dialogue = File.ReadAllLines(Path.Combine(srcPath, "dialogue.txt"))
+                .Select(x => x.Trim())
+                .Where(x => !string.IsNullOrEmpty(x))
+                .ToArray();
+            if (dialogue.Length != 0)
+            {
+                var msgBag = new EndlessBag<string>(rng, dialogue);
+                var msgBuilderEn = rdtBuilder.MSGEN.ToBuilder();
+                var msgBuilderJa = rdtBuilder.MSGJA.ToBuilder();
+                var text = new List<string>();
+                for (var i = 39; i < msgBuilderEn.Messages.Count; i++)
+                {
+                    var msgText = msgBag.Next();
+                    msgBuilderEn.Messages[i] = msgText.ToMsg(MsgLanguage.English, BioVersion.Biohazard2);
+                    msgBuilderJa.Messages[i] = msgText.ToMsg(MsgLanguage.Japanese, BioVersion.Biohazard2);
+                }
+                rdtBuilder.MSGEN = msgBuilderEn.ToMsgList();
+                rdtBuilder.MSGJA = msgBuilderJa.ToMsgList();
+            }
+
+            var dstRdt0 = Path.Combine(dstPath, "pl0", "rdt", "ROOM2170.RDT");
+            var dstRdt1 = Path.Combine(dstPath, "pl1", "rdt", "ROOM2171.RDT");
+            Directory.CreateDirectory(Path.GetDirectoryName(dstRdt0));
+            Directory.CreateDirectory(Path.GetDirectoryName(dstRdt1));
+            var rdt = rdtBuilder.ToRdt();
+            rdt.Data.WriteToFile(dstRdt0);
+            rdt.Data.WriteToFile(dstRdt1);
+
+            // Redirect end of game
+            for (var p = 0; p < 2; p++)
+            {
+                ModifyRdt(fileRepository, p, new RdtId(6, 0x00), 7, 51);
+                ModifyRdt(fileRepository, p, new RdtId(6, 0x03), p == 0 ? 0x0A : 0x0B, 132);
+            }
+        }
+
+        private static void ModifyRdt(FileRepository fileRepository, int p, RdtId rdtId, int procedureIndex, int keep)
+        {
+            var scdRedirect =
+                "570017022DC60000" +
+                "3B00013100001111222233334444000000000000000001170000002000000000" +
+                "4700" +
+                "0100";
+
+            if (rdtId.Room == 0x03)
+            {
+                scdRedirect =
+                    "6F0E" +
+                    "02" +
+                    scdRedirect;
+            }
+
+            var rdtPath = fileRepository.GetModPath($"pl{p}/rdt/ROOM{rdtId}{p}.RDT");
+            var rdt = (Rdt2)Rdt.FromFile(BioVersion.Biohazard2, rdtPath);
+            var rdtBuilder = rdt.ToBuilder();
+            var scdBuilder = rdtBuilder.SCDMAIN.ToBuilder();
+            var proc = scdBuilder.Procedures[procedureIndex];
+            var pKeep = proc.Data.Slice(0, keep).ToArray();
+            var pNew = StringToBytes(scdRedirect);
+            var pReplace = pKeep.Concat(pNew).ToArray();
+            scdBuilder.Procedures[procedureIndex] = new ScdProcedure(BioVersion.Biohazard2, pReplace);
+            rdtBuilder.SCDMAIN = scdBuilder.ToProcedureList();
+            rdt = rdtBuilder.ToRdt();
+            rdt.Data.WriteToFile(rdtPath);
+        }
+
+        private static byte[] StringToBytes(string s)
+        {
+            var result = new byte[s.Length / 2];
+            for (var i = 0; i < s.Length; i += 2)
+            {
+                var b = s.Substring(i, 2);
+                result[i / 2] = Convert.ToByte(b, 16);
+            }
+            return result;
         }
     }
 }

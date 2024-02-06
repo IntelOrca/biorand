@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using IntelOrca.Biohazard.Model;
+using IntelOrca.Biohazard.Room;
 
 namespace IntelOrca.Biohazard.BioRand
 {
@@ -181,6 +183,50 @@ namespace IntelOrca.Biohazard.BioRand
         public static bool Implements(this Type t, Type i)
         {
             return t.GetInterfaces().Contains(i);
+        }
+
+        public static Msg ToMsg(this string message, MsgLanguage language, BioVersion version, bool autoBreak = true)
+        {
+            var maxLineLength = language == MsgLanguage.English ? 21 : 16;
+            var processedMessage = autoBreak ? AutoBreak(message, maxLineLength) : message;
+            return new Msg(version, language, processedMessage);
+        }
+
+        private static string AutoBreak(string s, int maxLineLength)
+        {
+            var sb = new StringBuilder();
+            var pages = s.Split('#');
+            foreach (var page in pages)
+            {
+                if (sb.Length != 0)
+                    sb.Append('#');
+                var words = page.Split(' ');
+                var lineLength = 0;
+                var lines = 0;
+                foreach (var word in words)
+                {
+                    if (lineLength + word.Length > maxLineLength)
+                    {
+                        if (lines % 2 == 1)
+                        {
+                            sb.Append('#');
+                        }
+                        else
+                        {
+                            sb.Append('\n');
+                        }
+                        lines++;
+                        lineLength = 0;
+                    }
+                    if (lineLength != 0)
+                    {
+                        sb.Append(' ');
+                    }
+                    sb.Append(word);
+                    lineLength += word.Length;
+                }
+            }
+            return sb.ToString();
         }
     }
 }

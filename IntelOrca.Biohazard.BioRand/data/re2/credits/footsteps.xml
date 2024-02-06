@@ -1,0 +1,127 @@
+<Footsteps>
+    <Entry Room="0x100" Set_0="0" Set_1="1" Set_2="2"/>
+    <Entry Room="0x101" Set_2="3"/>
+    <Entry Room="0x102" Set_1="4" Set_2="2"/>
+    <Entry Room="0x103" Set_0="5" Set_1="6" Set_2="7"/>
+    <Entry Room="0x104" Set_1="1" Set_2="2"/>
+    <Entry Room="0x105" Set_1="8" Set_2="2"/>
+    <Entry Room="0x106" Set_1="9" Set_2="10"/>
+    <Entry Room="0x107" Set_1="11" Set_2="7"/>
+    <Entry Room="0x108" Set_1="12" Set_2="10"/>
+    <Entry Room="0x109" Set_1="14" Set_2="13"/>
+    <Entry Room="0x10A" Set_1="3" Set_2="18"/>
+    <Entry Room="0x10B" Set_1="15" Set_2="16"/>
+    <Entry Room="0x10C" Set_0="17" Set_1="16" Set_2="18"/>
+    <Entry Room="0x10D" Set_1="19" Set_2="3"/>
+    <Entry Room="0x10E" Set_1="16" Set_2="3"/>
+    <Entry Room="0x10F" Set_2="16"/>
+    <Entry Room="0x110" Set_2="20"/>
+    <Entry Room="0x111" Set_1="17" Set_2="21"/>
+    <Entry Room="0x112" Set_1="17" Set_2="18"/>
+    <Entry Room="0x113" Set_2="22"/>
+    <Entry Room="0x114" Set_1="23" Set_2="21"/>
+    <Entry Room="0x115" Set_1="24" Set_2="25"/>
+    <Entry Room="0x116" Set_0="12" Set_1="11" Set_2="7"/>
+    <Entry Room="0x117" Set_2="20"/>
+    <Entry Room="0x118" Set_0="26" Set_1="27" Set_2="28"/>
+    <Entry Room="0x119" Set_2="2"/>
+    <Entry Room="0x11A" Set_1="23" Set_2="21"/>
+    <Entry Room="0x11B" Set_1="27" Set_2="2"/>
+    <Entry Room="0x11C" Set_1="12" Set_2="10"/>
+    <Entry Room="0x200" Set_0="20" Set_1="29" Set_2="29"/>
+    <Entry Room="0x201" Set_2="25"/>
+    <Entry Room="0x202" Set_1="30" Set_2="25"/>
+    <Entry Room="0x203" Set_1="32" Set_2="31"/>
+    <Entry Room="0x204" Set_1="30" Set_2="25"/>
+    <Entry Room="0x205" Set_1="36" Set_2="33"/>
+    <Entry Room="0x206" Set_0="18" Set_1="37" Set_2="25"/>
+    <Entry Room="0x207" Set_2="28"/>
+    <Entry Room="0x208" Set_1="31" Set_2="3"/>
+    <Entry Room="0x209" Set_2="33"/>
+    <Entry Room="0x20A" Set_2="38"/>
+    <Entry Room="0x20B" Set_1="12" Set_2="25"/>
+    <Entry Room="0x20C" Set_1="15" Set_2="16"/>
+    <Entry Room="0x20D" Set_0="39" Set_1="21" Set_2="10"/>
+    <Entry Room="0x20E" Set_2="40"/>
+    <Entry Room="0x20F" Set_1="41" Set_2="40"/>
+    <Entry Room="0x210" Set_2="40"/>
+    <Entry Room="0x211" Set_2="28"/>
+    <Entry Room="0x212" Set_2="28"/>
+    <Entry Room="0x213" Set_1="42" Set_2="28"/>
+    <Entry Room="0x214" Set_2="28"/>
+    <Entry Room="0x215" Set_2="28"/>
+    <Entry Room="0x216" Set_2="28"/>
+    <Entry Room="0x217" Set_0="25" Set_1="3" Set_2="1"/>
+    <Entry Room="0x219" Set_2="28"/>
+    <Entry Room="0x21A" Set_0="0" Set_1="3" Set_2="33"/>
+    <Entry Room="0x21B" Set_1="16" Set_2="3"/>
+    <Entry Room="0x300" Set_2="28"/>
+    <Entry Room="0x301" Set_2="28"/>
+    <Entry Room="0x302" Set_1="49" Set_2="28"/>
+    <Entry Room="0x303" Set_1="42" Set_2="28"/>
+    <Entry Room="0x304" Set_0="42" Set_1="49" Set_2="28"/>
+    <Entry Room="0x305" Set_0="7" Set_1="42" Set_2="28"/>
+    <Entry Room="0x306" Set_0="42" Set_1="50" Set_2="28"/>
+    <Entry Room="0x307" Set_0="42" Set_1="28" Set_2="6"/>
+    <Entry Room="0x308" Set_2="28"/>
+    <Entry Room="0x309" Set_2="26"/>
+    <Entry Room="0x30A" Set_0="0" Set_1="49" Set_2="28"/>
+    <Entry Room="0x30B" Set_2="28"/>
+    <Entry Room="0x30C" Set_2="28"/>
+    <Entry Room="0x30D" Set_2="28"/>
+    <Entry Room="0x400" Set_1="49" Set_2="28"/>
+    <Entry Room="0x401" Set_1="42" Set_2="28"/>
+    <Entry Room="0x402" Set_1="49" Set_2="28"/>
+    <Entry Room="0x403" Set_1="42" Set_2="28"/>
+    <Entry Room="0x404" Set_1="51" Set_2="42"/>
+    <Entry Room="0x405" Set_1="52" Set_2="28"/>
+    <Entry Room="0x407" Set_1="52" Set_2="28"/>
+    <Entry Room="0x408" Set_0="42" Set_2="28"/>
+    <Entry Room="0x409" Set_0="42" Set_2="28"/>
+    <Entry Room="0x40A" Set_1="42" Set_2="28"/>
+    <Entry Room="0x40B" Set_2="28"/>
+    <Entry Room="0x40C" Set_1="28" Set_2="42"/>
+    <Entry Room="0x40D" Set_1="53" Set_2="26"/>
+    <Entry Room="0x40E" Set_0="28" Set_1="53" Set_2="26"/>
+    <Entry Room="0x40F" Set_2="28"/>
+    <Entry Room="0x410" Set_1="52" Set_2="28"/>
+    <Entry Room="0x500" Set_2="34"/>
+    <Entry Room="0x501" Set_2="34"/>
+    <Entry Room="0x502" Set_1="42" Set_2="34"/>
+    <Entry Room="0x503" Set_2="35"/>
+    <Entry Room="0x504" Set_1="42" Set_2="34"/>
+    <Entry Room="0x505" Set_2="42"/>
+    <Entry Room="0x506" Set_1="42" Set_2="34"/>
+    <Entry Room="0x507" Set_1="42" Set_2="26"/>
+    <Entry Room="0x508" Set_1="42" Set_2="34"/>
+    <Entry Room="0x509" Set_2="42"/>
+    <Entry Room="0x600" Set_2="42"/>
+    <Entry Room="0x601" Set_2="43"/>
+    <Entry Room="0x602" Set_0="26" Set_1="42" Set_2="28"/>
+    <Entry Room="0x603" Set_2="42"/>
+    <Entry Room="0x604" Set_0="26" Set_1="44"/>
+    <Entry Room="0x605" Set_0="26" Set_1="44" Set_2="42"/>
+    <Entry Room="0x606" Set_1="42" Set_2="34"/>
+    <Entry Room="0x607" Set_2="35"/>
+    <Entry Room="0x608" Set_1="26" Set_2="45"/>
+    <Entry Room="0x609" Set_2="43"/>
+    <Entry Room="0x60A" Set_2="43"/>
+    <Entry Room="0x60B" Set_2="28"/>
+    <Entry Room="0x60C" Set_1="44" Set_2="28"/>
+    <Entry Room="0x60D" Set_2="46"/>
+    <Entry Room="0x60E" Set_1="26"/>
+    <Entry Room="0x60F" Set_0="36" Set_1="0" Set_2="34"/>
+    <Entry Room="0x610" Set_2="28"/>
+    <Entry Room="0x611" Set_1="26" Set_2="45"/>
+    <Entry Room="0x612" Set_2="47"/>
+    <Entry Room="0x613" Set_2="48"/>
+    <Entry Room="0x614" Set_0="26" Set_1="42" Set_2="28"/>
+    <Entry Room="0x615" Set_1="26" Set_2="28"/>
+    <Entry Room="0x616" Set_0="28" Set_1="42" Set_2="47"/>
+    <Entry Room="0x617" Set_1="26" Set_2="28"/>
+    <Entry Room="0x700" Set_0="26" Set_1="42" Set_2="28"/>
+    <Entry Room="0x701" Set_0="12" Set_1="42" Set_2="28"/>
+    <Entry Room="0x702" Set_1="0" Set_2="28"/>
+    <Entry Room="0x703" Set_0="26" Set_1="42" Set_2="28"/>
+    <Entry Room="0x704" Set_1="42" Set_2="28"/>
+</Footsteps>

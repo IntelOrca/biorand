@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using IntelOrca.Biohazard.BioRand.RE2;
 using IntelOrca.Biohazard.Room;
 
@@ -186,54 +185,20 @@ namespace IntelOrca.Biohazard.BioRand.Events
 
         internal CsMessage AllocateMessage(string message, bool autoBreak = true)
         {
-            var enMessage = autoBreak ? AutoBreak(message, 23) : message;
-            var jaMessage = autoBreak ? AutoBreak(message, 16) : message;
-
             var builder = ((Rdt2)_rdt.RdtFile).ToBuilder();
 
             var en = builder.MSGEN.ToBuilder();
             var id = en.Messages.Count;
-            en.Messages.Add(new Msg(BioVersion.Biohazard2, MsgLanguage.English, enMessage));
+            en.Messages.Add(message.ToMsg(MsgLanguage.English, BioVersion.Biohazard2, autoBreak));
             builder.MSGEN = en.ToMsgList();
 
             var ja = builder.MSGJA.ToBuilder();
-            ja.Messages.Add(new Msg(BioVersion.Biohazard2, MsgLanguage.Japanese, jaMessage));
+            en.Messages.Add(message.ToMsg(MsgLanguage.Japanese, BioVersion.Biohazard2, autoBreak));
             builder.MSGJA = ja.ToMsgList();
 
             _rdt.RdtFile = builder.ToRdt();
 
             return new CsMessage(id, message);
-        }
-
-        private static string AutoBreak(string s, int maxLineLength)
-        {
-            var words = s.Split(' ');
-            var sb = new StringBuilder();
-            var lineLength = 0;
-            var lines = 0;
-            foreach (var word in words)
-            {
-                if (lineLength + word.Length > maxLineLength)
-                {
-                    if (lines % 2 == 1)
-                    {
-                        sb.Append('#');
-                    }
-                    else
-                    {
-                        sb.Append('\n');
-                    }
-                    lines++;
-                    lineLength = 0;
-                }
-                if (lineLength != 0)
-                {
-                    sb.Append(' ');
-                }
-                sb.Append(word);
-                lineLength += word.Length;
-            }
-            return sb.ToString();
         }
 
         public CsEnemy[] GetEnemies()
