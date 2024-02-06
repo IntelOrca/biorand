@@ -166,6 +166,16 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
                 // base.Generate(config, progress, fileRepository);
 
+#if DEBUG
+                var rdxPathModded = Path.Combine(fileRepository.ModPath, "rdx_lnk_modded");
+                Directory.CreateDirectory(rdxPathModded);
+                Parallel.For(0, _rdts.Length, i =>
+                {
+                    var rdt = _rdts[i]?.RdtFile;
+                    rdt?.Data.WriteToFile(Path.Combine(rdxPathModded, $"{i:000}"));
+                });
+#endif
+
                 using (progress.BeginTask(null, "Compressing room files"))
                 {
                     _rdxAfs = WriteRdxAfs();
