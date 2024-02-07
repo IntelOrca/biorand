@@ -328,6 +328,19 @@ namespace IntelOrca.Biohazard.BioRand.RE1
             };
         }
 
+        public string[] GetWeaponNames()
+        {
+            return new[]
+            {
+                "Beretta",
+                "Shotgun",
+                "FlameThrower",
+                "Bazooka",
+                "Magnum",
+                "Rocket Launcher",
+            };
+        }
+
         public byte? GetWeaponUpgrade(byte weapon, Rng rng, RandoConfig config)
         {
             return null;

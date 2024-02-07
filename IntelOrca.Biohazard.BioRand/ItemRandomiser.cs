@@ -841,10 +841,14 @@ namespace IntelOrca.Biohazard.BioRand
             var availableWeapons = new List<byte>();
             var weaponPool = ItemHelper
                 .GetWeapons(_rng, _config)
-                .Shuffle(_rng)
                 .ToList();
-
-            var numWeapons = Math.Max(1, _config.WeaponQuantity * weaponPool.Count / 7);
+            for (var i = weaponPool.Count - 1; i >= 0; i--)
+            {
+                if (!_config.EnabledWeapons[i])
+                {
+                    weaponPool.RemoveAt(i);
+                }
+            }
 
             if (_config.RandomInventory && !_config.ShuffleItems)
             {
@@ -855,7 +859,7 @@ namespace IntelOrca.Biohazard.BioRand
                 availableWeapons.AddRange(ItemHelper.GetDefaultWeapons(_config));
             }
 
-            while (availableWeapons.Count < numWeapons && weaponPool.Count != 0)
+            while (weaponPool.Count != 0)
             {
                 var weapon = weaponPool[weaponPool.Count - 1];
                 weaponPool.RemoveAt(weaponPool.Count - 1);

@@ -451,6 +451,25 @@ namespace IntelOrca.Biohazard.BioRand.RE2
                 .ToArray();
         }
 
+        public string[] GetWeaponNames()
+        {
+            return new[]
+            {
+                "Handgun (Leon)",
+                "Handgun (Claire)",
+                "SMG",
+                "Flamethrower",
+                "Colt SAA",
+                "Beretta",
+                "Sparkshot",
+                "Bowgun",
+                "Shotgun",
+                "Magnum",
+                "Rocket Launcher",
+                "Grenade Launcher"
+            };
+        }
+
         public byte? GetWeaponUpgrade(byte weapon, Rng rng, RandoConfig config)
         {
             switch (weapon)

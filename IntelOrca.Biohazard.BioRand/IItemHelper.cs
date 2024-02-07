@@ -15,6 +15,7 @@
         byte GetMaxAmmoForAmmoType(byte type);
         double GetItemProbability(byte type);
         byte[] GetWeapons(Rng rng, RandoConfig config);
+        string[] GetWeaponNames();
         byte[] GetDefaultWeapons(RandoConfig config);
         byte? GetWeaponUpgrade(byte weapon, Rng rng, RandoConfig config);
         byte[] GetWeaponGunpowder(byte weapon);

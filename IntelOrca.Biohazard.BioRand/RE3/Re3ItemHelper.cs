@@ -254,6 +254,23 @@ namespace IntelOrca.Biohazard.BioRand.RE3
             };
         }
 
+        public string[] GetWeaponNames()
+        {
+            return new[]
+            {
+                "Handgun (Sigpro)",
+                "Handgun (Beretta)",
+                "Shotgun (Benelli)",
+                "Magnum",
+                "Grenade Launcher",
+                "Rocket Launcher",
+                "Mine Thrower",
+                "Handgun (Eagle)",
+                "Assult Rifle",
+                "Shotgun (M37)"
+            };
+        }
+
         public byte? GetWeaponUpgrade(byte weapon, Rng rng, RandoConfig config)
         {
             return null;

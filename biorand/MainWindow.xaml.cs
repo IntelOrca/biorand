@@ -278,6 +278,8 @@ namespace IntelOrca.Biohazard.BioRand
                     }
                 }
 
+                listWeapons.Values = _config.EnabledWeapons;
+
                 chkEnemySkins.IsChecked = _config.RandomEnemySkins;
                 listEnemySkins.Values = _config.EnabledEnemySkins;
 
@@ -303,7 +305,6 @@ namespace IntelOrca.Biohazard.BioRand
 
                 dropdownWeapon0.SelectedIndex = Math.Min(_config.Weapon0, dropdownWeapon0.Items.Count - 1);
                 dropdownWeapon1.SelectedIndex = Math.Min(_config.Weapon1, dropdownWeapon1.Items.Count - 1);
-                sliderWeaponQuantity.Value = _config.WeaponQuantity;
 
                 sliderEnemyDifficulty.Value = _config.EnemyDifficulty;
                 sliderEnemyRooms.Value = _config.EnemyRooms;
@@ -374,7 +375,7 @@ namespace IntelOrca.Biohazard.BioRand
                     eta = $"{(int)lHours} to {(int)uHours} hours";
                     colour = Colors.Red;
                 }
-                lblEstimateCompletionTime.Text = $"Estimate completion time: {eta} per scenario";
+                lblEstimateCompletionTime.Text = $"{eta} per scenario";
                 lblEstimateCompletionTime.Foreground = new SolidColorBrush(colour);
             }
             else
@@ -468,6 +469,8 @@ namespace IntelOrca.Biohazard.BioRand
             _config.Player1 = (byte)dropdownPlayer1.SelectedIndex;
             _config.SwapCharacters = chkSwapCharacters.IsChecked == true;
 
+            _config.EnabledWeapons = listWeapons.Values;
+
             _config.EnemyRatios = listEnemies.ItemsSource
                 .Cast<SliderListItem>()
                 .Select(x => (byte)x.Value)
@@ -501,7 +504,6 @@ namespace IntelOrca.Biohazard.BioRand
             _config.RandomInventory = chkRandomInventory.IsChecked == true;
             _config.Weapon0 = (byte)dropdownWeapon0.SelectedIndex;
             _config.Weapon1 = (byte)dropdownWeapon1.SelectedIndex;
-            _config.WeaponQuantity = (byte)sliderWeaponQuantity.Value;
 
             _config.RatioGunpowder = (byte)sliderGunpowder.Value;
             _config.RatioAmmo = (byte)sliderAmmo.Value;
@@ -946,6 +948,7 @@ namespace IntelOrca.Biohazard.BioRand
                         Visibility.Hidden;
                     UpdatePlayerDropdowns();
                     UpdateItems();
+                    UpdateWeaponList();
                     UpdateEnemies();
                     UpdateEnemySkinList();
                     UpdateCutscenes();
@@ -1238,6 +1241,14 @@ namespace IntelOrca.Biohazard.BioRand
                     chkRandomEvents.Visibility = Visibility.Collapsed;
                 }
             }
+        }
+
+        private void UpdateWeaponList()
+        {
+            var randomizer = GetRandomizer();
+            listWeapons.Names = randomizer
+                .GetWeaponNames()
+                .ToArray();
         }
 
         private void UpdateNPCList()

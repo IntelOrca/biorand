@@ -14,6 +14,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         public const int MaxSeed = 0b11111_11111_11111_11111;
         public const byte LatestVersion = 7;
+        public const int MaxWeapons = 15;
         public const int MaxEnemies = 12;
         public const int MaxEnemySkins = 35;
         public const int MaxNPCs = 75;
@@ -53,7 +54,6 @@ namespace IntelOrca.Biohazard.BioRand
         public bool SwapCharacters { get; set; }
         public byte Weapon0 { get; set; } = 1;
         public byte Weapon1 { get; set; } = 1;
-        public byte WeaponQuantity { get; set; } = 7;
         public byte RatioAmmo { get; set; } = 16;
         public byte RatioHealth { get; set; } = 16;
         public byte RatioInkRibbons { get; set; } = 4;
@@ -65,6 +65,7 @@ namespace IntelOrca.Biohazard.BioRand
         public byte AreaCount { get; set; } = 3;
         public byte AreaSize { get; set; } = 7;
 
+        public bool[] EnabledWeapons { get; set; } = new bool[0];
         public byte[] EnemyRatios { get; set; } = new byte[0];
         public bool[] EnabledEnemySkins { get; set; } = new bool[0];
         public bool[] EnabledNPCs { get; set; } = new bool[0];
@@ -101,6 +102,8 @@ namespace IntelOrca.Biohazard.BioRand
             result.RatioInkRibbons = reader.ReadDigit();
             result.RatioGunpowder = reader.ReadDigit();
 
+            result.EnabledWeapons = reader.ReadBooleanArray(15);
+
             result.AmmoQuantity = reader.ReadByte(3);
             result.EnemyDifficulty = reader.ReadByte(2);
             result.EnemyRooms = reader.ReadByte(3);
@@ -112,7 +115,7 @@ namespace IntelOrca.Biohazard.BioRand
 
             result.Weapon0 = reader.ReadByte(3);
             result.Weapon1 = reader.ReadByte(3);
-            result.WeaponQuantity = reader.ReadByte(3);
+            reader.ReadByte(3);
             result.PrioritiseCutscenes = reader.ReadFlag();
 
             result.Player0 = reader.ReadByte(6);
@@ -190,6 +193,8 @@ namespace IntelOrca.Biohazard.BioRand
             writer.WriteDigit(RatioInkRibbons);
             writer.WriteDigit(RatioGunpowder);
 
+            writer.WriteArray(MaxWeapons, EnabledWeapons);
+
             writer.Write(3, AmmoQuantity);
             writer.Write(2, EnemyDifficulty);
 
@@ -202,7 +207,7 @@ namespace IntelOrca.Biohazard.BioRand
 
             writer.Write(3, Weapon0);
             writer.Write(3, Weapon1);
-            writer.Write(3, WeaponQuantity);
+            writer.Write(3, 0);
             writer.Write(PrioritiseCutscenes);
 
             writer.Write(6, Player0);

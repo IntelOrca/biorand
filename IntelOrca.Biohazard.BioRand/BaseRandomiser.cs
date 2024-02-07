@@ -684,6 +684,8 @@ namespace IntelOrca.Biohazard.BioRand
             return pldIndex;
         }
 
+        public virtual string[] GetWeaponNames() => ItemHelper.GetWeaponNames();
+
         public virtual EnemySkin[] GetEnemySkins()
         {
             return new EnemySkin[0];

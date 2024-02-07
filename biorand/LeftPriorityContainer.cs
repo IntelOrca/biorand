@@ -5,19 +5,37 @@ namespace IntelOrca.Biohazard.BioRand
 {
     internal class LeftPriorityContainer : Panel
     {
+        private int _importantChildIndex;
+
+        public int ImportantChildIndex
+        {
+            get => _importantChildIndex;
+            set
+            {
+                if (_importantChildIndex != value)
+                {
+                    _importantChildIndex = value;
+                    InvalidateMeasure();
+                }
+            }
+        }
+
         protected override Size MeasureOverride(Size availableSize)
         {
             var size = new Size();
-            if (InternalChildren.Count > 0)
+            if (InternalChildren.Count > ImportantChildIndex && ImportantChildIndex >= 0)
             {
-                var firstChild = InternalChildren[0];
-                firstChild.Measure(availableSize);
-                size = firstChild.DesiredSize;
+                var importantChild = InternalChildren[ImportantChildIndex];
+                importantChild.Measure(availableSize);
+                size = importantChild.DesiredSize;
 
                 availableSize.Width -= size.Width;
                 availableSize.Height = size.Height;
-                for (int i = 1; i < InternalChildren.Count; i++)
+                for (int i = 0; i < InternalChildren.Count; i++)
                 {
+                    if (i == ImportantChildIndex)
+                        continue;
+
                     var child = InternalChildren[i];
                     child.Measure(availableSize);
                     size.Width += child.DesiredSize.Width;

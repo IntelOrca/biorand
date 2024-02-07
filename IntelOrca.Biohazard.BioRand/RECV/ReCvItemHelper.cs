@@ -377,6 +377,26 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 ReCvItemIds.Magnum,
                 ReCvItemIds.SubMachineGun,
                 ReCvItemIds.M1P,
+                ReCvItemIds.LinearLauncher,
+            };
+        }
+
+        public string[] GetWeaponNames()
+        {
+            return new[]
+            {
+                "Handgun",
+                "Rocket Launcher",
+                "Assault Rifle",
+                "Sniper Rifle",
+                "Shotgun",
+                "Handgun (Glock 17)",
+                "Grenade Launcher",
+                "Bowgun",
+                "Magnum",
+                "Assult Rifle",
+                "MP100",
+                "Linear Launcher",
             };
         }
 
