@@ -23,7 +23,7 @@
           "type": 50,
           "amount": 1,
           "requires": [ 104 ],
-          "priority": "fixed"
+          "offsets": [ 1625480, 1629070 ]
         },
         {
           "id": 4,
@@ -233,9 +233,10 @@
           "requiresRoom": [ "104" ]
         },
         {
-          "id": 255,
+          "id": 1,
           "type": 84,
           "amount": 1,
+          "requiresRoom": [ "104" ],
           "offsets": [ 1782756 ]
         }
       ]
@@ -303,12 +304,13 @@
           "id": 1,
           "type": 21,
           "amount": 1
+        },
+        {
+          "id": 2,
+          "type": 12,
+          "amount": 15,
+          "offsets": [ 640998 ]
         }
-        // {
-        //   "id": 2,
-        //   "type": 12,
-        //   "amount": 15
-        // }
       ]
     },
     "10B": {
@@ -330,11 +332,12 @@
         //   "type": 47,
         //   "amount": 1
         // },
-        // {
-        //   "id": 1,
-        //   "type": 20,
-        //   "amount": 1
-        // },
+        {
+          "id": 1,
+          "type": 20,
+          "amount": 1,
+          "offsets": [ 2133888 ]
+        },
         {
           "id": 4,
           "type": 51,
@@ -354,16 +357,18 @@
         }
       ],
       "items": [
-        // {
-        //   "id": 0,
-        //   "type": 63,
-        //   "amount": 1
-        // },
-        // {
-        //   "id": 1,
-        //   "type": 12,
-        //   "amount": 15
-        // },
+        {
+          "id": 0,
+          "type": 63,
+          "amount": 1,
+          "offsets": [ 1526878 ]
+        },
+        {
+          "id": 1,
+          "type": 12,
+          "amount": 15,
+          "offsets": [ 1526934 ]
+        },
         {
           "id": 2,
           "type": 22,
@@ -427,11 +432,12 @@
         }
       ],
       "items": [
-        // {
-        //   "id": 0,
-        //   "type": 103,
-        //   "amount": 1
-        // },
+        {
+          "id": 0,
+          "type": 103,
+          "amount": 1,
+          "offsets": [ 1191434 ]
+        },
         {
           "id": 1,
           "type": 52,
@@ -557,7 +563,7 @@
           "id": 0,
           "type": 116,
           "amount": 1,
-          "priority": "fixed"
+          "offsets": [ 269770 ]
         }
         // {
         //   "id": 1,
@@ -573,12 +579,13 @@
         }
       ],
       "items": [
-        {
-          "id": 0,
-          "type": 33,
-          "amount": 1,
-          "priority": "fixed"
-        },
+        // gold lugars
+        // {
+        //   "id": 0,
+        //   "type": 33,
+        //   "amount": 1,
+        //   "priority": "fixed"
+        // },
         {
           "id": 2,
           "type": 53,
@@ -633,11 +640,12 @@
         }
       ],
       "items": [
-        // {
-        //   "id": 0,
-        //   "type": 12,
-        //   "amount": 15
-        // },
+        {
+          "id": 0,
+          "type": 12,
+          "amount": 15,
+          "offsets": [ 1356926 ]
+        },
         {
           "id": 1,
           "type": 22,
@@ -676,11 +684,12 @@
         //   "type": 47,
         //   "amount": 1
         // },
-        // {
-        //   "id": 5,
-        //   "type": 12,
-        //   "amount": 15
-        // },
+        {
+          "id": 5,
+          "type": 12,
+          "amount": 15,
+          "offsets": [ 289872 ]
+        },
         {
           "id": 6,
           "type": 21,
@@ -735,7 +744,7 @@
           "type": 61,
           "amount": 1,
           "requires": [ 52 ],
-          "priority": "fixed"
+          "offsets": [ 542440 ]
         },
         {
           "id": 3,
