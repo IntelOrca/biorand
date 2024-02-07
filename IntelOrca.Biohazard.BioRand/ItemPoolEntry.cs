@@ -3,7 +3,7 @@
     internal struct ItemPoolEntry
     {
         public RdtId RdtId { get; set; }
-        public int Offset { get; set; }
+        public int[] Offsets { get; set; }
         public byte Id { get; set; }
         public ushort Type { get; set; }
         public ushort Amount { get; set; }

@@ -1019,7 +1019,7 @@ namespace IntelOrca.Biohazard.BioRand
                         items = items.Concat(new[] {
                                 new ItemPoolEntry() {
                                     RdtId = rdtId,
-                                    Offset = correctedItem.Offset,
+                                    Offsets = correctedItem.Offsets?.ToArray() ?? new int[0],
                                     Id = correctedItem.Id,
                                     Type = (ushort)(correctedItem.Type ?? 0),
                                     Amount = correctedItem.Amount ?? 1,
@@ -1055,7 +1055,7 @@ namespace IntelOrca.Biohazard.BioRand
                         items = items.Concat(new[] {
                                 new ItemPoolEntry() {
                                     RdtId = rdtId,
-                                    Offset = correctedItem.Offset,
+                                    Offsets = correctedItem.Offsets?.ToArray() ?? new int[0],
                                     Id = correctedItem.Id,
                                     Type = (ushort)(correctedItem.Type ?? 0),
                                     Amount = correctedItem.Amount ?? 1,

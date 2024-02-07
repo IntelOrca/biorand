@@ -92,11 +92,18 @@
         }
       ],
       "items": [
-        // {
-        //   "id": 1,
-        //   "type": 12,
-        //   "amount": 15
-        // }
+        {
+          "id": 0,
+          "type": 9,
+          "amount": 15,
+          "offsets": [ 2603334, 2607638 ]
+        },
+        {
+          "id": 1,
+          "type": 12,
+          "amount": 15,
+          "offsets": [ 2607986 ]
+        }
       ]
     },
     "104": {
@@ -110,7 +117,8 @@
           "id": 0,
           "type": 59,
           "amount": 1,
-          "priority": "fixed"
+          "priority": "low",
+          "offsets": [ 1070594 ]
         },
         // {
         //   "id": 1,
@@ -161,7 +169,7 @@
           "id": 0,
           "type": 12,
           "amount": 15,
-          "offset": 1635340
+          "offsets": [ 1635340 ]
         },
         // {
         //   "id": 1,
@@ -227,7 +235,8 @@
         {
           "id": 255,
           "type": 84,
-          "amount": 1
+          "amount": 1,
+          "offsets": [ 1782756 ]
         }
       ]
     },
@@ -252,7 +261,8 @@
           "type": 86,
           "amount": 1,
           "requires": [ 59, 83 ],
-          "priority": "fixed"
+          "priority": "low",
+          "offsets": [ 1911478, 1911592 ]
         },
         {
           "id": 3,

@@ -1135,10 +1135,17 @@ namespace IntelOrca.Biohazard.BioRand
                             }
                         }
                     }
-                    if (entry.Offset == 0)
+                    if (entry.Offsets.Length == 0)
+                    {
                         rdt.SetItem(entry.Id, entry.Type, entry.Amount);
+                    }
                     else
-                        rdt.SetItemAt(entry.Offset, entry.Type, entry.Amount);
+                    {
+                        foreach (var offset in entry.Offsets)
+                        {
+                            rdt.SetItemAt(offset, entry.Type, entry.Amount);
+                        }
+                    }
                 }
             }
         }
