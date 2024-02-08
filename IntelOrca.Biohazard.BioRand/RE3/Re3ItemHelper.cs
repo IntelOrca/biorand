@@ -266,7 +266,7 @@ namespace IntelOrca.Biohazard.BioRand.RE3
                 "Rocket Launcher",
                 "Mine Thrower",
                 "Handgun (Eagle)",
-                "Assult Rifle",
+                "Assault Rifle",
                 "Shotgun (M37)"
             };
         }

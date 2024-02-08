@@ -394,7 +394,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 "Grenade Launcher",
                 "Bowgun",
                 "Magnum",
-                "Assult Rifle",
+                "SMG",
                 "MP100",
                 "Linear Launcher",
             };
