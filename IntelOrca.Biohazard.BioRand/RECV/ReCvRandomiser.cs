@@ -197,7 +197,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
         private void TestEdits()
         {
 #if DEBUG
-            QuickDoor(RdtId.Parse("106"), 0);
+            QuickDoor(RdtId.Parse("10A"), 0);
             // Change 101 door to 10A
             // var a = (RdtCv)_rdts[1].RdtFile;
             // var ab = a.ToBuilder();
@@ -350,6 +350,39 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             "",
             "20D",
             "20E",
+            "",
+            "",
+            "", // 40
+            "",
+            "",
+            "",
+            "",
+            "", // 45
+            "",
+            "",
+            "",
+            "",
+            "401", // 50
+            "",
+            "",
+            "",
+            "405",
+            "406", // 55
+            "407",
+            "408",
+            "409",
+            "",
+            "40A", // 60
+            "40B",
+            "",
+            "40D",
+            "",
+            "40F", // 65
+            "",
+            "411",
+            "",
+            "",
+            "", // 70
         };
     }
 }
