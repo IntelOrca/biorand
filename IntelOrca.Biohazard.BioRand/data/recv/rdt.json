@@ -812,6 +812,27 @@
         // }
       ]
     },
+    "400": {
+      "doors": [
+        {
+          "target": "402"
+        },
+        {
+          "target": "403",
+          "lock": "side"
+        },
+        {
+          "target": "40C"
+        }
+      ],
+      "items": [
+        {
+          "id": 0,
+          "type": 12,
+          "amount": 15
+        }
+      ]
+    },
     "401": {
       "doors": [
         {
@@ -831,6 +852,67 @@
           "amount": 1,
           "requires": [ 56 ],
           "offsets": [ 601266, 601348 ]
+        }
+      ]
+    },
+    "402": {
+      "doors": [
+        {
+          "target": "400"
+        },
+        {
+          "target": "409"
+        }
+      ],
+      "items": [
+        {
+          "id": 1,
+          "type": 18,
+          "amount": 30
+        }
+      ]
+    },
+    "403": {
+      "doors": [
+        {
+          "target": "400"
+        },
+        {
+          "target": "404"
+        },
+        {
+          "target": "40C",
+          "lock": "side"
+        },
+        {
+          "target": "416"
+        }
+      ],
+      "items": [
+        {
+          "id": 0,
+          "type": 12,
+          "amount": 15
+        }
+      ]
+    },
+    "404": {
+      "doors": [
+        {
+          "target": "403"
+        }
+      ],
+      "items": [
+        {
+          "id": 6,
+          "type": 56,
+          "amount": 1,
+          "offsets": [ 222920 ]
+        },
+        {
+          "id": 7,
+          "type": 31,
+          "amount": 1
         }
       ]
     },
@@ -962,15 +1044,12 @@
           "target": "20C"
         },
         {
+          "target": "402",
+          "lock": "side"
+        },
+        {
           "target": "408"
         }
-        // ,
-        // {
-        //   "target": "402"
-        // },
-        // {
-        //   "target": "4??"
-        // }
       ],
       "items": [
         {
@@ -984,6 +1063,9 @@
       "doors": [
         {
           "target": "40F"
+        },
+        {
+          "target": "410"
         }
       ]
     },
@@ -1026,6 +1108,46 @@
         }
       ]
     },
+    "40C": {
+      "doors": [
+        {
+          "target": "400"
+        },
+        {
+          "target": "403",
+          "requires": [ 76 ]
+        },
+        {
+          "target": "416"
+        }
+      ],
+      "items": [
+        {
+          "id": 0,
+          "type": 15,
+          "amount": 6,
+          "requires": [ 76 ]
+        },
+        {
+          "id": 1,
+          "type": 21,
+          "amount": 1,
+          "requires": [ 76 ]
+        },
+        {
+          "id": 2,
+          "type": 21,
+          "amount": 1,
+          "requires": [ 76 ]
+        },
+        {
+          "id": 3,
+          "type": 69,
+          "amount": 1,
+          "requires": [ 76 ]
+        }
+      ]
+    },
     "40D": {
       "doors": [
         {
@@ -1065,7 +1187,141 @@
         }
       ]
     },
+    "410": {
+      "doors": [
+        {
+          "id": 0,
+          "target": "414"
+        },
+        {
+          "id": 1,
+          "target": "412"
+        },
+        {
+          "id": 2,
+          "target": "411"
+        },
+        {
+          "id": 3,
+          "target": "412"
+        },
+        {
+          "target": "40A"
+        }
+      ],
+      "items": [
+        {
+          "id": 0,
+          "type": 6,
+          "amount": 6,
+          "requires": [ 76 ]
+        },
+        {
+          "id": 1,
+          "type": 15,
+          "amount": 6
+        },
+        {
+          "id": 2,
+          "type": 15,
+          "amount": 6
+        }
+      ]
+    },
     "411": {
+      "doors": [
+        {
+          "target": "401"
+        },
+        {
+          "target": "410"
+        },
+        {
+          "target": "415"
+        }
+      ]
+    },
+    "412": {
+      "doors": [
+        {
+          "id": 1,
+          "target": "410"
+        },
+        {
+          "id": 8,
+          "target": "410"
+        },
+        {
+          "target": "413"
+        }
+      ],
+      "items": [
+        {
+          "id": 0,
+          "type": 18,
+          "amount": 30
+        }
+      ]
+    },
+    "413": {
+      "doors": [
+        {
+          "target": "412"
+        }
+      ]
+    },
+    "414": {
+      "items": [
+        {
+          "id": 1,
+          "type": 16,
+          "amount": 6,
+          "requires": [ 50 ],
+          "offsets": [ 1393580 ]
+        },
+        {
+          "id": 2,
+          "type": 12,
+          "amount": 15
+        }
+      ]
+    },
+    "415": {
+      "doors": [
+        {
+          "target": "411"
+        },
+        {
+          "target": "416"
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "type": 12,
+          "amount": 15
+        }
+      ]
+    },
+    "416": {
+      "doors": [
+        {
+          "target": "403"
+        },
+        {
+          "target": "40C"
+        },
+        {
+          "target": "415"
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "type": 12,
+          "amount": 15
+        }
+      ]
     }
   }
 }
