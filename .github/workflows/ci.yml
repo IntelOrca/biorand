@@ -31,7 +31,7 @@ jobs:
 
         rd /s /q data\bgm data\voice data\hurt data\title
         rd /s /q data\re1\emd data\re1\pld0 data\re1\pld1
-        rd /s /q data\re2\emd data\re2\pld0 data\re2\pld1
+        rd /s /q data\re2\emd data\re2\pld0 data\re2\pld1 data\re2\credits
         rd /s /q data\re3\emd data\re3\pld0
         7z -r a ${{ github.workspace }}\artefacts\biorand_slim.zip data *.exe *.dll *.config README.md CHANGELOG.md LICENSE
     - name: Upload artifact (slim)
