@@ -1143,25 +1143,29 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 8,
+          "globalId": 228,
           "type": 15,
           "amount": 6,
           "requires": [ 76 ]
         },
         {
-          "id": 1,
+          "id": 9,
+          "globalId": 229,
           "type": 21,
           "amount": 1,
           "requires": [ 76 ]
         },
         {
-          "id": 2,
+          "id": 10,
+          "globalId": 230,
           "type": 21,
           "amount": 1,
           "requires": [ 76 ]
         },
         {
-          "id": 3,
+          "id": 5,
+          "globalId": 24,
           "type": 69,
           "amount": 1,
           "requires": [ 76 ]
@@ -1196,12 +1200,14 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 5,
+          "globalId": 235,
           "type": 12,
           "amount": 15
         },
         {
-          "id": 1,
+          "id": 6,
+          "globalId": 236,
           "type": 12,
           "amount": 15
         }
