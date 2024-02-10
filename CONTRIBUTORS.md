@@ -4,9 +4,11 @@
 * **Snipz** -  testing, animations, models, voices
 * **Kashup** - testing, models, textures, voices
 * **Zky3sdge** - models
-* **Shannon** - testing
 * **baesik** - testing
+* **Death2024** - testing
+* **gonta2319** - testing
 * **otamega72** - testing
+* **Shannon** - testing
 * **PMCDC** - UI enhancements
 * **ALSOP** - textures
 * **AndrewC** - models
