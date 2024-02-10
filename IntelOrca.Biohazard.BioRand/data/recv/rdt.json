@@ -737,6 +737,10 @@
       "doors": [
         {
           "target": "209"
+        },
+        {
+          "target": "300",
+          "lock": "unblock"
         }
       ]
     },
@@ -829,6 +833,217 @@
         //   "type": 57,
         //   "amount": 1
         // }
+      ]
+    },
+    "300": {
+      "doors": [
+        {
+          "target": "20A"
+        },
+        {
+          "target": "301"
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "globalId": 187,
+          "type": 21,
+          "amount": 1
+        },
+        {
+          "id": 5,
+          "globalId": 188,
+          "type": 22,
+          "amount": 1
+        }
+      ]
+    },
+    "301": {
+      "doors": [
+        {
+          "target": "300"
+        },
+        {
+          "target": "302"
+        },
+        {
+          "target": "303"
+        }
+      ],
+      "items": [
+        {
+          "id": 11,
+          "globalId": 189,
+          "type": 12,
+          "amount": 15
+        },
+        {
+          "id": 12,
+          "globalId": 190,
+          "type": 20,
+          "amount": 1
+        }
+      ]
+    },
+    "302": {
+      "doors": [
+        {
+          "target": "301"
+        }
+      ],
+      "items": [
+        {
+          "id": 13,
+          "globalId": 191,
+          "type": 18,
+          "amount": 30,
+          "offsets": [ 1216490 ]
+        },
+        {
+          "id": 12,
+          "globalId": 192,
+          "type": 31,
+          "amount": 3
+        },
+        {
+          "id": 14,
+          "globalId": 193,
+          "type": 12,
+          "amount": 15
+        }
+      ]
+    },
+    "303": {
+      "doors": [
+        {
+          "target": "301"
+        },
+        {
+          "target": "304"
+        },
+        {
+          "target": "305"
+        }
+      ],
+      "items": [
+        {
+          "id": 14,
+          "globalId": 194,
+          "type": 21,
+          "amount": 1
+        },
+        {
+          "id": 12,
+          "globalId": 195,
+          "type": 12,
+          "amount": 15
+        }
+      ]
+    },
+    "304": {
+      "doors": [
+        {
+          "target": "303"
+        },
+        {
+          "target": "306",
+          "requires": [ 60, 61, 78 ]
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "globalId": 112,
+          "type": 134,
+          "amount": 1
+        }
+      ]
+    },
+    "305": {
+      "doors": [
+        {
+          "target": "303"
+        }
+      ],
+      "items": [
+        {
+          "id": 254,
+          "type": 78,
+          "amount": 1,
+          "offsets": [ 1442476 ]
+        }
+      ]
+    },
+    "306": {
+      "doors": [
+        {
+          "target": "304"
+        },
+        {
+          "target": "307",
+          "requires": [ 119 ]
+        }
+      ],
+      "items": [
+        {
+          "id": 13,
+          "globalId": 196,
+          "type": 15,
+          "amount": 6
+        },
+        {
+          "id": 12,
+          "globalId": 197,
+          "type": 15,
+          "amount": 1
+        },
+        {
+          "id": 5,
+          "globalId": 17,
+          "type": 15,
+          "amount": 1
+        }
+      ]
+    },
+    "307": {
+      "doors": [
+        {
+          "target": "306"
+        }
+      ],
+      "items": [
+        {
+          "id": 2,
+          "globalId": 198,
+          "type": 12,
+          "amount": 15
+        },
+        {
+          "id": 6,
+          "globalId": 101,
+          "type": 135,
+          "amount": 1,
+          "offsets": [ 537360 ]
+        },
+        {
+          "id": 24,
+          "globalId": 199,
+          "type": 31,
+          "amount": 3
+        },
+        {
+          "id": 253,
+          "type": 102,
+          "amount": 1,
+          "offsets": [ 537690 ]
+        },
+        {
+          "id": 254,
+          "type": 71,
+          "amount": 1,
+          "offsets": [ 537734 ]
+        }
       ]
     },
     "400": {
