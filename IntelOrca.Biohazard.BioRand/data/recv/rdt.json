@@ -300,20 +300,23 @@
       ],
       "items": [
         {
-          "id": 0,
-          "type": 21,
-          "amount": 1
-        },
-        {
-          "id": 1,
-          "type": 21,
-          "amount": 1
-        },
-        {
-          "id": 2,
+          "id": 11,
+          "globalId": 142,
           "type": 12,
           "amount": 15,
           "offsets": [ 640998 ]
+        },
+        {
+          "id": 13,
+          "globalId": 143,
+          "type": 21,
+          "amount": 1
+        },
+        {
+          "id": 17,
+          "globalId": 144,
+          "type": 21,
+          "amount": 1
         }
       ]
     },
@@ -331,25 +334,28 @@
         }
       ],
       "items": [
-        // {
-        //   "id": 0,
-        //   "type": 47,
-        //   "amount": 1
-        // },
+        {
+          "id": 6,
+          "globalId": 145,
+          "type": 47,
+          "amount": 1
+        },
         {
           "id": 1,
+          "globalId": 115,
           "type": 20,
           "amount": 1,
           "offsets": [ 2133888 ]
         },
         // {
         //   "id": 2,
+        //   "globalId": 6,
         //   "type": 51,
-        //   "amount": 1,
-        //   "offsets": [ 2132958 ]
+        //   "amount": 1
         // },
         {
-          "id": 5,
+          "id": 13,
+          "globalId": 146,
           "type": 12,
           "amount": 15
         }
