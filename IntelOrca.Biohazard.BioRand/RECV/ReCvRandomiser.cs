@@ -320,9 +320,9 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             "100",
             "101",
             "102",
-            "", // 102 again
-            "103", // 103 with handgun (not right)
-            "", // 103 with bullets (not right)
+            "",
+            "103",
+            "",
             "104",
             "105",
             "106",

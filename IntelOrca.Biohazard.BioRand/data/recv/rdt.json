@@ -74,13 +74,12 @@
         }
       ],
       "items": [
-        {
-          "id": 0,
-          "type": 83,
-          "amount": 1,
-          "requires": [ 82 ],
-          "priority": "fixed"
-        }
+        // { TODO HELP
+        //   "id": 0,
+        //   "type": 83,
+        //   "amount": 1,
+        //   "requires": [ 82 ]
+        // }
       ]
     },
     "103": {
@@ -108,6 +107,7 @@
           "id": 1,
           "type": 12,
           "amount": 15,
+          "priority": "low", // TODO Until we randomize both versions of room
           "offsets": [ 2607986 ]
         }
       ]
@@ -347,9 +347,8 @@
           "amount": 1,
           "offsets": [ 2133888 ]
         },
-        // {
-        //   "id": 2,
-        //   "globalId": 6,
+        // { TODO HELP
+        //   "id": 4,
         //   "type": 51,
         //   "amount": 1
         // },
@@ -1086,6 +1085,14 @@
         },
         {
           "target": "410"
+        }
+      ],
+      "items": [
+        {
+          "id": 254,
+          "type": 33,
+          "amount": 0,
+          "offsets": [ 2850448 ]
         }
       ]
     },
