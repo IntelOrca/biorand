@@ -56,27 +56,10 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
         protected override string GetRdtPath(string dataPath, RdtId rdtId, int player, bool mod)
         {
-            return Path.Combine(dataPath, "RDX_LNK.AFS");
-        }
-
-        protected override RandomizedRdt ReadRdt(FileRepository fileRepository, RdtId rdtId, string path, string modPath)
-        {
-            var fileIndex = GetRdxFileIndex(rdtId);
-            if (_rdts[fileIndex] != null)
-                return _rdts[fileIndex];
-
-            var prs = new PrsFile(_rdxAfs!.GetFileData(fileIndex));
-            var rdt = new RdtCv(prs.Uncompressed);
-            var rrdt = new RandomizedRdt(rdt, rdtId);
-
-            var scdReader = new ScdReader();
-            scdReader.BaseOffset = ((RdtCv)rrdt.RdtFile).ScriptOffset;
-            rrdt.ScriptDisassembly = scdReader.Diassemble(rdt.Script, BiohazardVersion, BioScriptKind.Main, listing: false);
-            rrdt.ScriptListing = scdReader.Diassemble(rdt.Script, BiohazardVersion, BioScriptKind.Main, listing: true);
-
-            rrdt.Ast = CreateAst(rdt);
-            _rdts[fileIndex] = rrdt;
-            return rrdt;
+            var ridx = GetRdxFileIndex(rdtId).ToString("000");
+            return mod ?
+                Path.Combine(dataPath, "rdx_lnk_modded", ridx) :
+                Path.Combine(dataPath, "..", "mod_biorand", "rdx_lnk", ridx);
         }
 
         public override string GetPlayerName(int player) => "Claire";
@@ -107,6 +90,15 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             var dataPath = GetDataPath(reConfig.GetInstallPath(BiohazardVersion));
             var srcBgmDirectory = Path.Combine(dataPath, BGMPath);
             bgmRandomizer.AddToSelection(GetBgmJson(), srcBgmDirectory, ".WAV", volume);
+        }
+
+        protected override RandomizedRdt ReadRdt(FileRepository fileRepository, RdtId rdtId, string path, string modPath)
+        {
+            var result = base.ReadRdt(fileRepository, rdtId, path, modPath);
+            var fileIndex = GetRdxFileIndex(rdtId);
+            if (_rdts[fileIndex] == null)
+                _rdts[fileIndex] = result;
+            return result;
         }
 
         public override void Generate(RandoConfig config, IRandoProgress progress, FileRepository fileRepository)
@@ -152,7 +144,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                     _rdxAfs = ReadRdxAfs(udfEditor, afsFileId);
                 }
 
-#if DEBUG
+                // Extract room files
                 var rdxPath = Path.Combine(fileRepository.ModPath, "rdx_lnk");
                 Directory.CreateDirectory(rdxPath);
                 Parallel.For(0, _rdxAfs.Count, i =>
@@ -160,22 +152,12 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                     var prs = new PrsFile(_rdxAfs.GetFileData(i));
                     prs.Uncompressed.WriteToFile(Path.Combine(rdxPath, $"{i:000}"));
                 });
-#endif
 
                 GenerateRdts(config, progress, fileRepository);
+
                 TestEdits();
 
                 // base.Generate(config, progress, fileRepository);
-
-#if DEBUG
-                var rdxPathModded = Path.Combine(fileRepository.ModPath, "rdx_lnk_modded");
-                Directory.CreateDirectory(rdxPathModded);
-                Parallel.For(0, _rdts.Length, i =>
-                {
-                    var rdt = _rdts[i]?.RdtFile;
-                    rdt?.Data.WriteToFile(Path.Combine(rdxPathModded, $"{i:000}"));
-                });
-#endif
 
                 using (progress.BeginTask(null, "Compressing room files"))
                 {
@@ -194,10 +176,41 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             }
         }
 
-        private void TestEdits()
+        private unsafe void TestEdits()
         {
 #if DEBUG
-            QuickDoor(RdtId.Parse("10A"), 0);
+            foreach (var f in Directory.GetFiles(@"F:\games\recv\mod_biorand\rdx_lnk"))
+            {
+                var cv = new RdtCv(f);
+                if (cv.ScriptOffset == 0x00208A40)
+                {
+                    cv = cv;
+                }
+            }
+
+            QuickDoor(RdtId.Parse("10B"), 0);
+
+            for (var i = 0; i < _rdts.Length; i++)
+            {
+                var rdt = _rdts[i]?.RdtFile as RdtCv;
+                if (rdt == null)
+                    continue;
+                var rdtBuilder = rdt.ToBuilder();
+                var header = rdtBuilder.Header;
+                header.Author[0] = (byte)'B';
+                header.Author[1] = (byte)'I';
+                header.Author[2] = (byte)'O';
+                header.Author[3] = (byte)'R';
+                header.Author[4] = (byte)'A';
+                header.Author[5] = (byte)'N';
+                header.Author[6] = (byte)'D';
+                for (var j = 7; j < 32; j++)
+                    header.Author[j] = (byte)'\0';
+                rdtBuilder.Header = header;
+                rdt = rdtBuilder.ToRdt();
+                _rdts[i].RdtFile = rdt;
+            }
+
             // Change 101 door to 10A
             // var a = (RdtCv)_rdts[1].RdtFile;
             // var ab = a.ToBuilder();
@@ -280,10 +293,11 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             {
                 MaxDegreeOfParallelism = 32
             };
+
             Parallel.For(0, _rdts.Length, parellelOptions, i =>
             {
                 var rrdt = _rdts[i];
-                if (rrdt != null && rrdt.RdtId != new RdtId(0x0, 0x0B))
+                if (rrdt != null)
                 {
                     var prs = PrsFile.Compress(rrdt.RdtFile.Data);
                     builder.Replace(i, prs.Data);

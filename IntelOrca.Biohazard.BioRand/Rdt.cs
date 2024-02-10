@@ -161,7 +161,14 @@ namespace IntelOrca.Biohazard.BioRand
             if (Version == BioVersion.BiohazardCv)
             {
                 var data = RdtFile.Data.ToArray();
-                data[offset + 2] = (byte)type;
+                if (data[offset] == 0x08)
+                {
+                    data[offset + 2] = (byte)type;
+                }
+                else if (data[offset] == 0x7C)
+                {
+                    data[offset + 4] = (byte)type;
+                }
                 RdtFile = new RdtCv(data);
             }
             else
@@ -324,25 +331,28 @@ namespace IntelOrca.Biohazard.BioRand
 
         public void Save()
         {
-            using (var ms = new MemoryStream(RdtFile.Data.ToArray()))
+            if (Version != BioVersion.BiohazardCv)
             {
-                var bw = new BinaryWriter(ms);
-                foreach (var opcode in Opcodes)
+                using (var ms = new MemoryStream(RdtFile.Data.ToArray()))
                 {
-                    ms.Position = opcode.Offset;
-                    opcode.Write(bw);
+                    var bw = new BinaryWriter(ms);
+                    foreach (var opcode in Opcodes)
+                    {
+                        ms.Position = opcode.Offset;
+                        opcode.Write(bw);
+                    }
+                    foreach (var patch in Patches)
+                    {
+                        ms.Position = patch.Key;
+                        bw.Write(patch.Value);
+                    }
+                    if (Version == BioVersion.BiohazardCv)
+                        RdtFile = new RdtCv(ms.ToArray());
+                    else if (Version == BioVersion.Biohazard1)
+                        RdtFile = new Rdt1(ms.ToArray());
+                    else
+                        RdtFile = new Rdt2(Version, ms.ToArray());
                 }
-                foreach (var patch in Patches)
-                {
-                    ms.Position = patch.Key;
-                    bw.Write(patch.Value);
-                }
-                if (Version == BioVersion.BiohazardCv)
-                    RdtFile = new RdtCv(ms.ToArray());
-                else if (Version == BioVersion.Biohazard1)
-                    RdtFile = new Rdt1(ms.ToArray());
-                else
-                    RdtFile = new Rdt2(Version, ms.ToArray());
             }
 
             // HACK do not play around with EMRs for RE 2, 409 because it crashes the room
