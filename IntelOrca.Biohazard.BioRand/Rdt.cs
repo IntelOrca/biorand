@@ -490,17 +490,37 @@ namespace IntelOrca.Biohazard.BioRand
                 var rdtBuilder = cv.ToBuilder();
                 var scriptBuilder = rdtBuilder.Script.ToBuilder();
 
-                // Write additional opcodes
                 var ms = new MemoryStream();
                 var bw = new BinaryWriter(ms);
-                foreach (var op in AdditionalFrameOpcodes)
-                {
-                    op.Write(bw);
-                }
 
-                // Write original procedure code
-                var originalData = scriptBuilder.Procedures[1].Data;
-                bw.Write(originalData);
+                // HACK put new opcodes at bottom of 2nd proc unless
+                //      it is last proc, in which case put it at top
+                var data = scriptBuilder.Procedures[1].Data;
+                if (scriptBuilder.Procedures.Count > 2)
+                {
+                    // Write original procedure code
+                    bw.Write(data.Slice(0, data.Length - 2));
+
+                    // Write additional opcodes
+                    foreach (var op in AdditionalFrameOpcodes)
+                    {
+                        op.Write(bw);
+                    }
+
+                    bw.Write((byte)0);
+                    bw.Write((byte)0);
+                }
+                else
+                {
+                    // Write additional opcodes
+                    foreach (var op in AdditionalFrameOpcodes)
+                    {
+                        op.Write(bw);
+                    }
+
+                    // Write original procedure code
+                    bw.Write(data.Slice(0, data.Length));
+                }
 
                 scriptBuilder.Procedures[1] = new ScdProcedure(BioVersion.BiohazardCv, ms.ToArray());
                 rdtBuilder.Script = scriptBuilder.ToProcedureList();
