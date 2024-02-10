@@ -515,9 +515,14 @@ namespace IntelOrca.Biohazard.BioRand
             _config.AreaSize = (byte)sliderAreaSize.Value;
 
             _config.RandomCutscenes = chkCutscenes.IsChecked == true;
+            if (SelectedGame == 3)
+                _config.RandomCutscenes = false;
+
             _config.AllowAnyVoice = chkAllowAnyVoice.IsChecked == true;
             _config.ReduceSilences = chkReduceSilences.IsChecked == true;
             _config.RandomEvents = chkRandomEvents.IsChecked == true;
+            if (SelectedGame != 1)
+                _config.RandomEvents = false;
 
             _config.GameVariant = (byte)dropdownVariant.SelectedIndex;
 
