@@ -246,7 +246,7 @@
           "type": 84,
           "amount": 1,
           "requiresRoom": [ "104" ],
-          "offsets": [ 1782756 ]
+          "offsets": [ 1782756, 1782782 ]
         }
       ]
     },

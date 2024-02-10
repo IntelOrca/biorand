@@ -200,6 +200,13 @@ namespace IntelOrca.Biohazard.BioRand
                 {
                     op.Data[1] = (byte)type;
                 }
+                else if (op.Opcode == 0x06)
+                {
+                    if (op.Data[0] == 8 && op.Data[1] == 0)
+                    {
+                        op.Data[2] = (byte)type;
+                    }
+                }
                 else if (op.Opcode == 0x7C)
                 {
                     op.Data[3] = (byte)type;
