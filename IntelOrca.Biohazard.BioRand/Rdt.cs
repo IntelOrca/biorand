@@ -125,15 +125,15 @@ namespace IntelOrca.Biohazard.BioRand
 
         internal void SetItem(ItemPoolEntry entry)
         {
-            var nopArray = Map.ParseNopArray(entry.Raw.Nop, this);
+            var nopArray = Map.ParseNopArray(entry.Raw?.Nop, this);
             foreach (var offset in nopArray)
             {
                 Nop(offset);
             }
 
-            if (entry.Raw.Offsets == null || entry.Raw.Offsets.Length == 0)
+            if (entry.Raw?.Offsets == null || entry.Raw.Offsets.Length == 0)
             {
-                SetItem(entry.Id, entry.Raw.GlobalId, entry.Type, entry.Amount);
+                SetItem(entry.Id, entry.Raw?.GlobalId, entry.Type, entry.Amount);
             }
             else
             {
@@ -508,7 +508,6 @@ namespace IntelOrca.Biohazard.BioRand
             }
             else
             {
-                throw new NotImplementedException();
             }
         }
 
