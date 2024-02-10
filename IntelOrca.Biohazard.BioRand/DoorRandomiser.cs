@@ -1012,6 +1012,8 @@ namespace IntelOrca.Biohazard.BioRand
                         continue;
                     if (correctedItem.DoorRando != null && correctedItem.DoorRando != _config.RandomDoors)
                         continue;
+                    if (!_config.IncludeDocuments && (correctedItem.Type != null && (_itemHelper.GetItemAttributes(correctedItem.Type.Value) & ItemAttribute.Document) != 0))
+                        continue;
 
                     // HACK 255 is used for item get commands
                     if (correctedItem.Id == 255)
@@ -1019,7 +1021,7 @@ namespace IntelOrca.Biohazard.BioRand
                         items = items.Concat(new[] {
                                 new ItemPoolEntry() {
                                     RdtId = rdtId,
-                                    Offsets = correctedItem.Offsets?.ToArray() ?? new int[0],
+                                    Raw = correctedItem,
                                     Id = correctedItem.Id,
                                     Type = (ushort)(correctedItem.Type ?? 0),
                                     Amount = correctedItem.Amount ?? 1,
@@ -1055,7 +1057,7 @@ namespace IntelOrca.Biohazard.BioRand
                         items = items.Concat(new[] {
                                 new ItemPoolEntry() {
                                     RdtId = rdtId,
-                                    Offsets = correctedItem.Offsets?.ToArray() ?? new int[0],
+                                    Raw = correctedItem,
                                     Id = correctedItem.Id,
                                     Type = (ushort)(correctedItem.Type ?? 0),
                                     Amount = correctedItem.Amount ?? 1,

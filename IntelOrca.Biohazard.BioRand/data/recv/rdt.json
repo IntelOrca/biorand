@@ -14,12 +14,7 @@
       ],
       "items": [
         {
-          "id": 0,
-          "type": 8,
-          "amount": 0
-        },
-        {
-          "id": 3,
+          "id": 254,
           "type": 50,
           "amount": 1,
           "requires": [ 104 ],
@@ -27,11 +22,19 @@
         },
         {
           "id": 4,
+          "globalId": 121,
           "type": 12,
           "amount": 15
         },
         {
-          "id": 6,
+          "id": 7,
+          "globalId": 120,
+          "type": 8,
+          "amount": 0
+        },
+        {
+          "id": 8,
+          "globalId": 122,
           "type": 21,
           "amount": 1
         }
@@ -48,12 +51,14 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 2,
+          "globalId": 123,
           "type": 31,
           "amount": 1
         },
         {
-          "id": 1,
+          "id": 3,
+          "globalId": 124,
           "type": 12,
           "amount": 15
         }
@@ -189,24 +194,29 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 2,
+          "globalId": 134,
           "type": 12,
           "amount": 15
         },
         {
-          "id": 1,
+          "id": 4,
+          "globalId": 135,
+          "type": 12,
+          "amount": 15
+        },
+        {
+          "id": 6,
+          "globalId": 136,
           "type": 142,
           "amount": 100
         },
-        // {
-        //   "id": 3,
-        //   "type": 48,
-        //   "amount": 1
-        // },
         {
-          "id": 4,
-          "type": 12,
-          "amount": 15
+          "id": 7,
+          "globalId": 97,
+          "type": 48,
+          "amount": 1,
+          "nop": [ "0x181910-0x181934" ]
         }
       ]
     },
@@ -455,14 +465,16 @@
       ],
       "items": [
         {
-          "id": 0,
-          "type": 21,
-          "amount": 1
-        },
-        {
-          "id": 1,
+          "id": 5,
+          "globalId": 155,
           "type": 12,
           "amount": 15
+        },
+        {
+          "id": 6,
+          "globalId": 154,
+          "type": 21,
+          "amount": 1
         }
         // {
         //   "id": 2,

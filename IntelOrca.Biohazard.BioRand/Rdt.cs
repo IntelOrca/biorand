@@ -27,6 +27,7 @@ namespace IntelOrca.Biohazard.BioRand
         public ScriptAst? Ast { get; set; }
         public List<KeyValuePair<int, byte>> Patches { get; } = new List<KeyValuePair<int, byte>>();
         public List<OpcodeBase> AdditionalOpcodes { get; } = new List<OpcodeBase>();
+        public List<OpcodeBase> AdditionalFrameOpcodes { get; } = new List<OpcodeBase>();
         public string? CustomAdditionalScript { get; set; }
 
         public IEnumerable<OpcodeBase> AllOpcodes => AdditionalOpcodes.Concat(Opcodes);
@@ -122,17 +123,50 @@ namespace IntelOrca.Biohazard.BioRand
 
         public void RemoveDoorLock(int id) => SetDoorLock(id, 0, 0);
 
-        public void SetItem(byte id, ushort type, ushort amount)
+        internal void SetItem(ItemPoolEntry entry)
+        {
+            var nopArray = Map.ParseNopArray(entry.Raw.Nop, this);
+            foreach (var offset in nopArray)
+            {
+                Nop(offset);
+            }
+
+            if (entry.Raw.Offsets == null || entry.Raw.Offsets.Length == 0)
+            {
+                SetItem(entry.Id, entry.Raw.GlobalId, entry.Type, entry.Amount);
+            }
+            else
+            {
+                foreach (var offset in entry.Raw.Offsets)
+                {
+                    SetItemAt(offset, entry.Type, entry.Amount);
+                }
+            }
+        }
+
+        private void SetItem(byte id, byte? globalId, ushort type, ushort amount)
         {
             if (Version == BioVersion.BiohazardCv)
             {
                 var rdtBuilder = ((RdtCv)RdtFile).ToBuilder();
-                if (rdtBuilder.Items.Count > id)
+                if (globalId == null)
                 {
-                    var item = rdtBuilder.Items[id];
-                    item.Type = type;
-                    rdtBuilder.Items[id] = item;
-                    RdtFile = rdtBuilder.ToRdt();
+                    if (rdtBuilder.Items.Count > id)
+                    {
+                        var item = rdtBuilder.Items[id];
+                        item.Type = type;
+                        rdtBuilder.Items[id] = item;
+                        RdtFile = rdtBuilder.ToRdt();
+                    }
+                }
+                else
+                {
+                    // Convert AOT to a message
+                    var aot = rdtBuilder.Aots[id];
+                    // aot.Kind = 3;
+                    // aot.Flags = 0;
+                    // rdtBuilder.Aots[id] = aot;
+                    CvAddItemPickupCodes(id, aot.Stage, (byte)type, globalId.Value);
                 }
             }
             else
@@ -156,24 +190,23 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
-        public void SetItemAt(int offset, ushort type, ushort amount)
+        private void SetItemAt(int offset, ushort type, ushort amount)
         {
+            var opcode = Opcodes.FirstOrDefault(x => x.Offset == offset);
             if (Version == BioVersion.BiohazardCv)
             {
-                var data = RdtFile.Data.ToArray();
-                if (data[offset] == 0x08)
+                var op = (UnknownOpcode)opcode;
+                if (op.Opcode == 0x08)
                 {
-                    data[offset + 2] = (byte)type;
+                    op.Data[1] = (byte)type;
                 }
-                else if (data[offset] == 0x7C)
+                else if (op.Opcode == 0x7C)
                 {
-                    data[offset + 4] = (byte)type;
+                    op.Data[3] = (byte)type;
                 }
-                RdtFile = new RdtCv(data);
             }
             else
             {
-                var opcode = Opcodes.FirstOrDefault(x => x.Offset == offset);
                 if (opcode is IItemAotSetOpcode item)
                 {
                     item.Type = type;
@@ -185,6 +218,21 @@ namespace IntelOrca.Biohazard.BioRand
                     reset.Data1 = amount;
                 }
             }
+        }
+
+        private void CvAddItemPickupCodes(byte aotIndex, byte itemIndex, byte itemType, byte globalId)
+        {
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x01, new byte[] { 0x2C }));
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x04, new byte[] { 0x07, globalId, 0x00, 0x00, 0x01 }));
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x25, new byte[] { aotIndex, 0x00, 0x00, itemIndex, 0x00, 0x00, 0x00, 0x03, 0x00 }));
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x01, new byte[] { 0x18 }));
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x04, new byte[] { 0x0A, 0x17, 0x00, aotIndex, 0x00 }));
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x05, new byte[] { 0x0A, 0x1B, 0x00, 0x00, 0x00 }));
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x08, new byte[] { 0x08, itemType, 0x00 }));
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x05, new byte[] { 0x0A, 0x17, 0x00, aotIndex, 0x01 }));
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x03, new byte[] { 0x00 }));
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x02, new byte[] { 0x0C }));
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x25, new byte[] { aotIndex, 0x00, 0x80, 0x00, 0x05, 0x00, 0x00, 0x03, 0x00 }));
         }
 
         public void SetEnemy(byte id, byte type, byte state, byte ai, byte soundBank, byte texture)
@@ -331,34 +379,32 @@ namespace IntelOrca.Biohazard.BioRand
 
         public void Save()
         {
-            if (Version != BioVersion.BiohazardCv)
+            using (var ms = new MemoryStream(RdtFile.Data.ToArray()))
             {
-                using (var ms = new MemoryStream(RdtFile.Data.ToArray()))
+                var bw = new BinaryWriter(ms);
+                foreach (var opcode in Opcodes)
                 {
-                    var bw = new BinaryWriter(ms);
-                    foreach (var opcode in Opcodes)
-                    {
-                        ms.Position = opcode.Offset;
-                        opcode.Write(bw);
-                    }
-                    foreach (var patch in Patches)
-                    {
-                        ms.Position = patch.Key;
-                        bw.Write(patch.Value);
-                    }
-                    if (Version == BioVersion.BiohazardCv)
-                        RdtFile = new RdtCv(ms.ToArray());
-                    else if (Version == BioVersion.Biohazard1)
-                        RdtFile = new Rdt1(ms.ToArray());
-                    else
-                        RdtFile = new Rdt2(Version, ms.ToArray());
+                    ms.Position = opcode.Offset;
+                    opcode.Write(bw);
                 }
+                foreach (var patch in Patches)
+                {
+                    ms.Position = patch.Key;
+                    bw.Write(patch.Value);
+                }
+                if (Version == BioVersion.BiohazardCv)
+                    RdtFile = new RdtCv(ms.ToArray());
+                else if (Version == BioVersion.Biohazard1)
+                    RdtFile = new Rdt1(ms.ToArray());
+                else
+                    RdtFile = new Rdt2(Version, ms.ToArray());
             }
 
             // HACK do not play around with EMRs for RE 2, 409 because it crashes the room
             if (!(Version == BioVersion.Biohazard2 && RdtId == new RdtId(3, 9)))
                 UpdateEmrs();
             PrependOpcodes();
+            AppendFrameOpcodes();
             AddCustomScript();
 
             if (ModifiedPath != null)
@@ -427,6 +473,35 @@ namespace IntelOrca.Biohazard.BioRand
                 scdBuilder.Procedures[0] = new ScdProcedure(scdBuilder.Version, ms.ToArray());
                 rdtBuilder.SCDINIT = scdBuilder.ToProcedureList();
                 RdtFile = rdtBuilder.ToRdt();
+            }
+        }
+
+        private void AppendFrameOpcodes()
+        {
+            if (RdtFile is RdtCv cv)
+            {
+                var rdtBuilder = cv.ToBuilder();
+                var scriptBuilder = rdtBuilder.Script.ToBuilder();
+
+                // Write additional opcodes
+                var ms = new MemoryStream();
+                var bw = new BinaryWriter(ms);
+                foreach (var op in AdditionalFrameOpcodes)
+                {
+                    op.Write(bw);
+                }
+
+                // Write original procedure code
+                var originalData = scriptBuilder.Procedures[1].Data;
+                bw.Write(originalData);
+
+                scriptBuilder.Procedures[1] = new ScdProcedure(BioVersion.BiohazardCv, ms.ToArray());
+                rdtBuilder.Script = scriptBuilder.ToProcedureList();
+                RdtFile = rdtBuilder.ToRdt();
+            }
+            else
+            {
+                throw new NotImplementedException();
             }
         }
 

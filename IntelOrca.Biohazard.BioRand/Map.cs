@@ -118,8 +118,10 @@ namespace IntelOrca.Biohazard.BioRand
 
     public class MapRoomItem
     {
+        public System.Text.Json.JsonElement[]? Nop { get; set; }
         public int[]? Offsets { get; set; }
         public byte Id { get; set; }
+        public byte? GlobalId { get; set; }
         public byte? Type { get; set; }
         public byte? Amount { get; set; }
         public string? Link { get; set; }

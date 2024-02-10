@@ -179,37 +179,28 @@ namespace IntelOrca.Biohazard.BioRand.RECV
         private unsafe void TestEdits()
         {
 #if DEBUG
-            foreach (var f in Directory.GetFiles(@"F:\games\recv\mod_biorand\rdx_lnk"))
-            {
-                var cv = new RdtCv(f);
-                if (cv.ScriptOffset == 0x00208A40)
-                {
-                    cv = cv;
-                }
-            }
-
             QuickDoor(RdtId.Parse("10B"), 0);
 
-            for (var i = 0; i < _rdts.Length; i++)
-            {
-                var rdt = _rdts[i]?.RdtFile as RdtCv;
-                if (rdt == null)
-                    continue;
-                var rdtBuilder = rdt.ToBuilder();
-                var header = rdtBuilder.Header;
-                header.Author[0] = (byte)'B';
-                header.Author[1] = (byte)'I';
-                header.Author[2] = (byte)'O';
-                header.Author[3] = (byte)'R';
-                header.Author[4] = (byte)'A';
-                header.Author[5] = (byte)'N';
-                header.Author[6] = (byte)'D';
-                for (var j = 7; j < 32; j++)
-                    header.Author[j] = (byte)'\0';
-                rdtBuilder.Header = header;
-                rdt = rdtBuilder.ToRdt();
-                _rdts[i].RdtFile = rdt;
-            }
+            // for (var i = 0; i < _rdts.Length; i++)
+            // {
+            //     var rdt = _rdts[i]?.RdtFile as RdtCv;
+            //     if (rdt == null)
+            //         continue;
+            //     var rdtBuilder = rdt.ToBuilder();
+            //     var header = rdtBuilder.Header;
+            //     header.Author[0] = (byte)'B';
+            //     header.Author[1] = (byte)'I';
+            //     header.Author[2] = (byte)'O';
+            //     header.Author[3] = (byte)'R';
+            //     header.Author[4] = (byte)'A';
+            //     header.Author[5] = (byte)'N';
+            //     header.Author[6] = (byte)'D';
+            //     for (var j = 7; j < 32; j++)
+            //         header.Author[j] = (byte)'\0';
+            //     rdtBuilder.Header = header;
+            //     rdt = rdtBuilder.ToRdt();
+            //     _rdts[i].RdtFile = rdt;
+            // }
 
             // Change 101 door to 10A
             // var a = (RdtCv)_rdts[1].RdtFile;
