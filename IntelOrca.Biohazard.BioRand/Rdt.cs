@@ -134,8 +134,7 @@ namespace IntelOrca.Biohazard.BioRand
             var hasOffsets = entry.Raw?.Offsets != null && entry.Raw.Offsets.Length != 0;
             if (!hasOffsets || entry.Raw?.ItemId != null)
             {
-                var itemId = entry.Raw?.ItemId ?? entry.Id;
-                SetItem(itemId, entry.Raw?.GlobalId, entry.Type, entry.Amount);
+                SetItem(entry.Id, entry.Raw?.ItemId, entry.Raw?.GlobalId, entry.Type, entry.Amount);
             }
             if (hasOffsets)
             {
@@ -146,18 +145,18 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
-        private void SetItem(byte id, short? globalId, ushort type, ushort amount)
+        private void SetItem(byte id, byte? itemId, short? globalId, ushort type, ushort amount)
         {
             if (Version == BioVersion.BiohazardCv)
             {
                 var rdtBuilder = ((RdtCv)RdtFile).ToBuilder();
                 if (globalId == null)
                 {
-                    if (rdtBuilder.Items.Count > id)
+                    if (rdtBuilder.Items.Count > itemId)
                     {
-                        var item = rdtBuilder.Items[id];
+                        var item = rdtBuilder.Items[itemId.Value];
                         item.Type = type;
-                        rdtBuilder.Items[id] = item;
+                        rdtBuilder.Items[itemId.Value] = item;
                         RdtFile = rdtBuilder.ToRdt();
                     }
                 }
@@ -165,10 +164,14 @@ namespace IntelOrca.Biohazard.BioRand
                 {
                     // Convert AOT to a message
                     var aot = rdtBuilder.Aots[id];
+                    if (itemId == null)
+                    {
+                        itemId = aot.Stage;
+                    }
                     // aot.Kind = 3;
                     // aot.Flags = 0;
                     // rdtBuilder.Aots[id] = aot;
-                    CvAddItemPickupCodes(id, aot.Stage, (byte)type, globalId.Value);
+                    CvAddItemPickupCodes(id, itemId.Value, (byte)type, globalId.Value);
                 }
             }
             else
