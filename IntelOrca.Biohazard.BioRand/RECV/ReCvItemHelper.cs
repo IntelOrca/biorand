@@ -1,5 +1,4 @@
 ﻿using System;
-using IntelOrca.Biohazard.BioRand.RE2;
 
 namespace IntelOrca.Biohazard.BioRand.RECV
 {
@@ -313,7 +312,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
         public int GetItemQuantity(RandoConfig config, byte item)
         {
-            if (item == Re2ItemIds.EagleStone)
+            if (item == ReCvItemIds.EaglePlate)
                 return 2;
             return 1;
         }
