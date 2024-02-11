@@ -57,6 +57,8 @@ namespace IntelOrca.Biohazard.BioRand
                 result.Properties["Background"] = "Green";
             if (node.Category == DoorRandoCategory.Bridge)
                 result.Properties["Background"] = "Orange";
+            if (node.Category == DoorRandoCategory.Segment)
+                result.Properties["Background"] = "Red";
             return result;
         }
 
@@ -218,7 +220,8 @@ namespace IntelOrca.Biohazard.BioRand
         Exclude,
         Static,
         Bridge,
-        Box
+        Box,
+        Segment,
     }
 
     internal class PlayEdge

@@ -145,18 +145,30 @@ namespace IntelOrca.Biohazard.BioRand
                 _nodesLeft.Remove(node);
             }
 
-            var bridgeSuperNodes = GetBridgeSuperNodes();
-            var areaSuperNodes = GetAreaSuperNodes(numAreas);
-            for (int i = 0; i < numAreas; i++)
+            if (numAreas == 1)
             {
-                pool.AddRange(areaSuperNodes[i]);
-                var bridgeNode = i == numAreas - 1 ? graph.End : bridgeSuperNodes[i][0];
-                _logger.WriteLine($"Creating segment from {beginNode} to {bridgeNode}:");
-                CreateArea(beginNode, bridgeNode, pool);
-                beginNode = bridgeNode;
-                if (i < numAreas - 1)
+                _nodesLeft.RemoveAll(x => x.Category == DoorRandoCategory.Segment);
+                var areaSuperNodes = GetAreaSuperNodes(numAreas);
+                pool.AddRange(areaSuperNodes[0]);
+                _logger.WriteLine($"Creating single segment from {beginNode} to {graph.End}:");
+                CreateArea(beginNode, graph.End, pool);
+                beginNode = graph.End;
+            }
+            else
+            {
+                var bridgeSuperNodes = GetBridgeSuperNodes();
+                var areaSuperNodes = GetAreaSuperNodes(numAreas);
+                for (int i = 0; i < numAreas; i++)
                 {
-                    pool.AddRange(bridgeSuperNodes[i]);
+                    pool.AddRange(areaSuperNodes[i]);
+                    var bridgeNode = i == numAreas - 1 ? graph.End : bridgeSuperNodes[i][0];
+                    _logger.WriteLine($"Creating segment from {beginNode} to {bridgeNode}:");
+                    CreateArea(beginNode, bridgeNode, pool);
+                    beginNode = bridgeNode;
+                    if (i < numAreas - 1)
+                    {
+                        pool.AddRange(bridgeSuperNodes[i]);
+                    }
                 }
             }
             FinishOffEndNodes(graph.End);
@@ -359,7 +371,9 @@ namespace IntelOrca.Biohazard.BioRand
         private List<PlayNode>[] GetBridgeSuperNodes()
         {
             var bridgeSuperNodes = new List<List<PlayNode>>();
-            var bridgeNodes = _nodesLeft.Where(x => x.Category == DoorRandoCategory.Bridge).Shuffle(_rng);
+            var bridgeNodes = _nodesLeft.Where(x =>
+                x.Category == DoorRandoCategory.Bridge ||
+                x.Category == DoorRandoCategory.Segment).Shuffle(_rng);
             foreach (var bridgeNode in bridgeNodes)
             {
                 var bridgeSuperNode = new List<PlayNode>();
@@ -1335,8 +1349,12 @@ namespace IntelOrca.Biohazard.BioRand
                     return true;
 
                 // Do not extend graph via required key edges until a box room is accessible
-                if (entrance.Parent.Category != DoorRandoCategory.Bridge && entrance.Requires.Length != 0)
+                if (entrance.Parent.Category != DoorRandoCategory.Bridge &&
+                    entrance.Parent.Category != DoorRandoCategory.Segment &&
+                    entrance.Requires.Length != 0)
+                {
                     return false;
+                }
 
                 if (exit.Parent.Category == DoorRandoCategory.Box)
                     return true;

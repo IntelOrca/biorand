@@ -1352,7 +1352,7 @@
       "doorRando": [
         {
           "cutscene": true,
-          "category": "bridge"
+          "category": "segment"
         }
       ],
       "doors": [
@@ -2295,7 +2295,7 @@
     "30B": {
       "doorRando": [
         {
-          "category": "bridge"
+          "category": "segment"
         }
       ],
       "doors": [
@@ -2849,7 +2849,7 @@
     "415": {
       "doorRando": [
         {
-          "category": "bridge",
+          "category": "segment",
           "nop": [ "0x361E" ]
         }
       ],
