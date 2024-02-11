@@ -144,7 +144,7 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
-        private void SetItem(byte id, byte? globalId, ushort type, ushort amount)
+        private void SetItem(byte id, short? globalId, ushort type, ushort amount)
         {
             if (Version == BioVersion.BiohazardCv)
             {
@@ -227,10 +227,10 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
-        private void CvAddItemPickupCodes(byte aotIndex, byte itemIndex, byte itemType, byte globalId)
+        private void CvAddItemPickupCodes(byte aotIndex, byte itemIndex, byte itemType, short globalId)
         {
             AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x01, new byte[] { 0x2C }));
-            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x04, new byte[] { 0x07, globalId, 0x00, 0x00, 0x01 }));
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x04, new byte[] { 0x07, (byte)(globalId & 0xFF), (byte)(globalId >> 8), 0x00, 0x01 }));
             AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x25, new byte[] { aotIndex, 0x00, 0x00, itemIndex, 0x00, 0x00, 0x00, 0x03, 0x00 }));
             AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x01, new byte[] { 0x18 }));
             AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x04, new byte[] { 0x0A, 0x17, 0x00, aotIndex, 0x00 }));

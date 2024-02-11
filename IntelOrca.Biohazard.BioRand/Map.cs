@@ -121,7 +121,7 @@ namespace IntelOrca.Biohazard.BioRand
         public System.Text.Json.JsonElement[]? Nop { get; set; }
         public int[]? Offsets { get; set; }
         public byte Id { get; set; }
-        public byte? GlobalId { get; set; }
+        public short? GlobalId { get; set; }
         public byte? Type { get; set; }
         public byte? Amount { get; set; }
         public string? Link { get; set; }

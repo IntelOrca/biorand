@@ -825,6 +825,9 @@
       "doors": [
         {
           "target": "20D"
+        },
+        {
+          "target": "504"
         }
       ],
       "items": [
@@ -1568,6 +1571,165 @@
           "id": 2,
           "type": 12,
           "amount": 15
+        }
+      ]
+    },
+    "500": {
+      "doors": [
+        {
+          "target": "501"
+        },
+        {
+          "target": "503"
+        }
+      ],
+      "items": [
+        // {
+        //   "id": 6,
+        //   "globalId": 247,
+        //   "type": 14,
+        //   "amount": 6
+        // },
+        {
+          "id": 4,
+          "globalId": 248,
+          "type": 12,
+          "amount": 15
+        },
+        {
+          "id": 9,
+          "globalId": 249,
+          "type": 31,
+          "amount": 3
+        }
+        // {
+        //   "id": 0,
+        //   "globalId": 0,
+        //   "type": 20,
+        //   "amount": 1
+        // },
+        // {
+        //   "id": 0,
+        //   "globalId": 0,
+        //   "type": 75,
+        //   "amount": 1
+        // }
+      ]
+    },
+    "501": {
+      "doors": [
+        {
+          "target": "500"
+        },
+        {
+          "target": "500",
+          "requires": [ 65 ]
+        },
+        {
+          "target": "502"
+        },
+        {
+          "target": "600",
+          "requires": [ 69, 70, 71 ]
+        }
+      ]
+    },
+    "502": {
+      "doors": [
+        {
+          "target": "501"
+        },
+        {
+          "target": "501"
+        },
+        {
+          "target": "504",
+          "requires": [ 75 ]
+        }
+      ],
+      "items": [
+        {
+          "id": 12,
+          "globalId": 252,
+          "type": 62,
+          "amount": 1
+        },
+        {
+          "id": 7,
+          "globalId": 251,
+          "type": 18,
+          "amount": 1
+        }
+      ]
+    },
+    "503": {
+      "doors": [
+        {
+          "target": "500"
+        },
+        {
+          "target": "504"
+        }
+      ]
+    },
+    "504": {
+      "doors": [
+        {
+          "target": "20E"
+        },
+        {
+          "target": "503"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "globalId": 253,
+          "type": 21,
+          "amount": 1
+        },
+        {
+          "id": 4,
+          "globalId": 254,
+          "type": 21,
+          "amount": 1
+        },
+        {
+          "id": 5,
+          "globalId": 255,
+          "type": 12,
+          "amount": 15
+        }
+      ]
+    },
+    "600": {
+      "doors": [
+        {
+          "target": "501"
+        },
+        {
+          "target": "601"
+        }
+      ],
+      "items": [
+        {
+          "id": 3,
+          "globalId": 28,
+          "type": 31,
+          "amount": 3
+        },
+        {
+          "id": 8,
+          "globalId": 257,
+          "type": 65,
+          "amount": 1
+        }
+      ]
+    },
+    "601": {
+      "doors": [
+        {
+          "target": "600"
         }
       ]
     }

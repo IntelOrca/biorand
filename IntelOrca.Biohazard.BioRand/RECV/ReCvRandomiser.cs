@@ -179,7 +179,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
         private unsafe void TestEdits()
         {
 #if DEBUG
-            QuickDoor(RdtId.Parse("500"), 0);
+            QuickDoor(RdtId.Parse("503"), 0);
 
             // for (var i = 0; i < _rdts.Length; i++)
             // {
@@ -389,7 +389,21 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             "413",
             "414", // 70
             "415",
-            "416"
+            "416",
+            "",
+            "",
+            "500", // 75
+            "",
+            "501",
+            "",
+            "",
+            "502", // 80
+            "503",
+            "504",
+            "505",
+            "600",
+            "", // 85
+            "601",
         };
     }
 }
