@@ -502,12 +502,14 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 5,
+          "globalId": 9,
           "type": 70,
           "amount": 1
         },
         {
-          "id": 1,
+          "id": 7,
+          "globalId": 7,
           "type": 21,
           "amount": 1
         }
@@ -1714,7 +1716,7 @@
       "items": [
         {
           "id": 12,
-          "globalId": 252,
+          "globalId": 27,
           "type": 62,
           "amount": 1
         },
