@@ -849,12 +849,6 @@
       ],
       "items": [
         {
-          "id": 4,
-          "globalId": 187,
-          "type": 21,
-          "amount": 1
-        },
-        {
           "id": 5,
           "globalId": 188,
           "type": 22,
@@ -1141,13 +1135,31 @@
       ],
       "items": [
         {
-          "id": 6,
+          "id": 7,
+          "globalId": 204,
+          "type": 68,
+          "amount": 1,
+          "requires": [ 77 ],
+          "offsets": [ 221966 ]
+        },
+        {
+          "id": 1,
+          "globalId": 204,
+          "type": 20,
+          "amount": 1,
+          "requires": [ 50, 77 ],
+          "offsets": [ 222708 ]
+        },
+        {
+          "id": 4,
+          "globalId": 21,
           "type": 56,
           "amount": 1,
           "offsets": [ 222920 ]
         },
         {
-          "id": 7,
+          "id": 10,
+          "globalId": 205,
           "type": 31,
           "amount": 1
         }
@@ -1508,7 +1520,8 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 3,
+          "globalId": 239,
           "type": 18,
           "amount": 30
         }
