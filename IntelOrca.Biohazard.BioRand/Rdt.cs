@@ -240,8 +240,9 @@ namespace IntelOrca.Biohazard.BioRand
             AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x08, new byte[] { 0x08, itemType, 0x00 }));
             AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x05, new byte[] { 0x0A, 0x17, 0x00, aotIndex, 0x01 }));
             AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x03, new byte[] { 0x00 }));
-            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x02, new byte[] { 0x0C }));
-            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x25, new byte[] { aotIndex, 0x00, 0x80, 0x00, 0x05, 0x00, 0x00, 0x03, 0x00 }));
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x03, new byte[] { 0x00 }));
+            // AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x02, new byte[] { 0x0C }));
+            // AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x25, new byte[] { aotIndex, 0x00, 0x80, 0x00, 0x05, 0x00, 0x00, 0x03, 0x00 }));
         }
 
         public void SetEnemy(byte id, byte type, byte state, byte ai, byte soundBank, byte texture)

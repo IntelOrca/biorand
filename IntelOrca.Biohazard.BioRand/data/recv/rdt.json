@@ -1395,13 +1395,6 @@
       ],
       "items": [
         {
-          "id": 8,
-          "globalId": 228,
-          "type": 15,
-          "amount": 6,
-          "requires": [ 76 ]
-        },
-        {
           "id": 9,
           "globalId": 229,
           "type": 21,
@@ -1420,6 +1413,13 @@
           "globalId": 24,
           "type": 69,
           "amount": 1,
+          "requires": [ 76 ]
+        },
+        {
+          "id": 14,
+          "globalId": 231,
+          "type": 15,
+          "amount": 6,
           "requires": [ 76 ]
         }
       ]
