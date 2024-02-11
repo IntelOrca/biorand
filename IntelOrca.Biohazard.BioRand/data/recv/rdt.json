@@ -965,10 +965,19 @@
       ],
       "items": [
         {
+          "id": 0,
+          "itemId": 0,
+          // "globalId": 15,
+          "type": 67,
+          "amount": 1,
+          "offsets": [ 1438214 ]
+        },
+        {
           "id": 254,
+          "globalId": 16,
           "type": 78,
           "amount": 1,
-          "offsets": [ 1442476 ]
+          "offsets": [ 1438270, 1442476 ]
         }
       ]
     },
@@ -1000,6 +1009,12 @@
           "globalId": 17,
           "type": 15,
           "amount": 1
+        },
+        {
+          "id": 254,
+          "type": 119,
+          "amount": 1,
+          "offsets": [ 464256 ]
         }
       ]
     },

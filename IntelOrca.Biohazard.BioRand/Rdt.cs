@@ -131,13 +131,15 @@ namespace IntelOrca.Biohazard.BioRand
                 Nop(offset);
             }
 
-            if (entry.Raw?.Offsets == null || entry.Raw.Offsets.Length == 0)
+            var hasOffsets = entry.Raw?.Offsets != null && entry.Raw.Offsets.Length != 0;
+            if (!hasOffsets || entry.Raw?.ItemId != null)
             {
-                SetItem(entry.Id, entry.Raw?.GlobalId, entry.Type, entry.Amount);
+                var itemId = entry.Raw?.ItemId ?? entry.Id;
+                SetItem(itemId, entry.Raw?.GlobalId, entry.Type, entry.Amount);
             }
-            else
+            if (hasOffsets)
             {
-                foreach (var offset in entry.Raw.Offsets)
+                foreach (var offset in entry.Raw!.Offsets!)
                 {
                     SetItemAt(offset, entry.Type, entry.Amount);
                 }
