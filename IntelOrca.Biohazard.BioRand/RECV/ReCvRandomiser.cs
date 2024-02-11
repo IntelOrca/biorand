@@ -381,7 +381,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             "40B",
             "40C",
             "40D",
-            "",
+            "40E",
             "40F", // 65
             "410",
             "411",
