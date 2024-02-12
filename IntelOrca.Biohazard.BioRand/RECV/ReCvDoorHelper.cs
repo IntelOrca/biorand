@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using IntelOrca.Biohazard.Room;
+using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.BioRand.RECV
 {
@@ -10,6 +11,13 @@ namespace IntelOrca.Biohazard.BioRand.RECV
         public void Begin(RandoConfig config, GameData gameData, Map map)
         {
             Nop(gameData, new RdtId(0x00, 0x07), 0x1819AE); // Force window cutscene on item interaction
+
+            var rrdt = gameData.GetRdt(new RdtId(3, 0x0F));
+            if (rrdt == null)
+                return;
+
+            // set(1, 189, 0, 0);
+            rrdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x05, new byte[] { 1, 189, 0, 0, 0 }));
         }
 
         private void OverrideItemPickup(RandomizedRdt rrdt, byte aotIndex, byte itemType, byte globalId)

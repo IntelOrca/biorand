@@ -98,7 +98,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 case ReCvItemIds.Magnum:
                     return ItemAttribute.Weapon;
                 case ReCvItemIds.GoldLugers:
-                    return ItemAttribute.Key;
+                    return ItemAttribute.Key | ItemAttribute.Weapon;
                 case ReCvItemIds.SubMachineGun:
                     return ItemAttribute.Weapon;
                 case ReCvItemIds.BowGunPowder:
@@ -330,10 +330,40 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
         public byte GetMaxAmmoForAmmoType(byte type)
         {
-            var a = GetItemAttributes(type);
-            if ((a & ItemAttribute.Ammo) != 0)
-                return 30;
-            return 1;
+            return type switch
+            {
+                ReCvItemIds.RocketLauncher => 5,
+                ReCvItemIds.AssaultRifle => 255,
+                ReCvItemIds.SniperRifle => 7,
+                ReCvItemIds.Shotgun => 7,
+                ReCvItemIds.HandgunGlock17 => 18,
+                ReCvItemIds.GrenadeLauncher => 6,
+                ReCvItemIds.BowGun => 30,
+                ReCvItemIds.CombatKnife => 0,
+                ReCvItemIds.Handgun => 15,
+                ReCvItemIds.CustomHandgun => 20,
+                ReCvItemIds.LinearLauncher => 5,
+                ReCvItemIds.HandgunBullets => 30,
+                ReCvItemIds.MagnumBullets => 12,
+                ReCvItemIds.ShotgunShells => 14,
+                ReCvItemIds.GrenadeRounds => 12,
+                ReCvItemIds.AcidRounds => 12,
+                ReCvItemIds.FlameRounds => 12,
+                ReCvItemIds.BowGunArrows => 60,
+                ReCvItemIds.M93RPart => 18,
+                ReCvItemIds.MagnumBulletsInsideCase => 12,
+                ReCvItemIds.InkRibbon => 6,
+                ReCvItemIds.Magnum => 6,
+                ReCvItemIds.GoldLugers => 15,
+                ReCvItemIds.SubMachineGun => 255,
+                ReCvItemIds.BOWGasRounds => 6,
+                ReCvItemIds.MGunBullets => 255,
+                ReCvItemIds.RifleBullets => 14,
+                ReCvItemIds.ARifleBullets => 150,
+                ReCvItemIds.EnhancedHandgun => 18,
+                ReCvItemIds.CalicoBullets => 200,
+                _ => 0,
+            };
         }
 
         public byte[] GetWeaponGunpowder(byte weapon)
