@@ -1527,18 +1527,21 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 5,
+          "globalId": 237,
           "type": 6,
           "amount": 6,
           "requires": [ 76 ]
         },
+        // {
+        //   "id": 6,
+        //   "globalId": 238,
+        //   "type": 15,
+        //   "amount": 6
+        // },
         {
-          "id": 1,
-          "type": 15,
-          "amount": 6
-        },
-        {
-          "id": 2,
+          "id": 7,
+          "globalId": 439,
           "type": 15,
           "amount": 6
         }
