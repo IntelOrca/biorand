@@ -1,6 +1,4 @@
-﻿using System.IO;
-using IntelOrca.Biohazard.Room;
-using IntelOrca.Biohazard.Script.Opcodes;
+﻿using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.BioRand.RECV
 {
@@ -10,7 +8,14 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
         public void Begin(RandoConfig config, GameData gameData, Map map)
         {
-            Nop(gameData, new RdtId(0x00, 0x07), 0x1819AE); // Force window cutscene on item interaction
+            Nop(gameData, RdtId.Parse("1010"), 0x3EF2C); // Force RDT1021 to load
+            Nop(gameData, RdtId.Parse("1010"), 0x3EF38, 0x3EF4C); // Force RDT1021 to load
+            Nop(gameData, RdtId.Parse("1010"), 0x3EF50, 0x3EF5A); // Force RDT1021 to load
+            Nop(gameData, RdtId.Parse("1050"), 0x1DF2AA, 0x1DF2BE); // Force RDT1031 to load
+            Nop(gameData, RdtId.Parse("1050"), 0x1DF2C2, 0x1DF2CC); // Force RDT1031 to load
+            // OverrideDoor(gameData, RdtId.Parse("1030"), 1, RdtId.Parse("1021"), 1);
+
+            Nop(gameData, RdtId.Parse("1070"), 0x1819AE); // Force window cutscene on item interaction
 
             var rrdt = gameData.GetRdt(new RdtId(3, 0x0F));
             if (rrdt == null)
@@ -20,34 +25,27 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             rrdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x05, new byte[] { 1, 189, 0, 0, 0 }));
         }
 
-        private void OverrideItemPickup(RandomizedRdt rrdt, byte aotIndex, byte itemType, byte globalId)
+        private void OverrideDoor(GameData gameData, RdtId rdtId, int aotIndex, RdtId target, int exit)
         {
-            var rdtBuilder = ((RdtCv)rrdt.RdtFile).ToBuilder();
+            var rrdt = gameData.GetRdt(rdtId);
+            if (rrdt == null)
+                return;
 
-            // Convert AOT to a message
-            var aot = rdtBuilder.Aots[aotIndex];
-            aot.Kind = 3;
-            aot.Flags = 0;
-            rdtBuilder.Aots[aotIndex] = aot;
+            var aotIndexB = (byte)aotIndex;
+            var stage = (byte)target.Stage;
+            var room = (byte)target.Room;
+            var variant = (byte)(target.Variant ?? 0);
+            var exitB = (byte)exit;
+            var texture = (byte)2;
+            var unk = (byte)0;
 
-            var scriptBuilder = rdtBuilder.Script.ToBuilder();
-            var ms = new MemoryStream();
-            var bw = new BinaryWriter(ms);
-
-            // Write original procedure code
-            var originalData = scriptBuilder.Procedures[1].Data;
-            bw.Write(originalData.Slice(0, originalData.Length - 2));
-
-            // Write item check code
-            bw.Write(GetItemPickupCodes(aotIndex, aot.Stage, itemType, globalId));
-
-            // Write new end opcode
-            bw.Write((byte)0);
-            bw.Write((byte)0);
-
-            scriptBuilder.Procedures[1] = new ScdProcedure(BioVersion.BiohazardCv, ms.ToArray());
-            rdtBuilder.Script = scriptBuilder.ToProcedureList();
-            rrdt.RdtFile = rdtBuilder.ToRdt();
+            rrdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x01, new byte[] { 0x1A }));
+            rrdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x04, new byte[] { 0x0A, 0x17, 0x00, aotIndexB, 0x00 }));
+            rrdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0xB6, new byte[] { variant }));
+            rrdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x37, new byte[] { variant }));
+            rrdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x33, new byte[] { 0x00, unk, 0x00, stage, room, exitB, texture }));
+            rrdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x05, new byte[] { 0x0A, 0x17, 0x00, aotIndexB, 0x01 }));
+            rrdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x03, new byte[] { 0x00 }));
         }
 
         private void Nop(GameData gameData, RdtId rtdId, int offset)
@@ -66,24 +64,6 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 return;
 
             rrdt.Nop(beginOffset, endOffset);
-        }
-
-        private byte[] GetItemPickupCodes(byte aotIndex, byte itemIndex, byte itemType, byte globalId)
-        {
-            return new byte[]
-            {
-                0x01, 0x2C,
-                0x04, 0x07, globalId, 0x00, 0x00, 0x01,
-                0x25, aotIndex, 0x00, 0x00, itemIndex, 0x00, 0x00, 0x00, 0x03, 0x00,
-                0x01, 0x18,
-                0x04, 0x0A, 0x17, 0x00, aotIndex, 0x00,
-                0x05, 0x0A, 0x1B, 0x00, 0x00, 0x00,
-                0x08, 0x08, itemType, 0x00,
-                0x05, 0x0A, 0x17, 0x00, aotIndex, 0x01,
-                0x03, 0x00,
-                0x02, 0x0C,
-                0x25, aotIndex, 0x00, 0x80, 0x00, 0x05, 0x00, 0x00, 0x03, 0x00,
-            };
         }
 
         public void End(RandoConfig config, GameData gameData, Map map)
