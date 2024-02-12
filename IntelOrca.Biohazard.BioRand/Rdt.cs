@@ -152,6 +152,7 @@ namespace IntelOrca.Biohazard.BioRand
                 var rdtBuilder = ((RdtCv)RdtFile).ToBuilder();
                 if (globalId == null)
                 {
+                    itemId = itemId ?? id;
                     if (rdtBuilder.Items.Count > itemId)
                     {
                         var item = rdtBuilder.Items[itemId.Value];
