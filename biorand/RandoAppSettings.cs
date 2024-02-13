@@ -32,6 +32,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         public bool RandomizeTitleVoice { get; set; } = true;
         public bool MaxInventorySize { get; set; }
+        public bool DoorSkip { get; set; }
 
         public string LastVersion { get; set; }
 

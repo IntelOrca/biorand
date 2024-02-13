@@ -102,6 +102,7 @@ namespace IntelOrca.Biohazard.BioRand
                 chkEnableCustomContent.IsChecked = !_settings.DisableCustomContent;
                 chkRandomizeTitleVoice.IsChecked = _settings.RandomizeTitleVoice;
                 chkMaxInventorySize.IsChecked = _settings.MaxInventorySize;
+                chkDoorSkip.IsChecked = _settings.DoorSkip;
             }
 
             if (!Version.TryParse(_settings.LastVersion, out var lastVersion) || lastVersion != Program.CurrentVersion)
@@ -146,6 +147,7 @@ namespace IntelOrca.Biohazard.BioRand
             _settings.DisableCustomContent = chkEnableCustomContent.IsChecked != true;
             _settings.RandomizeTitleVoice = chkRandomizeTitleVoice.IsChecked == true;
             _settings.MaxInventorySize = chkMaxInventorySize.IsChecked == true;
+            _settings.DoorSkip = chkDoorSkip.IsChecked == true;
 
             _settings.LastVersion = Program.CurrentVersionNumber;
 
@@ -665,6 +667,7 @@ namespace IntelOrca.Biohazard.BioRand
             config.EnableCustomContent = !_settings.DisableCustomContent;
             config.RandomizeTitleVoice = _settings.RandomizeTitleVoice;
             config.MaxInventorySize = _settings.MaxInventorySize;
+            config.DoorSkip = _settings.DoorSkip;
             config.SetEnabled(0, _settings.GameEnabled1);
             config.SetEnabled(1, _settings.GameEnabled2);
             config.SetEnabled(2, _settings.GameEnabled3);

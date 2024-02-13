@@ -160,6 +160,8 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
                 TestEdits();
 
+                if (InstallConfig.DoorSkip)
+                    SetDoorSkip();
                 SetInventory();
                 SetItemQuantityPickup(config, new Rng(config.Seed));
 
@@ -186,7 +188,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
         private unsafe void TestEdits()
         {
 #if DEBUG
-            QuickDoor(RdtId.Parse("200"), 0);
+            QuickDoor(RdtId.Parse("500"), 0);
 #endif
         }
 
@@ -250,6 +252,16 @@ namespace IntelOrca.Biohazard.BioRand.RECV
         protected override string[] GetDefaultNPCs()
         {
             return new[] { "claire", "steve", "chris", "rodrigo", "alfred", "alexia" };
+        }
+
+        private void SetDoorSkip()
+        {
+            var ms = new MemoryStream(_elf);
+            var bw = new BinaryWriter(ms);
+            ms.Position = ConvertAddress(0x133D4C);
+            bw.Write(0);
+            ms.Position = ConvertAddress(0x133D54);
+            bw.Write(0);
         }
 
         private void SetInventory()
