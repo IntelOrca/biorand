@@ -1314,6 +1314,9 @@ namespace IntelOrca.Biohazard.BioRand
             if (location == null)
                 return null;
 
+            if (SelectedGame == 3)
+                location = Path.GetDirectoryName(location);
+
             var path = Path.Combine(location, "mod_biorand", $"log_pl{player}.txt");
             return path;
         }
