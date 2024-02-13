@@ -1830,16 +1830,16 @@
         {
           "id": 3,
           "globalId": 28,
-          "type": 31,
-          "amount": 3,
-          "priority": "low"
+          "type": 65,
+          "amount": 1,
+          "priority": "fixed"
         },
         {
           "id": 8,
           "globalId": 257,
-          "type": 65,
-          "amount": 1,
-          "priority": "fixed"
+          "type": 31,
+          "amount": 3,
+          "priority": "low"
         }
       ]
     },
