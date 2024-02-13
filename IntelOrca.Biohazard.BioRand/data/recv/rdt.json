@@ -1364,7 +1364,8 @@
           "id": 254,
           "type": 33,
           "amount": 0,
-          "offsets": [ 2850448 ]
+          "offsets": [ 2850448 ],
+          "priority": "low"
         }
       ]
     },
