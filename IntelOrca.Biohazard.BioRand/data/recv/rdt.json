@@ -443,17 +443,15 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 5,
+          "globalId": 152,
           "type": 12,
-          "amount": 15
+          "amount": 15,
+          "offsets": [ 1706630 ]
         },
-        // {
-        //   "id": 1,
-        //   "type": 103,
-        //   "amount": 1
-        // },
         {
-          "id": 2,
+          "id": 4,
+          "globalId": 153,
           "type": 18,
           "amount": 30
         }

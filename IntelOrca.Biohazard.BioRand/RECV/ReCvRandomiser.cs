@@ -270,7 +270,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 var itemAttributes = ItemHelper.GetItemAttributes(itemType);
                 if ((itemAttributes & ItemAttribute.InkRibbon) != 0 ||
                     (itemAttributes & ItemAttribute.Ammo) != 0 ||
-                    (itemAttributes & ItemAttribute.Weapon) != 0)
+                    itemType == ReCvItemIds.RocketLauncher)
                 {
                     var quantity = GetQuantity(itemType);
 
