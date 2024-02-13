@@ -18,6 +18,9 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
             Nop(gameData, RdtId.Parse("1070"), 0x1819AE); // Force window cutscene on item interaction
 
+            Nop(gameData, RdtId.Parse("5000"), 0x187778, 0x18777A); // Force Steve at airport
+            Nop(gameData, RdtId.Parse("5000"), 0x187784, 0x18779C); // Force Steve at airport
+
             Patch(gameData, RdtId.Parse("40F0"), 0x7241C + 2, 0xC5);
             Patch(gameData, RdtId.Parse("4080"), 0x9F86C + 2, 0xC5);
         }
