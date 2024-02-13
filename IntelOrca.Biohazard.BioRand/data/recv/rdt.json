@@ -284,30 +284,35 @@
         }
       ],
       "items": [
-        // {
-        //   "id": 0,
-        //   "type": 49,
-        //   "amount": 1
-        // },
         {
           "id": 1,
+          "globalId": 98,
+          "type": 49,
+          "amount": 1
+        },
+        {
+          "id": 4,
+          "globalId": 5,
           "type": 86,
           "amount": 1,
           "requires": [ 59, 83 ],
           "offsets": [ 1911478, 1911592 ]
         },
         {
-          "id": 3,
+          "id": 5,
+          "globalId": 140,
           "type": 37,
           "amount": 3
         },
         {
-          "id": 5,
+          "id": 2,
+          "globalId": 138,
           "type": 20,
           "amount": 1
         },
         {
-          "id": 6,
+          "id": 3,
+          "globalId": 139,
           "type": 17,
           "amount": 6
         }
@@ -371,11 +376,12 @@
           "amount": 1,
           "offsets": [ 2133888 ]
         },
-        // { TODO HELP
-        //   "id": 4,
-        //   "type": 51,
-        //   "amount": 1
-        // },
+        { // TODO try and randomize glass eye
+          "id": 4,
+          "type": 51,
+          "amount": 1,
+          "priority": "fixed"
+        },
         {
           "id": 13,
           "globalId": 146,
@@ -851,7 +857,7 @@
           "target": "20D0"
         },
         {
-          "target": "5040"
+          "target": "5050"
         }
       ],
       "items": [
@@ -970,7 +976,7 @@
         },
         {
           "target": "3060",
-          "requires": [ 60, 61, 78 ]
+          "requires": [ 61, 78 ]
         }
       ],
       "items": [
@@ -1002,6 +1008,7 @@
           "globalId": 16,
           "type": 78,
           "amount": 1,
+          "requires": [ 116 ],
           "offsets": [ 1438270, 1442476 ]
         }
       ]
@@ -1671,12 +1678,6 @@
         }
       ],
       "items": [
-        // {
-        //   "id": 6,
-        //   "globalId": 247,
-        //   "type": 14,
-        //   "amount": 6
-        // },
         {
           "id": 4,
           "globalId": 248,
@@ -1689,28 +1690,37 @@
           "type": 31,
           "amount": 3
         }
-        // {
-        //   "id": 0,
-        //   "globalId": 0,
-        //   "type": 20,
-        //   "amount": 1
-        // },
-        // {
-        //   "id": 0,
-        //   "globalId": 0,
-        //   "type": 75,
-        //   "amount": 1
-        // }
+      ]
+    },
+    "5001": {
+      "doors": [
+        {
+          "target": "5011"
+        }
+      ],
+      "items": [
+        {
+          "id": 5,
+          "globalId": 245,
+          "type": 20,
+          "amount": 1,
+          "priority": "low",
+          "offsets": [ 1543102, 1543744 ]
+        },
+        {
+          "id": 254,
+          "globalId": 26,
+          "type": 75,
+          "amount": 1,
+          "offsets": [ 1543856 ],
+          "priority": "fixed"
+        }
       ]
     },
     "5010": {
       "doors": [
         {
           "target": "5000"
-        },
-        {
-          "target": "5000",
-          "requires": [ 65 ]
         },
         {
           "target": "5020"
@@ -1721,13 +1731,24 @@
         }
       ]
     },
+    "5011": {
+      "doors": [
+        {
+          "target": "5001",
+          "requires": [ 65 ]
+        },
+        {
+          "target": "5020"
+        }
+      ]
+    },
     "5020": {
       "doors": [
         {
           "target": "5010"
         },
         {
-          "target": "5010"
+          "target": "5011"
         },
         {
           "target": "5040",
@@ -1755,17 +1776,14 @@
           "target": "5000"
         },
         {
-          "target": "5040"
+          "target": "5050"
         }
       ]
     },
     "5040": {
       "doors": [
         {
-          "target": "20E0"
-        },
-        {
-          "target": "5030"
+          "target": "5020"
         }
       ],
       "items": [
@@ -1789,6 +1807,16 @@
         }
       ]
     },
+    "5050": {
+      "doors": [
+        {
+          "target": "20E0"
+        },
+        {
+          "target": "5030"
+        }
+      ]
+    },
     "6000": {
       "doors": [
         {
@@ -1803,13 +1831,15 @@
           "id": 3,
           "globalId": 28,
           "type": 31,
-          "amount": 3
+          "amount": 3,
+          "priority": "low"
         },
         {
           "id": 8,
           "globalId": 257,
           "type": 65,
-          "amount": 1
+          "amount": 1,
+          "priority": "fixed"
         }
       ]
     },
