@@ -188,7 +188,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
         private unsafe void TestEdits()
         {
 #if DEBUG
-            QuickDoor(RdtId.Parse("500"), 0);
+            QuickDoor(RdtId.Parse("303"), 0);
 #endif
         }
 
