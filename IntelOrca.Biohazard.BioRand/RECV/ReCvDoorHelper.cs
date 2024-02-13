@@ -1,4 +1,5 @@
-﻿using IntelOrca.Biohazard.Script.Opcodes;
+﻿using System.Collections.Generic;
+using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.BioRand.RECV
 {
@@ -17,12 +18,8 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
             Nop(gameData, RdtId.Parse("1070"), 0x1819AE); // Force window cutscene on item interaction
 
-            var rrdt = gameData.GetRdt(new RdtId(3, 0x0F));
-            if (rrdt == null)
-                return;
-
-            // set(1, 189, 0, 0);
-            rrdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x05, new byte[] { 1, 189, 0, 0, 0 }));
+            Patch(gameData, RdtId.Parse("40F0"), 0x7241C + 2, 0xC5);
+            Patch(gameData, RdtId.Parse("4080"), 0x9F86C + 2, 0xC5);
         }
 
         private void OverrideDoor(GameData gameData, RdtId rdtId, int aotIndex, RdtId target, int exit)
@@ -64,6 +61,15 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 return;
 
             rrdt.Nop(beginOffset, endOffset);
+        }
+
+        public void Patch(GameData gameData, RdtId rtdId, int offset, byte value)
+        {
+            var rrdt = gameData.GetRdt(rtdId);
+            if (rrdt == null)
+                return;
+
+            rrdt.Patches.Add(new KeyValuePair<int, byte>(offset, value));
         }
 
         public void End(RandoConfig config, GameData gameData, Map map)
