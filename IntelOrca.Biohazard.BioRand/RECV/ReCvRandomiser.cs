@@ -163,6 +163,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
                 if (InstallConfig.DoorSkip)
                     SetDoorSkip();
+                FixRifleStacking();
                 FixSpecialSlot(config, new Rng(config.Seed));
                 SetInventory();
                 SetItemQuantityPickup(config, new Rng(config.Seed));
@@ -190,7 +191,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
         private unsafe void TestEdits()
         {
 #if DEBUG
-            QuickDoor(RdtId.Parse("303"), 0);
+            QuickDoor(RdtId.Parse("306"), 0);
 #endif
         }
 
@@ -264,6 +265,18 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             bw.Write(0);
             ms.Position = ConvertAddress(0x133D54);
             bw.Write(0);
+        }
+
+        private void FixRifleStacking()
+        {
+            var ms = new MemoryStream(_elf);
+            var bw = new BinaryWriter(ms);
+            ms.Position = ConvertAddress(0x35B1F4);
+            bw.Write((byte)0x02);
+            bw.Write((byte)0x0E);
+            ms.Position = ConvertAddress(0x35B200);
+            bw.Write((byte)0x02);
+            bw.Write((byte)0x16);
         }
 
         private void FixSpecialSlot(RandoConfig config, Rng rng)
