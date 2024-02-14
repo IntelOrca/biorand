@@ -12,7 +12,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 case ReCvItemIds.HandgunGlock17:
                     return new[] { ReCvItemIds.HandgunBullets };
                 case ReCvItemIds.BowGun:
-                    return new[] { ReCvItemIds.BowGunArrows };
+                    return new[] { ReCvItemIds.BowGunArrows, ReCvItemIds.GunPowderArrow };
                 case ReCvItemIds.AssaultRifle:
                     return new[] { ReCvItemIds.ARifleBullets };
                 case ReCvItemIds.SniperRifle:
@@ -368,6 +368,12 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
         public byte[] GetWeaponGunpowder(byte weapon)
         {
+            if (weapon == ReCvItemIds.BowGun)
+            {
+                return new[] {
+                    ReCvItemIds.BowGunPowderUnused
+                };
+            }
             return new byte[0];
         }
 
@@ -442,7 +448,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             return null;
         }
 
-        public bool HasGunPowder(RandoConfig config) => false;
+        public bool HasGunPowder(RandoConfig config) => true;
 
         public bool HasInkRibbons(RandoConfig config) => true;
 

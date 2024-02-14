@@ -1173,7 +1173,7 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void UpdateItems()
         {
-            if (SelectedGame == 2)
+            if (SelectedGame == 2 || SelectedGame == 3)
             {
                 sliderGunpowder.Visibility = Visibility.Visible;
             }
