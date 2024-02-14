@@ -9,6 +9,13 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
         public void Begin(RandoConfig config, GameData gameData, Map map)
         {
+            // Do not lose lighter when giving Rodrigo medicine
+            Nop(gameData, RdtId.Parse("1000"), 0x18CD7A);
+            Nop(gameData, RdtId.Parse("1000"), 0x18DB74);
+            // Do not put Rodrigo's gift into special slot
+            Nop(gameData, RdtId.Parse("1000"), 0x18CD74);
+            Nop(gameData, RdtId.Parse("1000"), 0x18DB7C);
+
             // Force version of 102 and 103 where you can get briefcase and use medal
             Nop(gameData, RdtId.Parse("1010"), 0x3EF2C); // Force RDT1021 to load
             Nop(gameData, RdtId.Parse("1010"), 0x3EF38, 0x3EF4C); // Force RDT1021 to load
