@@ -9,6 +9,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
         public void Begin(RandoConfig config, GameData gameData, Map map)
         {
+            // Force version of 102 and 103 where you can get briefcase and use medal
             Nop(gameData, RdtId.Parse("1010"), 0x3EF2C); // Force RDT1021 to load
             Nop(gameData, RdtId.Parse("1010"), 0x3EF38, 0x3EF4C); // Force RDT1021 to load
             Nop(gameData, RdtId.Parse("1010"), 0x3EF50, 0x3EF5A); // Force RDT1021 to load
@@ -16,16 +17,23 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             Nop(gameData, RdtId.Parse("1050"), 0x1DF2C2, 0x1DF2CC); // Force RDT1031 to load
             // OverrideDoor(gameData, RdtId.Parse("1030"), 1, RdtId.Parse("1021"), 1);
 
-            Nop(gameData, RdtId.Parse("1070"), 0x1819AE); // Force window cutscene on item interaction
+            // Force window cutscene on item interaction
+            Nop(gameData, RdtId.Parse("1070"), 0x1819AE);
 
-            Nop(gameData, RdtId.Parse("3050"), 0x15F288, 0x15F2DA); // Delete Steve/Alfred cutscene
-            Nop(gameData, RdtId.Parse("3050"), 0x15EEDC, 0x15EEF6); // Delete Steve/Alfred cutscene
+            // Delete Steve/Alfred cutscene
+            Nop(gameData, RdtId.Parse("3050"), 0x15F288, 0x15F2DA);
+            Nop(gameData, RdtId.Parse("3050"), 0x15EEDC, 0x15EEF6);
 
-            Nop(gameData, RdtId.Parse("5000"), 0x187778, 0x18777A); // Force Steve at airport
-            Nop(gameData, RdtId.Parse("5000"), 0x187784, 0x18779C); // Force Steve at airport
+            // Softlock can occur if you enter 305 via ladder without picking up silver key
+            Patch(gameData, RdtId.Parse("3060"), 0x70A10 + 6, 0x00);
 
-            Patch(gameData, RdtId.Parse("40F0"), 0x7241C + 2, 0xC5);
+            // Change condition for going into 4011 so that it happens straight after Alfred cutscene
             Patch(gameData, RdtId.Parse("4080"), 0x9F86C + 2, 0xC5);
+            Patch(gameData, RdtId.Parse("40F0"), 0x7241C + 2, 0xC5);
+
+            // Force Steve to appear at airport
+            Nop(gameData, RdtId.Parse("5000"), 0x187778, 0x18777A);
+            Nop(gameData, RdtId.Parse("5000"), 0x187784, 0x18779C);
         }
 
         private void OverrideDoor(GameData gameData, RdtId rdtId, int aotIndex, RdtId target, int exit)
