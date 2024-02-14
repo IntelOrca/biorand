@@ -1319,12 +1319,14 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 15,
+          "globalId": 217,
           "type": 22,
           "amount": 1
         },
         {
-          "id": 1,
+          "id": 11,
+          "globalId": 218,
           "type": 18,
           "amount": 30
         }
