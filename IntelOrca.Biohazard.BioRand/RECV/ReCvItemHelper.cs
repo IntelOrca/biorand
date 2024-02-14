@@ -443,7 +443,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             switch (weapon)
             {
                 case ReCvItemIds.Handgun:
-                    return ReCvItemIds.CustomHandgun;
+                    return ReCvItemIds.M93RPart;
             }
             return null;
         }
