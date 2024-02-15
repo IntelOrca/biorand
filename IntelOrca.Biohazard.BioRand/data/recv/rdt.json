@@ -398,19 +398,22 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 3,
+          "globalId": 147,
           "type": 63,
           "amount": 1,
           "offsets": [ 1526878 ]
         },
         {
-          "id": 1,
+          "id": 2,
+          "globalId": 148,
           "type": 12,
           "amount": 15,
           "offsets": [ 1526934 ]
         },
         {
-          "id": 2,
+          "id": 6,
+          "globalId": 149,
           "type": 22,
           "amount": 1
         }
