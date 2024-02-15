@@ -1182,14 +1182,6 @@ namespace IntelOrca.Biohazard.BioRand
                 _config.RatioGunpowder = 0;
                 sliderGunpowder.Visibility = Visibility.Hidden;
             }
-            if (SelectedGame == 3)
-            {
-                panelRandomInventory.Visibility = Visibility.Hidden;
-            }
-            else
-            {
-                panelRandomInventory.Visibility = Visibility.Visible;
-            }
         }
 
         private void UpdateEnemies()

@@ -4,6 +4,7 @@ using System.Linq;
 using IntelOrca.Biohazard.BioRand.RE1;
 using IntelOrca.Biohazard.BioRand.RE2;
 using IntelOrca.Biohazard.BioRand.RE3;
+using IntelOrca.Biohazard.BioRand.RECV;
 using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.BioRand
@@ -112,35 +113,53 @@ namespace IntelOrca.Biohazard.BioRand
         private void RandomizeSpecialItem()
         {
             // Only RE 2 has a special inventory item
-            if (_config.Game == 2 && _config.RandomInventory && !_config.ShuffleItems)
+            var gameHasSpecialItem = _config.Game == 2 || _config.Game == 4;
+            if (gameHasSpecialItem && _config.RandomInventory && !_config.ShuffleItems)
             {
                 if (_rng.Next(0, 4) == 0)
                 {
-                    _specialItem = (byte)_rng.NextOf(new[] {
-                        Re2ItemIds.GVirus,
-                        Re2ItemIds.Lighter,
-                        Re2ItemIds.Lockpick,
-                    });
-                    _startKeyItems.Add(_specialItem.Value);
-                    if (_specialItem.Value == Re2ItemIds.Lockpick)
+                    if (_config.Game == 2)
                     {
-                        _startKeyItems.Add(Re2ItemIds.SmallKey);
-                        if (_config.Player == 0)
+                        _specialItem = (byte)_rng.NextOf(new[] {
+                            Re2ItemIds.GVirus,
+                            Re2ItemIds.Lighter,
+                            Re2ItemIds.Lockpick,
+                        });
+                        _startKeyItems.Add(_specialItem.Value);
+                        if (_specialItem.Value == Re2ItemIds.Lockpick)
                         {
-                            // Remove small key check for sewer door
-                            var rdt = _gameData.GetRdt(new RdtId(3, 0x01));
-                            if (rdt != null)
+                            _startKeyItems.Add(Re2ItemIds.SmallKey);
+                            if (_config.Player == 0)
                             {
-                                // Fix messages and small key check to be lockpick related
-                                var msg = rdt.Opcodes.FirstOrDefault(x => x.Offset == 0x2786) as UnknownOpcode;
-                                if (msg != null)
+                                // Remove small key check for sewer door
+                                var rdt = _gameData.GetRdt(new RdtId(3, 0x01));
+                                if (rdt != null)
                                 {
-                                    msg.Data[1]--;
+                                    // Fix messages and small key check to be lockpick related
+                                    var msg = rdt.Opcodes.FirstOrDefault(x => x.Offset == 0x2786) as UnknownOpcode;
+                                    if (msg != null)
+                                    {
+                                        msg.Data[1]--;
+                                    }
+                                    rdt.Nop(0x276C);
+                                    rdt.Nop(0x27AA);
+                                    rdt.Nop(0x27A2, 0x27B4);
                                 }
-                                rdt.Nop(0x276C);
-                                rdt.Nop(0x27AA);
-                                rdt.Nop(0x27A2, 0x27B4);
                             }
+                        }
+                    }
+                    else
+                    {
+                        _specialItem = (byte)_rng.NextOf(new[] {
+                            ReCvItemIds.FamilyPicture,
+                            ReCvItemIds.InkRibbon,
+                            ReCvItemIds.Lighter,
+                            ReCvItemIds.Lockpick,
+                        });
+                        _startKeyItems.Add(_specialItem.Value);
+                        foreach (var item in ItemHelper.GetInitialKeyItems(_config))
+                        {
+                            _startKeyItems.Add(item);
                         }
                     }
                 }
@@ -205,6 +224,12 @@ namespace IntelOrca.Biohazard.BioRand
                 {
                     // Always give the player a knife
                     AddToInventoryCommon(CommonItemKind.Knife, 1);
+                }
+
+                // RE CV, we always need the lighter for first cutscene
+                if (_config.Game == 4)
+                {
+                    AddToInventory(ReCvItemIds.Lighter, 1);
                 }
 
                 if (remaining >= 3 || _rng.NextProbability(75))

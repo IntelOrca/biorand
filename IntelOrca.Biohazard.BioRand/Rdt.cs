@@ -217,6 +217,10 @@ namespace IntelOrca.Biohazard.BioRand
                 {
                     op.Data[3] = (byte)type;
                 }
+                else if (op.Opcode == 0xC7)
+                {
+                    op.Data[1] = (byte)type;
+                }
             }
             else
             {
@@ -486,6 +490,16 @@ namespace IntelOrca.Biohazard.BioRand
                 bw.Write(scdBuilder.Procedures[0].Data);
                 scdBuilder.Procedures[0] = new ScdProcedure(scdBuilder.Version, ms.ToArray());
                 rdtBuilder.SCDINIT = scdBuilder.ToProcedureList();
+                RdtFile = rdtBuilder.ToRdt();
+            }
+            else if (RdtFile is RdtCv rdtCv)
+            {
+                var rdtBuilder = rdtCv.ToBuilder();
+                var scriptBuilder = rdtBuilder.Script.ToBuilder();
+                var data = scriptBuilder.Procedures[0].Data;
+                bw.Write(data.Slice(0, data.Length));
+                scriptBuilder.Procedures[0] = new ScdProcedure(BioVersion.BiohazardCv, ms.ToArray());
+                rdtBuilder.Script = scriptBuilder.ToProcedureList();
                 RdtFile = rdtBuilder.ToRdt();
             }
         }

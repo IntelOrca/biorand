@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Room;
+using IntelOrca.Biohazard.Script.Opcodes;
 using Ps2IsoTools.UDF;
 using Ps2IsoTools.UDF.Files;
 
@@ -118,7 +119,6 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             }
 
             config.RandomEnemyPlacement = false;
-            config.RandomInventory = false;
             config.RandomCutscenes = false;
             config.RandomEvents = false;
             config.RandomBgm = false;
@@ -164,8 +164,6 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 if (InstallConfig.DoorSkip)
                     SetDoorSkip();
                 FixRifleStacking();
-                FixSpecialSlot(config, new Rng(config.Seed));
-                SetInventory();
                 SetItemQuantityPickup(config, new Rng(config.Seed));
 
                 // base.Generate(config, progress, fileRepository);
@@ -188,10 +186,79 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             }
         }
 
+        protected override void PostGenerate(RandoConfig config, IRandoProgress progress, FileRepository fileRepository, GameData gameData)
+        {
+            if (!config.RandomItems || !config.RandomInventory)
+                return;
+
+            var rrdt = gameData.GetRdt(RdtId.Parse("1000"));
+            if (rrdt == null)
+                return;
+
+            var inventory = Inventories[0];
+            if (inventory == null)
+                return;
+
+            // if
+            var ifIndex = rrdt.AdditionalOpcodes.Count;
+            var ifStatement = new UnknownOpcode(0, 0x01, new byte[] { 0x00 });
+            rrdt.AdditionalOpcodes.Add(ifStatement);
+
+            // ck
+            rrdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x04, new byte[] { 0x01, 0x01, 0x00, 0x00, 0x01 }));
+
+            // inventory stuff
+            if (inventory.Special is RandomInventory.Entry entry)
+            {
+                SetInventoryItem(-1, entry.Type, entry.Count);
+            }
+            for (var i = 0; i < inventory.Entries.Length; i++)
+            {
+                var e = inventory.Entries[i];
+                SetInventoryItem(i, e.Type, e.Count);
+            }
+
+            // endif
+            rrdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x03, new byte[] { 0x00 }));
+
+            var skipSize = 0;
+            for (var i = ifIndex + 1; i < rrdt.AdditionalOpcodes.Count; i++)
+            {
+                skipSize += rrdt.AdditionalOpcodes[i].Length;
+            }
+            ifStatement.Data[0] = (byte)skipSize;
+
+            void SetInventoryItem(int index, byte type, byte quantity)
+            {
+                if (index == -1)
+                {
+                    SetSpecialSlotItem(type);
+                }
+                else if (index == 0)
+                {
+                    SetFirstInventoryItem(type);
+                }
+                else if (type != 0)
+                {
+                    rrdt!.AdditionalOpcodes.Add(new UnknownOpcode(0, 0xC7, new byte[] { 0x00, type, 0x00 }));
+                }
+                if (type != 0 && HasQuantity(type))
+                {
+                    rrdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0xC9, new byte[] { type, quantity, 0x00 }));
+                }
+            }
+
+            bool HasQuantity(byte type)
+            {
+                var mask = ItemAttribute.Ammo | ItemAttribute.Gunpowder | ItemAttribute.InkRibbon | ItemAttribute.Weapon;
+                return (ItemHelper.GetItemAttributes(type) & mask) != 0;
+            }
+        }
+
         private unsafe void TestEdits()
         {
 #if DEBUG
-            QuickDoor(RdtId.Parse("306"), 0);
+            // QuickDoor(RdtId.Parse("306"), 0);
 #endif
         }
 
@@ -321,10 +388,19 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             }
         }
 
-        private void SetInventory()
+        private void SetSpecialSlotItem(byte item)
         {
-            _elf[ConvertAddress(0x2A6CE8)] = ReCvItemIds.Lighter;
-            _elf[ConvertAddress(0x2A6CF0)] = ReCvItemIds.CombatKnife;
+            var ms = new MemoryStream(_elf);
+            var bw = new BinaryWriter(ms);
+            ms.Position = ConvertAddress(0x3340B0);
+            bw.Write((uint)(0x00FF0000 | item));
+
+            _elf[ConvertAddress(0x2A6CE8)] = item;
+        }
+
+        private void SetFirstInventoryItem(byte item)
+        {
+            _elf[ConvertAddress(0x2A6CF0)] = item;
         }
 
         private void SetItemQuantityPickup(RandoConfig config, Rng rng)

@@ -2,7 +2,7 @@
 
 namespace IntelOrca.Biohazard.BioRand
 {
-    internal class GameData
+    public class GameData
     {
         public RandomizedRdt[] Rdts { get; }
 

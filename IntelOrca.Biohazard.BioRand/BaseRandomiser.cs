@@ -469,6 +469,8 @@ namespace IntelOrca.Biohazard.BioRand
                     }
                 }
 
+                PostGenerate(config, progress, fileRepository, gameData);
+
                 using (progress.BeginTask(config.Player, "Writing RDT files"))
                 {
                     foreach (var rdt in gameData.Rdts)
@@ -490,6 +492,10 @@ namespace IntelOrca.Biohazard.BioRand
                 logger.WriteException(ex);
                 throw;
             }
+        }
+
+        protected virtual void PostGenerate(RandoConfig config, IRandoProgress progress, FileRepository fileRepository, GameData gameData)
+        {
         }
 
         protected virtual void GenerateBGM(RandoConfig config, ReInstallConfig reConfig, IRandoProgress progress, FileRepository fileRepository)
