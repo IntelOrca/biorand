@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -215,7 +214,10 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             for (var i = 0; i < inventory.Entries.Length; i++)
             {
                 var e = inventory.Entries[i];
-                SetInventoryItem(i, e.Type, e.Count);
+                if (e.Part != 2)
+                {
+                    SetInventoryItem(i, e.Type, e.Count);
+                }
             }
 
             // endif
@@ -344,48 +346,6 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             ms.Position = ConvertAddress(0x35B200);
             bw.Write((byte)0x02);
             bw.Write((byte)0x16);
-        }
-
-        private void FixSpecialSlot(RandoConfig config, Rng rng)
-        {
-            // Random item for your special slot
-            var potentialItems = new List<byte>()
-            {
-                0xFF,
-                ReCvItemIds.CombatKnife,
-                ReCvItemIds.Lighter,
-                ReCvItemIds.Lockpick,
-                ReCvItemIds.InkRibbon
-            };
-            var weapon = GetRandomWeapon();
-            if (weapon != 0)
-                potentialItems.Add(weapon);
-
-            var randomItem = rng.NextOf(potentialItems.ToArray());
-
-            var ms = new MemoryStream(_elf);
-            var bw = new BinaryWriter(ms);
-            ms.Position = ConvertAddress(0x3340B0);
-            bw.Write((uint)(0x00FF0000 | randomItem));
-
-            byte GetRandomWeapon()
-            {
-                var weaponPool = ItemHelper
-                    .GetWeapons(new Rng(), config)
-                    .ToList();
-                for (var i = weaponPool.Count - 1; i >= 0; i--)
-                {
-                    if (!config.EnabledWeapons[i])
-                    {
-                        weaponPool.RemoveAt(i);
-                    }
-                }
-                if (weaponPool.Count == 0)
-                {
-                    return 0;
-                }
-                return rng.NextOf(weaponPool.ToArray());
-            }
         }
 
         private void SetSpecialSlotItem(byte item)

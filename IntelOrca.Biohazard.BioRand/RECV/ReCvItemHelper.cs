@@ -322,6 +322,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             switch (type)
             {
                 case ReCvItemIds.M1P:
+                case ReCvItemIds.RocketLauncher:
                     return 2;
                 default:
                     return 1;
