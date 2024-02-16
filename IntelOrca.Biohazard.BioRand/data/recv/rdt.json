@@ -376,11 +376,11 @@
           "amount": 1,
           "offsets": [ 2133888 ]
         },
-        { // TODO try and randomize glass eye
-          "id": 4,
+        {
+          "id": 12,
+          "globalId": 6,
           "type": 51,
-          "amount": 1,
-          "priority": "fixed"
+          "amount": 1
         },
         {
           "id": 13,
