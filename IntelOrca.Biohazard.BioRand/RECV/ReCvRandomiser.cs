@@ -244,16 +244,10 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 {
                     rrdt!.AdditionalOpcodes.Add(new UnknownOpcode(0, 0xC7, new byte[] { 0x00, type, 0x00 }));
                 }
-                if (type != 0 && HasQuantity(type))
+                if (type != 0)
                 {
                     rrdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0xC9, new byte[] { type, quantity, 0x00 }));
                 }
-            }
-
-            bool HasQuantity(byte type)
-            {
-                var mask = ItemAttribute.Ammo | ItemAttribute.Gunpowder | ItemAttribute.InkRibbon | ItemAttribute.Weapon;
-                return (ItemHelper.GetItemAttributes(type) & mask) != 0;
             }
         }
 
