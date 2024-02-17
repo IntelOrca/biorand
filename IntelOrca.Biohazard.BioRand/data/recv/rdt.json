@@ -667,15 +667,26 @@
       ]
     },
     "2000": {
+      "doorRando": [
+        {
+          "nop": [ "0xE89B4-0xE8A5C" ]
+        }
+      ],
       "doors": [
         {
-          "target": "2020"
+          "id": 0,
+          "target": "2020",
+          "entranceId": 2
         },
         {
-          "target": "20D0"
+          "id": 2,
+          "target": "20D0",
+          "entranceId": 1
         },
         {
-          "target": "20C0"
+          "id": 1,
+          "target": "20C0",
+          "entranceId": 0
         }
       ],
       "items": [
@@ -694,23 +705,40 @@
       ]
     },
     "2020": {
+      "doorRando": [
+        {
+          "nop": [ "0x1878D6-0x187998" ]
+        }
+      ],
       "doors": [
         {
-          "target": "2000"
+          "id": 10,
+          "target": "2000",
+          "entranceId": 0
         },
         {
-          "target": "2030"
+          "id": 11,
+          "target": "2030",
+          "entranceId": 2
         },
         {
+          "id": 12,
           "target": "2070",
-          "requires": [ 73 ]
+          "requires": [ 73 ],
+          "entranceId": 1,
+          "condition": "!1:4"
         },
         {
-          "target": "2080"
+          "id": 8,
+          "target": "2080",
+          "entranceId": 4
         },
         {
+          "id": 9,
           "target": "20B0",
-          "requires": [ 67 ]
+          "requires": [ 67 ],
+          "entranceId": 3,
+          "condition": "!1:147"
         }
       ],
       "items": [
@@ -722,9 +750,16 @@
       ]
     },
     "2030": {
+      "doorRando": [
+        {
+          "nop": [ "0x46316-0x4635E" ]
+        }
+      ],
       "doors": [
         {
-          "target": "2020"
+          "id": 2,
+          "target": "2020",
+          "entranceId": 0
         }
       ],
       "items": [
@@ -746,9 +781,16 @@
       ]
     },
     "2040": {
+      "doorRando": [
+        {
+          "nop": [ "0x417C0-0x417D6" ]
+        }
+      ],
       "doors": [
         {
-          "target": "2070"
+          "id": 0,
+          "target": "2070",
+          "entranceId": 0
         }
       ],
       "items": [
@@ -768,7 +810,9 @@
     "2050": {
       "doors": [
         {
-          "target": "2070"
+          "id": 0,
+          "target": "2070",
+          "entranceId": 0
         }
       ],
       "items": [
@@ -794,7 +838,9 @@
     "2060": {
       "doors": [
         {
-          "target": "2070"
+          "id": 0,
+          "target": "2070",
+          "entranceId": 0
         }
       ],
       "items": [
@@ -816,20 +862,33 @@
       ]
     },
     "2070": {
+      "doorRando": [
+        {
+          "nop": [ "0x14B754-0x14B844" ]
+        }
+      ],
       "doors": [
         {
-          "target": "2020"
+          "id": 0,
+          "target": "2020",
+          "entranceId": 0
         },
         {
+          "id": 3,
           "target": "2040",
-          "requires": [ 68 ]
+          "requires": [ 68 ],
+          "entranceId": 3
         },
         {
-          "target": "2050"
+          "id": 2,
+          "target": "2050",
+          "entranceId": 2
         },
         {
+          "id": 1,
           "target": "2060",
-          "requires": [ 67 ]
+          "requires": [ 67 ],
+          "entranceId": 1
         }
       ],
       "items": [
@@ -849,16 +908,21 @@
     "2080": {
       "doorRando": [
         {
-          "category": "box"
+          "category": "box",
+          "nop": [ "0x46E24-0x46EF4" ]
         }
       ],
       "doors": [
         {
-          "target": "2020"
+          "id": 0,
+          "target": "2020",
+          "entranceId": 0
         },
         {
+          "id": 1,
           "target": "2090",
-          "requires": [ 33 ]
+          "requires": [ 33 ],
+          "entranceId": 1
         }
       ],
       "items": [
@@ -891,13 +955,22 @@
       ]
     },
     "2090": {
+      "doorRando": [
+        {
+          "nop": [ "0x16D3F8-0x16D462" ]
+        }
+      ],
       "doors": [
         {
-          "target": "2080"
+          "id": 0,
+          "target": "2080",
+          "entranceId": 0
         },
         {
+          "id": 1,
           "target": "20A0",
-          "lock": "unblock"
+          "lock": "unblock",
+          "entranceId": 1
         }
       ],
       "items": [
@@ -914,20 +987,36 @@
       ]
     },
     "20A0": {
+      "doorRando": [
+        {
+          "nop": [ "0x1846E4-0x18471C", "0x18473E-0x184776" ]
+        }
+      ],
       "doors": [
         {
-          "target": "2090"
+          "id": 0,
+          "target": "2090",
+          "entranceId": 0
         },
         {
+          "id": 1,
           "target": "3000",
-          "lock": "unblock"
+          "lock": "unblock",
+          "entranceId": 1
         }
       ]
     },
     "20B0": {
+      "doorRando": [
+        {
+          "nop": [ "0x84542-0x8459E" ]
+        }
+      ],
       "doors": [
         {
-          "target": "2020"
+          "id": 0,
+          "target": "2020",
+          "entranceId": 0
         }
       ],
       "items": [
@@ -961,26 +1050,45 @@
       ]
     },
     "20C0": {
+      "doorRando": [
+        {
+          "nop": [ "0x1580B4-0x158142" ]
+        }
+      ],
       "doors": [
         {
-          "target": "10A0"
+          "id": 3,
+          "target": "10A0",
+          "entranceId": 2
         },
         {
+          "id": 2,
           "target": "2000"
         },
         {
-          "target": "4090"
+          "id": 1,
+          "target": "4090",
+          "entranceId": 1
         }
       ]
     },
     "20D0": {
+      "doorRando": [
+        {
+          "nop": [ "0xB65B2-0xB66B6" ]
+        }
+      ],
       "doors": [
         {
-          "target": "2000"
+          "id": 0,
+          "target": "2000",
+          "entranceId": 0
         },
         {
+          "id": 4,
           "target": "20E0",
-          "requires": [ 53 ]
+          "requires": [ 53 ],
+          "entranceId": 1
         }
       ],
       "items": [
@@ -1002,12 +1110,22 @@
       ]
     },
     "20E0": {
+      "doorRando": [
+        {
+          "nop": [ "0x5274A-0x527B8" ]
+        }
+      ],
       "doors": [
         {
-          "target": "20D0"
+          "id": 0,
+          "target": "20D0",
+          "entranceId": 0
         },
         {
-          "target": "5050"
+          "id": 1,
+          "target": "5050",
+          "entranceId": 1,
+          "randomize": false
         }
       ],
       "items": [
@@ -1960,12 +2078,22 @@
       ]
     },
     "5050": {
+      "doorRando": [
+        {
+          "nop": [ "0x5274A-0x527B8" ]
+        }
+      ],
       "doors": [
         {
-          "target": "20E0"
+          "id": 1,
+          "target": "20E0",
+          "randomize": false,
+          "entranceId": 1
         },
         {
-          "target": "5030"
+          "id": 0,
+          "target": "5030",
+          "entranceId": 0
         }
       ]
     },
