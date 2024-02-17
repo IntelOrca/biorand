@@ -919,6 +919,9 @@ namespace IntelOrca.Biohazard.BioRand
                 case 2:
                     _config = RandoConfig.FromString(_settings.Seed3);
                     break;
+                case 3:
+                    _config = RandoConfig.FromString(_settings.SeedCv);
+                    break;
             }
 
             using (SuspendEvents())

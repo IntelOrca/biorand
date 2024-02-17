@@ -240,8 +240,9 @@ namespace IntelOrca.Biohazard.BioRand
         public bool Randomize { get; set; } = true;
         public bool NoUnlock { get; set; }
         public bool IsBridgeEdge { get; set; }
+        public MapRoomDoor Raw { get; set; }
 
-        public PlayEdge(PlayNode parent, PlayNode node, bool noReturn, byte[]? requires, int? doorId, DoorEntrance? entrance)
+        public PlayEdge(PlayNode parent, PlayNode node, bool noReturn, byte[]? requires, int? doorId, DoorEntrance? entrance, MapRoomDoor raw)
         {
             Parent = parent;
             OriginalTargetRdt = node.RdtId;
@@ -250,6 +251,7 @@ namespace IntelOrca.Biohazard.BioRand
             Requires = requires ?? new byte[0];
             DoorId = doorId;
             Entrance = entrance;
+            Raw = raw;
         }
 
         public string GetRequiresString(IItemHelper? itemHelper)

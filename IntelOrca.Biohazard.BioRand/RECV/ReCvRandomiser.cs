@@ -158,8 +158,6 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
                 GenerateRdts(config, progress, fileRepository);
 
-                TestEdits();
-
                 if (InstallConfig.DoorSkip)
                     SetDoorSkip();
                 FixRifleStacking();
@@ -187,6 +185,8 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
         protected override void PostGenerate(RandoConfig config, IRandoProgress progress, FileRepository fileRepository, GameData gameData)
         {
+            TestEdits(gameData);
+
             if (!config.RandomItems || !config.RandomInventory)
                 return;
 
@@ -251,10 +251,20 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             }
         }
 
-        private unsafe void TestEdits()
+        private unsafe void TestEdits(GameData gameData)
         {
 #if DEBUG
-            // QuickDoor(RdtId.Parse("306"), 0);
+            // QuickDoor(RdtId.Parse("10B"), 0);
+
+            // var rrdt = gameData.GetRdt(RdtId.Parse("1021"))!;
+            // var rdtBuilder = ((RdtCv)rrdt.RdtFile).ToBuilder();
+            // 
+            // rdtBuilder.Enemies.RemoveAt(rdtBuilder.Enemies.Count - 1);
+            // rdtBuilder.Enemies.RemoveAt(rdtBuilder.Enemies.Count - 1);
+            // rdtBuilder.Enemies.RemoveAt(rdtBuilder.Enemies.Count - 1);
+            // rdtBuilder.Enemies.RemoveAt(rdtBuilder.Enemies.Count - 1);
+            // 
+            // rrdt.RdtFile = rdtBuilder.ToRdt();
 #endif
         }
 

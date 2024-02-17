@@ -44,42 +44,96 @@ namespace IntelOrca.Biohazard.BioRand
             RdtId = rdtId;
         }
 
-        public void SetDoorTarget(int id, RdtId target, DoorEntrance destination, RdtId originalId, bool noCompareRewrite = false)
+        internal void SetDoorTarget(PlayEdge edge, RdtId target, DoorEntrance destination, bool noCompareRewrite = false)
         {
-            foreach (var door in Doors)
+            var id = edge.DoorId!.Value;
+            if (Version == BioVersion.BiohazardCv)
             {
-                if (door.Id == id)
+                var builder = ((RdtCv)RdtFile).ToBuilder();
+                var aot = builder.Aots[id];
+                aot.Stage = (byte)target.Stage;
+                aot.Room = (byte)target.Room;
+                aot.ExitId = (byte)destination.Id!.Value;
+                builder.Aots[id] = aot;
+                RdtFile = builder.ToRdt();
+
+                var offsets = Map.ParseNopArray(edge.Raw.Offsets, this);
+                foreach (var offset in offsets)
                 {
-                    door.NextX = destination.X;
-                    door.NextY = destination.Y;
-                    door.NextZ = destination.Z;
-                    door.NextD = destination.D;
-                    door.Target = target;
-                    door.NextCamera = destination.Camera;
-                    door.NextFloor = destination.Floor;
-                }
-            }
-            foreach (var reset in Resets)
-            {
-                if (reset.Id == id && reset.SCE == 1)
-                {
-                    reset.NextX = destination.X;
-                    reset.NextY = destination.Y;
-                    reset.NextZ = destination.Z;
-                }
-            }
-            if (!noCompareRewrite)
-            {
-                foreach (var cmp in Opcodes.OfType<CmpOpcode>())
-                {
-                    var oldValue = (short)(((originalId.Stage + 1) << 8) | originalId.Room);
-                    var newValue = (short)(((target.Stage + 1) << 8) | target.Room);
-                    if (cmp.Flag == 27 && cmp.Value == oldValue)
+                    var opcode = (UnknownOpcode)Opcodes.First(x => x.Offset == offset);
+                    if (opcode.Opcode == 0x37 || opcode.Opcode == 0xB6)
                     {
-                        cmp.Value = newValue;
+                        opcode.Data[0] = (byte)target.Variant!.Value;
+                    }
+                    else if (opcode.Opcode == 0x33)
+                    {
+                        opcode.Data[3] = (byte)target.Stage;
+                        opcode.Data[4] = (byte)target.Room;
+                        opcode.Data[5] = (byte)destination.Id.Value;
+                    }
+                }
+
+                if (offsets.Length == 0)
+                {
+                    OverrideDoor(id, target, (byte)destination.Id!.Value);
+                }
+            }
+            else
+            {
+                foreach (var door in Doors)
+                {
+                    if (door.Id == id)
+                    {
+                        door.NextX = destination.X;
+                        door.NextY = destination.Y;
+                        door.NextZ = destination.Z;
+                        door.NextD = destination.D;
+                        door.Target = target;
+                        door.NextCamera = destination.Camera;
+                        door.NextFloor = destination.Floor;
+                    }
+                }
+                foreach (var reset in Resets)
+                {
+                    if (reset.Id == id && reset.SCE == 1)
+                    {
+                        reset.NextX = destination.X;
+                        reset.NextY = destination.Y;
+                        reset.NextZ = destination.Z;
+                    }
+                }
+                if (!noCompareRewrite)
+                {
+                    foreach (var cmp in Opcodes.OfType<CmpOpcode>())
+                    {
+                        var oldValue = (short)(((edge.OriginalTargetRdt.Stage + 1) << 8) | edge.OriginalTargetRdt.Room);
+                        var newValue = (short)(((target.Stage + 1) << 8) | target.Room);
+                        if (cmp.Flag == 27 && cmp.Value == oldValue)
+                        {
+                            cmp.Value = newValue;
+                        }
                     }
                 }
             }
+        }
+
+        private void OverrideDoor(int aotIndex, RdtId target, int exit)
+        {
+            var aotIndexB = (byte)aotIndex;
+            var stage = (byte)target.Stage;
+            var room = (byte)target.Room;
+            var variant = (byte)(target.Variant ?? 0);
+            var exitB = (byte)exit;
+            var texture = (byte)2;
+            var unk = (byte)0;
+
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x01, new byte[] { 0x1A }));
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x04, new byte[] { 0x0A, 0x17, 0x00, aotIndexB, 0x00 }));
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0xB6, new byte[] { variant }));
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x37, new byte[] { variant }));
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x33, new byte[] { 0x00, unk, 0x00, stage, room, exitB, texture }));
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x05, new byte[] { 0x0A, 0x17, 0x00, aotIndexB, 0x01 }));
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x03, new byte[] { 0x00 }));
         }
 
         public void EnsureDoorUnlock(int id, byte lockId)

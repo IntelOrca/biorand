@@ -41,29 +41,25 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             // Force Steve to appear at airport
             Nop(gameData, RdtId.Parse("5000"), 0x187778, 0x18777A);
             Nop(gameData, RdtId.Parse("5000"), 0x187784, 0x18779C);
+
+            if (config.RandomDoors)
+            {
+                var rrdt = gameData.GetRdt(RdtId.Parse("6000"));
+                if (rrdt == null)
+                    return;
+
+                SetFlag(gameData, RdtId.Parse("6000"), 1, 35, 0);
+                SetFlag(gameData, RdtId.Parse("6000"), 1, 264, 0);
+            }
         }
 
-        private void OverrideDoor(GameData gameData, RdtId rdtId, int aotIndex, RdtId target, int exit)
+        private void SetFlag(GameData gameData, RdtId rtdId, byte kind, int index, byte value)
         {
-            var rrdt = gameData.GetRdt(rdtId);
+            var rrdt = gameData.GetRdt(rtdId);
             if (rrdt == null)
                 return;
 
-            var aotIndexB = (byte)aotIndex;
-            var stage = (byte)target.Stage;
-            var room = (byte)target.Room;
-            var variant = (byte)(target.Variant ?? 0);
-            var exitB = (byte)exit;
-            var texture = (byte)2;
-            var unk = (byte)0;
-
-            rrdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x01, new byte[] { 0x1A }));
-            rrdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x04, new byte[] { 0x0A, 0x17, 0x00, aotIndexB, 0x00 }));
-            rrdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0xB6, new byte[] { variant }));
-            rrdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x37, new byte[] { variant }));
-            rrdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x33, new byte[] { 0x00, unk, 0x00, stage, room, exitB, texture }));
-            rrdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x05, new byte[] { 0x0A, 0x17, 0x00, aotIndexB, 0x01 }));
-            rrdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x03, new byte[] { 0x00 }));
+            rrdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x05, new byte[] { kind, (byte)(index & 0xFF), (byte)((index >> 8) & 0xFF), 0x00, value }));
         }
 
         private void Nop(GameData gameData, RdtId rtdId, int offset)

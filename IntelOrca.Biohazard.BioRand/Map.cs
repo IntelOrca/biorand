@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 
 namespace IntelOrca.Biohazard.BioRand
 {
@@ -90,8 +91,10 @@ namespace IntelOrca.Biohazard.BioRand
         public int Texture { get; set; }
         public int? Special { get; set; }
         public int? Id { get; set; }
+        public JsonElement[]? Offsets { get; set; }
         public byte? Cut { get; set; }
         public MapRoomDoorEntrance? Entrance { get; set; }
+        public int? EntranceId { get; set; }
         public string? Target { get; set; }
         public bool? Randomize { get; set; }
         public string? Lock { get; set; }

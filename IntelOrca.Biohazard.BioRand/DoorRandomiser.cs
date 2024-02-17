@@ -659,7 +659,7 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 var aDoorId = aEdge.DoorId!.Value;
                 var aRdt = _gameData.GetRdt(a.RdtId)!;
-                aRdt.SetDoorTarget(aDoorId, b.RdtId, bEdge.Entrance!.Value, aEdge.OriginalTargetRdt, noCompareRewrite);
+                aRdt.SetDoorTarget(aEdge, b.RdtId, bEdge.Entrance!.Value, noCompareRewrite);
                 aRdt.RemoveDoorUnlock(aDoorId);
                 if (aEdge.Lock == LockKind.Side)
                 {
@@ -684,12 +684,12 @@ namespace IntelOrca.Biohazard.BioRand
                 var bRdt = _gameData.GetRdt(b.RdtId)!;
                 if (aEdge.Entrance == null)
                 {
-                    bRdt.SetDoorTarget(bDoorId, b.RdtId, bEdge.Entrance!.Value, bEdge.OriginalTargetRdt, noCompareRewrite);
+                    bRdt.SetDoorTarget(bEdge, b.RdtId, bEdge.Entrance!.Value, noCompareRewrite);
                     bRdt.SetDoorLock(bDoorId, 255);
                 }
                 else
                 {
-                    bRdt.SetDoorTarget(bDoorId, a.RdtId, aEdge.Entrance.Value, bEdge.OriginalTargetRdt, noCompareRewrite);
+                    bRdt.SetDoorTarget(bEdge, a.RdtId, aEdge.Entrance.Value, noCompareRewrite);
                     if (isLocked)
                     {
                         bEdge.Lock = LockKind.Side;
@@ -966,7 +966,11 @@ namespace IntelOrca.Biohazard.BioRand
                         targetExit = targetRdt.Doors.FirstOrDefault(x => IsSameRdtId(targetRdt, x.Target, rdtId));
                     }
                     var doorId = door.Id ?? rdt.Doors.FirstOrDefault(x => x.Target == target.Rdt)?.Id;
-                    if (door.Entrance != null)
+                    if (door.EntranceId != null)
+                    {
+                        entrance = new DoorEntrance(door.EntranceId.Value);
+                    }
+                    else if (door.Entrance != null)
                     {
                         entrance = new DoorEntrance()
                         {
@@ -1000,7 +1004,7 @@ namespace IntelOrca.Biohazard.BioRand
                     }
 
                     var edgeNode = GetOrCreateNode(target.Rdt);
-                    var edge = new PlayEdge(node, edgeNode, door.NoReturn, door.Requires?.Select(x => (byte)x).ToArray(), doorId, entrance);
+                    var edge = new PlayEdge(node, edgeNode, door.NoReturn, door.Requires?.Select(x => (byte)x).ToArray(), doorId, entrance, door);
                     edge.Randomize = door.Randomize ?? true;
                     edge.NoUnlock = door.NoUnlock;
                     edge.IsBridgeEdge = door.IsBridgeEdge;
