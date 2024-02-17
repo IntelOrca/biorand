@@ -16,27 +16,32 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             Nop(gameData, RdtId.Parse("1000"), 0x18CD74);
             Nop(gameData, RdtId.Parse("1000"), 0x18DB7C);
 
-            // Force version of 102 and 103 where you can get briefcase and use medal
-            Nop(gameData, RdtId.Parse("1010"), 0x3EF2C); // Force RDT1021 to load
-            Nop(gameData, RdtId.Parse("1010"), 0x3EF38, 0x3EF4C); // Force RDT1021 to load
-            Nop(gameData, RdtId.Parse("1010"), 0x3EF50, 0x3EF5A); // Force RDT1021 to load
-            Nop(gameData, RdtId.Parse("1050"), 0x1DF2AA, 0x1DF2BE); // Force RDT1031 to load
-            Nop(gameData, RdtId.Parse("1050"), 0x1DF2C2, 0x1DF2CC); // Force RDT1031 to load
-            // OverrideDoor(gameData, RdtId.Parse("1030"), 1, RdtId.Parse("1021"), 1);
+            if (!config.RandomDoors)
+            {
+                // Force version of 102 and 103 where you can get briefcase and use medal
+                Nop(gameData, RdtId.Parse("1010"), 0x3EF2C); // Force RDT1021 to load
+                Nop(gameData, RdtId.Parse("1010"), 0x3EF38, 0x3EF4C); // Force RDT1021 to load
+                Nop(gameData, RdtId.Parse("1010"), 0x3EF50, 0x3EF5A); // Force RDT1021 to load
+                Nop(gameData, RdtId.Parse("1050"), 0x1DF2AA, 0x1DF2BE); // Force RDT1031 to load
+                Nop(gameData, RdtId.Parse("1050"), 0x1DF2C2, 0x1DF2CC); // Force RDT1031 to load
+            }
 
             // Force window cutscene on item interaction
             Nop(gameData, RdtId.Parse("1070"), 0x1819AE);
 
-            // Delete Steve/Alfred cutscene
-            Nop(gameData, RdtId.Parse("3050"), 0x15F288, 0x15F2DA);
-            Nop(gameData, RdtId.Parse("3050"), 0x15EEDC, 0x15EEF6);
+            if (!config.RandomDoors)
+            {
+                // Delete Steve/Alfred cutscene
+                Nop(gameData, RdtId.Parse("3050"), 0x15F288, 0x15F2DA);
+                Nop(gameData, RdtId.Parse("3050"), 0x15EEDC, 0x15EEF6);
 
-            // Softlock can occur if you enter 305 via ladder without picking up silver key
-            Patch(gameData, RdtId.Parse("3060"), 0x70A10 + 6, 0x00);
+                // Softlock can occur if you enter 305 via ladder without picking up silver key
+                Patch(gameData, RdtId.Parse("3060"), 0x70A10 + 6, 0x00);
 
-            // Change condition for going into 4011 so that it happens straight after Alfred cutscene
-            Patch(gameData, RdtId.Parse("4080"), 0x9F86C + 2, 0xC5);
-            Patch(gameData, RdtId.Parse("40F0"), 0x7241C + 2, 0xC5);
+                // Change condition for going into 4011 so that it happens straight after Alfred cutscene
+                Patch(gameData, RdtId.Parse("4080"), 0x9F86C + 2, 0xC5);
+                Patch(gameData, RdtId.Parse("40F0"), 0x7241C + 2, 0xC5);
+            }
 
             // Force Steve to appear at airport
             Nop(gameData, RdtId.Parse("5000"), 0x187778, 0x18777A);
@@ -51,6 +56,10 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 SetFlag(gameData, RdtId.Parse("6000"), 1, 35, 0);
                 SetFlag(gameData, RdtId.Parse("6000"), 1, 264, 0);
             }
+        }
+
+        public void End(RandoConfig config, GameData gameData, Map map)
+        {
         }
 
         private void SetFlag(GameData gameData, RdtId rtdId, byte kind, int index, byte value)
@@ -87,10 +96,6 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 return;
 
             rrdt.Patches.Add(new KeyValuePair<int, byte>(offset, value));
-        }
-
-        public void End(RandoConfig config, GameData gameData, Map map)
-        {
         }
     }
 }

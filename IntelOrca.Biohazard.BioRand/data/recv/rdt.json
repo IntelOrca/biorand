@@ -676,7 +676,7 @@
         {
           "id": 0,
           "target": "2020",
-          "entranceId": 2
+          "entranceId": 0
         },
         {
           "id": 2,
@@ -686,7 +686,7 @@
         {
           "id": 1,
           "target": "20C0",
-          "entranceId": 0
+          "entranceId": 2
         }
       ],
       "items": [
@@ -1052,7 +1052,7 @@
     "20C0": {
       "doorRando": [
         {
-          "nop": [ "0x1580B4-0x158142" ]
+          "nop": [ "0x1580B4-0x1580D8", "0x1580FE-0x158142" ]
         }
       ],
       "doors": [
@@ -1063,7 +1063,8 @@
         },
         {
           "id": 2,
-          "target": "2000"
+          "target": "2000",
+          "entranceId": 0
         },
         {
           "id": 1,
@@ -1137,12 +1138,21 @@
       ]
     },
     "3000": {
+      "doorRando": [
+        {
+          "nop": [ "0x14F1E6-0x14F26E" ]
+        }
+      ],
       "doors": [
         {
-          "target": "20A0"
+          "id": 0,
+          "target": "20A0",
+          "entranceId": 0
         },
         {
-          "target": "3010"
+          "id": 3,
+          "target": "3010",
+          "entranceId": 1
         }
       ],
       "items": [
@@ -1155,15 +1165,26 @@
       ]
     },
     "3010": {
+      "doorRando": [
+        {
+          "nop": [ "0x8E668-0x8E6C8" ]
+        }
+      ],
       "doors": [
         {
-          "target": "3000"
+          "id": 1,
+          "target": "3000",
+          "entranceId": 0
         },
         {
-          "target": "3020"
+          "id": 2,
+          "target": "3020",
+          "entranceId": 1
         },
         {
-          "target": "3030"
+          "id": 6,
+          "target": "3030",
+          "entranceId": 2
         }
       ],
       "items": [
@@ -1182,9 +1203,16 @@
       ]
     },
     "3020": {
+      "doorRando": [
+        {
+          "nop": [ "0x12902E-0x129056" ]
+        }
+      ],
       "doors": [
         {
-          "target": "3010"
+          "id": 0,
+          "target": "3010",
+          "entranceId": 0
         }
       ],
       "items": [
@@ -1211,15 +1239,26 @@
       ]
     },
     "3030": {
+      "doorRando": [
+        {
+          "nop": [ "0x1597F4-0x159858" ]
+        }
+      ],
       "doors": [
         {
-          "target": "3010"
+          "id": 1,
+          "target": "3010",
+          "entranceId": 0
         },
         {
-          "target": "3040"
+          "id": 0,
+          "target": "3040",
+          "entranceId": 1
         },
         {
-          "target": "3050"
+          "id": 2,
+          "target": "3050",
+          "entranceId": 2
         }
       ],
       "items": [
@@ -1238,13 +1277,27 @@
       ]
     },
     "3040": {
+      "doorRando": [
+        {
+          "nop": [ "0x1652D4-0x16532E" ]
+        }
+      ],
       "doors": [
         {
-          "target": "3030"
+          "id": 1,
+          "target": "3030",
+          "entranceId": 0
         },
         {
+          "id": 0,
+          "target": "3050",
+          "entranceId": 1
+        },
+        {
+          "id": 2,
           "target": "3060",
-          "requires": [ 61, 78 ]
+          "requires": [ 61, 78 ],
+          "entranceId": 2
         }
       ],
       "items": [
@@ -1257,9 +1310,27 @@
       ]
     },
     "3050": {
+      "doorRando": [
+        {
+          "nop": [ "0x15F2DE-0x15F33A", "0x15F33C-0x15F3AE" ]
+        }
+      ],
       "doors": [
         {
-          "target": "3030"
+          "id": 0,
+          "target": "3030",
+          "entranceId": 0
+        },
+        {
+          "id": 1,
+          "target": "3040",
+          "entranceId": 1
+        },
+        {
+          "id": 2,
+          "target": "3060",
+          "lock": "side",
+          "entranceId": 2
         }
       ],
       "items": [
@@ -1282,13 +1353,29 @@
       ]
     },
     "3060": {
+      "doorRando": [
+        {
+          "nop": [ "0x7098E-0x70A62" ]
+        }
+      ],
       "doors": [
         {
-          "target": "3040"
+          "id": 8,
+          "altId": 9,
+          "target": "3040",
+          "entranceId": 0
         },
         {
+          "id": 9,
+          "target": "3050",
+          "doorRando": false,
+          "entranceId": 2
+        },
+        {
+          "id": 10,
           "target": "3070",
-          "requires": [ 119 ]
+          "requires": [ 119 ],
+          "entranceId": 1
         }
       ],
       "items": [
@@ -1319,9 +1406,16 @@
       ]
     },
     "3070": {
+      "doorRando": [
+        {
+          "nop": [ "0x832AC-0x832E4" ]
+        }
+      ],
       "doors": [
         {
-          "target": "3060"
+          "id": 5,
+          "target": "3060",
+          "entranceId": 0
         }
       ],
       "items": [

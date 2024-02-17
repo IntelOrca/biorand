@@ -13,6 +13,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
     public class ReCvRandomiser : BaseRandomiser
     {
         private AfsFile? _rdxAfs;
+        private AfsFile? _systemAfs;
         private RandomizedRdt[] _rdts = new RandomizedRdt[205];
         private byte[] _elf = new byte[0];
 
@@ -129,20 +130,20 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             UdfEditor? udfEditor = null;
             try
             {
-                FileIdentifier? afsFileId;
+                FileIdentifier? rdxAfsFileId;
                 FileIdentifier? elfFileId;
                 using (progress.BeginTask(null, "Reading ISO file"))
                 {
                     udfEditor = new Ps2IsoTools.UDF.UdfEditor(input, output);
-                    afsFileId = udfEditor.GetFileByName("RDX_LNK.AFS");
-                    if (afsFileId == null)
+                    rdxAfsFileId = udfEditor.GetFileByName("RDX_LNK.AFS");
+                    if (rdxAfsFileId == null)
                         throw new BioRandUserException("RDX_LNK.AFS not found in ISO");
 
                     elfFileId = udfEditor.GetFileByName("SLUS_201.84");
                     if (elfFileId == null)
                         throw new BioRandUserException("SLUS_201.84 not found in ISO");
 
-                    _rdxAfs = ReadRdxAfs(udfEditor, afsFileId);
+                    _rdxAfs = ReadRdxAfs(udfEditor, rdxAfsFileId);
                     _elf = ReadFile(udfEditor, elfFileId);
                 }
 
@@ -172,7 +173,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
                 using (progress.BeginTask(null, "Creating ISO file"))
                 {
-                    udfEditor.ReplaceFileStream(afsFileId, new MemoryStream(_rdxAfs!.Data.ToArray()));
+                    udfEditor.ReplaceFileStream(rdxAfsFileId, new MemoryStream(_rdxAfs!.Data.ToArray()));
                     udfEditor.ReplaceFileStream(elfFileId, new MemoryStream(_elf));
                     udfEditor.Rebuild(output);
                 }

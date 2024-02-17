@@ -91,6 +91,7 @@ namespace IntelOrca.Biohazard.BioRand
         public int Texture { get; set; }
         public int? Special { get; set; }
         public int? Id { get; set; }
+        public int? AltId { get; set; }
         public JsonElement[]? Offsets { get; set; }
         public byte? Cut { get; set; }
         public MapRoomDoorEntrance? Entrance { get; set; }

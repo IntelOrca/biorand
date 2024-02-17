@@ -76,6 +76,10 @@ namespace IntelOrca.Biohazard.BioRand
                 if (offsets.Length == 0)
                 {
                     OverrideDoor(id, target, (byte)destination.Id!.Value);
+                    if (edge.Raw.AltId is int altId)
+                    {
+                        OverrideDoor(altId, target, (byte)destination.Id!.Value);
+                    }
                 }
             }
             else
