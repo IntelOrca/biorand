@@ -2331,15 +2331,20 @@
       ]
     },
     "5010": {
+      "doorRando": [
+        {
+          "nop": [ "0x9E1CC-0x9E2B0" ]
+        }
+      ],
       "doors": [
         {
-          "id": 0,
+          "id": 2,
           "target": "5001",
           "requires": [ 65 ],
           "entranceId": 3
         },
         {
-          "id": 1,
+          "id": 4,
           "target": "5020",
           "entranceId": 4
         }
