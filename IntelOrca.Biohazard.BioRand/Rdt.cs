@@ -70,6 +70,7 @@ namespace IntelOrca.Biohazard.BioRand
                         opcode.Data[3] = (byte)target.Stage;
                         opcode.Data[4] = (byte)target.Room;
                         opcode.Data[5] = (byte)destination.Id.Value;
+                        opcode.Data[6] = 0;
                     }
                 }
 

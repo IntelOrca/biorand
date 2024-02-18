@@ -1453,16 +1453,28 @@
       ]
     },
     "4000": {
+      "doorRando": [
+        {
+          "nop": [ "0x1E2462-0x1E24BA" ]
+        }
+      ],
       "doors": [
         {
-          "target": "4020"
+          "id": 0,
+          "target": "4020",
+          "entranceId": 2
         },
         {
+          "id": 1,
           "target": "4030",
-          "lock": "side"
+          "lock": "side",
+          "entranceId": 3
         },
         {
-          "target": "40C0"
+          "id": 2,
+          "target": "40C0",
+          "entranceId": 1,
+          "doorRando": false
         }
       ],
       "items": [
@@ -1474,15 +1486,32 @@
       ]
     },
     "4011": {
+      "doorRando": [
+        {
+          "nop": [ "0x92AA0-0x92AD6", "0x92B80-0x92BD2" ]
+        }
+      ],
       "doors": [
         {
-          "target": "4080"
+          "id": 1,
+          "target": "4080",
+          "entranceId": 2
         },
         {
-          "target": "40F0"
+          "id": 3,
+          "target": "40F0",
+          "entranceId": 1
         },
         {
-          "target": "4110"
+          "id": 7,
+          "target": "4110",
+          "entranceId": 3
+        },
+        {
+          "id": 2,
+          "target": "40C0",
+          "lock": "side",
+          "entranceId": 0
         }
       ],
       "items": [
@@ -1496,12 +1525,21 @@
       ]
     },
     "4020": {
+      "doorRando": [
+        {
+          "nop": [ "0x16D8C6-0x16D952" ]
+        }
+      ],
       "doors": [
         {
-          "target": "4000"
+          "id": 0,
+          "target": "4000",
+          "entranceId": 1
         },
         {
-          "target": "4090"
+          "id": 1,
+          "target": "4090",
+          "entranceId": 0
         }
       ],
       "items": [
@@ -1513,19 +1551,26 @@
       ]
     },
     "4030": {
+      "doorRando": [
+        {
+          "nop": [ "0x1460DE-0x14611A" ]
+        }
+      ],
       "doors": [
         {
-          "target": "4000"
+          "id": 0,
+          "target": "4000",
+          "entranceId": 1
         },
         {
-          "target": "4040"
+          "id": 1,
+          "target": "4040",
+          "entranceId": 2
         },
         {
-          "target": "40C0",
-          "lock": "side"
-        },
-        {
-          "target": "4160"
+          "id": 2,
+          "target": "4160",
+          "entranceId": 0
         }
       ],
       "items": [
@@ -1539,7 +1584,9 @@
     "4040": {
       "doors": [
         {
-          "target": "4030"
+          "id": 0,
+          "target": "4030",
+          "entranceId": 0
         }
       ],
       "items": [
@@ -1575,12 +1622,21 @@
       ]
     },
     "4050": {
+      "doorRando": [
+        {
+          "nop": [ "0x19DEA2-0x19DEE0" ]
+        }
+      ],
       "doors": [
         {
-          "target": "4060"
+          "id": 4,
+          "target": "4060",
+          "entranceId": 0
         },
         {
-          "target": "4080"
+          "id": 3,
+          "target": "4080",
+          "entranceId": 1
         }
       ],
       "items": [
@@ -1606,7 +1662,9 @@
     "4060": {
       "doors": [
         {
-          "target": "4050"
+          "id": 1,
+          "target": "4050",
+          "entranceId": 0
         }
       ],
       "items": [
@@ -1618,9 +1676,16 @@
       ]
     },
     "4070": {
+      "doorRando": [
+        {
+          "nop": [ "0x16C90E-0x16C93A" ]
+        }
+      ],
       "doors": [
         {
-          "target": "4080"
+          "id": 0,
+          "target": "4080",
+          "entranceId": 0
         }
       ],
       "items": [
@@ -1665,22 +1730,43 @@
       ]
     },
     "4080": {
+      "doorRando": [
+        {
+          "nop": [ "0x9F81E-0x9F8C8" ]
+        }
+      ],
       "doors": [
         {
+          "id": 2,
           "target": "4011",
-          "requires": [ 62 ]
+          "requires": [ 62 ],
+          "entranceId": 0
         },
         {
-          "target": "4050"
+          "id": 0,
+          "target": "4050",
+          "entranceId": 1
         },
         {
-          "target": "4070"
+          "id": 1,
+          "target": "4070",
+          "entranceId": 2
         },
         {
-          "target": "4090"
+          "id": 3,
+          "target": "4090",
+          "entranceId": 3
         },
         {
-          "target": "40D0"
+          "id": 6,
+          "target": "40D0",
+          "entranceId": 5
+        },
+        {
+          "id": 5,
+          "target": "4000",
+          "entranceId": 4,
+          "doorRando": true
         }
       ],
       "items": [
@@ -1699,16 +1785,33 @@
       ]
     },
     "4090": {
+      "doorRando": [
+        {
+          "nop": [ "0xA9D6E-0xA9D8C" ]
+        }
+      ],
       "doors": [
         {
-          "target": "20C0"
+          "id": 1,
+          "target": "20C0",
+          "entranceId": 0
         },
         {
+          "id": 0,
           "target": "4020",
-          "lock": "side"
+          "lock": "side",
+          "entranceId": 3
         },
         {
-          "target": "4080"
+          "id": 3,
+          "target": "4080",
+          "entranceId": 2
+        },
+        {
+          "id": 2,
+          "target": "5040",
+          "lock": "side",
+          "entranceId": 1
         }
       ],
       "items": [
@@ -1720,6 +1823,11 @@
       ]
     },
     "40A0": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "target": "40F0"
@@ -1741,12 +1849,15 @@
     "40B0": {
       "doorRando": [
         {
-          "category": "box"
+          "category": "box",
+          "nop": [ "0x38C7C-0x38C8C" ]
         }
       ],
       "doors": [
         {
-          "target": "40F0"
+          "id": 0,
+          "target": "40F0",
+          "entranceId": 0
         }
       ],
       "items": [
@@ -1773,16 +1884,27 @@
       ]
     },
     "40C0": {
+      "doorRando": [
+        {
+          "nop": [ "0x1AB208-0x1AB222", "0x1AB4CA-0x1AB514" ]
+        }
+      ],
       "doors": [
         {
-          "target": "4000"
+          "id": 2,
+          "target": "4000",
+          "entranceId": 2
         },
         {
-          "target": "4030",
-          "requires": [ 76 ]
+          "id": 1,
+          "target": "4011",
+          "requires": [ 76 ],
+          "entranceId": 0
         },
         {
-          "target": "4160"
+          "id": 4,
+          "target": "4160",
+          "entranceId": 1
         }
       ],
       "items": [
@@ -1819,10 +1941,14 @@
     "40D0": {
       "doors": [
         {
-          "target": "4080"
+          "id": 0,
+          "target": "4080",
+          "entranceId": 0
         },
         {
-          "target": "40E0"
+          "id": 1,
+          "target": "40E0",
+          "entranceId": 1
         }
       ],
       "items": [
@@ -1846,7 +1972,9 @@
     "40E0": {
       "doors": [
         {
-          "target": "40D0"
+          "id": 0,
+          "target": "40D0",
+          "entranceId": 0
         }
       ],
       "items": [
@@ -1866,15 +1994,26 @@
       ]
     },
     "40F0": {
+      "doorRando": [
+        {
+          "nop": [ "0x723E2-0x724F6" ]
+        }
+      ],
       "doors": [
         {
-          "target": "4011"
+          "id": 1,
+          "target": "4011",
+          "entranceId": 0
         },
         {
-          "target": "40A0"
+          "id": 2,
+          "target": "40A0",
+          "entranceId": 2
         },
         {
-          "target": "40B0"
+          "id": 0,
+          "target": "40B0",
+          "entranceId": 1
         }
       ],
       "items": [
@@ -1893,25 +2032,31 @@
       ]
     },
     "4100": {
+      "doorRando": [
+        {
+          "nop": [ "0x16A4A8-0x16A4DE" ]
+        }
+      ],
       "doors": [
         {
           "id": 0,
-          "target": "4140"
+          "target": "4140",
+          "entranceId": 0
         },
         {
           "id": 1,
-          "target": "4120"
+          "target": "40A0",
+          "entranceId": 2
         },
         {
           "id": 2,
-          "target": "4110"
+          "target": "4110",
+          "entranceId": 1
         },
         {
           "id": 3,
-          "target": "4120"
-        },
-        {
-          "target": "40A0"
+          "target": "4120",
+          "entranceId": 3
         }
       ],
       "items": [
@@ -1937,30 +2082,66 @@
       ]
     },
     "4110": {
+      "doorRando": [
+        {
+          "nop": [ "0x17E2BC-0x17E302", "0x17E3CC-0x17E3DC" ]
+        }
+      ],
       "doors": [
         {
-          "target": "4011"
+          "id": 16,
+          "target": "4011",
+          "entranceId": 2
         },
         {
-          "target": "4100"
+          "id": 1,
+          "target": "4100",
+          "entranceId": 1,
+          "doorRando": false
         },
         {
-          "target": "4150"
+          "id": 3,
+          "target": "4150",
+          "entranceId": 0,
+          "doorRando": false
+        },
+        {
+          "id": 1,
+          "target": "4100",
+          "entranceId": 1,
+          "requires": [ 76 ],
+          "doorRando": true
+        },
+        {
+          "id": 3,
+          "target": "4150",
+          "entranceId": 0,
+          "requires": [ 76 ],
+          "doorRando": true
         }
       ]
     },
     "4120": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
+          "id": 0,
+          "target": "4100",
+          "entranceId": 0
+        },
+        {
           "id": 1,
-          "target": "4100"
+          "target": "4100",
+          "entranceId": 1
         },
         {
-          "id": 8,
-          "target": "4100"
-        },
-        {
-          "target": "4130"
+          "id": 2,
+          "target": "4130",
+          "entranceId": 2
         }
       ],
       "items": [
@@ -1973,13 +2154,28 @@
       ]
     },
     "4130": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
+        {
+          "target": "4120"
+        },
         {
           "target": "4120"
         }
       ]
     },
     "4140": {
+      "doors": [
+        {
+          "id": 0,
+          "target": "4100",
+          "entranceId": 0
+        }
+      ],
       "items": [
         {
           "id": 1,
@@ -1996,12 +2192,21 @@
       ]
     },
     "4150": {
+      "doorRando": [
+        {
+          "nop": [ "0x145F8C-0x145FAE" ]
+        }
+      ],
       "doors": [
         {
-          "target": "4110"
+          "id": 0,
+          "target": "4110",
+          "entranceId": 0
         },
         {
-          "target": "4160"
+          "id": 1,
+          "target": "4160",
+          "entranceId": 1
         }
       ],
       "items": [
@@ -2013,6 +2218,11 @@
       ]
     },
     "4160": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "target": "4030"
@@ -2033,12 +2243,26 @@
       ]
     },
     "5000": {
+      "doorRando": [
+        {
+          "nop": [ "0x18776A-0x187850" ]
+        }
+      ],
       "doors": [
         {
-          "target": "5010"
+          "id": 0,
+          "target": "5010",
+          "entranceId": 1
         },
         {
-          "target": "5030"
+          "id": 1,
+          "target": "5010",
+          "entranceId": 2
+        },
+        {
+          "id": 3,
+          "target": "5030",
+          "entranceId": 0
         }
       ],
       "items": [
@@ -2057,9 +2281,16 @@
       ]
     },
     "5001": {
+      "doorRando": [
+        {
+          "nop": [ "0x178D3E-0x178D76" ]
+        }
+      ],
       "doors": [
         {
-          "target": "5011"
+          "id": 0,
+          "target": "5011",
+          "entranceId": 3
         }
       ],
       "items": [
@@ -2069,7 +2300,8 @@
           "type": 20,
           "amount": 1,
           "priority": "low",
-          "offsets": [ 1543102, 1543744 ]
+          "offsets": [ 1543102, 1543744 ],
+          "doorRando": false
         },
         {
           "id": 254,
@@ -2077,46 +2309,79 @@
           "type": 75,
           "amount": 1,
           "offsets": [ 1543856 ],
-          "priority": "fixed"
+          "priority": "fixed",
+          "doorRando": false
+        },
+        {
+          "id": 5,
+          "globalId": 245,
+          "type": 20,
+          "amount": 1,
+          "offsets": [ 1543102, 1543744 ],
+          "doorRando": true
+        },
+        {
+          "id": 254,
+          "globalId": 26,
+          "type": 75,
+          "amount": 1,
+          "offsets": [ 1543856 ],
+          "doorRando": true
         }
       ]
     },
     "5010": {
       "doors": [
         {
-          "target": "5000"
+          "id": 0,
+          "target": "5001",
+          "requires": [ 65 ],
+          "entranceId": 3
         },
         {
-          "target": "5020"
-        },
-        {
-          "target": "6000",
-          "requires": [ 69, 70, 71 ]
+          "id": 1,
+          "target": "5020",
+          "entranceId": 4
         }
       ]
     },
     "5011": {
       "doors": [
         {
-          "target": "5001",
-          "requires": [ 65 ]
+          "id": 0,
+          "target": "5000",
+          "entranceId": 1
         },
         {
-          "target": "5020"
+          "id": 5,
+          "target": "6000",
+          "requires": [ 69, 70, 71 ],
+          "entranceId": 5
         }
       ]
     },
     "5020": {
+      "doorRando": [
+        {
+          "nop": [ "0x180D34-0x180E3A" ]
+        }
+      ],
       "doors": [
         {
-          "target": "5010"
+          "id": 1,
+          "target": "5010",
+          "entranceId": 0
         },
         {
-          "target": "5011"
+          "id": 2,
+          "target": "5011",
+          "entranceId": 2
         },
         {
+          "id": 0,
           "target": "5040",
-          "requires": [ 75 ]
+          "requires": [ 75 ],
+          "entranceId": 1
         }
       ],
       "items": [
@@ -2135,19 +2400,35 @@
       ]
     },
     "5030": {
+      "doorRando": [
+        {
+          "nop": [ "0x69AE4-0x69B5C" ]
+        }
+      ],
       "doors": [
         {
-          "target": "5000"
+          "id": 5,
+          "target": "5000",
+          "entranceId": 0
         },
         {
-          "target": "5050"
+          "id": 4,
+          "target": "5050",
+          "entranceId": 1
         }
       ]
     },
     "5040": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
-          "target": "5020"
+          "id": 0,
+          "target": "5020",
+          "entranceId": 2
         }
       ],
       "items": [
@@ -2235,6 +2516,11 @@
       ]
     },
     "6010": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "target": "6000"
