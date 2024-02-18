@@ -38,9 +38,16 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 // Softlock can occur if you enter 305 via ladder without picking up silver key
                 Patch(gameData, RdtId.Parse("3060"), 0x70A10 + 6, 0x00);
 
+            }
+            if (!config.RandomDoors)
+            {
                 // Change condition for going into 4011 so that it happens straight after Alfred cutscene
                 Patch(gameData, RdtId.Parse("4080"), 0x9F86C + 2, 0xC5);
                 Patch(gameData, RdtId.Parse("40F0"), 0x7241C + 2, 0xC5);
+            }
+            else
+            {
+                SetFlag(gameData, RdtId.Parse("4080"), 1, 211, 0);
             }
 
             // Force Steve to appear at airport
