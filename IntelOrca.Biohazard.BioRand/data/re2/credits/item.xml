@@ -1,0 +1,514 @@
+﻿<Items>
+    <Item name="" id="">
+        <Data max="0" col="NONE" />
+    </Item>
+    <Item name="Knife" id="ID_KNIFE">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Hand Gun" id="ID_HAND_GUN_0">
+        <Data max="18" col="GREEN">
+            <Mix with="ID_H_GUN_BULLETS" result="ID_HAND_GUN_0" type="IM_RELOAD_0" />
+            <Mix with="ID_H_GUN_PARTS" result="ID_C_HAND_GUN" type="IM_COMBINE" pic="0" />
+        </Data>
+    </Item>
+    <Item name="Hand Gun" id="ID_HAND_GUN_1">
+        <Data max="13" col="GREEN">
+            <Mix with="ID_H_GUN_BULLETS" result="ID_HAND_GUN_0" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="C. Hand Gun" id="ID_C_HAND_GUN">
+        <Data max="18" col="GREEN">
+            <Mix with="ID_H_GUN_BULLETS" result="ID_HAND_GUN_0" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="Magnum" id="ID_MAGNUM">
+        <Data max="8" col="GREEN">
+            <Mix with="ID_M_BULLETS" result="ID_MAGNUM" type="IM_RELOAD_0" />
+            <Mix with="ID_MAGNUM_PARTS" result="ID_C_MAGNUM" type="IM_COMBINE" pic="1" />
+        </Data>
+    </Item>
+    <Item name="C. Magnum" id="ID_C_MAGNUM">
+        <Data max="8" col="GREEN">
+            <Mix with="ID_M_BULLETS" result="ID_MAGNUM" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="Shotgun" id="ID_SHOTGUN">
+        <Data max="5" col="GREEN">
+            <Mix with="ID_SHOTGUN_SHELLS" result="ID_SHOTGUN" type="IM_RELOAD_0" />
+            <Mix with="ID_SHOTGUN_PARTS" result="ID_C_SHOTGUN" type="IM_COMBINE" pic="2" />
+        </Data>
+    </Item>
+    <Item name="C. Shotgun" id="ID_C_SHOTGUN">
+        <Data max="7" col="GREEN">
+            <Mix with="ID_SHOTGUN_SHELLS" result="ID_SHOTGUN" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="G. Launcher" id="ID_G_LAUNCHER_0">
+        <Data max="250" col="BLUE">
+            <Mix with="ID_G_ROUNDS" result="ID_G_LAUNCHER_0" type="IM_RELOAD_0" />
+            <Mix with="ID_FLAME_ROUNDS" result="ID_G_LAUNCHER_0" type="IM_LAUNCH_X" pic="3" />
+            <Mix with="ID_ACID_ROUNDS" result="ID_G_LAUNCHER_0" type="IM_LAUNCH_X" pic="3" />
+        </Data>
+    </Item>
+    <Item name="G. Launcher" id="ID_G_LAUNCHER_1">
+        <Data max="250" col="RED">
+            <Mix with="ID_FLAME_ROUNDS" result="ID_G_LAUNCHER_1" type="IM_RELOAD_0" />
+            <Mix with="ID_G_ROUNDS" result="ID_G_LAUNCHER_1" type="IM_LAUNCH_X" pic="4" />
+            <Mix with="ID_ACID_ROUNDS" result="ID_G_LAUNCHER_1" type="IM_LAUNCH_X" pic="4" />
+        </Data>
+    </Item>
+    <Item name="G. Launcher" id="ID_G_LAUNCHER_2">
+        <Data max="250" col="YELLOW">
+            <Mix with="ID_ACID_ROUNDS" result="ID_G_LAUNCHER_2" type="IM_RELOAD_0" />
+            <Mix with="ID_G_ROUNDS" result="ID_G_LAUNCHER_2" type="IM_LAUNCH_X" pic="5" />
+            <Mix with="ID_FLAME_ROUNDS" result="ID_G_LAUNCHER_2" type="IM_LAUNCH_X" pic="5" />
+        </Data>
+    </Item>
+    <Item name="Bow Gun" id="ID_BOW_GUN">
+        <Data max="18" col="GREEN">
+            <Mix with="ID_BOW_GUN_BOLTS" result="ID_BOW_GUN" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="Colt S.A.A." id="ID_COLT_SAA">
+        <Data max="6" col="GREEN">
+            <Mix with="ID_H_GUN_BULLETS" result="ID_HAND_GUN_0" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="Spark Shot" id="ID_SPARK_SHOT">
+        <Data max="100" col="GREEN,PERCENTAGE">
+            <Mix with="ID_S_SHOT_BULLETS" result="ID_SPARK_SHOT" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="S. Machine Gun" id="ID_S_MACHINE_GUN">
+        <Data max="100" col="GREEN,PERCENTAGE">
+            <Mix with="ID_MG_BULLETS" result="ID_S_MACHINE_GUN" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="Flamethrower" id="ID_FLAMETHROWER">
+        <Data max="100" col="RED,PERCENTAGE">
+            <Mix with="ID_FUEL" result="ID_FLAMETHROWER" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="R. Launcher" id="ID_R_LAUNCHER">
+        <Data max="4" col="GREEN" />
+    </Item>
+    <Item name="Gatling Gun" id="ID_GATLING_GUN">
+        <Data max="100" col="GREEN,PERCENTAGE" />
+    </Item>
+    <Item name="Hand Gun" id="ID_HAND_GUN_2">
+        <Data max="15" col="GREEN">
+            <Mix with="ID_H_GUN_BULLETS" result="ID_HAND_GUN_0" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="H. Gun Bullets" id="ID_H_GUN_BULLETS">
+        <Data max="250" col="BLUE">
+            <Mix with="ID_HAND_GUN_0" result="ID_HAND_GUN_0" type="IM_RELOAD_1" />
+            <Mix with="ID_HAND_GUN_1" result="ID_HAND_GUN_1" type="IM_RELOAD_1" />
+            <Mix with="ID_C_HAND_GUN" result="ID_C_HAND_GUN" type="IM_RELOAD_1" />
+            <Mix with="ID_COLT_SAA" result="ID_COLT_SAA" type="IM_RELOAD_1" />
+            <Mix with="ID_HAND_GUN_2" result="ID_HAND_GUN_2" type="IM_RELOAD_1" />
+            <Mix with="ID_H_GUN_BULLETS" result="ID_H_GUN_BULLETS" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="Shotgun Shells" id="ID_SHOTGUN_SHELLS">
+        <Data max="250" col="BLUE">
+            <Mix with="ID_SHOTGUN" result="ID_SHOTGUN" type="IM_RELOAD_1" />
+            <Mix with="ID_C_SHOTGUN" result="ID_C_SHOTGUN" type="IM_RELOAD_1" />
+            <Mix with="ID_SHOTGUN_SHELLS" result="ID_SHOTGUN_SHELLS" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="M. Bullets" id="ID_M_BULLETS">
+        <Data max="250" col="BLUE">
+            <Mix with="ID_MAGNUM" result="ID_MAGNUM" type="IM_RELOAD_1" />
+            <Mix with="ID_C_MAGNUM" result="ID_C_MAGNUM" type="IM_RELOAD_1" />
+            <Mix with="ID_M_BULLETS" result="ID_M_BULLETS" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="Fuel" id="ID_FUEL">
+        <Data max="100" col="RED,PERCENTAGE">
+            <Mix with="ID_FLAMETHROWER" result="ID_FLAMETHROWER" type="IM_RELOAD_1" />
+            <Mix with="ID_FUEL" result="ID_FUEL" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="G. Rounds" id="ID_G_ROUNDS">
+        <Data max="250" col="BLUE">
+            <Mix with="ID_G_LAUNCHER_0" result="ID_G_LAUNCHER_0" type="IM_RELOAD_1" />
+            <Mix with="ID_G_LAUNCHER_1" result="ID_G_LAUNCHER_0" type="IM_LAUNCH_F" pic="4" />
+            <Mix with="ID_G_LAUNCHER_2" result="ID_G_LAUNCHER_0" type="IM_LAUNCH_F" pic="5" />
+            <Mix with="ID_G_ROUNDS" result="ID_G_ROUNDS" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="Flame Rounds" id="ID_FLAME_ROUNDS">
+        <Data max="250" col="RED">
+            <Mix with="ID_G_LAUNCHER_1" result="ID_G_LAUNCHER_1" type="IM_RELOAD_1" />
+            <Mix with="ID_G_LAUNCHER_0" result="ID_G_LAUNCHER_1" type="IM_LAUNCH_F" pic="3" />
+            <Mix with="ID_G_LAUNCHER_2" result="ID_G_LAUNCHER_1" type="IM_LAUNCH_F" pic="5" />
+            <Mix with="ID_FLAME_ROUNDS" result="ID_FLAME_ROUNDS" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="Acid Rounds" id="ID_ACID_ROUNDS">
+        <Data max="250" col="YELLOW">
+            <Mix with="ID_G_LAUNCHER_2" result="ID_G_LAUNCHER_2" type="IM_RELOAD_1" />
+            <Mix with="ID_G_LAUNCHER_0" result="ID_G_LAUNCHER_2" type="IM_LAUNCH_F" pic="3" />
+            <Mix with="ID_G_LAUNCHER_1" result="ID_G_LAUNCHER_2" type="IM_LAUNCH_F" pic="4" />
+            <Mix with="ID_ACID_ROUNDS" result="ID_ACID_ROUNDS" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="M.G. Bullets" id="ID_MG_BULLETS">
+        <Data max="100" col="BLUE,PERCENTAGE">
+            <Mix with="ID_S_MACHINE_GUN" result="ID_S_MACHINE_GUN" type="IM_RELOAD_1" />
+            <Mix with="ID_MG_BULLETS" result="ID_MG_BULLETS" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="S. Shot Bullets" id="ID_S_SHOT_BULLETS">
+        <Data max="100" col="BLUE,PERCENTAGE">
+            <Mix with="ID_SPARK_SHOT" result="ID_SPARK_SHOT" type="IM_RELOAD_1" />
+            <Mix with="ID_S_SHOT_BULLETS" result="ID_S_SHOT_BULLETS" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="Bow Gun Bolts" id="ID_BOW_GUN_BOLTS">
+        <Data max="240" col="BLUE">
+            <Mix with="ID_BOW_GUN" result="ID_BOW_GUN" type="IM_RELOAD_1" />
+            <Mix with="ID_BOW_GUN_BOLTS" result="ID_BOW_GUN_BOLTS" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="Ink Ribbon" id="ID_INK_RIBBON">
+        <Data max="250" col="GREEN">
+            <Mix with="ID_INK_RIBBON" result="ID_INK_RIBBON" type="IM_RELOAD_0" />
+        </Data>
+    </Item>
+    <Item name="Small Key" id="ID_SMALL_KEY">
+        <Data max="250" col="GREEN" />
+    </Item>
+    <Item name="H. Gun Parts" id="ID_H_GUN_PARTS">
+        <Data max="1" col="NONE">
+            <Mix with="ID_HAND_GUN_0" result="ID_C_HAND_GUN" type="IM_COMBINE" pic="0" />
+        </Data>
+    </Item>
+    <Item name="Magnum Parts" id="ID_MAGNUM_PARTS">
+        <Data max="1" col="NONE">
+            <Mix with="ID_MAGNUM" result="ID_C_MAGNUM" type="IM_COMBINE" pic="1" />
+        </Data>
+    </Item>
+    <Item name="Shotgun Parts" id="ID_SHOTGUN_PARTS">
+        <Data max="1" col="NONE">
+            <Mix with="ID_SHOTGUN" result="ID_C_SHOTGUN" type="IM_COMBINE" pic="2" />
+        </Data>
+    </Item>
+    <Item name="F. Aid Spray" id="ID_F_AID_SPRAY">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Anti-virus bomb" id="ID_ANTIVIRUS_BOMB">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Chemical AC-W24" id="ID_CHEMICAL_ACW24">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Green Herb" id="ID_GREEN_HERB">
+        <Data max="1" col="NONE">
+            <Mix with="ID_RED_HERB" result="ID_MIXED_HERB_1" type="IM_HERB" pic="8" />
+            <Mix with="ID_GREEN_HERB" result="ID_MIXED_HERB_0" type="IM_HERB" pic="9" />
+            <Mix with="ID_BLUE_HERB" result="ID_MIXED_HERB_2" type="IM_HERB" pic="10" />
+            <Mix with="ID_MIXED_HERB_0" result="ID_MIXED_HERB_3" type="IM_HERB" pic="11" />
+            <Mix with="ID_MIXED_HERB_2" result="ID_MIXED_HERB_4" type="IM_HERB" pic="12" />
+        </Data>
+    </Item>
+    <Item name="Red Herb" id="ID_RED_HERB">
+        <Data max="1" col="NONE">
+            <Mix with="ID_GREEN_HERB" result="ID_MIXED_HERB_1" type="IM_HERB" pic="8" />
+            <Mix with="ID_MIXED_HERB_2" result="ID_MIXED_HERB_5" type="IM_HERB" pic="13" />
+        </Data>
+    </Item>
+    <Item name="Blue Herb" id="ID_BLUE_HERB">
+        <Data max="1" col="NONE">
+            <Mix with="ID_GREEN_HERB" result="ID_MIXED_HERB_2" type="IM_HERB" pic="10" />
+            <Mix with="ID_MIXED_HERB_1" result="ID_MIXED_HERB_5" type="IM_HERB" pic="13" />
+            <Mix with="ID_MIXED_HERB_0" result="ID_MIXED_HERB_4" type="IM_HERB" pic="12" />
+        </Data>
+    </Item>
+    <Item name="Mixed Herb" id="ID_MIXED_HERB_0">
+        <Data max="1" col="NONE">
+            <Mix with="ID_BLUE_HERB" result="ID_MIXED_HERB_4" type="IM_HERB" pic="12" />
+            <Mix with="ID_GREEN_HERB" result="ID_MIXED_HERB_3" type="IM_HERB" pic="11" />
+        </Data>
+    </Item>
+    <Item name="Mixed Herb" id="ID_MIXED_HERB_1">
+        <Data max="1" col="NONE">
+            <Mix with="ID_BLUE_HERB" result="ID_MIXED_HERB_5" type="IM_HERB" pic="13" />
+        </Data>
+    </Item>
+    <Item name="Mixed Herb" id="ID_MIXED_HERB_2">
+        <Data max="1" col="NONE">
+            <Mix with="ID_RED_HERB" result="ID_MIXED_HERB_5" type="IM_HERB" pic="13" />
+            <Mix with="ID_GREEN_HERB" result="ID_MIXED_HERB_4" type="IM_HERB" pic="12" />
+        </Data>
+    </Item>
+    <Item name="Mixed Herb" id="ID_MIXED_HERB_3">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Mixed Herb" id="ID_MIXED_HERB_4">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Mixed Herb" id="ID_MIXED_HERB_5">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Lighter" id="ID_LIGHTER">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Lockpick" id="ID_LOCKPICK">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Picture" id="ID_PICTURE_0">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Valve Handle" id="ID_VALVE_HANDLE">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Red Jewel" id="ID_RED_JEWEL">
+        <Data max="1" attr="ID_VIRGIN_HEART" col="NONE" />
+    </Item>
+    <Item name="Red Card Key" id="ID_RED_CARD_KEY">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Blue Card Key" id="ID_BLUE_CARD_KEY">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Serpent Stone" id="ID_SERPENT_STONE">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Jaguar Stone" id="ID_JAGUAR_STONE">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Blue Stone" id="ID_BLUE_STONE_0">
+        <Data max="1" col="NONE">
+            <Mix with="ID_BLUE_STONE_1" result="ID_JAGUAR_STONE" type="IM_COMBINE" pic="7" />
+        </Data>
+    </Item>
+    <Item name="Blue Stone" id="ID_BLUE_STONE_1">
+        <Data max="1" col="NONE">
+            <Mix with="ID_BLUE_STONE_0" result="ID_JAGUAR_STONE" type="IM_COMBINE" pic="7" />
+        </Data>
+    </Item>
+    <Item name="Eagle Stone" id="ID_EAGLE_STONE">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Bishop Plug" id="ID_BISHOP_PLUG">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Rook Plug" id="ID_ROOK_PLUG">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Knight Plug" id="ID_KNIGHT_PLUG">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="King Plug" id="ID_KING_PLUG">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="W. Box Key" id="ID_W_BOX_KEY">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Detonator" id="ID_DETONATOR">
+        <Data max="1" col="NONE">
+            <Mix with="ID_PLASTIC_BOMB" result="ID_BOMB_*_DET" type="IM_COMBINE" pic="6" />
+        </Data>
+    </Item>
+    <Item name="Plastic Bomb" id="ID_PLASTIC_BOMB">
+        <Data max="1" col="NONE">
+            <Mix with="ID_DETONATOR" result="ID_BOMB_*_DET" type="IM_COMBINE" pic="6" />
+        </Data>
+    </Item>
+    <Item name="Bomb &amp; Det." id="ID_BOMB_*_DET">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Crank" id="ID_CRANK">
+        <Data max="1" attr="ID_SQUARE_CRANK" col="NONE" />
+    </Item>
+    <Item name="Film" id="ID_FILM_0">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Film" id="ID_FILM_1">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Film" id="ID_FILM_2">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Unicorn Medal" id="ID_UNICORN_MEDAL">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Eagle Medal" id="ID_EAGLE_MEDAL">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Wolf Medal" id="ID_WOLF_MEDAL">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="G. Cogwheel" id="ID_G_COGWHEEL">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Manhole Opener" id="ID_MANHOLE_OPENER">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Main Fuse" id="ID_MAIN_FUSE">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Fuse Case" id="ID_FUSE_CASE">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Vaccine" id="ID_VACCINE">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Vaccine Cart." id="ID_VACCINE_CART">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Film" id="ID_FILM_3">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Base Vaccine" id="ID_BASE_VACCINE">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="G-virus" id="ID_GVIRUS">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Special Key" id="ID_SPECIAL_KEY">
+        <Data max="1" attr="ID_LOCKER_KEY" col="NONE" />
+    </Item>
+    <Item name="Joint S Plug" id="ID_JOINT_S_PLUG">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Joint N Plug" id="ID_JOINT_N_PLUG">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Cord" id="ID_CORD">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Picture" id="ID_PICTURE_1">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Cabin Key" id="ID_CABIN_KEY">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Precinct Key" id="ID_PRECINCT_KEY_0">
+        <Data max="1" attr="ID_SPADE_KEY" col="NONE" />
+    </Item>
+    <Item name="Precinct Key" id="ID_PRECINCT_KEY_1">
+        <Data max="1" attr="ID_DIAMOND_KEY" col="NONE" />
+    </Item>
+    <Item name="Precinct Key" id="ID_PRECINCT_KEY_2">
+        <Data max="1" attr="ID_HEART_KEY" col="NONE" />
+    </Item>
+    <Item name="Precinct Key" id="ID_PRECINCT_KEY_3">
+        <Data max="1" attr="ID_CLUB_KEY" col="NONE" />
+    </Item>
+    <Item name="C. Panel Key" id="ID_C_PANEL_KEY_0">
+        <Data max="1" attr="ID_DOWN_KEY" col="NONE" />
+    </Item>
+    <Item name="C. Panel Key" id="ID_C_PANEL_KEY_1">
+        <Data max="1" attr="ID_UP_KEY" col="NONE" />
+    </Item>
+    <Item name="P. Room Key" id="ID_P_ROOM_KEY">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="MO disk" id="ID_MO_DISK">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Lab Card Key" id="ID_LAB_CARD_KEY">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Master Key" id="ID_MASTER_KEY">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="Platform Key" id="ID_PLATFORM_KEY">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="no item" id="ID_NO_ITEM_0">
+        <Data max="1" col="NONE" />
+    </Item>
+    <Item name="no item" />
+    <Item name="no item" />
+    <Item name="no item" />
+    <Item name="CHRIS&apos;s diary">
+        <File pages="5" back_h="112" />
+    </Item>
+    <Item name="Mail to Chris">
+        <File pages="5" back_h="80" />
+    </Item>
+    <Item name="Memo to LEON">
+        <File pages="1" back_h="80" />
+    </Item>
+    <Item name="Police memorandum">
+        <File pages="2" back_h="80" />
+    </Item>
+    <Item name="Operation report 1">
+        <File pages="9" back_h="80" />
+    </Item>
+    <Item name="Mail to the chief">
+        <File pages="9" back_h="80" />
+    </Item>
+    <Item name="Mail to the chief">
+        <File pages="9" back_h="80" />
+    </Item>
+    <Item name="Secretary&apos;s diary A">
+        <File pages="6" back_h="112" />
+    </Item>
+    <Item name="Secretary&apos;s diary B">
+        <File pages="4" back_h="112" />
+    </Item>
+    <Item name="Operation report 2">
+        <File pages="6" back_h="80" />
+    </Item>
+    <Item name="User registration">
+        <File pages="1" back_h="128" />
+    </Item>
+    <Item name="Film A">
+        <File pages="2" back_h="144" />
+    </Item>
+    <Item name="Film B">
+        <File pages="3" back_h="144" />
+    </Item>
+    <Item name="Film C">
+        <File pages="2" back_h="144" />
+    </Item>
+    <Item name="Patrol report">
+        <File pages="3" back_h="112" />
+    </Item>
+    <Item name="Watchman&apos;s diary">
+        <File pages="8" back_h="80" />
+    </Item>
+    <Item name="Chief&apos;s diary">
+        <File pages="6" back_h="80" />
+    </Item>
+    <Item name="Sewer manager diary">
+        <File pages="9" back_h="80" />
+    </Item>
+    <Item name="Sewer manager fax">
+        <File pages="5" back_h="80" />
+    </Item>
+    <Item name="Film D">
+        <File pages="1" back_h="144" />
+    </Item>
+    <Item name="Vaccine synthesis">
+        <File pages="6" back_h="80" />
+    </Item>
+    <Item name="Lab security manual">
+        <File pages="5" back_h="80" />
+    </Item>
+    <Item name="Guest list">
+        <File pages="69" back_h="80" />
+    </Item>
+    <Item name="Rookie files">
+        <File pages="15" back_h="80" />
+    </Item>
+    <Item name="Rookie files">
+        <File pages="18" back_h="80" />
+    </Item>
+    <Item name="no item" id="ID_NO_ITEM_4" />
+    <Item name="Spade Key" id="ID_SPADE_KEY" />
+    <Item name="Diamond Key" id="ID_DIAMOND_KEY" />
+    <Item name="Desk Key" id="ID_DESK_KEY" />
+    <Item name="Heart Key" id="ID_HEART_KEY" />
+    <Item name="Club Key" id="ID_CLUB_KEY" />
+    <Item name="Virgin Heart" id="ID_VIRGIN_HEART" />
+    <Item name="Square Crank" id="ID_SQUARE_CRANK" />
+    <Item name="Down Key" id="ID_DOWN_KEY" />
+    <Item name="Up Key" id="ID_UP_KEY" />
+    <Item name="Locker Key" id="ID_LOCKER_KEY" />
+</Items>

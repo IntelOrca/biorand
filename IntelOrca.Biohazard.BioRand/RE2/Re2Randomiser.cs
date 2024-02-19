@@ -927,6 +927,9 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             File.Copy(
                 Path.Combine(srcPath, "footsteps.xml"),
                 Path.Combine(dstPath, "footsteps.xml"));
+            File.Copy(
+                Path.Combine(srcPath, "item.xml"),
+                Path.Combine(dstPath, "item.xml"));
 
             // HD
             var dstHiRes = Path.GetFullPath(Path.Combine(dstPath, "..", "hires"));
