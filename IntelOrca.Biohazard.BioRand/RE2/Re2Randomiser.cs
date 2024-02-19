@@ -1000,7 +1000,17 @@ namespace IntelOrca.Biohazard.BioRand.RE2
                 var dstFile = Path.Combine(dstPath, f);
                 var dstFolder = Path.GetDirectoryName(dstFile);
                 Directory.CreateDirectory(dstFolder);
-                File.Copy(srcFile, dstFile, true);
+                if (dstFile.EndsWith(".sap.ogg", StringComparison.OrdinalIgnoreCase))
+                {
+                    dstFile = dstFile.Substring(0, dstFile.Length - 4);
+                    var wavBuilder = new WaveformBuilder();
+                    wavBuilder.Append(srcFile);
+                    wavBuilder.Save(dstFile);
+                }
+                else
+                {
+                    File.Copy(srcFile, dstFile, true);
+                }
             }
         }
 
