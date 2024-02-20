@@ -118,6 +118,8 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 throw new BioRandUserException("RE3 installation must be enabled to randomize RE3.");
             }
 
+            config.RandomNPCs = false;
+            config.RandomEnemies = false;
             config.RandomEnemyPlacement = false;
             config.RandomCutscenes = false;
             config.RandomEvents = false;

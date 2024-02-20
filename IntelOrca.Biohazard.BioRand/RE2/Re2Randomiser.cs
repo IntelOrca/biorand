@@ -972,7 +972,6 @@ namespace IntelOrca.Biohazard.BioRand.RE2
 
                     var dd = msgBuilderEn.Messages[targetIndex].Data.ToList();
                     dd[1] = 0;
-                    // dd[dd.Count - 1] = 0xA0;
                     dd.RemoveAt(dd.Count - 1);
                     dd.RemoveAt(dd.Count - 1);
                     dd.Add(0xFA);

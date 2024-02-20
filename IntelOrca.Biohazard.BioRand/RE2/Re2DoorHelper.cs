@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using IntelOrca.Biohazard.Room;
+using IntelOrca.Biohazard.Script.Opcodes;
 
 namespace IntelOrca.Biohazard.BioRand.RE2
 {
@@ -38,6 +40,8 @@ namespace IntelOrca.Biohazard.BioRand.RE2
 
         public void End(RandoConfig config, GameData gameData, Map map)
         {
+            PreventWrongScenario(config, gameData);
+
             // See https://github.com/IntelOrca/biorand/issues/265
             var rdt = gameData.GetRdt(new RdtId(0, 0x0D));
             if (rdt == null || rdt.Version != BioVersion.Biohazard2 || config.Player != 1)
@@ -89,6 +93,44 @@ namespace IntelOrca.Biohazard.BioRand.RE2
 
             rdt.Patches.Add(new KeyValuePair<int, byte>(0x056A + 1, 0x22));
             rdt.Patches.Add(new KeyValuePair<int, byte>(0x056A + 2, 0x1D));
+        }
+
+        private void PreventWrongScenario(RandoConfig config, GameData gameData)
+        {
+            RandomizedRdt? rdt = null;
+            var alert = "RANDOMIZED FOR WRONG SCENARIO COMBINATION!";
+            if (config.Scenario == 1)
+            {
+                // 100 cannot be start
+                rdt = gameData.GetRdt(new RdtId(0, 0x00));
+            }
+            else
+            {
+                // 104 cannot be start
+                rdt = gameData.GetRdt(new RdtId(0, 0x04));
+            }
+            if (rdt != null)
+            {
+                ShowRoomAlert(rdt, alert);
+            }
+        }
+
+        private void ShowRoomAlert(RandomizedRdt rdt, string alert)
+        {
+            var rdtBuilder = ((Rdt2)rdt.RdtFile).ToBuilder();
+            var enbuilder = rdtBuilder.MSGEN.ToBuilder();
+            var jabuilder = rdtBuilder.MSGJA.ToBuilder();
+            enbuilder.Messages.Add(alert.ToMsg(MsgLanguage.English, BioVersion.Biohazard2));
+            jabuilder.Messages.Add(alert.ToMsg(MsgLanguage.Japanese, BioVersion.Biohazard2));
+            rdtBuilder.MSGEN = enbuilder.ToMsgList();
+            rdtBuilder.MSGJA = jabuilder.ToMsgList();
+            rdt.RdtFile = rdtBuilder.ToRdt();
+
+            var msgId = (byte)(enbuilder.Messages.Count - 1);
+            // rdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x06, new byte[] { 0x00, 0x0E, 0x00 }));
+            // rdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x23, new byte[] { 0x00, 0x1B, 0x00, 0x00, 0x00 }));
+            rdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x2B, new byte[] { 0x00, msgId, 0x00, 0xFF, 0xFF }));
+            // rdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x08, new byte[] { 0x00 }));
         }
     }
 }

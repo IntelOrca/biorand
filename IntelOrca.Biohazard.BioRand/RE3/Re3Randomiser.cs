@@ -97,6 +97,9 @@ namespace IntelOrca.Biohazard.BioRand.RE3
                 throw new BioRandUserException("RE3 installation must be enabled to randomize RE3.");
             }
 
+            config.SwapCharacters = false;
+            config.RandomEvents = false;
+
             GenerateRdts(config, progress, fileRepository);
 
             DisableDemo();

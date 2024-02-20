@@ -20,6 +20,12 @@
   ],
   "rooms": {
     "100": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "scenario": 1
+        }
+      ],
       "doors": [
         {
           "target": "101",
@@ -113,6 +119,12 @@
       ]
     },
     "104": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "scenario": 0
+        }
+      ],
       "doors": [
         {
           "target": "105"

@@ -565,6 +565,9 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void AppendFrameOpcodes()
         {
+            if (AdditionalFrameOpcodes.Count == 0)
+                return;
+
             if (RdtFile is RdtCv cv)
             {
                 var rdtBuilder = cv.ToBuilder();
@@ -606,8 +609,21 @@ namespace IntelOrca.Biohazard.BioRand
                 rdtBuilder.Script = scriptBuilder.ToProcedureList();
                 RdtFile = rdtBuilder.ToRdt();
             }
-            else
+            else if (Version == BioVersion.Biohazard2 && RdtFile is Rdt2 rdt2)
             {
+                var ms = new MemoryStream();
+                var bw = new BinaryWriter(ms);
+                foreach (var opcode in AdditionalFrameOpcodes)
+                {
+                    opcode.Write(bw);
+                }
+
+                var rdtBuilder = rdt2.ToBuilder();
+                var scdBuilder = rdtBuilder.SCDMAIN.ToBuilder();
+                bw.Write(scdBuilder.Procedures[1].Data);
+                scdBuilder.Procedures[1] = new ScdProcedure(scdBuilder.Version, ms.ToArray());
+                rdtBuilder.SCDMAIN = scdBuilder.ToProcedureList();
+                RdtFile = rdtBuilder.ToRdt();
             }
         }
 
