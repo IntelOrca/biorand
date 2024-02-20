@@ -2501,6 +2501,7 @@
         }
       ],
       "items": [
+        // Claire non-door rando, items are optional
         {
           "id": 3,
           "priorty": "low",
@@ -2539,6 +2540,28 @@
           "doorRando": false,
           "player": 1
         },
+
+        // Leon non-door rando
+        {
+          "id": 19,
+          "requires": [ 47 ],
+          "player": 0,
+          "doorRando": false
+        },
+        {
+          "id": 20,
+          "requires": [ 47 ],
+          "player": 0,
+          "doorRando": false
+        },
+
+        // Door rando
+        {
+          "id": 16,
+          "requires": [ 47 ],
+          "player": 1,
+          "doorRando": true
+        },
         {
           "id": 19,
           "requires": [ 47 ],
@@ -2547,6 +2570,7 @@
         {
           "id": 20,
           "requires": [ 47 ],
+          "player": 0,
           "doorRando": true
         }
       ]
