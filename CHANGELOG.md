@@ -1,25 +1,25 @@
 BioRand v3.2.5 (2024-02-20)
 
-* [Feature] Enable or disable hidden key items.
-* [Feature] RE 2, add Steve G1 skin.
-* [Feature] RE 2, add Randy Rando.
 * [Feature] Add BGM for RE 0 (N64) and RE 7.
-* [Feature] Replace weapon slider with list selection.
+* [Feature] Enable or disable hidden key items.
 * [Feature] RE 1, add Andy, Eveline, Mark, Niikolai (RE3R), and Sherry (RE2R) as playable characters.
 * [Feature] RE 1, add Jessica (Revelations), Jill (BSAA) (RE 5), Jim (Outbreak), and Misty (RE 2) as playable characters.
 * [Feature] RE 2, add Cindy (Outbreak), Jim (Outbreak) as playable characters.
 * [Feature] RE 2, add Claire (CV), Irving (RE 5), Jill (BSAA) (RE 5), and Jack Baker (RE 7) as playable characters.
-* [Enhancement] Update and add more voice lines.
-* [Enhancement] RE 2, orca skin, updated sounds.
+* [Feature] RE 2, add Randy Rando.
+* [Feature] RE 2, add Steve G1 skin.
+* [Feature] Replace weapon slider with list selection.
 * [Enhancement] Include soft segment enders in single segment door randos.
 * [Enhancement] RE 1, randomize main hall doors.
+* [Enhancement] RE 2, orca skin, updated sounds.
 * [Enhancement] RE 2, prevent playing wrong scenario.
+* [Enhancement] Update and add more voice lines.
 * [Change] RE 1, 108, randomize dogs to any enemy.
+* [Fix] #823: RE 1, generation gets stuck rather than showing message.
 * [Fix] Missing hurt sounds for Nikolai and Tyrell.
 * [Fix] Random events sometimes enabled for RE 1 and RE 3.
-* [Fix] #823: RE 1, generation gets stuck rather than showing message.
-* [Fix] Same seed produces different enemies across devices.
 * [Fix] RE 2, room 403, lighter requires lighter.
+* [Fix] Same seed produces different enemies across devices.
 
 BioRand v3.2.4 (2024-01-27)
 
