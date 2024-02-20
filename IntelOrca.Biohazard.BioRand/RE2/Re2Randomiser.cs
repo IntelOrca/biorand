@@ -919,10 +919,6 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             var srcPath = DataManager.GetPath(BiohazardVersion, "credits");
             var dstPath = fileRepository.GetModPath("");
 
-            var enable = Path.Combine(srcPath, "enable");
-            if (!File.Exists(enable))
-                return;
-
             CopyFolder(Path.Combine(srcPath, "common"), dstPath);
             File.Copy(
                 Path.Combine(srcPath, "footsteps.xml"),
