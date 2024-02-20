@@ -5,7 +5,8 @@ BioRand v3.2.5 (2024-02-20)
 * [Feature] RE 2, add Randy Rando.
 * [Feature] Add BGM for RE 0 (N64) and RE 7.
 * [Feature] Replace weapon slider with list selection.
-* [Feature] RE 1, add Andy, Eveline, Mark, Niikolai (RE3R), and Sherry (RE2R) as playable character.
+* [Feature] RE 1, add Andy, Eveline, Mark, Niikolai (RE3R), and Sherry (RE2R) as playable characters.
+* [Feature] RE 1, add Jessica (Revelations), Jill (BSAA) (RE 5), Jim (Outbreak), and Misty (RE 2) as playable characters.
 * [Feature] RE 2, add Cindy (Outbreak), Jim (Outbreak) as playable characters.
 * [Feature] RE 2, add Claire (CV), Irving (RE 5), Jill (BSAA) (RE 5), and Jack Baker (RE 7) as playable characters.
 * [Enhancement] Update and add more voice lines.
