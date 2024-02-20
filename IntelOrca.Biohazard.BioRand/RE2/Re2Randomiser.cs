@@ -955,6 +955,36 @@ namespace IntelOrca.Biohazard.BioRand.RE2
             });
 
             var rdtBuilder = ((Rdt2)Rdt.FromFile(BiohazardVersion, Path.Combine(srcPath, "room2170.rdt"))).ToBuilder();
+
+            var credits = File.ReadAllLines(Path.Combine(srcPath, "credits.txt"))
+                .Where(x => !string.IsNullOrEmpty(x))
+                .ToArray();
+            if (credits.Length != 0)
+            {
+                var msgBuilderEn = rdtBuilder.MSGEN.ToBuilder();
+                var msgBuilderJa = rdtBuilder.MSGJA.ToBuilder();
+                for (var i = 0; i < credits.Length; i++)
+                {
+                    var targetIndex = 11 + i;
+                    var msgText = credits[i].Replace("\\n", "\n");
+                    msgBuilderEn.Messages[targetIndex] = msgText.ToMsg(MsgLanguage.English, BioVersion.Biohazard2, false);
+                    msgBuilderJa.Messages[targetIndex] = msgText.ToMsg(MsgLanguage.Japanese, BioVersion.Biohazard2, false);
+
+                    var dd = msgBuilderEn.Messages[targetIndex].Data.ToList();
+                    dd[1] = 0;
+                    // dd[dd.Count - 1] = 0xA0;
+                    dd.RemoveAt(dd.Count - 1);
+                    dd.RemoveAt(dd.Count - 1);
+                    dd.Add(0xFA);
+                    dd.Add(0x01);
+                    dd.Add(0xFE);
+                    dd.Add(0xA0);
+                    msgBuilderEn.Messages[targetIndex] = new Msg(BioVersion.Biohazard2, MsgLanguage.English, dd.ToArray());
+                }
+                rdtBuilder.MSGEN = msgBuilderEn.ToMsgList();
+                rdtBuilder.MSGJA = msgBuilderJa.ToMsgList();
+            }
+
             var dialogue = File.ReadAllLines(Path.Combine(srcPath, "dialogue.txt"))
                 .Select(x => x.Trim())
                 .Where(x => !string.IsNullOrEmpty(x))
@@ -964,7 +994,6 @@ namespace IntelOrca.Biohazard.BioRand.RE2
                 var msgBag = new EndlessBag<string>(rng, dialogue);
                 var msgBuilderEn = rdtBuilder.MSGEN.ToBuilder();
                 var msgBuilderJa = rdtBuilder.MSGJA.ToBuilder();
-                var text = new List<string>();
                 for (var i = 39; i < msgBuilderEn.Messages.Count; i++)
                 {
                     var msgText = msgBag.Next();
