@@ -1,4 +1,26 @@
-BioRand v3.2.4 (2023-01-27)
+BioRand v3.2.5 (2024-02-20)
+
+* [Feature] Enable or disable hidden key items.
+* [Feature] RE 2, add Steve G1 skin.
+* [Feature] RE 2, add Randy Rando.
+* [Feature] Add BGM for RE 0 (N64) and RE 7.
+* [Feature] Replace weapon slider with list selection.
+* [Feature] RE 1, add Andy, Eveline, Mark, Niikolai (RE3R), and Sherry (RE2R) as playable character.
+* [Feature] RE 2, add Cindy (Outbreak), Jim (Outbreak) as playable characters.
+* [Feature] RE 2, add Claire (CV), Irving (RE 5), Jill (BSAA) (RE 5), and Jack Baker (RE 7) as playable characters.
+* [Enhancement] Update and add more voice lines.
+* [Enhancement] RE 2, orca skin, updated sounds.
+* [Enhancement] Include soft segment enders in single segment door randos.
+* [Enhancement] RE 1, randomize main hall doors.
+* [Enhancement] RE 2, prevent playing wrong scenario.
+* [Change] RE 1, 108, randomize dogs to any enemy.
+* [Fix] Missing hurt sounds for Nikolai and Tyrell.
+* [Fix] Random events sometimes enabled for RE 1 and RE 3.
+* [Fix] #823: RE 1, generation gets stuck rather than showing message.
+* [Fix] Same seed produces different enemies across devices.
+* [Fix] RE 2, room 403, lighter requires lighter.
+
+BioRand v3.2.4 (2024-01-27)
 
 * [Feature] RE 2, add orca dog enemy skin.
 * [Change] RE 2, room 613, larvae removed from room due to #797.
@@ -12,12 +34,12 @@ BioRand v3.2.4 (2023-01-27)
 * [Fix] #810: RE 3, room 103, arms crash.
 * [Fix] RE 2, room 403, lighter placed in dark.
 
-BioRand v3.2.3 (2023-01-14)
+BioRand v3.2.3 (2024-01-14)
 
 * [Fix] #786: RE 1, room 301, crash due to bees.
 * [Fix] Last room appearing in any segment.
 
-BioRand v3.2.2 (2023-01-13)
+BioRand v3.2.2 (2024-01-13)
 
 * [Change] RE 2, improve trade NPC message.
 * [Change] Tweak health item ratio.
@@ -31,7 +53,7 @@ BioRand v3.2.2 (2023-01-13)
 * [Fix] RE 3, room 20F, crash when NPC is Irons.
 * [Fix] generation error when randomize NPCs is disabled.
 
-BioRand v3.2.1 (2023-01-04)
+BioRand v3.2.1 (2024-01-04)
 
 * [Fix] #756: RE 1, room 10F, Jill softlock when using music notes.
 * [Fix] #757: RE 2, room 309, random event crash.
