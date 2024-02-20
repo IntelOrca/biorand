@@ -81,6 +81,9 @@
                         <TextBlock FontSize="16">IntelOrca - programmer</TextBlock>
                         <TextBlock FontSize="16">Snipz - testing, animations, models, voices</TextBlock>
                         <TextBlock FontSize="16">Kashup - testing, models, textures, voices</TextBlock>
+                        <TextBlock FontSize="16">Zky3sdge - models</TextBlock>
+                        <TextBlock FontSize="16">Resevilnemesis30 - Randy Rando</TextBlock>
+                        <TextBlock FontSize="16">SikShadow - Randy Rando songs</TextBlock>
                         <TextBlock FontSize="16">baesik - testing</TextBlock>
                         <TextBlock FontSize="16">Death2024 - testing</TextBlock>
                         <TextBlock FontSize="16">gonta2319 - testing</TextBlock>
@@ -96,9 +99,10 @@
                         <TextBlock FontSize="16">StarringRole - models</TextBlock>
                         <TextBlock FontSize="16">UniComics - textures</TextBlock>
                         <TextBlock FontSize="16">Us3r_Cr0ft - animations, models</TextBlock>
-                        <TextBlock FontSize="16">Zky3sdge - models</TextBlock>
                         <TextBlock FontSize="16">HazNut - a bugfix</TextBlock>
+                        <TextBlock FontSize="16">Grchman - model conversions</TextBlock>
                         <TextBlock FontSize="16">re_duke - RDT information</TextBlock>
+                        <TextBlock FontSize="16">kapdap - RE:CVX information</TextBlock>
                         <TextBlock FontSize="16">Classic RE Modding community discord</TextBlock>
                     </StackPanel>
                     <StackPanel Margin="12,16,0,0">

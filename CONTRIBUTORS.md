@@ -4,6 +4,8 @@
 * **Snipz** -  testing, animations, models, voices
 * **Kashup** - testing, models, textures, voices
 * **Zky3sdge** - models
+* **Resevilnemesis30** - Randy Rando
+* **SikShadow** - Randy Rando songs
 * **baesik** - testing
 * **Death2024** - testing
 * **gonta2319** - testing
@@ -20,6 +22,8 @@
 * **UniComics** - textures
 * **Us3r_Cr0ft** - animations, models
 * **HazNut** - a bugfix
+* **Grchman** - model conversions
+* **kapdap** - RE:CVX information
 * **re_duke** - RDT information
 * **Classic RE Modding community discord**
 

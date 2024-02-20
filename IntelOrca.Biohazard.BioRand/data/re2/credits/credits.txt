@@ -6,7 +6,7 @@
 }------------------}\n      {[}CONTRIBUTORS{]}
      {Resevilnemesis30}\n       Randy Rando
          {SikShadow}\n    Randy Rando Songs
-     {HazNut}, {PMCDC}\n       Programming
+ {Grchman}, {HazNut}, {PMCDC}\n        Contributions
 }------------------}\n        {[}MODELING{]}
    {ALSOP}, {Andrew Coyte},\n   {DarkSpyda04}, {Komizo}
     {El Rincon del Lobezno},\n       {Leigi}, {ncf}, {Rusty},
