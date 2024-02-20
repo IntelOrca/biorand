@@ -52,6 +52,8 @@ namespace IntelOrca.Biohazard.BioRand
             txtWhatsNewTitle.Text = txtWhatsNewTitle.Text.Replace("{VERSION}", Program.CurrentVersionNumber);
 
 #if DISABLE_CVX
+            if (SelectedGame == 3)
+                SelectedGame = -3;
             gameListView.Items.RemoveAt(3);
             gameLocationCV.Visibility = Visibility.Collapsed;
 #endif
