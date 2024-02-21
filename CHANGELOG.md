@@ -1,3 +1,7 @@
+BioRand v3.2.6 (2024-02-21)
+
+* [Fix] Randy Rando when Japanese text is enabled.
+
 BioRand v3.2.5 (2024-02-20)
 
 * [Feature] Add BGM for RE 0 (N64) and RE 7.
