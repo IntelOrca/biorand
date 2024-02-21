@@ -964,7 +964,11 @@ namespace IntelOrca.Biohazard.BioRand.RE2
                     var targetIndex = 11 + i;
                     var msgText = credits[i].Replace("\\n", "\n");
                     msgBuilderEn.Messages[targetIndex] = msgText.ToMsg(MsgLanguage.English, BioVersion.Biohazard2, false);
-                    msgBuilderJa.Messages[targetIndex] = msgText.ToMsg(MsgLanguage.Japanese, BioVersion.Biohazard2, false);
+                    msgBuilderJa.Messages[targetIndex] =
+                        string.Join("\n", msgText
+                            .Split(new[] { '\n' })
+                            .Select(x => x.Trim()))
+                        .ToMsg(MsgLanguage.Japanese, BioVersion.Biohazard2, false);
 
                     var dd = msgBuilderEn.Messages[targetIndex].Data.ToList();
                     dd[1] = 0;
@@ -975,6 +979,16 @@ namespace IntelOrca.Biohazard.BioRand.RE2
                     dd.Add(0xFE);
                     dd.Add(0xA0);
                     msgBuilderEn.Messages[targetIndex] = new Msg(BioVersion.Biohazard2, MsgLanguage.English, dd.ToArray());
+
+                    dd = msgBuilderJa.Messages[targetIndex].Data.ToList();
+                    dd[1] = 0;
+                    dd.RemoveAt(dd.Count - 1);
+                    dd.RemoveAt(dd.Count - 1);
+                    dd.Add(0xFA);
+                    dd.Add(0x01);
+                    dd.Add(0xFE);
+                    dd.Add(0xA0);
+                    msgBuilderJa.Messages[targetIndex] = new Msg(BioVersion.Biohazard2, MsgLanguage.Japanese, dd.ToArray());
                 }
                 rdtBuilder.MSGEN = msgBuilderEn.ToMsgList();
                 rdtBuilder.MSGJA = msgBuilderJa.ToMsgList();
