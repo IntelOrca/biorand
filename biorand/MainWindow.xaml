@@ -109,7 +109,7 @@
                         <TextBlock FontSize="16">Special thanks to all BioRand streamers and bug reporters!</TextBlock>
                     </StackPanel>
                 </StackPanel>
-                <StackPanel x:Name="panelConfig" Visibility="Visible">
+                <StackPanel x:Name="panelConfig" Visibility="Hidden">
                     <TextBlock>In order to generate a seed, set the location of where each Resident Evil game is installed on your system. All games need to be specified in order for content from all games to be used in the seed.</TextBlock>
                     <local:GameLocationBox x:Name="gameLocation1" Tag="0" Header="Resident Evil 1" Validate="gameLocation_Validate" Changed="gameLocation_Changed" />
                     <local:GameLocationBox x:Name="gameLocation2" Tag="1" Header="Resident Evil 2" Validate="gameLocation_Validate" Changed="gameLocation_Changed" />
@@ -129,7 +129,7 @@
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>
-                <StackPanel x:Name="panelRando" Visibility="Hidden">
+                <StackPanel x:Name="panelRando" Visibility="Visible">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -197,7 +197,7 @@
                             </StackPanel>
                         </Grid>
                     </GroupBox>
-                    <local:LeftPriorityContainer ImportantChildIndex="1" MinHeight="500">
+                    <local:LeftPriorityContainer ImportantChildIndex="2" MinHeight="500">
                         <StackPanel Width="200">
                             <local:CheckGroupBox x:Name="chkPlayer" Header="Change Player Character">
                                 <StackPanel>
