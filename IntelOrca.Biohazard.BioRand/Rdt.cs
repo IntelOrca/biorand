@@ -49,6 +49,9 @@ namespace IntelOrca.Biohazard.BioRand
             var id = edge.DoorId!.Value;
             if (Version == BioVersion.BiohazardCv)
             {
+                if (edge.Raw.Randomize == false)
+                    return;
+
                 var builder = ((RdtCv)RdtFile).ToBuilder();
                 var aot = builder.Aots[id];
                 aot.Stage = (byte)target.Stage;
@@ -132,8 +135,9 @@ namespace IntelOrca.Biohazard.BioRand
             var texture = (byte)2;
             var unk = (byte)0;
 
-            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x01, new byte[] { 0x1A }));
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x01, new byte[] { 0x1C }));
             AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x04, new byte[] { 0x0A, 0x17, 0x00, aotIndexB, 0x00 }));
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x93, new byte[] { 0x00 }));
             AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0xB6, new byte[] { variant }));
             AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x37, new byte[] { variant }));
             AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x33, new byte[] { 0x00, unk, 0x00, stage, room, exitB, texture }));

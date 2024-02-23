@@ -48,6 +48,11 @@
       ]
     },
     "1010": {
+      "doorRando": [
+        {
+          "nop": [ "0x3EF2A-0x3EF6C" ]
+        }
+      ],
       "doors": [
         {
           "id": 4,
@@ -57,8 +62,7 @@
         {
           "id": 0,
           "target": "1021",
-          "entranceId": 1,
-          "offsets": [ "0x3EF40", "0x3EF42", "0x3EF44", "0x3EF4E", "0x3EF58", "0x3EF5C", "0x3EF5E" ]
+          "entranceId": 1
         }
       ],
       "items": [
@@ -1488,7 +1492,7 @@
     "4011": {
       "doorRando": [
         {
-          "nop": [ "0x92AA0-0x92AD6", "0x92B80-0x92BD2" ]
+          "nop": [ "0x92AA0-0x92AD6", "0x92B80-0x92C26" ]
         }
       ],
       "doors": [
@@ -1760,12 +1764,16 @@
         {
           "id": 6,
           "target": "40D0",
-          "entranceId": 5
+          "entranceId": 5,
+          "requires": [ 62 ],
+          "requiresRoom": [ "40C0" ]
         },
         {
           "id": 5,
           "target": "4000",
           "entranceId": 4,
+          "requires": [ 62 ],
+          "requiresRoom": [ "40C0" ],
           "doorRando": true
         }
       ],
@@ -1948,7 +1956,9 @@
         {
           "id": 1,
           "target": "40E0",
-          "entranceId": 1
+          "entranceId": 1,
+          "requiresRoom": [ "40C0" ],
+          "lock": "unblock"
         }
       ],
       "items": [
@@ -2056,7 +2066,8 @@
         {
           "id": 3,
           "target": "4120",
-          "entranceId": 3
+          "entranceId": 3,
+          "requires": [ 76 ]
         }
       ],
       "items": [
@@ -2194,7 +2205,7 @@
     "4150": {
       "doorRando": [
         {
-          "nop": [ "0x145F8C-0x145FAE" ]
+          "nop": [ "0x145E74-0x145F2C", "0x145F8C-0x145FAE" ]
         }
       ],
       "doors": [
@@ -2252,12 +2263,12 @@
         {
           "id": 0,
           "target": "5010",
-          "entranceId": 1
+          "entranceId": 2
         },
         {
           "id": 1,
           "target": "5010",
-          "entranceId": 2
+          "entranceId": 1
         },
         {
           "id": 3,
@@ -2288,7 +2299,7 @@
       ],
       "doors": [
         {
-          "id": 0,
+          "id": 2,
           "target": "5011",
           "entranceId": 3
         }
@@ -2351,9 +2362,14 @@
       ]
     },
     "5011": {
+      "doorRando": [
+        {
+          "nop": [ "0xA4084-0xA4172" ]
+        }
+      ],
       "doors": [
         {
-          "id": 0,
+          "id": 1,
           "target": "5000",
           "entranceId": 1
         },
