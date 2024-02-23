@@ -118,6 +118,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 throw new BioRandUserException("RE3 installation must be enabled to randomize RE3.");
             }
 
+            config.SwapCharacters = false;
             config.RandomNPCs = false;
             config.RandomEnemies = false;
             config.RandomEnemyPlacement = false;
@@ -134,6 +135,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             {
                 FileIdentifier? rdxAfsFileId;
                 FileIdentifier? elfFileId;
+                FileIdentifier? systemAfsFileId;
                 using (progress.BeginTask(null, "Reading ISO file"))
                 {
                     udfEditor = new Ps2IsoTools.UDF.UdfEditor(input, output);
@@ -145,8 +147,13 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                     if (elfFileId == null)
                         throw new BioRandUserException("SLUS_201.84 not found in ISO");
 
-                    _rdxAfs = ReadRdxAfs(udfEditor, rdxAfsFileId);
+                    systemAfsFileId = udfEditor.GetFileByName("SYSTEM.AFS");
+                    if (systemAfsFileId == null)
+                        throw new BioRandUserException("SYSTEM.AFS not found in ISO");
+
+                    _rdxAfs = ReadAfs(udfEditor, rdxAfsFileId);
                     _elf = ReadFile(udfEditor, elfFileId);
+                    _systemAfs = ReadAfs(udfEditor, systemAfsFileId);
                 }
 
                 // Extract room files
@@ -177,6 +184,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 {
                     udfEditor.ReplaceFileStream(rdxAfsFileId, new MemoryStream(_rdxAfs!.Data.ToArray()));
                     udfEditor.ReplaceFileStream(elfFileId, new MemoryStream(_elf));
+                    udfEditor.ReplaceFileStream(systemAfsFileId, new MemoryStream(_systemAfs!.Data.ToArray()));
                     udfEditor.Rebuild(output);
                 }
             }
@@ -184,6 +192,37 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             {
                 udfEditor?.Dispose();
             }
+        }
+
+        internal override string[]? ChangePlayerCharacters(RandoConfig config, RandoLogger logger, GameData gameData, FileRepository fileRepository)
+        {
+            var actor = "claire.cv";
+            if (config.ChangePlayer)
+            {
+                // Change main
+                var pldPath = GetSelectedPldPath(config, config.Player);
+                if (pldPath != null)
+                {
+                    actor = Path.GetFileName(pldPath);
+                    SwapPlayerCharacter(config, logger, fileRepository, 10, actor);
+                }
+            }
+            return new[] { actor };
+        }
+
+        private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, FileRepository fileRepository, int pldIndex, string actor)
+        {
+            var originalPlayerActor = "claire.cv";
+            var srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld0\\{actor}");
+
+            logger.WriteHeading($"Randomizing Player PL{pldIndex:X2}:");
+            logger.WriteLine($"{originalPlayerActor} becomes {actor}");
+
+            var srcPldFile = Path.Combine(srcPldDir, $"unnamed_{pldIndex}.bin");
+
+            var afsBuilder = _systemAfs!.ToBuilder();
+            afsBuilder.Replace(pldIndex, File.ReadAllBytes(srcPldFile));
+            _systemAfs = afsBuilder.ToAfsFile();
         }
 
         protected override void PostGenerate(RandoConfig config, IRandoProgress progress, FileRepository fileRepository, GameData gameData)
@@ -291,7 +330,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             return new ScdProcedureList(BiohazardVersion, data2);
         }
 
-        private AfsFile ReadRdxAfs(UdfEditor editor, FileIdentifier fileId)
+        private AfsFile ReadAfs(UdfEditor editor, FileIdentifier fileId)
         {
             var data = ReadFile(editor, fileId);
             return new AfsFile(data);

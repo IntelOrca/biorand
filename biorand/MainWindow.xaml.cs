@@ -1140,40 +1140,35 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void UpdatePlayerDropdowns()
         {
-            if (SelectedGame == 3)
+            var randomizer = GetRandomizer();
+            var dropdownLabels = new[] { lblPlayer0, lblPlayer1 };
+            var dropdowns = new[] { dropdownPlayer0, dropdownPlayer1 };
+            for (int i = 0; i < 2; i++)
             {
-                chkPlayer.Visibility = Visibility.Hidden;
+                var label = dropdownLabels[i];
+                var dropdown = dropdowns[i];
+                label.Text = $"{randomizer.GetPlayerName(i)} becomes:";
+                var items = new List<string>() { "Random" };
+                items.AddRange(randomizer.GetPlayerCharacters(i));
+                dropdown.ItemsSource = items;
+                if (dropdown.SelectedIndex == -1)
+                    dropdown.SelectedIndex = 0;
+            }
+
+            if (SelectedGame >= 2)
+            {
+                lblPlayer1.Visibility = Visibility.Collapsed;
+                dropdownPlayer1.Visibility = Visibility.Collapsed;
             }
             else
             {
-                var randomizer = GetRandomizer();
-                var dropdownLabels = new[] { lblPlayer0, lblPlayer1 };
-                var dropdowns = new[] { dropdownPlayer0, dropdownPlayer1 };
-                for (int i = 0; i < 2; i++)
-                {
-                    var label = dropdownLabels[i];
-                    var dropdown = dropdowns[i];
-                    label.Text = $"{randomizer.GetPlayerName(i)} becomes:";
-                    var items = new List<string>() { "Random" };
-                    items.AddRange(randomizer.GetPlayerCharacters(i));
-                    dropdown.ItemsSource = items;
-                    if (dropdown.SelectedIndex == -1)
-                        dropdown.SelectedIndex = 0;
-                }
-
-                if (SelectedGame >= 2)
-                {
-                    lblPlayer1.Visibility = Visibility.Collapsed;
-                    dropdownPlayer1.Visibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    lblPlayer1.Visibility = Visibility.Visible;
-                    dropdownPlayer1.Visibility = Visibility.Visible;
-                }
-                chkSwapCharacters.Visibility = SelectedGame != 2 ? Visibility.Visible : Visibility.Hidden;
-                chkPlayer.Visibility = Visibility.Visible;
+                lblPlayer1.Visibility = Visibility.Visible;
+                dropdownPlayer1.Visibility = Visibility.Visible;
             }
+            chkSwapCharacters.Visibility = SelectedGame == 0 || SelectedGame == 1 ?
+                Visibility.Visible :
+                Visibility.Hidden;
+            chkPlayer.Visibility = Visibility.Visible;
         }
 
         private void UpdateItems()
