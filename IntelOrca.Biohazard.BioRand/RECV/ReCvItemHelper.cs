@@ -322,7 +322,11 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             switch (type)
             {
                 case ReCvItemIds.M1P:
+                case ReCvItemIds.GoldLugers:
+                case ReCvItemIds.SubMachineGun:
                 case ReCvItemIds.RocketLauncher:
+                case ReCvItemIds.AssaultRifle:
+                case ReCvItemIds.SniperRifle:
                     return 2;
                 default:
                     return 1;
