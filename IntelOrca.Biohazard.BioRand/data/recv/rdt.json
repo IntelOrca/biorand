@@ -494,7 +494,16 @@
           "id": 12,
           "globalId": 6,
           "type": 51,
-          "amount": 1
+          "amount": 1,
+          "doorRando": false
+        },
+        {
+          "id": 12,
+          "globalId": 6,
+          "type": 51,
+          "amount": 1,
+          "priority": "low",
+          "doorRando": true
         },
         {
           "id": 13,
@@ -2205,7 +2214,7 @@
     "4150": {
       "doorRando": [
         {
-          "nop": [ "0x145E74-0x145F2C", "0x145F8C-0x145FAE" ]
+          "nop": [ "0x145E74-0x145FAE" ]
         }
       ],
       "doors": [
@@ -2222,7 +2231,8 @@
       ],
       "items": [
         {
-          "id": 2,
+          "id": 9,
+          "globalId": 244,
           "type": 12,
           "amount": 15
         }
