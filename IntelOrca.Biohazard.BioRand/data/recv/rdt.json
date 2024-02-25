@@ -1987,6 +1987,11 @@
       ]
     },
     "40E0": {
+      "doorRando": [
+        {
+          "nop": [ "0x1B22A2" ]
+        }
+      ],
       "doors": [
         {
           "id": 0,
@@ -1999,23 +2004,22 @@
           "id": 11,
           "globalId": 25,
           "type": 77,
-          "amount": 1,
-          "doorRando": false
-        },
-        {
-          "id": 11,
-          "globalId": 25,
-          "type": 77,
-          "amount": 1,
-          "priority": "low",
-          "doorRando": true
+          "amount": 1
         },
         {
           "id": 12,
           "globalId": 233,
           "type": 16,
           "amount": 6,
-          "priority": "low"
+          "priority": "low",
+          "doorRando": false
+        },
+        {
+          "id": 12,
+          "globalId": 233,
+          "type": 16,
+          "amount": 6,
+          "doorRando": true
         }
       ]
     },
