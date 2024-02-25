@@ -29,16 +29,17 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             // Force window cutscene on item interaction
             Nop(gameData, RdtId.Parse("1070"), 0x1819AE);
 
+            // Delete Steve/Alfred cutscene
+            Nop(gameData, RdtId.Parse("3050"), 0x15F288, 0x15F2DA);
+            Nop(gameData, RdtId.Parse("3050"), 0x15EEDC, 0x15EEF6);
+
             if (!config.RandomDoors)
             {
-                // Delete Steve/Alfred cutscene
-                Nop(gameData, RdtId.Parse("3050"), 0x15F288, 0x15F2DA);
-                Nop(gameData, RdtId.Parse("3050"), 0x15EEDC, 0x15EEF6);
-
                 // Softlock can occur if you enter 305 via ladder without picking up silver key
                 Patch(gameData, RdtId.Parse("3060"), 0x70A10 + 6, 0x00);
 
             }
+
             if (!config.RandomDoors)
             {
                 // Change condition for going into 4011 so that it happens straight after Alfred cutscene

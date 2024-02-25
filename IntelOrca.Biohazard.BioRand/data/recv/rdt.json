@@ -2001,7 +2001,16 @@
           "id": 11,
           "globalId": 25,
           "type": 77,
-          "amount": 1
+          "amount": 1,
+          "doorRando": false
+        },
+        {
+          "id": 11,
+          "globalId": 25,
+          "type": 77,
+          "amount": 1,
+          "priority": "low",
+          "doorRando": true
         },
         {
           "id": 12,
@@ -2387,7 +2396,8 @@
           "id": 5,
           "target": "6000",
           "requires": [ 69, 70, 71 ],
-          "entranceId": 5
+          "entranceId": 5,
+          "offsets": [ "0xA4848", "0xA4852", "0xA485C" ]
         }
       ]
     },
