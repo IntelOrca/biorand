@@ -644,6 +644,7 @@
       "doors": [
         {
           "id": 3,
+          "condition": "!1:137",
           "target": "1040",
           "entranceId": 0,
           "lock": "unblock"

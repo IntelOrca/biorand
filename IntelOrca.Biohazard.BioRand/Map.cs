@@ -87,6 +87,7 @@ namespace IntelOrca.Biohazard.BioRand
 
     public class MapRoomDoor
     {
+        public string? Condition { get; set; }
         public bool Create { get; set; }
         public int Texture { get; set; }
         public int? Special { get; set; }

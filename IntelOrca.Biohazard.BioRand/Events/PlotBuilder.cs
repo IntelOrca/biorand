@@ -415,7 +415,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                 switch (expr)
                 {
                     case ScdCondition.Flag flagExpr:
-                        return new SbCk(new ReFlag(flagExpr.Group, flagExpr.Index), true);
+                        return new SbCk(new ReFlag(flagExpr.Group, (byte)flagExpr.Index), true);
                     case ScdCondition.Variable varExpr:
                         return new SbCmp(varExpr.Index, varExpr.Value, true);
                     case ScdCondition.And andExpr:
@@ -424,7 +424,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
                     {
                         if (nExpr.Child is ScdCondition.Flag flagExpr)
                         {
-                            return new SbCk(new ReFlag(flagExpr.Group, flagExpr.Index), false);
+                            return new SbCk(new ReFlag(flagExpr.Group, (byte)flagExpr.Index), false);
                         }
                         else if (nExpr.Child is ScdCondition.Variable varExpr)
                         {
