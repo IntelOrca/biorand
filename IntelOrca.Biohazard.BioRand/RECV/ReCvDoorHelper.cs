@@ -61,7 +61,8 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                     return;
 
                 SetFlag(gameData, RdtId.Parse("6000"), 1, 35, 0);
-                SetFlag(gameData, RdtId.Parse("6000"), 1, 264, 0);
+                SetFlag(gameData, RdtId.Parse("6000"), 1, 261, 0);
+                // SetFlag(gameData, RdtId.Parse("6000"), 1, 264, 0);
             }
         }
 
