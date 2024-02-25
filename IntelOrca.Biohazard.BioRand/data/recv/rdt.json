@@ -1125,16 +1125,13 @@
       ]
     },
     "20E0": {
-      "doorRando": [
-        {
-          "nop": [ "0x5274A-0x527B8" ]
-        }
-      ],
+      "doorRando": [],
       "doors": [
         {
           "id": 0,
           "target": "20D0",
-          "entranceId": 0
+          "entranceId": 0,
+          "offsets": [ "0x5276E", "0x52778", "0x52782", "0x5278E", "0x52798", "0x527A2" ]
         },
         {
           "id": 1,
@@ -2495,11 +2492,7 @@
       ]
     },
     "5050": {
-      "doorRando": [
-        {
-          "nop": [ "0x5274A-0x527B8" ]
-        }
-      ],
+      "doorRando": [],
       "doors": [
         {
           "id": 1,
@@ -2510,7 +2503,8 @@
         {
           "id": 0,
           "target": "5030",
-          "entranceId": 0
+          "entranceId": 0,
+          "offsets": [ "0x5276E", "0x52778", "0x52782", "0x5278E", "0x52798", "0x527A2" ]
         }
       ]
     },

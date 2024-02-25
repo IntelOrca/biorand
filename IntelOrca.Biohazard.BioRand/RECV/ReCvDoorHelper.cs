@@ -29,6 +29,12 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             // Force window cutscene on item interaction
             Nop(gameData, RdtId.Parse("1070"), 0x1819AE);
 
+            if (config.RandomDoors)
+            {
+                SetFlag(gameData, RdtId.Parse("20E0"), 1, 19, 0);
+                SetFlag(gameData, RdtId.Parse("5040"), 1, 19, 1);
+            }
+
             // Delete Steve/Alfred cutscene
             Nop(gameData, RdtId.Parse("3050"), 0x15F288, 0x15F2DA);
             Nop(gameData, RdtId.Parse("3050"), 0x15EEDC, 0x15EEF6);
