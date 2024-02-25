@@ -615,8 +615,7 @@
         {
           "id": 0,
           "target": "10E0",
-          "entranceId": 0,
-          "condition": "!4:5"
+          "entranceId": 0
         }
       ],
       "items": [
