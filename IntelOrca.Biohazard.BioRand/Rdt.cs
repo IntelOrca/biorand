@@ -135,13 +135,29 @@ namespace IntelOrca.Biohazard.BioRand
             var texture = (byte)2;
             var unk = (byte)0;
 
+            // if
             AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x01, new byte[] { 0x1C }));
             AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x04, new byte[] { 0x0A, 0x17, 0x00, aotIndexB, 0x00 }));
+
+            // bg_se_off_2
+            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x92, new byte[] { 0x00 }));
+
+            // bgm_off_2
             AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x93, new byte[] { 0x00 }));
+
+            // room_case_no
             AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0xB6, new byte[] { variant }));
+
+            // room_sound_case
             AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x37, new byte[] { variant }));
+
+            // set_door_call
             AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x33, new byte[] { 0x00, unk, 0x00, stage, room, exitB, texture }));
+
+            // set
             AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x05, new byte[] { 0x0A, 0x17, 0x00, aotIndexB, 0x01 }));
+
+            // endif
             AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x03, new byte[] { 0x00 }));
         }
 

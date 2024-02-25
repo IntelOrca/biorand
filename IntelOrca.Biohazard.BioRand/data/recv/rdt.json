@@ -922,7 +922,7 @@
       "doorRando": [
         {
           "category": "box",
-          "nop": [ "0x46E24-0x46EF4" ]
+          "nop": [ "0x46E7C-0x46EF4" ]
         }
       ],
       "doors": [
@@ -935,7 +935,8 @@
           "id": 1,
           "target": "2090",
           "requires": [ 33 ],
-          "entranceId": 1
+          "entranceId": 1,
+          "offsets": [ "0x46E66-0x46E6A" ]
         }
       ],
       "items": [
