@@ -2332,6 +2332,7 @@
           "globalId": 245,
           "type": 20,
           "amount": 1,
+          "requires": [ 50 ],
           "priority": "low",
           "offsets": [ 1543102, 1543744 ],
           "doorRando": false
@@ -2350,6 +2351,7 @@
           "globalId": 245,
           "type": 20,
           "amount": 1,
+          "requires": [ 50 ],
           "offsets": [ 1543102, 1543744 ],
           "doorRando": true
         },
