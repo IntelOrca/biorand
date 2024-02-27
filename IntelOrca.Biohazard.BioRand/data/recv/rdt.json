@@ -1964,6 +1964,7 @@
           "id": 1,
           "target": "40E0",
           "entranceId": 1,
+          "requires": [ 76 ],
           "requiresRoom": [ "40C0" ],
           "lock": "unblock"
         }
