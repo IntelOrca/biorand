@@ -124,7 +124,7 @@ namespace IntelOrca.Biohazard.BioRand
     public class MapRoomItem
     {
         public System.Text.Json.JsonElement[]? Nop { get; set; }
-        public int[]? Offsets { get; set; }
+        public JsonElement[]? Offsets { get; set; }
         public byte Id { get; set; }
         public byte? ItemId { get; set; }
         public short? GlobalId { get; set; }

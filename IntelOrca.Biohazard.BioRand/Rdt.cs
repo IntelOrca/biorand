@@ -29,6 +29,7 @@ namespace IntelOrca.Biohazard.BioRand
         public List<OpcodeBase> AdditionalOpcodes { get; } = new List<OpcodeBase>();
         public List<OpcodeBase> AdditionalFrameOpcodes { get; } = new List<OpcodeBase>();
         public string? CustomAdditionalScript { get; set; }
+        public List<Action> PostModifications { get; } = new List<Action>();
 
         public IEnumerable<OpcodeBase> AllOpcodes => AdditionalOpcodes.Concat(Opcodes);
         public IEnumerable<IDoorAotSetOpcode> Doors => AllOpcodes.OfType<IDoorAotSetOpcode>();
@@ -230,7 +231,8 @@ namespace IntelOrca.Biohazard.BioRand
             }
             if (hasOffsets)
             {
-                foreach (var offset in entry.Raw!.Offsets!)
+                var offsets = Map.ParseNopArray(entry.Raw!.Offsets!, this);
+                foreach (var offset in offsets)
                 {
                     SetItemAt(offset, entry.Type, entry.Amount);
                 }
@@ -516,6 +518,11 @@ namespace IntelOrca.Biohazard.BioRand
             PrependOpcodes();
             AppendFrameOpcodes();
             AddCustomScript();
+
+            foreach (var postMod in PostModifications)
+            {
+                postMod();
+            }
 
             if (ModifiedPath != null)
             {
