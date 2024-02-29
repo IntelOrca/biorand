@@ -2657,7 +2657,6 @@
         },
         {
           "id": 5,
-          "itemId": 0,
           "globalId": 258,
           "type": 20,
           "amount": 1,
@@ -2665,7 +2664,6 @@
         },
         {
           "id": 5,
-          "itemId": 6,
           "globalId": 262,
           "type": 12,
           "amount": 15,
@@ -2719,10 +2717,11 @@
         },
         {
           "id": 22,
-          "itemId": 3,
           "type": 88,
           "amount": 1,
-          "requires": [ 87 ]
+          "requires": [ 87 ],
+          "requiresRoom": [ "7060", "7070" ],
+          "offsets": [ "0x14B600" ]
         }
       ]
     },
@@ -2830,14 +2829,22 @@
       "items": [
         {
           "id": 22,
-          "itemId": 0,
           "globalId": 275,
+          "requires": [ 50 ],
+          "type": 14,
+          "amount": 6,
           "offsets": [ "0x198F32", "0x199412" ]
         }
       ],
-      "requires": [ 91 ]
+      "requires": [ 91 ],
+      "requiresRoom": [ "7070" ]
     },
     "7051": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "id": 8,
@@ -2893,12 +2900,12 @@
     "7070": {
       "doors": [
         {
-          "id": 0,
+          "id": 1,
           "target": "7060",
           "entranceId": 0
         },
         {
-          "id": 1,
+          "id": 0,
           "target": "7060",
           "entranceId": 1,
           "doorRando": false
@@ -2966,6 +2973,11 @@
       ]
     },
     "7080": {
+      "doorRando": [
+        {
+          "nop": [ "0x1BDDF8-0x1BDE30" ]
+        }
+      ],
       "doors": [
         {
           "id": 0,
@@ -2976,7 +2988,6 @@
       "items": [
         {
           "id": 2,
-          "itemId": 0,
           "globalId": 285,
           "type": 2,
           "amount": 100,
@@ -2984,7 +2995,6 @@
         },
         {
           "id": 13,
-          "itemId": 5,
           "globalId": 31,
           "type": 90,
           "amount": 1,
@@ -2992,7 +3002,6 @@
         },
         {
           "id": 3,
-          "itemId": 12,
           "globalId": 440,
           "type": 12,
           "amount": 15,
@@ -3000,7 +3009,6 @@
         },
         {
           "id": 3,
-          "itemId": 12,
           "globalId": 441,
           "type": 12,
           "amount": 15,
@@ -3008,11 +3016,17 @@
         },
         {
           "id": 3,
-          "itemId": 12,
           "globalId": 442,
           "type": 12,
           "amount": 15,
           "offsets": [ "0x1BFFBA" ]
+        },
+        {
+          "id": 14,
+          "itemId": 3,
+          "globalId": 289,
+          "type": 64,
+          "amount": 1
         }
       ]
     },
@@ -3055,7 +3069,6 @@
         },
         {
           "id": 1,
-          "itemId": 1,
           "globalId": 63,
           "type": 39,
           "amount": 1,
@@ -3064,7 +3077,6 @@
         },
         {
           "id": 13,
-          "itemId": 1,
           "globalId": 294,
           "type": 12,
           "amount": 15,
@@ -3072,7 +3084,6 @@
         },
         {
           "id": 13,
-          "itemId": 1,
           "globalId": 295,
           "type": 12,
           "amount": 15,
