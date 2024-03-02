@@ -2539,7 +2539,8 @@
           "target": "7000",
           "entranceId": 2,
           "noReturn": true,
-          "randomize": false
+          "randomize": false,
+          "isBridgeEdge": true
         }
       ],
       "items": [
@@ -2720,7 +2721,7 @@
           "type": 88,
           "amount": 1,
           "requires": [ 87 ],
-          "requiresRoom": [ "7060", "7070" ],
+          "requiresRoom": [ "7070" ],
           "offsets": [ "0x14B600" ]
         }
       ]
