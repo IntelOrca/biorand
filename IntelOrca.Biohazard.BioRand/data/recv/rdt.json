@@ -2896,6 +2896,15 @@
           "noReturn": true,
           "randomize": false
         }
+      ],
+      "items": [
+        {
+          "id": 13,
+          "globalId": 276,
+          "type": 4,
+          "amount": 6,
+          "priority": "low"
+        }
       ]
     },
     "7070": {
@@ -3096,6 +3105,29 @@
       "doorRando": [
         {
           "category": "exclude"
+        }
+      ],
+      "items": [
+        {
+          "id": 4,
+          "globalId": 296,
+          "type": 20,
+          "amount": 1,
+          "priority": "low"
+        },
+        // {
+        //   "id": 4,
+        //   "globalId": 297,
+        //   "type": 20,
+        //   "amount": 1,
+        //   "priority": "low"
+        // },
+        {
+          "id": 3,
+          "globalId": 298,
+          "type": 12,
+          "amount": 15,
+          "priority": "low"
         }
       ]
     }
