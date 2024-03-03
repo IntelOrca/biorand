@@ -1701,40 +1701,46 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 3,
+          "globalId": 214,
           "type": 21,
           "amount": 1
         },
         {
-          "id": 1,
+          "id": 5,
+          "globalId": 213,
           "type": 12,
           "amount": 15,
           "requires": [ 50 ],
-          "offsets": [ 1493722 ]
+          "offsets": [ "0x16CADA" ]
         },
         // { map
-        //   "id": 2,
+        //   "itemId": 2,
         //   "type": 74,
         //   "amount": 1
         // },
         // { shotgun shells
-        //   "id": 3,
+        //   "itemId": 3,
         //   "type": 14,
         //   "amount": 0
         // },
-        // { bow gun powder?
-        //   "id": 4,
-        //   "type": 130,
-        //   "amount": 0
-        // },
         {
-          "id": 5,
+          "id": 4,
+          "globalId": 211,
+          "type": 130,
+          "amount": 1,
+          "requires": [ 72 ],
+          "offsets": [ "0x16CC64" ]
+        },
+        {
+          "id": 7,
+          "globalId": 212,
           "type": 18,
           "amount": 30
         }
         // ,
         // { acid rounds
-        //   "id": 6,
+        //   "itemId": 6,
         //   "type": 16,
         //   "amount": 0
         // }
