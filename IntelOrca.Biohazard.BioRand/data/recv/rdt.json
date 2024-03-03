@@ -3248,6 +3248,66 @@
         }
       ]
     },
+    "8040": {
+      "doors": [
+        {
+          "id": 0,
+          "target": "8140",
+          "entrance": 0,
+          "offsets": [ "0x186118", "0x18611A" ]
+        }
+      ]
+    },
+    "8050": {
+      "doors": [
+        {
+          "id": 0,
+          "target": "80B0",
+          "entrance": 0
+        }
+      ]
+    },
+    "8060": {
+      "doors": [
+        {
+          "id": 2,
+          "target": "8070",
+          "entrance": 0,
+          "offsets": [ "0x193F12", "0x193F14", "0x193F18", "0x193F1A", "0x193F1C" ]
+        },
+        {
+          "id": 0,
+          "target": "8150",
+          "entrance": 1
+        },
+        {
+          "id": 11,
+          "target": "8010",
+          "entrance": 2,
+          "offsets": [ "0x193F36" ]
+        },
+        {
+          "id": 3,
+          "target": "8080",
+          "entrance": 3,
+          "offsets": [ "0x193ECC", "0x193ECE", "0x193ED2", "0x193ED4", "0x193EE2" ]
+        }
+      ]
+    },
+    "8070": {
+      "doors": [
+        {
+          "id": 2,
+          "target": "80B0",
+          "entrance": 0
+        },
+        {
+          "id": 3,
+          "target": "8060",
+          "entrance": 1
+        }
+      ]
+    },
     "8080": {
       "doors": [
         {
@@ -3291,6 +3351,43 @@
         }
       ]
     },
+    "80A0": {
+      "doors": [
+        {
+          "id": 13,
+          "target": "8190",
+          "entrance": 0,
+          "offsets": [ "0x15D52A" ]
+        }
+      ]
+    },
+    "80B0": {
+      "doors": [
+        {
+          "id": 0,
+          "target": "8140",
+          "entrance": 0
+        },
+        {
+          "id": 1,
+          "target": "8050",
+          "entrance": 2
+        },
+        {
+          "id": 2,
+          "target": "8070",
+          "entrance": 1,
+          "offsets": [ "0x14607E" ]
+        },
+        {
+          "id": 3,
+          "target": "8100",
+          "entrance": 3,
+          "offsets": [ "0x146554" ],
+          "requires": [ 96 ]
+        }
+      ]
+    },
     "80C0": {
       "doors": [
         {
@@ -3314,6 +3411,61 @@
         {
           "id": 3,
           "target": "8110",
+          "entrance": 0
+        }
+      ]
+    },
+    "80D0": {
+      "doors": [
+        {
+          "id": 2,
+          "target": "9040",
+          "entrance": 1
+        },
+        {
+          "id": 3,
+          "target": "8100",
+          "entrance": 1
+        }
+      ]
+    },
+    "80E0": {
+      "doors": [
+        {
+          "id": 2,
+          "target": "8030",
+          "entrance": 0,
+          "offsets": [ "0x152C6A", "0x152C6C" ]
+        },
+        {
+          "id": 3,
+          "target": "8120",
+          "entrance": 1,
+          "offsets": [ "0x152C38", "0x152C3A", "0x152C3E", "0x152C40", "0x152C42" ]
+        },
+        {
+          "id": 1,
+          "target": "80F0",
+          "entrance": 2
+        },
+        {
+          "id": 3,
+          "target": "8150",
+          "entrance": 3,
+          "offsets": [ "0x152C06" ]
+        }
+      ]
+    },
+    "80F0": {
+      "doors": [
+        {
+          "id": 0,
+          "target": "80E0",
+          "entrance": 1
+        },
+        {
+          "id": 1,
+          "target": "8100",
           "entrance": 0
         }
       ]
@@ -3343,6 +3495,22 @@
           "id": 2,
           "target": "80C0",
           "entrance": 1
+        }
+      ]
+    },
+    "8190": {
+      "doors": [
+        {
+          "id": 1,
+          "target": "8020",
+          "entrance": 0,
+          "offsets": [ "0xDBA50" ]
+        },
+        {
+          "id": 0,
+          "target": "80A0",
+          "entrance": 1,
+          "offsets": [ "0xDBA18" ]
         }
       ]
     }
