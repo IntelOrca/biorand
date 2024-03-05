@@ -12,6 +12,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 {
     public class ReCvRandomiser : BaseRandomiser
     {
+        private AfsFile? _advAfs;
         private AfsFile? _rdxAfs;
         private AfsFile? _systemAfs;
         private RandomizedRdt[] _rdts = new RandomizedRdt[205];
@@ -133,12 +134,17 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             UdfEditor? udfEditor = null;
             try
             {
+                FileIdentifier? advAfsFileId;
                 FileIdentifier? rdxAfsFileId;
                 FileIdentifier? elfFileId;
                 FileIdentifier? systemAfsFileId;
                 using (progress.BeginTask(null, "Reading ISO file"))
                 {
                     udfEditor = new Ps2IsoTools.UDF.UdfEditor(input, output);
+                    advAfsFileId = udfEditor.GetFileByName("ADV.AFS");
+                    if (advAfsFileId == null)
+                        throw new BioRandUserException("ADV.AFS not found in ISO");
+
                     rdxAfsFileId = udfEditor.GetFileByName("RDX_LNK.AFS");
                     if (rdxAfsFileId == null)
                         throw new BioRandUserException("RDX_LNK.AFS not found in ISO");
@@ -151,10 +157,15 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                     if (systemAfsFileId == null)
                         throw new BioRandUserException("SYSTEM.AFS not found in ISO");
 
+                    _advAfs = ReadAfs(udfEditor, advAfsFileId);
                     _rdxAfs = ReadAfs(udfEditor, rdxAfsFileId);
                     _elf = ReadFile(udfEditor, elfFileId);
                     _systemAfs = ReadAfs(udfEditor, systemAfsFileId);
                 }
+
+                // ExtractAfs(_advAfs, @"F:\games\recv\extracted\adv.afs");
+                using (progress.BeginTask(null, $"Creating backgrounds"))
+                    ReplaceBackground(config);
 
                 // Extract room files
                 var rdxPath = Path.Combine(fileRepository.ModPath, "rdx_lnk");
@@ -182,6 +193,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
                 using (progress.BeginTask(null, "Creating ISO file"))
                 {
+                    udfEditor.ReplaceFileStream(advAfsFileId, new MemoryStream(_advAfs!.Data.ToArray()));
                     udfEditor.ReplaceFileStream(rdxAfsFileId, new MemoryStream(_rdxAfs!.Data.ToArray()));
                     udfEditor.ReplaceFileStream(elfFileId, new MemoryStream(_elf));
                     udfEditor.ReplaceFileStream(systemAfsFileId, new MemoryStream(_systemAfs!.Data.ToArray()));
@@ -462,6 +474,45 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             var room = int.Parse(fileName.Substring(4, 2));
             var variant = fileName[6] - '0';
             return new RdtId(stage, room, variant);
+        }
+
+        private static void ExtractAfs(AfsFile afs, string target)
+        {
+            Directory.CreateDirectory(target);
+            for (var i = 0; i < afs.Count; i++)
+            {
+                var data = afs.GetFileData(i);
+                var path = Path.Combine(target, i.ToString());
+                data.WriteToFile(path);
+            }
+        }
+
+        private void ReplaceBackground(RandoConfig config)
+        {
+            if (BgCreator == null)
+                return;
+
+            var src = DataManager.GetData(BiohazardVersion, "bg.png");
+            var argb = BgCreator.CreateARGB(config, src);
+
+            var afs = _advAfs!;
+            var data = afs.GetFileData(2).ToArray();
+            var dataTim = new Memory<byte>(data, 0x460, 0x80960 - 0x460);
+
+            var bgTim = new Tim2(dataTim);
+            var bgTimBuilder = bgTim.ToBuilder();
+
+            var pic0 = bgTimBuilder.Pictures[0];
+            var pic0b = pic0.ToBuilder();
+            pic0b.Import(argb);
+            bgTimBuilder.Pictures[0] = pic0b.ToPicture();
+
+            var bgTimNew = bgTimBuilder.ToTim2();
+            bgTimNew.Data.CopyTo(dataTim);
+
+            var afsBuilder = _advAfs!.ToBuilder();
+            afsBuilder.Replace(2, data);
+            _advAfs = afsBuilder.ToAfsFile();
         }
 
         private static string[] _rdxFileNames = new[]

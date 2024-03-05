@@ -37,28 +37,33 @@ namespace IntelOrca.Biohazard.BioRand
 
         private static Bitmap CreateImage(RandoConfig config, byte[] src)
         {
-            var titleBg = new Bitmap(320, 240);
-            using (var g = Graphics.FromImage(titleBg))
+            using (var srcImage = new Bitmap(new MemoryStream(src)))
             {
-                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
-                g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
+                // HACK
+                var pictureRight = srcImage.Width == 1024 ? 640 : srcImage.Width;
 
-                var srcImage = new Bitmap(new MemoryStream(src));
-                g.DrawImage(srcImage, 0, 0, titleBg.Width, titleBg.Height);
+                var titleBg = new Bitmap(srcImage.Width, srcImage.Height);
+                using (var g = Graphics.FromImage(titleBg))
+                {
+                    g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
+                    g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
 
-                var font = new Font("Courier New", 14, GraphicsUnit.Pixel);
+                    g.DrawImage(srcImage, 0, 0, titleBg.Width, titleBg.Height);
 
-                var versionInfo = Program.CurrentVersionInfo;
-                var versionSize = g.MeasureString(versionInfo, font);
-                g.DrawString(versionInfo, font, Brushes.White, 0, 0);
+                    var font = new Font("Courier New", 14, GraphicsUnit.Pixel);
 
-                var seed = config.ToString();
-                // var seedSize = g.MeasureString(seed, font);
-                // g.DrawString(seed, font, Brushes.White, titleBg.Width - seedSize.Width + 1, 0);
-                var qr = GetQRImage(seed);
-                g.DrawImage(qr, titleBg.Width - qr.Width, 0);
+                    var versionInfo = Program.CurrentVersionInfo;
+                    var versionSize = g.MeasureString(versionInfo, font);
+                    g.DrawString(versionInfo, font, Brushes.White, 0, 0);
+
+                    var seed = config.ToString();
+                    // var seedSize = g.MeasureString(seed, font);
+                    // g.DrawString(seed, font, Brushes.White, titleBg.Width - seedSize.Width + 1, 0);
+                    var qr = GetQRImage(seed);
+                    g.DrawImage(qr, pictureRight - qr.Width, 0);
+                }
+                return titleBg;
             }
-            return titleBg;
         }
 
         public void DrawImage(TimFile timFile, string srcImagePath, int x, int y)
