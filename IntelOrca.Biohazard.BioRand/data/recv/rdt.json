@@ -2612,6 +2612,11 @@
       ]
     },
     "7010": {
+      "doorRando": [
+        {
+          "nop": [ "0x1A53B8-0x1A53D4" ]
+        }
+      ],
       "doors": [
         {
           "id": 0,
@@ -2621,43 +2626,44 @@
       ],
       "items": [
         {
+          "id": 1,
+          "itemId": 9,
+          // "globalId": 260,
+          "type": 130,
+          "amount": 1
+        },
+        {
           "id": 12,
-          "itemId": 2,
           "globalId": 261,
           "type": 31,
           "amount": 3
         },
         {
           "id": 3,
-          "itemId": 1,
           "globalId": 259,
           "type": 12,
           "amount": 15
         },
         {
           "id": 14,
-          "itemId": 5,
           "globalId": 263,
           "type": 12,
           "amount": 15
         },
         {
           "id": 6,
-          "itemId": 8,
           "globalId": 265,
           "type": 12,
           "amount": 15
         },
         {
           "id": 2,
-          "itemId": 4,
           "globalId": 104,
           "type": 48,
           "amount": 1
         },
         {
           "id": 8,
-          "itemId": 3,
           "globalId": 362,
           "type": 12,
           "amount": 15
@@ -2670,7 +2676,7 @@
           "offsets": [ "0x1A5E02" ]
         },
         {
-          "id": 5,
+          "id": 254,
           "globalId": 262,
           "type": 12,
           "amount": 15,
