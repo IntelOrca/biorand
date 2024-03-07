@@ -41,6 +41,7 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 // HACK
                 var pictureRight = srcImage.Width == 1024 ? 640 : srcImage.Width;
+                var size = srcImage.Width == 1024 ? 2 : 1;
 
                 var titleBg = new Bitmap(srcImage.Width, srcImage.Height);
                 using (var g = Graphics.FromImage(titleBg))
@@ -50,7 +51,7 @@ namespace IntelOrca.Biohazard.BioRand
 
                     g.DrawImage(srcImage, 0, 0, titleBg.Width, titleBg.Height);
 
-                    var font = new Font("Courier New", 14, GraphicsUnit.Pixel);
+                    var font = new Font("Courier New", 14 * size, GraphicsUnit.Pixel);
 
                     var versionInfo = Program.CurrentVersionInfo;
                     var versionSize = g.MeasureString(versionInfo, font);
@@ -59,7 +60,7 @@ namespace IntelOrca.Biohazard.BioRand
                     var seed = config.ToString();
                     // var seedSize = g.MeasureString(seed, font);
                     // g.DrawString(seed, font, Brushes.White, titleBg.Width - seedSize.Width + 1, 0);
-                    var qr = GetQRImage(seed);
+                    var qr = GetQRImage(seed, size);
                     g.DrawImage(qr, pictureRight - qr.Width, 0);
                 }
                 return titleBg;
@@ -89,12 +90,12 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
-        private static Bitmap GetQRImage(string text)
+        private static Bitmap GetQRImage(string text, int size)
         {
             var qrGenerator = new QRCodeGenerator();
             var qrCodeData = qrGenerator.CreateQrCode(text, QRCodeGenerator.ECCLevel.M);
             var qrCode = new QRCode(qrCodeData);
-            var qrCodeImage = qrCode.GetGraphic(1, Color.White, Color.Transparent, true);
+            var qrCodeImage = qrCode.GetGraphic(size, Color.White, Color.Transparent, true);
             return qrCodeImage;
         }
     }
