@@ -71,6 +71,10 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 SetFlag(gameData, RdtId.Parse("6000"), 1, 261, 0);
                 // SetFlag(gameData, RdtId.Parse("6000"), 1, 264, 0);
             }
+
+            // Do not put Rodrigo's gift into special slot
+            Nop(gameData, RdtId.Parse("8170"), 0x14D26E);
+            Nop(gameData, RdtId.Parse("8170"), 0x14EB68);
         }
 
         public void End(RandoConfig config, GameData gameData, Map map)
