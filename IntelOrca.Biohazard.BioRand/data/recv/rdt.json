@@ -2,7 +2,13 @@
   "beginEndRooms": [
     {
       "start": "1000",
-      "end": "7060"
+      "end": "A090",
+      "doorRando": false
+    },
+    {
+      "start": "1000",
+      "end": "7060",
+      "doorRando": true
     }
   ],
   "rooms": {
@@ -3255,13 +3261,16 @@
           "id": 7,
           "globalId": 301,
           "type": 14,
-          "amount": 6
+          "amount": 6,
+          "requires": [ 69, 70, 71 ],
+          "priority": "low"
         },
         {
           "id": 10,
           "globalId": 302,
           "type": 21,
-          "amount": 1
+          "amount": 1,
+          "requires": [ 69, 70, 71 ]
         },
         {
           "id": 12,
@@ -3273,21 +3282,25 @@
           "id": 13,
           "globalId": 304,
           "type": 14,
-          "amount": 6
+          "amount": 6,
+          "requires": [ 69, 70, 71 ],
+          "priority": "low"
         },
         {
           "id": 1,
           "globalId": 300,
           "type": 20,
           "amount": 1,
-          "offsets": [ "0x3C8DC" ]
+          "offsets": [ "0x3C8DC" ],
+          "priority": "low"
         },
         {
           "id": 2,
           "globalId": 33,
           "type": 96,
           "amount": 1,
-          "offsets": [ "0x3C932" ]
+          "offsets": [ "0x3C932" ],
+          "requires": [ 100 ]
         }
       ]
     },
@@ -3318,12 +3331,12 @@
         }
       ],
       "items": [
-        {
-          "id": 8,
-          "globalId": 228,
-          "type": 15,
-          "amount": 6
-        },
+        // {
+        //   "id": 8,
+        //   "globalId": 228,
+        //   "type": 15,
+        //   "amount": 6
+        // },
         {
           "id": 9,
           "globalId": 229,
@@ -3437,6 +3450,11 @@
       ]
     },
     "8060": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "id": 2,
@@ -3552,7 +3570,7 @@
           "entranceId": 0,
           "offsets": [ "0xF987E", "0xF9880", "0xF9882" ],
           "noReturn": true,
-          "requires": [ 81 ]
+          "requires": [ 56, 98, 99 ]
         },
         {
           "id": 2,
@@ -3775,7 +3793,7 @@
           "globalId": 336,
           "type": 12,
           "amount": 15,
-          "requires": [ 93, 96 ], // In order to get to top area
+          "requires": [ 93, 94 ], // In order to get to top area
           "doorRando": false
         },
         {
@@ -3784,7 +3802,7 @@
           "type": 100,
           "amount": 1,
           "offsets": [ "0x1869D8" ],
-          "requires": [ 93, 96 ], // In order to get to top area
+          "requires": [ 93, 94 ], // In order to get to top area
           "doorRando": false
         },
         {
@@ -3891,7 +3909,9 @@
           "id": 7,
           "globalId": 340,
           "type": 12,
-          "amount": 15
+          "amount": 15,
+          "offsets": [ "0x1831CA" ],
+          "priority": "low"
         },
         {
           "id": 8,
@@ -3903,7 +3923,8 @@
           "id": 10,
           "globalId": 342,
           "type": 16,
-          "amount": 6
+          "amount": 6,
+          "offsets": [ "0x18311A" ]
         },
         {
           "id": 5,
@@ -3942,7 +3963,8 @@
           "id": 3,
           "globalId": 344,
           "type": 130,
-          "amount": 1
+          "amount": 1,
+          "requires": [ 96 ]
         },
         {
           "id": 5,
@@ -3998,14 +4020,15 @@
           "id": 6,
           "globalId": 345,
           "type": 18,
-          "amount": 30
+          "amount": 30,
+          "priority": "low"
         },
         {
           "id": 7,
           "globalId": 232,
           "type": 7,
           "amount": 30,
-          "offsets": [ "0x164364", "0x1643DA" ]
+          "offsets": [ "0x164246", "0x164364", "0x1643DA" ]
         }
       ]
     },
@@ -4066,12 +4089,12 @@
           "type": 6,
           "amount": 6
         },
-        {
-          "id": 7,
-          "globalId": 238,
-          "type": 15,
-          "amount": 6
-        },
+        // {
+        //   "id": 7,
+        //   "globalId": 238,
+        //   "type": 15,
+        //   "amount": 6
+        // },
         {
           "id": 9,
           "globalId": 439,
@@ -4202,6 +4225,11 @@
       ]
     },
     "8190": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "id": 1,
@@ -4325,29 +4353,7 @@
           "entranceId": 4
         }
       ],
-      "items": [
-        {
-          "id": 254,
-          "globalId": 59,
-          "type": 69,
-          "amount": 1,
-          "offsets": [ "0xF6022" ]
-        },
-        {
-          "id": 253,
-          "globalId": 60,
-          "type": 70,
-          "amount": 1,
-          "offsets": [ "0xF6040" ]
-        },
-        {
-          "id": 252,
-          "globalId": 61,
-          "type": 71,
-          "amount": 1,
-          "offsets": [ "0xF605E" ]
-        }
-      ]
+      "items": []
     },
     "9020": {
       "doorRando": [
