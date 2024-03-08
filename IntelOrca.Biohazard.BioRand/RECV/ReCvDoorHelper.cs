@@ -78,7 +78,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
             if (config.RandomDoors)
             {
-                SetFlag(gameData, RdtId.Parse("8080"), 1, 309, 0);
+                SetFlag(gameData, RdtId.Parse("8080"), 1, 309, 1);
                 SetFlag(gameData, RdtId.Parse("8080"), 1, 41, 0);
                 SetFlag(gameData, RdtId.Parse("80A0"), 1, 354, 0);
             }
