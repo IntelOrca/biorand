@@ -1233,6 +1233,23 @@ namespace IntelOrca.Biohazard.BioRand
         {
             public override bool Validate(DoorRandomiser dr, PlayEdge entrance, PlayEdge exit)
             {
+                // HACK RE CV, if door uses offsets, we can't assume we can change
+                //      the variant
+                if (dr._config.Game == 4)
+                {
+                    var exitVariant = exit.Parent.RdtId.Variant ?? 0;
+                    if (entrance.Raw.Offsets != null && exitVariant != 0)
+                    {
+                        return false;
+                    }
+
+                    var entranceVariant = entrance.Parent.RdtId.Variant ?? 0;
+                    if (exit.Raw.Offsets != null && entranceVariant != 0)
+                    {
+                        return false;
+                    }
+                }
+
                 if (entrance.IsBridgeEdge)
                     return false;
                 if (!entrance.Randomize || !exit.Randomize)
