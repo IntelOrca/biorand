@@ -7,7 +7,7 @@
     },
     {
       "start": "1000",
-      "end": "7060",
+      "end": "A1E0",
       "doorRando": true
     }
   ],
@@ -1472,6 +1472,7 @@
     "4000": {
       "doorRando": [
         {
+          "category": "exclude",
           "nop": [ "0x1E2462-0x1E24BA" ]
         }
       ],
@@ -2583,6 +2584,11 @@
       ]
     },
     "6010": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "id": 0,
@@ -2885,6 +2891,11 @@
       ]
     },
     "7060": {
+      "doorRando": [
+        {
+          "category": "segment"
+        }
+      ],
       "doors": [
         {
           "id": 3,
@@ -2910,10 +2921,12 @@
           "doorRando": false
         },
         {
+          "id": 255,
           "target": "70A0",
           "requires": [ 39, 88 ],
           "noReturn": true,
-          "randomize": false
+          "randomize": false,
+          "isBridgeEdge": true
         }
       ],
       "items": [
@@ -3129,8 +3142,15 @@
       "doors": [
         {
           "id": 255,
-          "target": "8000",
+          "target": "7060",
           "entranceId": 0,
+          "randomize": false
+        },
+        {
+          "id": 255,
+          "target": "8180",
+          "entranceId": 0,
+          "offsets": [ "0x1F3142" ],
           "randomize": false
         }
       ],
@@ -3552,6 +3572,11 @@
       ]
     },
     "8080": {
+      "doorRando": [
+        {
+          "category": "segment"
+        }
+      ],
       "doors": [
         {
           "id": 1,
@@ -3570,7 +3595,9 @@
           "entranceId": 0,
           "offsets": [ "0xF987E", "0xF9880", "0xF9882" ],
           "noReturn": true,
-          "requires": [ 56, 98, 99 ]
+          "requires": [ 56, 98, 99 ],
+          "isBridgeEdge": true,
+          "randomize": false
         },
         {
           "id": 2,
@@ -4136,6 +4163,13 @@
       ],
       "doors": [
         {
+          "id": 255,
+          "target": "8180",
+          "entranceId": 0,
+          "randomize": false,
+          "lock": "always"
+        },
+        {
           "id": 0,
           "target": "8170",
           "entranceId": 1
@@ -4178,14 +4212,14 @@
     "8170": {
       "doors": [
         {
-          "id": 1,
+          "id": 2,
           "target": "8160",
-          "entranceId": 1
+          "entranceId": 0
         },
         {
-          "id": 2,
+          "id": 1,
           "target": "80C0",
-          "entranceId": 0,
+          "entranceId": 1,
           "offsets": [ "0x14E270", "0x14E272", "0x14E274" ],
           "lock": "unblock"
         }
@@ -4221,6 +4255,27 @@
           "amount": 1,
           "offsets": [ "0x14D27A", "0x14EB74" ],
           "priority": "low"
+        }
+      ]
+    },
+    "8180": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "id": 0,
+          "target": "70A0",
+          "entranceId": 0,
+          "randomize": false
+        },
+        {
+          "id": 1,
+          "target": "8160",
+          "entranceId": 0,
+          "randomize": false
         }
       ]
     },
@@ -4453,10 +4508,92 @@
         }
       ]
     },
+    "A000": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ]
+    },
     "A090": {
       "doorRando": [
         {
           "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "id": 255,
+          "target": "8080",
+          "entranceId": 1,
+          "lock": "always",
+          "randomize": false
+        },
+        {
+          "id": 0,
+          "target": "A000",
+          "entranceId": 0
+        }
+      ]
+    },
+    "A1D0": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "id": 0,
+          "target": "A1E0",
+          "entranceId": 0
+        }
+      ]
+    },
+    "A1E0": {
+      "doors": [
+        {
+          "id": 0,
+          "target": "A1F0",
+          "entranceId": 0,
+          "requires": [ 79, 105, 120 ],
+          "randomize": false
+        },
+        {
+          "id": 1,
+          "target": "A1D0",
+          "entranceId": 1
+        }
+      ]
+    },
+    "A1F0": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
+      "doors": [
+        {
+          "id": 0,
+          "entranceId": 0,
+          "target": "A1E0",
+          "randomize": false
+        }
+      ],
+      "items": [
+        {
+          "id": 5,
+          "globalId": 435,
+          "type": 21,
+          "amount": 1,
+          "priority": "low"
+        },
+        {
+          "id": 6,
+          "globalId": 436,
+          "type": 21,
+          "amount": 1,
+          "priority": "low"
         }
       ]
     }

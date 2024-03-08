@@ -63,13 +63,15 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
             if (config.RandomDoors)
             {
-                var rrdt = gameData.GetRdt(RdtId.Parse("6000"));
-                if (rrdt == null)
-                    return;
-
                 SetFlag(gameData, RdtId.Parse("6000"), 1, 35, 0);
                 SetFlag(gameData, RdtId.Parse("6000"), 1, 261, 0);
                 // SetFlag(gameData, RdtId.Parse("6000"), 1, 264, 0);
+            }
+
+            if (config.RandomDoors)
+            {
+                // Prevent change to Chris
+                Nop(gameData, RdtId.Parse("70A0"), 0x1F3140);
             }
 
             // Do not put Rodrigo's gift into special slot

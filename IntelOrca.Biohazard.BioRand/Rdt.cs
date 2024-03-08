@@ -53,13 +53,16 @@ namespace IntelOrca.Biohazard.BioRand
                 if (edge.Raw.Randomize == false)
                     return;
 
-                var builder = ((RdtCv)RdtFile).ToBuilder();
-                var aot = builder.Aots[id];
-                aot.Stage = (byte)target.Stage;
-                aot.Room = (byte)target.Room;
-                aot.ExitId = (byte)destination.Id!.Value;
-                builder.Aots[id] = aot;
-                RdtFile = builder.ToRdt();
+                if (id != 255)
+                {
+                    var builder = ((RdtCv)RdtFile).ToBuilder();
+                    var aot = builder.Aots[id];
+                    aot.Stage = (byte)target.Stage;
+                    aot.Room = (byte)target.Room;
+                    aot.ExitId = (byte)destination.Id!.Value;
+                    builder.Aots[id] = aot;
+                    RdtFile = builder.ToRdt();
+                }
 
                 var offsets = Map.ParseNopArray(edge.Raw.Offsets, this);
                 foreach (var offset in offsets)

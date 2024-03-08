@@ -201,15 +201,14 @@ namespace IntelOrca.Biohazard.BioRand
             foreach (var kvp in _map.Rooms!)
             {
                 var node = GetOrCreateNode(RdtId.Parse(kvp.Key));
-                if (node.Category == DoorRandoCategory.Exclude)
-                    continue;
-
                 foreach (var edge in node.Edges)
                 {
                     edge.Node = null;
                     edge.NoReturn = false;
                 }
-                nodes.Add(node);
+
+                if (node.Category != DoorRandoCategory.Exclude)
+                    nodes.Add(node);
             }
             return nodes;
         }
