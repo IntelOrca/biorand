@@ -2207,11 +2207,6 @@
       ]
     },
     "4140": {
-      "doorRando": [
-        {
-          "category": "exclude"
-        }
-      ],
       "doors": [
         {
           "id": 0,
@@ -3350,6 +3345,11 @@
       ]
     },
     "8040": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "id": 0,
@@ -3363,7 +3363,8 @@
           "globalId": 243,
           "type": 16,
           "amount": 6,
-          "offsets": [ "0x3EDE0" ]
+          "offsets": [ "0x3EDE0" ],
+          "nop": [ "0x3EB60-0x3EB70" ]
         },
         {
           "id": 2,
@@ -3375,7 +3376,8 @@
           "id": 3,
           "globalId": 34,
           "type": 98,
-          "amount": 1
+          "amount": 1,
+          "priority": "low"
         }
       ]
     },
@@ -3393,26 +3395,27 @@
           "globalId": 35,
           "type": 99,
           "amount": 1,
-          "offsets": [ "0xDACBA" ]
+          "offsets": [ "0xDACBA" ],
+          "requires": [ 97 ]
         },
-        {
-          "id": 5,
-          "globalId": 305,
-          "type": 129,
-          "amount": 1
-        },
+        // {
+        //   "id": 5,
+        //   "globalId": 305,
+        //   "type": 129,
+        //   "amount": 1
+        // },
         {
           "id": 6,
           "globalId": 306,
           "type": 14,
           "amount": 6
         },
-        {
-          "id": 7,
-          "globalId": 307,
-          "type": 37,
-          "amount": 6
-        },
+        // {
+        //   "id": 7,
+        //   "globalId": 307,
+        //   "type": 37,
+        //   "amount": 6
+        // },
         {
           "id": 8,
           "globalId": 308,
@@ -3548,7 +3551,8 @@
           "target": "A090",
           "entranceId": 0,
           "offsets": [ "0xF987E", "0xF9880", "0xF9882" ],
-          "noReturn": true
+          "noReturn": true,
+          "requires": [ 81 ]
         },
         {
           "id": 2,
@@ -3625,7 +3629,7 @@
         },
         {
           "id": 9,
-          "globalId": 325,
+          "globalId": 329,
           "type": 21,
           "amount": 1
         },
@@ -3680,6 +3684,11 @@
       ]
     },
     "80B0": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "id": 0,
@@ -3706,17 +3715,18 @@
         }
       ],
       "items": [
-        {
-          "id": 7,
-          "globalId": 344,
-          "type": 130,
-          "amount": 1
-        },
+        // {
+        //   "id": 7,
+        //   "globalId": 344,
+        //   "type": 130,
+        //   "amount": 1
+        // },
         {
           "id": 8,
           "globalId": 37,
           "type": 93,
-          "amount": 1
+          "amount": 1,
+          "nop": [ "0x145C8C-0x145CA6" ]
         },
         {
           "id": 13,
@@ -3731,7 +3741,7 @@
         {
           "id": 0,
           "target": "8000",
-          "entranceId": 3
+          "entranceId": 2
         },
         {
           "id": 3,
@@ -3749,7 +3759,8 @@
         {
           "id": 3,
           "target": "8110",
-          "entranceId": 0
+          "entranceId": 0,
+          "doorRando": false
         }
       ],
       "items": [
@@ -3763,21 +3774,26 @@
           "id": 16,
           "globalId": 336,
           "type": 12,
-          "amount": 15
+          "amount": 15,
+          "requires": [ 93, 96 ], // In order to get to top area
+          "doorRando": false
         },
         {
           "id": 11,
           "globalId": 38,
           "type": 100,
           "amount": 1,
-          "offsets": [ "0x1869D8" ]
+          "offsets": [ "0x1869D8" ],
+          "requires": [ 93, 96 ], // In order to get to top area
+          "doorRando": false
         },
         {
           "id": 1,
           "globalId": 39,
           "type": 97,
           "amount": 1,
-          "offsets": [ "0x1869FC" ]
+          "offsets": [ "0x1869FC" ],
+          "requires": [ 94 ]
         }
       ]
     },
@@ -4104,11 +4120,17 @@
       ],
       "items": [
         {
-          "id": 11,
-          "globalId": 350,
+          "id": 8,
+          "globalId": 353,
           "type": 34,
           "amount": 100,
-          "offsets": [ "0x1E1D74", "0x1E1DBE" ]
+          "offsets": [ "0x1E08CA", "0x1E1D74", "0x1E1DBE" ]
+        },
+        {
+          "id": 11,
+          "globalId": 350,
+          "type": 31,
+          "amount": 3
         },
         {
           "id": 13,
@@ -4135,12 +4157,12 @@
         {
           "id": 1,
           "target": "8160",
-          "entranceId": 0
+          "entranceId": 1
         },
         {
           "id": 2,
           "target": "80C0",
-          "entranceId": 1,
+          "entranceId": 0,
           "offsets": [ "0x14E270", "0x14E272", "0x14E274" ],
           "lock": "unblock"
         }
@@ -4254,6 +4276,11 @@
       ]
     },
     "9001": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "id": 2,
