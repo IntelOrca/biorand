@@ -41,6 +41,8 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 // HACK
                 var pictureRight = srcImage.Width == 1024 ? 640 : srcImage.Width;
+                var xOffset = srcImage.Width == 1024 ? 16 : 0;
+                var yOffset = srcImage.Width == 1024 ? 16 : 0;
                 var size = srcImage.Width == 1024 ? 2 : 1;
 
                 var titleBg = new Bitmap(srcImage.Width, srcImage.Height);
@@ -49,19 +51,19 @@ namespace IntelOrca.Biohazard.BioRand
                     g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
                     g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
 
-                    g.DrawImage(srcImage, 0, 0, titleBg.Width, titleBg.Height);
+                    g.DrawImage(srcImage, xOffset, 0, titleBg.Width, titleBg.Height);
 
                     var font = new Font("Courier New", 14 * size, GraphicsUnit.Pixel);
 
                     var versionInfo = Program.CurrentVersionInfo;
                     var versionSize = g.MeasureString(versionInfo, font);
-                    g.DrawString(versionInfo, font, Brushes.White, 0, 0);
+                    g.DrawString(versionInfo, font, Brushes.White, 0, yOffset);
 
                     var seed = config.ToString();
                     // var seedSize = g.MeasureString(seed, font);
                     // g.DrawString(seed, font, Brushes.White, titleBg.Width - seedSize.Width + 1, 0);
                     var qr = GetQRImage(seed, size);
-                    g.DrawImage(qr, pictureRight - qr.Width, 0);
+                    g.DrawImage(qr, pictureRight - xOffset - qr.Width, yOffset);
                 }
                 return titleBg;
             }
