@@ -4487,7 +4487,7 @@
     "9040": {
       "doorRando": [
         {
-          "category": "box"
+          "category": "exclude"
         }
       ],
       "doors": [
