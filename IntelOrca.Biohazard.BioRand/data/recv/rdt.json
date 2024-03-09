@@ -349,8 +349,16 @@
           "id": 3,
           "target": "1100",
           "requires": [ 56 ],
+          "entranceId": 2,
+          "doorRando": false
+        },
+        {
+          "id": 3,
+          "target": "1100",
+          "requires": [ 56 ],
           "requiresRoom": [ "1040" ],
-          "entranceId": 2
+          "entranceId": 2,
+          "doorRando": true
         }
       ],
       "items": [
