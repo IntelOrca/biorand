@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Room;
@@ -175,6 +176,44 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                     var rdtId = GetRdtId(i);
                     var prs = new PrsFile(_rdxAfs.GetFileData(i));
                     prs.Uncompressed.WriteToFile(Path.Combine(rdxPath, $"R{rdtId}.RDT"));
+
+#if EXTRACT_TEXTURES
+                    try
+                    {
+                        var d = Path.Combine(fileRepository.ModPath, "rdx_texture", $"R{rdtId}");
+                        Directory.CreateDirectory(d);
+                        var rdt = new RdtCv(prs.Uncompressed);
+                        var gIndex = 0;
+                        foreach (var g in rdt.Textures.Groups)
+                        {
+                            var eIndex = 0;
+                            foreach (var e in g.Entries)
+                            {
+                                if (e.Kind == CvTextureEntryKind.TIM2)
+                                {
+                                    if (BgCreator == null)
+                                    {
+                                        var fileName = $"R{rdtId}_{gIndex:00}_{eIndex:00}.bmp";
+                                        var path = Path.Combine(d, fileName);
+                                        var bmp = e.Tim2.Picture0.ToBmp();
+                                        bmp.Data.WriteToFile(path);
+                                    }
+                                    else
+                                    {
+                                        var fileName = $"R{rdtId}_{gIndex:00}_{eIndex:00}.png";
+                                        var path = Path.Combine(d, fileName);
+                                        BgCreator.SaveImage(path, e.Tim2.Picture0);
+                                    }
+                                }
+                                eIndex++;
+                            }
+                            gIndex++;
+                        }
+                    }
+                    catch
+                    {
+                    }
+#endif
                 });
 
                 GenerateRdts(config, progress, fileRepository);
@@ -239,6 +278,11 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
         protected override void PostGenerate(RandoConfig config, IRandoProgress progress, FileRepository fileRepository, GameData gameData)
         {
+            using (progress.BeginTask(null, "Randomizing portraits"))
+            {
+                RandomizePortraits(gameData);
+            }
+
             TestEdits(gameData);
 
             if (!config.RandomItems || !config.RandomInventory)
@@ -513,6 +557,48 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             var afsBuilder = _advAfs!.ToBuilder();
             afsBuilder.Replace(2, data);
             _advAfs = afsBuilder.ToAfsFile();
+        }
+
+        private void RandomizePortraits(GameData gameData)
+        {
+            var files = DataManager.GetFiles("portrait");
+            foreach (var file in files)
+            {
+                var fileName = Path.GetFileName(file);
+                var pattern = @"R([0-9A-Za-z]{4})_(\d{2})_(\d{2})\.png";
+                var match = Regex.Match(fileName, pattern);
+                if (!match.Success)
+                    continue;
+
+                if (!RdtId.TryParse(match.Groups[1].Value, out var rdtId) ||
+                    !int.TryParse(match.Groups[2].Value, out var groupNum) ||
+                    !int.TryParse(match.Groups[3].Value, out var entryNum))
+                {
+                    continue;
+                }
+
+                ReplaceRdtTexture(gameData, rdtId, groupNum, entryNum, file);
+            }
+        }
+
+        private void ReplaceRdtTexture(GameData gameData, RdtId rdtId, int groupNum, int entryNum, string path)
+        {
+            if (BgCreator == null)
+                return;
+
+            var rdt = gameData.GetRdt(rdtId);
+            if (rdt == null)
+                return;
+
+            var argb = BgCreator.LoadImage(path);
+            var rdtBuilder = ((RdtCv)rdt.RdtFile).ToBuilder();
+            var tim2Builder = rdtBuilder.Textures.Groups[groupNum].Entries[entryNum].Tim2.ToBuilder();
+            var pic0 = tim2Builder.Pictures[0].ToBuilder();
+            pic0.Import(argb);
+            tim2Builder.Pictures[0] = pic0.ToPicture();
+            var tim2 = tim2Builder.ToTim2();
+            rdtBuilder.Textures = rdtBuilder.Textures.WithNewTexture(groupNum, entryNum, tim2);
+            rdt.RdtFile = rdtBuilder.ToRdt();
         }
 
         private static string[] _rdxFileNames = new[]

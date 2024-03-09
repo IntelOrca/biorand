@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using QRCoder;
@@ -99,6 +100,47 @@ namespace IntelOrca.Biohazard.BioRand
             var qrCode = new QRCode(qrCodeData);
             var qrCodeImage = qrCode.GetGraphic(size, Color.White, Color.Transparent, true);
             return qrCodeImage;
+        }
+
+        public uint[] LoadImage(string path)
+        {
+            using (var bitmap = (Bitmap)Image.FromFile(path))
+            {
+                return bitmap.ToArgb();
+            }
+        }
+
+        public unsafe void SaveImage(string path, Tim2.Picture picture)
+        {
+            if (picture.Depth != 8)
+                return;
+
+            var pixelData = picture.PixelData.Span;
+            fixed (byte* p = pixelData)
+            {
+                var pixelFormat = picture.Depth == 8 ? PixelFormat.Format8bppIndexed : PixelFormat.Format4bppIndexed;
+                var numColours = picture.Depth == 8 ? 256 : 16;
+                using (var bitmap = new Bitmap(picture.Width, picture.Height, picture.Width, pixelFormat, (IntPtr)p))
+                {
+                    var palette = bitmap.Palette;
+                    for (var i = 0; i < numColours; i++)
+                    {
+                        var argb = Rgba2Argb(picture.GetColour(i));
+                        palette.Entries[i] = Color.FromArgb(argb);
+                    }
+                    bitmap.Palette = palette;
+                    bitmap.Save(path);
+                }
+            }
+        }
+
+        private static int Rgba2Argb(int value)
+        {
+            int r = (value >> 0) & 0xFF;
+            int g = (value >> 8) & 0xFF;
+            int b = (value >> 16) & 0xFF;
+            int a = (value >> 24) & 0xFF;
+            return (a << 24) | (r << 16) | (g << 8) | b;
         }
     }
 }
