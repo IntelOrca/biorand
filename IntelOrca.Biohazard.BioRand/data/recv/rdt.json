@@ -3710,6 +3710,11 @@
       ]
     },
     "80A0": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "id": 13,
