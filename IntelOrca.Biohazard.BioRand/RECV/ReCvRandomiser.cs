@@ -565,7 +565,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             foreach (var file in files)
             {
                 var fileName = Path.GetFileName(file);
-                var pattern = @"R([0-9A-Za-z]{4})_(\d{2})_(\d{2})\.png";
+                var pattern = @"^R([0-9A-Za-z]{4})_(\d{2})_(\d{2})\.png$";
                 var match = Regex.Match(fileName, pattern);
                 if (!match.Success)
                     continue;
