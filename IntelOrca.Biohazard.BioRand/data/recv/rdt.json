@@ -4238,13 +4238,13 @@
           "globalId": 354,
           "type": 18,
           "amount": 30
-        },
-        {
-          "id": 15,
-          "globalId": 351,
-          "type": 16,
-          "amount": 6
         }
+        // {
+        //   "id": 15,
+        //   "globalId": 351,
+        //   "type": 16,
+        //   "amount": 6
+        // }
       ]
     },
     "8170": {
