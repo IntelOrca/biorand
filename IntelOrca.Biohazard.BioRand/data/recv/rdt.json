@@ -4594,7 +4594,8 @@
     "A090": {
       "doorRando": [
         {
-          "category": "exclude"
+          "category": "exclude",
+          "nop": [ "0xF9730-0xF9746" ]
         }
       ],
       "doors": [

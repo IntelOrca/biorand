@@ -131,7 +131,7 @@ namespace IntelOrca.Biohazard.BioRand
 
             var numAreas = _config.AreaCount + 1;
 
-            _nodesLeft.AddRange(_allNodes);
+            _nodesLeft.AddRange(_allNodes.Where(x => x.Category != DoorRandoCategory.Exclude));
 
             var beginNode = graph.Start;
             beginNode.Visited = true;
@@ -206,9 +206,7 @@ namespace IntelOrca.Biohazard.BioRand
                     edge.Node = null;
                     edge.NoReturn = false;
                 }
-
-                if (node.Category != DoorRandoCategory.Exclude)
-                    nodes.Add(node);
+                nodes.Add(node);
             }
             return nodes;
         }
