@@ -23,13 +23,15 @@ namespace IntelOrca.Biohazard.BioRand.RECV
         internal override IDoorHelper DoorHelper { get; } = new ReCvDoorHelper();
         internal override IItemHelper ItemHelper { get; } = new ReCvItemHelper();
         internal override IEnemyHelper EnemyHelper => new ReCvEnemyHelper();
-        internal override INpcHelper NpcHelper { get; } = null;
+        internal override INpcHelper NpcHelper { get; }
         internal override string BGMPath => throw new NotImplementedException();
 
+#pragma warning disable 8618
         public ReCvRandomiser(ReInstallConfig installConfig, IBgCreator? bgCreator)
             : base(installConfig, bgCreator)
         {
         }
+#pragma warning restore 8618
 
         protected override RdtId[] GetRdtIds(string dataPath)
         {

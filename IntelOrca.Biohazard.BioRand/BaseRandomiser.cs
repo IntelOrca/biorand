@@ -456,7 +456,7 @@ namespace IntelOrca.Biohazard.BioRand
 
                 if (config.RandomCutscenes)
                 {
-                    voiceRandomiser.SetVoices();
+                    voiceRandomiser!.SetVoices();
                 }
 
                 // Copy EMD to EMD08
