@@ -126,7 +126,9 @@ namespace IntelOrca.Biohazard.BioRand
                     for (var i = 0; i < numColours; i++)
                     {
                         var argb = Rgba2Argb(picture.GetColour(i));
-                        palette.Entries[i] = Color.FromArgb(argb);
+                        var c = Color.FromArgb(argb);
+                        c = Color.FromArgb(Math.Min(c.A * 2, 255), c);
+                        palette.Entries[i] = c;
                     }
                     bitmap.Palette = palette;
                     bitmap.Save(path);
