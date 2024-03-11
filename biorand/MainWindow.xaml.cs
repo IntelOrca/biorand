@@ -636,7 +636,7 @@ namespace IntelOrca.Biohazard.BioRand
 
             if (_config.Game != (SelectedGame + 1))
             {
-                if (_config.Game >= 1 && _config.Game <= 3)
+                if (_config.Game >= 1 && _config.Game <= 4)
                 {
                     SelectedGame = _config.Game - 1;
                     _config = RandoConfig.FromString(txt);
