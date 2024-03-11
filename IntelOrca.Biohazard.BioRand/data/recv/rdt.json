@@ -3858,7 +3858,7 @@
           "globalId": 38,
           "type": 100,
           "amount": 1,
-          "offsets": [ "0x1869D8" ],
+          "offsets": [ "0x1868F0", "0x1869D8" ],
           "requires": [ 93, 94 ], // In order to get to top area
           "doorRando": false
         },
@@ -3867,7 +3867,7 @@
           "globalId": 39,
           "type": 97,
           "amount": 1,
-          "offsets": [ "0x1869FC" ],
+          "offsets": [ "0x18690C", "0x1869FC" ],
           "requires": [ 94 ]
         }
       ]
@@ -3925,18 +3925,19 @@
           "target": "8120",
           "entranceId": 1,
           "offsets": [ "0x152C38", "0x152C3A", "0x152C3E", "0x152C40", "0x152C42" ]
-        },
-        {
-          "id": 1,
-          "target": "80F0",
-          "entranceId": 2
-        },
-        {
-          "id": 3,
-          "target": "8150",
-          "entranceId": 3,
-          "offsets": [ "0x152C06" ]
         }
+        // Disregard these doors since they aren't connected to the other two
+        // {
+        //   "id": 1,
+        //   "target": "80F0",
+        //   "entranceId": 2
+        // },
+        // {
+        //   "id": 3,
+        //   "target": "8150",
+        //   "entranceId": 3,
+        //   "offsets": [ "0x152C06" ]
+        // }
       ]
     },
     "80F0": {
@@ -3948,7 +3949,7 @@
       "doors": [
         {
           "id": 0,
-          "target": "80E0",
+          "target": "8150", // actually 80E (but due to split room...)
           "entranceId": 1
         },
         {
@@ -4187,7 +4188,7 @@
         },
         {
           "id": 16,
-          "target": "80E0",
+          "target": "80F0", // actually 80E (but due to split room...)
           "entranceId": 2,
           "offsets": [ "0x180C0E" ]
         }
