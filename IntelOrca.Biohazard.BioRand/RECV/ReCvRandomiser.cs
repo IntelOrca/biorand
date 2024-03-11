@@ -220,6 +220,8 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
                 GenerateRdts(config, progress, fileRepository);
 
+                if (config.RandomDoors)
+                    DisableNosferatuPoison();
                 if (InstallConfig.DoorSkip)
                     SetDoorSkip();
                 FixRifleStacking();
@@ -429,6 +431,14 @@ namespace IntelOrca.Biohazard.BioRand.RECV
         protected override string[] GetDefaultNPCs()
         {
             return new[] { "claire", "steve", "chris", "rodrigo", "alfred", "alexia" };
+        }
+
+        private void DisableNosferatuPoison()
+        {
+            var ms = new MemoryStream(_elf);
+            var bw = new BinaryWriter(ms);
+            ms.Position = ConvertAddress(0x1E6DC4);
+            bw.Write(0);
         }
 
         private void SetDoorSkip()
