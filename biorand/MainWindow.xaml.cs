@@ -1155,15 +1155,15 @@ namespace IntelOrca.Biohazard.BioRand
                     dropdown.SelectedIndex = 0;
             }
 
-            if (SelectedGame >= 2)
-            {
-                lblPlayer1.Visibility = Visibility.Collapsed;
-                dropdownPlayer1.Visibility = Visibility.Collapsed;
-            }
-            else
+            if (SelectedGame == 1 || SelectedGame == 3)
             {
                 lblPlayer1.Visibility = Visibility.Visible;
                 dropdownPlayer1.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                lblPlayer1.Visibility = Visibility.Collapsed;
+                dropdownPlayer1.Visibility = Visibility.Collapsed;
             }
             chkSwapCharacters.Visibility = SelectedGame == 0 || SelectedGame == 1 ?
                 Visibility.Visible :

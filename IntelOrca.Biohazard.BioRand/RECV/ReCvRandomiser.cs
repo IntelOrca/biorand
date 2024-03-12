@@ -64,7 +64,13 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 Path.Combine(dataPath, "..", "mod_biorand", "rdx_lnk", rdtPath);
         }
 
-        public override string GetPlayerName(int player) => "Claire";
+        public override string GetPlayerName(int player) =>
+            player switch
+            {
+                0 => "Claire",
+                1 => "Chris",
+                _ => throw new NotImplementedException(),
+            };
 
         internal FileRepository CreateRepository(string installPath, string? modPath = null)
         {
@@ -254,12 +260,20 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             var actor = "claire.cv";
             if (config.ChangePlayer)
             {
-                // Change main
-                var pldPath = GetSelectedPldPath(config, config.Player);
+                // Change Claire
+                var pldPath = GetSelectedPldPath(config, 0);
                 if (pldPath != null)
                 {
                     actor = Path.GetFileName(pldPath);
                     SwapPlayerCharacter(config, logger, fileRepository, 10, actor);
+                }
+
+                // Change Chris
+                pldPath = GetSelectedPldPath(config, 1);
+                if (pldPath != null)
+                {
+                    actor = Path.GetFileName(pldPath);
+                    SwapPlayerCharacter(config, logger, fileRepository, 11, actor);
                 }
             }
             return new[] { actor };
@@ -267,13 +281,13 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
         private void SwapPlayerCharacter(RandoConfig config, RandoLogger logger, FileRepository fileRepository, int pldIndex, string actor)
         {
-            var originalPlayerActor = "claire.cv";
+            var originalPlayerActor = pldIndex == 10 ? "claire.cv" : "chris.cv";
             var srcPldDir = DataManager.GetPath(BiohazardVersion, $"pld0\\{actor}");
 
             logger.WriteHeading($"Randomizing Player PL{pldIndex:X2}:");
             logger.WriteLine($"{originalPlayerActor} becomes {actor}");
 
-            var srcPldFile = Path.Combine(srcPldDir, $"unnamed_{pldIndex}.bin");
+            var srcPldFile = Path.Combine(srcPldDir, $"PL00.PLD");
 
             var afsBuilder = _systemAfs!.ToBuilder();
             afsBuilder.Replace(pldIndex, File.ReadAllBytes(srcPldFile));

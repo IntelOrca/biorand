@@ -647,7 +647,7 @@ namespace IntelOrca.Biohazard.BioRand
         {
             var result = new HashSet<string>();
             var pldFiles = DataManager
-                .GetDirectories(BiohazardVersion, $"pld{index}")
+                .GetDirectories(BiohazardVersion, $"pld0")
                 .ToArray();
             foreach (var pldPath in pldFiles)
             {
@@ -675,7 +675,7 @@ namespace IntelOrca.Biohazard.BioRand
         {
             var pldIndex = GetSelectedPldIndex(config, player);
             var pldDirectoryIndex = config.SwapCharacters ? player ^ 1 : player;
-            var pldPath = DataManager.GetDirectories(BiohazardVersion, $"pld{pldDirectoryIndex}")
+            var pldPath = DataManager.GetDirectories(BiohazardVersion, "pld0")
                 .OrderBy(x => Path.GetFileName(x).ToActorString())
                 .Skip(pldIndex)
                 .FirstOrDefault();
