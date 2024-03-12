@@ -3418,7 +3418,7 @@
           "type": 16,
           "amount": 6,
           "offsets": [ "0x3EDE0" ],
-          "nop": [ "0x3EB60-0x3EB70" ]
+          "priority": "low"
         },
         {
           "id": 2,
@@ -3432,7 +3432,7 @@
           "globalId": 34,
           "type": 98,
           "amount": 1,
-          "priority": "low"
+          "nop": [ "0x3EB60-0x3EB70" ]
         }
       ]
     },
