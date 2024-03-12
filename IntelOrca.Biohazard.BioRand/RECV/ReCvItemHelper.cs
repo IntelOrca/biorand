@@ -316,6 +316,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             {
                 ReCvItemIds.EaglePlate => 3,
                 ReCvItemIds.WingObject => 4,
+                ReCvItemIds.OctaValveHandle => 2,
                 _ => 1,
             };
         }

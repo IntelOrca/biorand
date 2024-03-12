@@ -688,6 +688,12 @@ namespace IntelOrca.Biohazard.BioRand
                 noOriginalItemLocation = true;
             }
 
+            // HACK CV remove when we can
+            if (_config.Game == 4)
+            {
+                noOriginalItemLocation = true;
+            }
+
             // Get a new location for the key item
             var index = FindNewKeyItemLocation(req, includeLowPriority: false, includeKeyItems: !noOriginalItemLocation);
             if (index == null)
