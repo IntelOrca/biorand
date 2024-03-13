@@ -4908,8 +4908,7 @@
           "type": 2,
           "amount": 100,
           "offsets": [ "0x1BF2CC" ],
-          "requires": [ 82 ],
-          "requiresRoom": [ "A0B0" ]
+          "priority": "low"
         },
         {
           "id": 1,
