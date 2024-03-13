@@ -312,13 +312,26 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
         public int GetItemQuantity(RandoConfig config, byte item)
         {
-            return item switch
+            if (config.RandomDoors)
             {
-                ReCvItemIds.EaglePlate => 3,
-                ReCvItemIds.WingObject => 4,
-                ReCvItemIds.OctaValveHandle => 2,
-                _ => 1,
-            };
+                return item switch
+                {
+                    ReCvItemIds.EaglePlate => 3,
+                    ReCvItemIds.WingObject => 4,
+                    ReCvItemIds.OctaValveHandle => 2,
+                    _ => 1,
+                };
+            }
+            else
+            {
+                return item switch
+                {
+                    ReCvItemIds.EaglePlate => 2,
+                    ReCvItemIds.WingObject => 4,
+                    ReCvItemIds.OctaValveHandle => 1,
+                    _ => 1,
+                };
+            }
         }
 
         public byte GetItemSize(byte type)

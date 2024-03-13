@@ -88,6 +88,12 @@ namespace IntelOrca.Biohazard.BioRand
                         // HACK RE 1 battery needs placing in the lab
                         _haveItems.Remove(Re1ItemIds.Battery);
                     }
+                    else if (_config.Game == 4)
+                    {
+                        // HACK RE CV items needed in multiple segments
+                        _haveItems.Remove(ReCvItemIds.EaglePlate);
+                        _haveItems.Remove(ReCvItemIds.OctaValveHandle);
+                    }
                     checkpoint = newCheckpoint;
                 }
             }
