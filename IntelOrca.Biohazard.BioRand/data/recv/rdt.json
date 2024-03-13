@@ -5059,12 +5059,12 @@
           "type": 23,
           "amount": 1
         },
-        {
-          "id": 4,
-          "globalId": 369,
-          "type": 23,
-          "amount": 1
-        },
+        // {
+        //   "id": 4,
+        //   "globalId": 369,
+        //   "type": 23,
+        //   "amount": 1
+        // },
         {
           "id": 5,
           "globalId": 370,
@@ -5207,6 +5207,11 @@
       ]
     },
     "A0F0": {
+      "doorRando": [
+        {
+          "category": "exclude"
+        }
+      ],
       "doors": [
         {
           "id": 0,
@@ -5222,6 +5227,84 @@
       ]
     },
     "A100": {
+      "doorRando": [
+        {
+          "category": "exclude",
+          "nop": [ "0x524BA-0x524F2", "0x52B2E-0x52B82" ]
+        }
+      ],
+      "doors": [
+        {
+          "id": 1,
+          "target": "A0C0",
+          "entranceId": 1,
+          "requires": [ 88 ],
+          "requiresRoom": [ "A0E0" ]
+        },
+        {
+          "id": 2,
+          "target": "A0F0",
+          "entranceId": 0
+        },
+        {
+          "id": 3,
+          "target": "A110",
+          "entranceId": 4,
+          "offsets": [ "0x5403E", "0x540E4" ],
+          "requires": [ 88 ],
+          "requiresRoom": [ "A0E0" ]
+        }
+      ],
+      "items": [
+        {
+          "id": 8,
+          "globalId": 386,
+          "type": 14,
+          "amount": 6
+        },
+        {
+          "id": 9,
+          "globalId": 387,
+          "type": 12,
+          "amount": 15
+        },
+        {
+          "id": 4,
+          "globalId": 49,
+          "type": 112,
+          "amount": 1,
+          "offsets": [ "0x534EC", "0x53702" ],
+          "priority": "fixed"
+        },
+        {
+          "id": 254,
+          "globalId": 50,
+          "type": 111,
+          "amount": 1,
+          "offsets": [ "0x53504", "0x5372A" ],
+          "priority": "fixed"
+        },
+        {
+          "id": 253,
+          "globalId": 384,
+          "type": 12,
+          "amount": 15,
+          "offsets": [ "0x538FA", "0x545BA", "0x545CC" ],
+          "requires": [ 80, 111 ],
+          "requiresRoom": [ "A0E0" ]
+        },
+        {
+          "id": 252,
+          "globalId": 64,
+          "type": 12,
+          "amount": 15,
+          "offsets": [ "0x53A0A", "0x54668", "0x5467A" ],
+          "requires": [ 88, 112 ],
+          "requiresRoom": [ "A0E0" ]
+        }
+      ]
+    },
+    "A110": {
       "doorRando": [
         {
           "category": "exclude"
