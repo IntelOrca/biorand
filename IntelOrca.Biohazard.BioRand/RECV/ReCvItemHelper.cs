@@ -319,6 +319,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                     ReCvItemIds.EaglePlate => 3,
                     ReCvItemIds.WingObject => 4,
                     ReCvItemIds.OctaValveHandle => 2,
+                    ReCvItemIds.MusicBoxPlate => 2,
                     _ => 1,
                 };
             }
@@ -328,7 +329,6 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 {
                     ReCvItemIds.EaglePlate => 2,
                     ReCvItemIds.WingObject => 4,
-                    ReCvItemIds.OctaValveHandle => 1,
                     _ => 1,
                 };
             }

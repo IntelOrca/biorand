@@ -93,6 +93,7 @@ namespace IntelOrca.Biohazard.BioRand
                         // HACK RE CV items needed in multiple segments
                         _haveItems.Remove(ReCvItemIds.EaglePlate);
                         _haveItems.Remove(ReCvItemIds.OctaValveHandle);
+                        _haveItems.Remove(ReCvItemIds.MusicBoxPlate);
                     }
                     checkpoint = newCheckpoint;
                 }
