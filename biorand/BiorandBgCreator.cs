@@ -52,13 +52,13 @@ namespace IntelOrca.Biohazard.BioRand
                     g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
                     g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
 
-                    g.DrawImage(srcImage, xOffset, 0, titleBg.Width, titleBg.Height);
+                    g.DrawImage(srcImage, 0, 0, titleBg.Width, titleBg.Height);
 
                     var font = new Font("Courier New", 14 * size, GraphicsUnit.Pixel);
 
                     var versionInfo = Program.CurrentVersionInfo;
                     var versionSize = g.MeasureString(versionInfo, font);
-                    g.DrawString(versionInfo, font, Brushes.White, 0, yOffset);
+                    g.DrawString(versionInfo, font, Brushes.White, xOffset, yOffset);
 
                     var seed = config.ToString();
                     // var seedSize = g.MeasureString(seed, font);
