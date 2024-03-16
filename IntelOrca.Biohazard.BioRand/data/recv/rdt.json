@@ -3290,7 +3290,7 @@
           "target": "8190",
           "entranceId": 1,
           "offsets": [ "0x3C7BE", "0x3C7C8", "0x3C7D2" ],
-          "requires": [ 69, 70, 71 ]
+          "requires": [ 69, 70, 71, 100 ]
         }
       ],
       "items": [
@@ -5841,9 +5841,10 @@
           "id": 13,
           "itemId": 4,
           // "globalId": 56,
-          "type": 106,
+          "type": 105,
           "amount": 1,
-          "offsets": [ "0x1D27E6" ]
+          "offsets": [ "0x1D27E6" ],
+          "requires": [ 121 ]
         }
       ]
     },
