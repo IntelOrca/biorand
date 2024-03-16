@@ -671,11 +671,11 @@ namespace IntelOrca.Biohazard.BioRand
             return Path.GetFileName(pldPath).ToLower();
         }
 
-        protected string GetSelectedPldPath(RandoConfig config, int player)
+        protected virtual string GetSelectedPldPath(RandoConfig config, int player)
         {
             var pldIndex = GetSelectedPldIndex(config, player);
             var pldDirectoryIndex = config.SwapCharacters ? player ^ 1 : player;
-            var pldPath = DataManager.GetDirectories(BiohazardVersion, "pld0")
+            var pldPath = DataManager.GetDirectories(BiohazardVersion, $"pld{player}")
                 .OrderBy(x => Path.GetFileName(x).ToActorString())
                 .Skip(pldIndex)
                 .FirstOrDefault();

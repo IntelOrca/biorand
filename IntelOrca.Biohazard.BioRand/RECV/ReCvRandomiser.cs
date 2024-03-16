@@ -73,6 +73,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             };
 
         public override string[] GetPlayerCharacters(int index) => base.GetPlayerCharacters(0);
+        protected override string GetSelectedPldPath(RandoConfig config, int player) => GetSelectedPldPath(config, 0);
 
         internal FileRepository CreateRepository(string installPath, string? modPath = null)
         {
