@@ -254,7 +254,7 @@ namespace IntelOrca.Biohazard.BioRand
                     if (rdtBuilder.Items.Count > itemId)
                     {
                         var item = rdtBuilder.Items[itemId.Value];
-                        item.Type = type;
+                        item.Type = (item.Type & 0xFFFF) | (type << 16);
                         rdtBuilder.Items[itemId.Value] = item;
                         RdtFile = rdtBuilder.ToRdt();
                     }
@@ -526,6 +526,21 @@ namespace IntelOrca.Biohazard.BioRand
             foreach (var postMod in PostModifications)
             {
                 postMod();
+            }
+
+            if (Version == BioVersion.BiohazardCv)
+            {
+                var rdtCv = ((RdtCv)RdtFile).ToBuilder();
+                for (var i = 0; i < rdtCv.Items.Count; i++)
+                {
+                    var item = rdtCv.Items[i];
+                    if (((item.Type >> 16) & 0xFFFF) == 0)
+                    {
+                        item.Type |= (item.Type << 16);
+                    }
+                    rdtCv.Items[i] = item;
+                }
+                RdtFile = rdtCv.ToRdt();
             }
 
             if (ModifiedPath != null)

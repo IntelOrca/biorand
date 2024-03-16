@@ -235,6 +235,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                     SetDoorSkip();
                 FixRifleStacking();
                 SetItemQuantityPickup(config, new Rng(config.Seed));
+                HackItemPickup();
 
                 // base.Generate(config, progress, fileRepository);
 
@@ -478,6 +479,14 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             ms.Position = ConvertAddress(0x35B200);
             bw.Write((byte)0x02);
             bw.Write((byte)0x16);
+        }
+
+        private void HackItemPickup()
+        {
+            var ms = new MemoryStream(_elf);
+            var bw = new BinaryWriter(ms);
+            ms.Position = ConvertAddress(0x266E30);
+            bw.Write((byte)0x06);
         }
 
         private void SetSpecialSlotItem(byte item)
