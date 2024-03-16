@@ -647,7 +647,7 @@ namespace IntelOrca.Biohazard.BioRand
         {
             var result = new HashSet<string>();
             var pldFiles = DataManager
-                .GetDirectories(BiohazardVersion, $"pld0")
+                .GetDirectories(BiohazardVersion, $"pld{index}")
                 .ToArray();
             foreach (var pldPath in pldFiles)
             {

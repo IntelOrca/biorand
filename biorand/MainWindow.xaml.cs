@@ -1155,7 +1155,7 @@ namespace IntelOrca.Biohazard.BioRand
                     dropdown.SelectedIndex = 0;
             }
 
-            if (SelectedGame == 1 || SelectedGame == 3)
+            if (SelectedGame != 2)
             {
                 lblPlayer1.Visibility = Visibility.Visible;
                 dropdownPlayer1.Visibility = Visibility.Visible;

@@ -72,6 +72,8 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 _ => throw new NotImplementedException(),
             };
 
+        public override string[] GetPlayerCharacters(int index) => base.GetPlayerCharacters(0);
+
         internal FileRepository CreateRepository(string installPath, string? modPath = null)
         {
             var repo = new FileRepository(installPath, null);
