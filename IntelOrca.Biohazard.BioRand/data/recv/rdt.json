@@ -5928,10 +5928,18 @@
       ],
       "items": [
         {
+          "id": 11,
+          "globalId": 47,
+          "type": 107,
+          "amount": 1,
+          "priority": "low"
+        },
+        {
           "id": 12,
           "globalId": 382,
           "type": 8,
-          "amount": 1
+          "amount": 1,
+          "priority": "low"
         }
       ]
     }
