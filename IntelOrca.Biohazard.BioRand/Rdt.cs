@@ -53,7 +53,9 @@ namespace IntelOrca.Biohazard.BioRand
                 if (edge.Raw.Randomize == false)
                     return;
 
-                if (id != 255)
+                var offsets = Map.ParseNopArray(edge.Raw.Offsets, this);
+
+                if (offsets.Length == 0 && id != 255)
                 {
                     var builder = ((RdtCv)RdtFile).ToBuilder();
                     var aot = builder.Aots[id];
@@ -64,7 +66,6 @@ namespace IntelOrca.Biohazard.BioRand
                     RdtFile = builder.ToRdt();
                 }
 
-                var offsets = Map.ParseNopArray(edge.Raw.Offsets, this);
                 foreach (var offset in offsets)
                 {
                     var opcode = (UnknownOpcode)Opcodes.First(x => x.Offset == offset);

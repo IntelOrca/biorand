@@ -3492,11 +3492,6 @@
       ]
     },
     "8060": {
-      "doorRando": [
-        {
-          "category": "exclude"
-        }
-      ],
       "doors": [
         {
           "id": 2,
@@ -4320,11 +4315,6 @@
       ]
     },
     "8190": {
-      "doorRando": [
-        {
-          "category": "exclude"
-        }
-      ],
       "doors": [
         {
           "id": 1,
@@ -5623,11 +5613,6 @@
       ]
     },
     "A190": {
-      "doorRando": [
-        {
-          "category": "exclude"
-        }
-      ],
       "doors": [
         {
           "id": 0,
