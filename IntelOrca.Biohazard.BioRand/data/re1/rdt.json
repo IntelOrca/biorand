@@ -1379,8 +1379,7 @@
         },
         {
           "target": "302",
-          "requires": [ 29 ],
-          "randomize": false
+          "requires": [ 29 ]
         }
       ],
       "enemies": [
@@ -1405,8 +1404,7 @@
           "noUnlock": true
         },
         {
-          "target": "301",
-          "randomize": false
+          "target": "301"
         },
         {
           "target": "304"
