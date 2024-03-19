@@ -1274,10 +1274,10 @@ namespace IntelOrca.Biohazard.BioRand.Events
     internal class SbGetItem : SbNode
     {
         private readonly byte _item;
-        private readonly byte _count;
+        private readonly ushort _count;
 
         public SbGetItem(Item item) : this(item.Type, item.Amount) { }
-        public SbGetItem(byte item, byte count)
+        public SbGetItem(byte item, ushort count)
         {
             _item = item;
             _count = count;

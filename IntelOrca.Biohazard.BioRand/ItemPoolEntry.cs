@@ -11,6 +11,7 @@
         public byte[]? Requires { get; set; }
         public ItemPriority Priority { get; set; }
         public bool AllowDocuments { get; set; }
+        public ushort? GlobalId { get; set; }
 
         public RdtItemId RdtItemId
         {

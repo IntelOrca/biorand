@@ -906,6 +906,7 @@ namespace IntelOrca.Biohazard.BioRand
                     Id = x.Id,
                     Type = x.Type,
                     Amount = x.Amount,
+                    GlobalId = x.GlobalId,
                     AllowDocuments = true
                 })
                 .ToArray();
@@ -1040,6 +1041,7 @@ namespace IntelOrca.Biohazard.BioRand
                                     Id = correctedItem.Id,
                                     Type = (ushort)(correctedItem.Type ?? 0),
                                     Amount = correctedItem.Amount ?? 1,
+                                    GlobalId = (ushort?)correctedItem.GlobalId,
                                     Requires = correctedItem.Requires?.Select(x => (byte)x).ToArray(),
                                     Priority = ParsePriority(correctedItem.Priority),
                                     AllowDocuments = correctedItem.AllowDocuments ?? true
@@ -1076,6 +1078,7 @@ namespace IntelOrca.Biohazard.BioRand
                                     Id = correctedItem.Id,
                                     Type = (ushort)(correctedItem.Type ?? 0),
                                     Amount = correctedItem.Amount ?? 1,
+                                    GlobalId = (ushort?)correctedItem.GlobalId,
                                     Requires = correctedItem.Requires?.Select(x => (byte)x).ToArray(),
                                     Priority = ParsePriority(correctedItem.Priority),
                                     AllowDocuments = correctedItem.AllowDocuments ?? true

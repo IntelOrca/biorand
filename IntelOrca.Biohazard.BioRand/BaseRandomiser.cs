@@ -323,7 +323,7 @@ namespace IntelOrca.Biohazard.BioRand
                 {
                     var dgmlPath = fileRepository.GetModPath($"graph_pl{config.Player}.dgml");
                     var doorRando = new DoorRandomiser(logger, config, gameData, map, randomDoors, DoorHelper, ItemHelper);
-                    itemRandomiser = new ItemRandomiser(logger, config, gameData, randomItems, ItemHelper);
+                    itemRandomiser = new ItemRandomiser(logger, config, gameData, map, randomItems, ItemHelper);
                     using (progress.BeginTask(config.Player, "Randomizing doors"))
                     {
                         graph = config.RandomDoors ?

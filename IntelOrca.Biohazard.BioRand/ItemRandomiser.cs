@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using IntelOrca.Biohazard.BioRand.RE1;
 using IntelOrca.Biohazard.BioRand.RE2;
 using IntelOrca.Biohazard.BioRand.RE3;
@@ -14,9 +15,10 @@ namespace IntelOrca.Biohazard.BioRand
         private static bool g_debugLogging = false;
 
         private readonly RandoLogger _logger;
-        private RandoConfig _config;
-        private GameData _gameData;
-        private Rng _rng;
+        private readonly RandoConfig _config;
+        private readonly GameData _gameData;
+        private readonly Map _map;
+        private readonly Rng _rng;
 
         private PlayNode[] _nodes = new PlayNode[0];
         private List<ItemPoolEntry> _currentPool = new List<ItemPoolEntry>();
@@ -28,17 +30,21 @@ namespace IntelOrca.Biohazard.BioRand
         private HashSet<PlayNode> _visitedRooms = new HashSet<PlayNode>();
         private HashSet<RdtItemId> _visitedItems = new HashSet<RdtItemId>();
 
+        private HashSet<ushort> _globalIdVisited = new HashSet<ushort>();
+        private Dictionary<ushort, Item> _globalIdToRandomItem = new Dictionary<ushort, Item>();
+
         private byte? _specialItem;
         private List<RandomInventory.Entry> _startingWeapons = new List<RandomInventory.Entry>();
         private List<byte> _availableGunpowder = new List<byte>();
 
         public IItemHelper ItemHelper { get; }
 
-        public ItemRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Rng random, IItemHelper itemHelper)
+        public ItemRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng random, IItemHelper itemHelper)
         {
             _logger = logger;
             _config = config;
             _gameData = gameData;
+            _map = map;
             _rng = random;
             ItemHelper = itemHelper;
         }
@@ -815,7 +821,7 @@ namespace IntelOrca.Biohazard.BioRand
             // Remove new key item location from pool
             _haveItems.Add(req);
             _currentPool.RemoveAt(index.Value);
-            _definedPool.Add(itemEntry);
+            SetItem(itemEntry);
             itemParentNode.PlacedKeyItems.Add(itemEntry);
 
             _logger.WriteLine($"    Placing key item ({ItemHelper.GetItemName((byte)itemEntry.Type)} x{itemEntry.Amount}) in {itemEntry.RdtId}:{itemEntry.Id}");
@@ -838,8 +844,17 @@ namespace IntelOrca.Biohazard.BioRand
             return null;
         }
 
-        private int AddItemToPool(ItemPoolEntry item)
+        private void AddItemToPool(ItemPoolEntry item)
         {
+            // CVX currently, eventually add to all games
+            if (_config.Game == 4)
+            {
+                if (item.GlobalId is ushort globalId && !_globalIdVisited.Add(item.GlobalId.Value))
+                {
+                    return;
+                }
+            }
+
             if (_visitedItems.Add(item.RdtItemId))
             {
                 _currentPool.Add(item);
@@ -849,8 +864,15 @@ namespace IntelOrca.Biohazard.BioRand
 
             if (_currentPool.DistinctBy(x => x.RdtItemId).Count() != _currentPool.Count())
                 throw new Exception();
+        }
 
-            return _currentPool.Count - 1;
+        private void SetItem(ItemPoolEntry entry)
+        {
+            _definedPool.Add(entry);
+            if (entry.GlobalId is ushort globalId)
+            {
+                _globalIdToRandomItem.Add(globalId, new Item((byte)entry.Type, entry.Amount));
+            }
         }
 
         private void RandomiseRemainingPool()
@@ -1037,7 +1059,7 @@ namespace IntelOrca.Biohazard.BioRand
                 _logger.WriteLine($"    Replaced {oldEntry.ToString(ItemHelper)} with {newEntry.ToString(ItemHelper)}");
                 if (_definedPool.Any(x => x.RdtItemId == newEntry.RdtItemId))
                     throw new Exception();
-                _definedPool.Add(newEntry);
+                SetItem(newEntry);
                 return true;
             }
             else
@@ -1098,7 +1120,7 @@ namespace IntelOrca.Biohazard.BioRand
                 entry.Type = shuffleEntry.Type;
                 entry.Amount = shuffleEntry.Amount;
                 _logger.WriteLine($"    Swapped {shufflePool[i].ToString(ItemHelper)} with {shuffleEntry.ToString(ItemHelper)}");
-                _definedPool.Add(entry);
+                SetItem(entry);
             }
             _shufflePool.Clear();
         }
@@ -1133,16 +1155,45 @@ namespace IntelOrca.Biohazard.BioRand
                 var sourceItem = _definedPool[sourceItemIndex];
                 var targetItem = sourceItem;
                 targetItem.RdtItemId = target;
-                _definedPool.Add(targetItem);
+                SetItem(targetItem);
                 _logger.WriteLine($"    {sourceItem.ToString(ItemHelper)} placed at {target}");
             }
         }
 
         private void SetItems()
         {
+            if (_config.Game == 4)
+            {
+                foreach (var rdt in _gameData.Rdts)
+                {
+                    var room = _map.GetRoom(rdt.RdtId);
+                    if (room?.Items != null)
+                    {
+                        foreach (var jItem in room.Items)
+                        {
+                            if (jItem.GlobalId is short globalId)
+                            {
+                                if (_globalIdToRandomItem.TryGetValue((ushort)jItem.GlobalId, out var item))
+                                {
+                                    rdt.SetItem(jItem.Id, item, jItem);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            var sb = new StringBuilder();
             foreach (var entry in _definedPool)
             {
                 var rdt = _gameData.GetRdt(entry.RdtId)!;
+
+                // Items with global ID are already done
+                if (_config.Game == 4 && entry.GlobalId != null)
+                {
+                    continue;
+                }
+                sb.AppendLine($"{rdt.RdtId}: {entry.Id}");
 
                 // HACK: 255 is used for give commands
                 if (entry.Id == 255)
@@ -1170,7 +1221,7 @@ namespace IntelOrca.Biohazard.BioRand
                         }
                     }
 
-                    rdt.SetItem(entry);
+                    rdt.SetItem(entry.Id, new Item((byte)entry.Type, entry.Amount), entry.Raw);
                 }
             }
         }

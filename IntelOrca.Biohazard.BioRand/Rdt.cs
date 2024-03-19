@@ -220,25 +220,25 @@ namespace IntelOrca.Biohazard.BioRand
 
         public void RemoveDoorLock(int id) => SetDoorLock(id, 0, 0);
 
-        internal void SetItem(ItemPoolEntry entry)
+        internal void SetItem(byte id, Item item, MapRoomItem raw)
         {
-            var nopArray = Map.ParseNopArray(entry.Raw?.Nop, this);
+            var nopArray = Map.ParseNopArray(raw?.Nop, this);
             foreach (var offset in nopArray)
             {
                 Nop(offset);
             }
 
-            var hasOffsets = entry.Raw?.Offsets != null && entry.Raw.Offsets.Length != 0;
-            if (!hasOffsets || entry.Raw?.ItemId != null)
+            var hasOffsets = raw?.Offsets != null && raw.Offsets.Length != 0;
+            if (!hasOffsets || raw?.ItemId != null)
             {
-                SetItem(entry.Id, entry.Raw?.ItemId, entry.Raw?.GlobalId, entry.Type, entry.Amount);
+                SetItem(id, raw?.ItemId, raw?.GlobalId, item.Type, item.Amount);
             }
             if (hasOffsets)
             {
-                var offsets = Map.ParseNopArray(entry.Raw!.Offsets!, this);
+                var offsets = Map.ParseNopArray(raw!.Offsets!, this);
                 foreach (var offset in offsets)
                 {
-                    SetItemAt(offset, entry.Type, entry.Amount);
+                    SetItemAt(offset, item.Type, item.Amount);
                 }
             }
         }
