@@ -2865,7 +2865,7 @@
           "id": 2,
           "target": "7060",
           "entranceId": 3,
-          "requires": [ 90 ]
+          "requires": [ 39, 90, 126 ]
         }
       ],
       "items": [
@@ -2902,7 +2902,7 @@
           "id": 6,
           "target": "7060",
           "entranceId": 6,
-          "requires": [ 126 ]
+          "requires": [ 39, 90, 126 ]
         }
       ]
     },
@@ -2933,13 +2933,14 @@
         {
           "id": 2,
           "target": "7070",
+          "requires": [ 39 ],
           "entranceId": 4,
           "doorRando": false
         },
         {
           "id": 255,
           "target": "70A0",
-          "requires": [ 39, 88 ],
+          "requires": [ 88 ],
           "noReturn": true,
           "randomize": false,
           "isBridgeEdge": true
@@ -3025,7 +3026,6 @@
           "globalId": 30,
           "type": 87,
           "amount": 1,
-          "requires": [ 126 ],
           "doorRando": false
         }
       ]
