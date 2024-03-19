@@ -224,10 +224,8 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 case ReCvItemIds.EnhancedHandgun:
                     return ItemAttribute.Ammo;
                 case ReCvItemIds.Memo:
-                    return ItemAttribute.Document;
                 case ReCvItemIds.BoardClip:
                 case ReCvItemIds.Card:
-                    return ItemAttribute.Key;
                 case ReCvItemIds.NewspaperClip:
                     return ItemAttribute.Document;
                 case ReCvItemIds.LugerReplica:

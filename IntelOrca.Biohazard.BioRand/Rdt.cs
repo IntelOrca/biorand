@@ -248,6 +248,22 @@ namespace IntelOrca.Biohazard.BioRand
             if (Version == BioVersion.BiohazardCv)
             {
                 var rdtBuilder = ((RdtCv)RdtFile).ToBuilder();
+
+#if !OLD_ITEM_TECHNIQUE
+                itemId = itemId ?? id;
+                if (globalId != null)
+                {
+                    var aot = rdtBuilder.Aots[id];
+                    itemId = aot.Stage;
+                }
+                if (rdtBuilder.Items.Count > itemId)
+                {
+                    var item = rdtBuilder.Items[itemId.Value];
+                    item.Type = (item.Type & 0xFFFF) | (type << 16);
+                    rdtBuilder.Items[itemId.Value] = item;
+                    RdtFile = rdtBuilder.ToRdt();
+                }
+#else
                 if (globalId == null)
                 {
                     itemId = itemId ?? id;
@@ -272,6 +288,7 @@ namespace IntelOrca.Biohazard.BioRand
                     // rdtBuilder.Aots[id] = aot;
                     CvAddItemPickupCodes(id, itemId.Value, (byte)type, globalId.Value);
                 }
+#endif
             }
             else
             {

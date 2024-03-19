@@ -131,6 +131,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 throw new BioRandUserException("RE3 installation must be enabled to randomize RE3.");
             }
 
+            config.IncludeDocuments = false;
             config.SwapCharacters = false;
             config.RandomNPCs = false;
             config.RandomEnemies = false;
@@ -376,16 +377,16 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 #if DEBUG
             // QuickDoor(RdtId.Parse("10B"), 0);
 
-            var rrdt = gameData.GetRdt(RdtId.Parse("1021"))!;
-            rrdt.PostModifications.Add(() =>
-            {
-                var rdtBuilder = ((RdtCv)rrdt.RdtFile).ToBuilder();
-                rdtBuilder.Enemies.RemoveAt(rdtBuilder.Enemies.Count - 1);
-                rdtBuilder.Enemies.RemoveAt(rdtBuilder.Enemies.Count - 1);
-                rdtBuilder.Enemies.RemoveAt(rdtBuilder.Enemies.Count - 1);
-                rdtBuilder.Enemies.RemoveAt(rdtBuilder.Enemies.Count - 1);
-                rrdt.RdtFile = rdtBuilder.ToRdt();
-            });
+            // var rrdt = gameData.GetRdt(RdtId.Parse("1021"))!;
+            // rrdt.PostModifications.Add(() =>
+            // {
+            //     var rdtBuilder = ((RdtCv)rrdt.RdtFile).ToBuilder();
+            //     rdtBuilder.Enemies.RemoveAt(rdtBuilder.Enemies.Count - 1);
+            //     rdtBuilder.Enemies.RemoveAt(rdtBuilder.Enemies.Count - 1);
+            //     rdtBuilder.Enemies.RemoveAt(rdtBuilder.Enemies.Count - 1);
+            //     rdtBuilder.Enemies.RemoveAt(rdtBuilder.Enemies.Count - 1);
+            //     rrdt.RdtFile = rdtBuilder.ToRdt();
+            // });
 #endif
         }
 
