@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
 using IntelOrca.Biohazard.BioRand.RE1;
 using IntelOrca.Biohazard.BioRand.RE2;
 using IntelOrca.Biohazard.BioRand.RE3;
@@ -847,12 +847,9 @@ namespace IntelOrca.Biohazard.BioRand
         private void AddItemToPool(ItemPoolEntry item)
         {
             // CVX currently, eventually add to all games
-            if (_config.Game == 4)
+            if (_config.Game == 4 && !_globalIdVisited.Add(item.GlobalId!.Value))
             {
-                if (item.GlobalId is ushort globalId && !_globalIdVisited.Add(item.GlobalId.Value))
-                {
-                    return;
-                }
+                return;
             }
 
             if (_visitedItems.Add(item.RdtItemId))
@@ -869,9 +866,9 @@ namespace IntelOrca.Biohazard.BioRand
         private void SetItem(ItemPoolEntry entry)
         {
             _definedPool.Add(entry);
-            if (entry.GlobalId is ushort globalId)
+            if (_config.Game == 4)
             {
-                _globalIdToRandomItem.Add(globalId, new Item((byte)entry.Type, entry.Amount));
+                _globalIdToRandomItem.Add(entry.GlobalId!.Value, new Item((byte)entry.Type, entry.Amount));
             }
         }
 
@@ -1178,50 +1175,48 @@ namespace IntelOrca.Biohazard.BioRand
                                     rdt.SetItem(jItem.Id, item, jItem);
                                 }
                             }
+                            else
+                            {
+                                throw new InvalidDataException($"No global ID for {rdt.RdtId}:{jItem.Id}");
+                            }
                         }
                     }
                 }
             }
-
-            var sb = new StringBuilder();
-            foreach (var entry in _definedPool)
+            else
             {
-                var rdt = _gameData.GetRdt(entry.RdtId)!;
+                foreach (var entry in _definedPool)
+                {
+                    var rdt = _gameData.GetRdt(entry.RdtId)!;
 
-                // Items with global ID are already done
-                if (_config.Game == 4 && entry.GlobalId != null)
-                {
-                    continue;
-                }
-                sb.AppendLine($"{rdt.RdtId}: {entry.Id}");
-
-                // HACK: 255 is used for give commands
-                if (entry.Id == 255)
-                {
-                    foreach (var itemGet in rdt.ItemGets)
+                    // HACK: 255 is used for give commands
+                    if (entry.Id == 255)
                     {
-                        itemGet.Type = (byte)entry.Type;
-                        itemGet.Amount = (byte)entry.Amount;
-                    }
-                }
-                else
-                {
-                    if (rdt.Version == BioVersion.Biohazard1)
-                    {
-                        var originalType = rdt.Items.FirstOrDefault(x => x.Id == entry.Id)?.Type;
-                        if (originalType != null)
+                        foreach (var itemGet in rdt.ItemGets)
                         {
-                            foreach (var opcode in rdt.Opcodes)
+                            itemGet.Type = (byte)entry.Type;
+                            itemGet.Amount = (byte)entry.Amount;
+                        }
+                    }
+                    else
+                    {
+                        if (rdt.Version == BioVersion.Biohazard1)
+                        {
+                            var originalType = rdt.Items.FirstOrDefault(x => x.Id == entry.Id)?.Type;
+                            if (originalType != null)
                             {
-                                if (opcode is TestPickupOpcode testPickup && testPickup.Type == (byte)originalType)
+                                foreach (var opcode in rdt.Opcodes)
                                 {
-                                    testPickup.Type = (byte)entry.Type;
+                                    if (opcode is TestPickupOpcode testPickup && testPickup.Type == (byte)originalType)
+                                    {
+                                        testPickup.Type = (byte)entry.Type;
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    rdt.SetItem(entry.Id, new Item((byte)entry.Type, entry.Amount), entry.Raw);
+                        rdt.SetItem(entry.Id, new Item((byte)entry.Type, entry.Amount), entry.Raw);
+                    }
                 }
             }
         }

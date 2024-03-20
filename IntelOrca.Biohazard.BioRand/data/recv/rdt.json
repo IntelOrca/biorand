@@ -28,6 +28,7 @@
       "items": [
         {
           "id": 254,
+          "globalId": 1002,
           "type": 50,
           "amount": 1,
           "requires": [ 104 ],
@@ -206,7 +207,8 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 3,
+          "globalId": 3,
           "type": 59,
           "amount": 1,
           "offsets": [ 1070594 ]
@@ -217,7 +219,8 @@
         //   "amount": 1
         // },
         {
-          "id": 2,
+          "id": 7,
+          "globalId": 129,
           "type": 31,
           "amount": 3
         }
@@ -248,7 +251,8 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 7,
+          "globalId": 130,
           "type": 21,
           "amount": 1
         }
@@ -275,7 +279,8 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 4,
+          "globalId": 132,
           "type": 12,
           "amount": 15,
           "offsets": [ 1635340 ]
@@ -286,7 +291,8 @@
         //   "amount": 1
         // },
         {
-          "id": 2,
+          "id": 6,
+          "globalId": 131,
           "type": 21,
           "amount": 1
         }
@@ -641,12 +647,14 @@
       "items": [
         {
           "id": 0,
+          "globalId": 8,
           "type": 103,
           "amount": 1,
           "offsets": [ 1191434 ]
         },
         {
           "id": 1,
+          "globalId": 7,
           "type": 52,
           "amount": 1,
           "requires": [ 103 ]
@@ -855,17 +863,20 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 3,
+          "globalId": 160,
           "type": 128,
           "amount": 1
         },
         {
-          "id": 1,
+          "id": 5,
+          "globalId": 161,
           "type": 20,
           "amount": 1
         },
         {
-          "id": 2,
+          "id": 4,
+          "globalId": 162,
           "type": 12,
           "amount": 15
         }
@@ -886,7 +897,8 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 9,
+          "globalId": 10,
           "type": 116,
           "amount": 1,
           "offsets": [ 269770 ]
@@ -915,12 +927,14 @@
         //   "priority": "fixed"
         // },
         {
-          "id": 2,
+          "id": 5,
+          "globalId": 11,
           "type": 53,
           "amount": 1
         },
         {
-          "id": 3,
+          "id": 10,
+          "globalId": 165,
           "type": 12,
           "amount": 15
         }
@@ -936,7 +950,8 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 3,
+          "globalId": 12,
           "type": 56,
           "amount": 1
         },
@@ -946,7 +961,8 @@
         //   "amount": 1
         // },
         {
-          "id": 2,
+          "id": 5,
+          "globalId": 166,
           "type": 12,
           "amount": 15
         }
@@ -984,13 +1000,15 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 5,
+          "globalId": 167,
           "type": 12,
           "amount": 15,
           "offsets": [ 1356926 ]
         },
         {
-          "id": 1,
+          "id": 7,
+          "globalId": 169,
           "type": 22,
           "amount": 1
         }
@@ -1120,29 +1138,34 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 3,
+          "globalId": 177,
           "type": 21,
           "amount": 1
         },
         {
-          "id": 2,
+          "id": 5,
+          "globalId": 13,
           "type": 61,
           "amount": 1,
           "requires": [ 52 ],
           "offsets": [ 542440 ]
         },
         {
-          "id": 3,
+          "id": 2,
+          "globalId": 176,
           "type": 12,
           "amount": 15
         },
         {
-          "id": 4,
+          "id": 8,
+          "globalId": 179,
           "type": 130,
           "amount": 1
         },
         {
-          "id": 5,
+          "id": 4,
+          "globalId": 178,
           "type": 21,
           "amount": 1
         }
@@ -1198,12 +1221,14 @@
         //   "amount": 1
         // },
         {
-          "id": 2,
+          "id": 6,
+          "globalId": 183,
           "type": 12,
           "amount": 15
         },
         {
-          "id": 3,
+          "id": 8,
+          "globalId": 184,
           "type": 18,
           "amount": 30
         }
@@ -1475,7 +1500,7 @@
         {
           "id": 0,
           "itemId": 0,
-          // "globalId": 15,
+          "globalId": 15,
           "type": 67,
           "amount": 1,
           "offsets": [ 1438214 ]
@@ -1537,6 +1562,7 @@
         },
         {
           "id": 254,
+          "globalId": 1003,
           "type": 119,
           "amount": 1,
           "offsets": [ 464256 ]
@@ -1578,12 +1604,14 @@
         },
         {
           "id": 253,
+          "globalId": 1004,
           "type": 102,
           "amount": 1,
           "offsets": [ 537690 ]
         },
         {
           "id": 254,
+          "globalId": 1005,
           "type": 71,
           "amount": 1,
           "offsets": [ 537734 ]
@@ -1618,7 +1646,8 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 10,
+          "globalId": 200,
           "type": 12,
           "amount": 15
         }
@@ -1655,7 +1684,8 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 2,
+          "globalId": 201,
           "type": 76,
           "amount": 1,
           "requires": [ 56 ],
@@ -1716,6 +1746,7 @@
       "items": [
         {
           "id": 0,
+          "globalId": 203,
           "type": 12,
           "amount": 15
         }
@@ -1781,19 +1812,22 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 5,
+          "globalId": 206,
           "type": 18,
           "amount": 30,
           "offsets": [ 1695576 ]
         },
         {
-          "id": 1,
+          "id": 6,
+          "globalId": 208,
           "type": 18,
           "amount": 30,
           "offsets": [ 1695756 ]
         },
         {
-          "id": 2,
+          "id": 1,
+          "globalId": 207,
           "type": 18,
           "amount": 30
         }
@@ -1809,7 +1843,8 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 6,
+          "globalId": 22,
           "type": 72,
           "amount": 1
         }
@@ -2005,6 +2040,7 @@
       "items": [
         {
           "id": 254,
+          "globalId": 220,
           "type": 33,
           "amount": 0,
           "offsets": [ 2850448, 2855848 ],
@@ -2028,22 +2064,26 @@
       ],
       "items": [
         {
-          "id": 0,
+          "id": 3,
+          "globalId": 23,
           "type": 104,
           "amount": 1
         },
         {
-          "id": 1,
+          "id": 6,
+          "globalId": 225,
           "type": 21,
           "amount": 1
         },
         {
-          "id": 2,
+          "id": 8,
+          "globalId": 227,
           "type": 21,
           "amount": 1
         },
         {
-          "id": 4,
+          "id": 9,
+          "globalId": 224,
           "type": 31,
           "amount": 1
         }
@@ -2361,14 +2401,16 @@
       ],
       "items": [
         {
-          "id": 1,
+          "id": 11,
+          "globalId": 243,
           "type": 16,
           "amount": 6,
           "requires": [ 50 ],
           "offsets": [ 1393580 ]
         },
         {
-          "id": 2,
+          "id": 9,
+          "globalId": 438,
           "type": 12,
           "amount": 15
         }
@@ -2417,13 +2459,6 @@
         },
         {
           "target": "4150"
-        }
-      ],
-      "items": [
-        {
-          "id": 2,
-          "type": 12,
-          "amount": 15
         }
       ]
     },
@@ -2795,7 +2830,7 @@
         {
           "id": 1,
           "itemId": 9,
-          // "globalId": 260,
+          "globalId": 260,
           "type": 130,
           "amount": 1
         },
@@ -2897,6 +2932,7 @@
         },
         {
           "id": 22,
+          "globalId": 1006,
           "type": 88,
           "amount": 1,
           "requires": [ 87 ],
@@ -3201,6 +3237,7 @@
           "globalId": 440,
           "type": 12,
           "amount": 15,
+          "requires": [ 64 ],
           "offsets": [ "0x1BFE66" ]
         },
         {
@@ -3220,7 +3257,7 @@
         {
           "id": 14,
           "itemId": 3,
-          // "globalId": 289,
+          "globalId": 289,
           "type": 64,
           "amount": 1
         }
@@ -3884,6 +3921,7 @@
         },
         {
           "id": 19,
+          "globalId": 326,
           "type": 136,
           "amount": 1,
           "offsets": [ "0x4E186" ]
@@ -4972,7 +5010,7 @@
         {
           "id": 1,
           "itemId": 9,
-          // "globalId": 260,
+          "globalId": 260,
           "type": 130,
           "amount": 1,
           "priority": "low"
@@ -6125,7 +6163,7 @@
         {
           "id": 12,
           "itemId": 3,
-          // "globalId": 57,
+          "globalId": 57,
           "type": 121,
           "amount": 1,
           "offsets": [ "0x1D280A" ]
@@ -6133,7 +6171,7 @@
         {
           "id": 13,
           "itemId": 4,
-          // "globalId": 56,
+          "globalId": 56,
           "type": 105,
           "amount": 1,
           "offsets": [ "0x1D27E6" ],
