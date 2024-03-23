@@ -30,8 +30,8 @@ namespace IntelOrca.Biohazard.BioRand
         private readonly IEnemyHelper _enemyHelper;
         private readonly DataManager _dataManager;
         private EnemyPosition[] _enemyPositions = new EnemyPosition[0];
-        private HashSet<byte> _killIdPool = new HashSet<byte>();
-        private Queue<byte> _killIds = new Queue<byte>();
+        private HashSet<ushort> _killIdPool = new HashSet<ushort>();
+        private Queue<ushort> _killIds = new Queue<ushort>();
         private Dictionary<byte, EmbeddedEffect> _effects = new Dictionary<byte, EmbeddedEffect>();
         private List<CvEnemyAssets> _cvEnemies = new List<CvEnemyAssets>();
 
@@ -121,7 +121,7 @@ namespace IntelOrca.Biohazard.BioRand
             _cvEnemies.Add(new CvEnemyAssets(enemyType, variant, model, motion, texture));
         }
 
-        public byte GetNextKillId()
+        public ushort GetNextKillId()
         {
             if (_killIds.Count == 0)
             {
@@ -136,8 +136,9 @@ namespace IntelOrca.Biohazard.BioRand
         private void SetupRandomEnemyPlacements()
         {
             _enemyPositions = _enemyPositions.Shuffle(_rng);
-            for (byte i = 0; i < 255; i++)
-                _killIdPool.Add(i);
+            var maxEnemyIds = _version == BioVersion.BiohazardCv ? 384 : 255;
+            for (var i = 0; i < maxEnemyIds; i++)
+                _killIdPool.Add((ushort)i);
 
             var reservedEnemyIds = _enemyHelper.GetReservedEnemyIds();
             foreach (var enemyId in reservedEnemyIds)
@@ -145,21 +146,36 @@ namespace IntelOrca.Biohazard.BioRand
 
             foreach (var rdt in _gameData.Rdts)
             {
-                byte[] killIds;
+                ushort[] killIds;
                 if (_enemyPositions.Any(x => x.RdtId == rdt.RdtId))
                 {
                     // Exclude IDs which belong to special enemies like tyrants or bosses
                     killIds = rdt.Enemies
                         .Where(x => !_enemyHelper.IsEnemy(x.Type) || _enemyHelper.IsUniqueEnemyType(x.Type))
-                        .Select(x => x.KillId)
+                        .Select(x => (ushort)x.KillId)
                         .ToArray();
                 }
                 else
                 {
                     // Exclude IDs which belong to static enemy rooms
-                    killIds = rdt.Enemies
-                        .Select(x => x.KillId)
-                        .ToArray();
+                    if (_version == BioVersion.BiohazardCv)
+                    {
+                        killIds = rdt.AllOpcodes
+                            .Where(x => x.Opcode == 0x22)
+                            .Select(opcode =>
+                            {
+                                var data = ((UnknownOpcode)opcode).Data;
+                                var id = (ushort)((data[2] << 8) | data[1] & 0xFF);
+                                return id;
+                            })
+                            .ToArray();
+                    }
+                    else
+                    {
+                        killIds = rdt.Enemies
+                            .Select(x => (ushort)x.KillId)
+                            .ToArray();
+                    }
                 }
                 _killIdPool.RemoveMany(killIds);
             }
@@ -614,6 +630,30 @@ namespace IntelOrca.Biohazard.BioRand
                 var enemyType = _rng.NextOf(possibleTypes);
                 var assets = _cvEnemies.FirstOrDefault(x => x.EnemyType == enemyType);
                 var placements = GetRandomPlacements(rdt.RdtId, rng, enemySpec, enemyType);
+                var killIds = placements.Select(x => GetNextKillId()).ToArray();
+
+                foreach (var opcode in rdt.AllOpcodes.Where(x => x.Opcode == 0x0D))
+                {
+                    rdt.Nop(opcode.Offset);
+                }
+                foreach (var opcode in rdt.AllOpcodes.Where(x => x.Opcode == 0x22))
+                {
+                    rdt.Nop(opcode.Offset);
+                }
+                for (var i = 0; i < killIds.Length; i++)
+                {
+                    var killId = killIds[i];
+                    rdt.AdditionalOpcodes.Add(new UnknownOpcode(0, 0x22, new byte[] {
+                        (byte)i,
+                        (byte)(killId & 0xFF),
+                        (byte)(killId >> 8)
+                    }));
+                    rdt.AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x0D, new byte[] {
+                        (byte)i,
+                        (byte)(killId & 0xFF),
+                        (byte)(killId >> 8)
+                    }));
+                }
 
                 rdt.PostModifications.Add(() =>
                 {
@@ -768,7 +808,7 @@ namespace IntelOrca.Biohazard.BioRand
                 }
 
                 var killId = GetNextKillId();
-                var newEnemy = CreateEnemy(enemyId, killId, ep);
+                var newEnemy = CreateEnemy(enemyId, (byte)killId, ep);
                 enemyOpcodes.Add(newEnemy);
                 enemies.Add(newEnemy);
                 enemyId++;
@@ -776,7 +816,7 @@ namespace IntelOrca.Biohazard.BioRand
                 var dependencies = _enemyHelper.GetEnemyDependencies(enemyType);
                 foreach (var d in dependencies)
                 {
-                    newEnemy = CreateEnemy(enemyId, killId, ep);
+                    newEnemy = CreateEnemy(enemyId, (byte)killId, ep);
                     enemyOpcodes.Add(newEnemy);
                     enemies.Add(newEnemy);
                 }

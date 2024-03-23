@@ -103,7 +103,7 @@ namespace IntelOrca.Biohazard.BioRand.Events
             if (id == 255)
                 throw new InvalidOperationException();
 
-            var globalId = hasGlobalId ? _enemyRandomiser?.GetNextKillId() ?? 255 : (byte)255;
+            var globalId = (byte)(hasGlobalId ? _enemyRandomiser?.GetNextKillId() ?? 255 : 255);
             type ??= EnemyType ?? Re2EnemyIds.ZombieRandom;
             var position = _enemyPositions.Next();
             var enemyHelper = _enemyRandomiser?.EnemyHelper ?? new Re2EnemyHelper();
