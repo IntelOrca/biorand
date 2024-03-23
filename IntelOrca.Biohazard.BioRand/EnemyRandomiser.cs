@@ -88,10 +88,10 @@ namespace IntelOrca.Biohazard.BioRand
             {
                 // HarvestEnemyAssets(RdtId.Parse("1031"), ReCvEnemyIds.Zombie, 512, 2, 0, 2);
                 HarvestEnemyAssets(RdtId.Parse("10D0"), ReCvEnemyIds.Bat, 3, 1, 0, 1);
-                HarvestEnemyAssets(RdtId.Parse("10F0"), ReCvEnemyIds.Zombie, 256, 1, 0, 1);
+                HarvestEnemyAssets(RdtId.Parse("10C0"), ReCvEnemyIds.Zombie, 0, 1, 0, 1);
                 HarvestEnemyAssets(RdtId.Parse("2000"), ReCvEnemyIds.ZombieDog, 0, 1, 0, 1);
                 HarvestEnemyAssets(RdtId.Parse("2060"), ReCvEnemyIds.Bandersnatch, 0, 1, 0, 1);
-                HarvestEnemyAssets(RdtId.Parse("20C2"), ReCvEnemyIds.Tyrant, 0, 2, 0, 2);
+                HarvestEnemyAssets(RdtId.Parse("20C2"), ReCvEnemyIds.Tyrant, 0, 2, 1, 2);
                 HarvestEnemyAssets(RdtId.Parse("80D0"), ReCvEnemyIds.Hunter, 0, 1, 0, 1);
                 HarvestEnemyAssets(RdtId.Parse("80D0"), ReCvEnemyIds.Hunter, 256, 3, 0, 2);
             }
@@ -116,7 +116,7 @@ namespace IntelOrca.Biohazard.BioRand
         {
             var rdt = (RdtCv)_gameData.GetRdt(rdtId)!.RdtFile;
             var model = rdt.Models.Pages[modelIndex];
-            var motion = rdt.Motions;
+            var motion = rdt.Motions; ;
             var texture = rdt.Textures.Groups[textureIndex];
             _cvEnemies.Add(new CvEnemyAssets(enemyType, variant, model, motion, texture));
         }
@@ -630,12 +630,23 @@ namespace IntelOrca.Biohazard.BioRand
                     }
                     rdtb.Models = models.ToCvModelList();
 
+                    // var motions = rdtb.Motions.ToBuilder();
+                    // motions.Pages.RemoveAt(1);
+                    // motions.Pages.Insert(0, assets.Motion);
+                    // rdtb.Motions = motions.ToCvMotionList();
                     rdtb.Motions = assets.Motion;
 
                     var textures = rdtb.Textures.ToBuilder();
                     textures.Groups.RemoveAt(1);
-                    textures.Groups.Insert(1, assets.Texture);
+                    for (var i = 0; i < placements.Length; i++)
+                    {
+                        textures.Groups.Insert(1, assets.Texture);
+                        if (enemyType != ReCvEnemyIds.Zombie)
+                            break;
+                    }
                     rdtb.Textures = textures.ToTextureList();
+
+                    var variant = assets.Variant;
 
                     rdtb.Enemies.Clear();
                     foreach (var ep in placements)
@@ -645,11 +656,14 @@ namespace IntelOrca.Biohazard.BioRand
                             Header = 1,
                             Type = enemyType,
                             Effect = 0,
-                            Variant = assets.Variant,
+                            Variant = variant,
                             Index = (short)rdtb.Enemies.Count,
                             Position = new RdtCv.VectorF(ep.X, ep.Y, ep.Z),
                             Rotation = new RdtCv.Vector32(0, ep.D, 0),
                         });
+
+                        if (enemyType == ReCvEnemyIds.Zombie)
+                            variant += 256;
                     }
 
                     rdt.RdtFile = rdtb.ToRdt();
@@ -733,6 +747,8 @@ namespace IntelOrca.Biohazard.BioRand
         private SceEmSetOpcode[] GenerateRandomEnemies(Rng rng, RandomizedRdt rdt, MapRoomEnemies enemySpec, SceEmSetOpcode[] currentEnemies, byte enemyType)
         {
             var placements = GetRandomPlacements(rdt.RdtId, rng, enemySpec, enemyType);
+            if (placements.Length == 0)
+                return new SceEmSetOpcode[0];
 
             foreach (var enemy in currentEnemies)
                 rdt.Nop(enemy.Offset);

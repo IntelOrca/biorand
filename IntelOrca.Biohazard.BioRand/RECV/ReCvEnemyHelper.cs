@@ -24,8 +24,6 @@ namespace IntelOrca.Biohazard.BioRand.RECV
         {
             if (type == RECV.ReCvEnemyIds.Tyrant)
                 return 1;
-            if (type == RECV.ReCvEnemyIds.Zombie)
-                return 1;
 
             var limit = new byte[] { 2, 4, 7, 10 };
             var index = Math.Min(limit.Length - 1, difficulty);

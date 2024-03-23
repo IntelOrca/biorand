@@ -14,6 +14,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
     public class ReCvRandomiser : BaseRandomiser
     {
         private AfsFile? _advAfs;
+        // private AfsFile? _multspq1Afs;
         private AfsFile? _rdxAfs;
         private AfsFile? _systemAfs;
         private RandomizedRdt[] _rdts = new RandomizedRdt[205];
@@ -146,6 +147,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             try
             {
                 FileIdentifier? advAfsFileId;
+                FileIdentifier? multspq1AfsFileId;
                 FileIdentifier? rdxAfsFileId;
                 FileIdentifier? elfFileId;
                 FileIdentifier? systemAfsFileId;
@@ -155,6 +157,10 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                     advAfsFileId = udfEditor.GetFileByName("ADV.AFS");
                     if (advAfsFileId == null)
                         throw new BioRandUserException("ADV.AFS not found in ISO");
+
+                    multspq1AfsFileId = udfEditor.GetFileByName("MULTSPQ1.AFS");
+                    if (multspq1AfsFileId == null)
+                        throw new BioRandUserException("MULTSPQ1.AFS not found in ISO");
 
                     rdxAfsFileId = udfEditor.GetFileByName("RDX_LNK.AFS");
                     if (rdxAfsFileId == null)
@@ -169,12 +175,13 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                         throw new BioRandUserException("SYSTEM.AFS not found in ISO");
 
                     _advAfs = ReadAfs(udfEditor, advAfsFileId);
+                    // _multspq1Afs = ReadAfs(udfEditor, multspq1AfsFileId);
                     _rdxAfs = ReadAfs(udfEditor, rdxAfsFileId);
                     _elf = ReadFile(udfEditor, elfFileId);
                     _systemAfs = ReadAfs(udfEditor, systemAfsFileId);
                 }
 
-                // ExtractAfs(_advAfs, @"F:\games\recv\extracted\adv.afs");
+                // ExtractAfs(_multspq1Afs, @"F:\games\recv\extracted\multspq1.afs");
                 using (progress.BeginTask(null, $"Creating backgrounds"))
                     ReplaceBackground(config);
 
@@ -372,19 +379,56 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
         private unsafe void TestEdits(GameData gameData)
         {
-#if DEBUG
+#if DEBUG1
             // QuickDoor(RdtId.Parse("10B"), 0);
 
-            // var rrdt = gameData.GetRdt(RdtId.Parse("1021"))!;
-            // rrdt.PostModifications.Add(() =>
-            // {
-            //     var rdtBuilder = ((RdtCv)rrdt.RdtFile).ToBuilder();
-            //     rdtBuilder.Enemies.RemoveAt(rdtBuilder.Enemies.Count - 1);
-            //     rdtBuilder.Enemies.RemoveAt(rdtBuilder.Enemies.Count - 1);
-            //     rdtBuilder.Enemies.RemoveAt(rdtBuilder.Enemies.Count - 1);
-            //     rdtBuilder.Enemies.RemoveAt(rdtBuilder.Enemies.Count - 1);
-            //     rrdt.RdtFile = rdtBuilder.ToRdt();
-            // });
+            var srcRdt = (RdtCv)gameData.GetRdt(RdtId.Parse("10C0"))!.RdtFile;
+            var srcModels = srcRdt.Models.Pages[1..5].ToArray();
+            var srcMotion = srcRdt.Motions;
+            var srcTexture = srcRdt.Textures.Groups[1..4].ToArray();
+            var srcEnemies = srcRdt.Enemies.ToArray();
+
+            var rrdt = gameData.GetRdt(RdtId.Parse("1010"))!;
+            rrdt.PostModifications.Add(() =>
+            {
+                var rdtBuilder = ((RdtCv)rrdt.RdtFile).ToBuilder();
+
+                var scdb = new ScdProcedureList.Builder(BioVersion.BiohazardCv);
+                scdb.Procedures.Add(new ScdProcedure(BioVersion.BiohazardCv, new byte[] { 0x00, 0x00 }));
+                scdb.Procedures.Add(new ScdProcedure(BioVersion.BiohazardCv, new byte[] { 0x00, 0x00 }));
+                rdtBuilder.Script = scdb.ToProcedureList();
+
+                rdtBuilder.Motions = srcMotion;
+
+                var modelListBuilder = rdtBuilder.Models.ToBuilder();
+                modelListBuilder.Pages.RemoveAt(1);
+                modelListBuilder.Pages.Insert(1, srcModels[0]);
+                modelListBuilder.Pages.Insert(1, srcModels[2]);
+                rdtBuilder.Models = modelListBuilder.ToCvModelList();
+
+                var textureListBuilder = rdtBuilder.Textures.ToBuilder();
+                textureListBuilder.Groups.RemoveAt(1);
+                textureListBuilder.Groups.Insert(1, srcTexture[0]);
+                // textureListBuilder.Groups.Insert(1, srcTexture[0]);
+                rdtBuilder.Textures = textureListBuilder.ToTextureList();
+
+                rdtBuilder.Enemies.Clear();
+                for (var i = 0; i < 2; i++)
+                {
+                    rdtBuilder.Enemies.Add(new RdtCv.Enemy()
+                    {
+                        Header = 1,
+                        Type = ReCvEnemyIds.Zombie,
+                        Effect = 0,
+                        Variant = 0,
+                        Index = (short)i,
+                        Position = new RdtCv.VectorF(8, 0, 24),
+                        Rotation = new RdtCv.Vector32()
+                    });
+                }
+
+                rrdt.RdtFile = rdtBuilder.ToRdt();
+            });
 #endif
         }
 
