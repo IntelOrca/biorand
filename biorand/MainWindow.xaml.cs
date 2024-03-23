@@ -1193,14 +1193,7 @@ namespace IntelOrca.Biohazard.BioRand
                 items.Add(new SliderListItem(enemy.Name, 4, 7));
             }
             listEnemies.ItemsSource = items;
-            if (SelectedGame == 3)
-            {
-                chkRandomEnemyPlacements.Visibility = Visibility.Hidden;
-            }
-            else
-            {
-                chkRandomEnemyPlacements.Visibility = Visibility.Visible;
-            }
+            chkRandomEnemyPlacements.Visibility = Visibility.Visible;
         }
 
         private void UpdateEnemySkinList()

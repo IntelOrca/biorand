@@ -134,8 +134,6 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             config.IncludeDocuments = false;
             config.SwapCharacters = false;
             config.RandomNPCs = false;
-            config.RandomEnemies = false;
-            config.RandomEnemyPlacement = false;
             config.RandomCutscenes = false;
             config.RandomEvents = false;
             config.RandomBgm = false;

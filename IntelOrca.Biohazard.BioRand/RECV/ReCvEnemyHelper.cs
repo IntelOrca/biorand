@@ -22,7 +22,12 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
         public int GetEnemyTypeLimit(RandoConfig config, int difficulty, byte type)
         {
-            var limit = new byte[] { 4, 8, 12, 16 };
+            if (type == RECV.ReCvEnemyIds.Tyrant)
+                return 1;
+            if (type == RECV.ReCvEnemyIds.Zombie)
+                return 1;
+
+            var limit = new byte[] { 2, 4, 7, 10 };
             var index = Math.Min(limit.Length - 1, difficulty);
             return limit[index];
         }
@@ -33,7 +38,8 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             new SelectableEnemy("Zombie", "LightGray", ReCvEnemyIds.Zombie),
             new SelectableEnemy("Hunter", "IndianRed", ReCvEnemyIds.Hunter),
             new SelectableEnemy("Bandersnatch", "Cyan", ReCvEnemyIds.Bandersnatch),
-            new SelectableEnemy("Zombie Dog", "Black", ReCvEnemyIds.ZombieDog)
+            new SelectableEnemy("Zombie Dog", "Black", ReCvEnemyIds.ZombieDog),
+            new SelectableEnemy("Tyrant", "Gray", ReCvEnemyIds.Tyrant)
         };
 
         public bool IsEnemy(byte type)
@@ -76,9 +82,6 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
         public byte[] GetEnemyDependencies(byte enemyType) => new byte[0];
 
-        public byte[] GetRequiredEsps(byte enemyType)
-        {
-            throw new NotImplementedException();
-        }
+        public byte[] GetRequiredEsps(byte enemyType) => new byte[0];
     }
 }

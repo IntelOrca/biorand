@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using IntelOrca.Biohazard.BioRand.RE1;
 using IntelOrca.Biohazard.BioRand.RE2;
 using IntelOrca.Biohazard.BioRand.RE3;
+using IntelOrca.Biohazard.BioRand.RECV;
 using IntelOrca.Biohazard.Extensions;
 using IntelOrca.Biohazard.Room;
 using IntelOrca.Biohazard.Script;
@@ -31,6 +33,7 @@ namespace IntelOrca.Biohazard.BioRand
         private HashSet<byte> _killIdPool = new HashSet<byte>();
         private Queue<byte> _killIds = new Queue<byte>();
         private Dictionary<byte, EmbeddedEffect> _effects = new Dictionary<byte, EmbeddedEffect>();
+        private List<CvEnemyAssets> _cvEnemies = new List<CvEnemyAssets>();
 
         public IEnemyHelper EnemyHelper => _enemyHelper;
         public Dictionary<RandomizedRdt, SelectableEnemy> ChosenEnemies { get; } = new Dictionary<RandomizedRdt, SelectableEnemy>();
@@ -81,18 +84,41 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void GatherEsps()
         {
-            foreach (var rdt in _gameData.Rdts)
+            if (_version == BioVersion.BiohazardCv)
             {
-                var embeddedEffects = GetEmbeddedEffects(rdt.RdtFile);
-                for (var i = 0; i < embeddedEffects.Count; i++)
+                // HarvestEnemyAssets(RdtId.Parse("1031"), ReCvEnemyIds.Zombie, 512, 2, 0, 2);
+                HarvestEnemyAssets(RdtId.Parse("10D0"), ReCvEnemyIds.Bat, 3, 1, 0, 1);
+                HarvestEnemyAssets(RdtId.Parse("10F0"), ReCvEnemyIds.Zombie, 256, 1, 0, 1);
+                HarvestEnemyAssets(RdtId.Parse("2000"), ReCvEnemyIds.ZombieDog, 0, 1, 0, 1);
+                HarvestEnemyAssets(RdtId.Parse("2060"), ReCvEnemyIds.Bandersnatch, 0, 1, 0, 1);
+                HarvestEnemyAssets(RdtId.Parse("20C2"), ReCvEnemyIds.Tyrant, 0, 2, 0, 2);
+                HarvestEnemyAssets(RdtId.Parse("80D0"), ReCvEnemyIds.Hunter, 0, 1, 0, 1);
+                HarvestEnemyAssets(RdtId.Parse("80D0"), ReCvEnemyIds.Hunter, 256, 3, 0, 2);
+            }
+            else
+            {
+                foreach (var rdt in _gameData.Rdts)
                 {
-                    var ee = embeddedEffects[i];
-                    if (ee.Id != 0xFF && !_effects.ContainsKey(ee.Id))
+                    var embeddedEffects = GetEmbeddedEffects(rdt.RdtFile);
+                    for (var i = 0; i < embeddedEffects.Count; i++)
                     {
-                        _effects[ee.Id] = ee;
+                        var ee = embeddedEffects[i];
+                        if (ee.Id != 0xFF && !_effects.ContainsKey(ee.Id))
+                        {
+                            _effects[ee.Id] = ee;
+                        }
                     }
                 }
             }
+        }
+
+        private void HarvestEnemyAssets(RdtId rdtId, short enemyType, short variant, int modelIndex, int motionIndex, int textureIndex)
+        {
+            var rdt = (RdtCv)_gameData.GetRdt(rdtId)!.RdtFile;
+            var model = rdt.Models.Pages[modelIndex];
+            var motion = rdt.Motions;
+            var texture = rdt.Textures.Groups[textureIndex];
+            _cvEnemies.Add(new CvEnemyAssets(enemyType, variant, model, motion, texture));
         }
 
         public byte GetNextKillId()
@@ -400,7 +426,7 @@ namespace IntelOrca.Biohazard.BioRand
                     g_stickyEnemies.Add(rdt.RdtId, targetEnemy);
                 }
             }
-            else
+            else if (rdt.Version != BioVersion.BiohazardCv)
             {
                 // Mute all NPCs in the room so that we can hear enemies
                 foreach (var em in rdt.Enemies)
@@ -579,7 +605,116 @@ namespace IntelOrca.Biohazard.BioRand
 
         private void RandomiseRoom(Rng rng, RandomizedRdt rdt, MapRoomEnemies enemySpec, SelectableEnemy targetEnemy)
         {
-            var enemiesToChange = GetEnemiesToReplace(rdt, enemySpec);
+            var possibleTypes = GetPossibleEnemyTypes(enemySpec, targetEnemy);
+            if (possibleTypes.Length == 0)
+                return;
+
+            if (_version == BioVersion.BiohazardCv)
+            {
+                var enemyType = _rng.NextOf(possibleTypes);
+                var assets = _cvEnemies.FirstOrDefault(x => x.EnemyType == enemyType);
+                var placements = GetRandomPlacements(rdt.RdtId, rng, enemySpec, enemyType);
+
+                rdt.PostModifications.Add(() =>
+                {
+                    var rdtb = ((RdtCv)rdt.RdtFile).ToBuilder();
+
+                    var models = rdtb.Models.ToBuilder();
+                    for (var i = 0; i < rdtb.Enemies.Count; i++)
+                    {
+                        models.Pages.RemoveAt(1 + i);
+                    }
+                    for (var i = 0; i < placements.Length; i++)
+                    {
+                        models.Pages.Insert(1, assets.Model);
+                    }
+                    rdtb.Models = models.ToCvModelList();
+
+                    rdtb.Motions = assets.Motion;
+
+                    var textures = rdtb.Textures.ToBuilder();
+                    textures.Groups.RemoveAt(1);
+                    textures.Groups.Insert(1, assets.Texture);
+                    rdtb.Textures = textures.ToTextureList();
+
+                    rdtb.Enemies.Clear();
+                    foreach (var ep in placements)
+                    {
+                        rdtb.Enemies.Add(new RdtCv.Enemy()
+                        {
+                            Header = 1,
+                            Type = enemyType,
+                            Effect = 0,
+                            Variant = assets.Variant,
+                            Index = (short)rdtb.Enemies.Count,
+                            Position = new RdtCv.VectorF(ep.X, ep.Y, ep.Z),
+                            Rotation = new RdtCv.Vector32(0, ep.D, 0),
+                        });
+                    }
+
+                    rdt.RdtFile = rdtb.ToRdt();
+                });
+            }
+            else
+            {
+                var enemiesToChange = GetEnemiesToReplace(rdt, enemySpec);
+                var randomEnemiesToChange = new SceEmSetOpcode[0];
+                if (_config.RandomEnemyPlacement && !enemySpec.KeepPositions)
+                {
+                    randomEnemiesToChange = GenerateRandomEnemies(rng, rdt, enemySpec, enemiesToChange, possibleTypes[0]);
+                }
+                if (randomEnemiesToChange.Length != 0)
+                {
+                    enemiesToChange = randomEnemiesToChange;
+                }
+                else
+                {
+                    var quantity = enemiesToChange.DistinctBy(x => x.Id).Count();
+                    possibleTypes = possibleTypes.Where(type =>
+                    {
+                        var difficulty = Math.Min(enemySpec.MaxDifficulty ?? 3, _config.EnemyDifficulty);
+                        var maxQuantity = _enemyHelper.GetEnemyTypeLimit(_config, enemySpec.MaxDifficulty ?? _config.EnemyDifficulty, type);
+                        return maxQuantity >= quantity;
+                    }).ToArray();
+                }
+
+                if (possibleTypes.Length == 0)
+                    return;
+
+                var randomEnemyType = possibleTypes[0];
+                var ids = rdt.Enemies.Select(x => x.Id).Distinct().ToArray();
+                var enemyTypesId = ids.Select(x => randomEnemyType).ToArray();
+
+                _enemyHelper.BeginRoom(rdt);
+
+                for (var i = 0; i < enemiesToChange.Length; i++)
+                {
+                    var enemy = enemiesToChange[i];
+                    var index = Array.IndexOf(ids, enemy.Id);
+                    var enemyType = enemyTypesId[index];
+                    enemy.Type = enemyType;
+                    if (!enemySpec.KeepState)
+                        enemy.State = 0;
+                    if (!enemySpec.KeepAi)
+                        enemy.Ai = 0;
+                    enemy.Texture = 0;
+                    if (enemySpec.Y != null)
+                        enemy.Y = enemySpec.Y.Value;
+                    _enemyHelper.SetEnemy(_config, rng, enemy, enemySpec, enemyType);
+
+                    foreach (var dependencyType in _enemyHelper.GetEnemyDependencies(enemyType))
+                    {
+                        i++;
+                        enemy = enemiesToChange[i];
+                        enemy.Type = dependencyType;
+                        _enemyHelper.SetEnemy(_config, rng, enemy, enemySpec, enemyType);
+                    }
+                }
+            }
+        }
+
+        private byte[] GetPossibleEnemyTypes(MapRoomEnemies enemySpec, SelectableEnemy targetEnemy)
+        {
             var possibleTypes = targetEnemy.Types.Shuffle(_rng);
             if (enemySpec.IncludeTypes != null)
             {
@@ -591,77 +726,13 @@ namespace IntelOrca.Biohazard.BioRand
                 var excludeTypes = enemySpec.ExcludeTypes.Select(x => (byte)x).ToHashSet();
                 possibleTypes = possibleTypes.Except(excludeTypes).ToArray();
             }
-            if (possibleTypes.Length == 0)
-                return;
 
-            var randomEnemiesToChange = new SceEmSetOpcode[0];
-            if (_config.RandomEnemyPlacement && !enemySpec.KeepPositions)
-            {
-                randomEnemiesToChange = GenerateRandomEnemies(rng, rdt, enemySpec, enemiesToChange, possibleTypes[0]);
-            }
-            if (randomEnemiesToChange.Length != 0)
-            {
-                enemiesToChange = randomEnemiesToChange;
-            }
-            else
-            {
-                var quantity = enemiesToChange.DistinctBy(x => x.Id).Count();
-                possibleTypes = possibleTypes.Where(type =>
-                {
-                    var difficulty = Math.Min(enemySpec.MaxDifficulty ?? 3, _config.EnemyDifficulty);
-                    var maxQuantity = _enemyHelper.GetEnemyTypeLimit(_config, enemySpec.MaxDifficulty ?? _config.EnemyDifficulty, type);
-                    return maxQuantity >= quantity;
-                }).ToArray();
-            }
-
-            if (possibleTypes.Length == 0)
-                return;
-
-            var randomEnemyType = possibleTypes[0];
-            var ids = rdt.Enemies.Select(x => x.Id).Distinct().ToArray();
-            var enemyTypesId = ids.Select(x => randomEnemyType).ToArray();
-
-            _enemyHelper.BeginRoom(rdt);
-
-            for (var i = 0; i < enemiesToChange.Length; i++)
-            {
-                var enemy = enemiesToChange[i];
-                var index = Array.IndexOf(ids, enemy.Id);
-                var enemyType = enemyTypesId[index];
-                enemy.Type = enemyType;
-                if (!enemySpec.KeepState)
-                    enemy.State = 0;
-                if (!enemySpec.KeepAi)
-                    enemy.Ai = 0;
-                enemy.Texture = 0;
-                if (enemySpec.Y != null)
-                    enemy.Y = enemySpec.Y.Value;
-                _enemyHelper.SetEnemy(_config, rng, enemy, enemySpec, enemyType);
-
-                foreach (var dependencyType in _enemyHelper.GetEnemyDependencies(enemyType))
-                {
-                    i++;
-                    enemy = enemiesToChange[i];
-                    enemy.Type = dependencyType;
-                    _enemyHelper.SetEnemy(_config, rng, enemy, enemySpec, enemyType);
-                }
-            }
+            return possibleTypes;
         }
 
         private SceEmSetOpcode[] GenerateRandomEnemies(Rng rng, RandomizedRdt rdt, MapRoomEnemies enemySpec, SceEmSetOpcode[] currentEnemies, byte enemyType)
         {
-            var relevantPlacements = _enemyPositions
-                .Where(x => x.RdtId == rdt.RdtId)
-                .ToEndlessBag(_rng);
-
-            if (relevantPlacements.Count == 0)
-                return new SceEmSetOpcode[0];
-
-            var difficulty = Math.Min(enemySpec.MaxDifficulty ?? 3, _config.EnemyDifficulty);
-            var enemyTypeLimit = _enemyHelper.GetEnemyTypeLimit(_config, difficulty, enemyType);
-            var avg = 1 + _config.EnemyQuantity;
-            var quantity = rng.Next(1, avg * 2);
-            quantity = Math.Min(quantity, Math.Min(enemyTypeLimit, relevantPlacements.Count * 3));
+            var placements = GetRandomPlacements(rdt.RdtId, rng, enemySpec, enemyType);
 
             foreach (var enemy in currentEnemies)
                 rdt.Nop(enemy.Offset);
@@ -673,9 +744,8 @@ namespace IntelOrca.Biohazard.BioRand
 
             var enemyOpcodes = new List<OpcodeBase>();
             var firstEnemyOpcodeIndex = rdt.AdditionalOpcodes.Count;
-            for (var i = 0; i < quantity; i++)
+            foreach (var ep in placements)
             {
-                var ep = relevantPlacements.Next();
                 while (usedIds.Contains(enemyId))
                 {
                     enemyId++;
@@ -699,6 +769,23 @@ namespace IntelOrca.Biohazard.BioRand
             InsertConditions(rdt, enemyOpcodes, enemySpec.Condition);
 
             return enemies.ToArray();
+        }
+
+        private EnemyPosition[] GetRandomPlacements(RdtId rdtId, Rng rng, MapRoomEnemies enemySpec, byte enemyType)
+        {
+            var relevantPlacements = _enemyPositions
+                .Where(x => x.RdtId == rdtId)
+                .ToEndlessBag(_rng);
+
+            if (relevantPlacements.Count == 0)
+                return new EnemyPosition[0];
+
+            var difficulty = Math.Min(enemySpec.MaxDifficulty ?? 3, _config.EnemyDifficulty);
+            var enemyTypeLimit = _enemyHelper.GetEnemyTypeLimit(_config, difficulty, enemyType);
+            var avg = 1 + _config.EnemyQuantity;
+            var quantity = rng.Next(1, avg * 2);
+            quantity = Math.Min(quantity, Math.Min(enemyTypeLimit, relevantPlacements.Count * 3));
+            return relevantPlacements.Next(quantity);
         }
 
         private SceEmSetOpcode CreateEnemy(byte id, byte killId, EnemyPosition ep)
@@ -864,6 +951,25 @@ namespace IntelOrca.Biohazard.BioRand
             public override int GetHashCode()
             {
                 return (Room?.GetHashCode() ?? 0) ^ X ^ Y ^ Z ^ D ^ F;
+            }
+        }
+
+        [DebuggerDisplay("EnemyType = {EnemyType} Variant = {Variant}")]
+        private readonly struct CvEnemyAssets
+        {
+            public short EnemyType { get; }
+            public short Variant { get; }
+            public CvModelListPage Model { get; }
+            public CvMotionList Motion { get; }
+            public CvTextureEntryGroup Texture { get; }
+
+            public CvEnemyAssets(short enemyType, short variant, CvModelListPage model, CvMotionList motion, CvTextureEntryGroup texture)
+            {
+                EnemyType = enemyType;
+                Variant = variant;
+                Model = model;
+                Motion = motion;
+                Texture = texture;
             }
         }
     }
