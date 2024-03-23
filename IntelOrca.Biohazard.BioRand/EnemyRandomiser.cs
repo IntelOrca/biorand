@@ -659,25 +659,29 @@ namespace IntelOrca.Biohazard.BioRand
                 {
                     var rdtb = ((RdtCv)rdt.RdtFile).ToBuilder();
 
+                    // Models
                     var models = rdtb.Models.ToBuilder();
-                    for (var i = 0; i < rdtb.Enemies.Count; i++)
-                    {
-                        models.Pages.RemoveAt(1 + i);
-                    }
+                    models.Pages.RemoveRange(1, rdtb.Enemies.Count);
                     for (var i = 0; i < placements.Length; i++)
                     {
                         models.Pages.Insert(1, assets.Model);
                     }
                     rdtb.Models = models.ToCvModelList();
 
+                    // Motions
                     // var motions = rdtb.Motions.ToBuilder();
                     // motions.Pages.RemoveAt(1);
                     // motions.Pages.Insert(0, assets.Motion);
                     // rdtb.Motions = motions.ToCvMotionList();
                     rdtb.Motions = assets.Motion;
 
+                    // Textures
                     var textures = rdtb.Textures.ToBuilder();
-                    textures.Groups.RemoveAt(1);
+
+                    var numTexturesToRemove = rdtb.Enemies.Select(x => (x.Type, x.Variant & 0xFF00)).Distinct().Count();
+                    for (var i = 0; i < numTexturesToRemove; i++)
+                        textures.Groups.RemoveAt(1);
+
                     for (var i = 0; i < placements.Length; i++)
                     {
                         textures.Groups.Insert(1, assets.Texture);
@@ -686,9 +690,9 @@ namespace IntelOrca.Biohazard.BioRand
                     }
                     rdtb.Textures = textures.ToTextureList();
 
-                    var variant = assets.Variant;
-
+                    // Enemy table
                     rdtb.Enemies.Clear();
+                    var variant = assets.Variant;
                     foreach (var ep in placements)
                     {
                         rdtb.Enemies.Add(new RdtCv.Enemy()
