@@ -88,7 +88,8 @@
       ],
       "enemies": [
         {
-          "nop": [ "0x3EF10-0x3EF28" ]
+          "nop": [ "0x3EF10-0x3EF28" ],
+          "maxDifficulty": 0
         }
       ]
     },
@@ -599,6 +600,11 @@
           "globalId": 150,
           "type": 21,
           "amount": 1
+        }
+      ],
+      "enemies": [
+        {
+          "maxDifficulty": 0
         }
       ]
     },
