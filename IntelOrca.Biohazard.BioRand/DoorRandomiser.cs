@@ -295,7 +295,7 @@ namespace IntelOrca.Biohazard.BioRand
                 {
                     if (nonLinearBridgeNode)
                     {
-                        if (edge.IsBridgeEdge)
+                        if (edge.Raw.IsBridgeEdge)
                         {
                             edge.NoReturn = true;
                         }
@@ -310,7 +310,7 @@ namespace IntelOrca.Biohazard.BioRand
                     {
                         edge.NoReturn = true;
                     }
-                    edge.IsBridgeEdge = false;
+                    edge.Raw.IsBridgeEdge = false;
                 }
             }
 
@@ -578,10 +578,10 @@ namespace IntelOrca.Biohazard.BioRand
             if (!loopback)
             {
                 exitNode.Visited = true;
-                if (entrance.Requires.Length != 0)
+                if (entrance.KeyRequires.Length != 0)
                 {
                     exitNode.DoorRandoAllRequiredItems = entrance.Parent.DoorRandoAllRequiredItems
-                        .Union(entrance.Requires)
+                        .Union(entrance.KeyRequires)
                         .ToArray();
                 }
                 else
@@ -596,7 +596,7 @@ namespace IntelOrca.Biohazard.BioRand
                 }
 
                 _keyItemSpotsLeft += exitNode.Items.Count(x => x.Priority == ItemPriority.Normal && (x.Requires?.Length ?? 0) == 0);
-                AddToKeyItemRequiredCount(exitNode.Edges.SelectMany(x => x.Requires));
+                AddToKeyItemRequiredCount(exitNode.Edges.SelectMany(x => x.KeyRequires));
                 AddToKeyItemRequiredCount(exitNode.Requires);
             }
 
@@ -625,7 +625,7 @@ namespace IntelOrca.Biohazard.BioRand
                 // This is a safety measure for loopbacks
                 isLocked = true;
             }
-            if (aEdge.NoUnlock)
+            if (aEdge.Raw.NoUnlock)
             {
                 isLocked = false;
             }
@@ -900,7 +900,7 @@ namespace IntelOrca.Biohazard.BioRand
             var items = rdt.EnumerateOpcodes<IItemAotSetOpcode>(_config)
                 .DistinctBy(x => x.Id)
                 .Where(x => _config.IncludeDocuments || (_itemHelper.GetItemAttributes((byte)x.Type) & ItemAttribute.Document) == 0)
-                .Select(x => new ItemPoolEntry()
+                .Select(x => new PlayItem()
                 {
                     RdtId = rdt.RdtId,
                     Id = x.Id,
@@ -925,18 +925,6 @@ namespace IntelOrca.Biohazard.BioRand
             var mapRoom = _map.GetRoom(rdtId);
             if (mapRoom == null)
                 throw new Exception("No JSON definition for room");
-
-            node.Requires = mapRoom.Requires?.Select(x => (byte)x).ToArray() ?? Array.Empty<byte>();
-            if (mapRoom.Items != null)
-            {
-                node.RequiresRoom = mapRoom.Items
-                    .Where(x => x.Player == null || x.Player == _config.Player)
-                    .Where(x => x.Scenario == null || x.Scenario == _config.Scenario)
-                    .Where(x => x.DoorRando == null || x.DoorRando == _config.RandomDoors)
-                    .SelectMany(x => x.RequiresRoom ?? Array.Empty<string>())
-                    .Select(x => GetOrCreateNode(RdtId.Parse(x)))
-                    .ToArray();
-            }
 
             if (mapRoom.Doors != null)
             {
@@ -1002,17 +990,20 @@ namespace IntelOrca.Biohazard.BioRand
                     }
 
                     var edgeNode = GetOrCreateNode(target.Rdt);
-                    var edge = new PlayEdge(node, edgeNode, door.NoReturn, door.Requires?.Select(x => (byte)x).ToArray(), doorId, entrance, door);
-                    edge.Randomize = door.Randomize ?? true;
-                    edge.NoUnlock = door.NoUnlock;
-                    edge.IsBridgeEdge = door.IsBridgeEdge;
+                    var edge = new PlayEdge(node, door)
+                    {
+                        OriginalTargetRdt = node.RdtId,
+                        Node = edgeNode,
+                        NoReturn = door.NoReturn,
+                        Requires = door.Requires?.Select(x => PlayRequirement.Parse(x)).ToArray() ?? Array.Empty<PlayRequirement>(),
+                        DoorId = doorId,
+                        Entrance = entrance,
+                        Randomize = door.Randomize ?? true
+                    };
+                    edge.Raw.IsBridgeEdge = door.IsBridgeEdge;
                     if (door.Lock != null)
                     {
                         edge.Lock = (LockKind)Enum.Parse(typeof(LockKind), door.Lock, true);
-                    }
-                    if (door.RequiresRoom != null)
-                    {
-                        edge.RequiresRoom = door.RequiresRoom.Select(x => GetOrCreateNode(RdtId.Parse(x))).ToArray();
                     }
                     node.Edges.Add(edge);
                 }
@@ -1035,14 +1026,14 @@ namespace IntelOrca.Biohazard.BioRand
                     if (correctedItem.Id == 255)
                     {
                         items = items.Concat(new[] {
-                                new ItemPoolEntry() {
+                                new PlayItem() {
                                     RdtId = rdtId,
                                     Raw = correctedItem,
                                     Id = correctedItem.Id,
-                                    Type = (ushort)(correctedItem.Type ?? 0),
+                                    Type = correctedItem.Type ?? 0,
                                     Amount = correctedItem.Amount ?? 1,
-                                    GlobalId = (ushort?)correctedItem.GlobalId,
-                                    Requires = correctedItem.Requires?.Select(x => (byte)x).ToArray(),
+                                    GlobalId = correctedItem.GlobalId ?? -1,
+                                    Requires = correctedItem.Requires?.Select(x => PlayRequirement.Parse(x)).ToArray() ?? Array.Empty<PlayRequirement>(),
                                     Priority = ParsePriority(correctedItem.Priority),
                                     AllowDocuments = correctedItem.AllowDocuments ?? true
                                 }
@@ -1072,14 +1063,14 @@ namespace IntelOrca.Biohazard.BioRand
                     else
                     {
                         items = items.Concat(new[] {
-                                new ItemPoolEntry() {
+                                new PlayItem() {
                                     RdtId = rdtId,
                                     Raw = correctedItem,
                                     Id = correctedItem.Id,
-                                    Type = (ushort)(correctedItem.Type ?? 0),
+                                    Type = correctedItem.Type ?? 0,
                                     Amount = correctedItem.Amount ?? 1,
-                                    GlobalId = (ushort?)correctedItem.GlobalId,
-                                    Requires = correctedItem.Requires?.Select(x => (byte)x).ToArray(),
+                                    GlobalId = correctedItem.GlobalId ?? -1,
+                                    Requires = correctedItem.Requires?.Select(x => PlayRequirement.Parse(x)).ToArray() ?? Array.Empty<PlayRequirement>(),
                                     Priority = ParsePriority(correctedItem.Priority),
                                     AllowDocuments = correctedItem.AllowDocuments ?? true
                                 }
@@ -1218,7 +1209,7 @@ namespace IntelOrca.Biohazard.BioRand
                     return false;
 
                 // Don't connect to a door with a no unlock on the other side (in case we need to lock the door)
-                if (exit.NoUnlock)
+                if (exit.Raw.NoUnlock)
                     return false;
 
                 // Don't connect to a door that is blocked / one way
@@ -1250,7 +1241,7 @@ namespace IntelOrca.Biohazard.BioRand
                     }
                 }
 
-                if (entrance.IsBridgeEdge)
+                if (entrance.Raw.IsBridgeEdge)
                     return false;
                 if (!entrance.Randomize || !exit.Randomize)
                     return entrance.OriginalTargetRdt == exit.Parent.RdtId && exit.OriginalTargetRdt == entrance.Parent.RdtId;

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using OpenSoftware.DgmlTools;
 using OpenSoftware.DgmlTools.Builders;
@@ -90,9 +89,9 @@ namespace IntelOrca.Biohazard.BioRand
                 {
                     label += $"\n({edge.Lock.ToString().ToLower()})";
                 }
-                foreach (var key in edge.Requires)
+                foreach (var req in edge.Requires)
                 {
-                    label += $"\n[{itemHelper.GetItemName((byte)key)}]";
+                    label += $"\n[{req.ToString(itemHelper)}]";
                 }
 
                 links.Add(new Link()
@@ -177,114 +176,6 @@ namespace IntelOrca.Biohazard.BioRand
             return result
                 .OrderBy(x => x.RdtId)
                 .ToArray();
-        }
-    }
-
-    internal class PlayNode
-    {
-        public RdtId RdtId { get; set; }
-        public RdtId? LinkedRdtId { get; set; }
-        public ItemPoolEntry[] Items { get; set; } = Array.Empty<ItemPoolEntry>();
-        public Dictionary<byte, RdtItemId> LinkedItems { get; set; } = new Dictionary<byte, RdtItemId>();
-        public byte[] Requires { get; set; } = Array.Empty<byte>();
-        public PlayNode[] RequiresRoom { get; set; } = Array.Empty<PlayNode>();
-        public List<PlayEdge> Edges { get; } = new List<PlayEdge>();
-        public byte[] DoorRandoAllRequiredItems { get; set; } = Array.Empty<byte>();
-        public DoorRandoCategory Category { get; set; }
-        public int[] DoorRandoNop { get; set; } = Array.Empty<int>();
-        public List<ItemPoolEntry> PlacedKeyItems { get; } = new List<ItemPoolEntry>();
-        public int Depth { get; set; }
-        public bool Visited { get; set; }
-        public bool HasCutscene { get; set; }
-
-        public PlayNode(RdtId rdtId)
-        {
-            RdtId = rdtId;
-        }
-
-        public override string ToString() => RdtId.ToString();
-    }
-
-    internal enum LockKind
-    {
-        None,
-        Always,
-        Side,
-        Gate,
-        Unblock
-    }
-
-    internal enum DoorRandoCategory
-    {
-        Include,
-        Exclude,
-        Static,
-        Bridge,
-        Box,
-        Segment,
-    }
-
-    internal class PlayEdge
-    {
-        public PlayNode Parent { get; }
-        public RdtId OriginalTargetRdt { get; set; }
-        public PlayNode? Node { get; set; }
-        public LockKind Lock { get; set; }
-        public byte LockId { get; set; }
-        public bool NoReturn { get; set; }
-        public byte[] Requires { get; set; }
-        public PlayNode[] RequiresRoom { get; set; } = Array.Empty<PlayNode>();
-        public int? DoorId { get; }
-        public DoorEntrance? Entrance { get; set; }
-        public bool PreventLoopback { get; set; }
-        public bool Randomize { get; set; } = true;
-        public bool NoUnlock { get; set; }
-        public bool IsBridgeEdge { get; set; }
-        public MapRoomDoor Raw { get; set; }
-
-        public PlayEdge(PlayNode parent, PlayNode node, bool noReturn, byte[]? requires, int? doorId, DoorEntrance? entrance, MapRoomDoor raw)
-        {
-            Parent = parent;
-            OriginalTargetRdt = node.RdtId;
-            Node = node;
-            NoReturn = noReturn;
-            Requires = requires ?? new byte[0];
-            DoorId = doorId;
-            Entrance = entrance;
-            Raw = raw;
-        }
-
-        public string GetRequiresString(IItemHelper? itemHelper)
-        {
-            var s = "";
-            if (Lock == LockKind.Side)
-            {
-                s += $"(locked #{LockId}) ";
-            }
-            else if (Lock != LockKind.None)
-            {
-                s += $"({Lock.ToString().ToLowerInvariant()}) ";
-            }
-            if (Requires != null && Requires.Length != 0)
-            {
-                s += "[" + string.Join(", ", Requires.Select(x => GetItemName(itemHelper, (byte)x) ?? x.ToString())) + "] ";
-            }
-            return s.Trim();
-        }
-
-        private string GetItemName(IItemHelper? itemHelper, byte item)
-        {
-            if (itemHelper == null)
-                return item.ToString();
-            return itemHelper.GetItemName(item);
-        }
-
-        public override string ToString()
-        {
-            if (Node == null)
-                return $"{Parent} -> (unconnected)";
-
-            return $"{Parent} -> {Node.RdtId} {GetRequiresString(null)}";
         }
     }
 }

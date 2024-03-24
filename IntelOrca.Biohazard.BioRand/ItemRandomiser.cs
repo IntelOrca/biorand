@@ -12,7 +12,7 @@ namespace IntelOrca.Biohazard.BioRand
 {
     internal class ItemRandomiser
     {
-        private static bool g_debugLogging = false;
+        private static bool g_debugLogging = true;
 
         private readonly RandoLogger _logger;
         private readonly RandoConfig _config;
@@ -21,9 +21,9 @@ namespace IntelOrca.Biohazard.BioRand
         private readonly Rng _rng;
 
         private PlayNode[] _nodes = new PlayNode[0];
-        private List<ItemPoolEntry> _currentPool = new List<ItemPoolEntry>();
-        private List<ItemPoolEntry> _shufflePool = new List<ItemPoolEntry>();
-        private List<ItemPoolEntry> _definedPool = new List<ItemPoolEntry>();
+        private List<PlayItem> _currentPool = new List<PlayItem>();
+        private List<PlayItem> _shufflePool = new List<PlayItem>();
+        private List<PlayItem> _definedPool = new List<PlayItem>();
         private HashSet<KeyRequirement> _requiredItems = new HashSet<KeyRequirement>();
         private HashSet<byte> _startKeyItems = new HashSet<byte>();
         private HashSet<byte> _haveItems = new HashSet<byte>();
@@ -39,6 +39,11 @@ namespace IntelOrca.Biohazard.BioRand
 
         public IItemHelper ItemHelper { get; }
 
+        private RouteStatus _routeStatus = new RouteStatus();
+        private List<int> _itemPool = new List<int>();
+        private HashSet<int> _visitedItems2 = new HashSet<int>();
+        private Dictionary<int, Item> _itemSet = new Dictionary<int, Item>();
+
         public ItemRandomiser(RandoLogger logger, RandoConfig config, GameData gameData, Map map, Rng random, IItemHelper itemHelper)
         {
             _logger = logger;
@@ -50,6 +55,165 @@ namespace IntelOrca.Biohazard.BioRand
         }
 
         public void RandomiseItems(PlayGraph graph)
+        {
+            if (graph.Start == null || graph.End == null)
+                throw new ArgumentException("No start or end node", nameof(graph));
+
+            _nodes = graph.GetAllNodes();
+
+            _logger.WriteHeading("Randomizing Items:");
+
+            // Decide what starting loadout will be
+            RandomizeSpecialItem();
+
+            // Process graph
+            _logger.WriteLine("Placing key items:");
+            _visitedRooms.Clear();
+            _routeStatus = new RouteStatus();
+            AddChecksForNode(graph.Start);
+
+            if (_specialItem is byte specialItem)
+                _routeStatus.SatisfyCheck(CreateKeyCheck(specialItem));
+            foreach (var item in ItemHelper.GetInitialKeyItems(_config))
+                _routeStatus.SatisfyCheck(CreateKeyCheck(item));
+
+            while (true)
+            {
+                IRouteCheck[] satisfiedChecks;
+                do
+                {
+                    satisfiedChecks = _routeStatus.PopSatisfiedChecks();
+                    if (g_debugLogging)
+                    {
+                        _logger.WriteLine($"    Satisfied checks:");
+                        foreach (var c in satisfiedChecks)
+                        {
+                            _logger.WriteLine($"      * {c}");
+                        }
+                    }
+                    foreach (var check in satisfiedChecks)
+                    {
+                        AddCheck(check);
+                    }
+                } while (satisfiedChecks.Length != 0);
+
+                var checks = _routeStatus.GetRequiredChecks();
+                if (checks.Length == 0)
+                {
+                    if (g_debugLogging)
+                    {
+                        _logger.WriteLine($"    No required checks left");
+                    }
+                }
+                else
+                {
+                    if (g_debugLogging)
+                    {
+                        _logger.WriteLine($"    Required checks:");
+                        foreach (var c in _routeStatus.RequiredChecks)
+                        {
+                            _logger.WriteLine($"      * {c.Item1} -> {c.Item2}");
+                        }
+                    }
+
+                    var keys = checks.Where(x => x is KeyRouteCheck).ToArray();
+                    if (keys.Length == 0)
+                    {
+                        var segments = checks.Where(x => x is SegmentRouteCheck).ToArray();
+                        if (segments.Length != 0)
+                        {
+                            _logger.WriteLine("    ------------ checkpoint ------------");
+                            _routeStatus.SatisfyCheck(segments[0]);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        var key = (KeyRouteCheck)_rng.NextOf(keys);
+                        var item = new Item((byte)key.Type, 1);
+
+                        if (_itemPool.Count == 0)
+                        {
+                            throw new Exception("Nowhere to place key item");
+                        }
+                        var rngIndex = _rng.Next(0, _itemPool.Count);
+                        var rngGlobalId = _itemPool[rngIndex];
+                        _itemPool.RemoveAt(rngIndex);
+                        _itemSet.Add(rngGlobalId, item);
+                        _logger.WriteLine($"    Placing key item ({ItemHelper.GetItemName(item.Type)} x{item.Amount}) at Item({rngGlobalId})");
+
+                        _routeStatus.SatisfyCheck(key);
+                    }
+                }
+            }
+        }
+
+        private void AddCheck(IRouteCheck check)
+        {
+            if (check is RoomRouteCheck room)
+            {
+                AddChecksForNode(room.Node);
+            }
+            else if (check is ItemRouteCheck item)
+            {
+                _visitedItems2.Add(item.GlobalId);
+                _itemPool.Add(item.GlobalId);
+            }
+        }
+
+        private void AddChecksForNode(PlayNode node)
+        {
+            if (!_visitedRooms.Add(node))
+                return;
+
+            if (node.Requires.Length != 0)
+            {
+                _routeStatus.AddCheck(
+                    new AggregateRouteCheck(
+                        node.Requires.Select(x => (IRouteCheck)CreateKeyCheck(x))),
+                    new BasicRouteCheck());
+            }
+
+            foreach (var edge in node.Edges)
+            {
+                if (edge.Node == null)
+                    continue;
+                if (edge.Lock != LockKind.None && edge.Lock != LockKind.Unblock)
+                    continue;
+                var keys = edge.Requires.Select(x => (IRouteCheck)CreateKeyCheck(x));
+                var rooms = edge.RequiresRoom.Select(x => (IRouteCheck)new RoomRouteCheck(x));
+                var extra = edge.NoReturn ? new IRouteCheck[] { new SegmentRouteCheck() } : new IRouteCheck[0];
+                var agg = new AggregateRouteCheck(keys.Concat(rooms).Concat(extra));
+                _routeStatus.AddCheck(agg, new RoomRouteCheck(edge.Node));
+            }
+
+            foreach (var item in node.Items)
+            {
+                var keys = item.Requires == null ?
+                    new IRouteCheck[0] :
+                    item.Requires.Select(x => (IRouteCheck)CreateKeyCheck(x));
+                var agg = new AggregateRouteCheck(keys);
+                _routeStatus.AddCheck(agg, new ItemRouteCheck(item.GlobalId));
+            }
+        }
+
+        private IRouteCheck CreateCheck(PlayRequirement req)
+        {
+            switch (req.Kind)
+            {
+                case PlayRequirementKind.Key:
+                    return new KeyRouteCheck(req.Id, name: ItemHelper.GetItemName((byte)req.Id));
+                case PlayRequirementKind.Room:
+                    return new RoomRouteCheck(_nodes.FirstOrDefault(x => x.RdtId));
+            }
+        }
+
+        private KeyRouteCheck CreateKeyCheck(int type) => new KeyRouteCheck(type, name: ItemHelper.GetItemName((byte)type));
+
+        public void RandomiseItemsOld(PlayGraph graph)
         {
             if (graph.Start == null || graph.End == null)
                 throw new ArgumentException("No start or end node", nameof(graph));
@@ -844,7 +1008,7 @@ namespace IntelOrca.Biohazard.BioRand
             return null;
         }
 
-        private void AddItemToPool(ItemPoolEntry item)
+        private void AddItemToPool(PlayItem item)
         {
             // CVX currently, eventually add to all games
             if (_config.Game == 4 && !_globalIdVisited.Add(item.GlobalId!.Value))
@@ -863,7 +1027,7 @@ namespace IntelOrca.Biohazard.BioRand
                 throw new Exception();
         }
 
-        private void SetItem(ItemPoolEntry entry)
+        private void SetItem(PlayItem entry)
         {
             _definedPool.Add(entry);
             if (_config.Game == 4)
@@ -1033,7 +1197,7 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
-        private void SpawnItems(Queue<ItemPoolEntry> pool, int count, Rng.Table<byte> probabilityTable)
+        private void SpawnItems(Queue<PlayItem> pool, int count, Rng.Table<byte> probabilityTable)
         {
             for (int i = 0; i < count; i++)
             {
@@ -1045,7 +1209,7 @@ namespace IntelOrca.Biohazard.BioRand
             }
         }
 
-        private bool SpawnItem(Queue<ItemPoolEntry> pool, byte itemType, byte amount)
+        private bool SpawnItem(Queue<PlayItem> pool, byte itemType, byte amount)
         {
             if (pool.Count != 0)
             {
@@ -1298,7 +1462,7 @@ namespace IntelOrca.Biohazard.BioRand
         private class KeyRequirement : IEquatable<KeyRequirement>
         {
             public byte[] Keys { get; }
-            public ItemPoolEntry? Item { get; }
+            public PlayItem? Item { get; }
             public bool IsDoor { get; }
 
             public KeyRequirement(IEnumerable<byte> keys)
@@ -1306,7 +1470,7 @@ namespace IntelOrca.Biohazard.BioRand
             {
             }
 
-            public KeyRequirement(IEnumerable<byte> keys, ItemPoolEntry? item, bool isDoor = false)
+            public KeyRequirement(IEnumerable<byte> keys, PlayItem? item, bool isDoor = false)
             {
                 Keys = keys.OrderBy(x => x).ToArray();
                 if (Keys.Length == 0)
@@ -1343,10 +1507,185 @@ namespace IntelOrca.Biohazard.BioRand
                 return $"{string.Join(",", Keys.Select(x => x))}";
             }
 
-            public KeyRequirement WithItem(ItemPoolEntry? item)
+            public KeyRequirement WithItem(PlayItem? item)
             {
                 return new KeyRequirement(Keys, item, IsDoor);
             }
+        }
+
+        public class RouteStatus
+        {
+            private List<IRouteCheck> _checks = new List<IRouteCheck>();
+            private List<(IRouteCheck, IRouteCheck)> _req = new List<(IRouteCheck, IRouteCheck)>();
+
+            public List<IRouteCheck> SatisfiedChecks => _checks;
+            public List<(IRouteCheck, IRouteCheck)> RequiredChecks => _req;
+
+            public void AddCheck(IRouteCheck outcome)
+            {
+                _checks.Add(outcome);
+            }
+
+            public void AddCheck(IRouteCheck requirement, IRouteCheck outcome)
+            {
+                if (requirement is AggregateRouteCheck agg)
+                {
+                    if (agg.Sub.Length == 0)
+                    {
+                        AddCheck(outcome);
+                        return;
+                    }
+                    if (agg.Sub.Length == 1)
+                    {
+                        requirement = agg.Sub[0];
+                    }
+                }
+                _req.Add((requirement, outcome));
+            }
+
+            public void SatisfyCheck(IRouteCheck check)
+            {
+                for (var i = 0; i < _req.Count; i++)
+                {
+                    var (r, o) = _req[i];
+                    var newR = TransformCheck(r, check);
+                    if (newR == null)
+                    {
+                        _checks.Add(o);
+                        _req.RemoveAt(i);
+                        i--;
+                    }
+                    else
+                    {
+                        _req[i] = (newR, o);
+                    }
+                }
+            }
+
+            private IRouteCheck? TransformCheck(IRouteCheck a, IRouteCheck b)
+            {
+                if (a is AggregateRouteCheck agg)
+                {
+                    if (agg.Sub.Contains(b))
+                    {
+                        var sub = agg.Sub.ToList();
+                        sub.Remove(b);
+                        if (sub.Count == 0)
+                            return null;
+                        else if (sub.Count == 1)
+                            return sub[0];
+                        else
+                            return new AggregateRouteCheck(sub);
+                    }
+                    else
+                    {
+                        return agg;
+                    }
+                }
+                else if (a.Equals(b))
+                {
+                    return null;
+                }
+                return a;
+            }
+
+            public IRouteCheck[] GetRequiredChecks()
+            {
+                var result = new List<IRouteCheck>();
+                foreach (var (k, _) in _req)
+                {
+                    Add(k);
+                }
+                return result.ToArray();
+
+                void Add(IRouteCheck check)
+                {
+                    if (check is AggregateRouteCheck agg)
+                    {
+                        foreach (var c in agg.Sub)
+                        {
+                            Add(c);
+                        }
+                    }
+                    else
+                    {
+                        result.Add(check);
+                    }
+                }
+            }
+
+            public IRouteCheck[] PopSatisfiedChecks()
+            {
+                var result = _checks.ToArray();
+                _checks.Clear();
+                return result;
+            }
+        }
+
+        public interface IRouteCheck
+        {
+        }
+
+        public readonly struct AggregateRouteCheck : IRouteCheck
+        {
+            public IRouteCheck[] Sub { get; }
+
+            public AggregateRouteCheck(IEnumerable<IRouteCheck> sub)
+            {
+                Sub = sub.ToArray();
+            }
+
+            public override string ToString() => $"Aggregate({string.Join<IRouteCheck>(", ", Sub)})";
+        }
+
+        public readonly struct BasicRouteCheck : IRouteCheck
+        {
+            public override string ToString() => $"Basic()";
+        }
+
+        public readonly struct RoomRouteCheck : IRouteCheck
+        {
+            public PlayNode Node { get; }
+
+            public RoomRouteCheck(PlayNode node)
+            {
+                Node = node;
+            }
+
+            public override string ToString() => $"Room({Node.RdtId})";
+        }
+
+        public readonly struct ItemRouteCheck : IRouteCheck
+        {
+            public int GlobalId { get; }
+
+            public ItemRouteCheck(int globalId)
+            {
+                GlobalId = globalId;
+            }
+
+            public override string ToString() => $"Item({GlobalId})";
+        }
+
+        public readonly struct KeyRouteCheck : IRouteCheck
+        {
+            public string? Name { get; }
+            public int Type { get; }
+
+            public KeyRouteCheck(int type, string? name = null)
+            {
+                Name = name;
+                Type = type;
+            }
+
+            public override int GetHashCode() => Type.GetHashCode();
+            public override bool Equals(object obj) => obj is KeyRouteCheck c && Type == c.Type;
+            public override string ToString() => $"Key({Name ?? Type.ToString()})";
+        }
+
+        public readonly struct SegmentRouteCheck : IRouteCheck
+        {
+            public override string ToString() => $"Segment()";
         }
     }
 }

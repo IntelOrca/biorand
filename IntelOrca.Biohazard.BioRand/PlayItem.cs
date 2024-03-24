@@ -1,17 +1,20 @@
-﻿namespace IntelOrca.Biohazard.BioRand
+﻿using System;
+
+namespace IntelOrca.Biohazard.BioRand
 {
-    internal struct ItemPoolEntry
+    internal class PlayItem
     {
-        public MapRoomItem Raw { get; set; }
+        public int GlobalId { get; set; }
+        public PlayRequirement[] Requires { get; set; } = Array.Empty<PlayRequirement>();
 
         public RdtId RdtId { get; set; }
         public byte Id { get; set; }
         public ushort Type { get; set; }
         public ushort Amount { get; set; }
-        public byte[]? Requires { get; set; }
         public ItemPriority Priority { get; set; }
         public bool AllowDocuments { get; set; }
-        public ushort? GlobalId { get; set; }
+
+        public MapRoomItem? Raw { get; set; }
 
         public RdtItemId RdtItemId
         {

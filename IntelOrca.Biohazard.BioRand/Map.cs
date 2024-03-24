@@ -77,9 +77,9 @@ namespace IntelOrca.Biohazard.BioRand
     public class MapRoom
     {
         public string? LinkedRoom { get; set; }
-        public int[]? Requires { get; set; }
         public MapRoomDoor[]? Doors { get; set; }
         public MapRoomItem[]? Items { get; set; }
+        public MapRoomCheck[]? Checks { get; set; }
         public MapRoomEnemies[]? Enemies { get; set; }
         public MapRoomNpcs[]? Npcs { get; set; }
         public DoorRandoSpec[]? DoorRando { get; set; }
@@ -104,8 +104,7 @@ namespace IntelOrca.Biohazard.BioRand
         public bool NoReturn { get; set; }
         public bool NoUnlock { get; set; }
         public bool IsBridgeEdge { get; set; }
-        public int[]? Requires { get; set; }
-        public string[]? RequiresRoom { get; set; }
+        public JsonElement[]? Requires { get; set; }
         public bool? DoorRando { get; set; }
         public int? Player { get; set; }
         public int? Scenario { get; set; }
@@ -127,17 +126,22 @@ namespace IntelOrca.Biohazard.BioRand
         public JsonElement[]? Offsets { get; set; }
         public byte Id { get; set; }
         public byte? ItemId { get; set; }
-        public short? GlobalId { get; set; }
+        public int? GlobalId { get; set; }
         public byte? Type { get; set; }
         public byte? Amount { get; set; }
         public string? Link { get; set; }
         public string? Priority { get; set; }
-        public int[]? Requires { get; set; }
-        public string[]? RequiresRoom { get; set; }
+        public JsonElement[]? Requires { get; set; }
         public bool? AllowDocuments { get; set; }
         public bool? DoorRando { get; set; }
         public int? Player { get; set; }
         public int? Scenario { get; set; }
+    }
+
+    public class MapRoomCheck
+    {
+        public int GlobalId { get; set; }
+        public JsonElement[]? Requires { get; set; }
     }
 
     public class MapRoomEnemies

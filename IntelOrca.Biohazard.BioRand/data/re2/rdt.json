@@ -232,6 +232,12 @@
           "id": 5,
           "priority": "hidden"
         }
+      ],
+      "checks": [
+        {
+          "globalId": 0,
+          "requires": [ "key(50)" ]
+        }
       ]
     },
     "109": {
@@ -282,22 +288,19 @@
         },
         {
           "target": "10B",
-          "requires": [ 50 ],
-          "requiresRoom": [ "108" ],
+          "requires": [ "check(0)" ],
           "lock": "unblock"
         },
         {
           "target": "21B",
-          "requires": [ 50 ],
-          "requiresRoom": [ "108", "30B" ],
+          "requires": [ "check(0)", "room(30B)" ],
           "lock": "unblock",
           "player": 0,
           "scenario": 1
         },
         {
           "target": "21B",
-          "requires": [ 50, 64, 65 ],
-          "requiresRoom": [ "108" ],
+          "requires": [ "check(0)", "key(64)", "key(65)" ],
           "lock": "unblock",
           "player": 1
         }
@@ -321,7 +324,7 @@
         },
         {
           "id": 16,
-          "requires": [ 51 ]
+          "requires": [ 51, 51 ]
         }
       ],
       "enemies": [
@@ -1026,6 +1029,7 @@
         },
         {
           "id": 255,
+          "globalId": 256,
           "type": 53,
           "amount": 1,
           "priority": "low",
@@ -1066,7 +1070,6 @@
       ]
     },
     "204": {
-      "requires": [ 86 ],
       "doors": [
         {
           "target": "201"
@@ -1099,6 +1102,12 @@
           "excludeOffsets": [ 6836 ],
           "excludeTypes": [ 40 ],
           "scenario": 1
+        }
+      ],
+      "checks": [
+        {
+          "globalId": 2,
+          "requires": [ "key(86)" ]
         }
       ]
     },
@@ -1216,6 +1225,7 @@
         },
         {
           "id": 12,
+          "globalId": 158,
           "requires": [ 83 ],
           "type": 13,
           "quantity": 6
@@ -1272,7 +1282,7 @@
       "enemies": [
         {
           "excludeTypes": [ 58 ],
-          "maxDifficulty":  2
+          "maxDifficulty": 2
         }
       ]
     },
@@ -1293,7 +1303,7 @@
         {
           "excludeOffsets": [ 12368 ],
           "excludeTypes": [ 40, 58 ],
-          "maxDifficulty":  2
+          "maxDifficulty": 2
         }
       ],
       "items": [
@@ -1429,7 +1439,6 @@
       ]
     },
     "20F": {
-      "requires": [ 86 ],
       "doors": [
         {
           "target": "20B"
@@ -1446,6 +1455,12 @@
         {
           "id": 6,
           "priority": "hidden"
+        }
+      ],
+      "checks": [
+        {
+          "globalId": 1,
+          "requires": [ "key(86)" ]
         }
       ]
     },
@@ -1478,8 +1493,7 @@
         },
         {
           "target": "214",
-          "requires": [ 52 ],
-          "requiresRoom": [ "213" ]
+          "requires": [ "key(52)", "room(213)" ]
         },
         {
           "target": "216"
@@ -1711,8 +1725,7 @@
         {
           "target": "308",
           "noReturn": true,
-          "requires": [ 54, 56, 57, 58 ],
-          "requiresRoom": [ "10E" ],
+          "requires": [ "key(54)", "key(56)", "key(57)", "key(58)", "room(10E)" ],
           "noUnlock": true,
           "player": 1
         }
@@ -2791,8 +2804,7 @@
         },
         {
           "target": "40B",
-          "requires": [ 50 ],
-          "requiresRoom": [ "408" ]
+          "requires": [ "key(50)", "room(408)" ]
         }
       ],
       "npcs": [
@@ -3408,7 +3420,7 @@
         },
         {
           "target": "601",
-          "requiresRoom": [ "605" ],
+          "requires": [ "room(605)" ],
           "lock": "unblock"
         },
         {
@@ -3769,22 +3781,19 @@
         },
         {
           "target": "60E",
-          "requires": [ 76 ],
-          "requiresRoom": [ "611" ],
+          "requires": [ "key(76)", "room(611)" ],
           "player": 0,
           "doorRando": true
         },
         {
           "target": "60E",
-          "requires": [ 76 ],
-          "requiresRoom": [ "608" ],
+          "requires": [ "key(76)", "room(608)" ],
           "player": 0,
           "doorRando": false
         },
         {
           "target": "60E",
-          "requires": [ 76 ],
-          "requiresRoom": [ "608" ],
+          "requires": [ "key(76)", "room(608)" ],
           "player": 1
         }
       ]
@@ -3817,30 +3826,27 @@
         },
         {
           "target": "60F",
-          "requires": [ 76 ],
-          "requiresRoom": [ "611", "613" ],
+          "requires": [ "key(76)", "room(611)", "room(613)" ],
           "noUnlock": true,
           "player": 0,
           "doorRando": true
         },
         {
           "target": "60F",
-          "requires": [ 76 ],
-          "requiresRoom": [ "608", "613" ],
+          "requires": [ "key(76)", "room(608)", "room(613)" ],
           "noUnlock": true,
           "player": 1,
           "doorRando": true
         },
         {
           "target": "60F",
-          "requires": [ 76 ],
-          "requiresRoom": [ "608" ],
+          "requires": [ "key(76)", "room(608)" ],
           "scenario": 1,
           "doorRando": false
         },
         {
           "target": "610",
-          "requires": [ 97 ],
+          "requires": [ "key(97)" ],
           "cut": 6
         }
       ],
