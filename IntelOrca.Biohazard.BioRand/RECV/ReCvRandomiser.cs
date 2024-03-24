@@ -247,7 +247,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
                 using (progress.BeginTask(null, "Compressing room files"))
                 {
-                    _rdxAfs = WriteRdxAfs();
+                    _rdxAfs = WriteRdxAfs(fileRepository);
                 }
 
                 using (progress.BeginTask(null, "Creating ISO file"))
@@ -466,7 +466,7 @@ namespace IntelOrca.Biohazard.BioRand.RECV
             return data;
         }
 
-        private AfsFile WriteRdxAfs()
+        private AfsFile WriteRdxAfs(FileRepository fileRepository)
         {
             if (_rdxAfs == null)
                 throw new Exception();
@@ -482,11 +482,41 @@ namespace IntelOrca.Biohazard.BioRand.RECV
                 var rrdt = _rdts[i];
                 if (rrdt != null)
                 {
-                    var prs = PrsFile.Compress(rrdt.RdtFile.Data);
+                    var prs = CachePrs(fileRepository, rrdt.RdtId, rrdt.RdtFile.Data);
                     builder.Replace(i, prs.Data);
                 }
             });
             return builder.ToAfsFile();
+        }
+
+        private PrsFile CachePrs(FileRepository fileRepository, RdtId rtdId, ReadOnlyMemory<byte> uncompressed)
+        {
+            var cacheDir = Path.Combine(Path.GetDirectoryName(fileRepository.DataPath), "prs_cache");
+            var cacheFile = Path.Combine(cacheDir, rtdId + "_" + uncompressed.CalculateFnv1a().ToString("X8"));
+            if (File.Exists(cacheFile))
+            {
+                try
+                {
+                    return new PrsFile(File.ReadAllBytes(cacheFile));
+                }
+                catch
+                {
+                }
+            }
+
+            var compressedData = PrsFile.Compress(uncompressed);
+            try
+            {
+                if (Directory.Exists(cacheDir))
+                {
+                    Directory.CreateDirectory(cacheDir);
+                    compressedData.Data.WriteToFile(cacheFile);
+                }
+            }
+            catch
+            {
+            }
+            return compressedData;
         }
 
         protected override string[] GetDefaultNPCs()
