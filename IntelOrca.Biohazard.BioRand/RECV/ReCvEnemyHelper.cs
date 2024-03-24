@@ -22,10 +22,29 @@ namespace IntelOrca.Biohazard.BioRand.RECV
 
         public int GetEnemyTypeLimit(RandoConfig config, int difficulty, byte type)
         {
-            if (type == RECV.ReCvEnemyIds.Tyrant)
-                return 1;
+            byte[] limit;
+            switch (type)
+            {
+                default:
+                case ReCvEnemyIds.Zombie:
+                    limit = new byte[] { 4, 6, 8, 10 };
+                    break;
+                case ReCvEnemyIds.ZombieDog:
+                    limit = new byte[] { 2, 4, 6, 8 };
+                    break;
+                case ReCvEnemyIds.Bat:
+                    limit = new byte[] { 4, 6, 8, 10 };
+                    break;
+                case ReCvEnemyIds.Bandersnatch:
+                    limit = new byte[] { 2, 4, 6, 8 };
+                    break;
+                case ReCvEnemyIds.Hunter:
+                    limit = new byte[] { 2, 4, 6, 8 };
+                    break;
+                case ReCvEnemyIds.Tyrant:
+                    return 1;
+            }
 
-            var limit = new byte[] { 2, 4, 7, 10 };
             var index = Math.Min(limit.Length - 1, difficulty);
             return limit[index];
         }
