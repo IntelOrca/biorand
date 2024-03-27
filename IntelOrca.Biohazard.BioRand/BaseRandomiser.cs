@@ -675,7 +675,7 @@ namespace IntelOrca.Biohazard.BioRand
         {
             var pldIndex = GetSelectedPldIndex(config, player);
             var pldDirectoryIndex = config.SwapCharacters ? player ^ 1 : player;
-            var pldPath = DataManager.GetDirectories(BiohazardVersion, $"pld{player}")
+            var pldPath = DataManager.GetDirectories(BiohazardVersion, $"pld{pldDirectoryIndex}")
                 .OrderBy(x => Path.GetFileName(x).ToActorString())
                 .Skip(pldIndex)
                 .FirstOrDefault();
