@@ -248,10 +248,7 @@ namespace IntelOrca.Biohazard.BioRand
             if (Version == BioVersion.BiohazardCv)
             {
                 var rdtBuilder = ((RdtCv)RdtFile).ToBuilder();
-
-#if !OLD_ITEM_TECHNIQUE
-                itemId = itemId ?? id;
-                if (globalId != null)
+                if (itemId == null)
                 {
                     var aot = rdtBuilder.Aots[id];
                     itemId = aot.Stage;
@@ -263,32 +260,6 @@ namespace IntelOrca.Biohazard.BioRand
                     rdtBuilder.Items[itemId.Value] = item;
                     RdtFile = rdtBuilder.ToRdt();
                 }
-#else
-                if (globalId == null)
-                {
-                    itemId = itemId ?? id;
-                    if (rdtBuilder.Items.Count > itemId)
-                    {
-                        var item = rdtBuilder.Items[itemId.Value];
-                        item.Type = (item.Type & 0xFFFF) | (type << 16);
-                        rdtBuilder.Items[itemId.Value] = item;
-                        RdtFile = rdtBuilder.ToRdt();
-                    }
-                }
-                else
-                {
-                    // Convert AOT to a message
-                    var aot = rdtBuilder.Aots[id];
-                    if (itemId == null)
-                    {
-                        itemId = aot.Stage;
-                    }
-                    // aot.Kind = 3;
-                    // aot.Flags = 0;
-                    // rdtBuilder.Aots[id] = aot;
-                    CvAddItemPickupCodes(id, itemId.Value, (byte)type, globalId.Value);
-                }
-#endif
             }
             else
             {
@@ -350,22 +321,6 @@ namespace IntelOrca.Biohazard.BioRand
                     reset.Data1 = amount;
                 }
             }
-        }
-
-        private void CvAddItemPickupCodes(byte aotIndex, byte itemIndex, byte itemType, short globalId)
-        {
-            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x01, new byte[] { 0x2C }));
-            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x04, new byte[] { 0x07, (byte)(globalId & 0xFF), (byte)(globalId >> 8), 0x00, 0x01 }));
-            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x25, new byte[] { aotIndex, 0x00, 0x00, itemIndex, 0x00, 0x00, 0x00, 0x03, 0x00 }));
-            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x01, new byte[] { 0x18 }));
-            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x04, new byte[] { 0x0A, 0x17, 0x00, aotIndex, 0x00 }));
-            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x05, new byte[] { 0x0A, 0x1B, 0x00, 0x00, 0x00 }));
-            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x08, new byte[] { 0x08, itemType, 0x00 }));
-            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x05, new byte[] { 0x0A, 0x17, 0x00, aotIndex, 0x01 }));
-            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x03, new byte[] { 0x00 }));
-            AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x03, new byte[] { 0x00 }));
-            // AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x02, new byte[] { 0x0C }));
-            // AdditionalFrameOpcodes.Add(new UnknownOpcode(0, 0x25, new byte[] { aotIndex, 0x00, 0x80, 0x00, 0x05, 0x00, 0x00, 0x03, 0x00 }));
         }
 
         public void SetEnemy(byte id, byte type, byte state, byte ai, byte soundBank, byte texture)
