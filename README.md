@@ -2,7 +2,7 @@
 <a href="https://raw.githubusercontent.com/IntelOrca/biorand/master/docs/images/screenshot.png">
     <img src="docs/images/screenshot.png" style="width: 256px;" align="right" alt="BioRand screenshot"/>
 </a>
-A new randomizer for the classic Resident Evil games for PC. Supports sophisticated key item placement, randomized non-key items, randomized enemies, randomized NPCs with matching random voices and random background music. All highly configurable and easy to share seeds and configurations.
+A new randomizer for the classic Resident Evil games for PC. Supports sophisticated key item placement, randomized non-key items, randomized enemies, randomized enemy skins, randomized NPCs with matching random voices and random background music. All highly configurable and easy to share seeds and configurations.
 
 The randomizer currently only supports the Sourcenext port of all three classic Resident Evil games with the Classic REbirth patch.
 <br clear="right"/>
