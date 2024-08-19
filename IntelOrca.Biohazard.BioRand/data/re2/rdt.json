@@ -230,6 +230,7 @@
       "items": [
         {
           "id": 5,
+          "requires": [ 50 ],
           "priority": "hidden"
         }
       ]
