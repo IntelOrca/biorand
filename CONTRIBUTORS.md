@@ -7,7 +7,7 @@
 * **Resevilnemesis30** - Randy Rando
 * **SikShadow** - Randy Rando songs
 * **baesik** - testing
-* **Death2024** - testing
+* **DeathNoDamage** - testing
 * **gonta2319** - testing
 * **otamega72** - testing
 * **Shannon** - testing
