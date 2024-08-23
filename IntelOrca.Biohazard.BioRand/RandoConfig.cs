@@ -118,9 +118,8 @@ namespace IntelOrca.Biohazard.BioRand
             reader.ReadByte(3);
             result.PrioritiseCutscenes = reader.ReadFlag();
 
-            result.Player0 = reader.ReadByte(6);
-            result.Player1 = reader.ReadByte(6);
-            reader.ReadByte(2);
+            result.Player0 = reader.ReadByte(7);
+            result.Player1 = reader.ReadByte(7);
             result.SwapCharacters = reader.ReadFlag();
 
             result.RandomInventory = reader.ReadFlag();
@@ -210,9 +209,8 @@ namespace IntelOrca.Biohazard.BioRand
             writer.Write(3, 0);
             writer.Write(PrioritiseCutscenes);
 
-            writer.Write(6, Player0);
-            writer.Write(6, Player1);
-            writer.Write(2, 0);
+            writer.Write(7, Player0);
+            writer.Write(7, Player1);
             writer.Write(SwapCharacters);
 
             writer.Write(RandomInventory);
