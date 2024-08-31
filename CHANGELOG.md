@@ -1,3 +1,11 @@
+BioRand v3.2.7 (2024-08-31)
+
+* [Feature] RE 1, add Donna, Helena, and Yoko as playable characters.
+* [Feature] RE 2, add Angie, Bela, Cassandra, Daniela, Donna, Excella, Helena, and Yoko as playable characters.
+* [Feature] RE 3, add Bela, Cassandra, Daniela, Excella, Helena, and Yoko as playable characters.
+* [Enhancement] Increase playable character dropdown limit to 128.
+* [Fix] #889: RE 2, valve handle can be placed in helicopter fire.
+
 BioRand v3.2.6 (2024-02-21)
 
 * [Fix] Randy Rando when Japanese text is enabled.
