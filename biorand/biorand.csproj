@@ -11,7 +11,6 @@
     <RootNamespace>IntelOrca.Biohazard.BioRand</RootNamespace>
     <ApplicationIcon>biorand.ico</ApplicationIcon>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>DISABLE_CVX;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="biorand.ico" />

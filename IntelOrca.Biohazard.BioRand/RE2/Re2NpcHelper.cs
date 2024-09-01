@@ -198,10 +198,13 @@ namespace IntelOrca.Biohazard.BioRand.RE2
                 var zombiePath = fileRepository.GetDataPath("pl0/emd0/em010.emd");
                 var zombie = new EmdFile(BioVersion.Biohazard2, zombiePath);
                 var edd = (Edd1)zombie.GetEdd(1);
-                var offset = edd.Animations[22].Offset;
                 var eddBuilder = edd.ToBuilder();
                 eddBuilder.Animations[0] = eddBuilder.Animations[22];
-                eddBuilder.Animations[0].Frames = eddBuilder.Animations[0].Frames.Take(1).ToArray();
+
+                var firstFrame = eddBuilder.Animations[0].Frames.First();
+                eddBuilder.Animations[0].Frames.Clear();
+                eddBuilder.Animations[0].Frames.Add(firstFrame);
+
                 eddBuilder.Animations.RemoveRange(1, eddBuilder.Animations.Count - 1);
                 emdFile.SetEdd(0, eddBuilder.ToEdd());
                 var emr = pldFile.GetEmr(0)
