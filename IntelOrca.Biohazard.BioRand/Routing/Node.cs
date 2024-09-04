@@ -35,8 +35,10 @@ namespace IntelOrca.Biohazard.BioRand.Routing
         }
 
         public bool Equals(Node other) => Id == other.Id;
-
         public override string ToString() => $"#{Id} ({Label})" ?? $"#{Id}";
+
+        public static bool operator ==(Node a, Node b) => a.Equals(b);
+        public static bool operator !=(Node a, Node b) => !a.Equals(b);
     }
 
     public sealed class Graph
@@ -67,10 +69,8 @@ namespace IntelOrca.Biohazard.BioRand.Routing
 
         private Node[] GetKeys(Node node)
         {
-            if (node.Kind == NodeKind.Key)
-                return new Node[] { node };
             return node.Requires
-                .SelectMany(x => GetKeys(x))
+                .Where(x => x.Kind == NodeKind.Key)
                 .ToArray();
         }
 
@@ -122,21 +122,26 @@ namespace IntelOrca.Biohazard.BioRand.Routing
         {
             var keysAsNodes = false;
 
-            var sb = new StringBuilder();
-            sb.AppendLine("flowchart TD");
-
+            var mb = new MermaidBuilder();
+            mb.Node("S", " ", MermaidShape.Circle);
             for (int gIndex = 0; gIndex < Subgraphs.Length; gIndex++)
             {
                 var g = Subgraphs[gIndex];
-                sb.AppendLine($"        subgraph \"G<sub>{gIndex}\"");
+                mb.BeginSubgraph($"G<sub>{gIndex}</sub>");
                 foreach (var node in g)
                 {
                     if (node.Kind == NodeKind.Key && !keysAsNodes)
                         continue;
 
-                    sb.AppendLine($"        {GetNodeLabel(node)}");
+                    var (letter, shape) = GetNodeLabel(node);
+                    mb.Node(GetNodeName(node), $"{letter}<sub>{node.Id}</sub>", shape);
                 }
-                sb.AppendLine($"    end");
+                mb.EndSubgraph();
+            }
+
+            foreach (var node in Start)
+            {
+                EmitEdge("S", node);
             }
 
             foreach (var edge in Edges)
@@ -145,46 +150,37 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 if (a.Kind == NodeKind.Key && !keysAsNodes)
                     continue;
 
-                var source = GetNodeName(a);
+                var sourceName = GetNodeName(a);
                 foreach (var b in edge.Value)
                 {
-                    var target = GetNodeName(b);
-
-                    var keys = GetKeys(b);
-                    var keyString = string.Join(" + ", keys.Select(k => $"K<sub>{k.Id}</sub>"));
-                    var line = keys.Length == 0
-                        ? b.Kind == NodeKind.OneWay
-                            ? "-..->"
-                            : "-->"
-                        : b.Kind == NodeKind.OneWay
-                            ? $"-. {keyString} .->"
-                            : $"-- {keyString} -->";
-                    sb.AppendLine($"    {source} {line} {target}");
+                    EmitEdge(sourceName, b);
                 }
             }
-            return sb.ToString();
+            return mb.ToString();
+
+            void EmitEdge(string sourceName, Node b)
+            {
+                var targetName = GetNodeName(b);
+                var label = string.Join(" + ", GetKeys(b).Select(k => $"K<sub>{k.Id}</sub>"));
+                var edgeType = b.Kind == NodeKind.OneWay
+                    ? MermaidEdgeType.Dotted
+                    : MermaidEdgeType.Solid;
+                mb.Edge(sourceName, targetName, label, edgeType);
+            }
 
             static string GetNodeName(Node node)
             {
                 return $"N{node.Id}";
             }
 
-            static string GetNodeLabel(Node node)
+            static (char, MermaidShape) GetNodeLabel(Node node)
             {
-                var paren = node.Kind switch
+                return node.Kind switch
                 {
-                    NodeKind.AndGate => "R()",
-                    NodeKind.OrGate => "R()",
-                    NodeKind.OneWay => "R()",
-                    NodeKind.Item => "I[]",
-                    NodeKind.Key => "K{{}}",
-                    _ => "R()"
+                    NodeKind.Item => ('I', MermaidShape.Square),
+                    NodeKind.Key => ('K', MermaidShape.Hexagon),
+                    _ => ('R', MermaidShape.Circle),
                 };
-                var letter = paren[0];
-                paren = paren[1..];
-                var parenOpen = paren[..(paren.Length / 2)];
-                var parenClose = paren[(paren.Length / 2)..];
-                return $"{GetNodeName(node)}{parenOpen}\"{letter}<sub>{node.Id}</sub>\"{parenClose}";
             }
         }
     }
@@ -263,20 +259,22 @@ namespace IntelOrca.Biohazard.BioRand.Routing
 
     public sealed class Route
     {
+        public Graph Graph { get; }
         public bool AllNodesVisited { get; }
         public ImmutableDictionary<Node, Node> Fulfilled { get; }
         public string Log { get; }
 
-        public Route(bool allNodesVisited, ImmutableDictionary<Node, Node> fulfilled, string log)
+        public Route(Graph graph, bool allNodesVisited, ImmutableDictionary<Node, Node> fulfilled, string log)
         {
+            Graph = graph;
             AllNodesVisited = allNodesVisited;
             Fulfilled = fulfilled;
             Log = log;
         }
 
-        public Node? GetGetNodeForKey(Node key)
+        public Node? GetItemContents(Node item)
         {
-            if (Fulfilled.TryGetValue(key, out var result))
+            if (Fulfilled.TryGetValue(item, out var result))
                 return result;
             return null;
         }
@@ -287,15 +285,17 @@ namespace IntelOrca.Biohazard.BioRand.Routing
         private readonly Random _rng = new Random();
 
         private Graph _input;
+        private readonly HashSet<Node> _start = new HashSet<Node>();
         private readonly HashSet<Node> _next = new HashSet<Node>();
 
         private readonly HashSet<Node> _remainingNodes = new HashSet<Node>();
         private readonly HashSet<Node> _remainingKeys = new HashSet<Node>();
         private readonly HashSet<Node> _availableForKey = new HashSet<Node>();
-        private readonly List<Node> _visited = new List<Node>();
+        private readonly HashSet<Node> _visited = new HashSet<Node>();
         private readonly HashSet<Node> _keys = new HashSet<Node>();
         private readonly StringBuilder _log = new StringBuilder();
-        private readonly Dictionary<Node, Node> _fulfilled = new Dictionary<Node, Node>();
+        private readonly Dictionary<Node, Node> _itemToKey = new Dictionary<Node, Node>();
+        private readonly Dictionary<Node, List<Node>> _keyToItems = new Dictionary<Node, List<Node>>();
 
         public RouteFinder(int? seed = null)
         {
@@ -306,25 +306,41 @@ namespace IntelOrca.Biohazard.BioRand.Routing
         public Route Find(Graph input)
         {
             _input = input;
-            _next.AddRange(input.Start);
+            var m = input.ToMermaid();
+
+            var next = (IEnumerable<Node>)input.Start;
+            while (next.Any())
+            {
+                DoSubgraph(next);
+                next = TakeNextNodes(IsSatisfied);
+            }
+
+            return new Route(_input, _next.Count == 0, _itemToKey.ToImmutableDictionary(), _log.ToString());
+        }
+
+        private void DoSubgraph(IEnumerable<Node> start)
+        {
+            _visited.Clear();
+            _start.Clear();
+            _start.AddRange(start);
+            foreach (var n in start)
+            {
+                var deps = GetHardDependencies(n);
+                _visited.UnionWith(deps);
+                _next.Add(n);
+            }
             while (DoPass() || Fulfill())
             {
             }
-            return new Route(_next.Count == 0, _fulfilled.ToImmutableDictionary(), _log.ToString());
         }
 
         private bool DoPass()
         {
-            var satisfied = _next.Where(x => IsSatisfied(x)).ToArray();
+            var satisfied = TakeNextNodes(x => (_start.Contains(x) || x.Kind != NodeKind.OneWay) && IsSatisfied(x));
             if (satisfied.Length == 0)
                 return false;
 
-            _next.ExceptWith(satisfied);
-            foreach (var c in satisfied)
-            {
-                VisitNode(c);
-            }
-
+            VisitNodes(satisfied);
             return true;
         }
 
@@ -346,13 +362,38 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                     var item = available[rIndex];
 
                     _availableForKey.Remove(item);
-                    _fulfilled.Add(key, item);
+                    _itemToKey.Add(item, key);
+
+                    if (!_keyToItems.TryGetValue(key, out var list))
+                    {
+                        list = new List<Node>();
+                        _keyToItems.Add(key, list);
+                    }
+                    list.Add(item);
+
+                    Log($"Place {key} at {item}");
+
                     _keys.Remove(key);
                     VisitNode(key);
                     return true;
                 }
             }
             return false;
+        }
+
+        private Node[] TakeNextNodes(Func<Node, bool> predicate)
+        {
+            var taken = _next.Where(predicate).ToArray();
+            _next.ExceptWith(taken);
+            return taken;
+        }
+
+        private void VisitNodes(IEnumerable<Node> nodes)
+        {
+            foreach (var node in nodes)
+            {
+                VisitNode(node);
+            }
         }
 
         private void VisitNode(Node node)
@@ -369,6 +410,35 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             }
 
             Log($"Satisfied node: {node}");
+        }
+
+        private HashSet<Node> GetHardDependencies(Node node)
+        {
+            var set = new HashSet<Node>();
+            Recurse(node);
+            return set;
+
+            void Recurse(Node node)
+            {
+                foreach (var r in node.Requires)
+                {
+                    if (r.Kind == NodeKind.Key)
+                    {
+                        if (_keyToItems.TryGetValue(r, out var items) && items.Count != 0)
+                        {
+                            var item = items.FirstOrDefault();
+                            set.Add(r);
+                            set.Add(item);
+                            Recurse(item);
+                        }
+                    }
+                    else
+                    {
+                        set.Add(r);
+                        Recurse(r);
+                    }
+                }
+            }
         }
 
         private int Rng(int min, int max) => _rng.Next(min, max);
