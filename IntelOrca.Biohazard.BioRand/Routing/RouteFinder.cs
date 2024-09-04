@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 
@@ -20,8 +19,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
         private readonly HashSet<Node> _visited = new HashSet<Node>();
         private readonly HashSet<Node> _keys = new HashSet<Node>();
         private readonly StringBuilder _log = new StringBuilder();
-        private readonly Dictionary<Node, Node> _itemToKey = new Dictionary<Node, Node>();
-        private readonly Dictionary<Node, List<Node>> _keyToItems = new Dictionary<Node, List<Node>>();
+        private readonly OneToManyDictionary<Node, Node> _itemToKey = new OneToManyDictionary<Node, Node>();
 
         public RouteFinder(int? seed = null)
         {
@@ -44,8 +42,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             return new Route(
                 _input,
                 _next.Count == 0,
-                _itemToKey.ToImmutableDictionary(),
-                _keyToItems.ToImmutableDictionary(x => x.Key, x => x.Value.ToImmutableArray()),
+                _itemToKey.ToImmutable(),
                 _log.ToString());
         }
 
@@ -94,13 +91,6 @@ namespace IntelOrca.Biohazard.BioRand.Routing
 
                     _availableForKey.Remove(item);
                     _itemToKey.Add(item, key);
-
-                    if (!_keyToItems.TryGetValue(key, out var list))
-                    {
-                        list = new List<Node>();
-                        _keyToItems.Add(key, list);
-                    }
-                    list.Add(item);
 
                     Log($"Place {key} at {item}");
 
@@ -155,7 +145,8 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 {
                     if (r.Kind == NodeKind.Key)
                     {
-                        if (_keyToItems.TryGetValue(r, out var items) && items.Count != 0)
+                        var items = _itemToKey.GetKeysContainingValue(r);
+                        if (items.Any())
                         {
                             var item = items.FirstOrDefault();
                             set.Add(r);

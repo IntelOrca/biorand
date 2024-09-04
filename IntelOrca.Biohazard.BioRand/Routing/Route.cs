@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Immutable;
 
 namespace IntelOrca.Biohazard.BioRand.Routing
 {
@@ -7,28 +6,25 @@ namespace IntelOrca.Biohazard.BioRand.Routing
     {
         public Graph Graph { get; }
         public bool AllNodesVisited { get; }
-        public ImmutableDictionary<Node, Node> ItemToKey { get; }
-        public ImmutableDictionary<Node, ImmutableArray<Node>> KeyToItems { get; }
+        public ImmutableOneToManyDictionary<Node, Node> ItemToKey { get; }
         public string Log { get; }
 
         public Route(
             Graph graph,
             bool allNodesVisited,
-            ImmutableDictionary<Node, Node> itemToKey,
-            ImmutableDictionary<Node, ImmutableArray<Node>> keyToItems,
+            ImmutableOneToManyDictionary<Node, Node> itemToKey,
             string log)
         {
             Graph = graph;
             AllNodesVisited = allNodesVisited;
             ItemToKey = itemToKey;
-            KeyToItems = keyToItems;
             Log = log;
         }
 
         public Node? GetItemContents(Node item)
         {
-            if (ItemToKey.TryGetValue(item, out var result))
-                return result;
+            if (ItemToKey.TryGetValue(item, out var key))
+                return key;
             return null;
         }
 
@@ -66,15 +62,13 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 }
                 if (n.Kind == NodeKind.Key)
                 {
-                    if (KeyToItems.TryGetValue(n, out var items))
+                    var items = ItemToKey.GetKeysContainingValue(n);
+                    foreach (var item in items)
                     {
-                        foreach (var item in items)
-                        {
-                            Visit(item);
-                            if (keysAsNodes)
-                                mb.Edge($"N{item.Id}", $"N{n.Id}",
-                                    type: items.Length == 1 ? MermaidEdgeType.Solid : MermaidEdgeType.Dotted);
-                        }
+                        Visit(item);
+                        if (keysAsNodes)
+                            mb.Edge($"N{item.Id}", $"N{n.Id}",
+                                type: items.Count == 1 ? MermaidEdgeType.Solid : MermaidEdgeType.Dotted);
                     }
                 }
                 else
@@ -84,14 +78,12 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                         Visit(r);
                         if (r.Kind == NodeKind.Key && !keysAsNodes)
                         {
-                            if (KeyToItems.TryGetValue(r, out var items))
+                            var items = ItemToKey.GetKeysContainingValue(n);
+                            foreach (var item in items)
                             {
-                                foreach (var item in items)
-                                {
-                                    Visit(item);
-                                    mb.Edge($"N{item.Id}", $"N{n.Id}",
-                                        type: items.Length == 1 ? MermaidEdgeType.Solid : MermaidEdgeType.Dotted);
-                                }
+                                Visit(item);
+                                mb.Edge($"N{item.Id}", $"N{n.Id}",
+                                    type: items.Count == 1 ? MermaidEdgeType.Solid : MermaidEdgeType.Dotted);
                             }
                         }
                         else

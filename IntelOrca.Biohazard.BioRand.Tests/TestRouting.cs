@@ -203,6 +203,24 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             }
         }
 
+        [Fact]
+        public void Key2xRequired()
+        {
+            var builder = new GraphBuilder();
+
+            var key0 = builder.Key(1, "KEY 0");
+            var room0 = builder.AndGate("ROOM 0");
+            var item0a = builder.Item(1, "ITEM 0.A", room0);
+            var item0b = builder.Item(1, "ITEM 0.B", room0);
+            var room1 = builder.AndGate("ROOM 1", room0, key0, key0);
+
+            var route = builder.GenerateRoute();
+
+            AssertItem(route, item0a, key0);
+            AssertItem(route, item0b, key0);
+            Assert.True(route.AllNodesVisited);
+        }
+
         private static void AssertItemNotFulfilled(Route route, Node item)
         {
             var actual = route.GetItemContents(item);
