@@ -58,6 +58,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             return shape switch
             {
                 MermaidShape.Square => ("[", "]"),
+                MermaidShape.DoubleSquare => ("[[", "]]"),
                 MermaidShape.Rounded => ("(", ")"),
                 MermaidShape.Circle => ("((", "))"),
                 MermaidShape.Hexagon => ("{{", "}}"),
@@ -79,6 +80,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
     public enum MermaidShape
     {
         Square,
+        DoubleSquare,
         Rounded,
         Circle,
         Hexagon

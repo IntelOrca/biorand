@@ -52,6 +52,55 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             }
         }
 
+        [Fact]
+        public void KeyBehindKey()
+        {
+            for (var i = 0; i < Retries; i++)
+            {
+                var builder = new GraphBuilder();
+
+                var key0 = builder.Key(1, "KEY 0");
+                var key1 = builder.Key(1, "KEY 1");
+                var room0 = builder.AndGate("ROOM 0");
+                var item0a = builder.Item(1, "ITEM 0.A", room0);
+                var item0b = builder.Item(1, "ITEM 0.B", room0);
+                var item0c = builder.Item(1, "ITEM 0.C", room0, key0);
+                var room1 = builder.AndGate("ROOM 1", room0, key0, key1);
+
+                var route = builder.GenerateRoute(i);
+
+                AssertKeyOnce(route, key0, item0a, item0b);
+                AssertKeyOnce(route, key1, item0a, item0b, item0c);
+                Assert.True(route.AllNodesVisited);
+            }
+        }
+
+        /// <summary>
+        /// An edge case where the keys must be placed in a certain order,
+        /// otherwise we run out of accessible item nodes for all the keys.
+        /// </summary>
+        [Fact]
+        public void KeyOrderMatters()
+        {
+            for (var i = 0; i < Retries; i++)
+            {
+                var builder = new GraphBuilder();
+
+                var key0 = builder.Key(1, "KEY 0");
+                var key1 = builder.Key(1, "KEY 1");
+                var room0 = builder.AndGate("ROOM 0");
+                var item0a = builder.Item(1, "ITEM 0.A", room0);
+                var item0b = builder.Item(1, "ITEM 0.B", room0, key0);
+                var room1 = builder.AndGate("ROOM 1", room0, key0, key1);
+
+                var route = builder.GenerateRoute(i);
+
+                AssertKeyOnce(route, key0, item0a);
+                AssertKeyOnce(route, key1, item0b);
+                Assert.True(route.AllNodesVisited);
+            }
+        }
+
         /// <summary>
         /// Test that when we fulfill a key, we don't add its edges to the next list.
         /// This prevents cases where we place keys prematurely before we require them.
@@ -185,7 +234,7 @@ namespace IntelOrca.Biohazard.BioRand.Tests
                 Assert.True(items.Length == expected.Length,
                     string.Format("Expected {0} to be at {{{1}}} but was not placed",
                         key,
-                        string.Format(", ", expected)));
+                        string.Join(", ", expected)));
             }
             else
             {
@@ -194,7 +243,7 @@ namespace IntelOrca.Biohazard.BioRand.Tests
                     Assert.True(Array.IndexOf(expected, item) != -1,
                         string.Format("Expected {0} to be at {{{1}}} but was at {2}",
                             key,
-                            string.Format(", ", expected),
+                            string.Join(", ", expected),
                             item));
                 }
             }
