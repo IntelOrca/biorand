@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 
@@ -15,9 +16,9 @@ namespace IntelOrca.Biohazard.BioRand.Routing
 
         private readonly HashSet<Node> _remainingNodes = new HashSet<Node>();
         private readonly HashSet<Node> _remainingKeys = new HashSet<Node>();
-        private readonly HashSet<Node> _availableForKey = new HashSet<Node>();
+        private readonly HashSet<Node> _spareItems = new HashSet<Node>();
         private readonly HashSet<Node> _visited = new HashSet<Node>();
-        private readonly HashSet<Node> _keys = new HashSet<Node>();
+        private readonly MultiSet<Node> _keys = new MultiSet<Node>();
         private readonly StringBuilder _log = new StringBuilder();
         private readonly OneToManyDictionary<Node, Node> _itemToKey = new OneToManyDictionary<Node, Node>();
 
@@ -49,12 +50,14 @@ namespace IntelOrca.Biohazard.BioRand.Routing
         private void DoSubgraph(IEnumerable<Node> start)
         {
             _visited.Clear();
+            _keys.Clear();
             _start.Clear();
             _start.AddRange(start);
             foreach (var n in start)
             {
                 var deps = GetHardDependencies(n);
-                _visited.UnionWith(deps);
+                _keys.AddRange(deps.Where(x => x.Kind == NodeKind.Key));
+                _visited.UnionWith(deps.Where(x => x.Kind != NodeKind.Key));
                 _next.Add(n);
             }
             while (DoPass() || Fulfill())
@@ -74,28 +77,24 @@ namespace IntelOrca.Biohazard.BioRand.Routing
 
         private bool Fulfill()
         {
-            var nextKeys = _next
-                .SelectMany(x => GetRequiredKeys(x))
-                .ToArray();
-            _keys.AddRange(nextKeys);
-
-            var keys = Shuffle(_keys);
-            foreach (var key in keys)
+            var checklist = GetChecklist();
+            var requiredKeys = Shuffle(checklist.SelectMany(x => x.Need).Distinct());
+            foreach (var key in requiredKeys)
             {
                 // Find an item for this key
-                var available = Shuffle(_availableForKey.Where(x => x.Group == key.Group));
+                var available = Shuffle(_spareItems.Where(x => x.Group == key.Group));
                 if (available.Length != 0)
                 {
                     var rIndex = Rng(0, available.Length);
                     var item = available[rIndex];
 
-                    _availableForKey.Remove(item);
+                    _spareItems.Remove(item);
                     _itemToKey.Add(item, key);
 
                     Log($"Place {key} at {item}");
 
-                    _keys.Remove(key);
-                    VisitNode(key);
+                    _keys.Add(key);
+                    // VisitNode(key);
                     return true;
                 }
             }
@@ -127,7 +126,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 // Add edges
                 _next.AddRange(_input.GetEdges(node));
 
-                _availableForKey.Add(node);
+                _spareItems.Add(node);
             }
 
             Log($"Satisfied node: {node}");
@@ -163,6 +162,53 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             }
         }
 
+        private ImmutableArray<ChecklistItem> GetChecklist()
+        {
+            return _next.Select(GetChecklistItem).ToImmutableArray();
+        }
+
+        private ChecklistItem GetChecklistItem(Node node)
+        {
+            var haveList = new List<Node>();
+            var missingList = new List<Node>();
+            var requiredKeys = GetRequiredKeys(node)
+                .GroupBy(x => x)
+                .Select(x => (x.Key, x.Count()))
+                .ToArray();
+
+            foreach (var (key, need) in requiredKeys)
+            {
+                var have = _keys.GetCount(key);
+
+                var missing = Math.Max(0, need - have);
+                for (var i = 0; i < missing; i++)
+                    missingList.Add(key);
+
+                var progress = Math.Min(have, need);
+                for (var i = 0; i < progress; i++)
+                    haveList.Add(key);
+            }
+
+            return new ChecklistItem(node, haveList.ToImmutableArray(), missingList.ToImmutableArray());
+        }
+
+        private sealed class ChecklistItem
+        {
+            public Node Destination { get; }
+            public ImmutableArray<Node> Have { get; }
+            public ImmutableArray<Node> Need { get; }
+
+            public ChecklistItem(Node destination, ImmutableArray<Node> have, ImmutableArray<Node> need)
+            {
+                Destination = destination;
+                Have = have;
+                Need = need;
+            }
+
+            public override string ToString() => string.Format("{0} Have = {{{1}}} Need = {{{2}}}",
+                Destination, string.Join(", ", Have), string.Join(", ", Need));
+        }
+
         private int Rng(int min, int max) => _rng.Next(min, max);
         private T[] Shuffle<T>(IEnumerable<T> items)
         {
@@ -191,7 +237,13 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             }
             else
             {
-                return node.Requires.All(x => _visited.Contains(x));
+                var checklistItem = GetChecklistItem(node);
+                if (checklistItem.Need.Length > 0)
+                    return false;
+
+                return node.Requires
+                    .Where(x => x.Kind != NodeKind.Key)
+                    .All(x => _visited.Contains(x));
             }
         }
 
