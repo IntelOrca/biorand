@@ -33,12 +33,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             _input = input;
             var m = input.ToMermaid();
 
-            var next = (IEnumerable<Node>)input.Start;
-            while (next.Any())
-            {
-                DoSubgraph(next);
-                next = TakeNextNodes(IsSatisfied);
-            }
+            DoSubgraph(input.Start);
 
             return new Route(
                 _input,
@@ -53,6 +48,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             _keys.Clear();
             _start.Clear();
             _start.AddRange(start);
+            _next.Clear();
             foreach (var n in start)
             {
                 var deps = GetHardDependencies(n);
@@ -62,6 +58,12 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             }
             while (DoPass() || Fulfill())
             {
+            }
+
+            var next = TakeNextNodes(IsSatisfied);
+            foreach (var n in next)
+            {
+                DoSubgraph(new[] { n });
             }
         }
 
@@ -121,12 +123,20 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             // Mark as visited
             _visited.Add(node);
 
+            if (node.Kind == NodeKind.Item)
+            {
+                if (_itemToKey.TryGetValue(node, out var key))
+                {
+                    _keys.Add(key);
+                }
+                else
+                {
+                    _spareItems.Add(node);
+                }
+            }
             if (node.Kind != NodeKind.Key)
             {
-                // Add edges
                 _next.AddRange(_input.GetEdges(node));
-
-                _spareItems.Add(node);
             }
 
             Log($"Satisfied node: {node}");

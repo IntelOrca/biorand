@@ -221,6 +221,37 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             Assert.True(route.AllNodesVisited);
         }
 
+        [Fact]
+        public void TwoRoutes()
+        {
+            var builder = new GraphBuilder();
+
+            var keyTop = builder.Key(1, "KEY TOP");
+            var keyBottom = builder.Key(1, "KEY BOTTOM");
+            var keyEnd = builder.Key(1, "KEY END");
+
+            var roomStart = builder.AndGate("ROOM START");
+
+            var roomTop1 = builder.OneWay("ROOM TOP 1", roomStart);
+            var itemTop1 = builder.Item(1, "ITEM TOP 1", roomTop1);
+            var roomTop2 = builder.AndGate("ROOM TOP 2", roomTop1, keyTop);
+
+            var roomBottom1 = builder.OneWay("ROOM BOTTOM 1", roomStart);
+            var itemBottom1 = builder.Item(1, "ITEM BOTTOM 1", roomBottom1);
+            var roomBottom2 = builder.AndGate("ROOM BOTTOM 2", roomBottom1, keyBottom);
+
+            var roomMerge = builder.OrGate("ROOM MERGE", roomTop2, roomBottom2);
+            var itemMerge = builder.Item(1, "ITEM MERGE", roomMerge);
+            var roomEnd = builder.AndGate("ROOM END", roomMerge, keyEnd);
+
+            var route = builder.GenerateRoute();
+
+            AssertItem(route, itemTop1, keyTop);
+            AssertItem(route, itemBottom1, keyBottom);
+            AssertItem(route, itemMerge, keyEnd);
+            Assert.True(route.AllNodesVisited);
+        }
+
         private static void AssertItemNotFulfilled(Route route, Node item)
         {
             var actual = route.GetItemContents(item);

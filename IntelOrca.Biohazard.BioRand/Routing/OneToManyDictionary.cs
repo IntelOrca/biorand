@@ -13,6 +13,8 @@ namespace IntelOrca.Biohazard.BioRand.Routing
 
         public TMany this[TOne key] => _keyToValue[key];
 
+        public bool TryGetValue(TOne key, out TMany value) => _keyToValue.TryGetValue(key, out value);
+
         public void Add(TOne key, TMany value)
         {
             _keyToValue.Add(key, value);
