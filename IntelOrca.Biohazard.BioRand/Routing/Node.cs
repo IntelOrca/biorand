@@ -8,9 +8,9 @@ namespace IntelOrca.Biohazard.BioRand.Routing
         public int Group { get; }
         public NodeKind Kind { get; }
         public string? Label { get; }
-        public Node[] Requires { get; }
+        public Edge[] Requires { get; }
 
-        public Node(int id, int group, NodeKind flags, string? label, Node[] requires)
+        public Node(int id, int group, NodeKind flags, string? label, Edge[] requires)
         {
             Id = id;
             Group = group;

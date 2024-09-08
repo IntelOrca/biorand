@@ -2,12 +2,20 @@
 using System.Linq;
 using IntelOrca.Biohazard.BioRand.Routing;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace IntelOrca.Biohazard.BioRand.Tests
 {
     public class TestRouting
     {
         private const int Retries = 100;
+
+        private readonly ITestOutputHelper _output;
+
+        public TestRouting(ITestOutputHelper output)
+        {
+            _output = output;
+        }
 
         /// <summary>
         /// Tests an OR gate, i.e. two entrances to a room.
@@ -133,7 +141,7 @@ namespace IntelOrca.Biohazard.BioRand.Tests
         /// Test a map where a (start) room requires a key.
         /// </summary>
         [Fact]
-        public void RequireOnlyKey()
+        public void StartRoomRequiresKey()
         {
             for (var i = 0; i < Retries; i++)
             {
@@ -199,6 +207,89 @@ namespace IntelOrca.Biohazard.BioRand.Tests
 
                 AssertItem(route, item0a, key0);
                 AssertItemNotFulfilled(route, item1a);
+                Assert.True(route.AllNodesVisited);
+            }
+        }
+
+        [Fact]
+        public void SingleUseKey_DoorAfterDoor()
+        {
+            var builder = new GraphBuilder();
+
+            var key0 = builder.Key(1, "KEY 0");
+            var room0 = builder.AndGate("ROOM 0");
+            var item0 = builder.Item(1, "ITEM 0", room0);
+            var room1 = builder.AndGate("ROOM 1", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
+            var item1 = builder.Item(1, "ITEM 1", room1);
+            var room2 = builder.AndGate("ROOM 2", new Edge(room1), new Edge(key0, EdgeFlags.Consume));
+
+            var route = builder.GenerateRoute();
+
+            AssertItem(route, item0, key0);
+            AssertItem(route, item1, key0);
+            Assert.True(route.AllNodesVisited);
+        }
+
+        [Fact]
+        public void SingleUseKey_TwoDoors()
+        {
+            var builder = new GraphBuilder();
+
+            var key0 = builder.Key(1, "KEY 0");
+            var room0 = builder.AndGate("ROOM 0");
+            var item0 = builder.Item(1, "ITEM 0", room0);
+            var item1 = builder.Item(1, "ITEM 1", room0);
+            var room1 = builder.AndGate("ROOM 1", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
+            var room2 = builder.AndGate("ROOM 2", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
+
+            var route = builder.GenerateRoute();
+
+            AssertItem(route, item0, key0);
+            AssertItem(route, item1, key0);
+            Assert.True(route.AllNodesVisited);
+        }
+
+        [Fact]
+        public void SingleUseKey_TwoOneWayDoors()
+        {
+            var builder = new GraphBuilder();
+
+            var key0 = builder.Key(1, "KEY 0");
+            var room0 = builder.AndGate("ROOM 0");
+            var item0 = builder.Item(1, "ITEM 0", room0);
+            var item1 = builder.Item(1, "ITEM 1", room0);
+            var room1 = builder.OneWay("ROOM 1", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
+            var room2 = builder.OneWay("ROOM 2", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
+
+            var route = builder.GenerateRoute();
+
+            AssertItem(route, item0, key0);
+            AssertItem(route, item1, key0);
+            Assert.True(route.AllNodesVisited);
+        }
+
+        [Fact]
+        public void SingleUseKey_KeyOrderMatters()
+        {
+            for (var i = 0; i < Retries; i++)
+            {
+                var builder = new GraphBuilder();
+
+                var key0 = builder.Key(1, "KEY 0");
+                var key1 = builder.Key(1, "KEY 1");
+                var key2 = builder.Key(1, "KEY 2");
+                var room0 = builder.AndGate("ROOM 0");
+                var item0a = builder.Item(1, "ITEM 0.A", room0);
+                var item0b = builder.Item(1, "ITEM 0.B", room0);
+                var room1 = builder.AndGate("ROOM 1", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
+                var item1a = builder.Item(1, "ITEM 1.A", room1);
+                var room2 = builder.AndGate("ROOM 2", new Edge(room0), new Edge(key1));
+                var item2a = builder.Item(1, "ITEM 2.A", room2);
+                var room3 = builder.AndGate("ROOM 3", new Edge(room2), new Edge(key2));
+                var room4 = builder.AndGate("ROOM 4", new Edge(room3), new Edge(key0, EdgeFlags.Consume));
+
+                var route = builder.GenerateRoute(i);
+
                 Assert.True(route.AllNodesVisited);
             }
         }

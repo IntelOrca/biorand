@@ -33,6 +33,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
         private Node[] GetKeys(Node node)
         {
             return node.Requires
+                .Select(x => x.Node)
                 .Where(x => x.Kind == NodeKind.Key)
                 .ToArray();
         }
@@ -79,7 +80,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
         }
 
         private static bool IsStartNode(Node node) => RequiresNothingOrKeys(node) && node.Kind != NodeKind.Key;
-        private static bool RequiresNothingOrKeys(Node node) => node.Requires.All(x => x.Kind == NodeKind.Key);
+        private static bool RequiresNothingOrKeys(Node node) => node.Requires.All(x => x.Node.Kind == NodeKind.Key);
 
         public string ToMermaid()
         {

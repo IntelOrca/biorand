@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace IntelOrca.Biohazard.BioRand.Routing
 {
@@ -73,7 +74,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 }
                 else
                 {
-                    foreach (var r in n.Requires)
+                    foreach (var r in n.Requires.Select(x => x.Node))
                     {
                         Visit(r);
                         if (r.Kind == NodeKind.Key && !keysAsNodes)

@@ -16,19 +16,33 @@ namespace IntelOrca.Biohazard.BioRand.Routing
 
         public Node Key(int group, string? label)
         {
-            var node = new Node(GetNextId(), group, NodeKind.Key, label, new Node[0]);
+            var node = new Node(GetNextId(), group, NodeKind.Key, label, new Edge[0]);
             _nodes.Add(node);
             return node;
         }
 
         public Node Item(int group, string? label, params Node[] requires)
         {
-            var node = new Node(GetNextId(), group, NodeKind.Item, label, requires.ToArray());
+            var node = new Node(GetNextId(), group, NodeKind.Item, label, requires.Select(x => new Edge(x)).ToArray());
+            _nodes.Add(node);
+            return node;
+        }
+
+        public Node AndGate(string? label)
+        {
+            var node = new Node(GetNextId(), 0, NodeKind.AndGate, label, new Edge[0]);
             _nodes.Add(node);
             return node;
         }
 
         public Node AndGate(string? label, params Node[] requires)
+        {
+            var node = new Node(GetNextId(), 0, NodeKind.AndGate, label, requires.Select(x => new Edge(x)).ToArray());
+            _nodes.Add(node);
+            return node;
+        }
+
+        public Node AndGate(string? label, params Edge[] requires)
         {
             var node = new Node(GetNextId(), 0, NodeKind.AndGate, label, requires.ToArray());
             _nodes.Add(node);
@@ -37,24 +51,26 @@ namespace IntelOrca.Biohazard.BioRand.Routing
 
         public Node OrGate(string? label, params Node[] requires)
         {
-            var node = new Node(GetNextId(), 0, NodeKind.OrGate, label, requires.ToArray());
+            var node = new Node(GetNextId(), 0, NodeKind.OrGate, label, requires.Select(x => new Edge(x)).ToArray());
             _nodes.Add(node);
             return node;
         }
 
-        public Node OneWay(string? label, params Node[] requires)
+        public Node OneWay(string? label, params Edge[] requires)
         {
             var node = new Node(GetNextId(), 0, NodeKind.OneWay, label, requires.ToArray());
             _nodes.Add(node);
             return node;
         }
 
+        public Node OneWay(string? label, params Node[] requires) => OneWay(label, requires.Select(x => new Edge(x)).ToArray());
+
         public Graph Build()
         {
             var edges = new Dictionary<Node, List<Node>>();
             foreach (var c in _nodes)
             {
-                foreach (var r in c.Requires)
+                foreach (var r in c.Requires.Select(x => x.Node))
                 {
                     if (!edges.TryGetValue(r, out var list))
                     {

@@ -7,7 +7,5 @@
         OneWay,
         Item,
         Key,
-        Removable,
-        Consume,
     }
 }

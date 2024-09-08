@@ -11,16 +11,15 @@ namespace IntelOrca.Biohazard.BioRand.Routing
         private readonly Random _rng = new Random();
 
         private Graph _input;
-        private readonly HashSet<Node> _start = new HashSet<Node>();
-        private readonly HashSet<Node> _next = new HashSet<Node>();
 
-        private readonly HashSet<Node> _remainingNodes = new HashSet<Node>();
-        private readonly HashSet<Node> _remainingKeys = new HashSet<Node>();
+        private readonly HashSet<Node> _next = new HashSet<Node>();
+        private readonly HashSet<Node> _oneWay = new HashSet<Node>();
         private readonly HashSet<Node> _spareItems = new HashSet<Node>();
         private readonly HashSet<Node> _visited = new HashSet<Node>();
         private readonly MultiSet<Node> _keys = new MultiSet<Node>();
-        private readonly StringBuilder _log = new StringBuilder();
+
         private readonly OneToManyDictionary<Node, Node> _itemToKey = new OneToManyDictionary<Node, Node>();
+        private readonly StringBuilder _log = new StringBuilder();
 
         public RouteFinder(int? seed = null)
         {
@@ -33,7 +32,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             _input = input;
             var m = input.ToMermaid();
 
-            DoSubgraph(input.Start);
+            DoSubgraph(input.Start, first: true);
 
             return new Route(
                 _input,
@@ -42,38 +41,51 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 _log.ToString());
         }
 
-        private void DoSubgraph(IEnumerable<Node> start)
+        private void DoSubgraph(IEnumerable<Node> start, bool first)
         {
             _visited.Clear();
             _keys.Clear();
-            _start.Clear();
-            _start.AddRange(start);
             _next.Clear();
+            _oneWay.Clear();
             foreach (var n in start)
             {
                 var deps = GetHardDependencies(n);
                 _keys.AddRange(deps.Where(x => x.Kind == NodeKind.Key));
                 _visited.UnionWith(deps.Where(x => x.Kind != NodeKind.Key));
-                _next.Add(n);
+                if (first)
+                    _next.Add(n);
+                else
+                    VisitNode(n);
             }
             while (DoPass() || Fulfill())
             {
             }
 
-            var next = TakeNextNodes(IsSatisfied);
-            foreach (var n in next)
+            var subGraphs = _oneWay.ToArray();
+            foreach (var n in subGraphs)
             {
-                DoSubgraph(new[] { n });
+                DoSubgraph(new[] { n }, first: false);
             }
         }
 
         private bool DoPass()
         {
-            var satisfied = TakeNextNodes(x => (_start.Contains(x) || x.Kind != NodeKind.OneWay) && IsSatisfied(x));
+            var satisfied = TakeNextNodes(x => IsSatisfied(x));
             if (satisfied.Length == 0)
                 return false;
 
-            VisitNodes(satisfied);
+            foreach (var n in satisfied)
+            {
+                if (n.Kind == NodeKind.OneWay)
+                {
+                    _oneWay.Add(n);
+                }
+                else
+                {
+                    VisitNode(n);
+                }
+            }
+
             return true;
         }
 
@@ -105,17 +117,26 @@ namespace IntelOrca.Biohazard.BioRand.Routing
 
         private Node[] TakeNextNodes(Func<Node, bool> predicate)
         {
-            var taken = _next.Where(predicate).ToArray();
-            _next.ExceptWith(taken);
-            return taken;
-        }
-
-        private void VisitNodes(IEnumerable<Node> nodes)
-        {
-            foreach (var node in nodes)
+            var result = new List<Node>();
+            while (true)
             {
-                VisitNode(node);
+                var next = _next.ToArray();
+                var index = Array.FindIndex(next, x => predicate(x));
+                if (index == -1)
+                    break;
+
+                var node = next[index];
+                result.Add(node);
+                _next.Remove(node);
+
+                // Remove any keys from inventory if they are consumable
+                var consumableKeys = node.Requires
+                    .Where(x => x.Node.Kind == NodeKind.Key && (x.Flags & EdgeFlags.Consume) != 0)
+                    .Select(x => x.Node)
+                    .ToArray();
+                _keys.RemoveMany(consumableKeys);
             }
+            return result.ToArray();
         }
 
         private void VisitNode(Node node)
@@ -150,7 +171,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
 
             void Recurse(Node node)
             {
-                foreach (var r in node.Requires)
+                foreach (var r in node.Requires.Select(x => x.Node))
                 {
                     if (r.Kind == NodeKind.Key)
                     {
@@ -243,7 +264,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
         {
             if (node.Kind == NodeKind.OrGate)
             {
-                return node.Requires.Any(x => _visited.Contains(x));
+                return node.Requires.Select(x => x.Node).Any(x => _visited.Contains(x));
             }
             else
             {
@@ -252,6 +273,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                     return false;
 
                 return node.Requires
+                    .Select(x => x.Node)
                     .Where(x => x.Kind != NodeKind.Key)
                     .All(x => _visited.Contains(x));
             }
@@ -271,7 +293,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 if (c.Kind == NodeKind.Key)
                     leaves.Add(c);
 
-                foreach (var r in c.Requires)
+                foreach (var r in c.Requires.Select(x => x.Node))
                 {
                     GetRequiredKeys(r);
                 }
@@ -286,7 +308,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             }
             else
             {
-                foreach (var c in node.Requires)
+                foreach (var c in node.Requires.Select(x => x.Node))
                 {
                     GetRequiredKeys(list, c);
                 }
