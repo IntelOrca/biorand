@@ -250,6 +250,81 @@ namespace IntelOrca.Biohazard.BioRand.Tests
         }
 
         [Fact]
+        public void SingleUseKey_TwoDoors_NoPossibleSoftlock()
+        {
+            for (var i = 0; i < Retries; i++)
+            {
+                var builder = new GraphBuilder();
+
+                var key0 = builder.Key(1, "KEY 0");
+                var room0 = builder.AndGate("ROOM 0");
+                var item0a = builder.Item(1, "ITEM 0A", room0);
+                var item0b = builder.Item(1, "ITEM 0B", room0);
+                var room1 = builder.AndGate("ROOM 1", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
+                var item1 = builder.Item(1, "ITEM 1", room1);
+                var room2 = builder.AndGate("ROOM 2", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
+
+                var route = builder.GenerateRoute(i);
+
+                AssertItem(route, item0a, key0);
+                AssertItem(route, item0b, key0);
+                AssertItemNotFulfilled(route, item1);
+                Assert.True(route.AllNodesVisited);
+            }
+        }
+
+        [Fact]
+        public void SingleUseKey_RouteOrderMatters()
+        {
+            for (var i = 0; i < Retries; i++)
+            {
+                var builder = new GraphBuilder();
+
+                var key0 = builder.Key(1, "KEY 0");
+                var key1 = builder.Key(1, "KEY 1");
+                var room0 = builder.AndGate("ROOM 0");
+                var item0 = builder.Item(1, "ITEM 0", room0);
+                var room1 = builder.AndGate("ROOM 1", room0, key1);
+                var room2 = builder.AndGate("ROOM 2", new Edge(room1), new Edge(key0, EdgeFlags.Consume));
+                var room3 = builder.AndGate("ROOM 3", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
+                var item3a = builder.Item(1, "ITEM 3.A", room3);
+                var item3b = builder.Item(1, "ITEM 3.B", room3);
+
+                var route = builder.GenerateRoute(i);
+
+                AssertItem(route, item0, key0);
+                AssertKeyOnce(route, key1, item3a, item3b);
+                AssertKeyQuantity(route, key0, 2);
+                Assert.True(route.AllNodesVisited);
+            }
+        }
+
+        [Fact]
+        public void SingleUseKey_RouteOrderMatters_Flexible()
+        {
+            for (var i = 0; i < Retries; i++)
+            {
+                var builder = new GraphBuilder();
+
+                var key0 = builder.Key(1, "KEY 0");
+                var key1 = builder.Key(1, "KEY 1");
+                var room0 = builder.AndGate("ROOM 0");
+                var item0a = builder.Item(1, "ITEM 0.A", room0);
+                var item0b = builder.Item(1, "ITEM 0.B", room0);
+                var room1 = builder.AndGate("ROOM 1", room0, key1);
+                var room2 = builder.AndGate("ROOM 2", new Edge(room1), new Edge(key0, EdgeFlags.Consume));
+                var room3 = builder.AndGate("ROOM 3", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
+                var item3a = builder.Item(1, "ITEM 3.A", room3);
+                var item3b = builder.Item(1, "ITEM 3.B", room3);
+
+                var route = builder.GenerateRoute(i);
+
+                AssertKeyOnce(route, key1, item3a, item3b);
+                Assert.True(route.AllNodesVisited);
+            }
+        }
+
+        [Fact]
         public void SingleUseKey_TwoOneWayDoors()
         {
             var builder = new GraphBuilder();
@@ -265,6 +340,27 @@ namespace IntelOrca.Biohazard.BioRand.Tests
 
             AssertItem(route, item0, key0);
             AssertItem(route, item1, key0);
+            Assert.True(route.AllNodesVisited);
+        }
+
+        [Fact]
+        public void SingleUseKey_TwoKeyDoor()
+        {
+            var builder = new GraphBuilder();
+
+            var key0 = builder.Key(1, "KEY 0");
+            var key1 = builder.Key(2, "KEY 1");
+            var room0 = builder.AndGate("ROOM 0");
+            var item0 = builder.Item(1, "ITEM 0", room0);
+            var room1 = builder.AndGate("ROOM 1", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
+            var item1a = builder.Item(1, "ITEM 1A", room1);
+            var item1b = builder.Item(2, "ITEM 1B", room1);
+            var room2 = builder.AndGate("ROOM 2", new Edge(room0), new Edge(key0, EdgeFlags.Consume), new Edge(key1));
+            var route = builder.GenerateRoute();
+
+            AssertItem(route, item0, key0);
+            AssertItem(route, item1a, key0);
+            AssertItem(route, item1b, key1);
             Assert.True(route.AllNodesVisited);
         }
 
@@ -343,6 +439,60 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             Assert.True(route.AllNodesVisited);
         }
 
+        [Fact]
+        public void Removable_SingleKeyRequired()
+        {
+            for (var i = 0; i < Retries; i++)
+            {
+                var builder = new GraphBuilder();
+
+                var key0 = builder.Key(1, "KEY 0");
+                var key1 = builder.Key(1, "KEY 1");
+
+                var room0 = builder.AndGate("ROOM 0");
+                var item0 = builder.Item(1, "ITEM 0", room0);
+                var room1 = builder.AndGate("ROOM 1", new Edge(room0), new Edge(key0, EdgeFlags.Removable));
+                var item1 = builder.Item(1, "ITEM 1", room1);
+                var room2 = builder.AndGate("ROOM 2", new Edge(room1), new Edge(key0, EdgeFlags.Removable));
+                var item2 = builder.Item(1, "ITEM 1", room2);
+                var room3 = builder.AndGate("ROOM 2", room2, key1);
+
+                var route = builder.GenerateRoute(i);
+
+                AssertKeyOnce(route, key0, item0);
+                AssertKeyOnce(route, key1, item1, item2);
+                Assert.True(route.AllNodesVisited);
+            }
+        }
+
+        [Fact]
+        public void Removable_MultipleKeysRequired()
+        {
+            for (var i = 0; i < Retries; i++)
+            {
+                var builder = new GraphBuilder();
+
+                var key0 = builder.Key(1, "KEY 0");
+
+                var room0 = builder.AndGate("ROOM 0");
+                var item0 = builder.Item(1, "ITEM 0", room0);
+                var room1 = builder.AndGate("ROOM 1", new Edge(room0), new Edge(key0, EdgeFlags.Removable));
+                var item1 = builder.Item(1, "ITEM 1", room1);
+                var room2 = builder.AndGate("ROOM 2", new Edge(room1), new Edge(key0, EdgeFlags.Removable));
+                var item2 = builder.Item(1, "ITEM 1", room2);
+                var room3 = builder.AndGate("ROOM 2", new Edge(room2), new Edge(key0, EdgeFlags.Removable));
+
+                var route = builder.GenerateRoute(i);
+
+                AssertItem(route, item0, key0);
+
+                var items = route.GetItemsContainingKey(key0);
+                Assert.Equal(2, items.Count);
+
+                Assert.True(route.AllNodesVisited);
+            }
+        }
+
         private static void AssertItemNotFulfilled(Route route, Node item)
         {
             var actual = route.GetItemContents(item);
@@ -388,6 +538,12 @@ namespace IntelOrca.Biohazard.BioRand.Tests
                 }
             }
             Assert.True(items.Length == 1, "Expected key to only be placed once");
+        }
+
+        private static void AssertKeyQuantity(Route route, Node key, int expectedCount)
+        {
+            var actualCount = route.GetItemsContainingKey(key).Count;
+            Assert.Equal(expectedCount, actualCount);
         }
     }
 }

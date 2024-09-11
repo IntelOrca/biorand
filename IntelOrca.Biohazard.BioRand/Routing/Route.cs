@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace IntelOrca.Biohazard.BioRand.Routing
@@ -27,6 +28,11 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             if (ItemToKey.TryGetValue(item, out var key))
                 return key;
             return null;
+        }
+
+        public ImmutableHashSet<Node> GetItemsContainingKey(Node key)
+        {
+            return ItemToKey.GetKeysContainingValue(key);
         }
 
         public string GetDependencyTree(Node node, bool keysAsNodes = false)
