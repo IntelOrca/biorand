@@ -2,24 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
 
 namespace IntelOrca.Biohazard.BioRand.Routing
 {
     public class RouteFinder
     {
         private readonly Random _rng = new Random();
-
-        private Graph _input;
-
-        private readonly HashSet<Node> _next = new HashSet<Node>();
-        private readonly HashSet<Node> _oneWay = new HashSet<Node>();
-        private readonly HashSet<Node> _spareItems = new HashSet<Node>();
-        private readonly HashSet<Node> _visited = new HashSet<Node>();
-        private readonly MultiSet<Node> _keys = new MultiSet<Node>();
-
-        private readonly OneToManyDictionary<Node, Node> _itemToKey = new OneToManyDictionary<Node, Node>();
-        private readonly StringBuilder _log = new StringBuilder();
 
         public RouteFinder(int? seed = null)
         {
@@ -29,141 +17,127 @@ namespace IntelOrca.Biohazard.BioRand.Routing
 
         public Route Find(Graph input)
         {
-            _input = input;
             var m = input.ToMermaid();
 
-            DoSubgraph(input.Start, first: true);
+            var state = new State(input);
+            state = DoSubgraph(state, input.Start, first: true, _rng);
 
             return new Route(
-                _input,
-                _next.Count == 0,
-                _itemToKey.ToImmutable(),
-                _log.ToString());
+                input,
+                state.Next.Count == 0,
+                state.ItemToKey,
+                string.Join("\n", state.Log));
         }
 
-        private void DoSubgraph(IEnumerable<Node> start, bool first)
+        private static State DoSubgraph(State state, IEnumerable<Node> start, bool first, Random rng)
         {
-            _visited.Clear();
-            _keys.Clear();
-            _next.Clear();
-            _oneWay.Clear();
+            var keys = new List<Node>();
+            var visited = new List<Node>();
+            var next = new List<Node>();
+            var toVisit = new List<Node>();
             foreach (var n in start)
             {
-                var deps = GetHardDependencies(n);
-                _keys.AddRange(deps.Where(x => x.Kind == NodeKind.Key));
-                _visited.UnionWith(deps.Where(x => x.Kind != NodeKind.Key));
+                var deps = GetHardDependencies(state, n);
+                keys.AddRange(deps.Where(x => x.Kind == NodeKind.Key));
+                visited.AddRange(deps.Where(x => x.Kind != NodeKind.Key));
                 if (first)
-                    _next.Add(n);
+                    next.Add(n);
                 else
-                    VisitNode(n);
-            }
-            while (DoPass() || Fulfill())
-            {
+                    toVisit.Add(n);
             }
 
-            var subGraphs = _oneWay.ToArray();
+            state = state.Clear(visited, keys, next);
+            foreach (var v in toVisit)
+                state = state.VisitNode(v);
+
+            state = DoPass(state, rng);
+
+            var subGraphs = state.OneWay.ToArray();
             foreach (var n in subGraphs)
             {
-                DoSubgraph(new[] { n }, first: false);
+                state = DoSubgraph(state, new[] { n }, first: false, rng);
             }
+
+            return state;
         }
 
-        private bool DoPass()
+        private static State DoPass(State state, Random rng)
         {
-            var satisfied = TakeNextNodes(x => IsSatisfied(x));
-            if (satisfied.Length == 0)
-                return false;
-
-            foreach (var n in satisfied)
+            while (true)
             {
-                if (n.Kind == NodeKind.OneWay)
-                {
-                    _oneWay.Add(n);
-                }
-                else
-                {
-                    VisitNode(n);
-                }
+                state = Expand(state);
+                var newState = Fulfill(state, rng);
+                if (newState == state)
+                    break;
+                state = newState;
             }
-
-            return true;
+            return state;
         }
 
-        private bool Fulfill()
+        private static State Expand(State state)
         {
-            var checklist = GetChecklist();
-            var requiredKeys = Shuffle(checklist.SelectMany(x => x.Need).Distinct());
+            while (true)
+            {
+                var (newState, satisfied) = TakeNextNodes(state, IsSatisfied);
+                if (satisfied.Length == 0)
+                    break;
+
+                foreach (var n in satisfied)
+                {
+                    if (n.Kind == NodeKind.OneWay)
+                    {
+                        newState = newState.AddOneWay(n);
+                    }
+                    else
+                    {
+                        newState = newState.VisitNode(n);
+                    }
+                }
+                state = newState;
+            }
+            return state;
+        }
+
+        private static State Fulfill(State state, Random rng)
+        {
+            var checklist = GetChecklist(state);
+            var requiredKeys = Shuffle(rng, checklist.SelectMany(x => x.Need).Distinct());
             foreach (var key in requiredKeys)
             {
                 // Find an item for this key
-                var available = Shuffle(_spareItems.Where(x => x.Group == key.Group));
+                var available = Shuffle(rng, state.SpareItems.Where(x => x.Group == key.Group));
                 if (available.Length != 0)
                 {
-                    var rIndex = Rng(0, available.Length);
-                    var item = available[rIndex];
-
-                    _spareItems.Remove(item);
-                    _itemToKey.Add(item, key);
-
-                    Log($"Place {key} at {item}");
-
-                    _keys.Add(key);
-                    // VisitNode(key);
-                    return true;
+                    return state.PlaceKey(available[0], key);
                 }
             }
-            return false;
+            return state;
         }
 
-        private Node[] TakeNextNodes(Func<Node, bool> predicate)
+        private static (State, Node[]) TakeNextNodes(State state, Func<State, Node, bool> predicate)
         {
             var result = new List<Node>();
             while (true)
             {
-                var next = _next.ToArray();
-                var index = Array.FindIndex(next, x => predicate(x));
+                var next = state.Next.ToArray();
+                var index = Array.FindIndex(next, x => predicate(state, x));
                 if (index == -1)
                     break;
 
                 var node = next[index];
                 result.Add(node);
-                _next.Remove(node);
 
                 // Remove any keys from inventory if they are consumable
                 var consumableKeys = node.Requires
                     .Where(x => x.Node.Kind == NodeKind.Key && (x.Flags & EdgeFlags.Consume) != 0)
                     .Select(x => x.Node)
                     .ToArray();
-                _keys.RemoveMany(consumableKeys);
+                state = state.UseKey(node, consumableKeys);
             }
-            return result.ToArray();
+            return (state, result.ToArray());
         }
 
-        private void VisitNode(Node node)
-        {
-            // Mark as visited
-            _visited.Add(node);
-
-            if (node.Kind == NodeKind.Item)
-            {
-                if (_itemToKey.TryGetValue(node, out var key))
-                {
-                    _keys.Add(key);
-                }
-                else
-                {
-                    _spareItems.Add(node);
-                }
-            }
-            if (node.Kind != NodeKind.Key)
-            {
-                _next.AddRange(_input.GetEdges(node));
-            }
-
-            Log($"Satisfied node: {node}");
-        }
-
-        private HashSet<Node> GetHardDependencies(Node node)
+        private static HashSet<Node> GetHardDependencies(State state, Node node)
         {
             var set = new HashSet<Node>();
             Recurse(node);
@@ -175,7 +149,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 {
                     if (r.Kind == NodeKind.Key)
                     {
-                        var items = _itemToKey.GetKeysContainingValue(r);
+                        var items = state.ItemToKey.GetKeysContainingValue(r);
                         if (items.Any())
                         {
                             var item = items.FirstOrDefault();
@@ -193,23 +167,23 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             }
         }
 
-        private ImmutableArray<ChecklistItem> GetChecklist()
+        private static ImmutableArray<ChecklistItem> GetChecklist(State state)
         {
-            return _next.Select(GetChecklistItem).ToImmutableArray();
+            return state.Next.Select(x => GetChecklistItem(state, x)).ToImmutableArray();
         }
 
-        private ChecklistItem GetChecklistItem(Node node)
+        private static ChecklistItem GetChecklistItem(State state, Node node)
         {
             var haveList = new List<Node>();
             var missingList = new List<Node>();
-            var requiredKeys = GetRequiredKeys(node)
+            var requiredKeys = GetRequiredKeys(state, node)
                 .GroupBy(x => x)
                 .Select(x => (x.Key, x.Count()))
                 .ToArray();
 
             foreach (var (key, need) in requiredKeys)
             {
-                var have = _keys.GetCount(key);
+                var have = state.Keys.GetCount(key);
 
                 var missing = Math.Max(0, need - have);
                 for (var i = 0; i < missing; i++)
@@ -240,13 +214,12 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 Destination, string.Join(", ", Have), string.Join(", ", Need));
         }
 
-        private int Rng(int min, int max) => _rng.Next(min, max);
-        private T[] Shuffle<T>(IEnumerable<T> items)
+        private static T[] Shuffle<T>(Random rng, IEnumerable<T> items)
         {
             var result = items.ToArray();
             for (var i = 0; i < result.Length; i++)
             {
-                var j = Rng(0, i + 1);
+                var j = rng.Next(0, i + 1);
                 var tmp = result[i];
                 result[i] = result[j];
                 result[j] = tmp;
@@ -254,32 +227,26 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             return result;
         }
 
-        private void Log(string message)
-        {
-            _log.Append(message);
-            _log.Append('\n');
-        }
-
-        private bool IsSatisfied(Node node)
+        private static bool IsSatisfied(State state, Node node)
         {
             if (node.Kind == NodeKind.OrGate)
             {
-                return node.Requires.Select(x => x.Node).Any(x => _visited.Contains(x));
+                return node.Requires.Select(x => x.Node).Any(x => state.Visited.Contains(x));
             }
             else
             {
-                var checklistItem = GetChecklistItem(node);
+                var checklistItem = GetChecklistItem(state, node);
                 if (checklistItem.Need.Length > 0)
                     return false;
 
                 return node.Requires
                     .Select(x => x.Node)
                     .Where(x => x.Kind != NodeKind.Key)
-                    .All(x => _visited.Contains(x));
+                    .All(x => state.Visited.Contains(x));
             }
         }
 
-        private Node[] GetRequiredKeys(Node node)
+        private static Node[] GetRequiredKeys(State state, Node node)
         {
             var leaves = new List<Node>();
             GetRequiredKeys(node);
@@ -287,7 +254,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
 
             void GetRequiredKeys(Node c)
             {
-                if (_visited.Contains(c))
+                if (state.Visited.Contains(c))
                     return;
 
                 if (c.Kind == NodeKind.Key)
@@ -312,6 +279,93 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 {
                     GetRequiredKeys(list, c);
                 }
+            }
+        }
+
+        private sealed class State
+        {
+            public Graph Input { get; }
+            public ImmutableHashSet<Node> Next { get; private set; } = ImmutableHashSet<Node>.Empty;
+            public ImmutableHashSet<Node> OneWay { get; private set; } = ImmutableHashSet<Node>.Empty;
+            public ImmutableHashSet<Node> SpareItems { get; private set; } = ImmutableHashSet<Node>.Empty;
+            public ImmutableHashSet<Node> Visited { get; private set; } = ImmutableHashSet<Node>.Empty;
+            public ImmutableMultiSet<Node> Keys { get; private set; } = ImmutableMultiSet<Node>.Empty;
+            public ImmutableOneToManyDictionary<Node, Node> ItemToKey { get; private set; } = ImmutableOneToManyDictionary<Node, Node>.Empty;
+            public ImmutableList<string> Log { get; private set; } = ImmutableList<string>.Empty;
+
+            public State(Graph input)
+            {
+                Input = input;
+            }
+
+            private State(State state)
+            {
+                Input = state.Input;
+                Next = state.Next;
+                OneWay = state.OneWay;
+                SpareItems = state.SpareItems;
+                Visited = state.Visited;
+                Keys = state.Keys;
+                ItemToKey = state.ItemToKey;
+                Log = state.Log;
+            }
+
+            public State Clear(IEnumerable<Node> visited, IEnumerable<Node> keys, IEnumerable<Node> next)
+            {
+                var result = new State(this);
+                result.Visited = ImmutableHashSet<Node>.Empty.Union(visited);
+                result.Keys = ImmutableMultiSet<Node>.Empty.AddRange(keys);
+                result.Next = ImmutableHashSet<Node>.Empty.Union(next);
+                result.OneWay = ImmutableHashSet<Node>.Empty;
+                return result;
+            }
+
+            public State AddOneWay(Node node)
+            {
+                var result = new State(this);
+                result.OneWay = OneWay.Add(node);
+                return result;
+            }
+
+            public State VisitNode(Node node)
+            {
+                var result = new State(this);
+                result.Visited = Visited.Add(node);
+                if (node.Kind == NodeKind.Item)
+                {
+                    if (ItemToKey.TryGetValue(node, out var key))
+                    {
+                        result.Keys = Keys.Add(key);
+                    }
+                    else
+                    {
+                        result.SpareItems = SpareItems.Add(node);
+                    }
+                }
+                if (node.Kind != NodeKind.Key)
+                {
+                    result.Next = Next.Union(Input.GetEdges(node));
+                }
+                result.Log = Log.Add($"Satisfied node: {node}");
+                return result;
+            }
+
+            public State PlaceKey(Node item, Node key)
+            {
+                var result = new State(this);
+                result.SpareItems = SpareItems.Remove(item);
+                result.ItemToKey = ItemToKey.Add(item, key);
+                result.Keys = Keys.Add(key);
+                result.Log = Log.Add($"Place {key} at {item}");
+                return result;
+            }
+
+            public State UseKey(Node unlock, params Node[] keys)
+            {
+                var result = new State(this);
+                result.Next = Next.Remove(unlock);
+                result.Keys = Keys.RemoveMany(keys);
+                return result;
             }
         }
     }
