@@ -92,7 +92,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             }
             else
             {
-                newValueToKeys = _valueToKeys.Add(value, ImmutableHashSet<TOne>.Empty);
+                newValueToKeys = _valueToKeys.Add(value, ImmutableHashSet.Create(key));
             }
             return new ImmutableOneToManyDictionary<TOne, TMany>(newKeyToValue, newValueToKeys);
         }

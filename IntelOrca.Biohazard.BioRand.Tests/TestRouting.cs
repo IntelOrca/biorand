@@ -57,6 +57,7 @@ namespace IntelOrca.Biohazard.BioRand.Tests
 
                 AssertKeyOnce(route, key0, item0a, item0b);
                 AssertKeyOnce(route, key1, item0a, item0b, item1a);
+                Assert.Equal((RouteSolverResult)0, route.Solve());
             }
         }
 
@@ -319,8 +320,8 @@ namespace IntelOrca.Biohazard.BioRand.Tests
 
                 var route = builder.GenerateRoute(i);
 
-                AssertKeyOnce(route, key1, item3a, item3b);
                 Assert.True(route.AllNodesVisited);
+                AssertKeyOnce(route, key1, item3a, item3b);
             }
         }
 

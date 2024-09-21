@@ -101,5 +101,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 }
             }
         }
+
+        public RouteSolverResult Solve() => RouteSolver.Default.Solve(this);
     }
 }

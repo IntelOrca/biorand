@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace IntelOrca.Biohazard.BioRand.Routing
 {
@@ -17,13 +18,15 @@ namespace IntelOrca.Biohazard.BioRand.Routing
 
         public Route Find(Graph input)
         {
-            var m = input.ToMermaid();
-
             var state = new State(input);
             state = DoSubgraph(state, input.Start, first: true, _rng);
+            return GetRoute(state);
+        }
 
+        private static Route GetRoute(State state)
+        {
             return new Route(
-                input,
+                state.Input,
                 state.Next.Count == 0,
                 state.ItemToKey,
                 string.Join("\n", state.Log));
@@ -50,35 +53,78 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             foreach (var v in toVisit)
                 state = state.VisitNode(v);
 
-            state = DoPass(state, rng);
-
-            var subGraphs = state.OneWay.ToArray();
-            foreach (var n in subGraphs)
-            {
-                state = DoSubgraph(state, new[] { n }, first: false, rng);
-            }
-
-            return state;
+            return Fulfill(state, rng);
         }
 
-        private static State DoPass(State state, Random rng)
+        private static State Fulfill(State state, Random rng)
         {
-            while (true)
+            state = Expand(state);
+            if (!ValidateState(state))
+                return state;
+
+            var checklist = GetChecklist(state);
+            var requiredKeys = Shuffle(rng, checklist
+                .SelectMany(x => x.Need)
+                .Select(x => x.Node)
+                .Distinct());
+            var states = new List<State>();
+            foreach (var key in requiredKeys)
             {
-                state = Expand(state);
-                var newState = Fulfill(state, rng);
-                if (newState == state)
-                    break;
-                state = newState;
+                var allEdges = checklist
+                    .Where(x => x.Need.All(x => x.Node == key))
+                    .SelectMany(x => x.Need)
+                    .ToArray();
+                var multipleRequired = allEdges.Any(x => (x.Flags & EdgeFlags.Consume) != 0);
+                var need = multipleRequired ? allEdges.Length : 1;
+                var available = Shuffle(rng, state.SpareItems.Where(x => x.Group == key.Group));
+                if (need == 1)
+                {
+                    foreach (var a in available)
+                    {
+                        states.Add(state.PlaceKey(a, key));
+                    }
+                }
+                else if (available.Length >= need)
+                {
+                    var newState = state;
+                    for (var i = 0; i < need; i++)
+                    {
+                        newState = newState.PlaceKey(available[i], key);
+                    }
+                    states.Add(newState);
+                }
             }
-            return state;
+
+            if (states.Count == 0)
+            {
+                var subGraphs = state.OneWay.ToArray();
+                foreach (var n in subGraphs)
+                {
+                    state = DoSubgraph(state, new[] { n }, first: false, rng);
+                }
+                return state;
+            }
+            else
+            {
+                State? firstState = null;
+                foreach (var s in states)
+                {
+                    var finalState = Fulfill(s, rng);
+                    if (finalState.Next.Count == 0 && finalState.OneWay.Count == 0)
+                    {
+                        return finalState;
+                    }
+                    firstState ??= finalState;
+                }
+                return firstState!;
+            }
         }
 
         private static State Expand(State state)
         {
             while (true)
             {
-                var (newState, satisfied) = TakeNextNodes(state, IsSatisfied);
+                var (newState, satisfied) = TakeNextNodes(state);
                 if (satisfied.Length == 0)
                     break;
 
@@ -98,29 +144,13 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             return state;
         }
 
-        private static State Fulfill(State state, Random rng)
-        {
-            var checklist = GetChecklist(state);
-            var requiredKeys = Shuffle(rng, checklist.SelectMany(x => x.Need).Distinct());
-            foreach (var key in requiredKeys)
-            {
-                // Find an item for this key
-                var available = Shuffle(rng, state.SpareItems.Where(x => x.Group == key.Group));
-                if (available.Length != 0)
-                {
-                    return state.PlaceKey(available[0], key);
-                }
-            }
-            return state;
-        }
-
-        private static (State, Node[]) TakeNextNodes(State state, Func<State, Node, bool> predicate)
+        private static (State, Node[]) TakeNextNodes(State state)
         {
             var result = new List<Node>();
             while (true)
             {
                 var next = state.Next.ToArray();
-                var index = Array.FindIndex(next, x => predicate(state, x));
+                var index = Array.FindIndex(next, x => IsSatisfied(state, x));
                 if (index == -1)
                     break;
 
@@ -175,19 +205,24 @@ namespace IntelOrca.Biohazard.BioRand.Routing
         private static ChecklistItem GetChecklistItem(State state, Node node)
         {
             var haveList = new List<Node>();
-            var missingList = new List<Node>();
+            var missingList = new List<Edge>();
             var requiredKeys = GetRequiredKeys(state, node)
-                .GroupBy(x => x)
-                .Select(x => (x.Key, x.Count()))
+                .GroupBy(x => x.Node)
                 .ToArray();
 
-            foreach (var (key, need) in requiredKeys)
+            foreach (var edges in requiredKeys)
             {
+                var key = edges.Key;
+                EdgeFlags flags = 0;
+                foreach (var edge in edges)
+                    flags |= edge.Flags;
+
+                var need = edges.Count();
                 var have = state.Keys.GetCount(key);
 
                 var missing = Math.Max(0, need - have);
                 for (var i = 0; i < missing; i++)
-                    missingList.Add(key);
+                    missingList.Add(new Edge(key, flags));
 
                 var progress = Math.Min(have, need);
                 for (var i = 0; i < progress; i++)
@@ -197,13 +232,19 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             return new ChecklistItem(node, haveList.ToImmutableArray(), missingList.ToImmutableArray());
         }
 
+        private static bool ValidateState(State state)
+        {
+            var flags = RouteSolver.Default.Solve(GetRoute(state));
+            return (flags & RouteSolverResult.PotentialSoftlock) == 0;
+        }
+
         private sealed class ChecklistItem
         {
             public Node Destination { get; }
             public ImmutableArray<Node> Have { get; }
-            public ImmutableArray<Node> Need { get; }
+            public ImmutableArray<Edge> Need { get; }
 
-            public ChecklistItem(Node destination, ImmutableArray<Node> have, ImmutableArray<Node> need)
+            public ChecklistItem(Node destination, ImmutableArray<Node> have, ImmutableArray<Edge> need)
             {
                 Destination = destination;
                 Have = have;
@@ -246,9 +287,9 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             }
         }
 
-        private static Node[] GetRequiredKeys(State state, Node node)
+        private static Edge[] GetRequiredKeys(State state, Node node)
         {
-            var leaves = new List<Node>();
+            var leaves = new List<Edge>();
             GetRequiredKeys(node);
             return leaves.ToArray();
 
@@ -257,12 +298,12 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 if (state.Visited.Contains(c))
                     return;
 
-                if (c.Kind == NodeKind.Key)
-                    leaves.Add(c);
-
-                foreach (var r in c.Requires.Select(x => x.Node))
+                foreach (var r in c.Requires)
                 {
-                    GetRequiredKeys(r);
+                    if (r.Node.Kind == NodeKind.Key)
+                    {
+                        leaves.Add(r);
+                    }
                 }
             }
         }

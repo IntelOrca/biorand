@@ -14,5 +14,7 @@
             Node = node;
             Flags = flags;
         }
+
+        public override string ToString() => $"{Node} Flags = {Flags}";
     }
 }
