@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using IntelOrca.Biohazard.BioRand.Routing;
+using Ps2IsoTools.ISO.Builders;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -209,6 +210,69 @@ namespace IntelOrca.Biohazard.BioRand.Tests
                 AssertItem(route, item0a, key0);
                 AssertItemNotFulfilled(route, item1a);
                 Assert.True(route.AllNodesVisited);
+            }
+        }
+
+        /// <summary>
+        /// Tests a map with a mini segment which can go back to main segment.
+        /// </summary>
+        [Fact]
+        public void MiniSegment()
+        {
+            for (var i = 0; i < Retries; i++)
+            {
+                var builder = new GraphBuilder();
+
+                var key0 = builder.ReusuableKey(1, "KEY 0");
+                var key1 = builder.ReusuableKey(1, "KEY 1");
+
+                var room1 = builder.AndGate("ROOM 1");
+                var room2 = builder.AndGate("ROOM 2", room1);
+                var room3 = builder.OneWay("ROOM 3", room1);
+                var room4 = builder.AndGate("ROOM 4", room3, key1);
+                var room5 = builder.OrGate("ROOM 5", room2, room4);
+                var room6 = builder.AndGate("ROOM 6", room3, key0);
+
+                var item2 = builder.Item(1, "Item 2", room2);
+                var item3 = builder.Item(1, "Item 3", room3);
+
+                var route = builder.GenerateRoute(i);
+
+                Assert.True(route.AllNodesVisited);
+                AssertKeyOnce(route, key0, item2);
+                AssertKeyOnce(route, key1, item3);
+            }
+        }
+
+        /// <summary>
+        /// Tests a map with a two segments which you can go between.
+        /// </summary>
+        [Fact]
+        public void CircularSegments()
+        {
+            for (var i = 0; i < Retries; i++)
+            {
+                var builder = new GraphBuilder();
+
+                var key0 = builder.ReusuableKey(1, "KEY 0");
+                var key1 = builder.ReusuableKey(2, "KEY 1");
+
+                var room0 = builder.AndGate("ROOM 0");
+                var room1 = builder.OneWay("ROOM 1", room0);
+                var room2 = builder.AndGate("ROOM 2", room1);
+                var room3 = builder.AndGate("ROOM 3", room0);
+                var room4 = builder.AndGate("ROOM 4", room2);
+                var room5 = builder.OrGate("ROOM 5", room3, builder.OneWay(null, room4));
+                var room6 = builder.AndGate("ROOM 6", room2, key1);
+                var room7 = builder.AndGate("ROOM 7", room3, key0);
+                var item2 = builder.Item(1, "Item 2", room2);
+                var item3 = builder.Item(2, "Item 3", room3);
+
+                var route = builder.GenerateRoute(i);
+
+                Assert.True(route.AllNodesVisited);
+                AssertKeyOnce(route, key0, item2);
+                AssertKeyOnce(route, key1, item3);
             }
         }
 

@@ -51,6 +51,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                     toVisit.Add(n);
             }
 
+            state = state.AddLog($"Begin subgraph {start.First()}");
             state = state.Clear(visited, keys, next);
             foreach (var v in toVisit)
                 state = state.VisitNode(v);
@@ -180,16 +181,18 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             var result = new Node[keys.Count];
             for (var i = 0; i < keys.Count; i++)
             {
+                var found = false;
                 for (var j = 0; j < available.Count; j++)
                 {
                     if (available[j].Group == keys[i].Group)
                     {
                         result[i] = available[j];
                         available.RemoveAt(j);
+                        found = true;
                         break;
                     }
                 }
-                if (result[i] == null)
+                if (!found)
                     return null;
             }
             return result;
@@ -431,6 +434,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 result.Keys = ImmutableMultiSet<Node>.Empty.AddRange(keys);
                 result.Next = ImmutableHashSet<Node>.Empty.Union(next);
                 result.OneWay = ImmutableHashSet<Node>.Empty;
+                result.SpareItems = ImmutableHashSet<Node>.Empty;
                 return result;
             }
 
@@ -480,6 +484,13 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 result.Next = Next.Remove(unlock);
                 result.Keys = Keys.RemoveMany(keys);
                 return result;
+            }
+
+            public State AddLog(string message)
+            {
+                var state = new State(this);
+                state.Log = Log.Add(message);
+                return state;
             }
         }
     }
