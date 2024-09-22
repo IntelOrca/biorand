@@ -51,7 +51,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 newVisits.Clear();
                 foreach (var node in state.Next)
                 {
-                    if (!node.Requires.All(x => state.Visited.Contains(x.Node)))
+                    if (!node.Requires.All(x => state.Visited.Contains(x)))
                         continue;
 
                     newVisits.Add(node);
@@ -70,7 +70,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
 
             // Lets first unlock anything that doesn't consume a key
             var safeWays = possibleWays
-                .Where(x => x.Requires.All(x => (x.Flags & EdgeFlags.Consume) == 0))
+                .Where(x => x.Requires.All(x => x.Kind != NodeKind.ConsumableKey))
                 .ToArray();
             if (safeWays.Length != 0)
             {
@@ -89,8 +89,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                     return null;
 
                 var consumeKeys = way.Requires
-                    .Where(x => (x.Flags & EdgeFlags.Consume) != 0)
-                    .Select(x => x.Node)
+                    .Where(x => x.Kind == NodeKind.ConsumableKey)
                     .ToArray();
                 state = state.UseKeys(consumeKeys);
             }
@@ -108,9 +107,9 @@ namespace IntelOrca.Biohazard.BioRand.Routing
         {
             var keys = state.Keys;
             var requiredKeys = node.Requires
-                .Where(x => x.Node.Kind == NodeKind.Key)
+                .Where(x => x.IsKey)
                 .ToArray();
-            foreach (var g in requiredKeys.GroupBy(x => x.Node))
+            foreach (var g in requiredKeys.GroupBy(x => x))
             {
                 var have = keys.GetCount(g.Key);
                 var need = g.Count();

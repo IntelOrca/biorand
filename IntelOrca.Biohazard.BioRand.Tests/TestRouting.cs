@@ -42,8 +42,8 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             {
                 var builder = new GraphBuilder();
 
-                var key0 = builder.Key(1, "KEY 0");
-                var key1 = builder.Key(1, "KEY 1");
+                var key0 = builder.ReusuableKey(1, "KEY 0");
+                var key1 = builder.ReusuableKey(1, "KEY 1");
 
                 var room0 = builder.AndGate("ROOM 0");
                 var item0a = builder.Item(1, "ITEM 0.A", room0);
@@ -68,8 +68,8 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             {
                 var builder = new GraphBuilder();
 
-                var key0 = builder.Key(1, "KEY 0");
-                var key1 = builder.Key(1, "KEY 1");
+                var key0 = builder.ReusuableKey(1, "KEY 0");
+                var key1 = builder.ReusuableKey(1, "KEY 1");
                 var room0 = builder.AndGate("ROOM 0");
                 var item0a = builder.Item(1, "ITEM 0.A", room0);
                 var item0b = builder.Item(1, "ITEM 0.B", room0);
@@ -95,8 +95,8 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             {
                 var builder = new GraphBuilder();
 
-                var key0 = builder.Key(1, "KEY 0");
-                var key1 = builder.Key(1, "KEY 1");
+                var key0 = builder.ReusuableKey(1, "KEY 0");
+                var key1 = builder.ReusuableKey(1, "KEY 1");
                 var room0 = builder.AndGate("ROOM 0");
                 var item0a = builder.Item(1, "ITEM 0.A", room0);
                 var item0b = builder.Item(1, "ITEM 0.B", room0, key0);
@@ -121,9 +121,9 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             {
                 var builder = new GraphBuilder();
 
-                var key0 = builder.Key(1, "KEY 0");
-                var key1 = builder.Key(1, "KEY 1");
-                var key2 = builder.Key(1, "KEY 2");
+                var key0 = builder.ReusuableKey(1, "KEY 0");
+                var key1 = builder.ReusuableKey(1, "KEY 1");
+                var key2 = builder.ReusuableKey(1, "KEY 2");
                 var room0 = builder.AndGate("ROOM 0");
                 var item0a = builder.Item(1, "ITEM 0.A", room0);
                 var item0b = builder.Item(1, "ITEM 0.B", room0);
@@ -148,7 +148,7 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             {
                 var builder = new GraphBuilder();
 
-                var key0 = builder.Key(1, "KEY 0");
+                var key0 = builder.ReusuableKey(1, "KEY 0");
                 var room0 = builder.AndGate("ROOM 0");
                 var item0a = builder.Item(1, "ITEM 0.A", room0);
                 var room1 = builder.AndGate("ROOM 1", key0);
@@ -170,7 +170,7 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             {
                 var builder = new GraphBuilder();
 
-                var key0 = builder.Key(1, "KEY 0");
+                var key0 = builder.ReusuableKey(1, "KEY 0");
                 var room0 = builder.AndGate("ROOM 0");
                 var item0a = builder.Item(1, "ITEM 0.A", room0);
                 var room1 = builder.AndGate("ROOM 1", room0, key0);
@@ -197,7 +197,7 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             {
                 var builder = new GraphBuilder();
 
-                var key0 = builder.Key(1, "KEY 0");
+                var key0 = builder.ReusuableKey(1, "KEY 0");
                 var room0 = builder.AndGate("ROOM 0");
                 var item0a = builder.Item(1, "ITEM 0.A", room0);
                 var room1 = builder.OneWay("ROOM 1", room0, key0);
@@ -217,12 +217,12 @@ namespace IntelOrca.Biohazard.BioRand.Tests
         {
             var builder = new GraphBuilder();
 
-            var key0 = builder.Key(1, "KEY 0");
+            var key0 = builder.ConsumableKey(1, "KEY 0");
             var room0 = builder.AndGate("ROOM 0");
             var item0 = builder.Item(1, "ITEM 0", room0);
-            var room1 = builder.AndGate("ROOM 1", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
+            var room1 = builder.AndGate("ROOM 1", room0, key0);
             var item1 = builder.Item(1, "ITEM 1", room1);
-            var room2 = builder.AndGate("ROOM 2", new Edge(room1), new Edge(key0, EdgeFlags.Consume));
+            var room2 = builder.AndGate("ROOM 2", room1, key0);
 
             var route = builder.GenerateRoute();
 
@@ -236,12 +236,12 @@ namespace IntelOrca.Biohazard.BioRand.Tests
         {
             var builder = new GraphBuilder();
 
-            var key0 = builder.Key(1, "KEY 0");
+            var key0 = builder.ConsumableKey(1, "KEY 0");
             var room0 = builder.AndGate("ROOM 0");
             var item0 = builder.Item(1, "ITEM 0", room0);
             var item1 = builder.Item(1, "ITEM 1", room0);
-            var room1 = builder.AndGate("ROOM 1", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
-            var room2 = builder.AndGate("ROOM 2", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
+            var room1 = builder.AndGate("ROOM 1", room0, key0);
+            var room2 = builder.AndGate("ROOM 2", room0, key0);
 
             var route = builder.GenerateRoute();
 
@@ -257,13 +257,13 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             {
                 var builder = new GraphBuilder();
 
-                var key0 = builder.Key(1, "KEY 0");
+                var key0 = builder.ConsumableKey(1, "KEY 0");
                 var room0 = builder.AndGate("ROOM 0");
                 var item0a = builder.Item(1, "ITEM 0A", room0);
                 var item0b = builder.Item(1, "ITEM 0B", room0);
-                var room1 = builder.AndGate("ROOM 1", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
+                var room1 = builder.AndGate("ROOM 1", room0, key0);
                 var item1 = builder.Item(1, "ITEM 1", room1);
-                var room2 = builder.AndGate("ROOM 2", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
+                var room2 = builder.AndGate("ROOM 2", room0, key0);
 
                 var route = builder.GenerateRoute(i);
 
@@ -281,13 +281,13 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             {
                 var builder = new GraphBuilder();
 
-                var key0 = builder.Key(1, "KEY 0");
-                var key1 = builder.Key(1, "KEY 1");
+                var key0 = builder.ConsumableKey(1, "KEY 0");
+                var key1 = builder.ReusuableKey(1, "KEY 1");
                 var room0 = builder.AndGate("ROOM 0");
                 var item0 = builder.Item(1, "ITEM 0", room0);
                 var room1 = builder.AndGate("ROOM 1", room0, key1);
-                var room2 = builder.AndGate("ROOM 2", new Edge(room1), new Edge(key0, EdgeFlags.Consume));
-                var room3 = builder.AndGate("ROOM 3", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
+                var room2 = builder.AndGate("ROOM 2", room1, key0);
+                var room3 = builder.AndGate("ROOM 3", room0, key0);
                 var item3a = builder.Item(1, "ITEM 3.A", room3);
                 var item3b = builder.Item(1, "ITEM 3.B", room3);
 
@@ -307,14 +307,14 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             {
                 var builder = new GraphBuilder();
 
-                var key0 = builder.Key(1, "KEY 0");
-                var key1 = builder.Key(1, "KEY 1");
+                var key0 = builder.ConsumableKey(1, "KEY 0");
+                var key1 = builder.ReusuableKey(1, "KEY 1");
                 var room0 = builder.AndGate("ROOM 0");
                 var item0a = builder.Item(1, "ITEM 0.A", room0);
                 var item0b = builder.Item(1, "ITEM 0.B", room0);
                 var room1 = builder.AndGate("ROOM 1", room0, key1);
-                var room2 = builder.AndGate("ROOM 2", new Edge(room1), new Edge(key0, EdgeFlags.Consume));
-                var room3 = builder.AndGate("ROOM 3", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
+                var room2 = builder.AndGate("ROOM 2", room1, key0);
+                var room3 = builder.AndGate("ROOM 3", room0, key0);
                 var item3a = builder.Item(1, "ITEM 3.A", room3);
                 var item3b = builder.Item(1, "ITEM 3.B", room3);
 
@@ -330,12 +330,12 @@ namespace IntelOrca.Biohazard.BioRand.Tests
         {
             var builder = new GraphBuilder();
 
-            var key0 = builder.Key(1, "KEY 0");
+            var key0 = builder.ConsumableKey(1, "KEY 0");
             var room0 = builder.AndGate("ROOM 0");
             var item0 = builder.Item(1, "ITEM 0", room0);
             var item1 = builder.Item(1, "ITEM 1", room0);
-            var room1 = builder.OneWay("ROOM 1", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
-            var room2 = builder.OneWay("ROOM 2", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
+            var room1 = builder.OneWay("ROOM 1", room0,key0);
+            var room2 = builder.OneWay("ROOM 2", room0,key0);
 
             var route = builder.GenerateRoute();
 
@@ -349,14 +349,14 @@ namespace IntelOrca.Biohazard.BioRand.Tests
         {
             var builder = new GraphBuilder();
 
-            var key0 = builder.Key(1, "KEY 0");
-            var key1 = builder.Key(2, "KEY 1");
+            var key0 = builder.ConsumableKey(1, "KEY 0");
+            var key1 = builder.ReusuableKey(2, "KEY 1");
             var room0 = builder.AndGate("ROOM 0");
             var item0 = builder.Item(1, "ITEM 0", room0);
-            var room1 = builder.AndGate("ROOM 1", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
+            var room1 = builder.AndGate("ROOM 1", room0, key0);
             var item1a = builder.Item(1, "ITEM 1A", room1);
             var item1b = builder.Item(2, "ITEM 1B", room1);
-            var room2 = builder.AndGate("ROOM 2", new Edge(room0), new Edge(key0, EdgeFlags.Consume), new Edge(key1));
+            var room2 = builder.AndGate("ROOM 2", room0, key0, key1);
             var route = builder.GenerateRoute();
 
             AssertItem(route, item0, key0);
@@ -372,18 +372,18 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             {
                 var builder = new GraphBuilder();
 
-                var key0 = builder.Key(1, "KEY 0");
-                var key1 = builder.Key(1, "KEY 1");
-                var key2 = builder.Key(1, "KEY 2");
+                var key0 = builder.ConsumableKey(1, "KEY 0");
+                var key1 = builder.ReusuableKey(1, "KEY 1");
+                var key2 = builder.ReusuableKey(1, "KEY 2");
                 var room0 = builder.AndGate("ROOM 0");
                 var item0a = builder.Item(1, "ITEM 0.A", room0);
                 var item0b = builder.Item(1, "ITEM 0.B", room0);
-                var room1 = builder.AndGate("ROOM 1", new Edge(room0), new Edge(key0, EdgeFlags.Consume));
+                var room1 = builder.AndGate("ROOM 1", room0, key0);
                 var item1a = builder.Item(1, "ITEM 1.A", room1);
-                var room2 = builder.AndGate("ROOM 2", new Edge(room0), new Edge(key1));
+                var room2 = builder.AndGate("ROOM 2", room0, key1);
                 var item2a = builder.Item(1, "ITEM 2.A", room2);
-                var room3 = builder.AndGate("ROOM 3", new Edge(room2), new Edge(key2));
-                var room4 = builder.AndGate("ROOM 4", new Edge(room3), new Edge(key0, EdgeFlags.Consume));
+                var room3 = builder.AndGate("ROOM 3", room2, key2);
+                var room4 = builder.AndGate("ROOM 4", room3, key0);
 
                 var route = builder.GenerateRoute(i);
 
@@ -396,7 +396,7 @@ namespace IntelOrca.Biohazard.BioRand.Tests
         {
             var builder = new GraphBuilder();
 
-            var key0 = builder.Key(1, "KEY 0");
+            var key0 = builder.ReusuableKey(1, "KEY 0");
             var room0 = builder.AndGate("ROOM 0");
             var item0a = builder.Item(1, "ITEM 0.A", room0);
             var item0b = builder.Item(1, "ITEM 0.B", room0);
@@ -414,9 +414,9 @@ namespace IntelOrca.Biohazard.BioRand.Tests
         {
             var builder = new GraphBuilder();
 
-            var keyTop = builder.Key(1, "KEY TOP");
-            var keyBottom = builder.Key(1, "KEY BOTTOM");
-            var keyEnd = builder.Key(1, "KEY END");
+            var keyTop = builder.ReusuableKey(1, "KEY TOP");
+            var keyBottom = builder.ReusuableKey(1, "KEY BOTTOM");
+            var keyEnd = builder.ReusuableKey(1, "KEY END");
 
             var roomStart = builder.AndGate("ROOM START");
 
@@ -447,14 +447,14 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             {
                 var builder = new GraphBuilder();
 
-                var key0 = builder.Key(1, "KEY 0");
-                var key1 = builder.Key(1, "KEY 1");
+                var key0 = builder.RemovableKey(1, "KEY 0");
+                var key1 = builder.ReusuableKey(1, "KEY 1");
 
                 var room0 = builder.AndGate("ROOM 0");
                 var item0 = builder.Item(1, "ITEM 0", room0);
-                var room1 = builder.AndGate("ROOM 1", new Edge(room0), new Edge(key0, EdgeFlags.Removable));
+                var room1 = builder.AndGate("ROOM 1", room0, key0);
                 var item1 = builder.Item(1, "ITEM 1", room1);
-                var room2 = builder.AndGate("ROOM 2", new Edge(room1), new Edge(key0, EdgeFlags.Removable));
+                var room2 = builder.AndGate("ROOM 2", room0, key0);
                 var item2 = builder.Item(1, "ITEM 1", room2);
                 var room3 = builder.AndGate("ROOM 2", room2, key1);
 
@@ -473,24 +473,52 @@ namespace IntelOrca.Biohazard.BioRand.Tests
             {
                 var builder = new GraphBuilder();
 
-                var key0 = builder.Key(1, "KEY 0");
+                var key0 = builder.RemovableKey(1, "KEY 0");
 
                 var room0 = builder.AndGate("ROOM 0");
                 var item0 = builder.Item(1, "ITEM 0", room0);
-                var room1 = builder.AndGate("ROOM 1", new Edge(room0), new Edge(key0, EdgeFlags.Removable));
+                var room1 = builder.AndGate("ROOM 1", room0, key0);
                 var item1 = builder.Item(1, "ITEM 1", room1);
-                var room2 = builder.AndGate("ROOM 2", new Edge(room1), new Edge(key0, EdgeFlags.Removable));
-                var item2 = builder.Item(1, "ITEM 1", room2);
-                var room3 = builder.AndGate("ROOM 2", new Edge(room2), new Edge(key0, EdgeFlags.Removable));
+                var room2 = builder.AndGate("ROOM 2", room1, key0);
+                var item2 = builder.Item(1, "ITEM 2", room2);
+                var room3 = builder.AndGate("ROOM 3", room2, key0);
 
                 var route = builder.GenerateRoute(i);
 
+                Assert.True(route.AllNodesVisited);
                 AssertItem(route, item0, key0);
+                AssertKeyQuantity(route, key0, 3);
+            }
+        }
 
-                var items = route.GetItemsContainingKey(key0);
-                Assert.Equal(3, items.Count);
+        [Fact]
+        public void Removable_MultipleKeysRequiredOnce()
+        {
+            for (var i = 0; i < Retries; i++)
+            {
+                var builder = new GraphBuilder();
+
+                var key0 = builder.RemovableKey(1, "KEY 0");
+                var key1 = builder.ReusuableKey(1, "KEY 0");
+
+                var room0 = builder.AndGate("ROOM 0");
+                var item0 = builder.Item(1, "ITEM 0", room0);
+                var room1 = builder.AndGate("ROOM 1", room0, key0);
+                var item1 = builder.Item(1, "ITEM 1", room1);
+                var room2 = builder.AndGate("ROOM 2", room0, key0);
+                var item2 = builder.Item(1, "ITEM 2", room2);
+                var room3 = builder.AndGate("ROOM 3", room1, key0);
+                var room4 = builder.AndGate("ROOM 4", room2, key0);
+                var room5 = builder.AndGate("ROOM 5", room4, key1);
+
+                var route = builder.GenerateRoute(i);
 
                 Assert.True(route.AllNodesVisited);
+                AssertKeyOnce(route, key1, item1, item2);
+                AssertItem(route, item0, key0);
+                AssertItem(route, item1, key0, key1);
+                AssertItem(route, item2, key0, key1);
+                AssertKeyQuantity(route, key0, 2);
             }
         }
 

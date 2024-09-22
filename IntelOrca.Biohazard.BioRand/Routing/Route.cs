@@ -47,7 +47,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 if (!visited.Add(n))
                     return;
 
-                if (keysAsNodes || n.Kind != NodeKind.Key)
+                if (keysAsNodes || n.IsKey)
                 {
                     var label = n.Label;
                     if (n.Kind == NodeKind.Item && !keysAsNodes)
@@ -60,14 +60,16 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                     mb.Node($"N{n.Id}", label,
                         n.Kind switch
                         {
-                            NodeKind.Key => MermaidShape.Hexagon,
+                            NodeKind.ReusuableKey => MermaidShape.Hexagon,
+                            NodeKind.ConsumableKey => MermaidShape.Hexagon,
+                            NodeKind.RemovableKey => MermaidShape.Hexagon,
                             NodeKind.Item => keysAsNodes
                                 ? MermaidShape.Square
                                 : MermaidShape.DoubleSquare,
                             _ => MermaidShape.Circle,
                         });
                 }
-                if (n.Kind == NodeKind.Key)
+                if (n.IsKey)
                 {
                     var items = ItemToKey.GetKeysContainingValue(n);
                     foreach (var item in items)
@@ -80,10 +82,10 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 }
                 else
                 {
-                    foreach (var r in n.Requires.Select(x => x.Node))
+                    foreach (var r in n.Requires)
                     {
                         Visit(r);
-                        if (r.Kind == NodeKind.Key && !keysAsNodes)
+                        if (r.IsKey && !keysAsNodes)
                         {
                             var items = ItemToKey.GetKeysContainingValue(n);
                             foreach (var item in items)

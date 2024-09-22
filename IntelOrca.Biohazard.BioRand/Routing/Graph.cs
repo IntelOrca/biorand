@@ -32,19 +32,17 @@ namespace IntelOrca.Biohazard.BioRand.Routing
 
         private string[] GetKeys(Node node)
         {
-            var edges = node.Requires
-                .Where(x => x.Node.Kind == NodeKind.Key)
-                .ToArray();
-            return edges
-                .Select(e => string.Join(" ", GetIcon(e), $"K<sub>{e.Node.Id}</sub>"))
+            return node.Requires
+                .Where(x => x.IsKey)
+                .Select(e => string.Join(" ", GetIcon(e), $"K<sub>{e.Id}</sub>"))
                 .ToArray();
         }
 
-        private static string GetIcon(Edge edge)
+        private static string GetIcon(Node node)
         {
-            if ((edge.Flags & EdgeFlags.Consume) != 0)
+            if (node.Kind == NodeKind.ConsumableKey)
                 return "fa:fa-triangle-exclamation";
-            if ((edge.Flags & EdgeFlags.Removable) != 0)
+            if (node.Kind == NodeKind.RemovableKey)
                 return "fa:fa-circle";
             return "";
         }
@@ -90,8 +88,8 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             }
         }
 
-        private static bool IsStartNode(Node node) => RequiresNothingOrKeys(node) && node.Kind != NodeKind.Key;
-        private static bool RequiresNothingOrKeys(Node node) => node.Requires.All(x => x.Node.Kind == NodeKind.Key);
+        private static bool IsStartNode(Node node) => RequiresNothingOrKeys(node) && !node.IsKey;
+        private static bool RequiresNothingOrKeys(Node node) => node.Requires.All(x => x.IsKey);
 
         public string ToMermaid()
         {
@@ -105,7 +103,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 mb.BeginSubgraph($"G<sub>{gIndex}</sub>");
                 foreach (var node in g)
                 {
-                    if (node.Kind == NodeKind.Key && !keysAsNodes)
+                    if (node.IsKey && !keysAsNodes)
                         continue;
 
                     var (letter, shape) = GetNodeLabel(node);
@@ -122,7 +120,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             foreach (var edge in Edges)
             {
                 var a = edge.Key;
-                if (a.Kind == NodeKind.Key && !keysAsNodes)
+                if (a.IsKey && !keysAsNodes)
                     continue;
 
                 var sourceName = GetNodeName(a);
@@ -153,7 +151,9 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 return node.Kind switch
                 {
                     NodeKind.Item => ('I', MermaidShape.Square),
-                    NodeKind.Key => ('K', MermaidShape.Hexagon),
+                    NodeKind.ReusuableKey => ('K', MermaidShape.Hexagon),
+                    NodeKind.ConsumableKey => ('K', MermaidShape.Hexagon),
+                    NodeKind.RemovableKey => ('K', MermaidShape.Hexagon),
                     _ => ('R', MermaidShape.Circle),
                 };
             }
