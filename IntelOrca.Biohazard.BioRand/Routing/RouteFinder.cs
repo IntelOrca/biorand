@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using static IntelOrca.Biohazard.BioRand.ScdCondition;
 
 namespace IntelOrca.Biohazard.BioRand.Routing
 {
@@ -93,65 +95,6 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 }
             }
             return DoNextSubGraph(bestState, rng);
-
-            /*
-            var checklist = GetChecklist(state);
-            var requiredKeys = Shuffle(rng, checklist
-                .SelectMany(x => x.Need)
-                .Select(x => x.Node)
-                .Distinct());
-            var states = new List<State>();
-            foreach (var key in requiredKeys)
-            {
-                var allEdges = checklist
-                    .Where(x => x.Need.All(x => x.Node == key))
-                    .SelectMany(x => x.Need)
-                    .ToArray();
-                var multipleRequired = allEdges.Any(x => (x.Flags & EdgeFlags.Consume) != 0);
-                var need = multipleRequired ? allEdges.Length : 1;
-                var available = Shuffle(rng, state.SpareItems.Where(x => x.Group == key.Group));
-                if (need == 1)
-                {
-                    foreach (var a in available)
-                    {
-                        states.Add(state.PlaceKey(a, key));
-                    }
-                }
-                else if (available.Length >= need)
-                {
-                    var newState = state;
-                    for (var i = 0; i < need; i++)
-                    {
-                        newState = newState.PlaceKey(available[i], key);
-                    }
-                    states.Add(newState);
-                }
-            }
-
-            if (states.Count == 0)
-            {
-                var subGraphs = state.OneWay.ToArray();
-                foreach (var n in subGraphs)
-                {
-                    state = DoSubgraph(state, new[] { n }, first: false, rng);
-                }
-                return state;
-            }
-            else
-            {
-                State? firstState = null;
-                foreach (var s in states)
-                {
-                    var finalState = Fulfill(s, rng);
-                    if (finalState.Next.Count == 0 && finalState.OneWay.Count == 0)
-                    {
-                        return finalState;
-                    }
-                    firstState ??= finalState;
-                }
-                return firstState!;
-            }
-            */
         }
 
         private static State Expand(State state)
@@ -180,17 +123,17 @@ namespace IntelOrca.Biohazard.BioRand.Routing
 
         private static List<Node> GetRequiredKeys2(State state, Node node)
         {
-            var required = GetMissingKeys(state.Keys, node);
+            var required = GetMissingKeys(state, state.Keys, node);
             var newKeys = state.Keys.AddRange(required.Select(x => x.Node));
             foreach (var n in state.Next)
             {
                 if (n == node)
                     continue;
 
-                var missingKeys = GetMissingKeys(newKeys, n);
+                var missingKeys = GetMissingKeys(state, newKeys, n);
                 if (missingKeys.Count == 0)
                 {
-                    missingKeys = GetMissingKeys(state.Keys, n);
+                    missingKeys = GetMissingKeys(state, state.Keys, n);
                     foreach (var k in missingKeys)
                     {
                         if ((k.Flags & EdgeFlags.Consume) != 0)
@@ -204,7 +147,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             return required.Select(x => x.Node).ToList();
         }
 
-        private static List<Edge> GetMissingKeys(ImmutableMultiSet<Node> keys, Node node)
+        private static List<Edge> GetMissingKeys(State state, ImmutableMultiSet<Node> keys, Node node)
         {
             var requiredKeys = node.Requires
                 .Where(x => x.Node.Kind == NodeKind.Key)
@@ -212,13 +155,19 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 .ToArray();
 
             var required = new List<Edge>();
+            var removable = new List<Node>();
             foreach (var g in requiredKeys)
             {
-                var have = keys.GetCount(g.Key);
-                var need = g.Count() - have;
                 var flags = CombineFlags(g);
+                var have = keys.GetCount(g.Key);
+                var need = (flags & EdgeFlags.Removable) != 0
+                    ? GetRemovableKeyCount(state, g.Key, node)
+                    : g.Count();
+                need -= have;
                 for (var i = 0; i < need; i++)
+                {
                     required.Add(new Edge(g.Key, flags));
+                }
             }
 
             return required;
@@ -289,6 +238,24 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             return (state, result.ToArray());
         }
 
+        private static int GetRemovableKeyCount(State state, Node key, Node node)
+        {
+            var count = 0;
+            Recurse(node);
+            return count;
+
+            void Recurse(Node n)
+            {
+                foreach (var r in n.Requires)
+                {
+                    if (r.Node == key)
+                        count++;
+                    else
+                        Recurse(r.Node);
+                }
+            }
+        }
+
         private static HashSet<Node> GetHardDependencies(State state, Node node)
         {
             var set = new HashSet<Node>();
@@ -319,11 +286,6 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             }
         }
 
-        private static ImmutableArray<ChecklistItem> GetChecklist(State state)
-        {
-            return state.Next.Select(x => GetChecklistItem(state, x)).ToImmutableArray();
-        }
-
         private static ChecklistItem GetChecklistItem(State state, Node node)
         {
             var haveList = new List<Node>();
@@ -341,6 +303,11 @@ namespace IntelOrca.Biohazard.BioRand.Routing
 
                 var need = edges.Count();
                 var have = state.Keys.GetCount(key);
+
+                if ((flags & EdgeFlags.Removable) != 0)
+                {
+                    need = GetRemovableKeyCount(state, key, node);
+                }
 
                 var missing = Math.Max(0, need - have);
                 for (var i = 0; i < missing; i++)

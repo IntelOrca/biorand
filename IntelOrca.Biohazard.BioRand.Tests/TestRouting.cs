@@ -488,7 +488,7 @@ namespace IntelOrca.Biohazard.BioRand.Tests
                 AssertItem(route, item0, key0);
 
                 var items = route.GetItemsContainingKey(key0);
-                Assert.Equal(2, items.Count);
+                Assert.Equal(3, items.Count);
 
                 Assert.True(route.AllNodesVisited);
             }

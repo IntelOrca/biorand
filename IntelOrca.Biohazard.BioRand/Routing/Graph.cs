@@ -44,6 +44,8 @@ namespace IntelOrca.Biohazard.BioRand.Routing
         {
             if ((edge.Flags & EdgeFlags.Consume) != 0)
                 return "fa:fa-triangle-exclamation";
+            if ((edge.Flags & EdgeFlags.Removable) != 0)
+                return "fa:fa-circle";
             return "";
         }
 
