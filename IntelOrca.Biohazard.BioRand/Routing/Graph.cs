@@ -30,12 +30,21 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             return ImmutableArray<Node>.Empty;
         }
 
-        private Node[] GetKeys(Node node)
+        private string[] GetKeys(Node node)
         {
-            return node.Requires
-                .Select(x => x.Node)
-                .Where(x => x.Kind == NodeKind.Key)
+            var edges = node.Requires
+                .Where(x => x.Node.Kind == NodeKind.Key)
                 .ToArray();
+            return edges
+                .Select(e => string.Join(" ", GetIcon(e), $"K<sub>{e.Node.Id}</sub>"))
+                .ToArray();
+        }
+
+        private static string GetIcon(Edge edge)
+        {
+            if ((edge.Flags & EdgeFlags.Consume) != 0)
+                return "fa:fa-triangle-exclamation";
+            return "";
         }
 
         private ImmutableArray<ImmutableArray<Node>> GetSubgraphs()
@@ -125,7 +134,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             void EmitEdge(string sourceName, Node b)
             {
                 var targetName = GetNodeName(b);
-                var label = string.Join(" + ", GetKeys(b).Select(k => $"K<sub>{k.Id}</sub>"));
+                var label = string.Join(" + ", GetKeys(b));
                 var edgeType = b.Kind == NodeKind.OneWay
                     ? MermaidEdgeType.Dotted
                     : MermaidEdgeType.Solid;

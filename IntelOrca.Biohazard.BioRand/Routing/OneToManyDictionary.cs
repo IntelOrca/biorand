@@ -71,6 +71,8 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             _valueToKeys = valueToKeys;
         }
 
+        public int Count => _keyToValue.Count;
+
         public TMany this[TOne key] => _keyToValue[key];
 
         public ImmutableHashSet<TOne> GetKeysContainingValue(TMany value)

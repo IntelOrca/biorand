@@ -62,6 +62,39 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             if (!ValidateState(state))
                 return state;
 
+            // Choose a door to open
+            var bestState = state;
+            foreach (var n in Shuffle(rng, state.Next))
+            {
+                var required = GetRequiredKeys2(state, n);
+
+                // TODO do something better here
+                for (int retries = 0; retries < 10; retries++)
+                {
+                    var slots = FindAvailableSlots(rng, state, required);
+                    if (slots == null)
+                        continue;
+
+                    var newState = state;
+                    for (var i = 0; i < required.Count; i++)
+                    {
+                        newState = newState.PlaceKey(slots[i], required[i]);
+                    }
+
+                    var finalState = Fulfill(newState, rng);
+                    if (finalState.Next.Count == 0 && finalState.OneWay.Count == 0)
+                    {
+                        return finalState;
+                    }
+                    else if (finalState.ItemToKey.Count > bestState.ItemToKey.Count)
+                    {
+                        bestState = finalState;
+                    }
+                }
+            }
+            return DoNextSubGraph(bestState, rng);
+
+            /*
             var checklist = GetChecklist(state);
             var requiredKeys = Shuffle(rng, checklist
                 .SelectMany(x => x.Need)
@@ -118,6 +151,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 }
                 return firstState!;
             }
+            */
         }
 
         private static State Expand(State state)
@@ -140,6 +174,94 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                     }
                 }
                 state = newState;
+            }
+            return state;
+        }
+
+        private static List<Node> GetRequiredKeys2(State state, Node node)
+        {
+            var required = GetMissingKeys(state.Keys, node);
+            var newKeys = state.Keys.AddRange(required.Select(x => x.Node));
+            foreach (var n in state.Next)
+            {
+                if (n == node)
+                    continue;
+
+                var missingKeys = GetMissingKeys(newKeys, n);
+                if (missingKeys.Count == 0)
+                {
+                    missingKeys = GetMissingKeys(state.Keys, n);
+                    foreach (var k in missingKeys)
+                    {
+                        if ((k.Flags & EdgeFlags.Consume) != 0)
+                        {
+                            required.Add(k);
+                        }
+                    }
+                }
+            }
+
+            return required.Select(x => x.Node).ToList();
+        }
+
+        private static List<Edge> GetMissingKeys(ImmutableMultiSet<Node> keys, Node node)
+        {
+            var requiredKeys = node.Requires
+                .Where(x => x.Node.Kind == NodeKind.Key)
+                .GroupBy(x => x.Node)
+                .ToArray();
+
+            var required = new List<Edge>();
+            foreach (var g in requiredKeys)
+            {
+                var have = keys.GetCount(g.Key);
+                var need = g.Count() - have;
+                var flags = CombineFlags(g);
+                for (var i = 0; i < need; i++)
+                    required.Add(new Edge(g.Key, flags));
+            }
+
+            return required;
+        }
+
+        private static EdgeFlags CombineFlags(IEnumerable<Edge> edges)
+        {
+            EdgeFlags result = 0;
+            foreach (var edge in edges)
+                result |= edge.Flags;
+            return result;
+        }
+
+        private static Node[]? FindAvailableSlots(Random rng, State state, List<Node> keys)
+        {
+            if (state.SpareItems.Count < keys.Count)
+                return null;
+
+            var available = Shuffle(rng, state.SpareItems).ToList();
+            var result = new Node[keys.Count];
+            for (var i = 0; i < keys.Count; i++)
+            {
+                for (var j = 0; j < available.Count; j++)
+                {
+                    if (available[j].Group == keys[i].Group)
+                    {
+                        result[i] = available[j];
+                        available.RemoveAt(j);
+                        break;
+                    }
+                }
+                if (result[i] == null)
+                    return null;
+            }
+            return result;
+        }
+
+        private static State DoNextSubGraph(State state, Random rng)
+        {
+            var subGraphs = state.OneWay.ToArray();
+            foreach (var n in subGraphs)
+            {
+                state = DoSubgraph(state, new[] { n }, first: false, rng);
             }
             return state;
         }
