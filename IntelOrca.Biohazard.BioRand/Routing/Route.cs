@@ -60,7 +60,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                     mb.Node($"N{n.Id}", label,
                         n.Kind switch
                         {
-                            NodeKind.ReusuableKey => MermaidShape.Hexagon,
+                            NodeKind.ReusableKey => MermaidShape.Hexagon,
                             NodeKind.ConsumableKey => MermaidShape.Hexagon,
                             NodeKind.RemovableKey => MermaidShape.Hexagon,
                             NodeKind.Item => keysAsNodes

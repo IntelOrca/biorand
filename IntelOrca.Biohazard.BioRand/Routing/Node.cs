@@ -21,7 +21,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
 
         public bool IsItem => Kind == NodeKind.Item;
         public bool IsKey =>
-            Kind == NodeKind.ReusuableKey ||
+            Kind == NodeKind.ReusableKey ||
             Kind == NodeKind.ConsumableKey ||
             Kind == NodeKind.RemovableKey;
 

@@ -6,7 +6,7 @@
         OrGate,
         OneWay,
         Item,
-        ReusuableKey,
+        ReusableKey,
         ConsumableKey,
         RemovableKey
     }

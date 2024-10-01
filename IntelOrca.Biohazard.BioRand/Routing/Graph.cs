@@ -151,7 +151,7 @@ namespace IntelOrca.Biohazard.BioRand.Routing
                 return node.Kind switch
                 {
                     NodeKind.Item => ('I', MermaidShape.Square),
-                    NodeKind.ReusuableKey => ('K', MermaidShape.Hexagon),
+                    NodeKind.ReusableKey => ('K', MermaidShape.Hexagon),
                     NodeKind.ConsumableKey => ('K', MermaidShape.Hexagon),
                     NodeKind.RemovableKey => ('K', MermaidShape.Hexagon),
                     _ => ('R', MermaidShape.Circle),

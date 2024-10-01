@@ -14,9 +14,9 @@ namespace IntelOrca.Biohazard.BioRand.Routing
             return ++_id;
         }
 
-        public Node ReusuableKey(int group, string? label)
+        public Node ReusableKey(int group, string? label)
         {
-            var node = new Node(GetNextId(), group, NodeKind.ReusuableKey, label, new Node[0]);
+            var node = new Node(GetNextId(), group, NodeKind.ReusableKey, label, new Node[0]);
             _nodes.Add(node);
             return node;
         }
